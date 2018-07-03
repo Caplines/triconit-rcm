@@ -22,19 +22,19 @@
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !firstName.valid }">
 								<label class="sr-only" for="firstName">First Name</label>
 								<input type="text" class="login-signup-form-field form-control" name="firstName" id="firstName" [(ngModel)]="user.firstName" #firstName="ngModel" placeholder="First Name..." required />
-								<div *ngIf="f.submitted && !firstName.valid" class="help-block">Please enter your first name.</div>
+								<div *ngIf="f.submitted && !firstName.valid" class="error-msg">Please enter your first name.</div>
 							</div>
 							
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !lastName.valid }">
 								<label class="sr-only" for="lastName">Last Name</label>
 								<input type="text" class="login-signup-form-field form-control" name="lastName" id="lastName" [(ngModel)]="user.lastName" #lastName="ngModel" placeholder="Last Name..." required />
-								<div *ngIf="f.submitted && !lastName.valid" class="help-block">Please enter your last name.</div>
+								<div *ngIf="f.submitted && !lastName.valid" class="error-msg">Please enter your last name.</div>
 							</div>
 							
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
 								<label class="sr-only" for="email">Email Address</label>
 								<input type="text" class="login-signup-form-field form-control" id="email" name="email" pattern="[^ @]*@[^ @]*" [(ngModel)]="user.email" #email="ngModel" placeholder="Email/Username..." required />
-								<div *ngIf="f.submitted && !email.valid" class="help-block">
+								<div *ngIf="f.submitted && !email.valid" class="error-msg">
 									<div *ngIf="email.errors.required">Please enter your email.</div>
 									<div *ngIf="email.errors.pattern">Please enter a valid email address.</div>
 								</div>
@@ -43,7 +43,7 @@
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
 								<label class="sr-only" for="password">Password</label>
 								<input type="password" class="login-signup-form-field form-control" name="password" id="password" [(ngModel)]="user.password" #password="ngModel" placeholder="Password..." required minlength="4" />
-								<div *ngIf="f.submitted && !password.valid" class="help-block">
+								<div *ngIf="f.submitted && !password.valid" class="error-msg">
 									<div *ngIf="password.errors.required">Please enter a password.</div>
 									<div *ngIf="password.errors.minlength">Password must be at least 4 characters long.</div>
 								</div>
@@ -51,16 +51,17 @@
 							
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted}">
 								<label class="sr-only" for="passwordAgain">Retype Password</label>
-								<input type="passwordAgain" class="login-signup-form-field form-control" name="passwordAgain" id="passwordAgain" [(ngModel)]="passwordAgain" #repassword="ngModel" placeholder="Retype Password..."/>
-								<div *ngIf="f.submitted && user.password!=passwordAgain" class="help-block">The two passwords you entered don't match. Please try again.</div> 
+								<input type="password" class="login-signup-form-field form-control" name="passwordAgain" id="passwordAgain" [(ngModel)]="passwordAgain" #repassword="ngModel" placeholder="Retype Password..."/>
+								<div *ngIf="f.submitted && user.password!=passwordAgain && user.password!=''" class="error-msg">The two passwords you entered don't match. Please try again.</div> 
 							</div>
 
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
 								<label class="sr-only" for="officeId">Office Name</label>
 								<select name="officeId" [(ngModel)]="user.officeId" class="login-signup-form-field form-control" id="officeId">
+									<option value="">Office Name...</option>
 									<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
 								</select>
-								<div *ngIf="f.submitted && user.officeId==''" class="help-block">The Office Name is required</div>
+								<div *ngIf="f.submitted && user.officeId==''" class="error-msg">The Office Name is required</div>
 							</div>
 							
 							<p><button type="submit" class="btn">SIGN UP</button></p>

@@ -31,10 +31,14 @@ export class RegisterComponent implements OnInit {
 	  console.log(this.user);
 	  if(this.user.password==this.passwordAgain && this.user.officeId) {
 		this.accountService.createAccount(this.user).subscribe(data => {
-			this.router.navigate(['/login']);
+			if(data.message == "User Created Successfully") {
+				this.router.navigate(['/login']);
+			} else {
+				this.errorMessage = data.message;
+			}
 		  }, err => {
 			console.log(err);
-			this.errorMessage = "username already exist";
+			//this.errorMessage = "username already exist";
 		  }
 		)
 	  }

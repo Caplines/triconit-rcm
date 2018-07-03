@@ -80,7 +80,7 @@ img { max-width: 100%; }
 /***** Top content *****/
 
 .inner-bg {
-    padding: 50px 0 170px 0;
+    padding: 25px 0 170px 0;
 }
 
 .top-content .text {
@@ -174,16 +174,16 @@ img { max-width: 100%; }
 }
 
 .top-content .login-signup-form-field {
-	height: 50px;
+	height: 38px;
     margin: 0;
-    padding: 0 20px;
+    padding: 0 10px;
     vertical-align: middle;
     background: #f8f8f8;
     border: 2px solid #ddd;
     font-family: 'Roboto', sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 300;
-    line-height: 50px;
+    line-height: 38px;
     color: #888;
     border-radius: 4px;
     -webkit-box-shadow: none;
@@ -191,4 +191,12 @@ img { max-width: 100%; }
     -webkit-transition: all .3s;
     transition: all .3s;
 }
+
+.top-content .has-error .error-msg {
+	color: #a94442;
+    font-size: 13px;
+    padding: 4px 5px 0px;
+    line-height: normal;
+}
+
 
