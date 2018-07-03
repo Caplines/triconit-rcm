@@ -15,6 +15,7 @@ export class RegisterComponent implements OnInit {
   office: Office = new Office();
   errorMessage: string;
   offices:any;
+  passwordAgain:any;
   constructor(public accountService: AccountService, public router: Router) {
   }
 
@@ -27,12 +28,15 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    this.accountService.createAccount(this.user).subscribe(data => {
-        this.router.navigate(['/login']);
-      }, err => {
-        console.log(err);
-        this.errorMessage = "username already exist";
-      }
-    )
+	  console.log(this.user);
+	  if(this.user.password==this.passwordAgain && this.user.officeId) {
+		this.accountService.createAccount(this.user).subscribe(data => {
+			this.router.navigate(['/login']);
+		  }, err => {
+			console.log(err);
+			this.errorMessage = "username already exist";
+		  }
+		)
+	  }
   }
 }

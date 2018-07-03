@@ -1,9 +1,8 @@
 export class User {
-  id : string;
+  //id : string;
   email: string="";
   password: string="";
-  fullName: string="";
-  officeName:string="";
-
-
+  firstName: string="";
+  lastName: string="";
+  officeId:string="";
 }
