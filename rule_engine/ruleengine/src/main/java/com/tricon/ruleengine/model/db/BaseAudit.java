@@ -28,17 +28,24 @@ public class BaseAudit implements java.io.Serializable {
 //http://www.baeldung.com/database-auditing-jpa
 	private static final long serialVersionUID = 7518774133552424997L;
 
-	private Date createdDate;
-
-	private Date updatedDate;
-	
-	private User createdBy;
-	
-	private User updatedBy;
-
 	@CreationTimestamp
 	@Column(name = "created_date", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdDate;
+
+    @UpdateTimestamp
+	@Column(name = "updated_date", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updatedDate;
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "created_by",referencedColumnName="uuid")
+	private User createdBy;
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "updated_by",referencedColumnName="uuid")
+	private User updatedBy;
+
 	public Date getCreatedDate() {
 		return createdDate;
 	}
@@ -47,9 +54,6 @@ public class BaseAudit implements java.io.Serializable {
 		this.createdDate = createdDate;
 	}
 
-    @UpdateTimestamp
-	@Column(name = "updated_date", nullable = true)
-	@Temporal(TemporalType.TIMESTAMP)
 	public Date getUpdatedDate() {
 		return updatedDate;
 	}
@@ -58,8 +62,6 @@ public class BaseAudit implements java.io.Serializable {
 		this.updatedDate = updatedDate;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "uuid", nullable = false)
 	public User getCreatedBy() {
 		return this.createdBy;
 	}
@@ -68,8 +70,6 @@ public class BaseAudit implements java.io.Serializable {
 		this.createdBy = createdBy;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "uuid", nullable = true)
 	public User getUpdatedBy() {
 		return this.updatedBy;
 	}

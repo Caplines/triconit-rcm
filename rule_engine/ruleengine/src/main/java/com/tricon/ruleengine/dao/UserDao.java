@@ -2,6 +2,7 @@ package com.tricon.ruleengine.dao;
 
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.User;
+import com.tricon.ruleengine.model.db.UserRole;
 
 /**
  * @author Deepak.Dogra
@@ -9,9 +10,10 @@ import com.tricon.ruleengine.model.db.User;
  */
 public interface UserDao {
 
-	User findUserByUsername(String username);
-	User findUserByEmail(String email);
-	Office findOfficeById(String officeId);
-	User registerUser(User user);
+	public User findUserByUsername(String username);
+	public User findUserByEmail(String email);
+	public Office findOfficeById(String officeId);
+	public String registerUser(User user);
+	public void generateUserRole(UserRole role);
 	
 }

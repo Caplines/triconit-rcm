@@ -1,13 +1,13 @@
 package com.tricon.ruleengine.dao.impl;
 
-import javax.persistence.criteria.CriteriaBuilder;
+import java.io.Serializable;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.User;
+import com.tricon.ruleengine.model.db.UserRole;
 
 /**
  * @author Deepak.Dogra
@@ -25,19 +25,24 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
 	@Override
 	public User findUserByEmail(String email) {
 
-		return (User) getEntityByColumnName(User.class, "", email);
+		return (User) getEntityByColumnName(User.class, "email", email);
 	}
 
 	@Override
 	public Office findOfficeById(String officeId) {
 
-		return (Office) getEntityById(Office.class, officeId);
+		return (Office) getEntityByColumnName(Office.class, "uuid", officeId);
 
 	}
 
 	@Override
-	public User registerUser(User user) {
-		return (User) saveEntiy(user);
+	public String registerUser(User user) {
+		return (String) saveEntiy(user);
+	}
+	
+	@Override
+	public void generateUserRole(UserRole role) {
+		 saveEntiy(role);
 	}
 
 }

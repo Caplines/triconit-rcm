@@ -25,7 +25,7 @@ import org.springframework.data.annotation.Transient;
  */
 @Entity
 @Table(name = "user")
-public class User implements Serializable{
+public class User extends BaseAudit implements Serializable {
 
 
 	/**
