@@ -39,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
  //https://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html
-        //http.csrf().disable();
+        http.csrf().disable();
  
         // The pages does not require login
         //http.authorizeRequests().antMatchers("/", "/login", "/logout").permitAll();

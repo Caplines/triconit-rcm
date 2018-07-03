@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,7 +29,8 @@ public class AccountApiController {
 	private UserService userService;
 
 	// request method to create a new account by a guest
-	@RequestMapping(value = "/register", method = RequestMethod.GET)
+	@CrossOrigin
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto dto) {
 	//public ResponseEntity<?> registerUser() {
 
