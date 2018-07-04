@@ -22,7 +22,7 @@ public class UtilController {
 	private UserService userService;
 
 	@CrossOrigin
-	@RequestMapping(value = "/getoffices", method = RequestMethod.GET)
+	@RequestMapping(value = "/open/getoffices", method = RequestMethod.GET)
 	public ResponseEntity<?> registerUser() {
 
 		Optional<List<OfficeDto>> offices = userService.getAllOffices();

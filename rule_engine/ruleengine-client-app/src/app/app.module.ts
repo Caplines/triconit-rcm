@@ -10,6 +10,8 @@ import { AuthService } from "./services/auth.service";
 import {HttpModule} from "@angular/http";
 import {AccountService} from "./services/account.service";
 import { ProfileComponent } from './components/profile/profile.component';
+import { IVFComponent } from './components/ivf/ivf.component';
+
 import {routing} from "./app.routing";
 import {UrlPermission} from "./urlPermission/url.permission";
 
@@ -20,7 +22,7 @@ import {UrlPermission} from "./urlPermission/url.permission";
     LoginComponent,
     RegisterComponent,
     ProfileComponent,
-
+    IVFComponent
 
   ],
   imports: [

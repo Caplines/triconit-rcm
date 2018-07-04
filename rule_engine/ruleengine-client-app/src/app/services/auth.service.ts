@@ -20,6 +20,7 @@ export class AuthService {
 
     return this.http.get(AppComponent.API_URL+"/account/login" ,   options)
     .pipe(map((response: Response) => {
+        console.log(response);
       // login successful if there's a jwt token in the response
       let user = response.json().principal;// the returned user object is a principal object
       if (user) {

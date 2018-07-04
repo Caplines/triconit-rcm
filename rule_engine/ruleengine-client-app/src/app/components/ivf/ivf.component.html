@@ -1,0 +1,61 @@
+
+<div class="top-content">
+	<div class="inner-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2 text">
+					<h1><strong>Smile Point</strong> <br>Dental Clinic Insurance</h1>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-6 col-sm-offset-3 form-box">
+					<div class="form-top">
+						<div class="form-top-left">
+							<h3>Enter Details for Validating Treatment Plan</h3>
+						</div>
+					</div>
+					<div class="form-bottom">
+						<form class="login-form" name="form" (ngSubmit)="f.form.valid && validateIVF()" #f="ngForm" novalidate>
+							<div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>
+							<span id="reauth-email" class="reauth-email"></span>
+							
+							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !treatmentPlanId.valid }">
+								<label class="sr-only" for="treatmentPlanId">First Name</label>
+								<input type="text" class="login-signup-form-field form-control" name="treatmentPlanId" id="treatmentPlanId" [(ngModel)]="ivfm.treatmentPlanId" #treatmentPlanId="ngModel" placeholder="Treatment Plan Id..." required />
+								<div *ngIf="f.submitted && !treatmentPlanId.valid" class="error-msg">Please enter Treatment Plan Id.</div>
+							</div>
+			
+							
+							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !ivfId.valid }">
+								<label class="sr-only" for="ivfId">IVf Id</label>
+								<input type="text" class="login-signup-form-field form-control" name="iVfId" id="iVfId" [(ngModel)]="ivfm.ivfId" #ivfId="ngModel" placeholder="IVF ID..." required />
+								<div *ngIf="f.submitted && !ivfId.valid" class="error-msg">Please enter IVF ID.</div>
+							</div>
+							
+							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !createdBy.valid }">
+								<label class="sr-only" for="createdBy">IVf Id</label>
+								<input type="text" class="login-signup-form-field form-control" name="createdBy" id="createdBy" [(ngModel)]="ivfm.createdBy" #createdBy="ngModel" placeholder="validator Name ..." required />
+								<div *ngIf="f.submitted && !createdBy.valid" class="error-msg">Please enter User Name ...</div>
+							</div>
+							
+							
+
+							<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+								<label class="sr-only" for="officeId">Office Name</label>
+								<select name="officeId" [(ngModel)]="ivfm.officeId" class="login-signup-form-field form-control" id="officeId">
+									<option value="">Office Name...</option>
+									<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+								</select>
+								<div *ngIf="f.submitted && ivfm.officeId==''" class="error-msg">The Office Name is required</div>
+							</div>
+							
+							<p><button type="submit" class="btn">Validate IVF</button></p>
+							
+						</form>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+ </div>
