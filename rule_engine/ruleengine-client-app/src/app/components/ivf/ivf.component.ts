@@ -18,20 +18,20 @@ export class IVFComponent implements OnInit {
   }
 
   ngOnInit() {
+      /*
       this.accountService.getOffices((result) => {
         console.log(result);
         this.offices=result;
       });
-       
+      */
   }
 
   validateIVF() {
       console.log(this.ivfm);
-      this.errorMessage = "sdff";
-      if( this.ivfm.officeId) {
+      this.errorMessage = "DDD";
           this.accountService.validateIVF(this.ivfm,(result) => {
+              console.log(100);
               console.log(result);
         });
-      }
   }
 }

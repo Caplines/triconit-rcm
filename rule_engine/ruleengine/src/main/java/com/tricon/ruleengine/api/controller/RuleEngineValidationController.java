@@ -3,6 +3,7 @@ package com.tricon.ruleengine.api.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ public class RuleEngineValidationController {
 
 	@CrossOrigin
 	@PostMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	@RequestMapping(value = "/validateTreatmentPlan", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Object> validateTreatementPlan(@RequestBody TreatmentPlanValidationDto dto) {
 
@@ -30,8 +32,5 @@ public class RuleEngineValidationController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", ""));
 	}
 
-	@RequestMapping("/api/hello")
-	public String greet() {
-		return "Hello from the other side!!!";
-	}
+
 }

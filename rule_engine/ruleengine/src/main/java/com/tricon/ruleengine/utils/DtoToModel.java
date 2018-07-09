@@ -13,7 +13,7 @@ public class DtoToModel {
 		us.setName(dto.getFirstName());
 		us.setLastName(dto.getLastName());
 		us.setOffice(off);
-		us.setActive(0);
+		us.setActive(1);
 		us.setCreatedBy(us);
 		us.setPassword(EncrytedKeyUtil.encryptKey(dto.getPassword()));
 		return us;

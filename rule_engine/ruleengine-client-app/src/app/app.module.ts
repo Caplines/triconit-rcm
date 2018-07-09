@@ -11,10 +11,15 @@ import {HttpModule} from "@angular/http";
 import {AccountService} from "./services/account.service";
 import { ProfileComponent } from './components/profile/profile.component';
 import { IVFComponent } from './components/ivf/ivf.component';
+import { LogoutComponent } from './components/logout/logout.component';
+
 
 import {routing} from "./app.routing";
 import {UrlPermission} from "./urlPermission/url.permission";
-
+import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
+import {UrlLoggedInCheck} from "./urlPermission/url.checkloginstate";
+import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './auth/token.interceptor';
 
 @NgModule({
   declarations: [
@@ -22,13 +27,20 @@ import {UrlPermission} from "./urlPermission/url.permission";
     LoginComponent,
     RegisterComponent,
     ProfileComponent,
-    IVFComponent
+    IVFComponent,
+    LogoutComponent
 
   ],
   imports: [
-    BrowserModule,HttpModule,FormsModule,routing
+    BrowserModule,HttpModule,FormsModule,routing,HttpClientModule
   ],
-  providers: [AuthService,AccountService,UrlPermission],
+  providers: [AuthService,AccountService,UrlPermission,UrlAdminPermission,UrlLoggedInCheck,
+       {
+          provide: HTTP_INTERCEPTORS,
+          useClass: TokenInterceptor,
+          multi: true
+      }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,6 +1,5 @@
 package com.tricon.ruleengine.security.service;
 
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User.UserBuilder;
@@ -12,16 +11,15 @@ import org.springframework.stereotype.Service;
 
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.model.db.User;
-import com.tricon.ruleengine.model.db.UserRole;
  
-@Service("userDetailsService")
-public class UserDetailsServiceImpl implements UserDetailsService {
+
+public class UserDetailsServiceImplNotUSed  {
  
     @Autowired
     private UserDao userDAO;
  
    
-    @Override
+    //@Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
     	System.out.println("oooooooooooooooooooo");
     	System.out.println(userName);

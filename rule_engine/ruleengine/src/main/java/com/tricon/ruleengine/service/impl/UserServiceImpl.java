@@ -28,39 +28,36 @@ import com.tricon.ruleengine.utils.DtoToModel;
  */
 @Transactional
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
-	
-	@Autowired UserDao userDao;
-	@Autowired OfficeDao officeDao;
-	
+	@Autowired
+	UserDao userDao;
+	@Autowired
+	OfficeDao officeDao;
+
 	@Override
 	public GenericResponse registerUser(UserRegistrationDto dto) {
 		Office office = userDao.findOfficeById(dto.getOfficeId());
-		if (office!=null) {
-		  User user = userDao.findUserByEmail(dto.getEmail());
-		  if (user==null) {
-			  user =DtoToModel.convertRegistrationDto(dto,office);
-			  user.setUuid((String) userDao.registerUser(user));
-			  UserRole role =new UserRole();
-			  role.setRole(Constants.APP_ROLE_USER);
-			  role.setUser(user);
-			  userDao.generateUserRole(role);
-			  return new GenericResponse(HttpStatus.OK, "User Created Successfully",null);
-		  }
-		  return new GenericResponse(HttpStatus.BAD_REQUEST, "User Already Exists",null);
+		if (office != null) {
+			User user = userDao.findUserByEmail(dto.getEmail());
+			if (user == null) {
+				user = DtoToModel.convertRegistrationDto(dto, office);
+				user.setUuid((String) userDao.registerUser(user));
+				UserRole role = new UserRole();
+				role.setRole(Constants.APP_ROLE_USER);
+				role.setUser(user);
+				userDao.generateUserRole(role);
+				return new GenericResponse(HttpStatus.OK, "User Created Successfully", null);
+			}
+			return new GenericResponse(HttpStatus.BAD_REQUEST, "User Already Exists", null);
 		}
-		
-	 return new GenericResponse(HttpStatus.BAD_REQUEST, "In correct Office name",null );
+
+		return new GenericResponse(HttpStatus.BAD_REQUEST, "In correct Office name", null);
 	}
 
 	@Override
-	public  Optional<List<OfficeDto>> getAllOffices() {
+	public Optional<List<OfficeDto>> getAllOffices() {
 		return officeDao.getAllOffices();
 	}
-	
-	
-	
-  
-	
+
 }

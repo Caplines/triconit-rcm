@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.model.db;
 import java.io.Serializable;
+import java.util.Date;
 //https://medium.com/@gustavo.ponce.ch/spring-boot-spring-mvc-spring-security-mysql-a5d8545d837d
 import java.util.Set;
 
@@ -46,12 +47,14 @@ public class User extends BaseAudit implements Serializable {
 	@NotEmpty(message = "*Please provide your password")
 	@Transient
 	private String password;
-	@Column(name = "name")
+	@Column(name = "first_name")
 	@NotEmpty(message = "*Please provide your name")
-	private String name;
+	private String firstName;
 	@Column(name = "last_name")
 	@NotEmpty(message = "*Please provide your last name")
 	private String lastName;
+	@Column(name = "last_password_reset_date")
+	private Date lastPasswordResetDate;
 	@Column(name = "active")
 	private int active;
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
@@ -77,12 +80,12 @@ public class User extends BaseAudit implements Serializable {
 		this.password = password;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String firstName) {
+		this.firstName = firstName;
 	}
 
 	public String getLastName() {
@@ -123,6 +126,14 @@ public class User extends BaseAudit implements Serializable {
 
 	public void setOffice(Office office) {
 		this.office = office;
+	}
+
+	public Date getLastPasswordResetDate() {
+		return lastPasswordResetDate;
+	}
+
+	public void setLastPasswordResetDate(Date lastPasswordResetDate) {
+		this.lastPasswordResetDate = lastPasswordResetDate;
 	}
 
 

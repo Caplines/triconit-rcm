@@ -20,7 +20,7 @@
 							<span id="reauth-email" class="reauth-email"></span>
 							
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !treatmentPlanId.valid }">
-								<label class="sr-only" for="treatmentPlanId">First Name</label>
+								<label class="sr-only" for="treatmentPlanId">Treatment Plan Id</label>
 								<input type="text" class="login-signup-form-field form-control" name="treatmentPlanId" id="treatmentPlanId" [(ngModel)]="ivfm.treatmentPlanId" #treatmentPlanId="ngModel" placeholder="Treatment Plan Id..." required />
 								<div *ngIf="f.submitted && !treatmentPlanId.valid" class="error-msg">Please enter Treatment Plan Id.</div>
 							</div>
@@ -32,24 +32,7 @@
 								<div *ngIf="f.submitted && !ivfId.valid" class="error-msg">Please enter IVF ID.</div>
 							</div>
 							
-							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !createdBy.valid }">
-								<label class="sr-only" for="createdBy">IVf Id</label>
-								<input type="text" class="login-signup-form-field form-control" name="createdBy" id="createdBy" [(ngModel)]="ivfm.createdBy" #createdBy="ngModel" placeholder="validator Name ..." required />
-								<div *ngIf="f.submitted && !createdBy.valid" class="error-msg">Please enter User Name ...</div>
-							</div>
-							
-							
-
-							<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
-								<label class="sr-only" for="officeId">Office Name</label>
-								<select name="officeId" [(ngModel)]="ivfm.officeId" class="login-signup-form-field form-control" id="officeId">
-									<option value="">Office Name...</option>
-									<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
-								</select>
-								<div *ngIf="f.submitted && ivfm.officeId==''" class="error-msg">The Office Name is required</div>
-							</div>
-							
-							<p><button type="submit" class="btn">Validate IVF</button></p>
+							<p><button type="submit" class="btn">Validate Treatment Plan</button></p>
 							
 						</form>
 					</div>

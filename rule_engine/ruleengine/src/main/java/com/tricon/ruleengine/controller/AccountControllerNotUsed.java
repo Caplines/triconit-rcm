@@ -23,7 +23,7 @@ import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
 import com.tricon.ruleengine.dto.UserRegistrationDto;
 import com.tricon.ruleengine.model.db.User;
-import com.tricon.ruleengine.security.service.UserDetailsServiceImpl;
+import com.tricon.ruleengine.security.service.UserDetailsServiceImplNotUSed;
 import com.tricon.ruleengine.service.UserService;
 
 
@@ -31,10 +31,10 @@ import com.tricon.ruleengine.service.UserService;
  * @author Deepak.Dogra
  *
  */
-@Controller
-public class AccountController {
+//@Controller
+public class AccountControllerNotUsed {
 
-	public static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+	public static final Logger logger = LoggerFactory.getLogger(AccountControllerNotUsed.class);
 
 	@Autowired
 	private UserService userService;

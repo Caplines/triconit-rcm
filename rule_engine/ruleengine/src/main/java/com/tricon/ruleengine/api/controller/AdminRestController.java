@@ -1,11 +1,8 @@
 package com.tricon.ruleengine.api.controller;
 
-import java.security.Principal;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,33 +12,25 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.ruleengine.dto.UserRegistrationDto;
 import com.tricon.ruleengine.service.UserService;
 
-/**
- * @author Deepak.Dogra
- *
- */
 @RestController
-@RequestMapping("admin1111")
-public class AccountApiController {
-
-	public static final Logger logger = LoggerFactory.getLogger(AccountApiController.class);
+@RequestMapping("admin")
+public class AdminRestController {
 
 	@Autowired
 	private UserService userService;
-
-	// request method to create a new account by a guest
+    /**
+     * in @PreAuthorize such as 'hasRole()' to determine if a user has access. Remember that the hasRole expression assumes a
+     * 'ROLE_' prefix on all role names. So 'ADMIN' here is actually stored as 'ROLE_ADMIN' in database!
+     **/
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<?> getProtectedGreeting() {
+        return ResponseEntity.ok("Greetings from admin protected method!");
+    }
 	@CrossOrigin
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto dto) {
-	//public ResponseEntity<?> registerUser() {
-
 		return ResponseEntity.ok(userService.registerUser(dto));
 	}
 
-	// this is the login api/service
-	@CrossOrigin
-	@RequestMapping("/login")
-	public Principal user(Principal principal) {
-		logger.info("user logged " + principal);
-		return principal;
-	}
 }
