@@ -14,10 +14,13 @@ export class IVFComponent implements OnInit {
   ivfm: IVFModel = new IVFModel();
   errorMessage: string;
   offices:any;
+  userName: any;
+  userType: any;
   constructor(public accountService: AccountService, public router: Router) {
   }
 
   ngOnInit() {
+	this.setUser();
       /*
       this.accountService.getOffices((result) => {
         console.log(result);
@@ -30,8 +33,14 @@ export class IVFComponent implements OnInit {
       console.log(this.ivfm);
       this.errorMessage = "DDD";
           this.accountService.validateIVF(this.ivfm,(result) => {
-              console.log(100);
               console.log(result);
+			  this.setUser();
         });
   }
+  
+  setUser() {
+	this.userName = localStorage.getItem('currentUser');
+	this.userType = localStorage.getItem('roles').indexOf("ROLE_ADMIN")>0;
+  }
+  
 }

@@ -199,4 +199,27 @@ img { max-width: 100%; }
     line-height: normal;
 }
 
+.top-content .ivf-title {
+	font-size:18px;
+}
 
+.top-content .user-tab {
+	background-color: #363f63;
+    border-color: #8f97be;
+	border-radius: 0px;
+	border-right: 0px;
+	border-left: 0px;
+}
+
+.top-content .navbar-default .navbar-nav>li>a{
+	color:#fff;
+}
+
+.top-content .navbar-default .navbar-nav>li>a:hover {
+	color:#ccc;
+}
+
+.top-content .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus, .navbar-default .navbar-nav>.open>a:hover {
+	color: #fff;
+	background-color: #363f63;
+}

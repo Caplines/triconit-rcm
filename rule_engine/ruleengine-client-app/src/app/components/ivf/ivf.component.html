@@ -1,5 +1,21 @@
 
 <div class="top-content">
+	<nav class="navbar navbar-default user-tab">
+	  <div class="container-fluid">
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		  <ul class="nav navbar-nav navbar-right">
+			<li class="dropdown">
+			  <a href="#" class="dropdown-toggle username" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			  <span>Hi,</span> {{userName}}<span class="caret"></span></a>
+			  <ul class="dropdown-menu">
+				<li><a *ngIf="userType" href="javascript:void(0)" [routerLink]="['/register']">Register New User</a></li>
+				<li><a href="javascript:void(0)" [routerLink]="['/logout']">Log Out</a></li>
+			  </ul>
+			</li>
+		  </ul>
+		</div><!-- /.navbar-collapse -->
+	  </div><!-- /.container-fluid -->
+	</nav>
 	<div class="inner-bg">
 		<div class="container">
 			<div class="row">
@@ -11,9 +27,10 @@
 				<div class="col-sm-6 col-sm-offset-3 form-box">
 					<div class="form-top">
 						<div class="form-top-left">
-							<h3>Enter Details for Validating Treatment Plan</h3>
+							<h3 class="ivf-title">Enter Details for Validating Treatment Plan</h3>
 						</div>
 					</div>
+
 					<div class="form-bottom">
 						<form class="login-form" name="form" (ngSubmit)="f.form.valid && validateIVF()" #f="ngForm" novalidate>
 							<div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>
