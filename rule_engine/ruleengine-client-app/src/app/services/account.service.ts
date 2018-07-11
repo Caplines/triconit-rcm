@@ -25,6 +25,7 @@ export class AccountService {
         },
         error => {
             callback(error);
+            this.router.navigate(['/logout']);
         },
         () => {
         }
@@ -71,15 +72,17 @@ export class AccountService {
           console.log("token is set");
             return  this.http.post(AppComponent.API_URL+'/validateTreatmentPlan',ivf);
           })).subscribe(data => {
-                //console.log(data['results']);
-              callback(data
-                      ,
-                      error => {
-                          callback(error);
-                      },
-                      () => {
-                      });
-          });
+              callback((<any>data));
+          },
+          error => {
+              callback(error);
+              this.router.navigate(['/logout']);
+              
+          },
+          () => {
+          }
+          
+          );
               
   }
   

@@ -16,17 +16,19 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "reports")
-public class Reports implements java.io.Serializable {
+public class Reports extends BaseAudit implements java.io.Serializable {
 
 	private static final long serialVersionUID = -9135032927310683833L;
+	@Id
+	@Column(name = "id", unique = true, nullable = false)
 	private int id;
-	private Date createDate;
-	private Date updateDate;
-	private Integer createdBy;
-	private Integer updatedBy;
+	@Column(name = "treatement_plan_id", length = 45)
 	private String treatementPlanId;
+	@Column(name = "ivf_form_id", length = 45)
 	private String ivfFormId;
+	@Column(name = "office_id")
 	private Integer officeId;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "reports")
 	private Set<ReportDetail> reportDetails = new HashSet<ReportDetail>(0);
 
 	public Reports() {
@@ -36,22 +38,7 @@ public class Reports implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public Reports(int id, Date createDate, Date updateDate, Integer createdBy, Integer updatedBy,
-			String treatementPlanId, String ivfFormId, Integer officeId, Set<ReportDetail> reportDetails) {
-		this.id = id;
-		this.createDate = createDate;
-		this.updateDate = updateDate;
-		this.createdBy = createdBy;
-		this.updatedBy = updatedBy;
-		this.treatementPlanId = treatementPlanId;
-		this.ivfFormId = ivfFormId;
-		this.officeId = officeId;
-		this.reportDetails = reportDetails;
-	}
 
-	@Id
-
-	@Column(name = "id", unique = true, nullable = false)
 	public int getId() {
 		return this.id;
 	}
@@ -60,43 +47,7 @@ public class Reports implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@Column(name = "create_date", length = 45)
-	public Date getCreateDate() {
-		return this.createDate;
-	}
 
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-
-	@Column(name = "update_date", length = 45)
-	public Date getUpdateDate() {
-		return this.updateDate;
-	}
-
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
-
-	@Column(name = "created_by")
-	public Integer getCreatedBy() {
-		return this.createdBy;
-	}
-
-	public void setCreatedBy(Integer createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	@Column(name = "updated_by")
-	public Integer getUpdatedBy() {
-		return this.updatedBy;
-	}
-
-	public void setUpdatedBy(Integer updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-
-	@Column(name = "treatement_plan_id", length = 45)
 	public String getTreatementPlanId() {
 		return this.treatementPlanId;
 	}
@@ -105,7 +56,6 @@ public class Reports implements java.io.Serializable {
 		this.treatementPlanId = treatementPlanId;
 	}
 
-	@Column(name = "ivf_form_id", length = 45)
 	public String getIvfFormId() {
 		return this.ivfFormId;
 	}
@@ -114,7 +64,6 @@ public class Reports implements java.io.Serializable {
 		this.ivfFormId = ivfFormId;
 	}
 
-	@Column(name = "office_id")
 	public Integer getOfficeId() {
 		return this.officeId;
 	}
@@ -123,7 +72,6 @@ public class Reports implements java.io.Serializable {
 		this.officeId = officeId;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "reports")
 	public Set<ReportDetail> getReportDetails() {
 		return this.reportDetails;
 	}

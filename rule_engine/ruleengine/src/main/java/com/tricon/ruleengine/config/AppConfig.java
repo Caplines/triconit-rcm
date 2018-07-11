@@ -13,6 +13,7 @@ import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import static org.hibernate.cfg.Environment.*;
+import org.springframework.context.MessageSource;
 
 @Configuration
 @EnableTransactionManagement
@@ -109,4 +111,13 @@ public class AppConfig {
 		transactionManager.setSessionFactory(getSessionFactory().getObject());
 		return transactionManager;
 	}
+	
+	 @Bean
+	    public MessageSource messageSource() {
+	    	ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+	        //messageSource.setBasenames("i18/users", "i18/errormsg");
+	    	messageSource.setBasenames("i18n/error");
+	        messageSource.setDefaultEncoding("UTF-8");
+	        return messageSource;
+	    }
 }

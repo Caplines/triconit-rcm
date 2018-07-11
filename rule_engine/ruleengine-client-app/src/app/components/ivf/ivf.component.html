@@ -43,11 +43,6 @@
 							</div>
 			
 							
-							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !ivfId.valid }">
-								<label class="sr-only" for="ivfId">IVf Id</label>
-								<input type="text" class="login-signup-form-field form-control" name="iVfId" id="iVfId" [(ngModel)]="ivfm.ivfId" #ivfId="ngModel" placeholder="IVF ID..." required />
-								<div *ngIf="f.submitted && !ivfId.valid" class="error-msg">Please enter IVF ID.</div>
-							</div>
 							
 							<p><button type="submit" class="btn">Validate Treatment Plan</button></p>
 							

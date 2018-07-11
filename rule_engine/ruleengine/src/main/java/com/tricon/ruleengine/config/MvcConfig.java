@@ -1,6 +1,7 @@
 package com.tricon.ruleengine.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -18,5 +19,10 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addViewController("/hello").setViewName("hello");
         //registry.addViewController("/login").setViewName("loginPage");
     }
-
+@Override
+public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	// TODO Auto-generated method stub
+	WebMvcConfigurer.super.addResourceHandlers(registry);
+	
+}
 }

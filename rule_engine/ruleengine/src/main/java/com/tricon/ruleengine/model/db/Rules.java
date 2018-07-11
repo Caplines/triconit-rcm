@@ -15,15 +15,23 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "rules")
-public class Rules implements java.io.Serializable {
+public class Rules extends BaseAudit implements java.io.Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 489977259021273798L;
+	@Id
+	@Column(name = "id", unique = true, nullable = false)
 	private int id;
+	@Column(name = "name", columnDefinition = "text")
 	private String name;
+	@Column(name = "description", columnDefinition = "text")
 	private String description;
+	@Column(name = "active")
+	private int active;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "rules")
 	private Set<ReportDetail> reportDetails = new HashSet<ReportDetail>(0);
 
 	public Rules() {
@@ -40,9 +48,6 @@ public class Rules implements java.io.Serializable {
 		this.reportDetails = reportDetails;
 	}
 
-	@Id
-
-	@Column(name = "id", unique = true, nullable = false)
 	public int getId() {
 		return this.id;
 	}
@@ -51,7 +56,6 @@ public class Rules implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@Column(name = "name", columnDefinition = "text")
 	public String getName() {
 		return this.name;
 	}
@@ -60,7 +64,6 @@ public class Rules implements java.io.Serializable {
 		this.name = name;
 	}
 
-	@Column(name = "description", columnDefinition = "text")
 	public String getDescription() {
 		return this.description;
 	}
@@ -69,7 +72,6 @@ public class Rules implements java.io.Serializable {
 		this.description = description;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "rules")
 	public Set<ReportDetail> getReportDetails() {
 		return this.reportDetails;
 	}
@@ -77,5 +79,15 @@ public class Rules implements java.io.Serializable {
 	public void setReportDetails(Set<ReportDetail> reportDetails) {
 		this.reportDetails = reportDetails;
 	}
+
+	public int getActive() {
+		return active;
+	}
+
+	public void setActive(int active) {
+		this.active = active;
+	}
+	
+	
 
 }

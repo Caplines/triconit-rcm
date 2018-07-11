@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.service;
 
+import java.util.List;
+
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
 
@@ -15,6 +17,6 @@ public interface TreatmentPlanService {
 	 * @param dto
 	 * @return
 	 */
-	public TPValidationResponseDto validateTreatmentPlan(TreatmentPlanValidationDto dto);
+	public List<TPValidationResponseDto> validateTreatmentPlan(TreatmentPlanValidationDto dto);
 
 }

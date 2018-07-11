@@ -13,16 +13,21 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "google_sheets")
-public class GoogleSheets implements java.io.Serializable {
+public class GoogleSheets extends BaseAudit implements java.io.Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8400768077034656443L;
+	@Id
+	@Column(name = "id", unique = true, nullable = false)
 	private int id;
+	@Column(name = "sheet_id", length = 45)
 	private String sheetId;
+	@Column(name = "sheet_name")
 	private String sheetName;
-	private String description;
+	@Column(name = "app_sheet_name", length = 45, unique=true)
+	private String appSheetName;
 	private Integer officeId;
 
 	public GoogleSheets() {
@@ -32,17 +37,14 @@ public class GoogleSheets implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public GoogleSheets(int id, String sheetId, String sheetName, String description, Integer officeId) {
+	public GoogleSheets(int id, String sheetId, String sheetName, String appSheetName, Integer officeId) {
 		this.id = id;
 		this.sheetId = sheetId;
 		this.sheetName = sheetName;
-		this.description = description;
+		this.appSheetName = appSheetName;
 		this.officeId = officeId;
 	}
 
-	@Id
-
-	@Column(name = "id", unique = true, nullable = false)
 	public int getId() {
 		return this.id;
 	}
@@ -51,7 +53,6 @@ public class GoogleSheets implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@Column(name = "sheet_id", length = 45)
 	public String getSheetId() {
 		return this.sheetId;
 	}
@@ -60,7 +61,6 @@ public class GoogleSheets implements java.io.Serializable {
 		this.sheetId = sheetId;
 	}
 
-	@Column(name = "sheet_name")
 	public String getSheetName() {
 		return this.sheetName;
 	}
@@ -69,13 +69,12 @@ public class GoogleSheets implements java.io.Serializable {
 		this.sheetName = sheetName;
 	}
 
-	@Column(name = "description", length = 45)
-	public String getDescription() {
-		return this.description;
+	public String getAppSheetName() {
+		return this.appSheetName;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setAppSheetName(String appSheetName) {
+		this.appSheetName = appSheetName;
 	}
 
 	@Column(name = "office_id")

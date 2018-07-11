@@ -105,13 +105,48 @@ public class BaseDaoImpl {
 		Object object = null;
 		try {
 			Transaction transaction = session.beginTransaction();
-			object = session.byId(clazz).getReference(columnValue);
+			object = session.byId(clazz).load(columnValue);
 			transaction.commit();
 		} finally {
 			closeSession(session);
 
 		}
 		return object;
+
+	}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected Object getWholeEntity(Class clazz) {
+		Session session = getSession();
+		List<Object> list = null;
+		try {
+			Transaction transaction = session.beginTransaction();
+			Criteria criteria = session.createCriteria(clazz);
+			criteria.list();
+			transaction.commit();
+		} finally {
+			closeSession(session);
+
+		}
+		return list;
+
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected List<Object> getEntitiesByColumnName(Class clazz, String columnName, Object columnValue) {
+		Session session = getSession();
+		List<Object> list = null;
+		try {
+			Transaction transaction = session.beginTransaction();
+			Criteria criteria = session.createCriteria(clazz);
+			criteria.add(Restrictions.eq(columnName, columnValue));
+			list =  criteria.list();
+			transaction.commit();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return list;
 
 	}
 }
