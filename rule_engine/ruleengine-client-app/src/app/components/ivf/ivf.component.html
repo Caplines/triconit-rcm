@@ -33,7 +33,7 @@
 
 					<div class="form-bottom">
 						<form class="login-form" name="form" (ngSubmit)="f.form.valid && validateIVF()" #f="ngForm" novalidate>
-							<div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>
+							<!-- <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div> -->
 							<span id="reauth-email" class="reauth-email"></span>
 							
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !treatmentPlanId.valid }">
@@ -44,7 +44,9 @@
 			
 							
 							
-							<p><button type="submit" class="btn">Validate Treatment Plan</button></p>
+							<p><button [disabled]="showLoading" type="submit" class="btn">Validate Treatment Plan</button></p>
+							
+							<div *ngIf="showLoading" class="loader"></div>
 							
 						</form>
 					</div>
@@ -54,3 +56,21 @@
 		</div>
 	</div>
  </div>
+ 
+ <div *ngIf="showPopup" class="validation-modal">
+	 <div class="modal-backdrop fade in"></div>
+	 <div id="modal-login" class="modal fade in"  tabindex="-1" style="display:block">
+		  <div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" (click)="showPopup=false;"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="myModalLabel">Validation Messages</h4>
+					</div>
+						<div class="modal-body">
+							{{ivfmData.ruleName}} - {{ivfmData.message}}
+					</div>
+					<!-- <div class="modal-footer"></div> -->
+				</div>
+		  </div>
+	</div>
+</div>

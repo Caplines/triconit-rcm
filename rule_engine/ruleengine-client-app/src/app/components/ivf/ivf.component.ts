@@ -16,6 +16,9 @@ export class IVFComponent implements OnInit {
   offices:any;
   userName: any;
   userType: any;
+  ivfmData: any;
+  showPopup: boolean = false;
+  showLoading: boolean = false;
   constructor(public accountService: AccountService, public router: Router) {
   }
 
@@ -30,11 +33,14 @@ export class IVFComponent implements OnInit {
   }
 
   validateIVF() {
-      console.log(this.ivfm);
+	  this.showLoading = true;
       this.errorMessage = "DDD";
           this.accountService.validateIVF(this.ivfm,(result) => {
               console.log(result);
-			  this.setUser();
+			  this.ivfmData = result.data[0];
+			  this.showPopup=true;
+			  this.showLoading = false;			  
+			  //this.setUser();
         });
   }
   
