@@ -27,7 +27,12 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.tricon.ruleengine.model.sheet.EagleSoftCB;
+import com.tricon.ruleengine.model.sheet.EagleSoftFSName;
+import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
+import com.tricon.ruleengine.model.sheet.MappingTableCodeMaster;
+import com.tricon.ruleengine.model.sheet.MappingTableFeeSN;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanPatient;
@@ -71,7 +76,17 @@ public class ConnectAndReadSheets {
 						.setAccessType("offline").build();
 		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
 	}
-	
+	/**
+	 * 
+	 * @param spreadsheetId
+	 * @param sheetName
+	 * @param id Can be null
+	 * @param sheetType
+	 * @param clientDir
+	 * @param clientFolder
+	 * @return
+	 * @throws IOException
+	 */
 	public static List<Object> readSheet(String spreadsheetId,String sheetName, String id,String sheetType,String clientDir,String clientFolder ) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY,getCredentials(clientDir,clientFolder) )
 				.setApplicationName(APPLICATION_NAME).build();
@@ -79,6 +94,11 @@ public class ConnectAndReadSheets {
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
 		if (sheetType.equals(Constants.SHEET_TYPE_TP)) return  readTPSheetData(response, id);
 		if (sheetType.equals(Constants.SHEET_TYPE_IVF_DATA)) return  readIVFSheet(response, id);
+		if (sheetType.equals(Constants.SHEET_TYPE_MappingTable_CM)) return  readMappingDataCM(response);
+		if (sheetType.equals(Constants.SHEET_TYPE_MappingTable_FEESN)) return  readMappingDataFEE(response);
+		if (sheetType.equals(Constants.SHEET_TYPE_FS_FEE)) return  readEagleSoftFSFee(response);
+		if (sheetType.equals(Constants.SHEET_TYPE_ES_COVERAGE)) return  readEagleSoftESCoverage(response);
+		if (sheetType.equals(Constants.SHEET_TYPE_FS_NAME)) return  readEagleSoftFSName(response);
        return  null;
 	}
 	
@@ -162,5 +182,96 @@ public class ConnectAndReadSheets {
 		
 	}
 	
+	public static List<Object> readMappingDataFEE(ValueRange range) {
+		
+		List<List<Object>> values = range.getValues();
+		ListIterator li = values.listIterator(values.size());
+		MappingTableFeeSN vif =null;
+		List<Object> ivList=null;
+        while(li.hasPrevious()) {
+        	ArrayList<String> obj=(ArrayList<String>) li.previous();
+        	int x=0;
+        	vif=new MappingTableFeeSN(obj.get(++x), obj.get(++x));            
+        	System.out.println("xxxxxxxx:"+x);
+            if (ivList ==null) ivList= new ArrayList<>();
+        	ivList.add(vif);            
+        }
+		
+		return ivList;
+		
+	}
+
+	public static List<Object> readMappingDataCM(ValueRange range) {
+		
+		List<List<Object>> values = range.getValues();
+		ListIterator li = values.listIterator(values.size());
+		MappingTableCodeMaster vif =null;
+		List<Object> ivList=null;
+        while(li.hasPrevious()) {
+        	ArrayList<String> obj=(ArrayList<String>) li.previous();
+        	int x=0;
+        	vif=new MappingTableCodeMaster(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x)
+        		,obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x)
+        		);            
+        	System.out.println("xxxxxxxx:"+x);
+            if (ivList ==null) ivList= new ArrayList<>();
+        	ivList.add(vif);            
+        }
+		
+		return ivList;
+		
+	}
+	public static List<Object> readEagleSoftFSFee(ValueRange range) {
+		List<List<Object>> values = range.getValues();
+		ListIterator li = values.listIterator(values.size());
+		EagleSoftFeeShedule vif =null;
+		List<Object> ivList=null;
+        while(li.hasPrevious()) {
+        	ArrayList<String> obj=(ArrayList<String>) li.previous();
+        	int x=-1;
+        	vif=new EagleSoftFeeShedule(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x)
+        		);            
+        	System.out.println("xxxxxxxx:"+x);
+            if (ivList ==null) ivList= new ArrayList<>();
+        	ivList.add(vif);            
+        }
+		
+		return ivList;
+		
+	}
+	public static List<Object> readEagleSoftESCoverage(ValueRange range) {
+		List<List<Object>> values = range.getValues();
+		ListIterator li = values.listIterator(values.size());
+		EagleSoftCB vif =null;
+		List<Object> ivList=null;
+        while(li.hasPrevious()) {
+        	ArrayList<String> obj=(ArrayList<String>) li.previous();
+        	int x=-1;
+        	vif=new EagleSoftCB(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x)
+        		,obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x)
+        		);            
+        	System.out.println("xxxxxxxx:"+x);
+            if (ivList ==null) ivList= new ArrayList<>();
+        	ivList.add(vif);            
+        }
+        return ivList;
+		
+	}
+	public static List<Object> readEagleSoftFSName(ValueRange range) {
+		List<List<Object>> values = range.getValues();
+		ListIterator li = values.listIterator(values.size());
+		EagleSoftFSName vif =null;
+		List<Object> ivList=null;
+        while(li.hasPrevious()) {
+        	ArrayList<String> obj=(ArrayList<String>) li.previous();
+        	int x=-1;
+        	vif=new EagleSoftFSName(obj.get(++x), obj.get(++x)
+        		);            
+        	System.out.println("xxxxxxxx:"+x);
+            if (ivList ==null) ivList= new ArrayList<>();
+        	ivList.add(vif);            
+        }
+        return ivList;
+	}
 	
 }

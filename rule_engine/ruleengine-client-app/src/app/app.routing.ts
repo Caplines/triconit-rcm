@@ -16,6 +16,7 @@ const appRoutes: Routes = [
   { path: 'ivf', component: IVFComponent ,canActivate: [UrlPermission] },
   { path: 'login', component: LoginComponent ,canActivate: [UrlLoggedInCheck]},
   { path: 'register', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
+  { path: 'report', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
   { path: 'logout', component: LogoutComponent  },
 
   // otherwise redirect to profile

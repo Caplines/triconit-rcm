@@ -7,7 +7,10 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -20,14 +23,17 @@ public class Reports extends BaseAudit implements java.io.Serializable {
 
 	private static final long serialVersionUID = -9135032927310683833L;
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", unique = true, nullable = false)
 	private int id;
-	@Column(name = "treatement_plan_id", length = 45)
+	@Column(name = "treatement_plan_id",unique=true, length = 45)
 	private String treatementPlanId;
 	@Column(name = "ivf_form_id", length = 45)
 	private String ivfFormId;
-	@Column(name = "office_id")
-	private Integer officeId;
+	@Column(name = "patient_name", length = 255)
+	private String patientName;
+	@Column(name = "patient_dob", length = 255)
+	private String patientDob;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "reports")
 	private Set<ReportDetail> reportDetails = new HashSet<ReportDetail>(0);
 
@@ -64,14 +70,6 @@ public class Reports extends BaseAudit implements java.io.Serializable {
 		this.ivfFormId = ivfFormId;
 	}
 
-	public Integer getOfficeId() {
-		return this.officeId;
-	}
-
-	public void setOfficeId(Integer officeId) {
-		this.officeId = officeId;
-	}
-
 	public Set<ReportDetail> getReportDetails() {
 		return this.reportDetails;
 	}
@@ -80,4 +78,21 @@ public class Reports extends BaseAudit implements java.io.Serializable {
 		this.reportDetails = reportDetails;
 	}
 
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getPatientDob() {
+		return patientDob;
+	}
+
+	public void setPatientDob(String patientDob) {
+		this.patientDob = patientDob;
+	}
+
+	
 }

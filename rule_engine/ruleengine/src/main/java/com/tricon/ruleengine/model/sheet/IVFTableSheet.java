@@ -25,7 +25,7 @@ public class IVFTableSheet {
 	private String planType ;
 	private String planTermedDate ;
 	private String planNetwork ;
-	private String planFeeScheduleName ;
+	private String planFeeScheduleName ;// Fee Schedule Name
 	private String planIndFamilyCoverage ;
 	private String planEffectiveDate ;//26-1 Effective Date RULE ONE (Plan_EffectiveDate)
 	private String planAnnualMax ;
@@ -36,7 +36,7 @@ public class IVFTableSheet {
 	private String planFamilyDeductibleMet ;
 	private String planCalendarFiscalYear ;
 	private String planDependentsCoveredtoAge ;
-	private String planCoverageBook ;
+	private String planCoverageBook ;// Coverage Book
 	private String planPreDMandatory ;
 	private String planNonDuplicateClause;
 	private String planFullTimeStudentStatus;

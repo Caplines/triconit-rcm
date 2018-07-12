@@ -5,7 +5,7 @@ import {AccountService} from "../../services/account.service";
 import {Router} from "@angular/router";
 
 @Component({
-  selector: 'app-ivf',
+  selector: 'app-report',
   templateUrl: './ivf.component.html',
   styleUrls: ['./ivf.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -19,9 +19,7 @@ export class IVFComponent implements OnInit {
   ivfmData: any;
   showPopup: boolean = false;
   showLoading: boolean = false;
-
   constructor(public accountService: AccountService, public router: Router) {
-      
   }
 
   ngOnInit() {

@@ -249,3 +249,8 @@ img { max-width: 100%; }
 .validation-modal .modal-backdrop.in {
 	opacity: 0.7;
 }
+
+
+.modal-content {text-align: left;}
+.message-container { line-height: 22px; font-size: 14px; margin-bottom: 10px; padding-left: 20px;}
+.message-container .error-message-api{color:red;}

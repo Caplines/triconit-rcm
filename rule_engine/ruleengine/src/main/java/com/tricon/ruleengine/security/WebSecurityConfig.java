@@ -114,7 +114,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                 HttpMethod.GET,
                 "/open/*",
-                "/validateTreatmentPlan",
+                "/validateTreatmentPlan2",
                 "/",
                 "/*.html",
                 "/favicon.ico",

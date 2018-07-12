@@ -4,6 +4,8 @@ package com.tricon.ruleengine.model.db;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -19,15 +21,23 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "report_detail")
-public class ReportDetail implements java.io.Serializable {
+public class ReportDetail extends BaseAudit implements java.io.Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -9150819243860027278L;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id", unique = true, nullable = false)
 	private int id;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "report_id")
 	private Reports reports;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "rule_id")
 	private Rules rules;
+	@Column(name = "error_message", columnDefinition = "text")
 	private String errorMessage;
 
 	public ReportDetail() {
@@ -44,9 +54,6 @@ public class ReportDetail implements java.io.Serializable {
 		this.errorMessage = errorMessage;
 	}
 
-	@Id
-
-	@Column(name = "id", unique = true, nullable = false)
 	public int getId() {
 		return this.id;
 	}
@@ -55,8 +62,6 @@ public class ReportDetail implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "report_id")
 	public Reports getReports() {
 		return this.reports;
 	}
@@ -65,8 +70,6 @@ public class ReportDetail implements java.io.Serializable {
 		this.reports = reports;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "rule_id")
 	public Rules getRules() {
 		return this.rules;
 	}
@@ -75,7 +78,6 @@ public class ReportDetail implements java.io.Serializable {
 		this.rules = rules;
 	}
 
-	@Column(name = "error_message", columnDefinition = "text")
 	public String getErrorMessage() {
 		return this.errorMessage;
 	}

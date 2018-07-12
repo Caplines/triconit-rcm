@@ -69,7 +69,7 @@
 					</div>
 						<div class="modal-body">							
 							<ul *ngFor="let data of ivfmData" class="message-container">
-								<li [innerHTML]="data.ruleName +' - '+ data.message"></li>
+								<li>{{data.ruleName}} - {{data.message}}</li>
 							</ul>
 					</div>
 					<!-- <div class="modal-footer"></div> -->

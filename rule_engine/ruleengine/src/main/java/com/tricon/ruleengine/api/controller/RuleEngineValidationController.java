@@ -45,8 +45,6 @@ public class RuleEngineValidationController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", tpDdtoL));
 	}
 
-	@CrossOrigin
-	@PostMapping
 	@RequestMapping(value = "/validateTreatmentPlan2", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Object> validateTreatementPlan2() {
 

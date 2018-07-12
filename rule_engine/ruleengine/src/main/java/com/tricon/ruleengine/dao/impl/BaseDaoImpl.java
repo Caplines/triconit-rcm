@@ -115,13 +115,13 @@ public class BaseDaoImpl {
 
 	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected Object getWholeEntity(Class clazz) {
+	protected List<Object> getWholeEntity(Class clazz) {
 		Session session = getSession();
 		List<Object> list = null;
 		try {
 			Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(clazz);
-			criteria.list();
+			list=criteria.list();
 			transaction.commit();
 		} finally {
 			closeSession(session);
@@ -148,5 +148,17 @@ public class BaseDaoImpl {
 		}
 		return list;
 
+	}
+
+	protected void updateEntiyDate(Object object) {
+		Session session = getSession();
+		try {
+			Transaction transaction = session.beginTransaction();
+			session.update(object);
+			transaction.commit();
+		} finally {
+			closeSession(session);
+
+		}
 	}
 }

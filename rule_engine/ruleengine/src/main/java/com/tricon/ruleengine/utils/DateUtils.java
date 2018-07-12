@@ -13,4 +13,12 @@ public class DateUtils {
 	return (one.compareTo(two)>=0);
 	}
 
+	//Compares Two Date 
+	public static void CheckForStringInDate(String date) throws RuleEngineDateException{
+
+		 if( date.matches(".*[a-zA-Z]+.*")){
+	          throw  new RuleEngineDateException("Date Contains String");
+	        }
+	}
+
 }

@@ -71,15 +71,21 @@ export class AccountService {
           localStorage.setItem("token", (<any>data).token);
           console.log("token is set");
             return  this.http.post(AppComponent.API_URL+'/validateTreatmentPlan',ivf);
-          })).subscribe(data => {
+          },
+          )    
+      ).subscribe(data => {
+              console.log(data);
               callback((<any>data));
           },
           error => {
-              callback(error);
+              console.log(33);
+              if (error.status==401){
               this.router.navigate(['/logout']);
+              }
               
           },
           () => {
+              console.log(111);
           }
           
           );
