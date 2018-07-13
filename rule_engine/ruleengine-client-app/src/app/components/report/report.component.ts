@@ -6,11 +6,11 @@ import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-report',
-  templateUrl: './ivf.component.html',
-  styleUrls: ['./ivf.component.css'],
+  templateUrl: './report.component.html',
+  styleUrls: ['./report.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class IVFComponent implements OnInit {
+export class ReportComponent implements OnInit {
   ivfm: IVFModel = new IVFModel();
   errorMessage: string;
   offices:any;
