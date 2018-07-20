@@ -2,10 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>springBoot Angular Auth</title>
-  <base href="http://localhost:8080/ruleengine-0.0.1-SNAPSHOT/">
-  <!-- script for the facebook api -->
-  <script type="text/javascript" src="https://connect.facebook.net/en_US/sdk.js"></script>
+  <title>Rule engine Application</title>
+  <base href="<%=request.getContextPath()%>/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">

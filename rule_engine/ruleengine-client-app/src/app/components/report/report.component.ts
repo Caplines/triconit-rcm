@@ -1,8 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {IVFModel} from "../../model/model.ivf";
-import {Office} from "../../model/model.office";
 import {AccountService} from "../../services/account.service";
 import {Router} from "@angular/router";
+import {Report} from "../../model/model.report";
 
 @Component({
   selector: 'app-report',
@@ -11,41 +10,39 @@ import {Router} from "@angular/router";
   encapsulation: ViewEncapsulation.None
 })
 export class ReportComponent implements OnInit {
-  ivfm: IVFModel = new IVFModel();
+  report: Report = new Report();
   errorMessage: string;
-  offices:any;
-  userName: any;
-  userType: any;
-  ivfmData: any;
-  showPopup: boolean = false;
-  showLoading: boolean = false;
+  showReportForm: boolean = false;
+  reportParamId: boolean = false;
+  reportParamDate: boolean = false;
+  reportParamName: boolean = false;
+  
   constructor(public accountService: AccountService, public router: Router) {
   }
 
   ngOnInit() {
-	this.setUser();
-      /*
-      this.accountService.getOffices((result) => {
-        console.log(result);
-        this.offices=result;
-      });
-      */
+	
   }
 
-  validateIVF() {
-	  this.showLoading = true;
-      this.errorMessage = "DDD";
-          this.accountService.validateIVF(this.ivfm,(result) => {
-              this.ivfmData = result.data;
-			  this.showPopup=true;
-			  this.showLoading = false;			  
-			  //this.setUser();
-        });
+  reportParam(value) {
+	this.showReportForm = true;
+	if(value == 'id') {
+		this.reportParamId = true;
+		this.reportParamDate = false;
+		this.reportParamName = false;
+	}
+	if(value == 'date') {
+		this.reportParamDate = true;
+		this.reportParamId = false;
+		this.reportParamName = false;
+		
+	}
+	if(value == 'name') {
+		this.reportParamName = true;
+		this.reportParamId = false;
+		this.reportParamDate = false;
+	}
   }
-  
-  setUser() {
-	this.userName = localStorage.getItem('currentUser');
-	this.userType = localStorage.getItem('roles').indexOf("ROLE_ADMIN")>0;
-  }
-  
+
+
 }

@@ -82,7 +82,10 @@ export class AccountService {
               if (error.status==401){
               this.router.navigate(['/logout']);
               }
-              
+              if (error.status==500){
+                  alert("Some un-Wanted Chnages Done to Google Sheets");
+                  callback(error);
+              }
           },
           () => {
               console.log(111);

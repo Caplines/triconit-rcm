@@ -4,6 +4,7 @@ import {RegisterComponent} from "./components/register/register.component";
 import {ProfileComponent} from "./components/profile/profile.component";
 import {IVFComponent} from "./components/ivf/ivf.component";
 import {LogoutComponent} from "./components/logout/logout.component";
+import {ReportComponent} from "./components/report/report.component";
 
 import {UrlPermission} from "./urlPermission/url.permission";
 import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
@@ -16,7 +17,7 @@ const appRoutes: Routes = [
   { path: 'ivf', component: IVFComponent ,canActivate: [UrlPermission] },
   { path: 'login', component: LoginComponent ,canActivate: [UrlLoggedInCheck]},
   { path: 'register', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
-  { path: 'report', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
+  { path: 'report', component: ReportComponent,canActivate: [UrlAdminPermission]  },
   { path: 'logout', component: LogoutComponent  },
 
   // otherwise redirect to profile

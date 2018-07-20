@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import {User} from "../../model/model.user";
 import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
@@ -13,6 +13,7 @@ import {Router} from "@angular/router";
 export class LoginComponent implements OnInit {
   user: User=new User();
   errorMessage:string;
+  @Output() emitToParent = new EventEmitter<any>();
   constructor(private authService :AuthService, private router: Router) { }
 
 
@@ -24,6 +25,7 @@ export class LoginComponent implements OnInit {
     this.authService.logIn(this.user)
       .subscribe(data=>{
         this.router.navigate(['/ivf']);
+        this.authService.emitChange('login');
         },err=>{
         this.errorMessage="Error :  Username or password is incorrect";
         }

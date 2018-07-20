@@ -21,28 +21,31 @@ export class IVFComponent implements OnInit {
   showLoading: boolean = false;
 
   constructor(public accountService: AccountService, public router: Router) {
-      
+      this.accountService.getOffices((result) => {
+          this.offices=result;
+        });
   }
 
   ngOnInit() {
 	this.setUser();
-      /*
-      this.accountService.getOffices((result) => {
-        console.log(result);
-        this.offices=result;
-      });
-      */
   }
 
   validateIVF() {
 	  this.showLoading = true;
-      this.errorMessage = "DDD";
+      //this.errorMessage = "DDD";
+	  if(this.ivfm.officeId) {
           this.accountService.validateIVF(this.ivfm,(result) => {
-              this.ivfmData = result.data;
+              this.showLoading = false;
+              console.log(result);
+              if (result.status=='OK'){this.ivfmData = result.data;
 			  this.showPopup=true;
-			  this.showLoading = false;			  
+              }
 			  //this.setUser();
         });
+	  }else{
+	      this.showLoading = false;
+
+	  }
   }
   
   setUser() {

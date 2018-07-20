@@ -1,22 +1,4 @@
 
-<div class="top-content">
-	<nav class="navbar navbar-default user-tab">
-	  <div class="container-fluid">
-		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		  <ul class="nav navbar-nav navbar-right">
-			<li class="dropdown">
-			  <a href="#" class="dropdown-toggle username" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-			  <span>Hi,</span> {{userName}}<span class="caret"></span></a>
-			  <ul class="dropdown-menu">
-				<li><a *ngIf="userType" href="javascript:void(0)" [routerLink]="['/register']">Register New User</a></li>
-				<li><a *ngIf="userType" href="javascript:void(0)" [routerLink]="['/report']">Reports</a></li>
-				<li><a href="javascript:void(0)" [routerLink]="['/logout']">Log Out</a></li>
-			  </ul>
-			</li>
-		  </ul>
-		</div><!-- /.navbar-collapse -->
-	  </div><!-- /.container-fluid -->
-	</nav>
 	<div class="inner-bg">
 		<div class="container">
 			<div class="row">
@@ -26,54 +8,55 @@
 			</div>
 			<div class="row">
 				<div class="col-sm-6 col-sm-offset-3 form-box">
-					<div class="form-top">
-						<div class="form-top-left">
-							<h3 class="ivf-title">Enter Details for Validating Treatment Plan</h3>
-						</div>
+					<div class="dropdown">
+						<button class="btn btn-block dropdown-toggle" type="button" data-toggle="dropdown" (click)="showReportForm = false">
+							<span class="caret"></span>Select Report to Run
+						</button>
+						<ul class="dropdown-menu">
+							<li><a href="javascript:void(0)" (click)="reportParam('id')">Treatment Plan Id</a></li>
+							<li><a href="javascript:void(0)" (click)="reportParam('date')">Date Run</a></li>
+							<li><a href="javascript:void(0)" (click)="reportParam('name')">Patient Name</a></li>
+						</ul>
 					</div>
+					<!-- <div class="form-top">
+						<div class="form-top-left">
+							<a href="javascript:void(0)" (click)="showReportForm = true"><h3 class="ivf-title">Select Report to Run</h3></a>
+						</div>
+						
+					</div> -->
 
-					<div class="form-bottom">
+					<div *ngIf="showReportForm" class="form-bottom">
 						<form class="login-form" name="form" (ngSubmit)="f.form.valid && validateIVF()" #f="ngForm" novalidate>
-							<!-- <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div> -->
+							<!--  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>  -->
 							<span id="reauth-email" class="reauth-email"></span>
 							
-							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !treatmentPlanId.valid }">
+							<div *ngIf="reportParamId" class="form-group" [ngClass]="{ 'has-error': f.submitted && !treatmentPlanId.valid }">
 								<label class="sr-only" for="treatmentPlanId">Treatment Plan Id</label>
-								<input type="text" class="login-signup-form-field form-control" name="treatmentPlanId" id="treatmentPlanId" [(ngModel)]="ivfm.treatmentPlanId" #treatmentPlanId="ngModel" placeholder="Treatment Plan Id..." required />
+								<input type="text" class="login-signup-form-field form-control" name="treatmentPlanId" id="treatmentPlanId" [(ngModel)]="report.treatmentPlanId" #treatmentPlanId="ngModel" placeholder="Treatment Plan Id..." required />
 								<div *ngIf="f.submitted && !treatmentPlanId.valid" class="error-msg">Please enter Treatment Plan Id.</div>
 							</div>
 			
+							<div *ngIf="reportParamDate" class="form-group" [ngClass]="{ 'has-error': f.submitted && !date.valid }"> 
+								<label class="sr-only" for="dateRun">Date Run</label>
+								<input type="date" class="login-signup-form-field form-control" name="dateRun" id="dateRun" [(ngModel)]="report.date" #date="ngModel" placeholder="MM/DD/YYY" required/>
+								<div *ngIf="f.submitted && !date.valid" class="error-msg">Please select valid Date.</div>
+							</div>
 							
+							<div *ngIf="reportParamName" class="form-group" [ngClass]="{ 'has-error': f.submitted && !patientName.valid }">
+								<label class="sr-only" for="patientName">Patient Name</label>
+								<input type="text" class="login-signup-form-field form-control" name="patientName" id="patientName" [(ngModel)]="report.patientName" #patientName="ngModel" placeholder="Patient Name..." required />
+								<div *ngIf="f.submitted && !patientName.valid" class="error-msg">Please enter Patient Name.</div>
+							</div>
 							
-							<p><button [disabled]="showLoading" type="submit" class="btn">Validate Treatment Plan</button></p>
+							<p><button (click)="showReportForm = false" type="submit" class="btn">Submit</button></p>
 							
 							<div *ngIf="showLoading" class="loader"></div>
 							
 						</form>
-					</div>
+					</div> 
 				</div>
 			</div>
 
 		</div>
 	</div>
- </div>
- 
- <div *ngIf="showPopup" class="validation-modal">
-	 <div class="modal-backdrop fade in"></div>
-	 <div id="modal-login" class="modal fade in"  tabindex="-1" style="display:block">
-		  <div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" (click)="showPopup=false;"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="myModalLabel">Validation Messages</h4>
-					</div>
-						<div class="modal-body">							
-							<ul *ngFor="let data of ivfmData" class="message-container">
-								<li>{{data.ruleName}} - {{data.message}}</li>
-							</ul>
-					</div>
-					<!-- <div class="modal-footer"></div> -->
-				</div>
-		  </div>
-	</div>
-</div>
+	

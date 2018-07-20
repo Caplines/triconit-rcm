@@ -13,6 +13,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { IVFComponent } from './components/ivf/ivf.component';
 import { ReportComponent } from './components/report/report.component';
 import { LogoutComponent } from './components/logout/logout.component';
+import { HeaderComponent } from './components/header/header.component';
 
 
 import {routing} from "./app.routing";
@@ -22,6 +23,7 @@ import {UrlLoggedInCheck} from "./urlPermission/url.checkloginstate";
 import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './auth/token.interceptor';
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +32,9 @@ import { TokenInterceptor } from './auth/token.interceptor';
     ProfileComponent,
     IVFComponent,
     ReportComponent,
-    LogoutComponent
+    LogoutComponent,
+    HeaderComponent
+    
 
   ],
   imports: [
