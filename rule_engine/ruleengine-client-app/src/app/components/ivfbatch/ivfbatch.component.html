@@ -1,16 +1,12 @@
 
 	<div class="inner-bg">
 		<div class="container">
-			<div class="row">
-				<div class="col-sm-8 col-sm-offset-2 text">
-					<h1><strong>Smile Point</strong> <br>Dental Clinic Insurance</h1>
-				</div>
-			</div>
+			
 			<div class="row">
 				<div class="col-sm-6 col-sm-offset-3 form-box">
 					<div class="form-top">
 						<div class="form-top-left">
-							<h3 class="ivf-title">Enter Details for Validating Treatment Plan in Batch Mode</h3>
+							<h3 class="ivf-title">Enter Details for Validating IVF Form (Batch Mode)</h3>
 						</div>
 					</div>
 
@@ -29,7 +25,7 @@
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
 								<label class="sr-only" for="officeId">Office Name</label>
 								<select name="officeId" [(ngModel)]="ivfm.officeId" class="login-signup-form-field form-control" id="officeId">
-<!-- 									<option value="">Office Name...</option> -->
+									<option value="">Office Name...</option> 
 									<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
 								</select>
 								<div *ngIf="f.submitted && ivfm.officeId==''" class="error-msg">The Office Name is required</div>

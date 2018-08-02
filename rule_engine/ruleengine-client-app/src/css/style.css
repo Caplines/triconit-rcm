@@ -121,7 +121,6 @@ img { max-width: 100%; }
 
 .form-top-left {
 	float: left;
-	width: 75%;
 	padding-top: 15px;
 }
 
@@ -225,7 +224,9 @@ button.btn:active:focus, button.btn.active:focus {
 .inner-bg .col-sm-6 {
     width: 70%;
 }
+.top-location, .top-time {display: none;}
 }
+
 
 @media (max-width: 415px) {
 	
@@ -250,7 +251,7 @@ button.btn:active:focus, button.btn.active:focus {
 .inner-bg .col-sm-6 {
     width: auto;
 }
-
+.top-location, .top-time {display: none;}
 }
 
 .top-content .login-signup-form-field {

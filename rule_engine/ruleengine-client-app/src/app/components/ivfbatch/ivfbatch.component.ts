@@ -25,7 +25,8 @@ export class IVFBatchComponent implements OnInit {
         });
   }
 
-
+  ngOnInit() {
+  }
   validateIVF() {
 	  this.showLoading = true;
  	  if(this.ivfm.officeId) {
@@ -61,4 +62,5 @@ export class IVFBatchComponent implements OnInit {
 	  this.ivfm.ivfId=this.past;
 
   
+}
 }
