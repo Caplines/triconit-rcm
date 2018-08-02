@@ -11,6 +11,7 @@ import {HttpModule} from "@angular/http";
 import {AccountService} from "./services/account.service";
 import { ProfileComponent } from './components/profile/profile.component';
 import { IVFComponent } from './components/ivf/ivf.component';
+import { IVFBatchComponent } from './components/ivfbatch/ivfbatch.component';
 import { ReportComponent } from './components/report/report.component';
 import { LogoutComponent } from './components/logout/logout.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -31,6 +32,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
     RegisterComponent,
     ProfileComponent,
     IVFComponent,
+    IVFBatchComponent,
     ReportComponent,
     LogoutComponent,
     HeaderComponent

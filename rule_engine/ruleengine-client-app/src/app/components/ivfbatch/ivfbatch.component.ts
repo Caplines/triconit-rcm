@@ -1,24 +1,23 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {IVFModel} from "../../model/model.ivf";
+import {IVFBatchModel} from "../../model/model.ivfbatch";
 import {Office} from "../../model/model.office";
 import {AccountService} from "../../services/account.service";
 import {Router} from "@angular/router";
 
 @Component({
-  selector: 'app-ivf',
-  templateUrl: './ivf.component.html',
-  styleUrls: ['./ivf.component.css'],
+  selector: 'app-ivfbatch',
+  templateUrl: './ivfbatch.component.html',
+  styleUrls: ['./ivfbatch.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class IVFComponent implements OnInit {
-  ivfm: IVFModel = new IVFModel();
+export class IVFBatchComponent implements OnInit {
+  ivfm: IVFBatchModel = new IVFBatchModel();
   errorMessage: string;
   offices:any;
-  userName: any;
-  userType: any;
   ivfmData: any;
   showPopup: boolean = false;
   showLoading: boolean = false;
+  past:any;
 
   constructor(public accountService: AccountService, public router: Router) {
       this.accountService.getOffices((result) => {
@@ -26,26 +25,40 @@ export class IVFComponent implements OnInit {
         });
   }
 
-  ngOnInit() {
-  }
 
   validateIVF() {
 	  this.showLoading = true;
-      //this.errorMessage = "DDD";
-	  if(this.ivfm.officeId) {
-          this.accountService.validateIVF(this.ivfm,(result) => {
+ 	  if(this.ivfm.officeId) {
+          this.accountService.validateIVFBatch(this.ivfm,(result) => {
               this.showLoading = false;
               console.log(result);
               if (result.status=='OK'){this.ivfmData = result.data;
 			  this.showPopup=true;
               }
-			  //this.setUser();
         });
 	  }else{
 	      this.showLoading = false;
 
 	  }
   }
+ 
+  onPaste(evt) {
+		let content = '';
+		if (evt.clipboardData && evt.clipboardData.getData) {
+			content = evt.clipboardData.getData('text/plain');
+		} 
+		let words = content.replace(/\n/g, "");
+		this.past = words.replace(/\s/g, ",");
+		console.log(this.past);
+		
+		
+		
+		
+	  }
   
+  getDataFromPasteEvent(evt) {
+	  
+	  this.ivfm.ivfId=this.past;
+
   
 }
