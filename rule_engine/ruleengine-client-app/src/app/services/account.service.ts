@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {User} from "../model/model.user";
 import {IVFModel} from "../model/model.ivf";
+import {IVFBatchPreModel} from "../model/model.ivfbatchpre";
 import {IVFBatchModel} from "../model/model.ivfbatch";
 import {AuthHeader} from "../util/auth.header";
 import {AppComponent} from "../app.component";
@@ -96,6 +97,37 @@ export class AccountService {
               
   }
   
+  validateIVFPreBatch(ivf:IVFBatchPreModel,callback){
+      this.generateRefreshToken().pipe(switchMap(data => {
+          console.log((<any>data).token);
+          localStorage.setItem("token", (<any>data).token);
+          console.log("token is set");
+            return  this.http.post(AppComponent.API_URL+'/validateTreatmentPlanPreBatch',ivf);
+          },
+          )    
+      ).subscribe(data => {
+              console.log(data);
+              callback((<any>data));
+          },
+          error => {
+              console.log(33);
+              if (error.status==401){
+              this.router.navigate(['/logout']);
+              }
+              if (error.status==500){
+                  alert("Some un-Wanted Chnages Done to Google Sheets");
+                  callback(error);
+              }
+          },
+          () => {
+              console.log(111);
+          }
+          
+          );
+              
+  }
+
+
   validateIVFBatch(ivf:IVFBatchModel,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
           console.log((<any>data).token);
@@ -124,9 +156,7 @@ export class AccountService {
           
           );
               
-  }
-
-  generateRefreshToken(){
+  }generateRefreshToken(){
       return this.http.get(AppComponent.API_URL+'/refresh');
   }
       /*

@@ -355,7 +355,12 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
 .top-content .dropdown .dropdown-menu { width: 100%; }
 .top-content .dropdown .dropdown-menu a { padding: 10px 20px; }
 .top-content .dropdown .btn-block.dropdown-toggle:hover, .top-content .dropdown .btn-block.dropdown-toggle:focus { opacity: 1; }
-
+.modal-dialog {
+    width: 600px;
+    margin: 30px auto;
+    max-height: 450px;
+    overflow-y: scroll;
+}
 
 
 

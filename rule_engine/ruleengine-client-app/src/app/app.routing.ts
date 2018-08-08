@@ -3,6 +3,7 @@ import {LoginComponent} from "./components/login/login.component";
 import {RegisterComponent} from "./components/register/register.component";
 import {ProfileComponent} from "./components/profile/profile.component";
 import {IVFComponent} from "./components/ivf/ivf.component";
+import {IVFBatchPreComponent} from "./components/ivfbatchpre/ivfbatchpre.component";
 import {IVFBatchComponent} from "./components/ivfbatch/ivfbatch.component";
 import {LogoutComponent} from "./components/logout/logout.component";
 import {ReportComponent} from "./components/report/report.component";
@@ -17,6 +18,7 @@ const appRoutes: Routes = [
   { path: 'profile', component: ProfileComponent ,canActivate: [UrlPermission] },
   { path: 'ivf', component: IVFComponent ,canActivate: [UrlPermission] },
   { path: 'ivfbatch', component: IVFBatchComponent ,canActivate: [UrlPermission] },
+  { path: 'ivfbatchpre', component: IVFBatchPreComponent ,canActivate: [UrlPermission] },
   { path: 'login', component: LoginComponent ,canActivate: [UrlLoggedInCheck]},
   { path: 'register', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
   { path: 'report', component: ReportComponent,canActivate: [UrlAdminPermission]  },
