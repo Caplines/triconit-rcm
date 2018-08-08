@@ -31,9 +31,9 @@
 								<div *ngIf="f.submitted && !treatmentPlanId.valid" class="error-msg">Please enter Treatment Plan Id.</div>
 							</div>
 			
-							<div *ngIf="reportParamDate" class="form-group" [ngClass]="{ 'has-error': f.submitted && !date.valid }"> 
+							<div *ngIf="reportParamDate" class="form-group date-dropdown" [ngClass]="{ 'has-error': f.submitted && !date.valid }"> 
 								<label class="sr-only" for="dateRun">Date Run</label>
-								<input type="date" class="login-signup-form-field form-control" name="dateRun" id="dateRun" [(ngModel)]="report.date" #date="ngModel" placeholder="MM/DD/YYY" required/>
+								<ng-datepicker [(ngModel)]="report.date" name="datePicker" [options]="dateOptions"></ng-datepicker>
 								<div *ngIf="f.submitted && !date.valid" class="error-msg">Please select valid Date.</div>
 							</div>
 							
@@ -45,8 +45,7 @@
 							
 							<p><button (click)="showReportForm = false" type="submit" class="btn">Submit</button></p>
 							
-							<div *ngIf="showLoading" class="loader"></div>
-							
+							<div *ngIf="showLoading" class="loader"></div>							    
 						</form>
 					</div> 
 				</div>

@@ -1,4 +1,5 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {DatepickerOptions} from 'ng2-datepicker';
 import {AccountService} from "../../services/account.service";
 import {Router} from "@angular/router";
 import {Report} from "../../model/model.report";
@@ -16,8 +17,14 @@ export class ReportComponent implements OnInit {
   reportParamId: boolean = false;
   reportParamDate: boolean = false;
   reportParamName: boolean = false;
+	dateOptions: DatepickerOptions = {
+    displayFormat: 'MM/DD/YYYY',
+		placeholder: 'Click to select a date',
+  };
+  
   
   constructor(public accountService: AccountService, public router: Router) {
+   //this.report.date=new Date();
   }
 
   ngOnInit() {
@@ -42,6 +49,10 @@ export class ReportComponent implements OnInit {
 		this.reportParamId = false;
 		this.reportParamDate = false;
 	}
+  }
+  
+  showCalendar(){
+  
   }
 
 

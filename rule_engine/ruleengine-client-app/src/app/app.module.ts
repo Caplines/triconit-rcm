@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import { NgDatepickerModule } from 'ng2-datepicker';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
@@ -42,7 +42,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
 
   ],
   imports: [
-    BrowserModule,HttpModule,FormsModule,routing,HttpClientModule
+    BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule
   ],
   providers: [AuthService,AccountService,UrlPermission,UrlAdminPermission,UrlLoggedInCheck,
        {
