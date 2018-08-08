@@ -19,11 +19,11 @@
 						<div class="form-group"
 							[ngClass]="{ 'has-error': f.submitted && !copyId.valid }">
 							<label class="sr-only" for="treatmentPlanId">IVF ID & Treatment
-								Plan Id</label> <textarea  rows="150" cols="15"
+								Plan Id</label> <input type="text" 
 								class="login-signup-form-field1 form-control"
 								name="copyId" id="copyId"
 								[(ngModel)]="ivfm.copyId" #copyId="ngModel"
-								placeholder="IVF ID & Treatment	Plan ID" required (paste)="onPaste($event)"></textarea>
+								placeholder="IVF ID & Treatment	Plan ID" required (paste)="onPaste($event)"/>
 							<div *ngIf="f.submitted && !copyId.valid"
 								class="error-msg">Please enter Treatment Plan Id's and Treatment Id's.</div>
 						</div>
