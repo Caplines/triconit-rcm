@@ -2,6 +2,11 @@ package com.tricon.ruleengine.dao.impl;
 
 import java.io.Serializable;
 
+import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.UserDao;
@@ -26,6 +31,27 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
 	public User findUserByEmail(String email) {
 
 		return (User) getEntityByColumnName(User.class, "email", email);
+	}
+
+	@Override
+	public User findUserAndOfficeByEmail(String email) {
+
+		Session session = getSession();
+		User object = null;
+		try {
+			Transaction transaction = session.beginTransaction();
+			Criteria criteria = session.createCriteria(User.class);
+			criteria.add(Restrictions.eq("email", email));
+			object =  (User)criteria.uniqueResult();
+			Hibernate.initialize(object.getOffice());
+			transaction.commit();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return object;
+
 	}
 
 	@Override

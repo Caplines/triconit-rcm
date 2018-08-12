@@ -39,6 +39,8 @@ public class ReportDetail extends BaseAudit implements java.io.Serializable {
 	private Rules rules;
 	@Column(name = "error_message", columnDefinition = "text")
 	private String errorMessage;
+	@Column(name = "group_run")
+	private int groupRun;
 
 	public ReportDetail() {
 	}
@@ -86,4 +88,13 @@ public class ReportDetail extends BaseAudit implements java.io.Serializable {
 		this.errorMessage = errorMessage;
 	}
 
+	public int getGroupRun() {
+		return groupRun;
+	}
+
+	public void setGroupRun(int groupRun) {
+		this.groupRun = groupRun;
+	}
+
+	
 }

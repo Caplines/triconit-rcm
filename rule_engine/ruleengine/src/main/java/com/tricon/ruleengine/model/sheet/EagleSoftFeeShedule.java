@@ -8,6 +8,9 @@ public class EagleSoftFeeShedule {
 	private String  feesFee;
 	
 	
+	public EagleSoftFeeShedule() {
+	}
+	
 	public EagleSoftFeeShedule(String feeId, String name, String feesServiceCode, String feesFee) {
 		super();
 		this.feeId = feeId;

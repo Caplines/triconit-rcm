@@ -15,5 +15,7 @@ public interface UserDao {
 	public Office findOfficeById(String officeId);
 	public String registerUser(User user);
 	public void generateUserRole(UserRole role);
+	public User findUserAndOfficeByEmail(String email);
+	
 	
 }

@@ -6,6 +6,9 @@ public class EagleSoftFSName {
 	private String name;
 	
 	
+	public EagleSoftFSName() {
+	}
+
 	public EagleSoftFSName(String feeId, String name) {
 		super();
 		this.feeId = feeId;

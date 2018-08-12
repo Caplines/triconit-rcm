@@ -150,7 +150,7 @@ public class BaseDaoImpl {
 
 	}
 
-	protected void updateEntiyDate(Object object) {
+	protected void updateEntity(Object object) {
 		Session session = getSession();
 		try {
 			Transaction transaction = session.beginTransaction();

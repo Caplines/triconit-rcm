@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -34,6 +35,11 @@ public class Reports extends BaseAudit implements java.io.Serializable {
 	private String patientName;
 	@Column(name = "patient_dob", length = 255)
 	private String patientDob;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "office_id")
+	private Office office;
+	@Column(name = "group_run")
+	private int groupRun;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "reports")
 	private Set<ReportDetail> reportDetails = new HashSet<ReportDetail>(0);
 
@@ -92,6 +98,22 @@ public class Reports extends BaseAudit implements java.io.Serializable {
 
 	public void setPatientDob(String patientDob) {
 		this.patientDob = patientDob;
+	}
+
+	public Office getOffice() {
+		return office;
+	}
+
+	public void setOffice(Office office) {
+		this.office = office;
+	}
+
+	public int getGroupRun() {
+		return groupRun;
+	}
+
+	public void setGroupRun(int groupRun) {
+		this.groupRun = groupRun;
 	}
 
 	

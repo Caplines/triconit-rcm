@@ -1,219 +1,210 @@
 package com.tricon.ruleengine.model.sheet;
 
 public class IVFTableSheet {
-	
-	private String officeName;
-	private String patientName ;
-	private String insName ; 
-	private String taxId ;
-	private String policyHolder ; 
-	private String patientDOB;
-	private String InsContact;
-	private String cSRName;
-	private String policyHolderDOB;
-	private String employerName;
-	private String contTxRecallNP ;
-	private String ref;
-	private String memberSSN ;
-	private String group ;
-	private String cOBStatus ;
-	private String memberId ;
-	private String aptDate ;
-	private String payerId ;
-	private String providerName ;
-	private String insAddress ;
-	private String planType ;
-	private String planTermedDate ;
-	private String planNetwork ;
-	private String planFeeScheduleName ;// Fee Schedule Name
-	private String planIndFamilyCoverage ;
-	private String planEffectiveDate ;//26-1 Effective Date RULE ONE (Plan_EffectiveDate)
-	private String planAnnualMax ;
-	private String planAnnualMaxUsed ;
-	private String planIndividualDeductible ;
-	private String planIndividualDeductibleMet ;
-	private String planFamilyDeductible ; 
-	private String planFamilyDeductibleMet ;
-	private String planCalendarFiscalYear ;
-	private String planDependentsCoveredtoAge ;
-	private String planCoverageBook ;// Coverage Book
-	private String planPreDMandatory ;
-	private String planNonDuplicateClause;
-	private String planFullTimeStudentStatus;
-	private String planAssignmentofBenefits  ;
-	private String xRaysBundling ;
-	private String xRaysBWSperCYFL ;
-	private String xRaysFMXperCYFL ;
-	private String selants ;
-	private String selantsD1351PrimaryMolarsCovered ;
-	private String selantsD1351PreMolarCovered ;
-	private String selantsD1351PermanentMolarsCovered ;
-	private String selantsD135AgeLimit ;
-	private String sRPD4341 ;//%
-	private String sRPD4341FL ;
-	private String sRPD4341QuadsPerDay  ;
-	private String sRPD4341DaysBwTreatment ;
-	private String perioMaintenanceD4910 ;//%
-	private String perioMaintenanceD4910FL ;
-	private String perioMaintenanceD4910AltwProphyD0110 ;
-	private String fMDD4355 ;//%
-	private String fMDD4355FL ;
-	private String gingivitisD4346 ;// %
-	private String gingivitisD4346FL ;
-	private String denturesFL ;
-	private String completeDenturesD5110D5120FL ;
-	private String immediateDenturesD5130D5140FL ;
-	private String PartialDenturesD5213D5214FL ;
-	private String interimPartialDenturesD5214FL ;
-	private String flourideD1208FL ;
-	private String flourideAgeLimit ;
-	private String varnishD1206FL ;
-	private String varnishD1206AgeLimit ;
-	private String rollOverAge11201110 ;
-	private String fillingsBundling ; 
-	private String postCompFL ; 
-	private String orthoAgeLimit ;
-	private String sscD2930FL ; 
-	private String sscC2931FL ;
-	private String oralSurgeryD72107241CoveredMedical ;
-	private String crownLengthD4249Per; //%
-	private String crownLengthD4249FL ;
-	private String boneGraftsD7953CoveredWithEXT ; 
-	private String boneGraftsD7953FL ;
-	private String alveoD7311CoveredWithEXT ; 
-	private String alveoD7311FL ; 
-	private String alveoD7310CoveredWithEXT ; 
-	private String alveoD7310FL ;
-	private String missingToothClause ; 
-	private String replacementClause ; 
-	private String crownsD2750D2740FL ;
-	private String crownsD2750D2740PaysPrepSeatDate ; 
-	private String nightGuardsD9940FL ; 
-	private String buildUpsD2950Covered ; 
-	private String buildUpsD2950FL ;
-	private String buildUpsD2950SameDayCrown ;
-	private String basicWaitingPeriod ;
-	private String majorWaitingPeriod ;
-	
-	
-	private String preventive ;//% 
-	private String diagnostic ;//%
-	private String paXRays ;//% 
-	private String basic;//%
-	private String basicSubjectDeductible ;
-	private String major ;//% 
-	private String majorSubjectDeductible ; 
-	private String endodontics ; //%
-	private String endoSubjectDeductible ; 
-	private String perioSurgery ;//% 
-	private String perioSurgerySubjectDeductible ; 
-	private String extractionsMinor ;//%  
-	private String extraction_Major;//%  
-	private String ortho ;//% 
-	private String orthoMax ;
-	private String orthoSubjectDeductible ; 
-	private String nitrousD9230 ;//%  
-	private String iVSedationD9243 ;//%  
-	private String iVSedationD9248 ; //% 
-	private String medicalInsCoverage ; 
-	private String implantCoverage ; //% 
-	private String implantSupportedPorcCeramicD606;//%  
-	private String postCompositesD2391 ; //% 
-	private String posteriorCompositesD2391Downgrade ; 
-	private String crownsD2750D2740 ; //% 
-	private String crownsD2750D2740Downgrade ; 
-	private String nightGuardsD9940FL_1_REP ;//REPEAT 
-	
-	
-	private String d9310 ;//% 
-	private String d9310FL ; 
-	
-	private String adaCode ;
-	private String toothNo ; 
-	private String dos ; 
-	
-	private String adaCode_1_REP ;//REP
-	private String toothNo_1_REP ;//REP 
-	private String dos_1_REP ;//REP 
-	
-	private String adaCode_2_REP ;//REP
-	private String toothNo_2_REP ;//REP 
-	private String dos_2_REP ;//REP 
-	
-	private String adaCode_3_REP ;//REP
-	private String toothNo_3_REP ;//REP
-	private String dos_3_REP ;//REP ; 
-	
-	private String adaCode_4_REP ;//REP ; 
-	private String toothNo_4_REP ;//REP ;
-	private String dos_4_REP ;//REP ; 
-	
-	private String adaCode_5_REP ;//REP ; 
-	private String toothNo_5_REP ;//REP ; 
-	private String dos_5_REP ;//REP ;
-	
-	private String adaCode_6_REP ;//REP ;
-	private String toothNo_6_REP ;//REP ;
-	private String dos_6_REP ;//REP ;
-	
-	private String adaCode_7_REP ;//REP ;
-	private String toothNo_7_REP ;//REP; 
-	private String dos_7_REP ;//REP ; 
-	
-	private String adaCode_8_REP ;//REP;
-	private String toothNo_8_REP ;//REP;
-	private String dos_8_REP ;//REP ; 
-	
-	private String comments ;
-	private String generalBenefitsVerifiedBy ; 
-	private String generalDateIVwasDone ;//Format Issue
-	private String uniqueId;
-	
-	
-	//Constructor
-	
-	//
-	
+
+	private String officeName;// A
+	private String patientName;// B
+	private String insName; // C
+	private String taxId;// D
+	private String policyHolder;// E
+	private String patientDOB;// F
+	private String InsContact;// G
+	private String cSRName;// H
+	private String policyHolderDOB;// I
+	private String employerName;// J
+	private String contTxRecallNP;// L
+	private String ref;// L
+	private String memberSSN;// M
+	private String group;// N
+	private String cOBStatus;// O
+	private String memberId;// P
+	private String aptDate;// Q
+	private String payerId;// R
+	private String providerName;// S
+	private String insAddress;// T
+	private String planType;// U
+	private String planTermedDate;// V
+	private String planNetwork;// W
+	private String planFeeScheduleName;// X Fee Schedule Name
+	// private String planIndFamilyCoverage ;//Y
+	private String planEffectiveDate;// Y 26-1 Effective Date RULE ONE (Plan_EffectiveDate)
+	private String planCalendarFiscalYear;// Z
+	private String planAnnualMax;// AA
+	private String planAnnualMaxRemaining;// AB
+	private String planIndividualDeductible;// AC
+	private String planIndividualDeductibleRemaining;// AD
+	private String planDependentsCoveredtoAge;// AE
+	private String planPreDMandatory;// AF
+	private String planNonDuplicateClause;// AG
+	private String planFullTimeStudentStatus;// AH
+	private String planAssignmentofBenefits;// AI
+	private String planCoverageBook;// AJ
+	private String basicPercentage;// AK
+	private String basicSubjectDeductible;// AL
+	private String majorPercentage;// AM
+	private String majorSubjectDeductible;// AN
+	private String endodonticsPercentage;// AO
+	private String endoSubjectDeductible;// AP
+	private String perioSurgeryPercentage;// AQ
+	private String perioSurgerySubjectDeductible;// AR
+	private String preventivePercentage;// AS
+	private String diagnosticPercentage;// AT
+	private String pAXRaysPercentage;// AU
+	private String missingToothClause;// AV
+	private String replacementClause;// AW
+	private String crownsD2750D2740PaysPrepSeatDate;// AX
+	private String nightGuardsD9940FL;// AY
+	private String basicWaitingPeriod;// AZ
+	private String majorWaitingPeriod;// BA
+	private String sSCD2930FL;// BB
+	private String sSCD2931FL;// BC
+	private String examsD0120FL;// BD
+	private String examsD0140FL;// BE
+	private String eExamsD0145FL;// BF
+	private String examsD0150FL;// BG
+	private String xRaysBWSFL;// BH
+	private String xRaysPAD0220FL;// BI
+	private String xRaysPAD0230FL;// BJ
+	private String xRaysFMXFL;// BK
+	private String xRaysBundling;// BL
+	private String flourideD1208FL;// BM
+	private String flourideAgeLimit;// BN
+	private String varnishD1206FL;// BO
+	private String varnishD1206AgeLimit;// BP
+	private String sealantsD1351Percentage;// BQ
+	private String sealantsD1351FL;// BR
+	private String sealantsD1351AgeLimit;// BS
+	private String sealantsD1351PrimaryMolarsCovered;// BT
+	private String sealantsD1351PreMolarsCovered;// BU
+	private String sealantsD1351PermanentMolarsCovered;// BV
+	private String prophyD1110FL;// BW
+	private String prophyD1120FL;// BX
+	private String name1201110RollOverAgYe;// BY
+	private String sRPD4341Percentage;// BZ
+	private String sRPD4341FL;// CA
+	private String sRPD4341QuadsPerDay;// CB
+	private String sRPD4341DaysBwTreatment;// CC
+	private String perioMaintenanceD4910Percentage;// CD
+	private String perioMaintenanceD4910FL;// CE
+	private String perioMaintenanceD4910AltWProphyD0110;// CF
+	private String FillingsBundling;// CG
+	private String FMDD4355Percentage;// CH
+	private String fMDD4355FL;// CI
+	private String gingivitisD4346Percentage;// CJ
+	private String gingivitisD4346FL;// CK
+	private String NitrousD9230Percentage;// CL
+	private String iVSedationD9243Percentage;// CM
+	private String iVSedationD9248Percentage;// CN
+	private String extractionsMinorPercentage;// CO
+	private String extractionsMajorPercentage;// CP
+	private String crownLengthD4249Percentage;// CQ
+	private String crownLengthD4249FL;// CR
+	private String alveoD7311CoveredWithEXT;// CS
+	private String alveoD7311FL;// CT
+	private String alveoD7310CoveredWithEXT;// CU
+	private String alveoD7310FL;// CV
+	private String completeDenturesD5110D5120FL;// CW
+	private String immediateDenturesD5130D5140FL;// CX
+	private String partialDenturesD5213D5214FL;// CY
+	private String interimPartialDenturesD5214FL;// CZ
+	private String boneGraftsD7953CoveredWithEXT;//DA
+	private String boneGraftsD7953FL;//DB
+	private String implantCoverageD6010Percentage;//DC
+	private String implantCoverageD6057Percentage;//DD
+	private String implantCoverageD6190Percentage;//DE
+	private String implantSupportedPorcCeramicD6065Percentage;//DF
+	private String postCompositesD2391Percentage;//DG
+	private String postCompositesD2391FL;//DH
+	private String posteriorCompositesD2391Downgrade;//DI
+	private String crownsD2750D2740Percentage;//DJ
+	private String crownsD2750D2740FL;//DK
+	private String crownsD2750D2740Downgrade;//DL
+	private String nightGuardsD9940Percentage;//DM
+	private String d9310Percentage;//DN
+	private String d9310FL;//DO
+	private String buildUpsD2950Covered;//DP
+	private String buildUpsD2950FL;//DQ
+	private String buildUpsD2950SameDayCrown;//DR
+	private String orthoPercentage;//DS
+	private String orthoMax;//DT
+	private String orthoAgeLimit;//DU
+	private String orthoSubjectDeductible;//DV
+	private String history1Code;//DW
+	private String history1Tooth;//DX
+	private String history1DOS;//DY
+	private String history2Code;//DZ
+	private String history2Tooth;//EA
+	private String history2DOS;//EB
+	private String history3Code;//EC
+	private String history3Tooth;//ED
+	private String history3DOS;//EE
+	private String history4Code;//EF
+	private String history4Tooth;//EG
+	private String history4DOS;//EH
+	private String history5Code;//EI
+	private String history5Tooth;//EJ
+	private String history5DOS;//EK
+	private String history6Code;//EL
+	private String history6Tooth;//EM
+	private String history6DOS;//EN
+	private String history7Code;//EO
+	private String history7Tooth;//EP
+	private String history7DOS;//EQ
+	private String history8Code;//ER
+	private String history8Tooth;//ES
+	private String history8DOS;//ET
+	private String history9Code;//EU
+	private String history9Tooth;//EV
+	private String history9DOS;//EW
+	private String comments;//EX
+	private String generalBenefitsVerifiedBy;//EY
+	private String generalDateIVwasDone;//EZ
+	private String uniqueID;//FA
 	
 	public IVFTableSheet(String officeName, String patientName, String insName, String taxId, String policyHolder,
 			String patientDOB, String insContact, String cSRName, String policyHolderDOB, String employerName,
 			String contTxRecallNP, String ref, String memberSSN, String group, String cOBStatus, String memberId,
 			String aptDate, String payerId, String providerName, String insAddress, String planType,
-			String planTermedDate, String planNetwork, String planFeeScheduleName, String planIndFamilyCoverage,
-			String planEffectiveDate, String planAnnualMax, String planAnnualMaxUsed, String planIndividualDeductible,
-			String planIndividualDeductibleMet, String planFamilyDeductible, String planFamilyDeductibleMet,
-			String planCalendarFiscalYear, String planDependentsCoveredtoAge, String planCoverageBook,
-			String planPreDMandatory, String planNonDuplicateClause, String planFullTimeStudentStatus,
-			String planAssignmentofBenefits, String xRaysBundling, String xRaysBWSperCYFL, String xRaysFMXperCYFL,
-			String selants, String selantsD1351PrimaryMolarsCovered, String selantsD1351PreMolarCovered,
-			String selantsD1351PermanentMolarsCovered, String selantsD135AgeLimit, String sRPD4341, String sRPD4341FL,
-			String sRPD4341QuadsPerDay, String sRPD4341DaysBwTreatment, String perioMaintenanceD4910,
-			String perioMaintenanceD4910FL, String perioMaintenanceD4910AltwProphyD0110, String fMDD4355,
-			String fMDD4355FL, String gingivitisD4346, String gingivitisD4346FL, String denturesFL,
-			String completeDenturesD5110D5120FL, String immediateDenturesD5130D5140FL,
-			String partialDenturesD5213D5214FL, String interimPartialDenturesD5214FL, String flourideD1208FL,
-			String flourideAgeLimit, String varnishD1206FL, String varnishD1206AgeLimit, String rollOverAge11201110,
-			String fillingsBundling, String postCompFL, String orthoAgeLimit, String sscD2930FL, String sscC2931FL,
-			String oralSurgeryD72107241CoveredMedical, String crownLengthD4249Per, String crownLengthD4249FL,
-			String boneGraftsD7953CoveredWithEXT, String boneGraftsD7953FL, String alveoD7311CoveredWithEXT,
-			String alveoD7311FL, String alveoD7310CoveredWithEXT, String alveoD7310FL, String missingToothClause,
-			String replacementClause, String crownsD2750D2740FL, String crownsD2750D2740PaysPrepSeatDate,
-			String nightGuardsD9940FL, String buildUpsD2950Covered, String buildUpsD2950FL,
-			String buildUpsD2950SameDayCrown, String basicWaitingPeriod, String majorWaitingPeriod, String preventive,
-			String diagnostic, String paXRays, String basic, String basicSubjectDeductible, String major,
-			String majorSubjectDeductible, String endodontics, String endoSubjectDeductible, String perioSurgery,
-			String perioSurgerySubjectDeductible, String extractionsMinor, String extraction_Major, String ortho,
-			String orthoMax, String orthoSubjectDeductible, String nitrousD9230, String iVSedationD9243,
-			String iVSedationD9248, String medicalInsCoverage, String implantCoverage,
-			String implantSupportedPorcCeramicD606, String postCompositesD2391,
-			String posteriorCompositesD2391Downgrade, String crownsD2750D2740, String crownsD2750D2740Downgrade,
-			String nightGuardsD9940FL_1_REP, String d9310, String d9310fl, String adaCode, String toothNo, String dos,
-			String adaCode_1_REP, String toothNo_1_REP, String dos_1_REP, String adaCode_2_REP, String toothNo_2_REP,
-			String dos_2_REP, String adaCode_3_REP, String toothNo_3_REP, String dos_3_REP, String adaCode_4_REP,
-			String toothNo_4_REP, String dos_4_REP, String adaCode_5_REP, String toothNo_5_REP, String dos_5_REP,
-			String adaCode_6_REP, String toothNo_6_REP, String dos_6_REP, String adaCode_7_REP, String toothNo_7_REP,
-			String dos_7_REP, String adaCode_8_REP, String toothNo_8_REP, String dos_8_REP, String comments,
-			String generalBenefitsVerifiedBy, String generalDateIVwasDone, String uniqueId) {
+			String planTermedDate, String planNetwork, String planFeeScheduleName, String planEffectiveDate,
+			String planCalendarFiscalYear, String planAnnualMax, String planAnnualMaxRemaining,
+			String planIndividualDeductible, String planIndividualDeductibleRemaining,
+			String planDependentsCoveredtoAge, String planPreDMandatory, String planNonDuplicateClause,
+			String planFullTimeStudentStatus, String planAssignmentofBenefits, String planCoverageBook,
+			String basicPercentage, String basicSubjectDeductible, String majorPercentage,
+			String majorSubjectDeductible, String endodonticsPercentage, String endoSubjectDeductible,
+			String perioSurgeryPercentage, String perioSurgerySubjectDeductible, String preventivePercentage,
+			String diagnosticPercentage, String pAXRaysPercentage, String missingToothClause, String replacementClause,
+			String crownsD2750D2740PaysPrepSeatDate, String nightGuardsD9940FL, String basicWaitingPeriod,
+			String majorWaitingPeriod, String sSCD2930FL, String sSCD2931FL, String examsD0120FL, String examsD0140FL,
+			String eExamsD0145FL, String examsD0150FL, String xRaysBWSFL, String xRaysPAD0220FL, String xRaysPAD0230FL,
+			String xRaysFMXFL, String xRaysBundling, String flourideD1208FL, String flourideAgeLimit,
+			String varnishD1206FL, String varnishD1206AgeLimit, String sealantsD1351Percentage, String sealantsD1351FL,
+			String sealantsD1351AgeLimit, String sealantsD1351PrimaryMolarsCovered,
+			String sealantsD1351PreMolarsCovered, String sealantsD1351PermanentMolarsCovered, String prophyD1110FL,
+			String prophyD1120FL, String name1201110RollOverAgYe, String sRPD4341Percentage, String sRPD4341FL,
+			String sRPD4341QuadsPerDay, String sRPD4341DaysBwTreatment, String perioMaintenanceD4910Percentage,
+			String perioMaintenanceD4910FL, String perioMaintenanceD4910AltWProphyD0110, String fillingsBundling,
+			String fMDD4355Percentage, String fMDD4355FL, String gingivitisD4346Percentage, String gingivitisD4346FL,
+			String nitrousD9230Percentage, String iVSedationD9243Percentage, String iVSedationD9248Percentage,
+			String extractionsMinorPercentage, String extractionsMajorPercentage, String crownLengthD4249Percentage,
+			String crownLengthD4249FL, String alveoD7311CoveredWithEXT, String alveoD7311FL,
+			String alveoD7310CoveredWithEXT, String alveoD7310FL, String completeDenturesD5110D5120FL,
+			String immediateDenturesD5130D5140FL, String partialDenturesD5213D5214FL,
+			String interimPartialDenturesD5214FL, String boneGraftsD7953CoveredWithEXT, String boneGraftsD7953FL,
+			String lmplantCoverageD6010Percentage, String lmplantCoverageD6057Percentage,
+			String lmplantCoverageD6190Percentage, String lmplantSupportedPorcCeramicD6065Percentage,
+			String postCompositesD2391Percentage, String postCompositesD2391FL,
+			String posteriorCompositesD2391Downgrade, String crownsD2750D2740Percentage, String crownsD2750D2740FL,
+			String crownsD2750D2740Downgrade, String nightGuardsD9940Percentage, String d9310Percentage, String d9310fl,
+			String buildUpsD2950Covered, String buildUpsD2950FL, String buildUpsD2950SameDayCrown,
+			String orthoPercentage, String orthoMax, String orthoAgeLimit, String orthoSubjectDeductible,
+			String history1Code, String history1Tooth, String history1dos, String history2Code, String history2Tooth,
+			String history2dos, String history3Code, String history3Tooth, String history3dos, String history4Code,
+			String history4Tooth, String history4dos, String history5Code, String history5Tooth, String history5dos,
+			String history6Code, String history6Tooth, String history6dos, String history7Code, String history7Tooth,
+			String history7dos, String history8Code, String history8Tooth, String history8dos, String history9Code,
+			String history9Tooth, String history9dos, String comments, String generalBenefitsVerifiedBy,
+			String generalDateIVwasDone, String uniqueID) {
 		super();
 		this.officeName = officeName;
 		this.patientName = patientName;
@@ -239,140 +230,143 @@ public class IVFTableSheet {
 		this.planTermedDate = planTermedDate;
 		this.planNetwork = planNetwork;
 		this.planFeeScheduleName = planFeeScheduleName;
-		this.planIndFamilyCoverage = planIndFamilyCoverage;
 		this.planEffectiveDate = planEffectiveDate;
-		this.planAnnualMax = planAnnualMax;
-		this.planAnnualMaxUsed = planAnnualMaxUsed;
-		this.planIndividualDeductible = planIndividualDeductible;
-		this.planIndividualDeductibleMet = planIndividualDeductibleMet;
-		this.planFamilyDeductible = planFamilyDeductible;
-		this.planFamilyDeductibleMet = planFamilyDeductibleMet;
 		this.planCalendarFiscalYear = planCalendarFiscalYear;
+		this.planAnnualMax = planAnnualMax;
+		this.planAnnualMaxRemaining = planAnnualMaxRemaining;
+		this.planIndividualDeductible = planIndividualDeductible;
+		this.planIndividualDeductibleRemaining = planIndividualDeductibleRemaining;
 		this.planDependentsCoveredtoAge = planDependentsCoveredtoAge;
-		this.planCoverageBook = planCoverageBook;
 		this.planPreDMandatory = planPreDMandatory;
 		this.planNonDuplicateClause = planNonDuplicateClause;
 		this.planFullTimeStudentStatus = planFullTimeStudentStatus;
 		this.planAssignmentofBenefits = planAssignmentofBenefits;
+		this.planCoverageBook = planCoverageBook;
+		this.basicPercentage = basicPercentage;
+		this.basicSubjectDeductible = basicSubjectDeductible;
+		this.majorPercentage = majorPercentage;
+		this.majorSubjectDeductible = majorSubjectDeductible;
+		this.endodonticsPercentage = endodonticsPercentage;
+		this.endoSubjectDeductible = endoSubjectDeductible;
+		this.perioSurgeryPercentage = perioSurgeryPercentage;
+		this.perioSurgerySubjectDeductible = perioSurgerySubjectDeductible;
+		this.preventivePercentage = preventivePercentage;
+		this.diagnosticPercentage = diagnosticPercentage;
+		this.pAXRaysPercentage = pAXRaysPercentage;
+		this.missingToothClause = missingToothClause;
+		this.replacementClause = replacementClause;
+		this.crownsD2750D2740PaysPrepSeatDate = crownsD2750D2740PaysPrepSeatDate;
+		this.nightGuardsD9940FL = nightGuardsD9940FL;
+		this.basicWaitingPeriod = basicWaitingPeriod;
+		this.majorWaitingPeriod = majorWaitingPeriod;
+		this.sSCD2930FL = sSCD2930FL;
+		this.sSCD2931FL = sSCD2931FL;
+		this.examsD0120FL = examsD0120FL;
+		this.examsD0140FL = examsD0140FL;
+		this.eExamsD0145FL = eExamsD0145FL;
+		this.examsD0150FL = examsD0150FL;
+		this.xRaysBWSFL = xRaysBWSFL;
+		this.xRaysPAD0220FL = xRaysPAD0220FL;
+		this.xRaysPAD0230FL = xRaysPAD0230FL;
+		this.xRaysFMXFL = xRaysFMXFL;
 		this.xRaysBundling = xRaysBundling;
-		this.xRaysBWSperCYFL = xRaysBWSperCYFL;
-		this.xRaysFMXperCYFL = xRaysFMXperCYFL;
-		this.selants = selants;
-		this.selantsD1351PrimaryMolarsCovered = selantsD1351PrimaryMolarsCovered;
-		this.selantsD1351PreMolarCovered = selantsD1351PreMolarCovered;
-		this.selantsD1351PermanentMolarsCovered = selantsD1351PermanentMolarsCovered;
-		this.selantsD135AgeLimit = selantsD135AgeLimit;
-		this.sRPD4341 = sRPD4341;
-		this.sRPD4341FL = sRPD4341FL;
-		this.sRPD4341QuadsPerDay = sRPD4341QuadsPerDay;
-		this.sRPD4341DaysBwTreatment = sRPD4341DaysBwTreatment;
-		this.perioMaintenanceD4910 = perioMaintenanceD4910;
-		this.perioMaintenanceD4910FL = perioMaintenanceD4910FL;
-		this.perioMaintenanceD4910AltwProphyD0110 = perioMaintenanceD4910AltwProphyD0110;
-		this.fMDD4355 = fMDD4355;
-		this.fMDD4355FL = fMDD4355FL;
-		this.gingivitisD4346 = gingivitisD4346;
-		this.gingivitisD4346FL = gingivitisD4346FL;
-		this.denturesFL = denturesFL;
-		this.completeDenturesD5110D5120FL = completeDenturesD5110D5120FL;
-		this.immediateDenturesD5130D5140FL = immediateDenturesD5130D5140FL;
-		PartialDenturesD5213D5214FL = partialDenturesD5213D5214FL;
-		this.interimPartialDenturesD5214FL = interimPartialDenturesD5214FL;
 		this.flourideD1208FL = flourideD1208FL;
 		this.flourideAgeLimit = flourideAgeLimit;
 		this.varnishD1206FL = varnishD1206FL;
 		this.varnishD1206AgeLimit = varnishD1206AgeLimit;
-		this.rollOverAge11201110 = rollOverAge11201110;
-		this.fillingsBundling = fillingsBundling;
-		this.postCompFL = postCompFL;
-		this.orthoAgeLimit = orthoAgeLimit;
-		this.sscD2930FL = sscD2930FL;
-		this.sscC2931FL = sscC2931FL;
-		this.oralSurgeryD72107241CoveredMedical = oralSurgeryD72107241CoveredMedical;
-		this.crownLengthD4249Per = crownLengthD4249Per;
+		this.sealantsD1351Percentage = sealantsD1351Percentage;
+		this.sealantsD1351FL = sealantsD1351FL;
+		this.sealantsD1351AgeLimit = sealantsD1351AgeLimit;
+		this.sealantsD1351PrimaryMolarsCovered = sealantsD1351PrimaryMolarsCovered;
+		this.sealantsD1351PreMolarsCovered = sealantsD1351PreMolarsCovered;
+		this.sealantsD1351PermanentMolarsCovered = sealantsD1351PermanentMolarsCovered;
+		this.prophyD1110FL = prophyD1110FL;
+		this.prophyD1120FL = prophyD1120FL;
+		this.name1201110RollOverAgYe = name1201110RollOverAgYe;
+		this.sRPD4341Percentage = sRPD4341Percentage;
+		this.sRPD4341FL = sRPD4341FL;
+		this.sRPD4341QuadsPerDay = sRPD4341QuadsPerDay;
+		this.sRPD4341DaysBwTreatment = sRPD4341DaysBwTreatment;
+		this.perioMaintenanceD4910Percentage = perioMaintenanceD4910Percentage;
+		this.perioMaintenanceD4910FL = perioMaintenanceD4910FL;
+		this.perioMaintenanceD4910AltWProphyD0110 = perioMaintenanceD4910AltWProphyD0110;
+		FillingsBundling = fillingsBundling;
+		FMDD4355Percentage = fMDD4355Percentage;
+		this.fMDD4355FL = fMDD4355FL;
+		this.gingivitisD4346Percentage = gingivitisD4346Percentage;
+		this.gingivitisD4346FL = gingivitisD4346FL;
+		NitrousD9230Percentage = nitrousD9230Percentage;
+		this.iVSedationD9243Percentage = iVSedationD9243Percentage;
+		this.iVSedationD9248Percentage = iVSedationD9248Percentage;
+		this.extractionsMinorPercentage = extractionsMinorPercentage;
+		this.extractionsMajorPercentage = extractionsMajorPercentage;
+		this.crownLengthD4249Percentage = crownLengthD4249Percentage;
 		this.crownLengthD4249FL = crownLengthD4249FL;
-		this.boneGraftsD7953CoveredWithEXT = boneGraftsD7953CoveredWithEXT;
-		this.boneGraftsD7953FL = boneGraftsD7953FL;
 		this.alveoD7311CoveredWithEXT = alveoD7311CoveredWithEXT;
 		this.alveoD7311FL = alveoD7311FL;
 		this.alveoD7310CoveredWithEXT = alveoD7310CoveredWithEXT;
 		this.alveoD7310FL = alveoD7310FL;
-		this.missingToothClause = missingToothClause;
-		this.replacementClause = replacementClause;
+		this.completeDenturesD5110D5120FL = completeDenturesD5110D5120FL;
+		this.immediateDenturesD5130D5140FL = immediateDenturesD5130D5140FL;
+		this.partialDenturesD5213D5214FL = partialDenturesD5213D5214FL;
+		this.interimPartialDenturesD5214FL = interimPartialDenturesD5214FL;
+		this.boneGraftsD7953CoveredWithEXT = boneGraftsD7953CoveredWithEXT;
+		this.boneGraftsD7953FL = boneGraftsD7953FL;
+		this.implantCoverageD6010Percentage = lmplantCoverageD6010Percentage;
+		this.implantCoverageD6057Percentage = lmplantCoverageD6057Percentage;
+		this.implantCoverageD6190Percentage = lmplantCoverageD6190Percentage;
+		this.implantSupportedPorcCeramicD6065Percentage = lmplantSupportedPorcCeramicD6065Percentage;
+		this.postCompositesD2391Percentage = postCompositesD2391Percentage;
+		this.postCompositesD2391FL = postCompositesD2391FL;
+		this.posteriorCompositesD2391Downgrade = posteriorCompositesD2391Downgrade;
+		this.crownsD2750D2740Percentage = crownsD2750D2740Percentage;
 		this.crownsD2750D2740FL = crownsD2750D2740FL;
-		this.crownsD2750D2740PaysPrepSeatDate = crownsD2750D2740PaysPrepSeatDate;
-		this.nightGuardsD9940FL = nightGuardsD9940FL;
+		this.crownsD2750D2740Downgrade = crownsD2750D2740Downgrade;
+		this.nightGuardsD9940Percentage = nightGuardsD9940Percentage;
+		this.d9310Percentage = d9310Percentage;
+		d9310FL = d9310fl;
 		this.buildUpsD2950Covered = buildUpsD2950Covered;
 		this.buildUpsD2950FL = buildUpsD2950FL;
 		this.buildUpsD2950SameDayCrown = buildUpsD2950SameDayCrown;
-		this.basicWaitingPeriod = basicWaitingPeriod;
-		this.majorWaitingPeriod = majorWaitingPeriod;
-		this.preventive = preventive;
-		this.diagnostic = diagnostic;
-		this.paXRays = paXRays;
-		this.basic = basic;
-		this.basicSubjectDeductible = basicSubjectDeductible;
-		this.major = major;
-		this.majorSubjectDeductible = majorSubjectDeductible;
-		this.endodontics = endodontics;
-		this.endoSubjectDeductible = endoSubjectDeductible;
-		this.perioSurgery = perioSurgery;
-		this.perioSurgerySubjectDeductible = perioSurgerySubjectDeductible;
-		this.extractionsMinor = extractionsMinor;
-		this.extraction_Major = extraction_Major;
-		this.ortho = ortho;
+		this.orthoPercentage = orthoPercentage;
 		this.orthoMax = orthoMax;
+		this.orthoAgeLimit = orthoAgeLimit;
 		this.orthoSubjectDeductible = orthoSubjectDeductible;
-		this.nitrousD9230 = nitrousD9230;
-		this.iVSedationD9243 = iVSedationD9243;
-		this.iVSedationD9248 = iVSedationD9248;
-		this.medicalInsCoverage = medicalInsCoverage;
-		this.implantCoverage = implantCoverage;
-		this.implantSupportedPorcCeramicD606 = implantSupportedPorcCeramicD606;
-		this.postCompositesD2391 = postCompositesD2391;
-		this.posteriorCompositesD2391Downgrade = posteriorCompositesD2391Downgrade;
-		this.crownsD2750D2740 = crownsD2750D2740;
-		this.crownsD2750D2740Downgrade = crownsD2750D2740Downgrade;
-		this.nightGuardsD9940FL_1_REP = nightGuardsD9940FL_1_REP;
-		this.d9310 = d9310;
-		d9310FL = d9310fl;
-		this.adaCode = adaCode;
-		this.toothNo = toothNo;
-		this.dos = dos;
-		this.adaCode_1_REP = adaCode_1_REP;
-		this.toothNo_1_REP = toothNo_1_REP;
-		this.dos_1_REP = dos_1_REP;
-		this.adaCode_2_REP = adaCode_2_REP;
-		this.toothNo_2_REP = toothNo_2_REP;
-		this.dos_2_REP = dos_2_REP;
-		this.adaCode_3_REP = adaCode_3_REP;
-		this.toothNo_3_REP = toothNo_3_REP;
-		this.dos_3_REP = dos_3_REP;
-		this.adaCode_4_REP = adaCode_4_REP;
-		this.toothNo_4_REP = toothNo_4_REP;
-		this.dos_4_REP = dos_4_REP;
-		this.adaCode_5_REP = adaCode_5_REP;
-		this.toothNo_5_REP = toothNo_5_REP;
-		this.dos_5_REP = dos_5_REP;
-		this.adaCode_6_REP = adaCode_6_REP;
-		this.toothNo_6_REP = toothNo_6_REP;
-		this.dos_6_REP = dos_6_REP;
-		this.adaCode_7_REP = adaCode_7_REP;
-		this.toothNo_7_REP = toothNo_7_REP;
-		this.dos_7_REP = dos_7_REP;
-		this.adaCode_8_REP = adaCode_8_REP;
-		this.toothNo_8_REP = toothNo_8_REP;
-		this.dos_8_REP = dos_8_REP;
+		this.history1Code = history1Code;
+		this.history1Tooth = history1Tooth;
+		history1DOS = history1dos;
+		this.history2Code = history2Code;
+		this.history2Tooth = history2Tooth;
+		history2DOS = history2dos;
+		this.history3Code = history3Code;
+		this.history3Tooth = history3Tooth;
+		history3DOS = history3dos;
+		this.history4Code = history4Code;
+		this.history4Tooth = history4Tooth;
+		history4DOS = history4dos;
+		this.history5Code = history5Code;
+		this.history5Tooth = history5Tooth;
+		history5DOS = history5dos;
+		this.history6Code = history6Code;
+		this.history6Tooth = history6Tooth;
+		history6DOS = history6dos;
+		this.history7Code = history7Code;
+		this.history7Tooth = history7Tooth;
+		history7DOS = history7dos;
+		this.history8Code = history8Code;
+		this.history8Tooth = history8Tooth;
+		history8DOS = history8dos;
+		this.history9Code = history9Code;
+		this.history9Tooth = history9Tooth;
+		history9DOS = history9dos;
 		this.comments = comments;
 		this.generalBenefitsVerifiedBy = generalBenefitsVerifiedBy;
 		this.generalDateIVwasDone = generalDateIVwasDone;
-		this.uniqueId = uniqueId;
+		this.uniqueID = uniqueID;
 	}
-
 	public String getOfficeName() {
 		return officeName;
 	}
-
 	public void setOfficeName(String officeName) {
 		this.officeName = officeName;
 	}
@@ -514,53 +508,11 @@ public class IVFTableSheet {
 	public void setPlanFeeScheduleName(String planFeeScheduleName) {
 		this.planFeeScheduleName = planFeeScheduleName;
 	}
-	public String getPlanIndFamilyCoverage() {
-		return planIndFamilyCoverage;
-	}
-	public void setPlanIndFamilyCoverage(String planIndFamilyCoverage) {
-		this.planIndFamilyCoverage = planIndFamilyCoverage;
-	}
 	public String getPlanEffectiveDate() {
 		return planEffectiveDate;
 	}
 	public void setPlanEffectiveDate(String planEffectiveDate) {
 		this.planEffectiveDate = planEffectiveDate;
-	}
-	public String getPlanAnnualMax() {
-		return planAnnualMax;
-	}
-	public void setPlanAnnualMax(String planAnnualMax) {
-		this.planAnnualMax = planAnnualMax;
-	}
-	public String getPlanAnnualMaxUsed() {
-		return planAnnualMaxUsed;
-	}
-	public void setPlanAnnualMaxUsed(String planAnnualMaxUsed) {
-		this.planAnnualMaxUsed = planAnnualMaxUsed;
-	}
-	public String getPlanIndividualDeductible() {
-		return planIndividualDeductible;
-	}
-	public void setPlanIndividualDeductible(String planIndividualDeductible) {
-		this.planIndividualDeductible = planIndividualDeductible;
-	}
-	public String getPlanIndividualDeductibleMet() {
-		return planIndividualDeductibleMet;
-	}
-	public void setPlanIndividualDeductibleMet(String planIndividualDeductibleMet) {
-		this.planIndividualDeductibleMet = planIndividualDeductibleMet;
-	}
-	public String getPlanFamilyDeductible() {
-		return planFamilyDeductible;
-	}
-	public void setPlanFamilyDeductible(String planFamilyDeductible) {
-		this.planFamilyDeductible = planFamilyDeductible;
-	}
-	public String getPlanFamilyDeductibleMet() {
-		return planFamilyDeductibleMet;
-	}
-	public void setPlanFamilyDeductibleMet(String planFamilyDeductibleMet) {
-		this.planFamilyDeductibleMet = planFamilyDeductibleMet;
 	}
 	public String getPlanCalendarFiscalYear() {
 		return planCalendarFiscalYear;
@@ -568,17 +520,35 @@ public class IVFTableSheet {
 	public void setPlanCalendarFiscalYear(String planCalendarFiscalYear) {
 		this.planCalendarFiscalYear = planCalendarFiscalYear;
 	}
+	public String getPlanAnnualMax() {
+		return planAnnualMax;
+	}
+	public void setPlanAnnualMax(String planAnnualMax) {
+		this.planAnnualMax = planAnnualMax;
+	}
+	public String getPlanAnnualMaxRemaining() {
+		return planAnnualMaxRemaining;
+	}
+	public void setPlanAnnualMaxRemaining(String planAnnualMaxRemaining) {
+		this.planAnnualMaxRemaining = planAnnualMaxRemaining;
+	}
+	public String getPlanIndividualDeductible() {
+		return planIndividualDeductible;
+	}
+	public void setPlanIndividualDeductible(String planIndividualDeductible) {
+		this.planIndividualDeductible = planIndividualDeductible;
+	}
+	public String getPlanIndividualDeductibleRemaining() {
+		return planIndividualDeductibleRemaining;
+	}
+	public void setPlanIndividualDeductibleRemaining(String planIndividualDeductibleRemaining) {
+		this.planIndividualDeductibleRemaining = planIndividualDeductibleRemaining;
+	}
 	public String getPlanDependentsCoveredtoAge() {
 		return planDependentsCoveredtoAge;
 	}
 	public void setPlanDependentsCoveredtoAge(String planDependentsCoveredtoAge) {
 		this.planDependentsCoveredtoAge = planDependentsCoveredtoAge;
-	}
-	public String getPlanCoverageBook() {
-		return planCoverageBook;
-	}
-	public void setPlanCoverageBook(String planCoverageBook) {
-		this.planCoverageBook = planCoverageBook;
 	}
 	public String getPlanPreDMandatory() {
 		return planPreDMandatory;
@@ -604,149 +574,179 @@ public class IVFTableSheet {
 	public void setPlanAssignmentofBenefits(String planAssignmentofBenefits) {
 		this.planAssignmentofBenefits = planAssignmentofBenefits;
 	}
+	public String getPlanCoverageBook() {
+		return planCoverageBook;
+	}
+	public void setPlanCoverageBook(String planCoverageBook) {
+		this.planCoverageBook = planCoverageBook;
+	}
+	public String getBasicPercentage() {
+		return basicPercentage;
+	}
+	public void setBasicPercentage(String basicPercentage) {
+		this.basicPercentage = basicPercentage;
+	}
+	public String getBasicSubjectDeductible() {
+		return basicSubjectDeductible;
+	}
+	public void setBasicSubjectDeductible(String basicSubjectDeductible) {
+		this.basicSubjectDeductible = basicSubjectDeductible;
+	}
+	public String getMajorPercentage() {
+		return majorPercentage;
+	}
+	public void setMajorPercentage(String majorPercentage) {
+		this.majorPercentage = majorPercentage;
+	}
+	public String getMajorSubjectDeductible() {
+		return majorSubjectDeductible;
+	}
+	public void setMajorSubjectDeductible(String majorSubjectDeductible) {
+		this.majorSubjectDeductible = majorSubjectDeductible;
+	}
+	public String getEndodonticsPercentage() {
+		return endodonticsPercentage;
+	}
+	public void setEndodonticsPercentage(String endodonticsPercentage) {
+		this.endodonticsPercentage = endodonticsPercentage;
+	}
+	public String getEndoSubjectDeductible() {
+		return endoSubjectDeductible;
+	}
+	public void setEndoSubjectDeductible(String endoSubjectDeductible) {
+		this.endoSubjectDeductible = endoSubjectDeductible;
+	}
+	public String getPerioSurgeryPercentage() {
+		return perioSurgeryPercentage;
+	}
+	public void setPerioSurgeryPercentage(String perioSurgeryPercentage) {
+		this.perioSurgeryPercentage = perioSurgeryPercentage;
+	}
+	public String getPerioSurgerySubjectDeductible() {
+		return perioSurgerySubjectDeductible;
+	}
+	public void setPerioSurgerySubjectDeductible(String perioSurgerySubjectDeductible) {
+		this.perioSurgerySubjectDeductible = perioSurgerySubjectDeductible;
+	}
+	public String getPreventivePercentage() {
+		return preventivePercentage;
+	}
+	public void setPreventivePercentage(String preventivePercentage) {
+		this.preventivePercentage = preventivePercentage;
+	}
+	public String getDiagnosticPercentage() {
+		return diagnosticPercentage;
+	}
+	public void setDiagnosticPercentage(String diagnosticPercentage) {
+		this.diagnosticPercentage = diagnosticPercentage;
+	}
+	public String getpAXRaysPercentage() {
+		return pAXRaysPercentage;
+	}
+	public void setpAXRaysPercentage(String pAXRaysPercentage) {
+		this.pAXRaysPercentage = pAXRaysPercentage;
+	}
+	public String getMissingToothClause() {
+		return missingToothClause;
+	}
+	public void setMissingToothClause(String missingToothClause) {
+		this.missingToothClause = missingToothClause;
+	}
+	public String getReplacementClause() {
+		return replacementClause;
+	}
+	public void setReplacementClause(String replacementClause) {
+		this.replacementClause = replacementClause;
+	}
+	public String getCrownsD2750D2740PaysPrepSeatDate() {
+		return crownsD2750D2740PaysPrepSeatDate;
+	}
+	public void setCrownsD2750D2740PaysPrepSeatDate(String crownsD2750D2740PaysPrepSeatDate) {
+		this.crownsD2750D2740PaysPrepSeatDate = crownsD2750D2740PaysPrepSeatDate;
+	}
+	public String getNightGuardsD9940FL() {
+		return nightGuardsD9940FL;
+	}
+	public void setNightGuardsD9940FL(String nightGuardsD9940FL) {
+		this.nightGuardsD9940FL = nightGuardsD9940FL;
+	}
+	public String getBasicWaitingPeriod() {
+		return basicWaitingPeriod;
+	}
+	public void setBasicWaitingPeriod(String basicWaitingPeriod) {
+		this.basicWaitingPeriod = basicWaitingPeriod;
+	}
+	public String getMajorWaitingPeriod() {
+		return majorWaitingPeriod;
+	}
+	public void setMajorWaitingPeriod(String majorWaitingPeriod) {
+		this.majorWaitingPeriod = majorWaitingPeriod;
+	}
+	public String getsSCD2930FL() {
+		return sSCD2930FL;
+	}
+	public void setsSCD2930FL(String sSCD2930FL) {
+		this.sSCD2930FL = sSCD2930FL;
+	}
+	public String getsSCD2931FL() {
+		return sSCD2931FL;
+	}
+	public void setsSCD2931FL(String sSCD2931FL) {
+		this.sSCD2931FL = sSCD2931FL;
+	}
+	public String getExamsD0120FL() {
+		return examsD0120FL;
+	}
+	public void setExamsD0120FL(String examsD0120FL) {
+		this.examsD0120FL = examsD0120FL;
+	}
+	public String getExamsD0140FL() {
+		return examsD0140FL;
+	}
+	public void setExamsD0140FL(String examsD0140FL) {
+		this.examsD0140FL = examsD0140FL;
+	}
+	public String geteExamsD0145FL() {
+		return eExamsD0145FL;
+	}
+	public void seteExamsD0145FL(String eExamsD0145FL) {
+		this.eExamsD0145FL = eExamsD0145FL;
+	}
+	public String getExamsD0150FL() {
+		return examsD0150FL;
+	}
+	public void setExamsD0150FL(String examsD0150FL) {
+		this.examsD0150FL = examsD0150FL;
+	}
+	public String getxRaysBWSFL() {
+		return xRaysBWSFL;
+	}
+	public void setxRaysBWSFL(String xRaysBWSFL) {
+		this.xRaysBWSFL = xRaysBWSFL;
+	}
+	public String getxRaysPAD0220FL() {
+		return xRaysPAD0220FL;
+	}
+	public void setxRaysPAD0220FL(String xRaysPAD0220FL) {
+		this.xRaysPAD0220FL = xRaysPAD0220FL;
+	}
+	public String getxRaysPAD0230FL() {
+		return xRaysPAD0230FL;
+	}
+	public void setxRaysPAD0230FL(String xRaysPAD0230FL) {
+		this.xRaysPAD0230FL = xRaysPAD0230FL;
+	}
+	public String getxRaysFMXFL() {
+		return xRaysFMXFL;
+	}
+	public void setxRaysFMXFL(String xRaysFMXFL) {
+		this.xRaysFMXFL = xRaysFMXFL;
+	}
 	public String getxRaysBundling() {
 		return xRaysBundling;
 	}
 	public void setxRaysBundling(String xRaysBundling) {
 		this.xRaysBundling = xRaysBundling;
-	}
-	public String getxRaysBWSperCYFL() {
-		return xRaysBWSperCYFL;
-	}
-	public void setxRaysBWSperCYFL(String xRaysBWSperCYFL) {
-		this.xRaysBWSperCYFL = xRaysBWSperCYFL;
-	}
-	public String getxRaysFMXperCYFL() {
-		return xRaysFMXperCYFL;
-	}
-	public void setxRaysFMXperCYFL(String xRaysFMXperCYFL) {
-		this.xRaysFMXperCYFL = xRaysFMXperCYFL;
-	}
-	public String getSelants() {
-		return selants;
-	}
-	public void setSelants(String selants) {
-		this.selants = selants;
-	}
-	public String getSelantsD1351PrimaryMolarsCovered() {
-		return selantsD1351PrimaryMolarsCovered;
-	}
-	public void setSelantsD1351PrimaryMolarsCovered(String selantsD1351PrimaryMolarsCovered) {
-		this.selantsD1351PrimaryMolarsCovered = selantsD1351PrimaryMolarsCovered;
-	}
-	public String getSelantsD1351PreMolarCovered() {
-		return selantsD1351PreMolarCovered;
-	}
-	public void setSelantsD1351PreMolarCovered(String selantsD1351PreMolarCovered) {
-		this.selantsD1351PreMolarCovered = selantsD1351PreMolarCovered;
-	}
-	public String getSelantsD1351PermanentMolarsCovered() {
-		return selantsD1351PermanentMolarsCovered;
-	}
-	public void setSelantsD1351PermanentMolarsCovered(String selantsD1351PermanentMolarsCovered) {
-		this.selantsD1351PermanentMolarsCovered = selantsD1351PermanentMolarsCovered;
-	}
-	public String getSelantsD135AgeLimit() {
-		return selantsD135AgeLimit;
-	}
-	public void setSelantsD135AgeLimit(String selantsD135AgeLimit) {
-		this.selantsD135AgeLimit = selantsD135AgeLimit;
-	}
-	public String getsRPD4341() {
-		return sRPD4341;
-	}
-	public void setsRPD4341(String sRPD4341) {
-		this.sRPD4341 = sRPD4341;
-	}
-	public String getsRPD4341FL() {
-		return sRPD4341FL;
-	}
-	public void setsRPD4341FL(String sRPD4341FL) {
-		this.sRPD4341FL = sRPD4341FL;
-	}
-	public String getsRPD4341QuadsPerDay() {
-		return sRPD4341QuadsPerDay;
-	}
-	public void setsRPD4341QuadsPerDay(String sRPD4341QuadsPerDay) {
-		this.sRPD4341QuadsPerDay = sRPD4341QuadsPerDay;
-	}
-	public String getsRPD4341DaysBwTreatment() {
-		return sRPD4341DaysBwTreatment;
-	}
-	public void setsRPD4341DaysBwTreatment(String sRPD4341DaysBwTreatment) {
-		this.sRPD4341DaysBwTreatment = sRPD4341DaysBwTreatment;
-	}
-	public String getPerioMaintenanceD4910() {
-		return perioMaintenanceD4910;
-	}
-	public void setPerioMaintenanceD4910(String perioMaintenanceD4910) {
-		this.perioMaintenanceD4910 = perioMaintenanceD4910;
-	}
-	public String getPerioMaintenanceD4910FL() {
-		return perioMaintenanceD4910FL;
-	}
-	public void setPerioMaintenanceD4910FL(String perioMaintenanceD4910FL) {
-		this.perioMaintenanceD4910FL = perioMaintenanceD4910FL;
-	}
-	public String getPerioMaintenanceD4910AltwProphyD0110() {
-		return perioMaintenanceD4910AltwProphyD0110;
-	}
-	public void setPerioMaintenanceD4910AltwProphyD0110(String perioMaintenanceD4910AltwProphyD0110) {
-		this.perioMaintenanceD4910AltwProphyD0110 = perioMaintenanceD4910AltwProphyD0110;
-	}
-	public String getfMDD4355() {
-		return fMDD4355;
-	}
-	public void setfMDD4355(String fMDD4355) {
-		this.fMDD4355 = fMDD4355;
-	}
-	public String getfMDD4355FL() {
-		return fMDD4355FL;
-	}
-	public void setfMDD4355FL(String fMDD4355FL) {
-		this.fMDD4355FL = fMDD4355FL;
-	}
-	public String getGingivitisD4346() {
-		return gingivitisD4346;
-	}
-	public void setGingivitisD4346(String gingivitisD4346) {
-		this.gingivitisD4346 = gingivitisD4346;
-	}
-	public String getGingivitisD4346FL() {
-		return gingivitisD4346FL;
-	}
-	public void setGingivitisD4346FL(String gingivitisD4346FL) {
-		this.gingivitisD4346FL = gingivitisD4346FL;
-	}
-	public String getDenturesFL() {
-		return denturesFL;
-	}
-	public void setDenturesFL(String denturesFL) {
-		this.denturesFL = denturesFL;
-	}
-	public String getCompleteDenturesD5110D5120FL() {
-		return completeDenturesD5110D5120FL;
-	}
-	public void setCompleteDenturesD5110D5120FL(String completeDenturesD5110D5120FL) {
-		this.completeDenturesD5110D5120FL = completeDenturesD5110D5120FL;
-	}
-	public String getImmediateDenturesD5130D5140FL() {
-		return immediateDenturesD5130D5140FL;
-	}
-	public void setImmediateDenturesD5130D5140FL(String immediateDenturesD5130D5140FL) {
-		this.immediateDenturesD5130D5140FL = immediateDenturesD5130D5140FL;
-	}
-	public String getPartialDenturesD5213D5214FL() {
-		return PartialDenturesD5213D5214FL;
-	}
-	public void setPartialDenturesD5213D5214FL(String partialDenturesD5213D5214FL) {
-		PartialDenturesD5213D5214FL = partialDenturesD5213D5214FL;
-	}
-	public String getInterimPartialDenturesD5214FL() {
-		return interimPartialDenturesD5214FL;
-	}
-	public void setInterimPartialDenturesD5214FL(String interimPartialDenturesD5214FL) {
-		this.interimPartialDenturesD5214FL = interimPartialDenturesD5214FL;
 	}
 	public String getFlourideD1208FL() {
 		return flourideD1208FL;
@@ -772,71 +772,173 @@ public class IVFTableSheet {
 	public void setVarnishD1206AgeLimit(String varnishD1206AgeLimit) {
 		this.varnishD1206AgeLimit = varnishD1206AgeLimit;
 	}
-	public String getRollOverAge11201110() {
-		return rollOverAge11201110;
+	public String getSealantsD1351Percentage() {
+		return sealantsD1351Percentage;
 	}
-	public void setRollOverAge11201110(String rollOverAge11201110) {
-		this.rollOverAge11201110 = rollOverAge11201110;
+	public void setSealantsD1351Percentage(String sealantsD1351Percentage) {
+		this.sealantsD1351Percentage = sealantsD1351Percentage;
+	}
+	public String getSealantsD1351FL() {
+		return sealantsD1351FL;
+	}
+	public void setSealantsD1351FL(String sealantsD1351FL) {
+		this.sealantsD1351FL = sealantsD1351FL;
+	}
+	public String getSealantsD1351AgeLimit() {
+		return sealantsD1351AgeLimit;
+	}
+	public void setSealantsD1351AgeLimit(String sealantsD1351AgeLimit) {
+		this.sealantsD1351AgeLimit = sealantsD1351AgeLimit;
+	}
+	public String getSealantsD1351PrimaryMolarsCovered() {
+		return sealantsD1351PrimaryMolarsCovered;
+	}
+	public void setSealantsD1351PrimaryMolarsCovered(String sealantsD1351PrimaryMolarsCovered) {
+		this.sealantsD1351PrimaryMolarsCovered = sealantsD1351PrimaryMolarsCovered;
+	}
+	public String getSealantsD1351PreMolarsCovered() {
+		return sealantsD1351PreMolarsCovered;
+	}
+	public void setSealantsD1351PreMolarsCovered(String sealantsD1351PreMolarsCovered) {
+		this.sealantsD1351PreMolarsCovered = sealantsD1351PreMolarsCovered;
+	}
+	public String getSealantsD1351PermanentMolarsCovered() {
+		return sealantsD1351PermanentMolarsCovered;
+	}
+	public void setSealantsD1351PermanentMolarsCovered(String sealantsD1351PermanentMolarsCovered) {
+		this.sealantsD1351PermanentMolarsCovered = sealantsD1351PermanentMolarsCovered;
+	}
+	public String getProphyD1110FL() {
+		return prophyD1110FL;
+	}
+	public void setProphyD1110FL(String prophyD1110FL) {
+		this.prophyD1110FL = prophyD1110FL;
+	}
+	public String getProphyD1120FL() {
+		return prophyD1120FL;
+	}
+	public void setProphyD1120FL(String prophyD1120FL) {
+		this.prophyD1120FL = prophyD1120FL;
+	}
+	public String getName1201110RollOverAgYe() {
+		return name1201110RollOverAgYe;
+	}
+	public void setName1201110RollOverAgYe(String name1201110RollOverAgYe) {
+		this.name1201110RollOverAgYe = name1201110RollOverAgYe;
+	}
+	public String getsRPD4341Percentage() {
+		return sRPD4341Percentage;
+	}
+	public void setsRPD4341Percentage(String sRPD4341Percentage) {
+		this.sRPD4341Percentage = sRPD4341Percentage;
+	}
+	public String getsRPD4341FL() {
+		return sRPD4341FL;
+	}
+	public void setsRPD4341FL(String sRPD4341FL) {
+		this.sRPD4341FL = sRPD4341FL;
+	}
+	public String getsRPD4341QuadsPerDay() {
+		return sRPD4341QuadsPerDay;
+	}
+	public void setsRPD4341QuadsPerDay(String sRPD4341QuadsPerDay) {
+		this.sRPD4341QuadsPerDay = sRPD4341QuadsPerDay;
+	}
+	public String getsRPD4341DaysBwTreatment() {
+		return sRPD4341DaysBwTreatment;
+	}
+	public void setsRPD4341DaysBwTreatment(String sRPD4341DaysBwTreatment) {
+		this.sRPD4341DaysBwTreatment = sRPD4341DaysBwTreatment;
+	}
+	public String getPerioMaintenanceD4910Percentage() {
+		return perioMaintenanceD4910Percentage;
+	}
+	public void setPerioMaintenanceD4910Percentage(String perioMaintenanceD4910Percentage) {
+		this.perioMaintenanceD4910Percentage = perioMaintenanceD4910Percentage;
+	}
+	public String getPerioMaintenanceD4910FL() {
+		return perioMaintenanceD4910FL;
+	}
+	public void setPerioMaintenanceD4910FL(String perioMaintenanceD4910FL) {
+		this.perioMaintenanceD4910FL = perioMaintenanceD4910FL;
+	}
+	public String getPerioMaintenanceD4910AltWProphyD0110() {
+		return perioMaintenanceD4910AltWProphyD0110;
+	}
+	public void setPerioMaintenanceD4910AltWProphyD0110(String perioMaintenanceD4910AltWProphyD0110) {
+		this.perioMaintenanceD4910AltWProphyD0110 = perioMaintenanceD4910AltWProphyD0110;
 	}
 	public String getFillingsBundling() {
-		return fillingsBundling;
+		return FillingsBundling;
 	}
 	public void setFillingsBundling(String fillingsBundling) {
-		this.fillingsBundling = fillingsBundling;
+		FillingsBundling = fillingsBundling;
 	}
-	public String getPostCompFL() {
-		return postCompFL;
+	public String getFMDD4355Percentage() {
+		return FMDD4355Percentage;
 	}
-	public void setPostCompFL(String postCompFL) {
-		this.postCompFL = postCompFL;
+	public void setFMDD4355Percentage(String fMDD4355Percentage) {
+		FMDD4355Percentage = fMDD4355Percentage;
 	}
-	public String getOrthoAgeLimit() {
-		return orthoAgeLimit;
+	public String getfMDD4355FL() {
+		return fMDD4355FL;
 	}
-	public void setOrthoAgeLimit(String orthoAgeLimit) {
-		this.orthoAgeLimit = orthoAgeLimit;
+	public void setfMDD4355FL(String fMDD4355FL) {
+		this.fMDD4355FL = fMDD4355FL;
 	}
-	public String getSscD2930FL() {
-		return sscD2930FL;
+	public String getGingivitisD4346Percentage() {
+		return gingivitisD4346Percentage;
 	}
-	public void setSscD2930FL(String sscD2930FL) {
-		this.sscD2930FL = sscD2930FL;
+	public void setGingivitisD4346Percentage(String gingivitisD4346Percentage) {
+		this.gingivitisD4346Percentage = gingivitisD4346Percentage;
 	}
-	public String getSscC2931FL() {
-		return sscC2931FL;
+	public String getGingivitisD4346FL() {
+		return gingivitisD4346FL;
 	}
-	public void setSscC2931FL(String sscC2931FL) {
-		this.sscC2931FL = sscC2931FL;
+	public void setGingivitisD4346FL(String gingivitisD4346FL) {
+		this.gingivitisD4346FL = gingivitisD4346FL;
 	}
-	public String getOralSurgeryD72107241CoveredMedical() {
-		return oralSurgeryD72107241CoveredMedical;
+	public String getNitrousD9230Percentage() {
+		return NitrousD9230Percentage;
 	}
-	public void setOralSurgeryD72107241CoveredMedical(String oralSurgeryD72107241CoveredMedical) {
-		this.oralSurgeryD72107241CoveredMedical = oralSurgeryD72107241CoveredMedical;
+	public void setNitrousD9230Percentage(String nitrousD9230Percentage) {
+		NitrousD9230Percentage = nitrousD9230Percentage;
 	}
-	public String getCrownLengthD4249Per() {
-		return crownLengthD4249Per;
+	public String getiVSedationD9243Percentage() {
+		return iVSedationD9243Percentage;
 	}
-	public void setCrownLengthD4249Per(String crownLengthD4249Per) {
-		this.crownLengthD4249Per = crownLengthD4249Per;
+	public void setiVSedationD9243Percentage(String iVSedationD9243Percentage) {
+		this.iVSedationD9243Percentage = iVSedationD9243Percentage;
+	}
+	public String getiVSedationD9248Percentage() {
+		return iVSedationD9248Percentage;
+	}
+	public void setiVSedationD9248Percentage(String iVSedationD9248Percentage) {
+		this.iVSedationD9248Percentage = iVSedationD9248Percentage;
+	}
+	public String getExtractionsMinorPercentage() {
+		return extractionsMinorPercentage;
+	}
+	public void setExtractionsMinorPercentage(String extractionsMinorPercentage) {
+		this.extractionsMinorPercentage = extractionsMinorPercentage;
+	}
+	public String getExtractionsMajorPercentage() {
+		return extractionsMajorPercentage;
+	}
+	public void setExtractionsMajorPercentage(String extractionsMajorPercentage) {
+		this.extractionsMajorPercentage = extractionsMajorPercentage;
+	}
+	public String getCrownLengthD4249Percentage() {
+		return crownLengthD4249Percentage;
+	}
+	public void setCrownLengthD4249Percentage(String crownLengthD4249Percentage) {
+		this.crownLengthD4249Percentage = crownLengthD4249Percentage;
 	}
 	public String getCrownLengthD4249FL() {
 		return crownLengthD4249FL;
 	}
 	public void setCrownLengthD4249FL(String crownLengthD4249FL) {
 		this.crownLengthD4249FL = crownLengthD4249FL;
-	}
-	public String getBoneGraftsD7953CoveredWithEXT() {
-		return boneGraftsD7953CoveredWithEXT;
-	}
-	public void setBoneGraftsD7953CoveredWithEXT(String boneGraftsD7953CoveredWithEXT) {
-		this.boneGraftsD7953CoveredWithEXT = boneGraftsD7953CoveredWithEXT;
-	}
-	public String getBoneGraftsD7953FL() {
-		return boneGraftsD7953FL;
-	}
-	public void setBoneGraftsD7953FL(String boneGraftsD7953FL) {
-		this.boneGraftsD7953FL = boneGraftsD7953FL;
 	}
 	public String getAlveoD7311CoveredWithEXT() {
 		return alveoD7311CoveredWithEXT;
@@ -862,17 +964,89 @@ public class IVFTableSheet {
 	public void setAlveoD7310FL(String alveoD7310FL) {
 		this.alveoD7310FL = alveoD7310FL;
 	}
-	public String getMissingToothClause() {
-		return missingToothClause;
+	public String getCompleteDenturesD5110D5120FL() {
+		return completeDenturesD5110D5120FL;
 	}
-	public void setMissingToothClause(String missingToothClause) {
-		this.missingToothClause = missingToothClause;
+	public void setCompleteDenturesD5110D5120FL(String completeDenturesD5110D5120FL) {
+		this.completeDenturesD5110D5120FL = completeDenturesD5110D5120FL;
 	}
-	public String getReplacementClause() {
-		return replacementClause;
+	public String getImmediateDenturesD5130D5140FL() {
+		return immediateDenturesD5130D5140FL;
 	}
-	public void setReplacementClause(String replacementClause) {
-		this.replacementClause = replacementClause;
+	public void setImmediateDenturesD5130D5140FL(String immediateDenturesD5130D5140FL) {
+		this.immediateDenturesD5130D5140FL = immediateDenturesD5130D5140FL;
+	}
+	public String getPartialDenturesD5213D5214FL() {
+		return partialDenturesD5213D5214FL;
+	}
+	public void setPartialDenturesD5213D5214FL(String partialDenturesD5213D5214FL) {
+		this.partialDenturesD5213D5214FL = partialDenturesD5213D5214FL;
+	}
+	public String getInterimPartialDenturesD5214FL() {
+		return interimPartialDenturesD5214FL;
+	}
+	public void setInterimPartialDenturesD5214FL(String interimPartialDenturesD5214FL) {
+		this.interimPartialDenturesD5214FL = interimPartialDenturesD5214FL;
+	}
+	public String getBoneGraftsD7953CoveredWithEXT() {
+		return boneGraftsD7953CoveredWithEXT;
+	}
+	public void setBoneGraftsD7953CoveredWithEXT(String boneGraftsD7953CoveredWithEXT) {
+		this.boneGraftsD7953CoveredWithEXT = boneGraftsD7953CoveredWithEXT;
+	}
+	public String getBoneGraftsD7953FL() {
+		return boneGraftsD7953FL;
+	}
+	public void setBoneGraftsD7953FL(String boneGraftsD7953FL) {
+		this.boneGraftsD7953FL = boneGraftsD7953FL;
+	}
+	public String getImplantCoverageD6010Percentage() {
+		return implantCoverageD6010Percentage;
+	}
+	public void setImplantCoverageD6010Percentage(String implantCoverageD6010Percentage) {
+		this.implantCoverageD6010Percentage = implantCoverageD6010Percentage;
+	}
+	public String getImplantCoverageD6057Percentage() {
+		return implantCoverageD6057Percentage;
+	}
+	public void setImplantCoverageD6057Percentage(String implantCoverageD6057Percentage) {
+		this.implantCoverageD6057Percentage = implantCoverageD6057Percentage;
+	}
+	public String getImplantCoverageD6190Percentage() {
+		return implantCoverageD6190Percentage;
+	}
+	public void setImplantCoverageD6190Percentage(String implantCoverageD6190Percentage) {
+		this.implantCoverageD6190Percentage = implantCoverageD6190Percentage;
+	}
+	public String getImplantSupportedPorcCeramicD6065Percentage() {
+		return implantSupportedPorcCeramicD6065Percentage;
+	}
+	public void setImplantSupportedPorcCeramicD6065Percentage(String implantSupportedPorcCeramicD6065Percentage) {
+		this.implantSupportedPorcCeramicD6065Percentage = implantSupportedPorcCeramicD6065Percentage;
+	}
+	public String getPostCompositesD2391Percentage() {
+		return postCompositesD2391Percentage;
+	}
+	public void setPostCompositesD2391Percentage(String postCompositesD2391Percentage) {
+		this.postCompositesD2391Percentage = postCompositesD2391Percentage;
+	}
+	public String getPostCompositesD2391FL() {
+		return postCompositesD2391FL;
+	}
+	public void setPostCompositesD2391FL(String postCompositesD2391FL) {
+		this.postCompositesD2391FL = postCompositesD2391FL;
+	}
+	public String getPosteriorCompositesD2391Downgrade() {
+		return posteriorCompositesD2391Downgrade;
+	}
+	public void setPosteriorCompositesD2391Downgrade(String posteriorCompositesD2391Downgrade) {
+		this.posteriorCompositesD2391Downgrade = posteriorCompositesD2391Downgrade;
+	}
+	public String getCrownsD2750D2740Percentage() {
+		return crownsD2750D2740Percentage;
+	}
+	public void setCrownsD2750D2740Percentage(String crownsD2750D2740Percentage) {
+		this.crownsD2750D2740Percentage = crownsD2750D2740Percentage;
 	}
 	public String getCrownsD2750D2740FL() {
 		return crownsD2750D2740FL;
@@ -880,17 +1054,29 @@ public class IVFTableSheet {
 	public void setCrownsD2750D2740FL(String crownsD2750D2740FL) {
 		this.crownsD2750D2740FL = crownsD2750D2740FL;
 	}
-	public String getCrownsD2750D2740PaysPrepSeatDate() {
-		return crownsD2750D2740PaysPrepSeatDate;
+	public String getCrownsD2750D2740Downgrade() {
+		return crownsD2750D2740Downgrade;
 	}
-	public void setCrownsD2750D2740PaysPrepSeatDate(String crownsD2750D2740PaysPrepSeatDate) {
-		this.crownsD2750D2740PaysPrepSeatDate = crownsD2750D2740PaysPrepSeatDate;
+	public void setCrownsD2750D2740Downgrade(String crownsD2750D2740Downgrade) {
+		this.crownsD2750D2740Downgrade = crownsD2750D2740Downgrade;
 	}
-	public String getNightGuardsD9940FL() {
-		return nightGuardsD9940FL;
+	public String getNightGuardsD9940Percentage() {
+		return nightGuardsD9940Percentage;
 	}
-	public void setNightGuardsD9940FL(String nightGuardsD9940FL) {
-		this.nightGuardsD9940FL = nightGuardsD9940FL;
+	public void setNightGuardsD9940Percentage(String nightGuardsD9940Percentage) {
+		this.nightGuardsD9940Percentage = nightGuardsD9940Percentage;
+	}
+	public String getD9310Percentage() {
+		return d9310Percentage;
+	}
+	public void setD9310Percentage(String d9310Percentage) {
+		this.d9310Percentage = d9310Percentage;
+	}
+	public String getD9310FL() {
+		return d9310FL;
+	}
+	public void setD9310FL(String d9310fl) {
+		d9310FL = d9310fl;
 	}
 	public String getBuildUpsD2950Covered() {
 		return buildUpsD2950Covered;
@@ -910,101 +1096,11 @@ public class IVFTableSheet {
 	public void setBuildUpsD2950SameDayCrown(String buildUpsD2950SameDayCrown) {
 		this.buildUpsD2950SameDayCrown = buildUpsD2950SameDayCrown;
 	}
-	public String getBasicWaitingPeriod() {
-		return basicWaitingPeriod;
+	public String getOrthoPercentage() {
+		return orthoPercentage;
 	}
-	public void setBasicWaitingPeriod(String basicWaitingPeriod) {
-		this.basicWaitingPeriod = basicWaitingPeriod;
-	}
-	public String getMajorWaitingPeriod() {
-		return majorWaitingPeriod;
-	}
-	public void setMajorWaitingPeriod(String majorWaitingPeriod) {
-		this.majorWaitingPeriod = majorWaitingPeriod;
-	}
-	public String getPreventive() {
-		return preventive;
-	}
-	public void setPreventive(String preventive) {
-		this.preventive = preventive;
-	}
-	public String getDiagnostic() {
-		return diagnostic;
-	}
-	public void setDiagnostic(String diagnostic) {
-		this.diagnostic = diagnostic;
-	}
-	public String getPaXRays() {
-		return paXRays;
-	}
-	public void setPaXRays(String paXRays) {
-		this.paXRays = paXRays;
-	}
-	public String getBasic() {
-		return basic;
-	}
-	public void setBasic(String basic) {
-		this.basic = basic;
-	}
-	public String getBasicSubjectDeductible() {
-		return basicSubjectDeductible;
-	}
-	public void setBasicSubjectDeductible(String basicSubjectDeductible) {
-		this.basicSubjectDeductible = basicSubjectDeductible;
-	}
-	public String getMajor() {
-		return major;
-	}
-	public void setMajor(String major) {
-		this.major = major;
-	}
-	public String getMajorSubjectDeductible() {
-		return majorSubjectDeductible;
-	}
-	public void setMajorSubjectDeductible(String majorSubjectDeductible) {
-		this.majorSubjectDeductible = majorSubjectDeductible;
-	}
-	public String getEndodontics() {
-		return endodontics;
-	}
-	public void setEndodontics(String endodontics) {
-		this.endodontics = endodontics;
-	}
-	public String getEndoSubjectDeductible() {
-		return endoSubjectDeductible;
-	}
-	public void setEndoSubjectDeductible(String endoSubjectDeductible) {
-		this.endoSubjectDeductible = endoSubjectDeductible;
-	}
-	public String getPerioSurgery() {
-		return perioSurgery;
-	}
-	public void setPerioSurgery(String perioSurgery) {
-		this.perioSurgery = perioSurgery;
-	}
-	public String getPerioSurgerySubjectDeductible() {
-		return perioSurgerySubjectDeductible;
-	}
-	public void setPerioSurgerySubjectDeductible(String perioSurgerySubjectDeductible) {
-		this.perioSurgerySubjectDeductible = perioSurgerySubjectDeductible;
-	}
-	public String getExtractionsMinor() {
-		return extractionsMinor;
-	}
-	public void setExtractionsMinor(String extractionsMinor) {
-		this.extractionsMinor = extractionsMinor;
-	}
-	public String getExtraction_Major() {
-		return extraction_Major;
-	}
-	public void setExtraction_Major(String extraction_Major) {
-		this.extraction_Major = extraction_Major;
-	}
-	public String getOrtho() {
-		return ortho;
-	}
-	public void setOrtho(String ortho) {
-		this.ortho = ortho;
+	public void setOrthoPercentage(String orthoPercentage) {
+		this.orthoPercentage = orthoPercentage;
 	}
 	public String getOrthoMax() {
 		return orthoMax;
@@ -1012,251 +1108,179 @@ public class IVFTableSheet {
 	public void setOrthoMax(String orthoMax) {
 		this.orthoMax = orthoMax;
 	}
+	public String getOrthoAgeLimit() {
+		return orthoAgeLimit;
+	}
+	public void setOrthoAgeLimit(String orthoAgeLimit) {
+		this.orthoAgeLimit = orthoAgeLimit;
+	}
 	public String getOrthoSubjectDeductible() {
 		return orthoSubjectDeductible;
 	}
 	public void setOrthoSubjectDeductible(String orthoSubjectDeductible) {
 		this.orthoSubjectDeductible = orthoSubjectDeductible;
 	}
-	public String getNitrousD9230() {
-		return nitrousD9230;
+	public String getHistory1Code() {
+		return history1Code;
 	}
-	public void setNitrousD9230(String nitrousD9230) {
-		this.nitrousD9230 = nitrousD9230;
+	public void setHistory1Code(String history1Code) {
+		this.history1Code = history1Code;
 	}
-	public String getiVSedationD9243() {
-		return iVSedationD9243;
+	public String getHistory1Tooth() {
+		return history1Tooth;
 	}
-	public void setiVSedationD9243(String iVSedationD9243) {
-		this.iVSedationD9243 = iVSedationD9243;
+	public void setHistory1Tooth(String history1Tooth) {
+		this.history1Tooth = history1Tooth;
 	}
-	public String getiVSedationD9248() {
-		return iVSedationD9248;
+	public String getHistory1DOS() {
+		return history1DOS;
 	}
-	public void setiVSedationD9248(String iVSedationD9248) {
-		this.iVSedationD9248 = iVSedationD9248;
+	public void setHistory1DOS(String history1dos) {
+		history1DOS = history1dos;
 	}
-	public String getMedicalInsCoverage() {
-		return medicalInsCoverage;
+	public String getHistory2Code() {
+		return history2Code;
 	}
-	public void setMedicalInsCoverage(String medicalInsCoverage) {
-		this.medicalInsCoverage = medicalInsCoverage;
+	public void setHistory2Code(String history2Code) {
+		this.history2Code = history2Code;
 	}
-	public String getImplantCoverage() {
-		return implantCoverage;
+	public String getHistory2Tooth() {
+		return history2Tooth;
 	}
-	public void setImplantCoverage(String implantCoverage) {
-		this.implantCoverage = implantCoverage;
+	public void setHistory2Tooth(String history2Tooth) {
+		this.history2Tooth = history2Tooth;
 	}
-	public String getImplantSupportedPorcCeramicD606() {
-		return implantSupportedPorcCeramicD606;
+	public String getHistory2DOS() {
+		return history2DOS;
 	}
-	public void setImplantSupportedPorcCeramicD606(String implantSupportedPorcCeramicD606) {
-		this.implantSupportedPorcCeramicD606 = implantSupportedPorcCeramicD606;
+	public void setHistory2DOS(String history2dos) {
+		history2DOS = history2dos;
 	}
-	public String getPostCompositesD2391() {
-		return postCompositesD2391;
+	public String getHistory3Code() {
+		return history3Code;
 	}
-	public void setPostCompositesD2391(String postCompositesD2391) {
-		this.postCompositesD2391 = postCompositesD2391;
+	public void setHistory3Code(String history3Code) {
+		this.history3Code = history3Code;
 	}
-	public String getPosteriorCompositesD2391Downgrade() {
-		return posteriorCompositesD2391Downgrade;
+	public String getHistory3Tooth() {
+		return history3Tooth;
 	}
-	public void setPosteriorCompositesD2391Downgrade(String posteriorCompositesD2391Downgrade) {
-		this.posteriorCompositesD2391Downgrade = posteriorCompositesD2391Downgrade;
+	public void setHistory3Tooth(String history3Tooth) {
+		this.history3Tooth = history3Tooth;
 	}
-	public String getCrownsD2750D2740() {
-		return crownsD2750D2740;
+	public String getHistory3DOS() {
+		return history3DOS;
 	}
-	public void setCrownsD2750D2740(String crownsD2750D2740) {
-		this.crownsD2750D2740 = crownsD2750D2740;
+	public void setHistory3DOS(String history3dos) {
+		history3DOS = history3dos;
 	}
-	public String getCrownsD2750D2740Downgrade() {
-		return crownsD2750D2740Downgrade;
+	public String getHistory4Code() {
+		return history4Code;
 	}
-	public void setCrownsD2750D2740Downgrade(String crownsD2750D2740Downgrade) {
-		this.crownsD2750D2740Downgrade = crownsD2750D2740Downgrade;
+	public void setHistory4Code(String history4Code) {
+		this.history4Code = history4Code;
 	}
-	public String getNightGuardsD9940FL_1_REP() {
-		return nightGuardsD9940FL_1_REP;
+	public String getHistory4Tooth() {
+		return history4Tooth;
 	}
-	public void setNightGuardsD9940FL_1_REP(String nightGuardsD9940FL_1_REP) {
-		this.nightGuardsD9940FL_1_REP = nightGuardsD9940FL_1_REP;
+	public void setHistory4Tooth(String history4Tooth) {
+		this.history4Tooth = history4Tooth;
 	}
-	public String getD9310() {
-		return d9310;
+	public String getHistory4DOS() {
+		return history4DOS;
 	}
-	public void setD9310(String d9310) {
-		this.d9310 = d9310;
+	public void setHistory4DOS(String history4dos) {
+		history4DOS = history4dos;
 	}
-	public String getD9310FL() {
-		return d9310FL;
+	public String getHistory5Code() {
+		return history5Code;
 	}
-	public void setD9310FL(String d9310fl) {
-		d9310FL = d9310fl;
+	public void setHistory5Code(String history5Code) {
+		this.history5Code = history5Code;
 	}
-	public String getAdaCode() {
-		return adaCode;
+	public String getHistory5Tooth() {
+		return history5Tooth;
 	}
-	public void setAdaCode(String adaCode) {
-		this.adaCode = adaCode;
+	public void setHistory5Tooth(String history5Tooth) {
+		this.history5Tooth = history5Tooth;
 	}
-	public String getToothNo() {
-		return toothNo;
+	public String getHistory5DOS() {
+		return history5DOS;
 	}
-	public void setToothNo(String toothNo) {
-		this.toothNo = toothNo;
+	public void setHistory5DOS(String history5dos) {
+		history5DOS = history5dos;
 	}
-	public String getDos() {
-		return dos;
+	public String getHistory6Code() {
+		return history6Code;
 	}
-	public void setDos(String dos) {
-		this.dos = dos;
+	public void setHistory6Code(String history6Code) {
+		this.history6Code = history6Code;
 	}
-	public String getAdaCode_1_REP() {
-		return adaCode_1_REP;
+	public String getHistory6Tooth() {
+		return history6Tooth;
 	}
-	public void setAdaCode_1_REP(String adaCode_1_REP) {
-		this.adaCode_1_REP = adaCode_1_REP;
+	public void setHistory6Tooth(String history6Tooth) {
+		this.history6Tooth = history6Tooth;
 	}
-	public String getToothNo_1_REP() {
-		return toothNo_1_REP;
+	public String getHistory6DOS() {
+		return history6DOS;
 	}
-	public void setToothNo_1_REP(String toothNo_1_REP) {
-		this.toothNo_1_REP = toothNo_1_REP;
+	public void setHistory6DOS(String history6dos) {
+		history6DOS = history6dos;
 	}
-	public String getDos_1_REP() {
-		return dos_1_REP;
+	public String getHistory7Code() {
+		return history7Code;
 	}
-	public void setDos_1_REP(String dos_1_REP) {
-		this.dos_1_REP = dos_1_REP;
+	public void setHistory7Code(String history7Code) {
+		this.history7Code = history7Code;
 	}
-	public String getAdaCode_2_REP() {
-		return adaCode_2_REP;
+	public String getHistory7Tooth() {
+		return history7Tooth;
 	}
-	public void setAdaCode_2_REP(String adaCode_2_REP) {
-		this.adaCode_2_REP = adaCode_2_REP;
+	public void setHistory7Tooth(String history7Tooth) {
+		this.history7Tooth = history7Tooth;
 	}
-	public String getToothNo_2_REP() {
-		return toothNo_2_REP;
+	public String getHistory7DOS() {
+		return history7DOS;
 	}
-	public void setToothNo_2_REP(String toothNo_2_REP) {
-		this.toothNo_2_REP = toothNo_2_REP;
+	public void setHistory7DOS(String history7dos) {
+		history7DOS = history7dos;
 	}
-	public String getDos_2_REP() {
-		return dos_2_REP;
+	public String getHistory8Code() {
+		return history8Code;
 	}
-	public void setDos_2_REP(String dos_2_REP) {
-		this.dos_2_REP = dos_2_REP;
+	public void setHistory8Code(String history8Code) {
+		this.history8Code = history8Code;
 	}
-	public String getAdaCode_3_REP() {
-		return adaCode_3_REP;
+	public String getHistory8Tooth() {
+		return history8Tooth;
 	}
-	public void setAdaCode_3_REP(String adaCode_3_REP) {
-		this.adaCode_3_REP = adaCode_3_REP;
+	public void setHistory8Tooth(String history8Tooth) {
+		this.history8Tooth = history8Tooth;
 	}
-	public String getToothNo_3_REP() {
-		return toothNo_3_REP;
+	public String getHistory8DOS() {
+		return history8DOS;
 	}
-	public void setToothNo_3_REP(String toothNo_3_REP) {
-		this.toothNo_3_REP = toothNo_3_REP;
+	public void setHistory8DOS(String history8dos) {
+		history8DOS = history8dos;
 	}
-	public String getDos_3_REP() {
-		return dos_3_REP;
+	public String getHistory9Code() {
+		return history9Code;
 	}
-	public void setDos_3_REP(String dos_3_REP) {
-		this.dos_3_REP = dos_3_REP;
+	public void setHistory9Code(String history9Code) {
+		this.history9Code = history9Code;
 	}
-	public String getAdaCode_4_REP() {
-		return adaCode_4_REP;
+	public String getHistory9Tooth() {
+		return history9Tooth;
 	}
-	public void setAdaCode_4_REP(String adaCode_4_REP) {
-		this.adaCode_4_REP = adaCode_4_REP;
+	public void setHistory9Tooth(String history9Tooth) {
+		this.history9Tooth = history9Tooth;
 	}
-	public String getToothNo_4_REP() {
-		return toothNo_4_REP;
+	public String getHistory9DOS() {
+		return history9DOS;
 	}
-	public void setToothNo_4_REP(String toothNo_4_REP) {
-		this.toothNo_4_REP = toothNo_4_REP;
-	}
-	public String getDos_4_REP() {
-		return dos_4_REP;
-	}
-	public void setDos_4_REP(String dos_4_REP) {
-		this.dos_4_REP = dos_4_REP;
-	}
-	public String getAdaCode_5_REP() {
-		return adaCode_5_REP;
-	}
-	public void setAdaCode_5_REP(String adaCode_5_REP) {
-		this.adaCode_5_REP = adaCode_5_REP;
-	}
-	public String getToothNo_5_REP() {
-		return toothNo_5_REP;
-	}
-	public void setToothNo_5_REP(String toothNo_5_REP) {
-		this.toothNo_5_REP = toothNo_5_REP;
-	}
-	public String getDos_5_REP() {
-		return dos_5_REP;
-	}
-	public void setDos_5_REP(String dos_5_REP) {
-		this.dos_5_REP = dos_5_REP;
-	}
-	public String getAdaCode_6_REP() {
-		return adaCode_6_REP;
-	}
-	public void setAdaCode_6_REP(String adaCode_6_REP) {
-		this.adaCode_6_REP = adaCode_6_REP;
-	}
-	public String getToothNo_6_REP() {
-		return toothNo_6_REP;
-	}
-	public void setToothNo_6_REP(String toothNo_6_REP) {
-		this.toothNo_6_REP = toothNo_6_REP;
-	}
-	public String getDos_6_REP() {
-		return dos_6_REP;
-	}
-	public void setDos_6_REP(String dos_6_REP) {
-		this.dos_6_REP = dos_6_REP;
-	}
-	public String getAdaCode_7_REP() {
-		return adaCode_7_REP;
-	}
-	public void setAdaCode_7_REP(String adaCode_7_REP) {
-		this.adaCode_7_REP = adaCode_7_REP;
-	}
-	public String getToothNo_7_REP() {
-		return toothNo_7_REP;
-	}
-	public void setToothNo_7_REP(String toothNo_7_REP) {
-		this.toothNo_7_REP = toothNo_7_REP;
-	}
-	public String getDos_7_REP() {
-		return dos_7_REP;
-	}
-	public void setDos_7_REP(String dos_7_REP) {
-		this.dos_7_REP = dos_7_REP;
-	}
-	public String getAdaCode_8_REP() {
-		return adaCode_8_REP;
-	}
-	public void setAdaCode_8_REP(String adaCode_8_REP) {
-		this.adaCode_8_REP = adaCode_8_REP;
-	}
-	public String getToothNo_8_REP() {
-		return toothNo_8_REP;
-	}
-	public void setToothNo_8_REP(String toothNo_8_REP) {
-		this.toothNo_8_REP = toothNo_8_REP;
-	}
-	public String getDos_8_REP() {
-		return dos_8_REP;
-	}
-	public void setDos_8_REP(String dos_8_REP) {
-		this.dos_8_REP = dos_8_REP;
+	public void setHistory9DOS(String history9dos) {
+		history9DOS = history9dos;
 	}
 	public String getComments() {
 		return comments;
@@ -1276,14 +1300,12 @@ public class IVFTableSheet {
 	public void setGeneralDateIVwasDone(String generalDateIVwasDone) {
 		this.generalDateIVwasDone = generalDateIVwasDone;
 	}
-	public String getUniqueId() {
-		return uniqueId;
+	public String getUniqueID() {
+		return uniqueID;
 	}
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
+	public void setUniqueIDPlanDependentsCoveredtoAge(String uniqueID) {
+		this.uniqueID = uniqueID;
 	}
-	
-	
-	
 
+	
 }

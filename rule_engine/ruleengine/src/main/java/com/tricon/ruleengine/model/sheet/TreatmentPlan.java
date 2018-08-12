@@ -6,7 +6,7 @@ package com.tricon.ruleengine.model.sheet;
  */
 public class TreatmentPlan {
 	
-	private String uniqueId;
+	private String id;
 	private String apptId;
 	private TreatmentPlanPatient patient;
 	private TreatmentPlanDetails treatmentPlanDetails;
@@ -19,13 +19,18 @@ public class TreatmentPlan {
 	private String 	fee;
 	private String 	estInsurance;
 	private String 	PatientPortion;
+	private String 	estPrimary;
 	
 	
-	public TreatmentPlan(String uniqueId, String apptId, TreatmentPlanPatient patient,
+	public TreatmentPlan() {
+		
+	}
+	
+	public TreatmentPlan(String id, String apptId, TreatmentPlanPatient patient,
 			TreatmentPlanDetails treatmentPlanDetails, String lineItem, String serviceCode, String description,
 			String surface, String tooth, String status, String fee, String estInsurance, String patientPortion) {
 		super();
-		this.uniqueId = uniqueId;
+		this.id = id;
 		this.apptId = apptId;
 		this.patient = patient;
 		this.treatmentPlanDetails = treatmentPlanDetails;
@@ -39,11 +44,11 @@ public class TreatmentPlan {
 		this.estInsurance = estInsurance;
 		PatientPortion = patientPortion;
 	}
-	public String getUniqueId() {
-		return uniqueId;
+	public String getId() {
+		return id;
 	}
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
+	public void setId(String id) {
+		this.id = id;
 	}
 	public String getApptId() {
 		return apptId;
@@ -116,6 +121,14 @@ public class TreatmentPlan {
 	}
 	public void setPatientPortion(String patientPortion) {
 		PatientPortion = patientPortion;
+	}
+
+	public String getEstPrimary() {
+		return estPrimary;
+	}
+
+	public void setEstPrimary(String estPrimary) {
+		this.estPrimary = estPrimary;
 	}
 	
 	

@@ -3,7 +3,10 @@ package com.tricon.ruleengine.model.db;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -30,7 +33,10 @@ public class GoogleSheets extends BaseAudit implements java.io.Serializable {
 	private String sheetName;
 	@Column(name = "app_sheet_name", length = 45)
 	private String appSheetName;
-	private Integer officeId;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "office_id")
+	private Office office;
 
 	public GoogleSheets() {
 	}
@@ -39,12 +45,12 @@ public class GoogleSheets extends BaseAudit implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public GoogleSheets(int id, String sheetId, String sheetName, String appSheetName, Integer officeId) {
+	public GoogleSheets(int id, String sheetId, String sheetName, String appSheetName, Office office) {
 		this.id = id;
 		this.sheetId = sheetId;
 		this.sheetName = sheetName;
 		this.appSheetName = appSheetName;
-		this.officeId = officeId;
+		this.office = office;
 	}
 
 	public int getId() {
@@ -79,13 +85,12 @@ public class GoogleSheets extends BaseAudit implements java.io.Serializable {
 		this.appSheetName = appSheetName;
 	}
 
-	@Column(name = "office_id")
-	public Integer getOfficeId() {
-		return this.officeId;
+	public Office getOffice() {
+		return this.office;
 	}
 
-	public void setOfficeId(Integer officeId) {
-		this.officeId = officeId;
+	public void setOffice(Office office) {
+		this.office = office;
 	}
 
 }

@@ -48,6 +48,12 @@ public class OfficeDaoImpl extends BaseDaoImpl implements OfficeDao{
 		return Optional.ofNullable((List<OfficeDto>) offices);
 		
 	}
+
+	@Override
+	public Office getOfficeByUuid(String uuid) {
+		// TODO Auto-generated method stub
+		return (Office)getEntityByColumnName(Office.class, "uuid", uuid);
+	}
 	
 	
 

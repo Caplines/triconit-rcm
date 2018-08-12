@@ -34,6 +34,7 @@ import com.tricon.ruleengine.service.UserService;
 //@Controller
 public class AccountControllerNotUsed {
 
+	/*
 	public static final Logger logger = LoggerFactory.getLogger(AccountControllerNotUsed.class);
 
 	@Autowired
@@ -50,5 +51,5 @@ public class AccountControllerNotUsed {
 		request.getRequestDispatcher("/").forward(request, response);
 	}
 
-
+*/
 }

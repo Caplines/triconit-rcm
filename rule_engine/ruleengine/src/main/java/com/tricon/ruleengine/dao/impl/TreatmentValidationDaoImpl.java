@@ -3,10 +3,17 @@ package com.tricon.ruleengine.dao.impl;
 import java.io.Serializable;
 import java.util.List;
 
+import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.model.db.GoogleSheets;
+import com.tricon.ruleengine.model.db.Mappings;
+import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ReportDetail;
 import com.tricon.ruleengine.model.db.Reports;
 import com.tricon.ruleengine.model.db.Rules;
@@ -56,7 +63,7 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 	@Override
 	public void updateReportDate(Reports reports) {
 		
-		updateEntiyDate(reports);
+		updateEntity(reports);
 		
 		
 	}
@@ -64,6 +71,41 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 	@Override
 	public List<GoogleSheets> getAllGoogleSheet() {
 		List<GoogleSheets> list = (List<GoogleSheets>)(List<?>) getWholeEntity(GoogleSheets.class);
+		return list;
+	}
+
+	@Override
+	public List<Mappings> getAllMappings() {
+		Session session = getSession();
+		List<Mappings> list = null;
+		try {
+			Criteria criteria = session.createCriteria(Mappings.class);
+			criteria.createAlias("adaCodes", "ad");
+			criteria.createAlias("serviceCodeCategory", "sa");
+			list=criteria.list();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return list;
+
+	}
+
+	@Override
+	public List<GoogleSheets> getAllGoogleSheetByOffice(Office off) {
+		Session session = getSession();
+		List<GoogleSheets> list = null;
+		try {
+			Criteria criteria = session.createCriteria(GoogleSheets.class);
+			criteria.createAlias("office", "off");//
+			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
+			list=criteria.list();
+			
+		} finally {
+			closeSession(session);
+
+		}
 		return list;
 	}
 }

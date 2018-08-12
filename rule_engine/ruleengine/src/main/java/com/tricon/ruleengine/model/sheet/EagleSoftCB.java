@@ -15,6 +15,9 @@ public class EagleSoftCB {
 	private String coPay;
 	
 	
+	public EagleSoftCB() {
+	}
+
 	public EagleSoftCB(String bookId, String covBbookHeaderName, String serviceCode, String dateModified,
 			String dollars, String ucr, String deductibleApplies, String dollarsOrPercent, String percentage,
 			String forgiveDifference, String coPay) {

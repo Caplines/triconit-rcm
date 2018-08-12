@@ -4,6 +4,8 @@ package com.tricon.ruleengine.model.db;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -15,7 +17,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "mappings")
+@Table(name = "mappings_1")
 public class Mappings implements java.io.Serializable {
 
 	/**
@@ -25,16 +27,16 @@ public class Mappings implements java.io.Serializable {
 	private int id;
 	private AdaCodes adaCodes;
 	private ServiceCodeCategory serviceCodeCategory;
-	private Byte coveredUnderMedical;
-	private Byte downgrading;
+	private String coveredUnderMedical;
+	private String downgrading;
 	private String toothNoForDowngrading;
 	private String fillingToothNoMapping;
-	private Byte freqencyLimitationApplicable;
-	private Byte missingToothClauseApplicable;
-	private Byte bundlingApplicable;
+	private String freqencyLimitationApplicable;
+	private String missingToothClauseApplicable;
+	private String bundlingApplicable;
 	private String additionalInformationNeeded;
-	private Byte preAuthNeeded;
-	private Byte ageLimitApplicable;
+	private String preAuthNeeded;
+	private String ageLimitApplicable;
 
 	public Mappings() {
 	}
@@ -43,10 +45,10 @@ public class Mappings implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public Mappings(int id, AdaCodes adaCodes, ServiceCodeCategory serviceCodeCategory, Byte coveredUnderMedical,
-			Byte downgrading, String toothNoForDowngrading, String fillingToothNoMapping,
-			Byte freqencyLimitationApplicable, Byte missingToothClauseApplicable, Byte bundlingApplicable,
-			String additionalInformationNeeded, Byte preAuthNeeded, Byte ageLimitApplicable) {
+	public Mappings(int id, AdaCodes adaCodes, ServiceCodeCategory serviceCodeCategory, String coveredUnderMedical,
+			String downgrading, String toothNoForDowngrading, String fillingToothNoMapping,
+			String freqencyLimitationApplicable, String missingToothClauseApplicable, String bundlingApplicable,
+			String additionalInformationNeeded, String preAuthNeeded, String ageLimitApplicable) {
 		this.id = id;
 		this.adaCodes = adaCodes;
 		this.serviceCodeCategory = serviceCodeCategory;
@@ -64,6 +66,7 @@ public class Mappings implements java.io.Serializable {
 
 	@Id
 	@Column(name = "id", unique = true, nullable = false)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	public int getId() {
 		return this.id;
 	}
@@ -93,20 +96,20 @@ public class Mappings implements java.io.Serializable {
 	}
 
 	@Column(name = "covered_under_medical")
-	public Byte getCoveredUnderMedical() {
+	public String getCoveredUnderMedical() {
 		return this.coveredUnderMedical;
 	}
 
-	public void setCoveredUnderMedical(Byte coveredUnderMedical) {
+	public void setCoveredUnderMedical(String coveredUnderMedical) {
 		this.coveredUnderMedical = coveredUnderMedical;
 	}
 
 	@Column(name = "downgrading")
-	public Byte getDowngrading() {
+	public String getDowngrading() {
 		return this.downgrading;
 	}
 
-	public void setDowngrading(Byte downgrading) {
+	public void setDowngrading(String downgrading) {
 		this.downgrading = downgrading;
 	}
 
@@ -129,29 +132,29 @@ public class Mappings implements java.io.Serializable {
 	}
 
 	@Column(name = "freqency_limitation_applicable")
-	public Byte getFreqencyLimitationApplicable() {
+	public String getFreqencyLimitationApplicable() {
 		return this.freqencyLimitationApplicable;
 	}
 
-	public void setFreqencyLimitationApplicable(Byte freqencyLimitationApplicable) {
+	public void setFreqencyLimitationApplicable(String freqencyLimitationApplicable) {
 		this.freqencyLimitationApplicable = freqencyLimitationApplicable;
 	}
 
 	@Column(name = "missing_tooth_clause_applicable")
-	public Byte getMissingToothClauseApplicable() {
+	public String getMissingToothClauseApplicable() {
 		return this.missingToothClauseApplicable;
 	}
 
-	public void setMissingToothClauseApplicable(Byte missingToothClauseApplicable) {
+	public void setMissingToothClauseApplicable(String missingToothClauseApplicable) {
 		this.missingToothClauseApplicable = missingToothClauseApplicable;
 	}
 
 	@Column(name = "bundling_applicable")
-	public Byte getBundlingApplicable() {
+	public String getBundlingApplicable() {
 		return this.bundlingApplicable;
 	}
 
-	public void setBundlingApplicable(Byte bundlingApplicable) {
+	public void setBundlingApplicable(String bundlingApplicable) {
 		this.bundlingApplicable = bundlingApplicable;
 	}
 
@@ -165,20 +168,20 @@ public class Mappings implements java.io.Serializable {
 	}
 
 	@Column(name = "pre_auth_needed")
-	public Byte getPreAuthNeeded() {
+	public String getPreAuthNeeded() {
 		return this.preAuthNeeded;
 	}
 
-	public void setPreAuthNeeded(Byte preAuthNeeded) {
+	public void setPreAuthNeeded(String preAuthNeeded) {
 		this.preAuthNeeded = preAuthNeeded;
 	}
 
 	@Column(name = "age_limit_applicable")
-	public Byte getAgeLimitApplicable() {
+	public String getAgeLimitApplicable() {
 		return this.ageLimitApplicable;
 	}
 
-	public void setAgeLimitApplicable(Byte ageLimitApplicable) {
+	public void setAgeLimitApplicable(String ageLimitApplicable) {
 		this.ageLimitApplicable = ageLimitApplicable;
 	}
 

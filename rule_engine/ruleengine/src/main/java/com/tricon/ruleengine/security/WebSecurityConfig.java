@@ -114,15 +114,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                 HttpMethod.GET,
                 "/open/*",
-                "/validateTreatmentPlan2",
+                "/login",
+                "/readDriveSuc",
+                "/sharePointIni",
+                "/appdebug/*.txt",
+                "/ivf",
+                "/register",
+                "/admin/report3",
                 "/",
                 "/*.html",
+                "/index.jsp",
                 "/favicon.ico",
                 "/**/*.html",
                 "/**/*.css",
+                "/**/*.jpg",
                 "/**/*.js"
             ).antMatchers(HttpMethod.POST,
-                "/account/register"
+                "/account/register",
+                "/readDriveSuc"
                 )
 
             // Un-secure H2 Database (for testing purposes, H2 console shouldn't be unprotected in production)

@@ -29,7 +29,7 @@ public class Rules extends BaseAudit implements java.io.Serializable {
 	private int id;
 	@Column(name = "name", columnDefinition = "text")
 	private String name;
-	@Column(name = "short_name", columnDefinition = "text")
+	@Column(name = "short_name", columnDefinition = "text", unique=true)
 	private String shortName;
 	@Column(name = "description", columnDefinition = "text")
 	private String description;
