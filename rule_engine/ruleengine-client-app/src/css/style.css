@@ -371,4 +371,10 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
 .date-dropdown .ngx-datepicker-calendar-container {width:100%!important;}
 
 
+.sr-checkbox {
+    font-weight: normal;
+    font-size: 14px;
+    margin: 0 5px;
+    }
+
 

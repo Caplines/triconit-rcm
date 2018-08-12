@@ -3,4 +3,5 @@ export class IVFModel {
   treatmentPlanId: string="";
   ivfId: string="";
   officeId:string="";
+  debugMode:boolean=false;
 }

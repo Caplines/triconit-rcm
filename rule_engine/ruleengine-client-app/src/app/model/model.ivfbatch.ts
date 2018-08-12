@@ -4,4 +4,5 @@ export class IVFBatchModel {
   treatmentPlanId: string="";
   ivfId: string="";
   officeId:string="";
+debugMode:any;
 }

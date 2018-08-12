@@ -48,7 +48,14 @@
 							<div *ngIf="f.submitted && ivfm.officeId==''" class="error-msg">The
 								Office Name is required</div>
 						</div>
+						<div class="form-group">
+							 <input
+								type="checkbox" class=""
+								name="debugMode" id="debugMode" [(ngModel)]="ivfm.debugMode"
+								#ivfId="ngModel"  />
+							<label class="sr-checkbox" for="debugMode">Debug Mode </label>
 
+						</div>
 
 						<p>
 							<button [disabled]="showLoading" type="submit" class="btn">Validate
@@ -80,7 +87,7 @@
 				</div>
 				<div class="modal-body">
 					<div *ngFor="let key of arrayOfKeys">
-						<h3>{{key}}</h3>
+						<h3 [innerHTML]="key"></h3>
 						<ul *ngFor="let data of ivfmData[key]" class="message-container">
 							<li [innerHTML]="data.ruleName +' - '+ data.message"></li>
 						</ul>
