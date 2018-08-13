@@ -86,10 +86,22 @@ export class IVFBatchComponent implements OnInit {
 			clipRows.forEach(function(value){
 				if(value && value != ''){
 					if(value && value != ''){
+						if (value.length>0){
+							field2data.push(value[0].trim().replace("\n", ""));
+								
+						}else{
+							field2data.push("");
+							
+						}
+						if (value.length>1){
+							field1data.push(value[1].trim().replace("\n", ""));
+								
+						}else{
+							field1data.push("");
+							
+						}
 						console.log(value[1]);
-						field1data.push(value[1].trim().replace("\n", ""));
-						field2data.push(value[0].trim().replace("\n", ""));
-					}
+						}
 				}
 			});
 			

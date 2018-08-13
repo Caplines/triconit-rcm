@@ -358,10 +358,14 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
 .modal-dialog {
     width: 600px;
     margin: 30px auto;
-    max-height: 450px;
-    overflow-y: scroll;
+ 
 }
 
+.modal-body {
+    margin: 30px auto;
+    max-height: 450px;
+    overflow-y: auto;
+}
 .date-dropdown input {    width: 100%!important;
     height: 38px;
     background: #ffffff;
