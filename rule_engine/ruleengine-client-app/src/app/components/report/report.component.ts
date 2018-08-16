@@ -1,8 +1,9 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {DatepickerOptions} from 'ng2-datepicker';
+import {Office} from "../../model/model.office";
+import {ReportModel} from "../../model/model.report";
 import {AccountService} from "../../services/account.service";
 import {Router} from "@angular/router";
-import {Report} from "../../model/model.report";
 
 @Component({
   selector: 'app-report',
@@ -11,20 +12,24 @@ import {Report} from "../../model/model.report";
   encapsulation: ViewEncapsulation.None
 })
 export class ReportComponent implements OnInit {
-  report: Report = new Report();
+  report: ReportModel = new ReportModel();
   errorMessage: string;
+  offices:any;
+  reportData: any;
+  arrayOfKeys: any;
+  showLoading: boolean = false;
   showReportForm: boolean = false;
-  reportParamId: boolean = false;
-  reportParamDate: boolean = false;
-  reportParamName: boolean = false;
-	dateOptions: DatepickerOptions = {
-    displayFormat: 'MM/DD/YYYY',
-		placeholder: 'Click to select a date',
+  showReportData: boolean = false;
+  dateOptions: DatepickerOptions = {
+	displayFormat: 'MM/DD/YYYY',
+	placeholder: 'Click to select a date',
   };
-  
+  showParam:any = {TreatmentId: false, IvfId: false, Date: false, PatientName: false}
   
   constructor(public accountService: AccountService, public router: Router) {
-   //this.report.date=new Date();
+	this.accountService.getOffices((result) => {
+      this.offices=result;
+    });
   }
 
   ngOnInit() {
@@ -32,27 +37,40 @@ export class ReportComponent implements OnInit {
   }
 
   reportParam(value) {
+    this.report = new ReportModel();
+	let filter = this.showParam;
+	Object.keys(filter).forEach(function(key, result) {
+	  if(key == value) {
+	  	filter[key] = true;
+	  } else {
+	  	filter[key] = false;
+	  }
+	  return filter;
+	});		
 	this.showReportForm = true;
-	if(value == 'id') {
-		this.reportParamId = true;
-		this.reportParamDate = false;
-		this.reportParamName = false;
-	}
-	if(value == 'date') {
-		this.reportParamDate = true;
-		this.reportParamId = false;
-		this.reportParamName = false;
-		
-	}
-	if(value == 'name') {
-		this.reportParamName = true;
-		this.reportParamId = false;
-		this.reportParamDate = false;
-	}
+	this.report.reportType = value;
   }
   
   showCalendar(){
   
+  }
+  
+  runReport() {
+	this.showLoading = true;
+	if(this.report.officeId && this.report.reportField1) {
+		this.accountService.validateReport(this.report,(result) => {
+			this.showLoading = false;
+			if (result.status=='OK'){
+				this.reportData = result.data;
+				this.arrayOfKeys = Object.keys(this.reportData);
+				this.showReportData = true;
+			}
+		});
+	}else{
+		this.showLoading = false;
+	}
+	console.log(this.arrayOfKeys);
+	console.log(this.reportData);
   }
 
 

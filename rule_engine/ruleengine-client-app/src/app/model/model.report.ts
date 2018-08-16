@@ -1,6 +1,5 @@
-export class Report {
-  treatmentPlanId : any;
-  date : any;
-  patientName: any;
-
+export class ReportModel {
+  reportType: any;
+  reportField1: any="";
+  officeId:string="";
 }

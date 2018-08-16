@@ -156,7 +156,34 @@ export class AccountService {
           
           );
               
-  }generateRefreshToken(){
+  }
+  
+  validateReport(report:ReportModel,callback){
+		this.generateRefreshToken().pipe(switchMap(data => {
+			localStorage.setItem("token", (<any>data).token);
+			return  this.http.post(AppComponent.API_URL+'/admin/report',report);
+		})
+		).subscribe(data => {
+			//console.log(data['results']);
+			callback((<any>data));
+		},
+		error => {  
+			console.log(33);
+			if (error.status==401){ 
+				this.router.navigate(['/logout']);
+			}
+            if (error.status==500){
+				alert("Some un-Wanted Chnages Done to Google Sheets");
+				callback(error);
+            }
+        },
+        () => {        
+			console.log(111);   
+			}
+		);   
+	}
+  
+  generateRefreshToken(){
       return this.http.get(AppComponent.API_URL+'/refresh');
   }
       /*
