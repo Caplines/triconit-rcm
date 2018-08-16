@@ -5,6 +5,7 @@ import {User} from "../model/model.user";
 import {IVFModel} from "../model/model.ivf";
 import {IVFBatchPreModel} from "../model/model.ivfbatchpre";
 import {IVFBatchModel} from "../model/model.ivfbatch";
+import {ReportModel} from "../model/model.report";
 import {AuthHeader} from "../util/auth.header";
 import {AppComponent} from "../app.component";
 import { map,flatMap,mergeMap,switchMap } from 'rxjs/operators';
@@ -189,6 +190,5 @@ export class AccountService {
       /*
       return this.http.get(AppComponent.API_URL+'/refresh',AuthHeader.createAuthHeader())
        .pipe(map(resp=>resp.json()));
-    }
     */ 
 }
