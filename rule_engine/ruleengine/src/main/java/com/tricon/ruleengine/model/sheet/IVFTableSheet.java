@@ -87,48 +87,50 @@ public class IVFTableSheet {
 	private String perioMaintenanceD4910Percentage;// CD
 	private String perioMaintenanceD4910FL;// CE
 	private String perioMaintenanceD4910AltWProphyD0110;// CF
-	private String FillingsBundling;// CG
-	private String FMDD4355Percentage;// CH
-	private String fMDD4355FL;// CI
-	private String gingivitisD4346Percentage;// CJ
-	private String gingivitisD4346FL;// CK
-	private String NitrousD9230Percentage;// CL
-	private String iVSedationD9243Percentage;// CM
-	private String iVSedationD9248Percentage;// CN
-	private String extractionsMinorPercentage;// CO
-	private String extractionsMajorPercentage;// CP
-	private String crownLengthD4249Percentage;// CQ
-	private String crownLengthD4249FL;// CR
-	private String alveoD7311CoveredWithEXT;// CS
-	private String alveoD7311FL;// CT
-	private String alveoD7310CoveredWithEXT;// CU
-	private String alveoD7310FL;// CV
-	private String completeDenturesD5110D5120FL;// CW
-	private String immediateDenturesD5130D5140FL;// CX
-	private String partialDenturesD5213D5214FL;// CY
-	private String interimPartialDenturesD5214FL;// CZ
-	private String boneGraftsD7953CoveredWithEXT;//DA
-	private String boneGraftsD7953FL;//DB
-	private String implantCoverageD6010Percentage;//DC
-	private String implantCoverageD6057Percentage;//DD
-	private String implantCoverageD6190Percentage;//DE
-	private String implantSupportedPorcCeramicD6065Percentage;//DF
-	private String postCompositesD2391Percentage;//DG
-	private String postCompositesD2391FL;//DH
-	private String posteriorCompositesD2391Downgrade;//DI
-	private String crownsD2750D2740Percentage;//DJ
-	private String crownsD2750D2740FL;//DK
-	private String crownsD2750D2740Downgrade;//DL
-	private String nightGuardsD9940Percentage;//DM
-	private String d9310Percentage;//DN
-	private String d9310FL;//DO
-	private String buildUpsD2950Covered;//DP
-	private String buildUpsD2950FL;//DQ
-	private String buildUpsD2950SameDayCrown;//DR
-	private String orthoPercentage;//DS
-	private String orthoMax;//DT
-	private String orthoAgeLimit;//DU
-	private String orthoSubjectDeductible;//DV
+	
+	 
+	private String FMDD4355Percentage;// CG
+	private String fMDD4355FL;// CH
+	private String gingivitisD4346Percentage;// CI
+	private String gingivitisD4346FL;// CJ
+	private String NitrousD9230Percentage;// CK
+	private String iVSedationD9243Percentage;// CL
+	private String iVSedationD9248Percentage;// CM
+	private String extractionsMinorPercentage;// CN
+	private String extractionsMajorPercentage;// CO
+	private String crownLengthD4249Percentage;// CP
+	private String crownLengthD4249FL;// CQ
+	private String alveoD7311CoveredWithEXT;// CR
+	private String alveoD7311FL;// CS
+	private String alveoD7310CoveredWithEXT;// CT
+	private String alveoD7310FL;// CU
+	private String completeDenturesD5110D5120FL;// CV
+	private String immediateDenturesD5130D5140FL;// CW
+	private String partialDenturesD5213D5214FL;// CX
+	private String interimPartialDenturesD5214FL;// CY
+	private String boneGraftsD7953CoveredWithEXT;//CZ
+	private String boneGraftsD7953FL;//DA
+	private String implantCoverageD6010Percentage;//DB
+	private String implantCoverageD6057Percentage;//DC
+	private String implantCoverageD6190Percentage;//DD
+	private String implantSupportedPorcCeramicD6065Percentage;//DE
+	private String postCompositesD2391Percentage;//DF
+	private String postCompositesD2391FL;//DG
+	private String posteriorCompositesD2391Downgrade;//DH
+	private String crownsD2750D2740Percentage;//DI
+	private String crownsD2750D2740FL;//DJ
+	private String crownsD2750D2740Downgrade;//DK
+	private String nightGuardsD9940Percentage;//DL
+	private String d9310Percentage;//DM
+	private String d9310FL;//DN
+	private String buildUpsD2950Covered;//DO
+	private String buildUpsD2950FL;//DP
+	private String buildUpsD2950SameDayCrown;//DQ
+	private String orthoPercentage;//DR
+	private String orthoMax;//DS
+	private String orthoAgeLimit;//DT
+	private String orthoSubjectDeductible;//DU
+	private String FillingsBundling;//DV
 	private String history1Code;//DW
 	private String history1Tooth;//DX
 	private String history1DOS;//DY
@@ -159,7 +161,10 @@ public class IVFTableSheet {
 	private String comments;//EX
 	private String generalBenefitsVerifiedBy;//EY
 	private String generalDateIVwasDone;//EZ
-	private String uniqueID;//FA
+	private String patientId;//FA
+	private String uniqueID;//FB
+	
+	
 	
 	public IVFTableSheet(String officeName, String patientName, String insName, String taxId, String policyHolder,
 			String patientDOB, String insContact, String cSRName, String policyHolderDOB, String employerName,
@@ -183,28 +188,28 @@ public class IVFTableSheet {
 			String sealantsD1351PreMolarsCovered, String sealantsD1351PermanentMolarsCovered, String prophyD1110FL,
 			String prophyD1120FL, String name1201110RollOverAgYe, String sRPD4341Percentage, String sRPD4341FL,
 			String sRPD4341QuadsPerDay, String sRPD4341DaysBwTreatment, String perioMaintenanceD4910Percentage,
-			String perioMaintenanceD4910FL, String perioMaintenanceD4910AltWProphyD0110, String fillingsBundling,
-			String fMDD4355Percentage, String fMDD4355FL, String gingivitisD4346Percentage, String gingivitisD4346FL,
+			String perioMaintenanceD4910FL, String perioMaintenanceD4910AltWProphyD0110, String fMDD4355Percentage,
+			String fMDD4355FL, String gingivitisD4346Percentage, String gingivitisD4346FL,
 			String nitrousD9230Percentage, String iVSedationD9243Percentage, String iVSedationD9248Percentage,
 			String extractionsMinorPercentage, String extractionsMajorPercentage, String crownLengthD4249Percentage,
 			String crownLengthD4249FL, String alveoD7311CoveredWithEXT, String alveoD7311FL,
 			String alveoD7310CoveredWithEXT, String alveoD7310FL, String completeDenturesD5110D5120FL,
 			String immediateDenturesD5130D5140FL, String partialDenturesD5213D5214FL,
 			String interimPartialDenturesD5214FL, String boneGraftsD7953CoveredWithEXT, String boneGraftsD7953FL,
-			String lmplantCoverageD6010Percentage, String lmplantCoverageD6057Percentage,
-			String lmplantCoverageD6190Percentage, String lmplantSupportedPorcCeramicD6065Percentage,
+			String implantCoverageD6010Percentage, String implantCoverageD6057Percentage,
+			String implantCoverageD6190Percentage, String implantSupportedPorcCeramicD6065Percentage,
 			String postCompositesD2391Percentage, String postCompositesD2391FL,
 			String posteriorCompositesD2391Downgrade, String crownsD2750D2740Percentage, String crownsD2750D2740FL,
 			String crownsD2750D2740Downgrade, String nightGuardsD9940Percentage, String d9310Percentage, String d9310fl,
 			String buildUpsD2950Covered, String buildUpsD2950FL, String buildUpsD2950SameDayCrown,
 			String orthoPercentage, String orthoMax, String orthoAgeLimit, String orthoSubjectDeductible,
-			String history1Code, String history1Tooth, String history1dos, String history2Code, String history2Tooth,
-			String history2dos, String history3Code, String history3Tooth, String history3dos, String history4Code,
-			String history4Tooth, String history4dos, String history5Code, String history5Tooth, String history5dos,
-			String history6Code, String history6Tooth, String history6dos, String history7Code, String history7Tooth,
-			String history7dos, String history8Code, String history8Tooth, String history8dos, String history9Code,
-			String history9Tooth, String history9dos, String comments, String generalBenefitsVerifiedBy,
-			String generalDateIVwasDone, String uniqueID) {
+			String fillingsBundling, String history1Code, String history1Tooth, String history1dos, String history2Code,
+			String history2Tooth, String history2dos, String history3Code, String history3Tooth, String history3dos,
+			String history4Code, String history4Tooth, String history4dos, String history5Code, String history5Tooth,
+			String history5dos, String history6Code, String history6Tooth, String history6dos, String history7Code,
+			String history7Tooth, String history7dos, String history8Code, String history8Tooth, String history8dos,
+			String history9Code, String history9Tooth, String history9dos, String comments,
+			String generalBenefitsVerifiedBy, String generalDateIVwasDone, String patientId, String uniqueID) {
 		super();
 		this.officeName = officeName;
 		this.patientName = patientName;
@@ -290,7 +295,6 @@ public class IVFTableSheet {
 		this.perioMaintenanceD4910Percentage = perioMaintenanceD4910Percentage;
 		this.perioMaintenanceD4910FL = perioMaintenanceD4910FL;
 		this.perioMaintenanceD4910AltWProphyD0110 = perioMaintenanceD4910AltWProphyD0110;
-		FillingsBundling = fillingsBundling;
 		FMDD4355Percentage = fMDD4355Percentage;
 		this.fMDD4355FL = fMDD4355FL;
 		this.gingivitisD4346Percentage = gingivitisD4346Percentage;
@@ -312,10 +316,10 @@ public class IVFTableSheet {
 		this.interimPartialDenturesD5214FL = interimPartialDenturesD5214FL;
 		this.boneGraftsD7953CoveredWithEXT = boneGraftsD7953CoveredWithEXT;
 		this.boneGraftsD7953FL = boneGraftsD7953FL;
-		this.implantCoverageD6010Percentage = lmplantCoverageD6010Percentage;
-		this.implantCoverageD6057Percentage = lmplantCoverageD6057Percentage;
-		this.implantCoverageD6190Percentage = lmplantCoverageD6190Percentage;
-		this.implantSupportedPorcCeramicD6065Percentage = lmplantSupportedPorcCeramicD6065Percentage;
+		this.implantCoverageD6010Percentage = implantCoverageD6010Percentage;
+		this.implantCoverageD6057Percentage = implantCoverageD6057Percentage;
+		this.implantCoverageD6190Percentage = implantCoverageD6190Percentage;
+		this.implantSupportedPorcCeramicD6065Percentage = implantSupportedPorcCeramicD6065Percentage;
 		this.postCompositesD2391Percentage = postCompositesD2391Percentage;
 		this.postCompositesD2391FL = postCompositesD2391FL;
 		this.posteriorCompositesD2391Downgrade = posteriorCompositesD2391Downgrade;
@@ -332,6 +336,7 @@ public class IVFTableSheet {
 		this.orthoMax = orthoMax;
 		this.orthoAgeLimit = orthoAgeLimit;
 		this.orthoSubjectDeductible = orthoSubjectDeductible;
+		FillingsBundling = fillingsBundling;
 		this.history1Code = history1Code;
 		this.history1Tooth = history1Tooth;
 		history1DOS = history1dos;
@@ -362,6 +367,7 @@ public class IVFTableSheet {
 		this.comments = comments;
 		this.generalBenefitsVerifiedBy = generalBenefitsVerifiedBy;
 		this.generalDateIVwasDone = generalDateIVwasDone;
+		this.patientId = patientId;
 		this.uniqueID = uniqueID;
 	}
 	public String getOfficeName() {
@@ -868,12 +874,6 @@ public class IVFTableSheet {
 	public void setPerioMaintenanceD4910AltWProphyD0110(String perioMaintenanceD4910AltWProphyD0110) {
 		this.perioMaintenanceD4910AltWProphyD0110 = perioMaintenanceD4910AltWProphyD0110;
 	}
-	public String getFillingsBundling() {
-		return FillingsBundling;
-	}
-	public void setFillingsBundling(String fillingsBundling) {
-		FillingsBundling = fillingsBundling;
-	}
 	public String getFMDD4355Percentage() {
 		return FMDD4355Percentage;
 	}
@@ -1120,6 +1120,12 @@ public class IVFTableSheet {
 	public void setOrthoSubjectDeductible(String orthoSubjectDeductible) {
 		this.orthoSubjectDeductible = orthoSubjectDeductible;
 	}
+	public String getFillingsBundling() {
+		return FillingsBundling;
+	}
+	public void setFillingsBundling(String fillingsBundling) {
+		FillingsBundling = fillingsBundling;
+	}
 	public String getHistory1Code() {
 		return history1Code;
 	}
@@ -1300,12 +1306,22 @@ public class IVFTableSheet {
 	public void setGeneralDateIVwasDone(String generalDateIVwasDone) {
 		this.generalDateIVwasDone = generalDateIVwasDone;
 	}
+	public String getPatientId() {
+		return patientId;
+	}
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 	public String getUniqueID() {
 		return uniqueID;
 	}
-	public void setUniqueIDPlanDependentsCoveredtoAge(String uniqueID) {
+	public void setUniqueID(String uniqueID) {
 		this.uniqueID = uniqueID;
 	}
+	
+
+	
+
 
 	
 }

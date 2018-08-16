@@ -50,28 +50,33 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				criteria.createAlias("createdBy", "cr");
 				
 				*/
-			 String queryString="SELECT rep.created_date as rep_create_date,rep.created_by as rep_created_date"
-			 		+ ",rd.created_date as rd_created_date," + 
-			 		"us.email as email,offi.name as office_name,rep.group_run as rep_group_run," + 
+			 String queryString="SELECT DATE_FORMAT(rep.created_date,'%m/%d/%Y %T') as rep_create_date,rep.created_by as rep_created_by"
+			 		+ ", DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as rd_created_date," + 
+			 		"us.email as email,offi.name as office_name,rep.group_run as rep_group_run,rd.group_run as rd_group_run, " + 
 			 		"rep.treatement_plan_id as treatement_plan_id,rep.patient_dob as dob,"
-			 		+ " rep.patient_name as patient_name,rep.ivf_form_id as ivf_form_id," + 
+			 		+ " rep.patient_name as patient_name,rep.patient_id as patient_id,rep.ivf_form_id as ivf_form_id," + 
 			 		"rd.rule_id as rule_id,rd.error_message as error_message,rl.name as rule_name FROM " + 
 			 		" reports as rep, report_detail as rd,rules as rl " + 
-			 		" ,user as us ,office as offi where " + 
+			 		" ,user as us ,office as offi where rep.office_id='"+dto.getOfficeId()+"' and " + 
 			 		" rep.id=rd.report_id and rl.id=rd.rule_id " + 
 			 		" and us.uuid=rd.created_by and offi.uuid=rep.office_id ";
 			 if (dto.getReportType().equals(ReportTypeEnum.ReportType.Date.toString())) {
-				 queryString= queryString + "and  DATE(rep.created_date)='"+dto.getReportField1()+"'";
-			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.OfficeId.toString())) {
-				 queryString= queryString + "and  rep.office_id='"+dto.getReportField1()+"'";
+				 queryString= queryString + " and "
+				 		+ " ( DATE(updated_date),DATE_FORMAT(DATE(updated_date),'%m-%d-%Y')='"+dto.getReportField1()+"'"
+					     + " or DATE(created_date),DATE_FORMAT(DATE(created_date),'%m-%d-%Y')='"+dto.getReportField1()+"' )";
+					 
+			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.IvfId.toString())) {
+				 queryString= queryString + "and  rep.ivf_form_id='"+dto.getReportField1()+"'";
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.PatientName.toString())) {
-				 queryString= queryString + "and  upper(rep.patient_name) like='"+dto.getReportField1().toUpperCase()+"'";
+				 queryString= queryString + "and  upper(rep.patient_name) like '%"+dto.getReportField1().toUpperCase()+"%'";
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.TreatmentId.toString())) {
 				 queryString= queryString + "and  rep.treatement_plan_id='"+dto.getReportField1()+"'";
 						 
 			 }
 			 		
-			 queryString=queryString+ "group  by rep.treatement_plan_id, rd.rule_id order by rd.group_run";
+			 //queryString=queryString+ " group  by rep.treatement_plan_id, rd.rule_id"
+			 queryString=queryString+ "	 order by rd.group_run asc";
+			 System.out.println(queryString);
 			 list=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(ReportResponseDto.class)). list();
 			 
 		} catch (Exception e) {

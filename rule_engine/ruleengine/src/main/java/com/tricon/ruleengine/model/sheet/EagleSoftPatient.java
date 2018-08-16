@@ -2,27 +2,30 @@ package com.tricon.ruleengine.model.sheet;
 
 public class EagleSoftPatient {
 
-	private String patientId;
-	private String firstName;
-	private String lastName;
-	private String birthDate;
-	private String socialSecurity;
-	private String primMemberId;
-	private String responsiblePartyStatus;
-	private String responsibleParty;
-	private String primMaximumCcoverage;
-	private String primBenefitsRemaining;
-	private String primRemainingDeductible;
-	private String secBenefitsRemaining;
-	private String secRemainingDeductible;
-	private String plannedServicesServiceCode;
-	private String plannedServicesFee;
-	private String employerId;
-	private String employerName;
-	private String plannedServicesCompletionDate;
-	private String feeScheduleId;
-	private String feeScheduleName;
-	private String covBookHeaderName;
+	private String patientId;//A
+	private String firstName;//B
+	private String lastName;//C
+	private String birthDate;//D
+	private String socialSecurity;//E
+	private String primMemberId;//F
+	private String status;//G
+	private String responsiblePartyStatus;//H
+	private String responsibleParty;//I
+	private String maximumCoverage;//J
+	private String primBenefitsRemaining;//K
+	private String primRemainingDeductible;//L
+	private String secBenefitsRemaining;//M
+	private String secRemainingDeductible;//N
+	
+	//private String plannedServicesServiceCode;
+	//private String plannedServicesFee;
+	private String employerId;//O
+	private String employerName;//P
+	//private String plannedServicesCompletionDate;
+	private String feeScheduleId;//Q
+	private String feeScheduleName;//R
+	private String covBookHeaderId;//S
+	private String covBookHeaderName;//T
 	public String getPatientId() {
 		return patientId;
 	}
@@ -59,6 +62,12 @@ public class EagleSoftPatient {
 	public void setPrimMemberId(String primMemberId) {
 		this.primMemberId = primMemberId;
 	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public String getResponsiblePartyStatus() {
 		return responsiblePartyStatus;
 	}
@@ -71,11 +80,11 @@ public class EagleSoftPatient {
 	public void setResponsibleParty(String responsibleParty) {
 		this.responsibleParty = responsibleParty;
 	}
-	public String getPrimMaximumCcoverage() {
-		return primMaximumCcoverage;
+	public String getMaximumCoverage() {
+		return maximumCoverage;
 	}
-	public void setPrimMaximumCcoverage(String primMaximumCcoverage) {
-		this.primMaximumCcoverage = primMaximumCcoverage;
+	public void setMaximumCoverage(String maximumCoverage) {
+		this.maximumCoverage = maximumCoverage;
 	}
 	public String getPrimBenefitsRemaining() {
 		return primBenefitsRemaining;
@@ -101,18 +110,6 @@ public class EagleSoftPatient {
 	public void setSecRemainingDeductible(String secRemainingDeductible) {
 		this.secRemainingDeductible = secRemainingDeductible;
 	}
-	public String getPlannedServicesServiceCode() {
-		return plannedServicesServiceCode;
-	}
-	public void setPlannedServicesServiceCode(String plannedServicesServiceCode) {
-		this.plannedServicesServiceCode = plannedServicesServiceCode;
-	}
-	public String getPlannedServicesFee() {
-		return plannedServicesFee;
-	}
-	public void setPlannedServicesFee(String plannedServicesFee) {
-		this.plannedServicesFee = plannedServicesFee;
-	}
 	public String getEmployerId() {
 		return employerId;
 	}
@@ -124,12 +121,6 @@ public class EagleSoftPatient {
 	}
 	public void setEmployerName(String employerName) {
 		this.employerName = employerName;
-	}
-	public String getPlannedServicesCompletionDate() {
-		return plannedServicesCompletionDate;
-	}
-	public void setPlannedServicesCompletionDate(String plannedServicesCompletionDate) {
-		this.plannedServicesCompletionDate = plannedServicesCompletionDate;
 	}
 	public String getFeeScheduleId() {
 		return feeScheduleId;
@@ -143,15 +134,19 @@ public class EagleSoftPatient {
 	public void setFeeScheduleName(String feeScheduleName) {
 		this.feeScheduleName = feeScheduleName;
 	}
+	public String getCovBookHeaderId() {
+		return covBookHeaderId;
+	}
+	public void setCovBookHeaderId(String covBookHeaderId) {
+		this.covBookHeaderId = covBookHeaderId;
+	}
 	public String getCovBookHeaderName() {
-		if (covBookHeaderName==null) covBookHeaderName="";
 		return covBookHeaderName;
 	}
 	public void setCovBookHeaderName(String covBookHeaderName) {
-
 		this.covBookHeaderName = covBookHeaderName;
-	} 
+	}
 	
-	
+    	
 	
 }

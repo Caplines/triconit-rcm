@@ -1,11 +1,8 @@
 package com.tricon.ruleengine.utils;
 
 import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,26 +11,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.google.common.collect.Collections2;
 import com.monitorjbl.xlsx.StreamingReader;
 import com.tricon.ruleengine.dto.MicroSoftSheetJson;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
-import com.tricon.ruleengine.model.db.Rules;
-import com.tricon.ruleengine.model.sheet.EagleSoftCB;
-import com.tricon.ruleengine.model.sheet.EagleSoftCBNew;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
-import com.tricon.ruleengine.model.sheet.EagleSoftFSName;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
-import com.tricon.ruleengine.model.sheet.EagleSoftRemBalDedMax;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
@@ -202,9 +191,15 @@ public class ReadMicrosoftFile {
 				else if (colCt == 15)
 					treatmentPlanDetails.setEstSecondary(currentCell.getStringCellValue());
 				else if (colCt == 16)
-					tp.setEstInsurance(currentCell.getStringCellValue());
+					treatmentPlanDetails.setDescription(currentCell.getStringCellValue());
 				else if (colCt == 17)
+					tp.setEstInsurance(currentCell.getStringCellValue());
+				else if (colCt == 18)
 					tp.setPatientPortion(currentCell.getStringCellValue());
+				//
+				if (tp.getTooth()==null) tp.setTooth("NA");
+				else if (tp.getTooth()!=null && tp.getTooth().trim().equals("")) tp.setTooth("NA");//NA Mean All Tooth.. like cleaning..
+				
 
 			}
 			if (added) {
@@ -376,54 +371,54 @@ public class ReadMicrosoftFile {
 					c = "";
 				// currentCell.setCellType(CellType.STRING);
 				if (colCt == 0)
-					fn.setPatientId(c);
+					fn.setPatientId(c);//A
 				else if (colCt == 1)
-					fn.setFirstName(c);
+					fn.setFirstName(c);//B
 				else if (colCt == 2)
-					fn.setLastName(c);
+					fn.setLastName(c);//C
 				else if (colCt == 3) {
 
 					if (currentCell.getDateCellValue() != null) {
 						fn.setBirthDate(Constants.SIMPLE_DATE_FORMAT.format(currentCell.getDateCellValue()));
 					} else {
-						fn.setBirthDate("");
+						fn.setBirthDate("");//D
 					}
 				} else if (colCt == 4)
-					fn.setSocialSecurity(c);
+					fn.setSocialSecurity(c);//E
 				else if (colCt == 5)
-					fn.setPrimMemberId(c);
+					fn.setPrimMemberId(c);//F
 				else if (colCt == 6)
-					fn.setResponsiblePartyStatus(c);
+					fn.setStatus(c);//G
 				else if (colCt == 7)
-					fn.setResponsibleParty(c);
+					fn.setResponsiblePartyStatus(c);//H
 				else if (colCt == 8)
-					fn.setPrimMaximumCcoverage(c);
+					fn.setResponsibleParty(c);//I
 				else if (colCt == 9)
-					fn.setPrimBenefitsRemaining(c);
+					fn.setMaximumCoverage(c);//J
 				else if (colCt == 10)
-					fn.setPrimRemainingDeductible(c);
+					fn.setPrimBenefitsRemaining(c);//K
 				else if (colCt == 11)
-					fn.setSecBenefitsRemaining(c);
+					fn.setPrimRemainingDeductible(c);//L
 				else if (colCt == 12)
-					fn.setSecRemainingDeductible(c);
+					fn.setSecBenefitsRemaining(c);//M
 				else if (colCt == 13)
-					fn.setPlannedServicesServiceCode(c);
+					fn.setSecRemainingDeductible(c);//N
 				else if (colCt == 14)
-					fn.setPlannedServicesFee(c);
+					fn.setEmployerId(c);//O
 				else if (colCt == 15)
-					fn.setEmployerId(c);
+					fn.setEmployerName(c);//P
 				else if (colCt == 16)
-					fn.setEmployerName(c);
+					fn.setFeeScheduleId(c);//Q
 				else if (colCt == 17)
-					fn.setPlannedServicesCompletionDate(c);
-				else if (colCt == 18)
-					fn.setFeeScheduleId(c);
-				else if (colCt == 19)
-					fn.setFeeScheduleName(c);
-				else if (colCt == 20) {
+					fn.setFeeScheduleName(c);//R
+				else if (colCt == 18) {
 					//System.out.println("HHHHHHHHHHHHHHH");
 					//System.out.println(c);
-					fn.setCovBookHeaderName(c);
+					fn.setCovBookHeaderId(c);//S
+				}else if (colCt == 19) {
+					//System.out.println("HHHHHHHHHHHHHHH");
+					//System.out.println(c);
+					fn.setCovBookHeaderName(c);//T
 				}
 			}
 
@@ -443,10 +438,11 @@ public class ReadMicrosoftFile {
 							//		.format(Constants.SIMPLE_DATE_FORMAT.parse(ivfSheet.getPatientDOB()))
 							//		+ ivfSheet.getPatientName());
 							
-							if ((fn.getBirthDate() + fn.getFirstName() + " " + fn.getLastName())
-									.equalsIgnoreCase(Constants.SIMPLE_DATE_FORMAT
-											.format(Constants.SIMPLE_DATE_FORMAT.parse(ivfSheet.getPatientDOB()))
-											+ ivfSheet.getPatientName())) {
+							//if ((fn.getBirthDate() + fn.getFirstName() + " " + fn.getLastName())
+								//	.equalsIgnoreCase(Constants.SIMPLE_DATE_FORMAT
+									//		.format(Constants.SIMPLE_DATE_FORMAT.parse(ivfSheet.getPatientDOB()))
+										//	+ ivfSheet.getPatientName())) {
+								if ((fn.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
 								if (map == null) map = new HashMap<>();
 								if (map.containsKey(ivfSheet.getUniqueID())) {
 									// if the key has already been used,
@@ -494,7 +490,7 @@ public class ReadMicrosoftFile {
 		} else if (Constants.microsoft_emp_master.equals(type)) {
 			list = readEmployerMasterJson(obj, dto);
 		} else if (Constants.microsoft_patient.equals(type)) {
-			list = readPatientJson(obj, dto);//
+			//list = readPatientJson(obj, dto);//
 		}
 		//
 		return list;
@@ -655,6 +651,7 @@ public class ReadMicrosoftFile {
 		return list;
 	}
 
+	/*
 	private List<Object> readPatientJson(Object obj, TreatmentPlanValidationDto dto) {
 		List<Object> list = null;
 		MicroSoftSheetJson graph = (MicroSoftSheetJson) obj;
@@ -724,5 +721,5 @@ public class ReadMicrosoftFile {
 		}
 		return list;
 	}
-
+    */
 }

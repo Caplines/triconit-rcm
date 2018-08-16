@@ -1,11 +1,9 @@
 package com.tricon.ruleengine.utils;
 
-import static org.hamcrest.CoreMatchers.nullValue;
 
 import java.io.BufferedWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,7 +19,6 @@ import java.util.Set;
 import org.springframework.context.MessageSource;
 
 import com.google.common.collect.Collections2;
-import com.tricon.ruleengine.api.controller.RuleEngineValidationController;
 import com.tricon.ruleengine.dto.FreqencyDto;
 import com.tricon.ruleengine.dto.HistoryMatcherDto;
 import com.tricon.ruleengine.dto.Rule6Dto;
@@ -153,22 +150,19 @@ public class RuleBook {
 		boolean pass = true;
 		if (espatients != null && espatients.get(0) != null) {
 			EagleSoftPatient pat = espatients.get(0);
-			System.out.println(ivf.getPlanCoverageBook());
-			System.out.println(pat.getCovBookHeaderName());
-
 			// String esp_ = ivf.getPlanFeeScheduleName();
-			RuleEngineLogger.generateLogs(clazz,"Coverage Book-"+ivf.getPlanCoverageBook()+" Coverage Book Header Name-"+ivf.getPlanCoverageBook(), Constants.rule_log_debug,bw);
+			RuleEngineLogger.generateLogs(clazz,"Coverage Book-"+ivf.getPlanCoverageBook()+" :: Coverage Book Header Name-"+ivf.getPlanCoverageBook(), Constants.rule_log_debug,bw);
 	        
-			if (!ivf.getPlanCoverageBook().trim().equalsIgnoreCase(pat.getCovBookHeaderName().trim())) {
+			if (ivf.getPlanCoverageBook()!=null  && pat.getCovBookHeaderName()!=null && !ivf.getPlanCoverageBook().trim().equalsIgnoreCase(pat.getCovBookHeaderName().trim())) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule4.error.message_1",
 								new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName() }, locale),
 						Constants.FAIL));
 				pass = false;
 			}
-			RuleEngineLogger.generateLogs(clazz,"Plan Fee Schedule Name-"+ivf.getPlanFeeScheduleName()+" Patient Fee Schedule Name-"+pat.getFeeScheduleName(), Constants.rule_log_debug,bw);
+			RuleEngineLogger.generateLogs(clazz,"Plan Fee Schedule Name-"+ivf.getPlanFeeScheduleName()+" :: Patient Fee Schedule Name-"+pat.getFeeScheduleName(), Constants.rule_log_debug,bw);
 	        
-			if (!ivf.getPlanFeeScheduleName().trim().equalsIgnoreCase(pat.getFeeScheduleName().trim())) {
+			if (ivf.getPlanFeeScheduleName()!=null  && pat.getFeeScheduleName()!=null &&   !ivf.getPlanFeeScheduleName().trim().equalsIgnoreCase(pat.getFeeScheduleName().trim())) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule4.error.message_3",
 								new Object[] { ivf.getPlanFeeScheduleName(), pat.getFeeScheduleName() }, locale),
@@ -186,7 +180,7 @@ public class RuleBook {
 							name -> name.getFeesServiceCode().equals(tp.getServiceCode()));
 					if (ruleGen != null) {
 						for (EagleSoftFeeShedule fs : ruleGen) {
-							RuleEngineLogger.generateLogs(clazz," FS FEE -"+fs.getFeesFee()+" Treatment Plan Fee-"+tp.getFee(), Constants.rule_log_debug,bw);
+							RuleEngineLogger.generateLogs(clazz," FS FEE -"+fs.getFeesFee()+" :: Treatment Plan Fee-"+tp.getFee(), Constants.rule_log_debug,bw);
 					        				
 							if (!fs.getFeesFee().equals(tp.getFee())) {
 								missing_code.add(tp.getServiceCode());
@@ -244,23 +238,28 @@ public class RuleBook {
 
 	// Compare Coverage Book, Fee Schedule and Fee in IV and Eaglesoft A- BATCH
 	public List<TPValidationResponseDto> Rule4_A(IVFTableSheet ivfSheet, MessageSource messageSource, Rules rule,
-			List<EagleSoftPatient> espatients) {
+			List<EagleSoftPatient> espatients,BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_4, Constants.rule_log_debug,bw);
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		boolean pass = true;
 		if (espatients != null && espatients.get(0) != null) {
 			EagleSoftPatient pat = espatients.get(0);
+			RuleEngineLogger.generateLogs(clazz,"PlanCoverageBook-"+ivf.getPlanCoverageBook(), Constants.rule_log_debug,bw);
+			RuleEngineLogger.generateLogs(clazz,"CovBookHeaderName-"+pat.getCovBookHeaderName(), Constants.rule_log_debug,bw);
 
 			// String esp_ = ivf.getPlanFeeScheduleName();
-			if (!ivf.getPlanCoverageBook().equals(pat.getCovBookHeaderName())) {
+			if (ivf.getPlanCoverageBook()!=null  && pat.getCovBookHeaderName()!=null &&  !ivf.getPlanCoverageBook().trim().equalsIgnoreCase(pat.getCovBookHeaderName().trim())) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule4.error.message_1",
 								new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName() }, locale),
 						Constants.FAIL));
 				pass = false;
 			}
-			if (!ivf.getPlanFeeScheduleName().equals(pat.getFeeScheduleName())) {
+			RuleEngineLogger.generateLogs(clazz,"Plan Fee Schedule Name-"+ivf.getPlanFeeScheduleName()+" :: Patient Fee Schedule Name-"+pat.getFeeScheduleName(), Constants.rule_log_debug,bw);
+			if (ivf.getPlanFeeScheduleName()!=null  && pat.getFeeScheduleName()!=null &&   !ivf.getPlanFeeScheduleName().trim().equalsIgnoreCase((pat.getFeeScheduleName().trim()))) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule4.error.message_3",
 								new Object[] { ivf.getPlanFeeScheduleName(), pat.getFeeScheduleName() }, locale),
@@ -271,6 +270,7 @@ public class RuleBook {
 			}
 
 		} else {
+			RuleEngineLogger.generateLogs(clazz,"Patient Details not found in Patient Sheet -"+ivf.getPatientName() + "-" + ivf.getPatientDOB(), Constants.rule_log_debug,bw);
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 					"rule.patient.notfound.espatient",
 					new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
@@ -289,13 +289,18 @@ public class RuleBook {
 	// Remaining Deductible, Remaining Balance and Benefit Max as per IV form
 
 	public List<TPValidationResponseDto> Rule5(Object ivfSheet, MessageSource messageSource, Rules rule,
-			List<EagleSoftPatient> espatients) {
+			List<EagleSoftPatient> espatients,BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_5, Constants.rule_log_debug,bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		double planAnnualMax = 0;
 		double planAnnualMaxRem = 0;
 		double planIndDedRem = 0;
+
+		RuleEngineLogger.generateLogs(clazz,"Annual Max-" + ivf.getPlanAnnualMax() + "  :: Annual Max Remaining -"
+				+ ivf.getPlanAnnualMaxRemaining() + " IndividualDeductible Met-"
+				+ ivf.getPlanIndividualDeductibleRemaining() , Constants.rule_log_debug,bw);
 
 		try {
 			planAnnualMax = Double.parseDouble(ivf.getPlanAnnualMax());
@@ -320,7 +325,7 @@ public class RuleBook {
 			EagleSoftPatient pat = espatients.get(0);
 			boolean pass = true;
 			try {
-				primeMaxCov = Double.parseDouble(pat.getPrimMaximumCcoverage());
+				primeMaxCov = Double.parseDouble(pat.getMaximumCoverage());
 				primeBenefitRem = Double.parseDouble(pat.getPrimBenefitsRemaining());
 				primeRemDed = Double.parseDouble(pat.getPrimRemainingDeductible());
 
@@ -330,6 +335,11 @@ public class RuleBook {
 				 * (Plan_IndividualDeductibleRemaining with prim_remaining_deductible)
 				 * 
 				 */
+
+				RuleEngineLogger.generateLogs(clazz,"PrimMaximumCcoverage-" + primeMaxCov + "  :: PrimBenefitsRemaining -"
+						+ primeBenefitRem + "  :: PrimRemainingDeductible-"
+						+ primeRemDed , Constants.rule_log_debug,bw);
+
 				if (planAnnualMax != primeMaxCov) {
 					pass = false;
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -361,9 +371,12 @@ public class RuleBook {
 							messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
 
 			} catch (Exception e) {
+				RuleEngineLogger.generateLogs(clazz," PrimMaximumCcoverage- " + pat.getMaximumCoverage()
+				+ "  :: PrimBenefitsRemaining-" + pat.getPrimBenefitsRemaining()
+				+ "  :: PrimRemainingDeductible-" + pat.getPrimRemainingDeductible() , Constants.rule_log_debug,bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.error.message",
-								new Object[] { " PrimMaximumCcoverage- " + pat.getPrimMaximumCcoverage()
+								new Object[] { " PrimMaximumCcoverage- " + pat.getMaximumCoverage()
 										+ " PrimBenefitsRemaining-" + pat.getPrimBenefitsRemaining()
 										+ " PrimRemainingDeductible-" + pat.getPrimRemainingDeductible() },
 								locale),
@@ -372,6 +385,9 @@ public class RuleBook {
 			}
 
 		} else {
+			RuleEngineLogger.generateLogs(clazz,"Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
+					+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" , Constants.rule_log_debug,bw);
+			
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 					"rule5.error.message_no_data",
 					new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
@@ -383,7 +399,7 @@ public class RuleBook {
 		return dList;
 	}
 
-	// Percentage Coverage ... Only DAta issue with Two
+	// Percentage Coverage check... Only DAta issue with Two
 	// -Sub-GingivalIrrigation_D4921_%,
 	public List<TPValidationResponseDto> Rule6(Object ivfSheet, MessageSource messageSource, Rules rule,
 			List<EagleSoftEmployerMaster> esempmaster, List<EagleSoftPatient> espatients,BufferedWriter bw) {
@@ -435,7 +451,7 @@ public class RuleBook {
 		druleList.add(new Rule6Dto("PerioSurgery_%", ivf.getPerioSurgeryPercentage(), "Periodontal Surgery"));
 		druleList.add(new Rule6Dto("Gingivitis_D4346_%", ivf.getGingivitisD4346Percentage(), "Gingivitis TX"));
 		//
-		RuleEngineLogger.generateLogs(clazz,"Sub-GingivalIrrigation_D4921_% -- is missing", Constants.rule_log_debug,bw);
+		//RuleEngineLogger.generateLogs(clazz,"Sub-GingivalIrrigation_D4921_% -- is missing", Constants.rule_log_debug,bw);
 		druleList.add(new Rule6Dto("SRP_D4341_%", ivf.getsRPD4341Percentage(), "SRP"));
 		// druleList.add(new Rule6Dto("Sub-GingivalIrrigation_D4921_%",
 		// "NNNNNNNNNNNNNNNNNNNNNNNNNNNN",
@@ -443,7 +459,7 @@ public class RuleBook {
 		druleList.add(new Rule6Dto("PerioMaintenance_D4910_%", ivf.getPerioMaintenanceD4910Percentage(),
 				"Perio Maintenance"));
 		druleList.add(new Rule6Dto("FMD_D4355_%", ivf.getFMDD4355Percentage(), "Full Mouth Debridement"));
-		druleList.add(new Rule6Dto("CrownLength_D4249_%", ivf.getPreventivePercentage(), "Periodontal Surgery"));
+		druleList.add(new Rule6Dto("CrownLength_D4249_%", ivf.getCrownLengthD4249Percentage(), "Periodontal Surgery"));
 		druleList.add(
 				new Rule6Dto("PostComposites_D2391_%", ivf.getPostCompositesD2391Percentage(), "Posterior Composites"));
 		druleList.add(new Rule6Dto("IVSedation_D9248_%", ivf.getiVSedationD9248Percentage(), "Sedation 9248"));
@@ -472,7 +488,7 @@ public class RuleBook {
                      
 					for (EagleSoftEmployerMaster y : ivfESMap2) {
 						
-						RuleEngineLogger.generateLogs(clazz,"Employer -"+y.getPercentage()+""+d6.getIvfName()+d6.getPercentage(), Constants.rule_log_debug,bw);
+						RuleEngineLogger.generateLogs(clazz,"Employer -Percentage-"+y.getPercentage()+" ::IVF FROM Name- "+d6.getIvfName()+" ::IVF PERCENTAGE- "+d6.getPercentage(), Constants.rule_log_debug,bw);
 						
 						if (y.getPercentage().trim().equalsIgnoreCase(d6.getPercentage().trim())) {
 							// Pass
@@ -490,6 +506,8 @@ public class RuleBook {
 				} else {
 					// Name not found in Emp Master
 					pass = false;
+					RuleEngineLogger.generateLogs(clazz,"ES Names in Employer Master not found--"+d6.getFsName(), Constants.rule_log_debug,bw);
+
 					li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule6.error.message_2", new Object[] { d6.getFsName() }, locale),
 							Constants.FAIL));
@@ -507,22 +525,29 @@ public class RuleBook {
 	}
 
 	// Alert
-	public List<TPValidationResponseDto> Rule7(Object ivfSheet, MessageSource messageSource, Rules rule) {
+	public List<TPValidationResponseDto> Rule7(Object ivfSheet, MessageSource messageSource, Rules rule,BufferedWriter bw) {
 
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_7, Constants.rule_log_debug,bw);
+		
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> li = new ArrayList<>();
+		RuleEngineLogger.generateLogs(clazz,"Non Dup clause- "+ivf.getPlanNonDuplicateClause(), Constants.rule_log_debug,bw);
+
 		if (ivf.getPlanNonDuplicateClause().equalsIgnoreCase("yes")) {
 			li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule7.error.message_duplicate", null, locale), Constants.FAIL));
 		}
+		RuleEngineLogger.generateLogs(clazz,"PlanPreDMandatory - "+ivf.getPlanPreDMandatory(), Constants.rule_log_debug,bw);
 		if (ivf.getPlanPreDMandatory().equalsIgnoreCase("yes")) {
 			li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule7.error.message_preman", null, locale), Constants.FAIL));
 		}
+		RuleEngineLogger.generateLogs(clazz,"getPlanFullTimeStudentStatus -"+ivf.getPlanFullTimeStudentStatus(), Constants.rule_log_debug,bw);
 		if (ivf.getPlanFullTimeStudentStatus().equalsIgnoreCase("yes")) {
 			li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule7.error.message_fulltime", null, locale), Constants.FAIL));
 		}
+		RuleEngineLogger.generateLogs(clazz,"getPlanAssignmentofBenefits - "+ivf.getPlanAssignmentofBenefits(), Constants.rule_log_debug,bw);
 		if (ivf.getPlanAssignmentofBenefits().equalsIgnoreCase("yes")) {
 			li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule7.error.message_benefit", null, locale), Constants.FAIL));
@@ -537,7 +562,9 @@ public class RuleBook {
 
 	// Age Limits
 	public List<TPValidationResponseDto> Rule8(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule) {
+			Rules rule,BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_8, Constants.rule_log_debug,bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String fl = ivf.getFlourideAgeLimit();
@@ -556,7 +583,10 @@ public class RuleBook {
 		boolean pass = true;
 		try {
 			age = DateUtils.calculateAge(dob);
+			RuleEngineLogger.generateLogs(clazz,"Date of Birth-"+dob, Constants.rule_log_debug,bw);
+			RuleEngineLogger.generateLogs(clazz,"Age-"+age, Constants.rule_log_debug,bw);
 		} catch (ParseException e) {
+			RuleEngineLogger.generateLogs(clazz,"Date of Birth-"+dob, Constants.rule_log_debug,bw);
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule1.error.message.date", new Object[] { dob }, locale),
 					Constants.FAIL));
@@ -583,7 +613,8 @@ public class RuleBook {
 			if (tp.getServiceCode().equals("D1208")) {
 				try {
 					int f = Integer.parseInt(fl);
-					if (age > f) {
+					RuleEngineLogger.generateLogs(clazz,"Age -"+dob+" ,FlourideAgeLimit-"+f, Constants.rule_log_debug,bw);
+							if (age > f) {
 						d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule8.error.message",
 										new Object[] { tp.getServiceCode(), age, f }, locale),
@@ -600,6 +631,7 @@ public class RuleBook {
 			} else if (tp.getServiceCode().equals("D1206")) {
 				try {
 					int v = Integer.parseInt(var);
+					RuleEngineLogger.generateLogs(clazz,"Age -"+dob+" ,VarnishD1206AgeLimit()-"+v, Constants.rule_log_debug,bw);
 					if (age > v) {
 						d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule8.error.message",
@@ -618,6 +650,7 @@ public class RuleBook {
 
 				try {
 					int s = Integer.parseInt(sel);
+					RuleEngineLogger.generateLogs(clazz,"Age -"+dob+" ,SealantsD1351AgeLimit-"+s, Constants.rule_log_debug,bw);
 					if (age > s) {
 						d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule8.error.message",
@@ -640,6 +673,7 @@ public class RuleBook {
 
 				try {
 					int o = Integer.parseInt(ortho);
+					RuleEngineLogger.generateLogs(clazz,"Age -"+dob+" ,OrthoAgeLimit-"+o, Constants.rule_log_debug,bw);
 					if (age > o) {
 						d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule8.error.message",
@@ -663,10 +697,11 @@ public class RuleBook {
 
 	}
 
-	// Sealants work in Progress waiting Message
+	// Sealants  
 	public List<TPValidationResponseDto> Rule14(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule) {
+			Rules rule,BufferedWriter bw) {
 
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_14, Constants.rule_log_debug,bw);
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String dob = ivf.getPatientDOB();
 		// String sealantPer=ivf.getSealantsD1351Percentage();
@@ -700,6 +735,9 @@ public class RuleBook {
 					Constants.FAIL));
 			return d;
 		}
+		RuleEngineLogger.generateLogs(clazz,"getSealantsD1351AgeLimit -"+sealantAL, Constants.rule_log_debug,bw);
+		RuleEngineLogger.generateLogs(clazz,"Age  -"+age, Constants.rule_log_debug,bw);
+		RuleEngineLogger.generateLogs(clazz," is age <= sealantAL  -"+(age <= Integer.parseInt(sealantAL)), Constants.rule_log_debug,bw);
 
 		// As per requirement hard Code these
 
@@ -754,6 +792,7 @@ public class RuleBook {
 				TreatmentPlan tp = (TreatmentPlan) obj;
 				String tooths[] = ToothUtil.getToothsFromTooth(tp.getTooth());
 				for (String tooth : tooths) {
+					RuleEngineLogger.generateLogs(clazz,"primaryMolar-"+primaryMolar +" -Tooth-"+tooth, Constants.rule_log_debug,bw);
 
 					if (!primaryMolar.trim().equalsIgnoreCase("yes")) {
 						Collection<String> prit = Collections2.filter(primaryMolarTCList, th -> th.equals(tooth));
@@ -761,6 +800,7 @@ public class RuleBook {
 							primaryMolarT.add(x);
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,"premanentMolar-"+premanentMolar +" -Tooth-"+tooth , Constants.rule_log_debug,bw);
 
 					if (!premanentMolar.trim().equalsIgnoreCase("yes")) {
 						Collection<String> permat = Collections2.filter(permanentMolarTCList, th -> th.equals(tooth));
@@ -768,6 +808,7 @@ public class RuleBook {
 							primaryMolarT.add(x);
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,"preMolar-"+preMolar +" -Tooth-"+tooth , Constants.rule_log_debug,bw);
 					if (!preMolar.trim().equalsIgnoreCase("yes")) {
 						Collection<String> perm = Collections2.filter(preMolarCList, th -> th.equals(tooth));
 						for (String x : perm) {
@@ -811,7 +852,9 @@ public class RuleBook {
 
 	// SRP Quads Per Day
 	public List<TPValidationResponseDto> Rule15(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule) {
+			Rules rule,BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_15, Constants.rule_log_debug,bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String srpperday = ivf.getsRPD4341QuadsPerDay();
@@ -840,6 +883,9 @@ public class RuleBook {
 			return d;
 		}
 
+		RuleEngineLogger.generateLogs(clazz,"getsRPD4341QuadsPerDay--"+ivf.getsRPD4341QuadsPerDay(), Constants.rule_log_debug,bw);
+		RuleEngineLogger.generateLogs(clazz,"getsRPD4341DaysBwTreatment--"+ivf.getsRPD4341DaysBwTreatment(), Constants.rule_log_debug,bw);
+
 		List<String> srpCodeTCList = new ArrayList<>();
 		srpCodeTCList.add("D4341");
 		srpCodeTCList.add("D4342");
@@ -852,15 +898,17 @@ public class RuleBook {
 		} // For LOOP end
 
 		// Eligibility for Number of Quads
+		RuleEngineLogger.generateLogs(clazz,"D4341-D4342 Total combined size-"+size, Constants.rule_log_debug,bw);
 
 		if (size > Integer.parseInt(srpperday)) {
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule15.error.message1", new Object[] { srpperday, size }, locale),
+					messageSource.getMessage("rule15.error.message3", new Object[] { srpperday, size,datybetweenTr }, locale),
 					Constants.FAIL));
 			pass = false;
 		}
 
 		// No. of Days Check
+		RuleEngineLogger.generateLogs(clazz,"datybetweenTr - "+datybetweenTr, Constants.rule_log_debug,bw);
 		if (Integer.parseInt(datybetweenTr) > 0 && size > 0) {
 			pass = false;
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -877,7 +925,9 @@ public class RuleBook {
 
 	// Bundling - X-Rays
 	public List<TPValidationResponseDto> Rule16(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule) {
+			Rules rule,BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_16, Constants.rule_log_debug,bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String xray = ivf.getxRaysBundling();
@@ -888,6 +938,7 @@ public class RuleBook {
 					Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
 			return d;
 		}
+		RuleEngineLogger.generateLogs(clazz,"getxRaysBundling--"+xray, Constants.rule_log_debug,bw);
 		if (xray != null && xray.trim().equalsIgnoreCase("yes")) {
 			List<String> xrayCodeList = new ArrayList<>();
 			xrayCodeList.add("D0220");
@@ -915,12 +966,14 @@ public class RuleBook {
 					sizePAXray = sizePAXray + prita.size();
 
 			} // For LOOP end
+			RuleEngineLogger.generateLogs(clazz,"sizeXray-"+sizeXray, Constants.rule_log_debug,bw);
 
 			if (sizeXray > 0) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule16.error.message1", new Object[] {}, locale), Constants.FAIL));
 				pass = false;
 			}
+			RuleEngineLogger.generateLogs(clazz,"sizePAXray-"+sizePAXray, Constants.rule_log_debug,bw);
 			if (sizePAXray > 9) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule16.error.message2", new Object[] {}, locale), Constants.FAIL));
@@ -937,7 +990,8 @@ public class RuleBook {
 
 	// Bundling - Fillings -
 	public List<TPValidationResponseDto> Rule17(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule) {
+			Rules rule,BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_17, Constants.rule_log_debug,bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String fillings = ivf.getFillingsBundling();
@@ -948,6 +1002,8 @@ public class RuleBook {
 					Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
 			return d;
 		}
+		RuleEngineLogger.generateLogs(clazz,"fillings-"+fillings, Constants.rule_log_debug,bw);
+
 		if (fillings != null && fillings.trim().equalsIgnoreCase("yes")) {
 			List<String> fillingCodeList_1 = new ArrayList<>();
 			fillingCodeList_1.add("D2330");
@@ -1036,10 +1092,13 @@ public class RuleBook {
 				TreatmentPlan tp = (TreatmentPlan) obj;
 				// fillingCodes
 				Collection<String> prit = Collections2.filter(fillingCodeList, cd -> cd.equals(tp.getServiceCode()));
+				
 				if (prit != null) {
+					RuleEngineLogger.generateLogs(clazz,"ServiceCode Found --"+tp.getServiceCode(), Constants.rule_log_debug,bw);
 
 					String[] tooths = ToothUtil.getToothsFromTooth(tp.getTooth());
 					for (String tooth : tooths) {
+						RuleEngineLogger.generateLogs(clazz,"tooth --"+tooth, Constants.rule_log_debug,bw);
 						if (filligToothMap == null)
 							filligToothMap = new HashMap<>();
 						if (filligToothMap.containsKey(tooth)) {
@@ -1053,6 +1112,9 @@ public class RuleBook {
 						}
 
 					}
+				}else {
+					RuleEngineLogger.generateLogs(clazz,"ServiceCode NOT Found --"+tp.getServiceCode(), Constants.rule_log_debug,bw);
+
 				}
 
 			} // For LOOP end
@@ -1071,6 +1133,12 @@ public class RuleBook {
 					int countD2392 = Collections.frequency(serviceCodes, "D2392");
 					int countD2393 = Collections.frequency(serviceCodes, "D2393");
 
+					RuleEngineLogger.generateLogs(clazz,"countD2330--"+countD2330, Constants.rule_log_debug,bw);
+					RuleEngineLogger.generateLogs(clazz,"countD2331--"+countD2331, Constants.rule_log_debug,bw);
+					RuleEngineLogger.generateLogs(clazz,"countD2332--"+countD2332, Constants.rule_log_debug,bw);
+					RuleEngineLogger.generateLogs(clazz,"countD2392--"+countD2392, Constants.rule_log_debug,bw);
+					RuleEngineLogger.generateLogs(clazz,"countD2391--"+countD2391, Constants.rule_log_debug,bw);
+					RuleEngineLogger.generateLogs(clazz,"countD2393--"+countD2393, Constants.rule_log_debug,bw);
 					if (countD2330 >= 4) {
 						found = true;
 
@@ -1143,7 +1211,8 @@ public class RuleBook {
 
 	// Filling Codes based on Tooth No
 	public List<TPValidationResponseDto> Rule9(List<Object> tpList, MessageSource messageSource, Rules rule,
-			List<Mappings> mappings) {
+			List<Mappings> mappings,BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_18, Constants.rule_log_debug,bw);
 
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		if (tpList == null) {
@@ -1160,12 +1229,20 @@ public class RuleBook {
 				// Mappings map = getMappingFromList(mappings, scode);dd
 				Mappings map = getMappingFromListForToothFilling(mappings, scode);
 				if (map != null) {
+					RuleEngineLogger.generateLogs(clazz,"Filling Codes Found-"+scode, Constants.rule_log_debug,bw);
 					for (String tooth : tooths) {
-						boolean toothFound = false;
+						RuleEngineLogger.generateLogs(clazz,"Tooth-"+tooth, Constants.rule_log_debug,bw);
+							boolean toothFound = false;
 						String toothsm[] = map.getFillingToothNoMapping().split(",");
-						List<String> ts = ToothUtil.findCommonTooth(tooths, toothsm);
+						RuleEngineLogger.generateLogs(clazz,"Filling Tooth-"+ map.getFillingToothNoMapping(), Constants.rule_log_debug,bw);
+						
+						List<String> ts = ToothUtil.findCommonTooth(tooth.trim().split(","), toothsm);
 						if (ts != null && ts.size() > 0) {
-							toothFound = true;
+							RuleEngineLogger.generateLogs(clazz,"CommonTooth-"+String.join(",", ts), Constants.rule_log_debug,bw);
+								toothFound = true;
+						}else {
+							RuleEngineLogger.generateLogs(clazz,"CommonTooth not found", Constants.rule_log_debug,bw);
+							
 						}
 						/*
 						 * for (String toothm : toothsm) { if (toothm.equals(tooth)) { toothFound =
@@ -1178,6 +1255,8 @@ public class RuleBook {
 						}
 					} // End - for loop from tooth of Treatment Plan
 				} else {
+					RuleEngineLogger.generateLogs(clazz,"Filling Codes Not Found-"+scode, Constants.rule_log_debug,bw);
+
 					/*
 					 * pass = false; d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					 * messageSource.getMessage("rule.servicecode.notfound", new Object[] { scode },
@@ -1195,10 +1274,10 @@ public class RuleBook {
 
 	// Pre Auth
 	public List<TPValidationResponseDto> Rule10(List<Object> tpList, MessageSource messageSource, Rules rule,
-			List<Mappings> mappings) {
+			List<Mappings> mappings,BufferedWriter bw) {
 
-		// IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
-		// String dob = ivf.getPatientDOB();
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_10, Constants.rule_log_debug,bw);
+
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		if (tpList == null) {
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1207,6 +1286,8 @@ public class RuleBook {
 		}
 		// int age = 0;
 		boolean pass = true;
+		RuleEngineLogger.generateLogs(clazz,"Age Logic removed as per Updated Doc", Constants.rule_log_debug,bw);
+
 		/*
 		 * Age Logic removed in updated Document try { age =
 		 * DateUtils.calculateAge(dob); } catch (ParseException e) { d.add(new
@@ -1214,6 +1295,10 @@ public class RuleBook {
 		 * messageSource.getMessage("rule1.error.message.date", new Object[] { dob },
 		 * locale), Constants.FAIL)); return d; }
 		 */
+		List<String> combined1=new ArrayList<>();
+		List<String> combined2=new ArrayList<>();
+		List<String> combined3=new ArrayList<>();
+		
 		for (Object obj : tpList) {
 			TreatmentPlan tp = (TreatmentPlan) obj;
 			Mappings mapA = getMappingFromListAdditionalInformationNeeded(mappings, tp.getServiceCode());
@@ -1221,20 +1306,40 @@ public class RuleBook {
 
 			// 100
 			if (mapA != null) {
+				RuleEngineLogger.generateLogs(clazz,"Addtion Info Needed present"+mapA.getAdditionalInformationNeeded(), Constants.rule_log_debug,bw);
 				pass = false;
+				combined1.add(tp.getServiceCode());
+				combined2.add(mapA.getAdditionalInformationNeeded() );
+				/*
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule10.error.message1",
 								new Object[] { tp.getServiceCode(), mapA.getAdditionalInformationNeeded() }, locale),
 						Constants.FAIL));
-
+                */
 			}
 			if (mapP != null) {
+				RuleEngineLogger.generateLogs(clazz,"PreAuth  present"+mapP.getPreAuthNeeded()
+						, Constants.rule_log_debug,bw);
 				pass = false;
+				combined3.add(tp.getServiceCode());
+				/*
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule10.error.message2", new Object[] { tp.getServiceCode() }, locale),
 						Constants.FAIL));
-
+                */
 			}
+		}
+		if (!pass) {
+			if (combined1.size()>0)
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule10.error.message1",
+							new Object[] { String.join(",", combined1),String.join(",", combined2) }, locale),
+					Constants.FAIL));
+			if (combined3.size()>0)
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule10.error.message2", new Object[] { String.join(",", combined3) }, locale),
+					Constants.FAIL));
+			
 		}
 		if (pass)
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1245,12 +1350,18 @@ public class RuleBook {
 
 	// Waiting Period
 	public List<TPValidationResponseDto> Rule11(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, List<Mappings> mappings) {
+			Rules rule, List<Mappings> mappings,BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_11, Constants.rule_log_debug,bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String eff = ivf.getPlanEffectiveDate();
 		String waitb = ivf.getBasicWaitingPeriod();
 		String waitm = ivf.getMajorWaitingPeriod();
+		RuleEngineLogger.generateLogs(clazz,"getPlanEffectiveDate-"+eff, Constants.rule_log_debug,bw);
+		RuleEngineLogger.generateLogs(clazz,"getBasicWaitingPeriod-"+waitb, Constants.rule_log_debug,bw);
+		RuleEngineLogger.generateLogs(clazz,"getMajorWaitingPeriod-"+waitm, Constants.rule_log_debug,bw);
+
 		Date effD = null;
 		Date dos = null;
 		List<TPValidationResponseDto> d = new ArrayList<>();
@@ -1300,10 +1411,13 @@ public class RuleBook {
 
 			if (map != null && map.getServiceCodeCategory().getName().equalsIgnoreCase("Major")
 					|| map.getServiceCodeCategory().getName().equalsIgnoreCase("Basic")) {
+				RuleEngineLogger.generateLogs(clazz,"Category Name:"+map.getServiceCodeCategory().getName(), Constants.rule_log_debug,bw);
 				int wt = Integer.parseInt(waitb);
 				if (map.getServiceCodeCategory().getName().equalsIgnoreCase("Major"))
 					wt = Integer.parseInt(waitm);
-
+				RuleEngineLogger.generateLogs(clazz,"DOS "+dos, Constants.rule_log_debug,bw);
+				RuleEngineLogger.generateLogs(clazz,"daysBetweenDates"+(DateUtils.daysBetweenDates(effD, dos)), Constants.rule_log_debug,bw);
+				RuleEngineLogger.generateLogs(clazz,"WAIT -"+wt, Constants.rule_log_debug,bw);
 				if (DateUtils.daysBetweenDates(effD, dos).intValue() < wt) {
 					pass = false;
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1323,7 +1437,9 @@ public class RuleBook {
 
 	// Missing Tooth Clause
 	public List<TPValidationResponseDto> Rule18(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, List<Mappings> mappings) {
+			Rules rule, List<Mappings> mappings,BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_18, Constants.rule_log_debug,bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> d = new ArrayList<>();
@@ -1333,12 +1449,14 @@ public class RuleBook {
 			return d;
 		}
 		boolean pass = true;
+		RuleEngineLogger.generateLogs(clazz,"getMissingToothClause="+ivf.getMissingToothClause(), Constants.rule_log_debug,bw);
 		if (ivf.getMissingToothClause() != null && ivf.getMissingToothClause().trim().equalsIgnoreCase("yes")) {
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
 				Collection<Mappings> mL = Collections2.filter(mappings,
 						y -> y.getAdaCodes().getCode().equals((tp).getServiceCode()));
 				if (mL == null) {
+					RuleEngineLogger.generateLogs(clazz,"Service code not found -"+tp.getServiceCode(), Constants.rule_log_debug,bw);
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 							.getMessage("rule.servicecode.notfound", new Object[] { tp.getServiceCode() }, locale),
 							Constants.FAIL));
@@ -1346,6 +1464,7 @@ public class RuleBook {
 					return d;
 				} else {
 					for (Mappings m : mL) {
+						RuleEngineLogger.generateLogs(clazz,"Service code  founnd -"+tp.getServiceCode()+ "  MissingToothClauseApplicable-"+m.getMissingToothClauseApplicable(), Constants.rule_log_debug,bw);
 						if (m.getMissingToothClauseApplicable() != null
 								&& m.getMissingToothClauseApplicable().trim().equalsIgnoreCase("yes")) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
@@ -1368,7 +1487,8 @@ public class RuleBook {
 
 	// Build-Ups & Crown Same Day
 	public List<TPValidationResponseDto> Rule13(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule) {
+			Rules rule,BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_13, Constants.rule_log_debug,bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String samedayCr = ivf.getBuildUpsD2950SameDayCrown();
@@ -1380,7 +1500,8 @@ public class RuleBook {
 		}
 		boolean pass = true;
 
-		if (samedayCr != null && samedayCr.equalsIgnoreCase("yes")) {
+		RuleEngineLogger.generateLogs(clazz,"BuildUpsD2950SameDayCrown- "+samedayCr, Constants.rule_log_debug,bw);
+		if (samedayCr != null && samedayCr.trim().equalsIgnoreCase("yes")) {
 			// Nothing for now
 		} else {
 			boolean found = false;
@@ -1392,14 +1513,20 @@ public class RuleBook {
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
 				if (tp.getServiceCode().equalsIgnoreCase("D2950")) {
+					RuleEngineLogger.generateLogs(clazz,"D2950 code found", Constants.rule_log_debug,bw);
+					RuleEngineLogger.generateLogs(clazz,"Tooth -"+tooth, Constants.rule_log_debug,bw);
 					tooth = tp.getTooth();
 					found = true;
 				}
 				if (tp.getServiceCode().equals("D2740")) {
+					RuleEngineLogger.generateLogs(clazz,"D2740 code found", Constants.rule_log_debug,bw);
+					RuleEngineLogger.generateLogs(clazz,"Tooth -"+toothD2740, Constants.rule_log_debug,bw);
 					toothD2740 = tp.getTooth();
 				}
 				if (tp.getServiceCode().equals("D2750")) {
-					toothD2750 = tp.getTooth();
+					RuleEngineLogger.generateLogs(clazz,"D2750 code found", Constants.rule_log_debug,bw);
+					RuleEngineLogger.generateLogs(clazz,"Tooth -"+toothD2750, Constants.rule_log_debug,bw);
+									toothD2750 = tp.getTooth();
 				}
 
 			} // For end
@@ -1424,7 +1551,9 @@ public class RuleBook {
 
 	// Downgrading
 	public List<TPValidationResponseDto> Rule19(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, List<Mappings> mappings, List<EagleSoftFeeShedule> esfeess, List<EagleSoftPatient> espatients) {
+			Rules rule, List<Mappings> mappings, List<EagleSoftFeeShedule> esfeess, List<EagleSoftPatient> espatients,BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_19, Constants.rule_log_debug,bw);
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		if (tpList == null) {
@@ -1434,6 +1563,8 @@ public class RuleBook {
 		}
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		boolean pass = true;
+		RuleEngineLogger.generateLogs(clazz,"PosteriorCompositesD2391Downgrade-"+ivf.getPosteriorCompositesD2391Downgrade()+
+				" CrownsD2750D2740Downgrade-"+ivf.getCrownsD2750D2740Downgrade(), Constants.rule_log_debug,bw);
 
 		if (ivf.getPosteriorCompositesD2391Downgrade() != null && ivf.getCrownsD2750D2740Downgrade() != null
 				&& (ivf.getPosteriorCompositesD2391Downgrade().trim().equalsIgnoreCase("yes")
@@ -1456,6 +1587,8 @@ public class RuleBook {
 						List<String> th = ToothUtil.findCommonTooth(toothMa, toothTR);
 						if (th != null && th.size() > 0) {
 							// Tooth Matched
+							RuleEngineLogger.generateLogs(clazz,"CommonTooth-"+String.join(",",th), Constants.rule_log_debug,bw);
+							RuleEngineLogger.generateLogs(clazz,"DownGrading -"+m.getDowngrading(), Constants.rule_log_debug,bw);
 							if (m.getDowngrading() != null && !m.getDowngrading().trim().equals("")) {
 								// Go Fee Schedule goto Check Fee
 								if (esfeess != null && esfeess.size() > 0) {
@@ -1463,6 +1596,8 @@ public class RuleBook {
 											name -> name.getFeesServiceCode().equals(m.getDowngrading().trim()));
 									if (ruleGen != null) {
 										for (EagleSoftFeeShedule fs : ruleGen) {
+											RuleEngineLogger.generateLogs(clazz,"TP Fee -"+tp.getFee(), Constants.rule_log_debug,bw);
+											RuleEngineLogger.generateLogs(clazz,"ES  Fee -"+fs.getFeesFee(), Constants.rule_log_debug,bw);
 											if (!fs.getFeesFee().equals(tp.getFee())) {
 												pass = false;
 												dList.add(
@@ -1486,6 +1621,7 @@ public class RuleBook {
 								} // if end
 								else {
 									pass = false;
+									RuleEngineLogger.generateLogs(clazz,"Downgraded Fee Not found in Fee Master for Service code-"+m.getDowngrading(), Constants.rule_log_debug,bw);
 									dList.add(
 											new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule19.error.message3",
@@ -1873,6 +2009,7 @@ public class RuleBook {
 											RuleEngineLogger.generateLogs(clazz,"HISTORY DOS- "+historyD.getHistoryDos(), Constants.rule_log_debug,bw);
 											
 											RuleEngineLogger.generateLogs(clazz,"Frequency- "+freq, Constants.rule_log_debug,bw);
+											if (freq.equalsIgnoreCase("NF")) continue;
 											FreqencyDto FDTO = FreqencyUtils.parseFrequecy(freq);
 											Date[] datesFIS = DateUtils.getFiscalYear(FDTO.getFy());
 											int ti = FDTO.getTimes();
@@ -1931,39 +2068,107 @@ public class RuleBook {
 												if (fiscal) {
 													scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
 												}
-											} else if (FDTO.getCalendarMonth() > 0) {// Calendar Months
+											} else if (FDTO.getCalendarMonth() > 0) {// Calendar Months Done (cal.mo) 
 												RuleEngineLogger.generateLogs(clazz,"Calendar Months:"+FDTO.getCalendarMonth(), Constants.rule_log_debug,bw);
-                                                 ///Complete ME
-												Calendar calendar = new GregorianCalendar();
+												//(1X6cal.mo) Plan Date 1 Jan - 31 JAN --> jan-june and july-Dec. two phase..
+												 for(int x=0;x<=11;) {
+														
+														x=x+FDTO.getCalendarMonth();
+														int initMonth=x-FDTO.getCalendarMonth();
+														int endMonth=(x-1);
+
+												
+														Calendar calendar = new GregorianCalendar();
+														calendar.setTime(planDate);
+														calendar.set(calendar.get(Calendar.YEAR),
+																calendar.get(Calendar.MONTH) + initMonth,
+																calendar.get(Calendar.DATE));
+														initMonth=calendar.get(Calendar.MONTH);
+														
+														calendar = new GregorianCalendar();
+														calendar.setTime(planDate);
+														calendar.set(calendar.get(Calendar.YEAR),
+																calendar.get(Calendar.MONTH) + endMonth,
+																calendar.get(Calendar.DATE));
+														endMonth=calendar.get(Calendar.MONTH);
+
+														RuleEngineLogger.generateLogs(clazz,"Initial Calendar Month for Plan Date is:"+(initMonth+1), Constants.rule_log_debug,bw);
+			                                            RuleEngineLogger.generateLogs(clazz,"End Month for Plan Date is:"+(endMonth+1), Constants.rule_log_debug,bw);
+			                                            		
+														
+			                                            calendar = new GregorianCalendar();
+														calendar.setTime(dos);
+														int dosmonth=calendar.get(Calendar.MONTH);
+														
+														
+														calendar = new GregorianCalendar();
+														calendar.setTime(TP_Date);
+														int tpmonth=calendar.get(Calendar.MONTH);
+														
+														RuleEngineLogger.generateLogs(clazz,"Month for DOS is:"+(dosmonth+1), Constants.rule_log_debug,bw);
+														RuleEngineLogger.generateLogs(clazz,"Month for TP is:"+(tpmonth+1), Constants.rule_log_debug,bw);
+														RuleEngineLogger.generateLogs(clazz," IS Month for DOS-("+(dosmonth+1)+") is between Initial Calendar Month:("+(initMonth+1)
+																+") and End Month for Plan("+(endMonth+1)+")==>"+(initMonth <= dosmonth && dosmonth>= endMonth), Constants.rule_log_debug,bw);
+			                                            
+														RuleEngineLogger.generateLogs(clazz," IS Month for TP-("+(tpmonth+1)+") is between Initial Calendar Month:("+(initMonth+1)
+																+") and End Month for Plan("+(endMonth+1)+")==>"+(initMonth <= tpmonth && tpmonth>= endMonth), Constants.rule_log_debug,bw);
+
+														if ((initMonth <= dosmonth && dosmonth>= endMonth) && (initMonth <= tpmonth && tpmonth>= endMonth)){
+															scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
+													}
+												 }
+												 /*
+                                                Calendar calendar = new GregorianCalendar();
 												calendar.setTime(planDate);
+												int intMonth=calendar.get(Calendar.MONTH);
 												calendar.set(calendar.get(Calendar.YEAR),
 														calendar.get(Calendar.MONTH) + FDTO.getCalendarMonth(),
-														calendar.get(Calendar.DATE));	
-												Date nextDate = calendar.getTime();
-												boolean fiscal = DateUtils.isDatesBetweenDates(planDate,
-														nextDate, dos);
-												if (fiscal) {
-													scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
+														calendar.get(Calendar.DATE));
+												int endMonth=calendar.get(Calendar.MONTH);
+												RuleEngineLogger.generateLogs(clazz,"Initial Calendar Month for Plan Date is:"+(intMonth+1), Constants.rule_log_debug,bw);
+	                                            RuleEngineLogger.generateLogs(clazz,"End Month for Plan Date is:"+(endMonth+1), Constants.rule_log_debug,bw);
+	                                               
+												calendar = new GregorianCalendar();
+												calendar.setTime(dos);
+												int dosmonth=calendar.get(Calendar.MONTH);
+												RuleEngineLogger.generateLogs(clazz,"Month for DOS is:"+(dosmonth+1), Constants.rule_log_debug,bw);
+												RuleEngineLogger.generateLogs(clazz," IS Month for DOS-("+dosmonth+") is between Initial Calendar Month:("+(intMonth+1)
+														+") and End Month for Plan("+(endMonth+1)+")==>"+(intMonth <= dosmonth && dosmonth>= endMonth), Constants.rule_log_debug,bw);
+	                                            
+												if (intMonth <= dosmonth && dosmonth>= endMonth){
+														scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
 												}
+												*/
 												
-											} else if (FDTO.getDays() > 0) {// Months & Days
+											} else if (FDTO.getDays() > 0) {// Months & Days (1x6Mo_1D)
 												RuleEngineLogger.generateLogs(clazz," Days:"+FDTO.getDays(), Constants.rule_log_debug,bw);
 												RuleEngineLogger.generateLogs(clazz,"Months :"+FDTO.getMonths(), Constants.rule_log_debug,bw);
 												//
-												Calendar calendar = new GregorianCalendar();
-												calendar.setTime(TP_Date);
+												RuleEngineLogger.generateLogs(clazz,"Initial planDate:"+planDate, Constants.rule_log_debug,bw);
+												//RuleEngineLogger.generateLogs(clazz,"End planDate:"+planDate, Constants.rule_log_debug,bw);
+	                                            
+												Calendar  calendar = new GregorianCalendar();
+												calendar.setTime(dos);
 												calendar.set(calendar.get(Calendar.YEAR),
-														calendar.get(Calendar.MONTH) - FDTO.getMonths(),
+														calendar.get(Calendar.MONTH) + FDTO.getMonths(),
 														calendar.get(Calendar.DATE));
 												calendar.set(calendar.get(Calendar.YEAR),
 														calendar.get(Calendar.MONTH),
-														calendar.get(Calendar.DATE) + FDTO.getDays());
-
-												Long dayhis = DateUtils.daysBetweenDates(dos,
-														TP_Date);
-												Long days = DateUtils.daysBetweenDates(calendar.getTime(),
-														TP_Date);
-												if ((days - dayhis) > 0) {
+														calendar.get(Calendar.DATE)+FDTO.getDays());
+												Date endTocompare= calendar.getTime();
+												//Date initTocompare= planDate;
+												//10 Aug --2 Days  DOS 14 Aug ..TP ...15 Aug-->end date 15 Aug
+												RuleEngineLogger.generateLogs(clazz,"endTocompare :"+endTocompare, Constants.rule_log_debug,bw);
+												
+												RuleEngineLogger.generateLogs(clazz,"DOS :"+dos, Constants.rule_log_debug,bw);
+												RuleEngineLogger.generateLogs(clazz,"TP_Date:"+TP_Date, Constants.rule_log_debug,bw);
+												RuleEngineLogger.generateLogs(clazz,"if endTocompare is greater than TP_DATE :"+(DateUtils.compareDates(endTocompare, TP_Date)), Constants.rule_log_debug,bw);
+												
+												//RuleEngineLogger.generateLogs(clazz," IS Date BetweenDates Initial planDate/End planDate/DOS :"+DateUtils.isDatesBetweenDates(initTocompare, endTocompare, dos), Constants.rule_log_debug,bw);
+												//RuleEngineLogger.generateLogs(clazz," IS Date BetweenDates Initial planDate/End planDate/TP_DATE :"+DateUtils.isDatesBetweenDates(initTocompare, endTocompare, TP_Date), Constants.rule_log_debug,bw);
+																							
+												
+												if (DateUtils.compareDates(endTocompare, TP_Date)) {
 													scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
 												}
 
@@ -1985,19 +2190,43 @@ public class RuleBook {
 												}
 
 											} else if (FDTO.getMonths() > 0) {// Months
-												RuleEngineLogger.generateLogs(clazz,"Months:"+FDTO.getMonths(), Constants.rule_log_debug,bw);
-												Calendar calendar = new GregorianCalendar();
-												calendar.setTime(TP_Date);
-												calendar.set(calendar.get(Calendar.YEAR),
-														calendar.get(Calendar.MONTH) - FDTO.getMonths(),
-														calendar.get(Calendar.DATE));
-												Long dayhis = DateUtils.daysBetweenDates(dos,
-														TP_Date);
-												Long days = DateUtils.daysBetweenDates(calendar.getTime(),
-														TP_Date);
-												if ((days - dayhis) > 0) {
-													scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
-												}
+												RuleEngineLogger.generateLogs(clazz,"MONTHS :"+FDTO.getMonths(), Constants.rule_log_debug,bw);
+												// isPlanYearPresent=true;
+												 Calendar startCalendar = new GregorianCalendar();
+												  startCalendar.setTime(planDate);
+												  Calendar endDOS = new GregorianCalendar();
+												  endDOS.setTime(dos);
+												  
+												  Calendar endCalendarTP = new GregorianCalendar();
+												  endDOS.setTime(TP_Date);
+												  
+												  //GET NEXT X MONTH DATE--
+												  Calendar nextCalendar = new GregorianCalendar();
+												  nextCalendar.setTime(planDate);
+												  nextCalendar.set(nextCalendar.get(Calendar.YEAR),
+														  nextCalendar.get(Calendar.MONTH)+FDTO.getMonths(),
+														  nextCalendar.get(Calendar.DATE));
+												  //Check if RANGE IS IN GIVEN X MONTHS ==>Range DOS and TP DATE FALLS in same TIME RANGE
+												  if (!DateUtils.compareDates(dos, nextCalendar.getTime())) {
+                                                  if ( DateUtils.isDatesBetweenDates(planDate, nextCalendar.getTime(), endDOS.getTime())
+                                                	&&	DateUtils.isDatesBetweenDates(planDate, nextCalendar.getTime(), TP_Date)  ) {
+                                                	  
+                                                   }
+												  }
+
+												  int diffYear1 = endDOS.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+												  int diffMonth1 = diffYear1 * 12 + endDOS.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+												 
+												  int diffYear2 = endCalendarTP.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+												  int diffMonth2 = diffYear2 * 12 + endCalendarTP.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+												  //given 6 
+												  //10 months past plan date his
+												  //10 months past plan date TP
+												  
+                                                  if (0<=diffMonth1 && diffMonth1<=FDTO.getMonths() && 0<=diffMonth2 && diffMonth2<=FDTO.getMonths()) {
+                                                	  
+                                                  }
+												
 											}
 
                             			 ////
@@ -2732,10 +2961,10 @@ public class RuleBook {
 
 	private Mappings getMappingFromListAdditionalInformationNeeded(List<Mappings> map, String code) {
 		Mappings r = null;
-		System.out.println("codecode---" + code);
 		Collection<Mappings> ruleGen = Collections2.filter(map,
 				rule -> (!rule.getAdditionalInformationNeeded().equalsIgnoreCase("No")
 						&& !rule.getAdditionalInformationNeeded().equalsIgnoreCase("NA")
+						&& !rule.getAdditionalInformationNeeded().equalsIgnoreCase("None")
 						&& rule.getAdaCodes().getCode().equals(code)));
 		for (Mappings rule : ruleGen) {
 			r = rule;
@@ -2746,9 +2975,10 @@ public class RuleBook {
 
 	private Mappings getMappingFromListPreAuth(List<Mappings> map, String code) {
 		Mappings r = null;
-		System.out.println("codecode---" + code);
 		Collection<Mappings> ruleGen = Collections2.filter(map, rule -> (!rule.getPreAuthNeeded().equalsIgnoreCase("No")
-				&& !rule.getPreAuthNeeded().equalsIgnoreCase("NA") && rule.getAdaCodes().getCode().equals(code))
+				&& !rule.getPreAuthNeeded().equalsIgnoreCase("NA")
+				&& !rule.getPreAuthNeeded().equalsIgnoreCase("None")
+				&& rule.getAdaCodes().getCode().equals(code))
 
 		);
 		for (Mappings rule : ruleGen) {

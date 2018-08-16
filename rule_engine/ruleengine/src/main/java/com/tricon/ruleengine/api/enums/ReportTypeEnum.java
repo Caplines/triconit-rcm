@@ -7,7 +7,8 @@ public class ReportTypeEnum {
     public enum ReportType {
         TreatmentId,
         PatientName,
-        OfficeId,
+        IvfId,
+        //OfficeId,
         Date;
     }
  

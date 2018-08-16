@@ -1,5 +1,13 @@
 package com.tricon.ruleengine.api.controller;
 
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.ruleengine.api.enums.ReportTypeEnum;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.ReportDto;
+import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.UserRegistrationDto;
 import com.tricon.ruleengine.service.ReportService;
 import com.tricon.ruleengine.service.UserService;
+import com.tricon.ruleengine.utils.Constants;
 
 @RestController
 @RequestMapping("admin")
@@ -28,35 +38,83 @@ public class AdminRestController {
 	private ReportService reportService;
 
 	/**
-     * in @PreAuthorize such as 'hasRole()' to determine if a user has access. Remember that the hasRole expression assumes a
-     * 'ROLE_' prefix on all role names. So 'ADMIN' here is actually stored as 'ROLE_ADMIN' in database!
-     **/
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<?> getProtectedGreeting() {
-        return ResponseEntity.ok("Greetings from admin protected method!");
-    }
+	 * in @PreAuthorize such as 'hasRole()' to determine if a user has access.
+	 * Remember that the hasRole expression assumes a 'ROLE_' prefix on all role
+	 * names. So 'ADMIN' here is actually stored as 'ROLE_ADMIN' in database!
+	 **///
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<?> getProtectedGreeting() {
+		return ResponseEntity.ok("Greetings from admin protected method!");
+	}
 
-    @CrossOrigin
+	@CrossOrigin
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-    @PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto dto) {
 		return ResponseEntity.ok(userService.registerUser(dto));
 	}
 
-    
-    @CrossOrigin
+	@CrossOrigin
 	@RequestMapping(value = "/report", method = RequestMethod.POST)
-    @PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> generateReport(@RequestBody ReportDto dto) {
-		return ResponseEntity.ok(reportService.getReports(dto));
+		List<ReportResponseDto> li = reportService.getReports(dto);
+		Map<String, List<ReportResponseDto>> map = new LinkedHashMap<>();
+		List<ReportResponseDto> a = new ArrayList<>();
+		String k="";
+		if (li != null)
+			for (ReportResponseDto d : li) {
+                k=d.getRd_group_run()+"). Patient ID- "+d.getPatient_id()+ " IVF ID-"+d.getIvf_form_id() +" TR. ID-"+d.getTreatement_plan_id();
+				if (map.containsKey(k)) {
+					// if the key has already been used,
+					// we'll just grab the array list and add the value to it
+					a = (List<ReportResponseDto>) map.get(k + "");
+					
+					a.add(d);
+				} else {
+					// if the key hasn't been used yet,
+					// we'll create a new ArrayList<String> object, add the value
+					// and put it in the array list with the new key
+					a = new ArrayList<>();
+					a.add(d);
+					map.put(k + "", a);
+				}
+
+			}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", map));
 	}
 
-    @CrossOrigin
+	@CrossOrigin
 	@RequestMapping(value = "/report3", method = RequestMethod.GET)
 	public ResponseEntity<?> generateReport() {
-    	ReportDto dto=new ReportDto();
-    	dto.setReportType(ReportTypeEnum.ReportType.OfficeId.toString());
-    	dto.setReportField1("f015515d-7df2-11e8-8432-8c16451459cd");//
- 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", reportService.getReports(dto)));
+		ReportDto dto = new ReportDto();
+		dto.setReportType(ReportTypeEnum.ReportType.TreatmentId.toString());
+		dto.setReportField1("6951");
+		dto.setOfficeId("fc1d7afd-7df2-11e8-8432-8c16451459cd");//
+		List<ReportResponseDto> li = reportService.getReports(dto);
+		Map<String, List<ReportResponseDto>> map = new LinkedHashMap<>();
+		List<ReportResponseDto> a = new ArrayList<>();
+		String k="";
+		if (li != null)
+			for (ReportResponseDto d : li) {
+                k=d.getRd_group_run()+"). Patient ID- "+d.getPatient_id()+ " IVF ID-"+d.getIvf_form_id() +" TR. ID-"+d.getTreatement_plan_id();
+				if (map.containsKey(k)) {
+					// if the key has already been used,
+					// we'll just grab the array list and add the value to it
+					a = (List<ReportResponseDto>) map.get(k + "");
+				//System.out.println(d.getRd_created_date().toLocalDateTime().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+					
+					a.add(d);
+				} else {
+					// if the key hasn't been used yet,
+					// we'll create a new ArrayList<String> object, add the value
+					// and put it in the array list with the new key
+					a = new ArrayList<>();
+					a.add(d);
+					map.put(k + "", a);
+				}
+
+			}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", map));
 	}
 }

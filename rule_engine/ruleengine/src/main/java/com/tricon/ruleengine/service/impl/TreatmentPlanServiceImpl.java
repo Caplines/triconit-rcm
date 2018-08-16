@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,29 +15,20 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-import org.hibernate.Hibernate;
-import org.json.JSONObject;
+import org.apache.poi.ss.formula.functions.Odd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.common.collect.Collections2;
-import com.tricon.ruleengine.api.controller.RuleEngineValidationController;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.SharePointDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.dao.UserDao;
-import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.MicroSoftGraphToken;
-import com.tricon.ruleengine.dto.MicroSoftSheetJson;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
@@ -52,15 +42,10 @@ import com.tricon.ruleengine.model.db.ReportDetail;
 import com.tricon.ruleengine.model.db.Reports;
 import com.tricon.ruleengine.model.db.Rules;
 import com.tricon.ruleengine.model.db.User;
-import com.tricon.ruleengine.model.sheet.EagleSoftCB;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
-import com.tricon.ruleengine.model.sheet.EagleSoftFSName;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
-import com.tricon.ruleengine.model.sheet.EagleSoftRemBalDedMax;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
-import com.tricon.ruleengine.model.sheet.MappingTableCodeMaster;
-import com.tricon.ruleengine.model.sheet.MappingTableFeeSN;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.service.SharePointService;
 import com.tricon.ruleengine.service.TreatmentPlanService;
@@ -68,7 +53,6 @@ import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.ReadMicrosoftFile;
 import com.tricon.ruleengine.utils.RuleBook;
-import com.tricon.ruleengine.utils.SendPostAndReadJSon;
 
 /**
  * @author Deepak.Dogra
@@ -118,11 +102,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 	
 
-	private Object[] logFileToAppendData() {
+	private Object[] logFileToAppendData(String officeName) {
 		
 		BufferedWriter bw = null;
 		FileWriter fw = null;
-		String n =  new Date().toString().trim().replaceAll(" ", "").replaceAll(":", "-") + ".txt";
+		String n = officeName+ new Date().toString().trim().replaceAll(" ", "").replaceAll(":", "-") + ".txt";
 
 		try {
 			File file = new File(appLogFolder +n);
@@ -162,12 +146,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	public Map<String, List<TPValidationResponseDto>> validateTreatmentPlan(TreatmentPlanValidationDto dtod) {
 
 		Map<String, List<TPValidationResponseDto>> returnMap = null;
-		
+		Date currentDate=new Date();
 		String fName="";
 		BufferedWriter bw=null;
 		Object[] o=null;
+		String tempFname=""; 
+		Office off = od.getOfficeByUuid(dtod.getOfficeId());
 		try {
-			o= logFileToAppendData();
+			o= logFileToAppendData(off.getName().trim());
 			fName=(String )o[0];
 			bw=(BufferedWriter)o[1];
 		
@@ -176,13 +162,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		// RuleEngineLogger.generateLogs(clazz,
 		// "RuleEngineValidationController", Constants.rule_log_debug,bw);
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		List<TPValidationResponseDto> list = new ArrayList<TPValidationResponseDto>();
+		List<TPValidationResponseDto> list2 = new ArrayList<TPValidationResponseDto>();
 		List<Rules> rules = tvd.getAllActiveRules();
 		List<Mappings> mappings = tvd.getAllMappings();
 		MicroSoftGraphToken microsoft = null;
 
-		Office off = od.getOfficeByUuid(dtod.getOfficeId());
-
+		
 		List<GoogleSheets> sheets = tvd.getAllGoogleSheetByOffice(off);
 		List<OneDriveFile> fileOne = spd.getOneDriveFileByOfficeId(dtod.getOfficeId());
 		TPValidationResponseDto dtoR = null;
@@ -205,10 +190,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
 						+ SharepointInit + "?officeId=" + dtod.getOfficeId() + "'> Register Office With App </a>",
 						Constants.FAIL);
-				list.add(dtoR);
+				list2.add(dtoR);
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
-				returnMap.put("no", list);
+				returnMap.put("no", list2);
 
 				return returnMap;
 			}
@@ -221,9 +206,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
 							+ SharepointInit + "?officeId=" + dtod.getOfficeId() + "'> Register Office With App </a>",
 					Constants.FAIL);
+			list2.add(dtoR);
 			if (returnMap == null)
 				returnMap = new HashMap<String, List<TPValidationResponseDto>>();
-			returnMap.put("no", list);
+			returnMap.put("no", list2);
 
 			return returnMap;
 
@@ -231,9 +217,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		if (rules != null && rules.size() == 0) {
 			RuleEngineLogger.generateLogs(clazz, "Generic- No Active Rules Found", Constants.rule_log_debug,bw);
 			dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL);
+			list2.add(dtoR);
 			if (returnMap == null)
 				returnMap = new HashMap<String, List<TPValidationResponseDto>>();
-			returnMap.put("no", list);
+			returnMap.put("No Rule Found", list2);
 
 			return returnMap;
 		}
@@ -267,9 +254,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
 						"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
 						Constants.FAIL);
+				list2.add(dtoR);
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
-				returnMap.put("no", list);
+				returnMap.put("IVF ID(" + dtod.getIvfId() + ") Treatment Plan ID (" + dtod.getTreatmentPlanId() + ")", list2);
 
 				return returnMap;
 			}
@@ -340,12 +328,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			}
 
 			// End
+			List<TPValidationResponseDto> list= null;
 			for (int y = 0; y < ivs.length; y++) {
+				list= new ArrayList<TPValidationResponseDto>();
 				// IMPORTANT --SEE THIS --WHY DONE in IVF sheet need to match Officename_IVFID
 				String ivx = ivs[y];// off.getName() + "_" +
 				String trx = trids[y];// off.getName() + "_" +
 				String patKey = off.getName() + "_" + ivx;
 				String feeKey = "1";
+				TreatmentPlan tp=null;
 				String empMasterKey = "HYPE100sq";// Some hypo value.
 				if (espatients != null && espatients.get(patKey) != null && espatients.get(patKey).get(0) != null) {
 					empMasterKey = espatients.get(patKey).get(0).getEmployerId();
@@ -359,7 +350,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
 							Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
 							Constants.FAIL);
-					saveReport(authentication, rule, dtoR, trx, null);
+					//saveReport(authentication, rule, dtoR, trx, null,off);
 					list.add(dtoR);
 
 				} else if (tMap != null && tMap.get(trx) == null) {
@@ -367,16 +358,20 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
 							Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
 							Constants.FAIL);
-					saveReport(authentication, rule, dtoR, trx, null);
+					//saveReport(authentication, rule, dtoR, trx, null,off);
 					list.add(dtoR);
 				} else {
 					tList = tMap.get(trx);
+					//Create File Name to rename latter..
+					 tp= (TreatmentPlan) tList.get(0);
+					if (y ==0 )	tempFname=tp.getPatient().getId();
+					
 				}
 
 				if (ivfMap != null && ivfMap.get(ivx) != null) {
-
+					
 					// RULE_ID_1 (Eligibility of the patient)
-
+                     
 					rule = getRulesFromList(rules, Constants.RULE_ID_1);
 					RuleBook rb = new RuleBook();
 					dtoR = rb.Rule1(ivfMap.get(ivx).get(0), messageSource, rule,bw);
@@ -421,11 +416,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 					// RULE_ID_4 "Coverage Book"
 					List<TPValidationResponseDto> dtoRL = new ArrayList<>();
-
+              
 					rule = getRulesFromList(rules, Constants.RULE_ID_4);
-					System.out.println(esfeess);
-					System.out.println(espatients);
-					System.out.println(mappings);
 					if (esfeess!=null && espatients!=null) {
 					dtoRL = rb.Rule4_B(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
 							esfeess.get(feeKey), espatients.get(patKey),bw);
@@ -457,7 +449,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					rule = getRulesFromList(rules, Constants.RULE_ID_19);
 					if (esfeess!=null && espatients!=null) {
 					dtoRL = rb.Rule19(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings, esfeess.get(feeKey),
-							espatients.get(patKey));
+							espatients.get(patKey),bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -467,10 +459,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
-					// END
 
-					// RULE_ID_6 "Remaining Deductible, Remaining Balance and Benefit Max as per IV
-					// form"
 					}else {
 						if (esfeess==null)dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 								"rule.fee.notfound",
@@ -482,9 +471,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								locale), Constants.FAIL));
 					
 					 }
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_19, Constants.rule_log_debug,bw);
+					// END
+					
+					// RULE_ID_5 "Remaining Deductible, Remaining Balance and Benefit Max as per IV form"
 					rule = getRulesFromList(rules, Constants.RULE_ID_5);
 					if (espatients!=null) {
-					dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey));
+					dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),bw);
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
 						for (TPValidationResponseDto t : dtoRL) {
@@ -493,7 +487,6 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					 }
-					// END
 					 }else {
 						    dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 									"rule.patient.notfound",
@@ -502,6 +495,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 						 
 					 }
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_5, Constants.rule_log_debug,bw);
+					// END
 
 					// RULE_ID_6 "Percentage Coverage Check"
 					rule = getRulesFromList(rules, Constants.RULE_ID_6);
@@ -529,7 +525,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 					// RULE_ID_7 "Alert
 					rule = getRulesFromList(rules, Constants.RULE_ID_7);
-					dtoRL = rb.Rule7(ivfMap.get(ivx).get(0), messageSource, rule);
+					dtoRL = rb.Rule7(ivfMap.get(ivx).get(0), messageSource, rule,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -539,10 +535,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_7, Constants.rule_log_debug,bw);
+
 					// END
 					// RULE_ID_8 "Age Limits
 					rule = getRulesFromList(rules, Constants.RULE_ID_8);
-					dtoRL = rb.Rule8(tList, ivfMap.get(ivx).get(0), messageSource, rule);
+					dtoRL = rb.Rule8(tList, ivfMap.get(ivx).get(0), messageSource, rule,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -552,11 +551,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_8, Constants.rule_log_debug,bw);
+
 					// END
 
 					// RULE_ID_14 "Sealants
 					rule = getRulesFromList(rules, Constants.RULE_ID_14);
-					dtoRL = rb.Rule14(tList, ivfMap.get(ivx).get(0), messageSource, rule);
+					dtoRL = rb.Rule14(tList, ivfMap.get(ivx).get(0), messageSource, rule,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -566,11 +568,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_14, Constants.rule_log_debug,bw);
+
 					// END
 					// RULE_ID_9 "Filling Codes based on Tooth No.
 
 					rule = getRulesFromList(rules, Constants.RULE_ID_9);
-					dtoRL = rb.Rule9(tList, messageSource, rule, mappings);
+					dtoRL = rb.Rule9(tList, messageSource, rule, mappings,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -580,11 +585,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_9, Constants.rule_log_debug,bw);
 
 					// END
 					// RULE_ID_10 "Pre Auth
 					rule = getRulesFromList(rules, Constants.RULE_ID_10);
-					dtoRL = rb.Rule10(tList, messageSource, rule, mappings);
+					dtoRL = rb.Rule10(tList, messageSource, rule, mappings,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -594,10 +601,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
-					// END
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_10, Constants.rule_log_debug,bw);
+
+					// EN
 					// RULE_ID_11 "Waiting Period.
 					rule = getRulesFromList(rules, Constants.RULE_ID_11);
-					dtoRL = rb.Rule11(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings);
+					dtoRL = rb.Rule11(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -607,10 +617,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_11, Constants.rule_log_debug,bw);
+
 					// END
 					// RULE_ID_13 "Build-Ups & Crown Same Day
 					rule = getRulesFromList(rules, Constants.RULE_ID_13);
-					dtoRL = rb.Rule13(tList, ivfMap.get(ivx).get(0), messageSource, rule);
+					dtoRL = rb.Rule13(tList, ivfMap.get(ivx).get(0), messageSource, rule,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -620,10 +633,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_13, Constants.rule_log_debug,bw);
+
 					// END
 					// RULE_ID_14 " Sealants
 					rule = getRulesFromList(rules, Constants.RULE_ID_14);
-					dtoRL = rb.Rule14(tList, ivfMap.get(ivx).get(0), messageSource, rule);
+					dtoRL = rb.Rule14(tList, ivfMap.get(ivx).get(0), messageSource, rule,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -633,10 +649,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_14, Constants.rule_log_debug,bw);
+
 					// END
 					// RULE_ID_15 " SRP Quads Per Day
 					rule = getRulesFromList(rules, Constants.RULE_ID_15);
-					dtoRL = rb.Rule15(tList, ivfMap.get(ivx).get(0), messageSource, rule);
+					dtoRL = rb.Rule15(tList, ivfMap.get(ivx).get(0), messageSource, rule,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -646,10 +665,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_15, Constants.rule_log_debug,bw);
+
 					// END
 					// RULE_ID_16 " Bundling - X-Rays
 					rule = getRulesFromList(rules, Constants.RULE_ID_16);
-					dtoRL = rb.Rule16(tList, ivfMap.get(ivx).get(0), messageSource, rule);
+					dtoRL = rb.Rule16(tList, ivfMap.get(ivx).get(0), messageSource, rule,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -659,10 +681,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_16, Constants.rule_log_debug,bw);
+
 					// END
 					// RULE_ID_17 " Bundling - Fillings
 					rule = getRulesFromList(rules, Constants.RULE_ID_17);
-					dtoRL = rb.Rule17(tList, ivfMap.get(ivx).get(0), messageSource, rule);
+					dtoRL = rb.Rule17(tList, ivfMap.get(ivx).get(0), messageSource, rule,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -672,10 +697,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_17, Constants.rule_log_debug,bw);
+
 					// END
 					// RULE_ID_18 "Missing Tooth Clause
 					rule = getRulesFromList(rules, Constants.RULE_ID_18);
-					dtoRL = rb.Rule18(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings);
+					dtoRL = rb.Rule18(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings,bw);
 
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -685,6 +713,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_18, Constants.rule_log_debug,bw);
+
 					// END
 
 					// RULE_ID_21 "// Frequency Limitations
@@ -699,6 +730,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 						}
 					}
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_exit + "-" + Constants.RULE_ID_21, Constants.rule_log_debug,bw);
+
 					// END
 
 				} else {
@@ -708,19 +742,24 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					list.add(dtoR);
 					// saveReports(authentication, rule,dtoR, dto,(IVFTableSheet)(ivfList.get(0)));
 				}
-				if (ivfMap != null && ivfMap.get(ivx) != null)
-					saveReportsList(authentication, rules, trx, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list);
-				else
-					saveReportsList(authentication, rules, trx, null, list);
+				if (ivfMap != null && ivfMap.get(ivx) != null && tList!=null)
+					saveReportsList(authentication, rules, tp, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list,off);
+				//else
+					//saveReportsList(authentication, rules, trx, null, list,off);
 
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
 				String debug="";
 				if (dtod.isDebugMode()) {
-					
-					debug=" - <a target='_blank' href='"+AppUrl+"/appdebug/"+fName+"'> Debug</a>";
+					 if (!tempFname.equals("")){
+						 tempFname=	 tempFname.trim().toLowerCase()+"-"+off.getName().trim().toLowerCase()+currentDate.toString().trim().replaceAll(" ", "").replaceAll(":", "-") + ".txt";
+					debug=" - <a target='_blank' href='"+AppUrl+"/appdebug/"+tempFname+"'> Debug</a>";
+					 }else {
+						 debug=" - <a target='_blank' href='"+AppUrl+"/appdebug/"+fName+"'> Debug</a>";
+								 
+					 }
 				}
-				returnMap.put("IVF ID(" + ivx + ") Treatment Plan ID (" + trx + ")" +debug, list);
+				returnMap.put("IVF ID(" + ivx + ") Treatment Plan ID (" + trx + ") Patient ID ("+((IVFTableSheet)ivfMap.get(ivx)).getPatientId()+")" +debug, list);
 			} // For loop
 
 			// Save Reports
@@ -733,6 +772,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
          }finally {
 			
 			closeBuffer((BufferedWriter)o[1],(FileWriter)o[2]);
+            if (!tempFname.equals("")){
+            	//fName="";
+            	//String n =  new Date().toString().trim().replaceAll(" ", "").replaceAll(":", "-") + ".txt";
+            	File newFile = new File(appLogFolder +tempFname);
+            	File oldFile = new File(appLogFolder + fName);
+            	oldFile.renameTo(newFile);
+            	//Rename file
+            }
 
 		}
 		// TODO Auto-generated method stub
@@ -760,6 +807,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		return r;
 	}
 
+	/*
 	private GoogleSheets getGoogleSheetFromList(List<GoogleSheets> sheets, int id) {
 		GoogleSheets s = null;
 		Collection<GoogleSheets> ruleGen = Collections2.filter(sheets, sh -> sh.getId() == id);
@@ -769,7 +817,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		return s;
 	}
-
+    */
 	private OneDriveFile getOneDriveFileFromList(List<OneDriveFile> sheets, String type) {
 		OneDriveFile s = null;
 		Collection<OneDriveFile> ruleGen = Collections2.filter(sheets, sh -> sh.getSheetType().equals(type));
@@ -780,8 +828,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		return s;
 	}
 
+	/*
 	private void saveReport(Authentication authentication, Rules rules, TPValidationResponseDto dtoR,
-			String treatmentPlanId, IVFTableSheet ivfSheet) {
+			String treatmentPlanId, IVFTableSheet ivfSheet,Office off) {
 		String email = "admin@admin.com";
 		User user = null;
 		boolean update = false;
@@ -792,7 +841,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			user = userDao.findUserByEmail(email);
 		}
 		// get Data from Reports by Treatment Plan ID..get
-		Reports reports = tvd.getReportsByTreamentPlanId(treatmentPlanId);
+		Reports reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);
 		if (reports == null) {
 			reports = new Reports();
 			reports.setCreatedBy(user);
@@ -818,12 +867,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		rd.setCreatedBy(user);
 		rd.setReports(reports);
 		tvd.saveReportDestail(rd);
-
-		//
+    	//
 	}
-
-	private void saveReportsList(Authentication authentication, List<Rules> rules, String treatmentPlanId,
-			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list) {
+   */
+	private void saveReportsList(Authentication authentication, List<Rules> rules, TreatmentPlan tp,
+			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list,Office off) {
+		if (ivfSheet ==null || tp ==null ) return;
 		String email = "admin@admin.com";
 		System.out.println(list.size());
 
@@ -834,7 +883,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		} else {
 			user = userDao.findUserByEmail(email);
 		}
-		Reports reports = tvd.getReportsByTreamentPlanId(treatmentPlanId);
+		
+		Reports reports= null;
+		reports = tvd.getReportsByTPIdIVFIDAndOffice(tp.getId(),ivfSheet.getUniqueID().split("_")[1],off);
+		//else reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);
+		//else reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);
+		//if (reports==null) reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);
+		
 		if (reports == null) {
 			reports = new Reports();
 			reports.setCreatedBy(user);
@@ -842,9 +897,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			if (ivfSheet != null) {
 				reports.setPatientName(ivfSheet.getPatientName());
 				reports.setPatientDob(ivfSheet.getPatientDOB());
+				if (ivfSheet.getUniqueID().split("_").length>1)reports.setIvfFormId(ivfSheet.getUniqueID().split("_")[1]);
+				else reports.setIvfFormId(ivfSheet.getUniqueID());
 			}
-			reports.setTreatementPlanId(treatmentPlanId);
-			reports.setOffice(user.getOffice());
+			reports.setTreatementPlanId(tp.getId());
+			reports.setOffice(off);
+			reports.setPatientId(ivfSheet.getPatientId());
 			Serializable id = tvd.saveReports(reports);
 			reports.setId((int) id);
 		} else {
@@ -853,7 +911,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				reports.setPatientName(ivfSheet.getPatientName());
 				reports.setPatientDob(ivfSheet.getPatientDOB());
 			}
-			reports.setOffice(user.getOffice());
+			reports.setOffice(off);
 			reports.setUpdatedBy(user);
 			tvd.updateReportDate(reports);
 		}
@@ -872,35 +930,61 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	}
 
 	private void saveReportsListBatch(Authentication authentication, List<Rules> rules, IVFTableSheet ivfSheet,
-			List<TPValidationResponseDto> list) {
-		String email = "admin@admin.com";
-		System.out.println(list.size());
+			List<TPValidationResponseDto> list,Office off) {
+	if (ivfSheet ==null  ) return;
+	String email = "admin@admin.com";
+	System.out.println(list.size());
 
-		/*
-		 * Not Implemented for now..see -1 Rule Case also User user = null; if
-		 * (authentication != null) { user =
-		 * userDao.findUserAndOfficeByEmail(authentication.getName()); //
-		 * Hibernate.initialize(user.getOffice()); } else { user =
-		 * userDao.findUserByEmail(email); } Reports reports =
-		 * tvd.getReportsByTreamentPlanId(treatmentPlanId); if (reports == null) {
-		 * reports = new Reports(); reports.setCreatedBy(user); reports.setGroupRun(1);
-		 * if (ivfSheet != null) { reports.setPatientName(ivfSheet.getPatientName());
-		 * reports.setPatientDob(ivfSheet.getPatientDOB()); }
-		 * reports.setTreatementPlanId(treatmentPlanId);
-		 * reports.setOffice(user.getOffice()); Serializable id =
-		 * tvd.saveReports(reports); reports.setId((int) id); } else {
-		 * reports.setGroupRun(reports.getGroupRun() + 1); if (ivfSheet != null) {
-		 * reports.setPatientName(ivfSheet.getPatientName());
-		 * reports.setPatientDob(ivfSheet.getPatientDOB()); }
-		 * reports.setOffice(user.getOffice()); reports.setUpdatedBy(user);
-		 * tvd.updateReportDate(reports); } // save Report Details ReportDetail rd =
-		 * null; for (TPValidationResponseDto d : list) { rd = new ReportDetail();
-		 * rd.setGroupRun(reports.getGroupRun()); rd.setErrorMessage(d.getMessage());
-		 * rd.setRules(getRulesFromListByid(rules, d.getRuleId()));
-		 * rd.setCreatedBy(user); rd.setReports(reports); tvd.saveReportDestail(rd); }
-		 * 
-		 * //
-		 */
+	User user = null;
+	if (authentication != null) {
+		user = userDao.findUserAndOfficeByEmail(authentication.getName());
+		// Hibernate.initialize(user.getOffice());
+	} else {
+		user = userDao.findUserByEmail(email);
+	}
+	
+	Reports reports= null;
+	reports = tvd.getReportsByIVFIdAndOffice(ivfSheet.getUniqueID().split("0")[1],off);
+	//else reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);
+	//else reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);
+	//if (reports==null) reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);
+	
+	if (reports == null) {
+		reports = new Reports();
+		reports.setCreatedBy(user);
+		reports.setTreatementPlanId(Constants.prebatchmode);
+		reports.setGroupRun(1);
+		if (ivfSheet != null) {
+			reports.setPatientName(ivfSheet.getPatientName());
+			reports.setPatientDob(ivfSheet.getPatientDOB());
+			if (ivfSheet.getUniqueID().split("_").length>1)reports.setIvfFormId(ivfSheet.getUniqueID().split("_")[1]);
+			else reports.setIvfFormId(ivfSheet.getUniqueID());
+		}
+		reports.setOffice(off);
+		reports.setPatientId(ivfSheet.getPatientId());
+		Serializable id = tvd.saveReports(reports);
+		reports.setId((int) id);
+	} else {
+		reports.setGroupRun(reports.getGroupRun() + 1);
+		if (ivfSheet != null) {
+			reports.setPatientName(ivfSheet.getPatientName());
+			reports.setPatientDob(ivfSheet.getPatientDOB());
+		}
+		reports.setOffice(off);
+		reports.setUpdatedBy(user);
+		tvd.updateReportDate(reports);
+	}
+	// save Report Details
+	ReportDetail rd = null;
+	for (TPValidationResponseDto d : list) {
+		rd = new ReportDetail();
+		rd.setGroupRun(reports.getGroupRun());
+		rd.setErrorMessage(d.getMessage());
+		rd.setRules(getRulesFromListByid(rules, d.getRuleId()));
+		rd.setCreatedBy(user);
+		rd.setReports(reports);
+		tvd.saveReportDestail(rd);
+	}
 	}
 
 	private List<String> getCodesfromTreamentPlanList(Map<String, List<Object>> tpMap) {
@@ -952,6 +1036,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
 						+ SharepointInit + "?officeId=" + dto.getOfficeId() + "'> Register Office With App </a>",
 						Constants.FAIL);
+				list.add(dtoR);
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
 				returnMap.put("no", list);
@@ -965,6 +1050,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
 							+ SharepointInit + "?officeId=" + dto.getOfficeId() + "'> Register Office With App </a>",
 					Constants.FAIL);
+			list.add(dtoR);
 			if (returnMap == null)
 				returnMap = new HashMap<String, List<TPValidationResponseDto>>();
 			returnMap.put("no", list);
@@ -1056,7 +1142,6 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							dtoR.getResultType());
 
 					// END
-
 					List<TPValidationResponseDto> dtoRL = new ArrayList<>();
 
 					if (espatients != null && espatients.size() > 0) {
@@ -1065,7 +1150,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rule = getRulesFromList(rules, Constants.RULE_ID_4);
 
 						dtoRL = rb.Rule4_A((IVFTableSheet) ivfMap.get(ivx).get(0), messageSource, rule,
-								espatients.get(patKey));
+								espatients.get(patKey),null);
 						if (dtoRL != null) {
 							list.addAll(dtoRL);
 							for (TPValidationResponseDto t : dtoRL) {
@@ -1076,11 +1161,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}
 
 						// END
-						// RULE_ID_5 "Remaining Deductible, Remaining Balance and Benefit Max as per IV
-						// form"
+						// RULE_ID_5 "Remaining Deductible, Remaining Balance and Benefit Max as per IV form"
 
 						rule = getRulesFromList(rules, Constants.RULE_ID_5);
-						dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey));
+						dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),null);
 						if (dtoRL != null) {
 							list.addAll(dtoRL);
 							for (TPValidationResponseDto t : dtoRL) {
@@ -1125,9 +1209,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				}
 
 				if (ivfMap != null && ivfMap.get(ivx) != null)
-					saveReportsListBatch(authentication, rules, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list);
-				else
-					saveReportsListBatch(authentication, rules, null, list);
+					saveReportsListBatch(authentication, rules, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list,off);
+				//else
+					//saveReportsListBatch(authentication, rules, null, list,off);
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
 				returnMap.put("IVF ID(" + ivx + ")", list);

@@ -14,6 +14,7 @@ import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.model.db.GoogleSheets;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.OneDriveApp;
 import com.tricon.ruleengine.model.db.ReportDetail;
 import com.tricon.ruleengine.model.db.Reports;
 import com.tricon.ruleengine.model.db.Rules;
@@ -38,10 +39,63 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 	}
 
 	@Override
-	public Reports getReportsByTreamentPlanId(String treatmentPlanId) {
+	public Reports getReportsByTreamentPlanIdAndOffice(String treatmentPlanId,Office off) {
 
-		return (Reports) getEntityByColumnName(Reports.class, "treatementPlanId", treatmentPlanId);
+		Reports rep=null;
+		Session session = getSession();
+		try {
+			Criteria criteria = session.createCriteria(Reports.class);
+			criteria.add(Restrictions.eq("treatementPlanId", treatmentPlanId));
+			criteria.createAlias("office", "off");
+			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
+			rep = (Reports) criteria.uniqueResult();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return rep;
 	}
+
+	@Override
+	public Reports getReportsByIVFIdAndOffice(String ivfId,Office off) {
+
+		Reports rep=null;
+		Session session = getSession();
+		try {
+			Criteria criteria = session.createCriteria(Reports.class);
+			criteria.add(Restrictions.eq("ivfFormId", ivfId));
+			criteria.createAlias("office", "off");
+			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
+			rep = (Reports) criteria.uniqueResult();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return rep;
+	}
+	
+	@Override
+     public Reports getReportsByTPIdIVFIDAndOffice(String tpid,String ivfId,Office office) {
+
+		Reports rep=null;
+		Session session = getSession();
+		try {
+			Criteria criteria = session.createCriteria(Reports.class);
+			criteria.add(Restrictions.eq("treatementPlanId", tpid));
+			criteria.add(Restrictions.eq("ivfFormId", ivfId));
+			criteria.createAlias("office", "off");
+			criteria.add(Restrictions.eq("off.uuid", office.getUuid()));
+			rep = (Reports) criteria.uniqueResult();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return rep;
+	}
+
 
 	@Override
 	public Serializable saveReports(Reports reports) {

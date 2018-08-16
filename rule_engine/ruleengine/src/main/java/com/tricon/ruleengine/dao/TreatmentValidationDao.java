@@ -22,7 +22,11 @@ public interface TreatmentValidationDao {
 
 	public List<Rules> getAllActiveRules();
 
-	public Reports getReportsByTreamentPlanId(String treatmentPlanId);
+	public Reports getReportsByTreamentPlanIdAndOffice(String treatmentPlanId,Office office);
+	
+	public Reports getReportsByIVFIdAndOffice(String ivfId,Office off);
+
+	public Reports getReportsByTPIdIVFIDAndOffice(String tpid,String ivfId,Office office);
 
 	public Serializable saveReports(Reports reports);
 

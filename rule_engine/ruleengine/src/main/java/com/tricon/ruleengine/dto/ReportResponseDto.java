@@ -1,44 +1,31 @@
 package com.tricon.ruleengine.dto;
 
-import java.util.Date;
-import java.util.List;
-
-import com.tricon.ruleengine.model.db.Office;
-import com.tricon.ruleengine.model.db.ReportDetail;
-import com.tricon.ruleengine.model.db.Reports;
+import java.sql.Timestamp;
 
 public class ReportResponseDto {
 	
-	private Date rep_created_date;
+	private String rep_create_date;
 	private String rep_created_by;
-	private Date rd_created_date;
+	private String rd_created_date;
 	private String email;
 	private String office_name;
 	private int rep_group_run;
+	private int rd_group_run;
 	private String treatement_plan_id;
 	private String dob;
 	private String patient_name;
 	private String ivf_form_id;
 	private int rule_id;
 	private String error_message;
-	private String rl_name;
-	public Date getRep_created_date() {
-		return rep_created_date;
-	}
-	public void setRep_created_date(Date rep_created_date) {
-		this.rep_created_date = rep_created_date;
-	}
+	private String rule_name;
+	private String patient_id;
+	
+
 	public String getRep_created_by() {
 		return rep_created_by;
 	}
 	public void setRep_created_by(String rep_created_by) {
 		this.rep_created_by = rep_created_by;
-	}
-	public Date getRd_created_date() {
-		return rd_created_date;
-	}
-	public void setRd_created_date(Date rd_created_date) {
-		this.rd_created_date = rd_created_date;
 	}
 	public String getEmail() {
 		return email;
@@ -94,13 +81,43 @@ public class ReportResponseDto {
 	public void setError_message(String error_message) {
 		this.error_message = error_message;
 	}
-	public String getRl_name() {
-		return rl_name;
+
+	
+	public String getRule_name() {
+		return rule_name;
 	}
-	public void setRl_name(String rl_name) {
-		this.rl_name = rl_name;
+	public void setRule_name(String rule_name) {
+		this.rule_name = rule_name;
+	}
+	public String getPatient_id() {
+		return patient_id;
+	}
+	public void setPatient_id(String patient_id) {
+		this.patient_id = patient_id;
 	}
 
+	
+	public String getRep_create_date() {
+		return rep_create_date;
+	}
+	public void setRep_create_date(String rep_create_date) {
+		this.rep_create_date = rep_create_date;
+	}
+	public String getRd_created_date() {
+		return rd_created_date;
+	}
+	public void setRd_created_date(String rd_created_date) {
+		this.rd_created_date = rd_created_date;
+	}
+	public int getRd_group_run() {
+		return rd_group_run;
+	}
+	public void setRd_group_run(int rd_group_run) {
+		this.rd_group_run = rd_group_run;
+	}
+
+	
+	
 	
 
 }

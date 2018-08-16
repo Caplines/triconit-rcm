@@ -11,6 +11,7 @@ public class TreatmentPlanDetails {
 	private String dateLastUpdated;// This is DOS
 	private String status;
 	private String estSecondary;
+	private String description;
 	
 
 	public TreatmentPlanDetails() {
@@ -46,5 +47,14 @@ public class TreatmentPlanDetails {
 		this.estSecondary = estSecondary;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	
 	
 }

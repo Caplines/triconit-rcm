@@ -121,7 +121,7 @@ public class DateUtils {
 //		}
 		 Calendar calendar = new GregorianCalendar();
 			calendar.setTime(date);
-			calendar.set(calendar.get(Calendar.YEAR)+1,calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)+1);
+			calendar.set(calendar.get(Calendar.YEAR)+1,calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)-1);
 			System.out.println(calendar.get(Calendar.YEAR));
 			//calendar.set(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH)-1, calendar.get(Calendar.DATE));
 		  

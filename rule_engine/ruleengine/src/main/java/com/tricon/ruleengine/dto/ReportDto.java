@@ -3,6 +3,7 @@ package com.tricon.ruleengine.dto;
 public class ReportDto {
 	
 	private String reportType;
+	private String officeId;
 	private String reportField1;
 	private String reportField2;
 	
@@ -23,6 +24,12 @@ public class ReportDto {
 	}
 	public void setReportField2(String reportField2) {
 		this.reportField2 = reportField2;
+	}
+	public String getOfficeId() {
+		return officeId;
+	}
+	public void setOfficeId(String officeId) {
+		this.officeId = officeId;
 	}
 	
 	

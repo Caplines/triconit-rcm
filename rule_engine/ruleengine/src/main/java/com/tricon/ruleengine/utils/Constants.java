@@ -118,6 +118,8 @@ public class Constants {
 	public static String rule_log_read_fil_end="Ending Reading The File -- ";
 	
 	
+	public static String prebatchmode="PREBATCHMODE";
+	
 	
 	
 	
