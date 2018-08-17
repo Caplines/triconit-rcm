@@ -32,6 +32,7 @@ export class IVFBatchComponent implements OnInit {
   validateIVF() {
 	if(this.ivfm.officeId) {
 		this.showPopup=true;
+		this.showLoading = true;
 	}
   }
   

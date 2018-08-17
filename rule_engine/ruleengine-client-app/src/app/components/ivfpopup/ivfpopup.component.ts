@@ -23,16 +23,18 @@ export class IVFPopupComponent implements OnInit {
 	}
 	
 	validateIVF() {  
-		this.emitToParent.emit({action: "showLoading", value: true});
 		this.accountService.validateIVF(this.ivfm, this.ivfValidateName, (result) => { 
+			this.emitToParent.emit({action: "showLoading", value: false});
 			if (result.status=='OK'){
 				this.ivfmData = result.data;
 				this.arrayOfKeys = Object.keys(this.ivfmData);
 				this.emitToParent.emit({action: "showIvfData", value: true});
+				if (this.isEmpty(this.ivfmData){
+					alert("No Data Found.");
+				}
 			} else {
 				this.emitToParent.emit({action: "showIvfData", value: false});
 			}
-			this.emitToParent.emit({action: "showLoading", value: false});
 		});
 	}
 	
@@ -40,5 +42,12 @@ export class IVFPopupComponent implements OnInit {
 		this.emitToParent.emit({action: "showIvfData", value: false});
 	}
 	
+	isEmpty(obj) {
+	  for(var key in obj) {
+		if(obj.hasOwnProperty(key))
+		  return false;
+		}
+	  return true;
+	}
 	
 }

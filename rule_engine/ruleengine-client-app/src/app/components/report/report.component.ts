@@ -4,12 +4,14 @@ import {Office} from "../../model/model.office";
 import {ReportModel} from "../../model/model.report";
 import {AccountService} from "../../services/account.service";
 import {Router} from "@angular/router";
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [DatePipe]
 })
 export class ReportComponent implements OnInit {
   report: ReportModel = new ReportModel();
@@ -22,18 +24,18 @@ export class ReportComponent implements OnInit {
   showReportData: boolean = false;
   dateOptions: DatepickerOptions = {
 	displayFormat: 'MM/DD/YYYY',
-	placeholder: 'Click to select a date',
+	placeholder: 'Click to select a date'
   };
   showParam:any = {TreatmentId: false, IvfId: false, Date: false, PatientName: false}
   
-  constructor(public accountService: AccountService, public router: Router) {
+  constructor(public accountService: AccountService, public router: Router, private datePipe: DatePipe) {
 	this.accountService.getOffices((result) => {
       this.offices=result;
     });
   }
 
   ngOnInit() {
-	
+	this.dateOptions.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
   }
 
   reportParam(value) {
@@ -56,22 +58,30 @@ export class ReportComponent implements OnInit {
   }
   
   runReport() {
-	this.showLoading = true;
 	if(this.report.officeId && this.report.reportField1) {
+		this.showLoading = true;
 		this.accountService.validateReport(this.report,(result) => {
 			this.showLoading = false;
 			if (result.status=='OK'){
 				this.reportData = result.data;
 				this.arrayOfKeys = Object.keys(this.reportData);
 				this.showReportData = true;
+				if (this.isEmpty(this.reportData){
+					alert("No Data Found.");
+				}
+			} else {
+				this.showReportData = false;
 			}
 		});
-	}else{
-		this.showLoading = false;
 	}
-	console.log(this.arrayOfKeys);
-	console.log(this.reportData);
   }
-
+	
+  isEmpty(obj) {
+    for(var key in obj) {
+      if(obj.hasOwnProperty(key))
+        return false;
+    }
+    return true;
+  }
 
 }
