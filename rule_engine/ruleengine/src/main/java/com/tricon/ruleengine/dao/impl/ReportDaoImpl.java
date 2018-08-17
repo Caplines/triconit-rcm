@@ -62,8 +62,8 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 		" and us.uuid=rd.created_by and offi.uuid=rep.office_id ";
 			 if (dto.getReportType().equals(ReportTypeEnum.ReportType.Date.toString())) {
 				 queryString= queryString + " and "
-				 		+ " ( DATE(updated_date),DATE_FORMAT(DATE(updated_date),'%m-%d-%Y')='"+dto.getReportField1()+"'"
-					     + " or DATE(created_date),DATE_FORMAT(DATE(created_date),'%m-%d-%Y')='"+dto.getReportField1()+"' )";
+				 		+ " ( DATE_FORMAT(rep.created_date,'%m/%d/%Y')='"+dto.getReportField1()+"'"
+					     + " or DATE_FORMAT(rd.created_date,'%m/%d/%Y')='"+dto.getReportField1()+"' )";
 					 
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.IvfId.toString())) {
 				 queryString= queryString + "and  rep.ivf_form_id='"+dto.getReportField1()+"'";

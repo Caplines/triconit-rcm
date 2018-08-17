@@ -759,7 +759,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								 
 					 }
 				}
-				returnMap.put("IVF ID(" + ivx + ") Treatment Plan ID (" + trx + ") Patient ID ("+((IVFTableSheet)ivfMap.get(ivx)).getPatientId()+")" +debug, list);
+				returnMap.put("IVF ID(" + ivx + ") Treatment Plan ID (" + trx + ") Patient ID ("+((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId()+")" +debug, list);
 			} // For loop
 
 			// Save Reports
@@ -944,7 +944,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	}
 	
 	Reports reports= null;
-	reports = tvd.getReportsByIVFIdAndOffice(ivfSheet.getUniqueID().split("0")[1],off);
+	reports = tvd.getReportsByIVFIdAndOffice(ivfSheet.getUniqueID().split("_")[1],off);
 	//else reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);
 	//else reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);
 	//if (reports==null) reports = tvd.getReportsByTreamentPlanIdAndOffice(treatmentPlanId,off);

@@ -142,7 +142,7 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_4, Constants.rule_log_debug,bw);
         		List<TPValidationResponseDto> dList = new ArrayList<>();
 		if (tpList == null) {
-			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName()+" & Fee",
 					Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
 			return dList;
 		}
@@ -154,7 +154,7 @@ public class RuleBook {
 			RuleEngineLogger.generateLogs(clazz,"Coverage Book-"+ivf.getPlanCoverageBook()+" :: Coverage Book Header Name-"+ivf.getPlanCoverageBook(), Constants.rule_log_debug,bw);
 	        
 			if (ivf.getPlanCoverageBook()!=null  && pat.getCovBookHeaderName()!=null && !ivf.getPlanCoverageBook().trim().equalsIgnoreCase(pat.getCovBookHeaderName().trim())) {
-				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName()+" & Fee",
 						messageSource.getMessage("rule4.error.message_1",
 								new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName() }, locale),
 						Constants.FAIL));
@@ -163,7 +163,7 @@ public class RuleBook {
 			RuleEngineLogger.generateLogs(clazz,"Plan Fee Schedule Name-"+ivf.getPlanFeeScheduleName()+" :: Patient Fee Schedule Name-"+pat.getFeeScheduleName(), Constants.rule_log_debug,bw);
 	        
 			if (ivf.getPlanFeeScheduleName()!=null  && pat.getFeeScheduleName()!=null &&   !ivf.getPlanFeeScheduleName().trim().equalsIgnoreCase(pat.getFeeScheduleName().trim())) {
-				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName()+" & Fee",
 						messageSource.getMessage("rule4.error.message_3",
 								new Object[] { ivf.getPlanFeeScheduleName(), pat.getFeeScheduleName() }, locale),
 						Constants.FAIL));
@@ -200,7 +200,7 @@ public class RuleBook {
 				if (missing_code.size() > 0 || missing_name.size() > 0 || missing_cp_EG.size() > 0) {
 					pass = false;
 					if (missing_code.size() > 0 && missing_name.size() > 0) {
-						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName()+" & Fee",
 								messageSource.getMessage("rule4.error.message_2",
 										new Object[] { String.join(",", missing_code), String.join(",", missing_name) }, locale),
 								Constants.FAIL));
@@ -221,7 +221,7 @@ public class RuleBook {
 
 		} else {
 			RuleEngineLogger.generateLogs(clazz,"Patient Details not found in Patient Sheet -"+ivf.getPatientName() + "-" + ivf.getPatientDOB(), Constants.rule_log_debug,bw);
-			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName()+" & Fee", messageSource.getMessage(
 					"rule.patient.notfound.espatient",
 					new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
 							+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
@@ -230,7 +230,7 @@ public class RuleBook {
 		}
         
 		if (pass)
-			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName()+" & Fee",
 					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
 		return dList;
 
@@ -399,7 +399,7 @@ public class RuleBook {
 		return dList;
 	}
 
-	// Percentage Coverage check... Only DAta issue with Two
+	// Percentage Coverage check... 
 	// -Sub-GingivalIrrigation_D4921_%,
 	public List<TPValidationResponseDto> Rule6(Object ivfSheet, MessageSource messageSource, Rules rule,
 			List<EagleSoftEmployerMaster> esempmaster, List<EagleSoftPatient> espatients,BufferedWriter bw) {
@@ -476,7 +476,7 @@ public class RuleBook {
 				ivf.getImplantSupportedPorcCeramicD6065Percentage(), "Implant Supported Prosthetics"));
 		druleList.add(new Rule6Dto("Crowns_D2750_D2740_%", ivf.getCrownsD2750D2740Percentage(), "Crowns"));
 		druleList.add(new Rule6Dto("D9310_%", ivf.getD9310Percentage(), "Adjunctive General Services"));
-
+        List<String> mess=new ArrayList<>();
 		//
 		if (espatients != null && esempmaster != null && espatients.get(0) != null && esempmaster.get(0) != null) {
 
@@ -494,11 +494,13 @@ public class RuleBook {
 							// Pass
 						} else {
 							pass = false;
+							mess.add(d6.getIvfName());
+							/*
 							li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule6.error.message",
 											new Object[] { d6.getIvfName() + "(" + d6.getFsName() + ")" }, locale),
 									Constants.FAIL));
-
+                            */
 						}
 						break;// Only one value will be there
 					}
@@ -515,6 +517,12 @@ public class RuleBook {
 
 			}
 
+		}
+		if (!pass) {
+			li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule6.error.message",
+							new Object[] { String.join(",", mess) }, locale),
+					Constants.FAIL));
 		}
 		if (pass) {
 			li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -862,7 +870,7 @@ public class RuleBook {
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		if (tpList == null) {
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+					Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.ALERT));
 			return d;
 		}
 		boolean pass = true;
@@ -1272,7 +1280,7 @@ public class RuleBook {
 
 	}
 
-	// Pre Auth
+	// Pre-Auth
 	public List<TPValidationResponseDto> Rule10(List<Object> tpList, MessageSource messageSource, Rules rule,
 			List<Mappings> mappings,BufferedWriter bw) {
 
@@ -1343,12 +1351,12 @@ public class RuleBook {
 		}
 		if (pass)
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.NotNeeded));
 		return d;
 
 	}
 
-	// Waiting Period
+	//Waiting Period Checks
 	public List<TPValidationResponseDto> Rule11(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
 			Rules rule, List<Mappings> mappings,BufferedWriter bw) {
 
@@ -1469,7 +1477,7 @@ public class RuleBook {
 								&& m.getMissingToothClauseApplicable().trim().equalsIgnoreCase("yes")) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 									.getMessage("rule18.error.message", new Object[] { tp.getServiceCode() }, locale),
-									Constants.FAIL));
+									Constants.ALERT));
 							pass = false;
 						}
 					}
@@ -1480,7 +1488,7 @@ public class RuleBook {
 		}
 		if (pass)
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.NotApplicable));
 		return d;
 
 	}
@@ -1645,6 +1653,15 @@ public class RuleBook {
 	}
 
 	// Frequency Limitations
+	/**
+	 * @param tpList
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param mappings
+	 * @param bw
+	 * @return
+	 */
 	public List<TPValidationResponseDto> Rule21(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
 			Rules rule, List<Mappings> mappings,BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz,Constants.rule_log_enter + "-" + Constants.RULE_ID_21, Constants.rule_log_debug,bw);
@@ -1943,19 +1960,20 @@ public class RuleBook {
 
 		if (historPresent) {
 			RuleEngineLogger.generateLogs(clazz,"History is present  now proceed Further..", Constants.rule_log_debug,bw);
-			
+			TP_Date=new Date();
 			Map<String, List<String>> tpToothMap = null;
 			List<String> list = null;
 			for (Object t : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) t;
+				/*NEED FOR SECOND PHASE..
 				try {
-					TP_Date = Constants.SIMPLE_DATE_FORMAT
-							.parse(tp.getTreatmentPlanDetails().getDateLastUpdated());
+					//TP_Date = Constants.SIMPLE_DATE_FORMAT
+						//	.parse(tp.getTreatmentPlanDetails().getDateLastUpdated());
 				} catch (ParseException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
-				
+				*/
 				for (Map.Entry<String, List<ServiceCodeIvfTimesFreqFieldDto>> entry : mapFlIVF.entrySet()) {
 					if (entry.getKey().equals(tp.getServiceCode())) {
 						String toothTR[] = ToothUtil.getToothsFromTooth(tp.getTooth());
@@ -2144,89 +2162,62 @@ public class RuleBook {
 												RuleEngineLogger.generateLogs(clazz," Days:"+FDTO.getDays(), Constants.rule_log_debug,bw);
 												RuleEngineLogger.generateLogs(clazz,"Months :"+FDTO.getMonths(), Constants.rule_log_debug,bw);
 												//
-												RuleEngineLogger.generateLogs(clazz,"Initial planDate:"+planDate, Constants.rule_log_debug,bw);
-												//RuleEngineLogger.generateLogs(clazz,"End planDate:"+planDate, Constants.rule_log_debug,bw);
-	                                            
-												Calendar  calendar = new GregorianCalendar();
-												calendar.setTime(dos);
-												calendar.set(calendar.get(Calendar.YEAR),
-														calendar.get(Calendar.MONTH) + FDTO.getMonths(),
-														calendar.get(Calendar.DATE));
-												calendar.set(calendar.get(Calendar.YEAR),
-														calendar.get(Calendar.MONTH),
-														calendar.get(Calendar.DATE)+FDTO.getDays());
-												Date endTocompare= calendar.getTime();
-												//Date initTocompare= planDate;
-												//10 Aug --2 Days  DOS 14 Aug ..TP ...15 Aug-->end date 15 Aug
-												RuleEngineLogger.generateLogs(clazz,"endTocompare :"+endTocompare, Constants.rule_log_debug,bw);
-												
-												RuleEngineLogger.generateLogs(clazz,"DOS :"+dos, Constants.rule_log_debug,bw);
-												RuleEngineLogger.generateLogs(clazz,"TP_Date:"+TP_Date, Constants.rule_log_debug,bw);
-												RuleEngineLogger.generateLogs(clazz,"if endTocompare is greater than TP_DATE :"+(DateUtils.compareDates(endTocompare, TP_Date)), Constants.rule_log_debug,bw);
-												
-												//RuleEngineLogger.generateLogs(clazz," IS Date BetweenDates Initial planDate/End planDate/DOS :"+DateUtils.isDatesBetweenDates(initTocompare, endTocompare, dos), Constants.rule_log_debug,bw);
-												//RuleEngineLogger.generateLogs(clazz," IS Date BetweenDates Initial planDate/End planDate/TP_DATE :"+DateUtils.isDatesBetweenDates(initTocompare, endTocompare, TP_Date), Constants.rule_log_debug,bw);
-																							
-												
-												if (DateUtils.compareDates(endTocompare, TP_Date)) {
-													scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
-												}
+												  Calendar nextAvailbleDate = new GregorianCalendar();
+												  nextAvailbleDate.setTime(dos);
+												  nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+														  nextAvailbleDate.get(Calendar.MONTH)+FDTO.getMonths(),
+														  nextAvailbleDate.get(Calendar.DATE));
+												  
+												  nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+														  nextAvailbleDate.get(Calendar.MONTH),
+														  nextAvailbleDate.get(Calendar.DATE)+FDTO.getDays());
+												  //
+												  RuleEngineLogger.generateLogs(clazz,"NEXT DATE OF SERVICE AVIALBLE :"+nextAvailbleDate.getTime(), Constants.rule_log_debug,bw);
+												  RuleEngineLogger.generateLogs(clazz,"Current Date :"+TP_Date, Constants.rule_log_debug,bw);
+														
+												  //1 June Dec 12 -->6 Months
+												  //1 Dec  Dec 12
+												  if ( TP_Date.compareTo(nextAvailbleDate.getTime())<=0) {
+													  RuleEngineLogger.generateLogs(clazz," INCREASE COUNT BY 1-", Constants.rule_log_debug,bw);
+														scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
+												  }
 
 											} else if (FDTO.getOnlyDays() > 0) {//  Days
-												RuleEngineLogger.generateLogs(clazz," Days:"+FDTO.getOnlyDays(), Constants.rule_log_debug,bw);
-												//
-												Calendar calendar = new GregorianCalendar();
-												calendar.setTime(TP_Date);
-												calendar.set(calendar.get(Calendar.YEAR),
-														calendar.get(Calendar.MONTH),
-														calendar.get(Calendar.DATE) -FDTO.getOnlyDays());
-
-												Long dayhis = DateUtils.daysBetweenDates(dos,
-														TP_Date);
-												Long days = DateUtils.daysBetweenDates(calendar.getTime(),
-														TP_Date);
-												if ((days - dayhis) > 0) {
-													scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
-												}
+												RuleEngineLogger.generateLogs(clazz,"ONLY DAYS :"+FDTO.getOnlyDays(), Constants.rule_log_debug,bw);
+												
+												  Calendar nextAvailbleDate = new GregorianCalendar();
+												  nextAvailbleDate.setTime(dos);
+												  nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+														  nextAvailbleDate.get(Calendar.MONTH),
+														  nextAvailbleDate.get(Calendar.DATE)+FDTO.getOnlyDays());
+												  //
+												  RuleEngineLogger.generateLogs(clazz,"NEXT DATE OF SERVICE AVIALBLE :"+nextAvailbleDate.getTime(), Constants.rule_log_debug,bw);
+												  RuleEngineLogger.generateLogs(clazz,"Current Date :"+TP_Date, Constants.rule_log_debug,bw);
+														
+												  //1 June Dec 12 -->6 Months
+												  //1 Dec  Dec 12
+												  if ( TP_Date.compareTo(nextAvailbleDate.getTime())<=0) {
+													  RuleEngineLogger.generateLogs(clazz," INCREASE COUNT BY 1-", Constants.rule_log_debug,bw);
+														scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
+												  }
 
 											} else if (FDTO.getMonths() > 0) {// Months
 												RuleEngineLogger.generateLogs(clazz,"MONTHS :"+FDTO.getMonths(), Constants.rule_log_debug,bw);
-												// isPlanYearPresent=true;
-												 Calendar startCalendar = new GregorianCalendar();
-												  startCalendar.setTime(planDate);
-												  Calendar endDOS = new GregorianCalendar();
-												  endDOS.setTime(dos);
-												  
-												  Calendar endCalendarTP = new GregorianCalendar();
-												  endDOS.setTime(TP_Date);
-												  
-												  //GET NEXT X MONTH DATE--
-												  Calendar nextCalendar = new GregorianCalendar();
-												  nextCalendar.setTime(planDate);
-												  nextCalendar.set(nextCalendar.get(Calendar.YEAR),
-														  nextCalendar.get(Calendar.MONTH)+FDTO.getMonths(),
-														  nextCalendar.get(Calendar.DATE));
-												  //Check if RANGE IS IN GIVEN X MONTHS ==>Range DOS and TP DATE FALLS in same TIME RANGE
-												  if (!DateUtils.compareDates(dos, nextCalendar.getTime())) {
-                                                  if ( DateUtils.isDatesBetweenDates(planDate, nextCalendar.getTime(), endDOS.getTime())
-                                                	&&	DateUtils.isDatesBetweenDates(planDate, nextCalendar.getTime(), TP_Date)  ) {
-                                                	  
-                                                   }
-												  }
-
-												  int diffYear1 = endDOS.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
-												  int diffMonth1 = diffYear1 * 12 + endDOS.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
-												 
-												  int diffYear2 = endCalendarTP.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
-												  int diffMonth2 = diffYear2 * 12 + endCalendarTP.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
-												  //given 6 
-												  //10 months past plan date his
-												  //10 months past plan date TP
-												  
-                                                  if (0<=diffMonth1 && diffMonth1<=FDTO.getMonths() && 0<=diffMonth2 && diffMonth2<=FDTO.getMonths()) {
-                                                	  
-                                                  }
 												
+												  Calendar nextAvailbleDate = new GregorianCalendar();
+												  nextAvailbleDate.setTime(dos);
+												  nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+														  nextAvailbleDate.get(Calendar.MONTH)+FDTO.getMonths(),
+														  nextAvailbleDate.get(Calendar.DATE));
+												  RuleEngineLogger.generateLogs(clazz,"NEXT DATE OF SERVICE AVIALBLE :"+nextAvailbleDate.getTime(), Constants.rule_log_debug,bw);
+												  RuleEngineLogger.generateLogs(clazz,"Current Date :"+TP_Date, Constants.rule_log_debug,bw);
+														
+												  //1 JUne Dec 12 -->6 Months
+												  //1 Dec  Dec 12
+												  if ( TP_Date.compareTo(nextAvailbleDate.getTime())<=0) {
+													  RuleEngineLogger.generateLogs(clazz," INCREASE COUNT BY 1-", Constants.rule_log_debug,bw);
+														scivfTFDFinal.setCount(scivfTFDFinal.getCount()+1);
+												  }
 											}
 
                             			 ////

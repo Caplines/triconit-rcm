@@ -1,13 +1,10 @@
 package com.tricon.ruleengine.api.controller;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +22,6 @@ import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.UserRegistrationDto;
 import com.tricon.ruleengine.service.ReportService;
 import com.tricon.ruleengine.service.UserService;
-import com.tricon.ruleengine.utils.Constants;
 
 @RestController
 @RequestMapping("admin")
@@ -64,8 +60,8 @@ public class AdminRestController {
 		String k="";
 		if (li != null)
 			for (ReportResponseDto d : li) {
-                k=d.getRd_group_run()+"). Patient ID- "+d.getPatient_id()+ " IVF ID-"+d.getIvf_form_id() +" TR. ID-"+d.getTreatement_plan_id();
-				if (map.containsKey(k)) {
+				 k=d.getRd_group_run()+"). Patient ID- "+d.getPatient_id()+ " Patient Name- "+d.getPatient_name() + " IVF ID-"+d.getIvf_form_id() +" TR. ID-"+d.getTreatement_plan_id();
+					if (map.containsKey(k)) {
 					// if the key has already been used,
 					// we'll just grab the array list and add the value to it
 					a = (List<ReportResponseDto>) map.get(k + "");
@@ -88,8 +84,8 @@ public class AdminRestController {
 	@RequestMapping(value = "/report3", method = RequestMethod.GET)
 	public ResponseEntity<?> generateReport() {
 		ReportDto dto = new ReportDto();
-		dto.setReportType(ReportTypeEnum.ReportType.TreatmentId.toString());
-		dto.setReportField1("6951");
+		dto.setReportType(ReportTypeEnum.ReportType.Date.toString());
+		dto.setReportField1("08/14/2018");
 		dto.setOfficeId("fc1d7afd-7df2-11e8-8432-8c16451459cd");//
 		List<ReportResponseDto> li = reportService.getReports(dto);
 		Map<String, List<ReportResponseDto>> map = new LinkedHashMap<>();
@@ -97,7 +93,7 @@ public class AdminRestController {
 		String k="";
 		if (li != null)
 			for (ReportResponseDto d : li) {
-                k=d.getRd_group_run()+"). Patient ID- "+d.getPatient_id()+ " IVF ID-"+d.getIvf_form_id() +" TR. ID-"+d.getTreatement_plan_id();
+                k=d.getRd_group_run()+"). Patient ID- "+d.getPatient_id()+ " Patient Name- "+d.getPatient_name() + " IVF ID-"+d.getIvf_form_id() +" TR. ID-"+d.getTreatement_plan_id();
 				if (map.containsKey(k)) {
 					// if the key has already been used,
 					// we'll just grab the array list and add the value to it

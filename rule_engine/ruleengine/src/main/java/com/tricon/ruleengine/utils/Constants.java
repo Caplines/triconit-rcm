@@ -71,6 +71,11 @@ public class Constants {
    public static final String FAIL = "FAIL";
    public static final String PASS = "PASS";
    public static final String DEBUG = "DEBUG";
+   public static final String NotApplicable = "Not Applicable";
+   public static final String ALERT = "Alert";
+   public static final String NotNeeded = "Not Needed";
+   
+   
    public static final String ONLY_MESSAGE = "MESSAGE";
    
 	public static final String APP_AccessToken="code";
