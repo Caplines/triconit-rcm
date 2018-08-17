@@ -72,15 +72,15 @@
 		<div *ngIf="showReportData">
 			<div class="close-btn">
 				<a href="javascript:void(0)" (click)="showReportData=false;">
-					<img src="http://cdn3.iconfinder.com/data/icons/iconic-1/32/x_alt-128.png" alt="X" />
+					<img src="assets/img/close-btn.png" alt="X" />
 				</a>
 			</div>	
 			<div *ngFor="let key of arrayOfKeys" class="table-container">
 				<h3>{{key}}</h3>
-				<table class="table table-bordered">
+				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
-							<th>Created Date</th>
+							<th class="date-width">Created Date</th>
 							<th>Error Message</th>
 							<th>Rule Name</th>
 						</tr>
@@ -93,13 +93,8 @@
 						<tr>
 					</tbody>						
 				</table>
-				<!-- <ul *ngFor="let data of reportData[key]" class="message-container"> -->
-					<!-- <li [innerHTML]="data.rd_created_date"></li> -->
-					<!-- <li [innerHTML]="data.error_message"></li> -->
-					<!-- <li [innerHTML]="data.rule_name"></li> -->
-				<!-- </ul> -->
 			</div>
-			</div>	
+		</div>	
 		
 	</div>
 	

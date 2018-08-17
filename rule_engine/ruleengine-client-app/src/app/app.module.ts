@@ -16,6 +16,7 @@ import { IVFBatchComponent } from './components/ivfbatch/ivfbatch.component';
 import { ReportComponent } from './components/report/report.component';
 import { LogoutComponent } from './components/logout/logout.component';
 import { HeaderComponent } from './components/header/header.component';
+import { IVFPopupComponent } from './components/ivfpopup/ivfpopup.component';
 
 
 import {routing} from "./app.routing";
@@ -37,8 +38,8 @@ import { TokenInterceptor } from './auth/token.interceptor';
     IVFBatchPreComponent,
     ReportComponent,
     LogoutComponent,
-    HeaderComponent
-    
+    HeaderComponent,
+    IVFPopupComponent
 
   ],
   imports: [

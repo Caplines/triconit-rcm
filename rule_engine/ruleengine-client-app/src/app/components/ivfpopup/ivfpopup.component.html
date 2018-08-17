@@ -1,0 +1,50 @@
+<!-- <div *ngIf="showPopup" class="validation-popup"> -->
+	<!-- <div class="modal-backdrop fade in"></div> -->
+	<!-- <div id="modal-login" class="modal fade-scale" tabindex="-1" style="display:block"> -->
+		<!-- <div class="modal-dialog" role="document" style="width: 90%;"> -->
+			<!-- <div class="modal-content"> -->
+				<!-- <div class="modal-header"> -->
+					<!-- <button type="button" class="close" (click)="closePopup()"> -->
+						<!-- <span aria-hidden="true">&times;</span> -->
+					<!-- </button> -->
+					<!-- <h4 class="modal-title" id="myModalLabel">Validation Messages</h4> -->
+				<!-- </div> -->
+				<!-- <div class="modal-body"> -->
+					<!-- <div *ngFor="let key of arrayOfKeys"> -->
+						<!-- <h3>{{key}}</h3> -->
+						<!-- <ul *ngFor="let data of ivfmData[key]" class="message-container"> -->
+							<!-- <li [innerHTML]="data.ruleName +' - '+ data.message"></li> -->
+						<!-- </ul> -->
+					<!-- </div> -->
+				<!-- </div> -->
+				<!-- <!-- <div class="modal-footer"></div> --> 
+			<!-- </div> -->
+		<!-- </div> -->
+	<!-- </div> -->
+<!-- </div> -->
+
+
+<div *ngIf="showIvfData">
+	<div class="close-btn">
+		<a href="javascript:void(0)" (click)="closePopup()">
+			<img src="assets/img/close-btn.png" alt="X" />
+		</a>
+	</div>	
+	<div *ngFor="let key of arrayOfKeys" class="table-container">
+		<h3 [innerHTML]="key"></h3>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<th>Rule Name</th>
+					<th>Messages</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let data of ivfmData[key]">
+					<td><span [innerHTML]="data.ruleName"></span></td>
+					<td><span [innerHTML]="data.message"></span></td>
+				<tr>
+			</tbody>						
+		</table>
+	</div>
+</div>

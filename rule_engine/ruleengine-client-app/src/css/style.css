@@ -396,16 +396,13 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
 }
 
 .table-container {
-	    background: #fff;
+	background: #fff;
     padding: 20px 20px;
     position: relative;
     font-size: 14px;
-    border-bottom: 2px solid #1aabe3;
 	text-align:left;
+	color: #494949;
 }
-
-
-
 
 .close-btn{    position: fixed;
     width: 100%;
@@ -414,31 +411,42 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
     background: #fff;
     height: 60px;
     border-top: 2px solid #ccc;
-	    border-bottom: 2px solid #1aabe3;
-	}
+	box-shadow: 0px 5px 7px 0px #eee;
+}
 
 .close-btn img{
     top: 10px;
     right: 10px;
-		width:35px;
-		height:35px;
-		position:absolute;
-		-webkit-transition:-webkit-transform .25s, opacity .25s;
-          -moz-transition:-moz-transform .25s, opacity .25s;
-                   transition: transform .25s, opacity .25s;
-		opacity:.25;
-	}
+	width:35px;
+	height:35px;
+	position:absolute;
+	-webkit-transition:-webkit-transform .25s, opacity .25s;
+    -moz-transition:-moz-transform .25s, opacity .25s;
+    transition: transform .25s, opacity .25s;
+	opacity:.4;
+}
 
-	.close-btn img:hover{
-		-webkit-transform: rotate(270deg);
-    -moz-transform: rotate(270deg);
-    transform: rotate(270deg);
-		opacity:1;
-	}
-	
-	.error-message-api{
-		color: red;
-	}
-	.success-message-api{
-		color:green;
-	}
+.close-btn img:hover{
+	-webkit-transform: rotate(270deg);
+	-moz-transform: rotate(270deg);
+	transform: rotate(270deg);
+	opacity:1;
+}
+
+.table-container h3 {
+	color: #3d5273;
+}
+.table-container .table thead {
+	background: #3d5273;
+    color: #fff;
+}
+.table-container .table .date-width {
+	width:130px;
+}
+
+.error-message-api{
+	color: red;
+}
+.success-message-api{
+	color:green;
+}

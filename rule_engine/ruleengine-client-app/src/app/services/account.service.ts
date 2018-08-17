@@ -68,12 +68,12 @@ export class AccountService {
        });
     }
   
-  validateIVF(ivf:IVFModel,callback){
+  validateIVF(ivf:IVFModel,ivfValidateName,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
           console.log((<any>data).token);
           localStorage.setItem("token", (<any>data).token);
           console.log("token is set");
-            return  this.http.post(AppComponent.API_URL+'/validateTreatmentPlan',ivf);
+            return  this.http.post(AppComponent.API_URL+'/'+ivfValidateName,ivf);
           },
           )    
       ).subscribe(data => {
@@ -98,7 +98,7 @@ export class AccountService {
               
   }
   
-  validateIVFPreBatch(ivf:IVFBatchPreModel,callback){
+  /* validateIVFPreBatch(ivf:IVFBatchPreModel,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
           console.log((<any>data).token);
           localStorage.setItem("token", (<any>data).token);
@@ -157,7 +157,7 @@ export class AccountService {
           
           );
               
-  }
+  } */
   
   validateReport(report:ReportModel,callback){
 		this.generateRefreshToken().pipe(switchMap(data => {

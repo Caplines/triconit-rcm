@@ -14,10 +14,9 @@ export class IVFBatchPreComponent implements OnInit {
   ivfm: IVFBatchPreModel = new IVFBatchPreModel();
   errorMessage: string;
   offices:any;
-  ivfmData: any;
-  arrayOfKeys:any;
   showPopup: boolean = false;
   showLoading: boolean = false;
+  showIvfData: boolean = false;
   past:any;
 
   constructor(public accountService: AccountService, public router: Router) {
@@ -28,22 +27,22 @@ export class IVFBatchPreComponent implements OnInit {
 
   ngOnInit() {
   }
+  
   validateIVF() {
-	  this.showLoading = true;
- 	  if(this.ivfm.officeId) {
-          this.accountService.validateIVFPreBatch(this.ivfm,(result) => {
-              this.showLoading = false;
-              console.log(result);
-              if (result.status=='OK'){
-            	    this.ivfmData = result.data;
-            	    this.arrayOfKeys = Object.keys(this.ivfmData);
-            	    this.showPopup=true;
-              }
-        });
-	  }else{
-	      this.showLoading = false;
-
-	  }
+	if(this.ivfm.officeId) {
+		this.showPopup=true;
+	}
+  }
+  
+  receiveChildrenEmitter(event) {
+	if(event['action'] == "showLoading") {
+		this.showLoading = event['value'];
+	} else if(event['action'] == "showIvfData") {
+		this.showIvfData = event['value'];
+		if(!this.showIvfData) {
+			this.showPopup = false;
+		}
+	}
   }
  
   onPaste(evt) {
