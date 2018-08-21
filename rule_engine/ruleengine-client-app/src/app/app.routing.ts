@@ -7,6 +7,7 @@ import {IVFBatchPreComponent} from "./components/ivfbatchpre/ivfbatchpre.compone
 import {IVFBatchComponent} from "./components/ivfbatch/ivfbatch.component";
 import {LogoutComponent} from "./components/logout/logout.component";
 import {ReportComponent} from "./components/report/report.component";
+import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
 
 import {UrlPermission} from "./urlPermission/url.permission";
 import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
@@ -22,6 +23,7 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginComponent ,canActivate: [UrlLoggedInCheck]},
   { path: 'register', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
   { path: 'report', component: ReportComponent,canActivate: [UrlPermission]  },
+  { path: 'treatmentplan', component: TreatmentPlanComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
 
   // otherwise redirect to profile

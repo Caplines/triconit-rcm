@@ -6,6 +6,7 @@ import {IVFModel} from "../model/model.ivf";
 import {IVFBatchPreModel} from "../model/model.ivfbatchpre";
 import {IVFBatchModel} from "../model/model.ivfbatch";
 import {ReportModel} from "../model/model.report";
+import {TreatmentPlanModel} from "../model/model.treatmentplan";
 import {AuthHeader} from "../util/auth.header";
 import {AppComponent} from "../app.component";
 import { map,flatMap,mergeMap,switchMap } from 'rxjs/operators';
@@ -182,6 +183,31 @@ export class AccountService {
 			console.log(111);   
 			}
 		);   
+	}
+	
+	generateTreatmentPlanId(treatment:TreatmentPlanModel, callback) {
+		this.generateRefreshToken().pipe(switchMap(data => {
+			localStorage.setItem("token", (<any>data).token);
+			return  this.http.post(AppComponent.API_URL+'/generateTreatmentId',treatment);
+		})
+		).subscribe(data => {
+			//console.log(data['results']);
+			callback((<any>data));
+		},
+		error => {  
+			console.log(33);
+			if (error.status==401){ 
+				this.router.navigate(['/logout']);
+			}
+            if (error.status==500){
+				alert("Some un-Wanted Chnages Done to Google Sheets");
+				callback(error);
+            }
+        },
+        () => {        
+			console.log(111);   
+			}
+		);  
 	}
   
   generateRefreshToken(){

@@ -17,7 +17,7 @@ import { ReportComponent } from './components/report/report.component';
 import { LogoutComponent } from './components/logout/logout.component';
 import { HeaderComponent } from './components/header/header.component';
 import { IVFPopupComponent } from './components/ivfpopup/ivfpopup.component';
-
+import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
 
 import {routing} from "./app.routing";
 import {UrlPermission} from "./urlPermission/url.permission";
@@ -39,8 +39,8 @@ import { TokenInterceptor } from './auth/token.interceptor';
     ReportComponent,
     LogoutComponent,
     HeaderComponent,
-    IVFPopupComponent
-
+    IVFPopupComponent,
+	TreatmentPlanComponent
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule
