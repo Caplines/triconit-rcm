@@ -36,7 +36,7 @@ public class FreqencyUtils {
 				dto.setMonths(Integer.parseInt(temp.replace("mo", "")));
 				}
 				else if (temp.indexOf("cy")>-1) {
-					dto.setCy(Integer.parseInt(temp.replace("CY", "")));
+					dto.setCy(Integer.parseInt(temp.replace("cy", "")));
 					
 				}
 				else if (temp.indexOf("cy")>-1) {
@@ -48,13 +48,13 @@ public class FreqencyUtils {
 					
 				}
 				else if (temp.indexOf("lt")>-1) {
-                	dto.setLt(Integer.parseInt(temp.replace("LT", "")));
+                	dto.setLt(Integer.parseInt(temp.replace("lt", "")));
 				}
 				else if (temp.indexOf("days")>-1) {
                 	dto.setOnlyDays(Integer.parseInt(temp.replace("days", "")));
 				}
 			}if (secondPart.length>1) {
-				dto.setDays(Integer.parseInt(secondPart[1].replaceAll("D", "")));
+				dto.setDays(Integer.parseInt(secondPart[1].replaceAll("d", "")));
 			}
 		}
 		}catch (Exception e) {
@@ -85,19 +85,27 @@ public class FreqencyUtils {
 		int count=0;
 		int times=0;
 		int  ctr=0;
+		String tooth="";
+		String code="";
+		
 		List<String> dos=new ArrayList<>();
 		String fr="";
+		String fl="";
+		
 		for(ServiceCodeIvfTimesFreqFieldDto s:li) {
 			if (s.getServiceCode().equals(serviceCode)) {
 				count=count+s.getCount();
 				dos.add(s.getDos());
+				fl=s.getFieldName();
+				code=s.getServiceCode();
+				tooth=s.getTooth();
 				fr=s.getFreqency();
 				if (ctr==0) times=s.getTimes();
 				else if (times>s.getTimes()) times=s.getTimes();///Set to minimum value
 			}
 			ctr++;
 		}
-		return new Object[] {count,times,fr,String.join(",", dos)};
+		return new Object[] {code,tooth,String.join(",", dos),fl};
 	}
 	
 	public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1,String s1,String tooth){
@@ -168,8 +176,8 @@ public class FreqencyUtils {
 	}
 	public static void main(String a[]) {
 		
-		FreqencyDto d=parseFrequecy("1x60Mo_1D");
-		System.out.println(d);
+		FreqencyDto d=parseFrequecy("1x5CY");
+		System.out.println(d.getCy());
 		Date treatmentDate =new Date();
 		
 		

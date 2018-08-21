@@ -75,7 +75,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 }
 			 		
 			 //queryString=queryString+ " group  by rep.treatement_plan_id, rd.rule_id"
-			 queryString=queryString+ "	 order by rd.group_run asc";
+			 queryString=queryString+ "	 order by rd.group_run desc";
 			 System.out.println(queryString);
 			 list=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(ReportResponseDto.class)). list();
 			 

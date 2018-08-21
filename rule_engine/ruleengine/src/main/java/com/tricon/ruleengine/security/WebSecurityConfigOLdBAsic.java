@@ -42,7 +42,6 @@ public class WebSecurityConfigOLdBAsic  {
  
         // Setting Service to find User in the database.
         // And Setting PassswordEncoder
-    	System.out.println("98989898899");
        // auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());     
  
     }

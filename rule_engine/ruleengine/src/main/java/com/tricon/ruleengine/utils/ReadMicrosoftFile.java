@@ -30,6 +30,25 @@ import com.tricon.ruleengine.model.sheet.TreatmentPlanPatient;
 
 public class ReadMicrosoftFile {
 
+	private Object[] getFileFromEagelSoft(String urlStr, String sheetName) throws IOException {
+
+		URL url = new URL(urlStr);
+
+		// InputStream is = new FileInputStream(new File("/path/to/workbook.xlsx"));
+		BufferedInputStream bis = new BufferedInputStream(url.openStream());
+		Workbook workbook = StreamingReader.builder().rowCacheSize(3000) // number of rows to keep in memory (defaults
+																			// to
+																			// 10)
+				.bufferSize(2048) // buffer size to use when reading InputStream to file (defaults to 1024)
+				.open(bis); // InputStream or File for XLSX file (required)
+
+		// Workbook workbook = new XSSFWorkbook(bis);
+		Sheet datatypeSheet = workbook.getSheet(sheetName);
+		Iterator<Row> iterator = datatypeSheet.iterator();
+		Object[] obj = new Object[] { bis, workbook, iterator };
+		return obj;
+	}
+
 	/**
 	 * 
 	 * @param urlStr
@@ -42,18 +61,13 @@ public class ReadMicrosoftFile {
 	public Map<String, List<?>> downloadAndReadUsingStream(String urlStr, String sheetName, String type,
 			String[] treatmentPlanIds, List<String> codes, Map<String, List<Object>> ivMap,
 			Map<String, List<EagleSoftPatient>> patientsMap) throws IOException {
-		URL url = new URL(urlStr);
 
-		// InputStream is = new FileInputStream(new File("/path/to/workbook.xlsx"));
-		BufferedInputStream bis = new BufferedInputStream(url.openStream());
-		Workbook workbook = StreamingReader.builder().rowCacheSize(3000) // number of rows to keep in memory (defaults to
-																		// 10)
-				.bufferSize(2048) // buffer size to use when reading InputStream to file (defaults to 1024)
-				.open(bis); // InputStream or File for XLSX file (required)
+		Object[] objArray = getFileFromEagelSoft(urlStr, sheetName);
+		Iterator<Row> iterator = (Iterator<Row>) objArray[2];
+		BufferedInputStream bis = (BufferedInputStream) objArray[0];
+		Workbook workbook = (Workbook) objArray[1];
 
-		// Workbook workbook = new XSSFWorkbook(bis);
-		Sheet datatypeSheet = workbook.getSheet(sheetName);
-		Iterator<Row> iterator = datatypeSheet.iterator();
+		// Iterator<Row> iterator = datatypeSheet.iterator();
 		Map<String, List<?>> map = null;
 
 		if (Constants.microsoft_treatement_sheet_name.equals(type))
@@ -61,7 +75,7 @@ public class ReadMicrosoftFile {
 		else if (Constants.microsoft_emp_master.equals(type))
 			map = readEmpmaster(iterator, patientsMap);
 		else if (Constants.microsoft_feeSchedule_master.equals(type))
-			map = readFeeSchedule(iterator, codes);
+			map = readFeeSchedule(iterator, patientsMap);
 		else if (Constants.microsoft_patient.equals(type))
 			map = readPatient(iterator, ivMap);
 
@@ -72,56 +86,57 @@ public class ReadMicrosoftFile {
 		return map;
 	}
 
-	/*
-	public Map<String, List<Object>> downloadAndReadUsingStreamMap(String urlStr, String sheetName, String type,
-			List<Object> ivfSheet, Map<String, List<EagleSoftPatient>> pats) throws IOException {
-		URL url = new URL(urlStr);
-		Map<String, List<Object>> map = null;
-		BufferedInputStream bis = new BufferedInputStream(url.openStream());
-		Workbook workbook = StreamingReader.builder().rowCacheSize(100) // number of rows to keep in memory (defaults to
-																		// 10)
-				.bufferSize(2048) // buffer size to use when reading InputStream to file (defaults to 1024)
-				.open(bis); // InputStream or File for XLSX file (required)
+	public List<TreatmentPlan> downloadAndReadUsingStreamForTreatOnly(String urlStr, String sheetName,
+			String patientId) throws IOException {
 
-		Sheet datatypeSheet = workbook.getSheet(sheetName);
-		Iterator<Row> iterator = datatypeSheet.iterator();
-		List<Object> list = null;
+		Object[] objArray = getFileFromEagelSoft(urlStr, sheetName);
+		Iterator<Row> iterator = (Iterator<Row>) objArray[2];
+		BufferedInputStream bis = (BufferedInputStream) objArray[0];
+		Workbook workbook = (Workbook) objArray[1];
 
-		if (Constants.microsoft_emp_master.equals(type)) {
-
-			for (Map.Entry<String, List<EagleSoftPatient>> entry : pats.entrySet()) {
-				System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-				List<EagleSoftPatient> x = entry.getValue();
-				if (x != null) {
-					list = readEmpmaster(iterator, x.get(0).getEmployerId());
-					if (list != null) {
-						if (map == null)
-							map = new HashMap<>();
-						if (map.get(x.get(0).getEmployerId()) == null)
-							map.put(x.get(0).getEmployerId(), list);
-					}
-				}
-			}
-		} else if (Constants.microsoft_patient.equals(type)) {
-			for (Object obj : ivfSheet) {
-				IVFTableSheet ivf = (IVFTableSheet) obj;
-				list = readPatient(iterator, ivf);
-				if (list != null) {
-					if (map == null)
-						map = new HashMap<>();
-					map.put(ivf.getUniqueID(), list);
-				}
-			}
-		}
+		// Iterator<Row> iterator = datatypeSheet.iterator();
+		
+		List<TreatmentPlan> list = readTreatmentPlanForPatient(iterator, patientId);
 
 		//
 		bis.close();
 		workbook.close();
 
-		return map;
+		return list;
 	}
 
-    */
+	/*
+	 * public Map<String, List<Object>> downloadAndReadUsingStreamMap(String urlStr,
+	 * String sheetName, String type, List<Object> ivfSheet, Map<String,
+	 * List<EagleSoftPatient>> pats) throws IOException { URL url = new URL(urlStr);
+	 * Map<String, List<Object>> map = null; BufferedInputStream bis = new
+	 * BufferedInputStream(url.openStream()); Workbook workbook =
+	 * StreamingReader.builder().rowCacheSize(100) // number of rows to keep in
+	 * memory (defaults to // 10) .bufferSize(2048) // buffer size to use when
+	 * reading InputStream to file (defaults to 1024) .open(bis); // InputStream or
+	 * File for XLSX file (required)
+	 * 
+	 * Sheet datatypeSheet = workbook.getSheet(sheetName); Iterator<Row> iterator =
+	 * datatypeSheet.iterator(); List<Object> list = null;
+	 * 
+	 * if (Constants.microsoft_emp_master.equals(type)) {
+	 * 
+	 * for (Map.Entry<String, List<EagleSoftPatient>> entry : pats.entrySet()) {
+	 * System.out.println("Key = " + entry.getKey() + ", Value = " +
+	 * entry.getValue()); List<EagleSoftPatient> x = entry.getValue(); if (x !=
+	 * null) { list = readEmpmaster(iterator, x.get(0).getEmployerId()); if (list !=
+	 * null) { if (map == null) map = new HashMap<>(); if
+	 * (map.get(x.get(0).getEmployerId()) == null) map.put(x.get(0).getEmployerId(),
+	 * list); } } } } else if (Constants.microsoft_patient.equals(type)) { for
+	 * (Object obj : ivfSheet) { IVFTableSheet ivf = (IVFTableSheet) obj; list =
+	 * readPatient(iterator, ivf); if (list != null) { if (map == null) map = new
+	 * HashMap<>(); map.put(ivf.getUniqueID(), list); } } }
+	 * 
+	 * // bis.close(); workbook.close();
+	 * 
+	 * return map; }
+	 * 
+	 */
 	private Map<String, List<?>> readTreatmentPlan(Iterator<Row> iterator, String[] treatmentPlanIds) {
 		Map<String, List<?>> map = null;
 		List<Object> list = null;
@@ -197,9 +212,10 @@ public class ReadMicrosoftFile {
 				else if (colCt == 18)
 					tp.setPatientPortion(currentCell.getStringCellValue());
 				//
-				if (tp.getTooth()==null) tp.setTooth("NA");
-				else if (tp.getTooth()!=null && tp.getTooth().trim().equals("")) tp.setTooth("NA");//NA Mean All Tooth.. like cleaning..
-				
+				if (tp.getTooth() == null)
+					tp.setTooth("NA");
+				else if (tp.getTooth() != null && tp.getTooth().trim().equals(""))
+					tp.setTooth("NA");// NA Mean All Tooth.. like cleaning..
 
 			}
 			if (added) {
@@ -207,11 +223,12 @@ public class ReadMicrosoftFile {
 				tp.setTreatmentPlanDetails(treatmentPlanDetails);
 				tp.setPatient(patient);
 				// list.add(tp);
-				if (map == null) map = new HashMap<>();
+				if (map == null)
+					map = new HashMap<>();
 				if (map.containsKey(tp.getId())) {
 					// if the key has already been used,
 					// we'll just grab the array list and add the value to it
-					list = (List<Object>)(List<?>) map.get(tp.getId());
+					list = (List<Object>) (List<?>) map.get(tp.getId());
 					list.add(tp);
 				} else {
 					// if the key hasn't been used yet,
@@ -222,14 +239,105 @@ public class ReadMicrosoftFile {
 					map.put(tp.getId(), list);
 				}
 
-				//System.out.println(tp.getId());
+				// System.out.println(tp.getId());
 			}
 
 		}
 		return map;
 	}
 
-	private Map<String, List<?>> readFeeSchedule(Iterator<Row> iterator, List<String> code) {
+	private List<TreatmentPlan> readTreatmentPlanForPatient(Iterator<Row> iterator, String patientId) {
+		List<TreatmentPlan> list = null;
+		TreatmentPlan tp = null;
+		TreatmentPlanPatient patient = null;
+		TreatmentPlanDetails treatmentPlanDetails = null;
+		int rowCt = -1;
+		while (iterator.hasNext()) {
+			rowCt++;
+			Row currentRow = iterator.next();
+			if (rowCt == 0) {
+				continue;
+			} // Ignore First Row
+			Iterator<Cell> cellIterator = currentRow.iterator();
+			int colCt = -1;
+			tp = new TreatmentPlan();
+			patient = new TreatmentPlanPatient();
+			treatmentPlanDetails = new TreatmentPlanDetails();
+			boolean added = false;
+			while (cellIterator.hasNext()) {
+				colCt++;
+				Cell currentCell = cellIterator.next();
+				if (colCt == 0)
+					tp.setApptId(currentCell.getStringCellValue());
+				else if (colCt == 1) {
+					patient.setId(currentCell.getStringCellValue());
+					
+					if (patient.getId()!=null && patient.getId().trim().equalsIgnoreCase(patientId)) {
+						added=true;	
+					} else {
+						break;
+					}
+
+				} else if (colCt == 2)
+					patient.setName(currentCell.getStringCellValue());
+				else if (colCt == 3)
+					patient.setLastName(currentCell.getStringCellValue());
+				else if (colCt == 4)
+					tp.setLineItem(currentCell.getStringCellValue());
+				else if (colCt == 5)
+					tp.setServiceCode(currentCell.getStringCellValue());
+				else if (colCt == 6)
+					tp.setDescription(currentCell.getStringCellValue());
+				else if (colCt == 7) {
+					tp.setId(currentCell.getStringCellValue());
+				} else if (colCt == 8)
+					treatmentPlanDetails.setDateLastUpdated(currentCell.getStringCellValue());
+				else if (colCt == 9)
+					tp.setSurface(currentCell.getStringCellValue());
+				else if (colCt == 10)
+					tp.setTooth(currentCell.getStringCellValue());
+				else if (colCt == 11)
+					tp.setStatus(currentCell.getStringCellValue());
+				else if (colCt == 12)
+					treatmentPlanDetails.setStatus(currentCell.getStringCellValue());
+				else if (colCt == 13)
+					tp.setFee(currentCell.getStringCellValue());
+				else if (colCt == 14)
+					tp.setEstPrimary(currentCell.getStringCellValue());
+
+				else if (colCt == 15)
+					treatmentPlanDetails.setEstSecondary(currentCell.getStringCellValue());
+				else if (colCt == 16)
+					treatmentPlanDetails.setDescription(currentCell.getStringCellValue());
+				else if (colCt == 17)
+					tp.setEstInsurance(currentCell.getStringCellValue());
+				else if (colCt == 18)
+					tp.setPatientPortion(currentCell.getStringCellValue());
+				//
+				if (tp.getTooth() == null)
+					tp.setTooth("NA");
+				else if (tp.getTooth() != null && tp.getTooth().trim().equals(""))
+					tp.setTooth("NA");// NA Mean All Tooth.. like cleaning..
+
+			}
+			if (added) {
+				// if (list == null) list = new ArrayList<>();
+				tp.setTreatmentPlanDetails(treatmentPlanDetails);
+				tp.setPatient(patient);
+				// list.add(tp);
+				if (list == null)
+					list = new ArrayList();
+				list.add(tp);
+				
+
+				// System.out.println(tp.getId());
+			}
+
+		}
+		return list;
+	}
+
+	private Map<String, List<?>> readFeeSchedule(Iterator<Row> iterator,  Map<String, List<EagleSoftPatient>> patientMap) {
 		Map<String, List<?>> map = null;
 		List<Object> list = null;
 		EagleSoftFeeShedule fn = null;
@@ -259,23 +367,38 @@ public class ReadMicrosoftFile {
 					fn.setFeesFee(currentCell.getStringCellValue());
 
 			}
-			final String cd = fn.getFeesServiceCode();
-			Collection<String> ruleGen = Collections2.filter(code, name -> name.equals(cd));
-			if (ruleGen.size() >0) {
-				if (list == null)
-					list = new ArrayList<>();
-				list.add(fn);
-			}
+			//final String cd = fn.getFeesServiceCode();
+			if (patientMap != null) {
+				for (Map.Entry<String, List<EagleSoftPatient>> entry : patientMap.entrySet()) {
+					if (entry.getValue() != null) {
+						EagleSoftPatient es = ((EagleSoftPatient) (entry.getValue().get(0)));
+						if (fn.getFeeId().equals(es.getFeeScheduleId())) {
 
-		}
-		if (list != null) {
-			map = new HashMap<>();
-			map.put(1 + "", list);
+							if (map == null)
+								map = new HashMap<>();
+							if (map.containsKey(es.getFeeScheduleId())) {
+								// if the key has already been used,
+								// we'll just grab the array list and add the value to it
+								list = (List<Object>) (List<?>) map.get(es.getFeeScheduleId());
+								list.add(fn);
+							} else {
+								// if the key hasn't been used yet,
+								// we'll create a new ArrayList<String> object, add the value
+								// and put it in the array list with the new key
+								list = new ArrayList<>();
+								list.add(fn);
+								map.put(es.getFeeScheduleId(), list);
+							}
+						}
+
+					}
+				}
+			}
 		}
 		return map;
 	}
 
-	private Map<String, List<?>> readEmpmaster(Iterator<Row> iterator, Map<String,List<EagleSoftPatient>> patientMap) {
+	private Map<String, List<?>> readEmpmaster(Iterator<Row> iterator, Map<String, List<EagleSoftPatient>> patientMap) {
 		Map<String, List<?>> map = null;
 		List<Object> list = null;
 		EagleSoftEmployerMaster fn = null;
@@ -313,31 +436,31 @@ public class ReadMicrosoftFile {
 
 			}
 
-			if (patientMap!=null) {
-			for (Map.Entry<String, List<EagleSoftPatient>> entry : patientMap.entrySet()) {
-				if (entry.getValue() != null) {
-					EagleSoftPatient es =((EagleSoftPatient)(entry.getValue().get(0)));
-					if (fn.getEmployerId().equals(es.getEmployerId())) {
-						
-						
-						if (map == null) map = new HashMap<>();
-						if (map.containsKey(es.getEmployerId())) {
-							// if the key has already been used,
-							// we'll just grab the array list and add the value to it
-							list = (List<Object>)(List<?>)  map.get(es.getEmployerId());
-							list.add(fn);
-						} else {
-							// if the key hasn't been used yet,
-							// we'll create a new ArrayList<String> object, add the value
-							// and put it in the array list with the new key
-							list = new ArrayList<>();
-							list.add(fn);
-							map.put(es.getEmployerId(), list);
+			if (patientMap != null) {
+				for (Map.Entry<String, List<EagleSoftPatient>> entry : patientMap.entrySet()) {
+					if (entry.getValue() != null) {
+						EagleSoftPatient es = ((EagleSoftPatient) (entry.getValue().get(0)));
+						if (fn.getEmployerId().equals(es.getEmployerId())) {
+
+							if (map == null)
+								map = new HashMap<>();
+							if (map.containsKey(es.getEmployerId())) {
+								// if the key has already been used,
+								// we'll just grab the array list and add the value to it
+								list = (List<Object>) (List<?>) map.get(es.getEmployerId());
+								list.add(fn);
+							} else {
+								// if the key hasn't been used yet,
+								// we'll create a new ArrayList<String> object, add the value
+								// and put it in the array list with the new key
+								list = new ArrayList<>();
+								list.add(fn);
+								map.put(es.getEmployerId(), list);
+							}
 						}
+
 					}
-					
 				}
-			}
 			}
 			/*
 			 * final String cd=fn.getServiceTypeServiceCode(); Collection<String> ruleGen =
@@ -371,83 +494,77 @@ public class ReadMicrosoftFile {
 					c = "";
 				// currentCell.setCellType(CellType.STRING);
 				if (colCt == 0)
-					fn.setPatientId(c);//A
+					fn.setPatientId(c);// A
 				else if (colCt == 1)
-					fn.setFirstName(c);//B
+					fn.setFirstName(c);// B
 				else if (colCt == 2)
-					fn.setLastName(c);//C
+					fn.setLastName(c);// C
 				else if (colCt == 3) {
 
 					if (currentCell.getDateCellValue() != null) {
 						fn.setBirthDate(Constants.SIMPLE_DATE_FORMAT.format(currentCell.getDateCellValue()));
 					} else {
-						fn.setBirthDate("");//D
+						fn.setBirthDate("");// D
 					}
 				} else if (colCt == 4)
-					fn.setSocialSecurity(c);//E
+					fn.setSocialSecurity(c);// E
 				else if (colCt == 5)
-					fn.setPrimMemberId(c);//F
+					fn.setPrimMemberId(c);// F
 				else if (colCt == 6)
-					fn.setStatus(c);//G
+					fn.setStatus(c);// G
 				else if (colCt == 7)
-					fn.setResponsiblePartyStatus(c);//H
+					fn.setResponsiblePartyStatus(c);// H
 				else if (colCt == 8)
-					fn.setResponsibleParty(c);//I
+					fn.setResponsibleParty(c);// I
 				else if (colCt == 9)
-					fn.setMaximumCoverage(c);//J
+					fn.setMaximumCoverage(c);// J
 				else if (colCt == 10)
-					fn.setPrimBenefitsRemaining(c);//K
+					fn.setPrimBenefitsRemaining(c);// K
 				else if (colCt == 11)
-					fn.setPrimRemainingDeductible(c);//L
+					fn.setPrimRemainingDeductible(c);// L
 				else if (colCt == 12)
-					fn.setSecBenefitsRemaining(c);//M
+					fn.setSecBenefitsRemaining(c);// M
 				else if (colCt == 13)
-					fn.setSecRemainingDeductible(c);//N
+					fn.setSecRemainingDeductible(c);// N
 				else if (colCt == 14)
-					fn.setEmployerId(c);//O
+					fn.setEmployerId(c);// O
 				else if (colCt == 15)
-					fn.setEmployerName(c);//P
+					fn.setEmployerName(c);// P
 				else if (colCt == 16)
-					fn.setFeeScheduleId(c);//Q
+					fn.setFeeScheduleId(c);// Q
 				else if (colCt == 17)
-					fn.setFeeScheduleName(c);//R
+					fn.setFeeScheduleName(c);// R
 				else if (colCt == 18) {
-					//System.out.println("HHHHHHHHHHHHHHH");
-					//System.out.println(c);
-					fn.setCovBookHeaderId(c);//S
-				}else if (colCt == 19) {
-					//System.out.println("HHHHHHHHHHHHHHH");
-					//System.out.println(c);
-					fn.setCovBookHeaderName(c);//T
+					fn.setCovBookHeaderId(c);// S
+				} else if (colCt == 19) {
+					fn.setCovBookHeaderName(c);// T
 				}
 			}
 
-			// final String cd=ivfSheet.getPatientDOB()+"-"+ivfSheet.getPatientName();
-			//System.out.println(fn.getBirthDate()+fn.getFirstName()+" "+fn.getLastName());
 			try {
 
 				// using for-each loop for iteration over Map.entrySet()
 				if (ivMap != null) {
-					//System.out.println("IN MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
 					for (Map.Entry<String, List<Object>> entry : ivMap.entrySet()) {
 						if (entry.getValue() != null) {
-							//System.out.println("IN XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX     XXXXXXXXXXX");
-									IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
-							//System.out.println(fn.getBirthDate() + fn.getFirstName() + " " + fn.getLastName());
-							//System.out.println(Constants.SIMPLE_DATE_FORMAT
-							//		.format(Constants.SIMPLE_DATE_FORMAT.parse(ivfSheet.getPatientDOB()))
-							//		+ ivfSheet.getPatientName());
-							
-							//if ((fn.getBirthDate() + fn.getFirstName() + " " + fn.getLastName())
-								//	.equalsIgnoreCase(Constants.SIMPLE_DATE_FORMAT
-									//		.format(Constants.SIMPLE_DATE_FORMAT.parse(ivfSheet.getPatientDOB()))
-										//	+ ivfSheet.getPatientName())) {
-								if ((fn.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
-								if (map == null) map = new HashMap<>();
+							IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
+							// System.out.println(fn.getBirthDate() + fn.getFirstName() + " " +
+							// fn.getLastName());
+							// System.out.println(Constants.SIMPLE_DATE_FORMAT
+							// .format(Constants.SIMPLE_DATE_FORMAT.parse(ivfSheet.getPatientDOB()))
+							// + ivfSheet.getPatientName());
+
+							// if ((fn.getBirthDate() + fn.getFirstName() + " " + fn.getLastName())
+							// .equalsIgnoreCase(Constants.SIMPLE_DATE_FORMAT
+							// .format(Constants.SIMPLE_DATE_FORMAT.parse(ivfSheet.getPatientDOB()))
+							// + ivfSheet.getPatientName())) {
+							if ((fn.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+								if (map == null)
+									map = new HashMap<>();
 								if (map.containsKey(ivfSheet.getUniqueID())) {
 									// if the key has already been used,
 									// we'll just grab the array list and add the value to it
-									list = (List<Object>)(List<?>) map.get(ivfSheet.getUniqueID());
+									list = (List<Object>) (List<?>) map.get(ivfSheet.getUniqueID());
 									list.add(fn);
 								} else {
 									// if the key hasn't been used yet,
@@ -455,10 +572,9 @@ public class ReadMicrosoftFile {
 									// and put it in the array list with the new key
 									list = new ArrayList<>();
 									list.add(fn);
-									//map.put(ivfSheet.getUniqueID().split("_")[1], list);
+									// map.put(ivfSheet.getUniqueID().split("_")[1], list);
 									map.put(ivfSheet.getUniqueID(), list);
 								}
-
 
 							}
 						}
@@ -480,7 +596,7 @@ public class ReadMicrosoftFile {
 		String urlStr = Constants.graphRangeUrl;
 		urlStr = urlStr.replace("--id--", sheetId).replace("--name--", sheetName.replace(" ", "%20"));
 		// URL url = new URL(urlStr);
-		//System.out.println(0000000);
+		// System.out.println(0000000);
 		List<Object> list = null;
 		Object obj = SendPostAndReadJSon.sendGetDataGraphDownloadJson(token, urlStr, clazz);
 		if (Constants.microsoft_treatement_sheet_name.equals(type)) {
@@ -490,7 +606,7 @@ public class ReadMicrosoftFile {
 		} else if (Constants.microsoft_emp_master.equals(type)) {
 			list = readEmployerMasterJson(obj, dto);
 		} else if (Constants.microsoft_patient.equals(type)) {
-			//list = readPatientJson(obj, dto);//
+			// list = readPatientJson(obj, dto);//
 		}
 		//
 		return list;
@@ -512,7 +628,7 @@ public class ReadMicrosoftFile {
 			for (Object x : l) {
 				ctr++;
 				String val = x.toString();
-				//System.out.println(val);
+				// System.out.println(val);
 				if (ctr == 0)
 					tp.setApptId(val);
 				else if (ctr == 1)
@@ -652,74 +768,32 @@ public class ReadMicrosoftFile {
 	}
 
 	/*
-	private List<Object> readPatientJson(Object obj, TreatmentPlanValidationDto dto) {
-		List<Object> list = null;
-		MicroSoftSheetJson graph = (MicroSoftSheetJson) obj;
-		EagleSoftPatient fn = null;
-		int rowCt = 0;
-		for (Object o : graph.getData()) {
-			List<Object> l = (ArrayList<Object>) o;
-			if (rowCt == 0) {
-				rowCt++;
-				continue;
-			} // Ignore First Row
-			if (list == null) {
-				list = new ArrayList<>();
-			}
-
-			int colCt = -1;
-			fn = new EagleSoftPatient();
-			for (Object x : l) {
-				colCt++;
-				String val = x.toString();
-				if (colCt == 0)
-					fn.setPatientId(val);
-				else if (colCt == 1)
-					fn.setFirstName(val);
-				else if (colCt == 2)
-					fn.setLastName(val);
-				else if (colCt == 3)
-					fn.setBirthDate(val);
-				else if (colCt == 4)
-					fn.setSocialSecurity(val);
-				else if (colCt == 5)
-					fn.setPrimMemberId(val);
-				else if (colCt == 6)
-					fn.setResponsiblePartyStatus(val);
-				else if (colCt == 7)
-					fn.setResponsibleParty(val);
-				else if (colCt == 8)
-					fn.setPrimMaximumCcoverage(val);
-				else if (colCt == 9)
-					fn.setPrimBenefitsRemaining(val);
-				else if (colCt == 10)
-					fn.setPrimRemainingDeductible(val);
-				else if (colCt == 11)
-					fn.setSecBenefitsRemaining(val);
-				else if (colCt == 12)
-					fn.setSecRemainingDeductible(val);
-				else if (colCt == 13)
-					fn.setPlannedServicesServiceCode(val);
-				else if (colCt == 14)
-					fn.setPlannedServicesFee(val);
-				else if (colCt == 15)
-					fn.setEmployerId(val);
-				else if (colCt == 16)
-					fn.setEmployerName(val);
-				else if (colCt == 17)
-					fn.setPlannedServicesCompletionDate(val);
-				else if (colCt == 18)
-					fn.setFeeScheduleId(val);
-				else if (colCt == 19)
-					fn.setFeeScheduleName(val);
-				else if (colCt == 20)
-					fn.setCovBookHeaderName(val);
-
-			}
-			if (list != null)
-				list.add(fn);
-		}
-		return list;
-	}
-    */
+	 * private List<Object> readPatientJson(Object obj, TreatmentPlanValidationDto
+	 * dto) { List<Object> list = null; MicroSoftSheetJson graph =
+	 * (MicroSoftSheetJson) obj; EagleSoftPatient fn = null; int rowCt = 0; for
+	 * (Object o : graph.getData()) { List<Object> l = (ArrayList<Object>) o; if
+	 * (rowCt == 0) { rowCt++; continue; } // Ignore First Row if (list == null) {
+	 * list = new ArrayList<>(); }
+	 * 
+	 * int colCt = -1; fn = new EagleSoftPatient(); for (Object x : l) { colCt++;
+	 * String val = x.toString(); if (colCt == 0) fn.setPatientId(val); else if
+	 * (colCt == 1) fn.setFirstName(val); else if (colCt == 2) fn.setLastName(val);
+	 * else if (colCt == 3) fn.setBirthDate(val); else if (colCt == 4)
+	 * fn.setSocialSecurity(val); else if (colCt == 5) fn.setPrimMemberId(val); else
+	 * if (colCt == 6) fn.setResponsiblePartyStatus(val); else if (colCt == 7)
+	 * fn.setResponsibleParty(val); else if (colCt == 8)
+	 * fn.setPrimMaximumCcoverage(val); else if (colCt == 9)
+	 * fn.setPrimBenefitsRemaining(val); else if (colCt == 10)
+	 * fn.setPrimRemainingDeductible(val); else if (colCt == 11)
+	 * fn.setSecBenefitsRemaining(val); else if (colCt == 12)
+	 * fn.setSecRemainingDeductible(val); else if (colCt == 13)
+	 * fn.setPlannedServicesServiceCode(val); else if (colCt == 14)
+	 * fn.setPlannedServicesFee(val); else if (colCt == 15) fn.setEmployerId(val);
+	 * else if (colCt == 16) fn.setEmployerName(val); else if (colCt == 17)
+	 * fn.setPlannedServicesCompletionDate(val); else if (colCt == 18)
+	 * fn.setFeeScheduleId(val); else if (colCt == 19) fn.setFeeScheduleName(val);
+	 * else if (colCt == 20) fn.setCovBookHeaderName(val);
+	 * 
+	 * } if (list != null) list.add(fn); } return list; }
+	 */
 }

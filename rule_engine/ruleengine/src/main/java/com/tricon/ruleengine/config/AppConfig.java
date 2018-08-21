@@ -29,50 +29,59 @@ import org.springframework.context.MessageSource;
 
 public class AppConfig {
 
-	@Value("${spring.datasource.driver-class-name}")
+	@Value("${spring.datasource1.driver-class-name}")
 	private String DB_DRIVER;
 
-	@Value("${spring.jpa.properties.hibernate.connection.password}")
+	@Value("${spring.jpa1.properties.hibernate.connection.password}")
 	private String DB_PASSWORD;
 
-	@Value("${spring.jpa.properties.hibernate.connection.url}")
+	@Value("${spring.jpa1.properties.hibernate.connection.url}")
 	private String DB_URL;
 
-	@Value("${spring.jpa.properties.hibernate.connection.username}")
+	@Value("${spring.jpa1.properties.hibernate.connection.username}")
 	private String DB_USERNAME;
 
-	@Value("${spring.jpa.properties.hibernate.dialect}")
+	@Value("${spring.jpa1.properties.hibernate.dialect}")
 	private String HIBERNATE_DIALECT;
 
-	@Value("${spring.jpa.show-sql}")
+	@Value("${spring.jpa1.show-sql}")
 	private String HIBERNATE_SHOW_SQL;
 
-	@Value("${spring.jpa.hibernate.ddl-auto}")
+	@Value("${spring.jpa1.hibernate.ddl-auto}")
 	private String HIBERNATE_HBM2DDL_AUTO;
 
 	@Value("${entitymanager.packagesToScan}")
 	private String ENTITYMANAGER_PACKAGES_TO_SCAN;
 
-	@Value("${hibernate.c3p0.max_size}")
+	@Value("${hibernate.c3p01.max_size}")
 	private String CONN_POOL_MAX_SIZE;
 
-	@Value("${hibernate.c3p0.min_size}")
+	@Value("${hibernate.c3p01.min_size}")
 	private String CONN_POOL_MIN_SIZE;
 
-	@Value("${hibernate.c3p0.idle_test_period}")
+	@Value("${hibernate.c3p01.idle_test_period}")
 	private String CONN_POOL_IDLE_PERIOD;
+	
+	@Value("${hibernate.c3p01.acquire_increment}")
+	private String CONN_POOL_ACQUIRE_INC;
 
-	@Autowired
-	private Environment env;
+	@Value("${hibernate.c3p01.timeout}")
+	private String CONN_POOL_TIMWEOUT;
+
+	@Value("${hibernate.c3p01.max_statements}")
+	private String CONN_POOL_MAX_STAT;
+
+
+//	@Autowired
+//	private Environment env;
 
 	@Bean
 	public ComboPooledDataSource dataSource() {
 		// a named datasource is best practice for later jmx monitoring
+		//https://chburmeister.github.io/2017/02/04/springboot-application-with-hibernate-and-c3p0-connection-pooling.html
 		ComboPooledDataSource dataSource = new ComboPooledDataSource("jupiter");
-		System.out.println("9999999999999999999999999999999999999");
 		try {
 			dataSource.setDriverClass(DB_DRIVER);
-			System.out.println("9999999999999999999999999999999999999");
 		} catch (PropertyVetoException pve) {
 			System.out.println("Cannot load datasource driver (" + DB_DRIVER + ") : " + pve.getMessage());
 			return null;
@@ -83,6 +92,10 @@ public class AppConfig {
 		dataSource.setMinPoolSize(Integer.parseInt(CONN_POOL_MIN_SIZE));
 		dataSource.setMaxPoolSize(Integer.parseInt(CONN_POOL_MAX_SIZE));
 		dataSource.setMaxIdleTime(Integer.parseInt(CONN_POOL_IDLE_PERIOD));
+		
+		dataSource.setAcquireIncrement(Integer.parseInt(CONN_POOL_ACQUIRE_INC));
+		dataSource.setMaxStatements(Integer.parseInt(CONN_POOL_MAX_STAT));
+		
 		// https://aodcoding.wordpress.com/2015/05/22/handling-connection-pool-issues-in-spring-boot/
 		// http://christoph-burmeister.eu/?p=3093
 

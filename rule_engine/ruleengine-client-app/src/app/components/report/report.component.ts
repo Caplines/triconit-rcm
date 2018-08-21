@@ -66,7 +66,7 @@ export class ReportComponent implements OnInit {
 				this.reportData = result.data;
 				this.arrayOfKeys = Object.keys(this.reportData);
 				this.showReportData = true;
-				if (this.isEmpty(this.reportData){
+				if (this.isEmpty(this.reportData)){
 					alert("No Data Found.");
 				}
 			} else {

@@ -132,7 +132,6 @@ public class ConnectAndReadSheets {
 	 * }
 	 */
 	public static Map<String, List<Object>> readIVFSheet(ValueRange range, String[] uniqueIds, String officeName) {
-		System.out.println("KKKKKKKKKKKKKKKK");
 
 		List<List<Object>> values = range.getValues();
 		Map<String, List<Object>> map = null;
@@ -154,9 +153,9 @@ public class ConnectAndReadSheets {
 			try {
 				if (obj.get(157).toLowerCase().startsWith("Unique_ID"))
 					break;
-				System.out.println("id---" + ivds.get(0));
-				System.out.println("id---" + officeName + "_" + ivds.get(0));
-				System.out.println("888888:;" + (obj.get(157)));
+				//System.out.println("id---" + ivds.get(0));
+				//System.out.println("id---" + officeName + "_" + ivds.get(0));
+				//System.out.println("888888:;" + (obj.get(157)));
 				Collection<String> ruleGen = Collections2.filter(ivds,
 						id -> (officeName + "_" + id).equals(obj.get(157)));
 				if (ruleGen != null && ruleGen.size() > 0) {
@@ -164,7 +163,7 @@ public class ConnectAndReadSheets {
                     for(String i:ruleGen) {
                     	uniqueId=i;	
                     }
-					System.out.println("ADDEDDDDD");
+					//System.out.println("ADDEDDDDD");
 					// if (!obj.get(157).equals(uniqueId)) continue;
 					int x = -1;
 					vif = new IVFTableSheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
@@ -194,6 +193,7 @@ public class ConnectAndReadSheets {
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 							obj.get(++x),obj.get(++x), obj.get(157));
+					
 				}else {
 					continue;
 				}

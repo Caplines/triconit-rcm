@@ -13,6 +13,10 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  * @author Deepak.Dogra
  *
  */
+
+/* from cmd >mvn package*/
+/* to create build of front end--- npm run --prod*/
+
 @SpringBootApplication(exclude = { JpaRepositoriesAutoConfiguration.class,
  HibernateJpaAutoConfiguration.class})
 public class RuleengineApplication extends SpringBootServletInitializer{

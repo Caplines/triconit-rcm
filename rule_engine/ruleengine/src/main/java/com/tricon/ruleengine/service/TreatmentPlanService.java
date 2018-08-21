@@ -3,8 +3,11 @@ package com.tricon.ruleengine.service;
 import java.util.List;
 import java.util.Map;
 
+import com.tricon.ruleengine.dto.PatientTreamentDto;
+import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
+import com.tricon.ruleengine.dto.TreatmentPlanDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
 
 /**
@@ -23,5 +26,7 @@ public interface TreatmentPlanService {
 
 	public Map<String,List<TPValidationResponseDto>> validateTreatmentPlanPreBatch(TreatmentPlanBatchValidationDto dto);
 
-
+	
+	public Map<String,List<PatientTreamentDto>> getTreatments(TreatmentPlanDto dto) ;
+	
 }

@@ -61,6 +61,8 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 	public Reports getReportsByIVFIdAndOffice(String ivfId,Office off) {
 
 		Reports rep=null;
+		//Never use me issue no unique data will be there
+		/*
 		Session session = getSession();
 		try {
 			Criteria criteria = session.createCriteria(Reports.class);
@@ -73,6 +75,7 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 			closeSession(session);
 
 		}
+		*/
 		return rep;
 	}
 	

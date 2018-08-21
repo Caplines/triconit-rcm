@@ -14,8 +14,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -26,12 +24,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SendPostAndReadJSon {
 	
 	
-	public static  Object sendPostRequest(String urlParameters,String urlReq,Class clazz) throws IOException {
-		System.out.println(urlParameters);
+	public static  Object sendPostRequest(String urlParameters,String urlReq,Class<?> clazz) throws IOException {
+		//System.out.println(urlParameters);
 		byte[] postData =urlParameters.getBytes( StandardCharsets.UTF_8 );
 		int postDataLength = postData.length;
 		Object fromGraph=null;
-		System.out.println("calllllllllllllllll");
 		InputStream stream = null;
 		String request = urlReq;
 		URL url = new URL( request );
@@ -49,7 +46,6 @@ public class SendPostAndReadJSon {
 			stream = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
             String result = reader.readLine();
-            System.out.println("ssssssss-0"+result);
             fromGraph  =new ObjectMapper().readValue(result, clazz);
             //Player p = g.fromJson(jsonString, Player.class)
 
@@ -74,8 +70,6 @@ public class SendPostAndReadJSon {
                 case 200: { 
                     // everything is fine, handle the response
                     String stringResponse = EntityUtils.toString(response.getEntity());  // now you have the response as String, which you can convert to a JSONObject or do other stuff
-            	System.out.println("--stringResponse----");
-            	System.out.println(stringResponse);
             	System.out.println(stringResponse.split("\",\"createdDateTime\"")[0].split(".graph.downloadUrl\":\"")[1]);
             	
                     return 	stringResponse.split("\",\"createdDateTime\"")[0].split(".graph.downloadUrl\":\"")[1];
@@ -98,11 +92,11 @@ public class SendPostAndReadJSon {
 		return null;
 	}
 
-	public static  Object sendGetDataGraphDownloadJson(String token,String urlReq,Class clazz) {
+	public static  Object sendGetDataGraphDownloadJson(String token,String urlReq,Class<?> clazz) {
 		Object fromGraph=null;
 		HttpResponse response=null;
 		try {
-            System.out.println(urlReq);
+            //System.out.println(urlReq);
             
             
             int timeout = 50000;
@@ -121,7 +115,7 @@ public class SendPostAndReadJSon {
             switch (responseCode) {
                 case 200: { 
                     String stringResponse = EntityUtils.toString(response.getEntity());  // now you have the response as String, which you can convert to a JSONObject or do other stuff
-            	System.out.println("--stringResponse----");
+            	//System.out.println("--stringResponse----");
             	fromGraph  =new ObjectMapper().readValue(stringResponse, clazz);
                 }
                 case 500: {
@@ -183,10 +177,10 @@ public class SendPostAndReadJSon {
 		*/
 		//byte[] postData =urlParameters.getBytes( StandardCharsets.UTF_8 );
 		//int postDataLength = postData.length;
-		Object fromGraph=null;
+		//Object fromGraph=null;
 		//msg.set
-		StringEntity params = new StringEntity(msg.toString());
-		System.out.println("calllllllllllllllll");
+		//StringEntity params = new StringEntity(msg.toString());
+		//System.out.println("calllllllllllllllll");
 		InputStream stream = null;
 		String request = urlReq;
 		URL url = new URL( request );
@@ -206,7 +200,7 @@ public class SendPostAndReadJSon {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
             String result = reader.readLine();
             System.out.println("ssssssss-0"+result);
-            System.out.println(result.split("&usid=")[0].split("\",\"id\":\"")[1]);
+            //System.out.println(result.split("&usid=")[0].split("\",\"id\":\"")[1]);
             //Player p = g.fromJson(jsonString, Player.class)
             if (pasreRes) return result.split("&usid=")[0].split("\",\"id\":\"")[1];
             //Read more: http://www.java67.com/2016/10/3-ways-to-convert-string-to-json-object-in-java.html#ixzz5LoZdhIvN

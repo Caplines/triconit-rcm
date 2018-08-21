@@ -21,7 +21,7 @@ const appRoutes: Routes = [
   { path: 'ivfbatchpre', component: IVFBatchPreComponent ,canActivate: [UrlPermission] },
   { path: 'login', component: LoginComponent ,canActivate: [UrlLoggedInCheck]},
   { path: 'register', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
-  { path: 'report', component: ReportComponent,canActivate: [UrlAdminPermission]  },
+  { path: 'report', component: ReportComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
 
   // otherwise redirect to profile

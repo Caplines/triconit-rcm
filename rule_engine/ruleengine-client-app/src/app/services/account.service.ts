@@ -162,7 +162,7 @@ export class AccountService {
   validateReport(report:ReportModel,callback){
 		this.generateRefreshToken().pipe(switchMap(data => {
 			localStorage.setItem("token", (<any>data).token);
-			return  this.http.post(AppComponent.API_URL+'/admin/report',report);
+			return  this.http.post(AppComponent.API_URL+'/report',report);
 		})
 		).subscribe(data => {
 			//console.log(data['results']);

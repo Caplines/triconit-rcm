@@ -29,7 +29,7 @@ export class IVFPopupComponent implements OnInit {
 				this.ivfmData = result.data;
 				this.arrayOfKeys = Object.keys(this.ivfmData);
 				this.emitToParent.emit({action: "showIvfData", value: true});
-				if (this.isEmpty(this.ivfmData){
+				if (this.isEmpty(this.ivfmData)){
 					alert("No Data Found.");
 				}
 			} else {
