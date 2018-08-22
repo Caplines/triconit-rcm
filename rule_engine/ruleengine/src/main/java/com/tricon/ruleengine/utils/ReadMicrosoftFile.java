@@ -490,11 +490,19 @@ public class ReadMicrosoftFile {
 				colCt++;
 				Cell currentCell = cellIterator.next();
 				String c = currentCell.getStringCellValue();
+				
+				//System.out.println("ii--"+c);
 				if (c == null)
 					c = "";
 				// currentCell.setCellType(CellType.STRING);
-				if (colCt == 0)
+				if (colCt == 0) {
 					fn.setPatientId(c);// A
+				/*
+					if (fn.getPatientId().equals("11196")) {
+					System.out.println("ss");
+				}
+				*/
+				}
 				else if (colCt == 1)
 					fn.setFirstName(c);// B
 				else if (colCt == 2)

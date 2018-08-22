@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Rule Engine Application';
-  static API_URL="http://localhost:8080";
-  //static API_URL="/ruleengine"; 
+  //static API_URL="http://localhost:8080";
+  static API_URL="/ruleengine"; 
 }

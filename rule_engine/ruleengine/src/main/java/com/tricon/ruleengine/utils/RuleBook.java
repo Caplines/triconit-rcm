@@ -926,38 +926,43 @@ public class RuleBook {
 				List<String> preMolarT = new ArrayList<>();
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
-					String tooths[] = ToothUtil.getToothsFromTooth(tp.getTooth());
-					for (String tooth : tooths) {
-						RuleEngineLogger.generateLogs(clazz, "primaryMolar-" + primaryMolar + " -Tooth-" + tooth,
-								Constants.rule_log_debug, bw);
+					// IF Any more Sealants are there plz add in OR Conditions
+					if (tp.getServiceCode().equalsIgnoreCase("D1351")) {
 
-						if (!primaryMolar.trim().equalsIgnoreCase("yes")) {
-							Collection<String> prit = Collections2.filter(primaryMolarTCList, th -> th.equals(tooth));
-							for (String x : prit) {
-								primaryMolarT.add(x);
+						String tooths[] = ToothUtil.getToothsFromTooth(tp.getTooth());
+						for (String tooth : tooths) {
+							RuleEngineLogger.generateLogs(clazz, "primaryMolar-" + primaryMolar + " -Tooth-" + tooth,
+									Constants.rule_log_debug, bw);
+
+							if (!primaryMolar.trim().equalsIgnoreCase("yes")) {
+								Collection<String> prit = Collections2.filter(primaryMolarTCList,
+										th -> th.equals(tooth));
+								for (String x : prit) {
+									primaryMolarT.add(x);
+								}
 							}
-						}
-						RuleEngineLogger.generateLogs(clazz, "premanentMolar-" + premanentMolar + " -Tooth-" + tooth,
-								Constants.rule_log_debug, bw);
+							RuleEngineLogger.generateLogs(clazz,
+									"premanentMolar-" + premanentMolar + " -Tooth-" + tooth, Constants.rule_log_debug,
+									bw);
 
-						if (!premanentMolar.trim().equalsIgnoreCase("yes")) {
-							Collection<String> permat = Collections2.filter(permanentMolarTCList,
-									th -> th.equals(tooth));
-							for (String x : permat) {
-								primaryMolarT.add(x);
+							if (!premanentMolar.trim().equalsIgnoreCase("yes")) {
+								Collection<String> permat = Collections2.filter(permanentMolarTCList,
+										th -> th.equals(tooth));
+								for (String x : permat) {
+									primaryMolarT.add(x);
+								}
 							}
-						}
-						RuleEngineLogger.generateLogs(clazz, "preMolar-" + preMolar + " -Tooth-" + tooth,
-								Constants.rule_log_debug, bw);
-						if (!preMolar.trim().equalsIgnoreCase("yes")) {
-							Collection<String> perm = Collections2.filter(preMolarCList, th -> th.equals(tooth));
-							for (String x : perm) {
-								primaryMolarT.add(x);
+							RuleEngineLogger.generateLogs(clazz, "preMolar-" + preMolar + " -Tooth-" + tooth,
+									Constants.rule_log_debug, bw);
+							if (!preMolar.trim().equalsIgnoreCase("yes")) {
+								Collection<String> perm = Collections2.filter(preMolarCList, th -> th.equals(tooth));
+								for (String x : perm) {
+									primaryMolarT.add(x);
+								}
 							}
-						}
 
-					} // For loop end= Tooth
-
+						} // For loop end= Tooth
+					}
 				} // For LOOP end
 				if (primaryMolarT.size() > 0) {
 					// String.join(", ", primaryMolarT)
@@ -1650,14 +1655,14 @@ public class RuleBook {
 
 					Calendar nextAvailbleDate = new GregorianCalendar();
 					nextAvailbleDate.setTime(effD);
-					nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR), nextAvailbleDate.get(Calendar.MONTH),
-							nextAvailbleDate.get(Calendar.DATE) + wt);
-					RuleEngineLogger.generateLogs(clazz, "Next Date " + nextAvailbleDate, Constants.rule_log_debug, bw);
+					nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR), nextAvailbleDate.get(Calendar.MONTH)+wt,
+							nextAvailbleDate.get(Calendar.DATE));
+					RuleEngineLogger.generateLogs(clazz, "Next Date " + nextAvailbleDate.getTime(), Constants.rule_log_debug, bw);
 
 					RuleEngineLogger.generateLogs(clazz, "WAIT -" + wt, Constants.rule_log_debug, bw);
 					RuleEngineLogger.generateLogs(clazz, "LAST UPDATED DATE-- " + dos, Constants.rule_log_debug, bw);
 
-					if (nextAvailbleDate.getTime().compareTo(dos) <= 0) {
+					if (nextAvailbleDate.getTime().compareTo(dos) >= 0) {
 						pass = false;
 						d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule11.error.message",
@@ -1863,18 +1868,30 @@ public class RuleBook {
 									// Go Fee Schedule goto Check Fee
 									if (esfeess != null && esfeess.size() > 0) {
 										Collection<EagleSoftFeeShedule> ruleGen = Collections2.filter(esfeess,
-												name -> name.getFeesServiceCode().equals(m.getDowngrading().trim()));
+												name -> name.getFeesServiceCode()
+														.indexOf(m.getDowngrading().trim()) >= 0);
 										if (ruleGen != null) {
 											for (EagleSoftFeeShedule fs : ruleGen) {
 												RuleEngineLogger.generateLogs(clazz, "TP Fee -" + tp.getFee(),
 														Constants.rule_log_debug, bw);
 												RuleEngineLogger.generateLogs(clazz, "ES  Fee -" + fs.getFeesFee(),
 														Constants.rule_log_debug, bw);
-												if (!fs.getFeesFee().equals(tp.getFee())) {
+												
+												RuleEngineLogger.generateLogs(clazz,
+														"EstInsurance -" + tp.getEstInsurance(),
+														Constants.rule_log_debug, bw);
+                                                Double estins= Double.parseDouble(tp.getEstInsurance());
+												Double fcal = DowngradingPercentUtil.getIVFColumnforServiceCode(ivf,
+														tp.getServiceCode(), fs.getFeesFee(), bw);
+												RuleEngineLogger.generateLogs(clazz, "Down Graded Ins -" + fcal,
+														Constants.rule_log_debug, bw);
+												RuleEngineLogger.generateLogs(clazz, "estins -" + estins,
+														Constants.rule_log_debug, bw);
+												if (fcal.doubleValue()!=estins.doubleValue()) {
 													pass = false;
 													dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 															messageSource.getMessage("rule19.error.message2",
-																	new Object[] { tp.getServiceCode(), fs.getFeesFee(),
+																	new Object[] { tp.getServiceCode(), fcal,
 																			m.getDowngrading() },
 																	locale),
 															Constants.FAIL));
@@ -1964,6 +1981,21 @@ public class RuleBook {
 			mapFlIVF.put("D1206", dL);
 			// mapFlIVF.put("D1206", new String[] { "Varnish_D1206_FL",
 			// ivf.getVarnishD1206FL() });// 2
+
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1110", "ProphyD1110_FL", ivf.getProphyD1110FL(), 0, 0);
+			dL = new ArrayList<>();
+			dL.add(scivftff);
+			mapFlIVF.put("D1110", dL);
+
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1120", "ProphyD1120_FL", ivf.getProphyD1120FL(), 0, 0);
+			dL = new ArrayList<>();
+			dL.add(scivftff);
+			mapFlIVF.put("D1120", dL);
+
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2391", "PostComposites_D2391_FL", ivf.getPostCompositesD2391FL(), 0, 0);
+			dL = new ArrayList<>();
+			dL.add(scivftff);
+			mapFlIVF.put("D2391", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0270", "XRaysBWS_FL", ivf.getxRaysBWSFL(), 0, 0);
 			dL = new ArrayList<>();

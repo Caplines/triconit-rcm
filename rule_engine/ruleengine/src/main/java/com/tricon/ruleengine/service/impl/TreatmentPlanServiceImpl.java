@@ -382,7 +382,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 					}
 
-					if (ivfMap != null && ivfMap.get(ivx) != null) {
+					if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0)!=null) {
 
 						// RULE_ID_1 (Eligibility of the patient)
 
@@ -434,7 +434,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rule = getRulesFromList(rules, Constants.RULE_ID_4);
 						String feeKey="-1";
 						if (espatients.get(patKey)!=null && espatients.get(patKey).size()>0) feeKey=((EagleSoftPatient)espatients.get(patKey).get(0)).getFeeScheduleId();
-						if (esfeess != null && espatients != null) {
+						if (esfeess != null && espatients != null && espatients.get(patKey).size()>0) {
 							dtoRL = rb.Rule4_B(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
 									esfeess.get(feeKey), espatients.get(patKey), bw);
 						} else {
@@ -442,13 +442,18 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
 										Constants.FAIL));
-							if (espatients == null)
+							else if (espatients == null)
 								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule.patient.notfound",
 												new Object[] { "Patient ID-"
 														+ ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getPatientId() },
 												locale),
 										Constants.FAIL));
+							else dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule.patient.notfound",
+											new Object[] { "Some Issue in Fee Sheet" },
+											locale),
+									Constants.FAIL));
 
 						}
 						if (dtoRL != null) {

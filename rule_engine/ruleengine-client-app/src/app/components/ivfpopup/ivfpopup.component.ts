@@ -26,12 +26,17 @@ export class IVFPopupComponent implements OnInit {
 		this.accountService.validateIVF(this.ivfm, this.ivfValidateName, (result) => { 
 			this.emitToParent.emit({action: "showLoading", value: false});
 			if (result.status=='OK'){
+				if (result.data){
 				this.ivfmData = result.data;
+				console.log(this.ivfmData);
 				this.arrayOfKeys = Object.keys(this.ivfmData);
 				this.emitToParent.emit({action: "showIvfData", value: true});
 				if (this.isEmpty(this.ivfmData)){
 					alert("No Data Found.");
 				}
+			 }else{
+				this.emitToParent.emit({action: "showIvfData", value: false});
+			 }
 			} else {
 				this.emitToParent.emit({action: "showIvfData", value: false});
 			}

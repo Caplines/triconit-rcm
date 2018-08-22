@@ -131,6 +131,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/**/*.html",
                 "/**/*.css",
                 "/**/*.jpg",
+                "/**/*.png",
                 "/**/*.js"
             ).antMatchers(HttpMethod.POST,
                 "/account/register",

@@ -111,6 +111,7 @@ public class TreatmentPlan {
 		this.fee = fee;
 	}
 	public String getEstInsurance() {
+		estInsurance=estInsurance.replaceAll("\"", "");
 		return estInsurance;
 	}
 	public void setEstInsurance(String estInsurance) {

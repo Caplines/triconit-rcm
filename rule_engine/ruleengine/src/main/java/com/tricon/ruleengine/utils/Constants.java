@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.utils;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
 public class Constants {
@@ -127,7 +129,7 @@ public class Constants {
 	public static String prebatchmode="PREBATCHMODE";
 	
 	
-	
+	public static NumberFormat formatter = new DecimalFormat("#0.00");
 	
 	
 
