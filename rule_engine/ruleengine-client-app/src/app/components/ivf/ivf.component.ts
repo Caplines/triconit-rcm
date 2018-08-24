@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
 import {IVFModel} from "../../model/model.ivf";
 import {Office} from "../../model/model.office";
 import {AccountService} from "../../services/account.service";
@@ -11,6 +11,7 @@ import {Router} from "@angular/router";
   encapsulation: ViewEncapsulation.None
 })
 export class IVFComponent implements OnInit {
+  @Input() treatmentPlanId:any;
   ivfm: IVFModel = new IVFModel();
   errorMessage: string;
   offices:any;
@@ -27,6 +28,7 @@ export class IVFComponent implements OnInit {
   }
 
   ngOnInit() {
+	this.ivfm.treatmentPlanId = this.treatmentPlanId;
   }
 
   validateIVF() {

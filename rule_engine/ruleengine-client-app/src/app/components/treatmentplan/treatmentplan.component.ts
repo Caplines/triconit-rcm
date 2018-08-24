@@ -18,6 +18,8 @@ export class TreatmentPlanComponent implements OnInit {
   arrayOfKeys: any;
   showLoading: boolean = false;
   showTreatmentPlanData: boolean = false;
+  treatmentPlanId: any;
+  selectedIndex: any;
   
   constructor(public accountService: AccountService, public router: Router) {
 	this.accountService.getOffices((result) => {
@@ -35,7 +37,7 @@ export class TreatmentPlanComponent implements OnInit {
 		this.showLoading = true;
 		this.accountService.generateTreatmentPlanId(this.treatmentplan,(result) => {
 			this.showLoading = false;
-			if (result.status=='OK'){
+			if (result.status=='OK' && result.data){
 				this.treatmentplanData = result.data;
 				this.arrayOfKeys = Object.keys(this.treatmentplanData);
 				this.showTreatmentPlanData = true;
@@ -55,6 +57,16 @@ export class TreatmentPlanComponent implements OnInit {
         return false;
     }
     return true;
+  }
+  
+  getTreatmentPlanData(value, index) {
+	this.treatmentPlanId = value;
+	this.selectedIndex = index;
+  }
+  
+  closeTreatmentPlanDataModal() {
+	this.selectedIndex = null;
+	this.showTreatmentPlanData=false;
   }
 
 

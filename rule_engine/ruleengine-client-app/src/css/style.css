@@ -319,9 +319,9 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
   border-top: 4px solid #006afb;
   width: 35px;
   height: 35px;
-  -webkit-animation: spin 1s linear infinite; /* Safari */
-  animation: spin 1s linear infinite;
-  margin-left: 220px;
+  -webkit-animation: spin .8s linear infinite; /* Safari */
+  animation: spin .8s linear infinite;
+  margin: 0 auto;
 }
 
 /* Safari */
@@ -407,6 +407,7 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
 .close-btn{    position: fixed;
     width: 100%;
     top: 80px;
+	left: 0px;
     z-index: 9999;
     background: #fff;
     height: 60px;
@@ -450,3 +451,71 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
 .success-message-api{
 	color:green;
 }
+
+	
+.ivf-form-validation .inner-bg { padding:0px;}
+.ivf-form-validation .container { width: auto; margin:0px;}
+.ivf-form-validation .login-form {display:flex; align-items: center;}
+.ivf-form-validation .form-box {    margin: 0px;
+    box-shadow: inherit;
+    width: 100%;
+	    border-radius: 0px;
+		    background: #eee;
+	}
+.ivf-form-validation .form-group {
+    margin-right: 20px;
+}
+.ivf-form-validation p {float:left;}
+.ivf-form-validation .form-bottom {
+    background: #eee;
+    border: 0px;
+    padding-top: 10px;
+}
+.ivf-form-validation td.ivf-popup-padding{
+	padding:0px!important;
+}
+.ivf-form-validation .form-bottom form button.btn {    font-size: 16px;
+    height: auto;
+    line-height: inherit;
+    padding: 8px 12px;}
+.ivf-form-validation .ivf-title {    margin: 0px;
+    font-size: 18px;
+    color: #29b1e5;}
+	
+.table-container  a.ivf-data-anchor{
+	color: #0059ff;
+    font-weight: bold;
+    padding-right: 15px;
+    position: relative;
+    z-index: 9;
+}   
+.table-container .glyphicon {
+	font-size: 11px;
+    color: #0059ff;
+    left: -12px;
+    position: relative;
+}
+.ivf-form-validation .login-signup-form-field {
+	width: 200px;
+}
+.ivf-form-validation .table-container .table thead {
+	background: #39b7e7;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

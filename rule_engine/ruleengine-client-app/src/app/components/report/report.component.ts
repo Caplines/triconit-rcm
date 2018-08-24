@@ -59,10 +59,13 @@ export class ReportComponent implements OnInit {
   
   runReport() {
 	if(this.report.officeId && this.report.reportField1) {
+		if(this.showParam.Date) {
+			this.report.reportField1 = this.datePipe.transform(this.report.reportField1, 'MM/dd/yyyy');
+		}
 		this.showLoading = true;
 		this.accountService.validateReport(this.report,(result) => {
 			this.showLoading = false;
-			if (result.status=='OK'){
+			if (result.status=='OK' && result.data){
 				this.reportData = result.data;
 				this.arrayOfKeys = Object.keys(this.reportData);
 				this.showReportData = true;

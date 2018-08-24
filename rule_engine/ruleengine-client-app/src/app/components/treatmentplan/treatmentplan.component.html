@@ -1,73 +1,81 @@
 
-	<div class="inner-bg">
-		<div *ngIf="!showTreatmentPlanData" class="container">
-			<div class="row">
-				<div class="col-sm-6 col-sm-offset-3 form-box">
-					<div class="form-top">
-						<div class="form-top-left">
-							<h3 class="ivf-title">Enter Details for Treatment Plan</h3>
-						</div>
+<div class="inner-bg">
+	<div *ngIf="!showTreatmentPlanData" class="container">
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Enter Details for Treatment Plan</h3>
 					</div>
-
-					<div class="form-bottom">
-						<form class="login-form" name="form" (ngSubmit)="f.form.valid && generateTreatmentPlanId()" #f="ngForm" novalidate>
-							<!--  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>  -->
-							<span id="reauth-email" class="reauth-email"></span>
-							
-							<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !patientId.valid }">
-								<label class="sr-only" for="patientId">Patient Id</label>
-								<input type="text" class="login-signup-form-field form-control" name="patientId" id="patientId"
-									[(ngModel)]="treatmentplan.patientId" #patientId="ngModel" placeholder="Patient Id..." required />
-								<div *ngIf="f.submitted && !patientId.valid" class="error-msg">Please enter Patient Id.</div>
-							</div>							
-			
-							<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
-								<label class="sr-only" for="officeId">Office Name</label> 
-								<select class="login-signup-form-field form-control" name="officeId" id="officeId" [(ngModel)]="treatmentplan.officeId">
-									<option value="">Office Name...</option>
-									<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
-								</select>
-								<div *ngIf="f.submitted && treatmentplan.officeId==''" class="error-msg">Office Name is required</div>
-							</div>
-							
-							<p><button [disabled]="showLoading" type="submit" class="btn">Submit</button></p>
-							
-							<div *ngIf="showLoading" class="loader"></div>							    
-						</form>
-					</div> 
 				</div>
-				
+
+				<div class="form-bottom">
+					<form class="login-form" name="form" (ngSubmit)="f.form.valid && generateTreatmentPlanId()" #f="ngForm" novalidate>
+						<!--  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>  -->
+						<span id="reauth-email" class="reauth-email"></span>
+						
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !patientId.valid }">
+							<label class="sr-only" for="patientId">Patient Id</label>
+							<input type="text" class="login-signup-form-field form-control" name="patientId" id="patientId"
+								[(ngModel)]="treatmentplan.patientId" #patientId="ngModel" placeholder="Patient Id..." required />
+							<div *ngIf="f.submitted && !patientId.valid" class="error-msg">Please enter Patient Id.</div>
+						</div>							
+		
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="officeId">Office Name</label> 
+							<select class="login-signup-form-field form-control" name="officeId" id="officeId" [(ngModel)]="treatmentplan.officeId">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+							<div *ngIf="f.submitted && treatmentplan.officeId==''" class="error-msg">Office Name is required</div>
+						</div>
+						
+						<p><button [disabled]="showLoading" type="submit" class="btn">Submit</button></p>
+						
+						<div *ngIf="showLoading" class="loader"></div>							    
+					</form>
+				</div> 
 			</div>
 			
 		</div>
 		
-		
-		
-		
-		<div *ngIf="showTreatmentPlanData">
-			<div class="close-btn">
-				<a href="javascript:void(0)" (click)="showTreatmentPlanData=false;">
-					<img src="assets/img/close-btn.png" alt="X" />
-				</a>
-			</div>	
-			<div *ngFor="let key of arrayOfKeys" class="table-container">
-				<h3>{{key}}</h3>
-				<table class="table table-bordered table-striped">
-					<thead>
-						<tr>
-							<th>Treatment Description</th>
-							<th>Treatment Plan Id</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let data of treatmentplanData[key]">
-							<td><span [innerHTML]="data.tDescription"></span></td>
-							<td><span [innerHTML]="data.treatmentPlanId"></span></td>
-						<tr>
-					</tbody>						
-				</table>
-			</div>
-		</div>	
-		
 	</div>
+	
+	
+	
+	
+	<div *ngIf="showTreatmentPlanData">
+		<div class="close-btn">
+			<a href="javascript:void(0)" (click)="closeTreatmentPlanDataModal()">
+				<img src="assets/img/close-btn.png" alt="X" />
+			</a>
+		</div>	
+		<div *ngFor="let key of arrayOfKeys" class="table-container">
+			<h3>{{key}}</h3>
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>Treatment Description</th>
+						<th>Treatment Plan Id</th>
+					</tr>
+				</thead>
+				<tbody *ngFor="let data of treatmentplanData[key]; let i=index">
+					<tr>
+						<td [innerHTML]="data.tDescription"></td>
+						<td><a class="ivf-data-anchor" href="javascript:void(0)" [innerHTML]="data.treatmentPlanId" (click)="getTreatmentPlanData(data.treatmentPlanId, i)"></a>
+							<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+						</td>
+					<tr>
+					<tr *ngIf="selectedIndex == i" class="ivf-form-validation">
+						<td class="ivf-popup-padding" colspan="2"><app-ivf [treatmentPlanId]="treatmentPlanId"></app-ivf></td>
+					</tr>
+				</tbody>						
+			</table>
+		</div>
+		
+	</div>	
+	
+</div>
+
+
 	
