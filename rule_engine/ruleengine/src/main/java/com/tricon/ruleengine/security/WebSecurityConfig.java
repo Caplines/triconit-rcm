@@ -123,7 +123,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ivfbatchpre",
                 "/report",
                 "/register",
-                "/generateTreatmentId1",
+                "/ivftreatmentplan",
                 "/",
                 "/*.html",
                 "/index.jsp",
@@ -131,6 +131,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/**/*.html",
                 "/**/*.css",
                 "/**/*.jpg",
+                "/**/*.ttf",
                 "/**/*.png",
                 "/**/*.js"
             ).antMatchers(HttpMethod.POST,

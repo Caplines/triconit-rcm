@@ -92,6 +92,14 @@ public class CommonRedirectController {
 		forwardRedirect(request, response);
 	}
 
+	@CrossOrigin
+	@RequestMapping(value = "/ivftreatmentplan", method = RequestMethod.GET)
+	public void treatmentForward(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		forwardRedirect(request, response);
+	}
+	
 	private void forwardRedirect(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		
 		request.getRequestDispatcher("/").forward(request, response);

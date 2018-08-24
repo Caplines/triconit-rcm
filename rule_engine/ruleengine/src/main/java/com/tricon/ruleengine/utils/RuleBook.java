@@ -688,12 +688,13 @@ public class RuleBook {
 						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
-			int age = 0;
+			int[] age = null;
 			boolean pass = true;
 			try {
-				age = DateUtils.calculateAgeIVF(dob);
+				age = DateUtils.calculateAgeYMD(dob, true);
 				RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
-				RuleEngineLogger.generateLogs(clazz, "Age-" + age, Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "Age- YEARS-" + age[0] + " MONTHS- " + age[1] + " DAYS -" + age[2],
+						Constants.rule_log_debug, bw);
 			} catch (ParseException e) {
 				RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -729,10 +730,13 @@ public class RuleBook {
 							int f = Integer.parseInt(fl);
 							RuleEngineLogger.generateLogs(clazz, "Age -" + dob + " ,FlourideAgeLimit-" + f,
 									Constants.rule_log_debug, bw);
-							if (age > f) {
+							if (!DateUtils.checkForAgeLimit(age, f)) {
 								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule8.error.message",
-												new Object[] { tp.getServiceCode(), age, f }, locale),
+										messageSource
+												.getMessage("rule8.error.message",
+														new Object[] { tp.getServiceCode(), " YEARS- " + age[0]
+																+ " MONTHS- " + age[1] + " DAYS -" + age[2], f },
+														locale),
 										Constants.FAIL));
 								pass = false;
 							}
@@ -750,10 +754,13 @@ public class RuleBook {
 							int v = Integer.parseInt(var);
 							RuleEngineLogger.generateLogs(clazz, "Age -" + dob + " ,VarnishD1206AgeLimit()-" + v,
 									Constants.rule_log_debug, bw);
-							if (age > v) {
+							if (!DateUtils.checkForAgeLimit(age, v)) {
 								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule8.error.message",
-												new Object[] { tp.getServiceCode(), age, v }, locale),
+										messageSource
+												.getMessage("rule8.error.message",
+														new Object[] { tp.getServiceCode(), " YEARS- " + age[0]
+																+ " MONTHS- " + age[1] + " DAYS -" + age[2], v },
+														locale),
 										Constants.FAIL));
 								pass = false;
 							}
@@ -771,10 +778,13 @@ public class RuleBook {
 							int s = Integer.parseInt(sel);
 							RuleEngineLogger.generateLogs(clazz, "Age -" + dob + " ,SealantsD1351AgeLimit-" + s,
 									Constants.rule_log_debug, bw);
-							if (age > s) {
+							if (!DateUtils.checkForAgeLimit(age, s)) {
 								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule8.error.message",
-												new Object[] { tp.getServiceCode(), age, s }, locale),
+										messageSource
+												.getMessage("rule8.error.message",
+														new Object[] { tp.getServiceCode(), " YEARS -" + age[0]
+																+ " MONTHS- " + age[1] + " DAYS -" + age[2], s },
+														locale),
 										Constants.FAIL));
 								pass = false;
 							}
@@ -796,10 +806,13 @@ public class RuleBook {
 							int o = Integer.parseInt(ortho);
 							RuleEngineLogger.generateLogs(clazz, "Age -" + dob + " ,OrthoAgeLimit-" + o,
 									Constants.rule_log_debug, bw);
-							if (age > o) {
+							if (!DateUtils.checkForAgeLimit(age, o)) {
 								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule8.error.message",
-												new Object[] { tp.getServiceCode(), age, o }, locale),
+										messageSource
+												.getMessage("rule8.error.message",
+														new Object[] { tp.getServiceCode(), " YEARS" + age[0]
+																+ " MONTHS- " + age[1] + " DAYS -" + age[2], o },
+														locale),
 										Constants.FAIL));
 								pass = false;
 							}
@@ -843,18 +856,39 @@ public class RuleBook {
 		String preMolar = ivf.getSealantsD1351PreMolarsCovered();
 		String premanentMolar = ivf.getSealantsD1351PermanentMolarsCovered();
 		// String insName = ivf.getInsName();
-
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		boolean sealantPresent = false;
+		// First Check For Sealant
+		if (tpList == null) {
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+			return d;
+		}
+		for (Object obj : tpList) {
+			TreatmentPlan tp = (TreatmentPlan) obj;
+			// IF Any more Sealants are there plz add in OR Conditions
+			if (tp.getServiceCode().equalsIgnoreCase("D1351")) {
+				sealantPresent = true;
+			}
+		}
+
+		RuleEngineLogger.generateLogs(clazz, "sealantPresent-" + sealantPresent, Constants.rule_log_debug, bw);
+
+		if (!sealantPresent) {
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+			return d;
+		}
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
-			int age = 0;
+			int age[] = null;
 			boolean pass = true;
 			try {
-				age = DateUtils.calculateAgeIVF(dob);
+				age = DateUtils.calculateAgeYMD(dob, true);
 			} catch (ParseException e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule1.error.message.date", new Object[] { dob }, locale),
@@ -871,13 +905,16 @@ public class RuleBook {
 			}
 			RuleEngineLogger.generateLogs(clazz, "getSealantsD1351AgeLimit -" + sealantAL, Constants.rule_log_debug,
 					bw);
-			RuleEngineLogger.generateLogs(clazz, "Age  -" + age, Constants.rule_log_debug, bw);
-			RuleEngineLogger.generateLogs(clazz, " is age <= sealantAL  -" + (age <= Integer.parseInt(sealantAL)),
+			RuleEngineLogger.generateLogs(clazz,
+					"Age  -" + " YEARS-" + age[0] + " MONTHS- " + age[1] + " DAYS -" + age[2], Constants.rule_log_debug,
+					bw);
+			RuleEngineLogger.generateLogs(clazz,
+					" is age <= sealantAL  -" + DateUtils.checkForAgeLimit(age, Integer.parseInt(sealantAL)),
 					Constants.rule_log_debug, bw);
 
 			// As per requirement hard Code these
-
-			if (age <= Integer.parseInt(sealantAL)) {
+			if (DateUtils.checkForAgeLimit(age, Integer.parseInt(sealantAL))) { // { if (age <=
+																				// Integer.parseInt(sealantAL)) {
 
 				List<String> primaryMolarTCList = new ArrayList<>();
 				primaryMolarTCList.add("A");
@@ -949,7 +986,7 @@ public class RuleBook {
 								Collection<String> permat = Collections2.filter(permanentMolarTCList,
 										th -> th.equals(tooth));
 								for (String x : permat) {
-									primaryMolarT.add(x);
+									permamentMolarT.add(x);
 								}
 							}
 							RuleEngineLogger.generateLogs(clazz, "preMolar-" + preMolar + " -Tooth-" + tooth,
@@ -957,7 +994,7 @@ public class RuleBook {
 							if (!preMolar.trim().equalsIgnoreCase("yes")) {
 								Collection<String> perm = Collections2.filter(preMolarCList, th -> th.equals(tooth));
 								for (String x : perm) {
-									primaryMolarT.add(x);
+									preMolarT.add(x);
 								}
 							}
 
@@ -966,28 +1003,33 @@ public class RuleBook {
 				} // For LOOP end
 				if (primaryMolarT.size() > 0) {
 					// String.join(", ", primaryMolarT)
-					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule14.error.message",
-									new Object[] { "Age(" + age + ")" + " Primary Molar " }, locale),
-							Constants.FAIL));
+					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+							"rule14.error.message1", new Object[] { " Primary Molar " }, locale), Constants.FAIL));
 
 					pass = false;
 				}
 				if (permamentMolarT.size() > 0) {
-					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule14.error.message",
-									new Object[] { "Age(" + age + ")" + " Permanent Molar " }, locale),
-							Constants.FAIL));
+					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+							"rule14.error.message1", new Object[] { " Permanent Molar " }, locale), Constants.FAIL));
 					pass = false;
 				}
 				if (preMolarT.size() > 0) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule14.error.message",
-									new Object[] { "Age(" + age + ")" + " Pre-Molar " }, locale),
+							messageSource.getMessage("rule14.error.message1", new Object[] { " Pre-Molar " }, locale),
 							Constants.FAIL));
 					pass = false;
 				}
 			} // if end for age limit
+			else {
+				pass = false;
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource
+								.getMessage("rule14.error.message",
+										new Object[] { "Age(" + "-  YEARS-" + age[0] + " MONTHS- " + age[1] + " DAYS -"
+												+ age[2] + ")" + "- sealant Age " + sealantAL },
+										locale),
+						Constants.FAIL));
+			}
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
@@ -1113,10 +1155,14 @@ public class RuleBook {
 				xrayCodeList.add("D0272");
 				xrayCodeList.add("D0274");
 				xrayCodeList.add("D0330");
+				String mandatoryXrayCode = "D0330";
 
 				List<String> paxrayCodeList = new ArrayList<>();
 				paxrayCodeList.add("D0220");
 				paxrayCodeList.add("D0230");
+
+				List<String> finalXrayCodeList = new ArrayList<>();
+				List<String> finalpaXrayCodeList = new ArrayList<>();
 
 				int sizeXray = 0;
 				int sizePAXray = 0;
@@ -1125,18 +1171,32 @@ public class RuleBook {
 					TreatmentPlan tp = (TreatmentPlan) obj;
 					// X-Rays Code
 					Collection<String> prit = Collections2.filter(xrayCodeList, cd -> cd.equals(tp.getServiceCode()));
-					if (prit != null)
+					if (prit != null && prit.size() > 0) {
 						sizeXray = sizeXray + prit.size();
+						if (!finalXrayCodeList.contains(tp.getServiceCode()))
+							finalXrayCodeList.add(tp.getServiceCode());
+					}
 					// 9+ PA into FMX
 					Collection<String> prita = Collections2.filter(paxrayCodeList,
 							cd -> cd.equals(tp.getServiceCode()));
-					if (prita != null)
+					if (prita != null && prita.size() > 0) {
 						sizePAXray = sizePAXray + prita.size();
+						finalpaXrayCodeList.add(tp.getServiceCode());
 
+					}
 				} // For LOOP end
-				RuleEngineLogger.generateLogs(clazz, "sizeXray-" + sizeXray, Constants.rule_log_debug, bw);
 
-				if (sizeXray > 0) {
+				RuleEngineLogger.generateLogs(clazz, "finalXrayCodeList-" + finalXrayCodeList.size(),
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "finalXrayCodeList-" + String.join(",", finalXrayCodeList),
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "finalXrayCodeList Mandatory Code -" + mandatoryXrayCode + " is "
+						+ finalXrayCodeList.contains(mandatoryXrayCode), Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "sizePAXray size-" + sizePAXray, Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "finalpaXrayCodeList-" + String.join(",", finalpaXrayCodeList),
+						Constants.rule_log_debug, bw);
+
+				if (finalXrayCodeList.size() > 1 && finalXrayCodeList.contains(mandatoryXrayCode)) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule16.error.message1", new Object[] {}, locale),
 							Constants.FAIL));
@@ -1577,6 +1637,8 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz, "getPlanEffectiveDate-" + eff, Constants.rule_log_debug, bw);
 		RuleEngineLogger.generateLogs(clazz, "getBasicWaitingPeriod-" + waitb, Constants.rule_log_debug, bw);
 		RuleEngineLogger.generateLogs(clazz, "getMajorWaitingPeriod-" + waitm, Constants.rule_log_debug, bw);
+		waitb = waitb.toLowerCase().replace("mo", "");
+		waitm = waitm.toLowerCase().replace("mo", "");
 
 		Date effD = null;
 		Date dos = null;
@@ -1655,9 +1717,10 @@ public class RuleBook {
 
 					Calendar nextAvailbleDate = new GregorianCalendar();
 					nextAvailbleDate.setTime(effD);
-					nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR), nextAvailbleDate.get(Calendar.MONTH)+wt,
+					nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR), nextAvailbleDate.get(Calendar.MONTH) + wt,
 							nextAvailbleDate.get(Calendar.DATE));
-					RuleEngineLogger.generateLogs(clazz, "Next Date " + nextAvailbleDate.getTime(), Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "Next Date " + nextAvailbleDate.getTime(),
+							Constants.rule_log_debug, bw);
 
 					RuleEngineLogger.generateLogs(clazz, "WAIT -" + wt, Constants.rule_log_debug, bw);
 					RuleEngineLogger.generateLogs(clazz, "LAST UPDATED DATE-- " + dos, Constants.rule_log_debug, bw);
@@ -1782,25 +1845,25 @@ public class RuleBook {
 				TreatmentPlan tp = (TreatmentPlan) obj;
 				if (tp.getServiceCode().equalsIgnoreCase("D2950")) {
 					RuleEngineLogger.generateLogs(clazz, "D2950 code found", Constants.rule_log_debug, bw);
-					RuleEngineLogger.generateLogs(clazz, "Tooth -" + tooth, Constants.rule_log_debug, bw);
 					tooth = tp.getTooth();
+					RuleEngineLogger.generateLogs(clazz, "Tooth -" + tooth, Constants.rule_log_debug, bw);
 					found = true;
 				}
 				if (tp.getServiceCode().equals("D2740")) {
 					RuleEngineLogger.generateLogs(clazz, "D2740 code found", Constants.rule_log_debug, bw);
-					RuleEngineLogger.generateLogs(clazz, "Tooth -" + toothD2740, Constants.rule_log_debug, bw);
 					toothD2740 = tp.getTooth();
+					RuleEngineLogger.generateLogs(clazz, "Tooth -" + toothD2740, Constants.rule_log_debug, bw);
 				}
 				if (tp.getServiceCode().equals("D2750")) {
 					RuleEngineLogger.generateLogs(clazz, "D2750 code found", Constants.rule_log_debug, bw);
-					RuleEngineLogger.generateLogs(clazz, "Tooth -" + toothD2750, Constants.rule_log_debug, bw);
 					toothD2750 = tp.getTooth();
+					RuleEngineLogger.generateLogs(clazz, "Tooth -" + toothD2750, Constants.rule_log_debug, bw);
 				}
 
 			} // For end
-			if (found && tooth != "" && toothD2740 != "" && toothD2750 != "") {
+			if (found && tooth != "" && (toothD2740 != "" || toothD2750 != "")) {
 				// Logic here
-				if (tooth.trim().equals(toothD2740.trim()) && tooth.trim().equals(toothD2750.trim())) {
+				if (tooth.trim().equals(toothD2740.trim()) || tooth.trim().equals(toothD2750.trim())) {
 					pass = false;
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule13.error.message", new Object[] { tooth }, locale),
@@ -1850,6 +1913,16 @@ public class RuleBook {
 					TreatmentPlan tp = (TreatmentPlan) t;
 					Collection<Mappings> mL = Collections2.filter(mapps,
 							y -> y.getAdaCodes().getCode().equals((tp).getServiceCode()));
+					/*
+					 * if (ivf.getPosteriorCompositesD2391Downgrade().trim().equalsIgnoreCase("yes")
+					 * && !( tp.getServiceCode().equals("D2391") ||
+					 * tp.getServiceCode().equals("D2392") || tp.getServiceCode().equals("D2393") ||
+					 * tp.getServiceCode().equals("D2394") ) ) { continue; } if
+					 * (ivf.getCrownsD2750D2740Downgrade().trim().equalsIgnoreCase("yes") && (
+					 * tp.getServiceCode().equals("D2740") || tp.getServiceCode().equals("D2750") ||
+					 * tp.getServiceCode().equals("D2751") || tp.getServiceCode().equals("D2751") )
+					 * ) { continue; }
+					 */
 					// Now Downgrading is applicable
 					if (mL != null && mL.size() > 0) {
 
@@ -1876,18 +1949,18 @@ public class RuleBook {
 														Constants.rule_log_debug, bw);
 												RuleEngineLogger.generateLogs(clazz, "ES  Fee -" + fs.getFeesFee(),
 														Constants.rule_log_debug, bw);
-												
+
 												RuleEngineLogger.generateLogs(clazz,
 														"EstInsurance -" + tp.getEstInsurance(),
 														Constants.rule_log_debug, bw);
-                                                Double estins= Double.parseDouble(tp.getEstInsurance());
+												Double estins = Double.parseDouble(tp.getEstInsurance());
 												Double fcal = DowngradingPercentUtil.getIVFColumnforServiceCode(ivf,
 														tp.getServiceCode(), fs.getFeesFee(), bw);
 												RuleEngineLogger.generateLogs(clazz, "Down Graded Ins -" + fcal,
 														Constants.rule_log_debug, bw);
 												RuleEngineLogger.generateLogs(clazz, "estins -" + estins,
 														Constants.rule_log_debug, bw);
-												if (fcal.doubleValue()!=estins.doubleValue()) {
+												if (fcal.doubleValue() != estins.doubleValue()) {
 													pass = false;
 													dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 															messageSource.getMessage("rule19.error.message2",
@@ -1992,7 +2065,8 @@ public class RuleBook {
 			dL.add(scivftff);
 			mapFlIVF.put("D1120", dL);
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2391", "PostComposites_D2391_FL", ivf.getPostCompositesD2391FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2391", "PostComposites_D2391_FL",
+					ivf.getPostCompositesD2391FL(), 0, 0);
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2391", dL);
@@ -2288,8 +2362,9 @@ public class RuleBook {
 					hdto = new ToothHistoryDto(ivf.getHistory8Code(), ivf.getHistory8DOS(), ivf.getHistory8Tooth());
 				else if (i == 9)
 					hdto = new ToothHistoryDto(ivf.getHistory9Code(), ivf.getHistory9DOS(), ivf.getHistory9Tooth());
-				if (hdto.getHistoryCode() != null && !hdto.getHistoryCode().equals("")
-						&& !hdto.getHistoryCode().equalsIgnoreCase("blank")) {
+				if (hdto.getHistoryCode() != null && !hdto.getHistoryCode().equalsIgnoreCase("blank")) {
+					if (hdto.getHistoryTooth().trim().equals(""))
+						hdto.setHistoryTooth("NA");
 					for (Map.Entry<String, List<ServiceCodeIvfTimesFreqFieldDto>> entry : mapFlIVF.entrySet()) {
 						if (entry.getKey().equals(hdto.getHistoryCode())) {
 							historPresent = true;
@@ -2297,7 +2372,7 @@ public class RuleBook {
 							for (String tooth : toothTR) {
 								if (mapHistoryTooth.containsKey(tooth)) {
 									list1 = mapHistoryTooth.get(tooth);
-									list1.addAll(list1);
+									list1.add(hdto);
 								} else {
 									list1 = new ArrayList<>();
 									list1.add(hdto);
@@ -2376,7 +2451,10 @@ public class RuleBook {
 													"Treatment Plan code- " + tpCode + " History Code-"
 															+ historyD.getHistoryCode() + "",
 													Constants.rule_log_debug, bw);
-									if (tpCode.equalsIgnoreCase(historyD.getHistoryCode().trim())) {
+									// Check For alike codes
+									if (FreqencyUtils.checkforAlikeCodes(tpCode.trim(),
+											historyD.getHistoryCode().trim()) || tpCode.equalsIgnoreCase(historyD.getHistoryCode().trim())) {
+										// if (tpCode.equalsIgnoreCase(historyD.getHistoryCode().trim())) {
 
 										List<ServiceCodeIvfTimesFreqFieldDto> dataIVF = mapFlIVF.get(tpCode);
 										boolean present = false;
@@ -2448,7 +2526,7 @@ public class RuleBook {
 
 												// isCalPresent=true;
 												// CurrentYear
-												if (DateUtils.isDatesBetweenDates(calcy[0], calcy[0], dos)) {
+												if (DateUtils.isDatesBetweenDates(calcy[0], calcy[1], dos)) {
 													present = true;
 													scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 												}
@@ -2685,14 +2763,19 @@ public class RuleBook {
 					List<ServiceCodeIvfTimesFreqFieldDto> D4342 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D1110 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D1120 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D0270 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D0272 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D0273 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D0274 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D0150 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D0120 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D0140 = null;
-					List<ServiceCodeIvfTimesFreqFieldDto> RestC = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> RestC1 = null;
 
 					for (ServiceCodeIvfTimesFreqFieldDto d : li) {
+						if (RestC1 == null)
+							RestC1 = new ArrayList<>();
+						RestC1.add(d);
 						if (d.getServiceCode().equals("D1206")) {
 							if (D1206 == null)
 								D1206 = new ArrayList<>();
@@ -2717,14 +2800,22 @@ public class RuleBook {
 							if (D1120 == null)
 								D1120 = new ArrayList<>();
 							D1120.add(d);
+						} else if (d.getServiceCode().equals("D0270")) {
+							if (D0270 == null)
+								D0270 = new ArrayList<>();
+							D0270.add(d);
 						} else if (d.getServiceCode().equals("D0272")) {
 							if (D0272 == null)
 								D0272 = new ArrayList<>();
 							D0272.add(d);
+						} else if (d.getServiceCode().equals("D0273")) {
+							if (D0273 == null)
+								D0273 = new ArrayList<>();
+							D0273.add(d);
 						} else if (d.getServiceCode().equals("D0274")) {
 							if (D0274 == null)
 								D0274 = new ArrayList<>();
-							D1206.add(d);
+							D0274.add(d);
 						} else if (d.getServiceCode().equals("D0150")) {
 							if (D0150 == null)
 								D0150 = new ArrayList<>();
@@ -2737,10 +2828,6 @@ public class RuleBook {
 							if (D0140 == null)
 								D0140 = new ArrayList<>();
 							D0140.add(d);
-						} else {
-							if (RestC == null)
-								RestC = new ArrayList<>();
-							RestC.add(d);
 						}
 					} // For Loop d:li
 						// Alike code
@@ -2752,7 +2839,7 @@ public class RuleBook {
 									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
 						}
 					}
-					if (D1206 != null && D1208 != null) {
+					if (D4341 != null && D4342 != null) {
 						Object[] m = FreqencyUtils.getError(D4341, D4342, "D4341", "D4342", tooth);
 						if (m != null) {
 							pass = false;
@@ -2760,7 +2847,7 @@ public class RuleBook {
 									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
 						}
 					}
-					if (D1206 != null && D1208 != null) {
+					if (D1110 != null && D1120 != null) {
 						Object[] m = FreqencyUtils.getError(D1110, D1120, "D1110", "D1120", tooth);
 						if (m != null) {
 							pass = false;
@@ -2768,8 +2855,8 @@ public class RuleBook {
 									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
 						}
 					}
-					if (D1206 != null && D1208 != null) {
-						Object[] m = FreqencyUtils.getError(D0272, D0274, "D0272", "D0274", tooth);
+					if (D0270 != null || D0272 != null || D0274 != null || D0273 != null) {
+						Object[] m = FreqencyUtils.getError(D0270,D0272, D0274, D0273,"D0270", "D0272", "D0274", "D0273", tooth);
 						if (m != null) {
 							pass = false;
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -2777,7 +2864,7 @@ public class RuleBook {
 
 						}
 					}
-					if (D1206 != null && D1208 != null) {
+					if (D0150 != null || D0120 != null || D0140 != null) {
 						Object[] m = FreqencyUtils.getError(D0150, D0120, D0140, "D0150", "D0120", "D0140", tooth);
 						if (m != null) {
 							pass = false;
@@ -2786,25 +2873,31 @@ public class RuleBook {
 
 						}
 					}
-					Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> fm = new HashMap<>();
-					for (ServiceCodeIvfTimesFreqFieldDto s : li) {
-						List<ServiceCodeIvfTimesFreqFieldDto> l2 = fm.get(s.getServiceCode());
-						if (l2 == null) {
-							l2 = new ArrayList<>();
-							l2.add(s);
-							fm.put(s.getServiceCode(), l2);
-						} else {
-							l2.add(s);
-						}
+					if (pass) {
+						Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> fm = new HashMap<>();
+						for (ServiceCodeIvfTimesFreqFieldDto s : li) {
+							List<ServiceCodeIvfTimesFreqFieldDto> l2 = fm.get(s.getServiceCode());
+							if (l2 == null) {
+								l2 = new ArrayList<>();
+								l2.add(s);
+								fm.put(s.getServiceCode(), l2);
+							} else {
+								l2.add(s);
+							}
 
-					}
-					for (Map.Entry<String, List<ServiceCodeIvfTimesFreqFieldDto>> entry2 : fm.entrySet()) {
-						List<ServiceCodeIvfTimesFreqFieldDto> s = entry2.getValue();
-						Object[] m = FreqencyUtils.getCountTimeServiceCode(s, entry2.getKey());
-						if (m != null) {
-							pass = false;
-							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+						}
+						for (Map.Entry<String, List<ServiceCodeIvfTimesFreqFieldDto>> entry2 : fm.entrySet()) {
+							List<ServiceCodeIvfTimesFreqFieldDto> s = entry2.getValue();
+							Object[] m = FreqencyUtils.getCountTimeServiceCode(s, entry2.getKey());
+							if (m != null) {
+
+								pass = false;
+								dList.add(
+										new TPValidationResponseDto(rule.getId(), rule.getName(),
+												messageSource.getMessage("rule21.error.message",
+														new Object[] { m[5], m[1], m[2], m[4] }, locale),
+												Constants.FAIL));
+							}
 						}
 					}
 

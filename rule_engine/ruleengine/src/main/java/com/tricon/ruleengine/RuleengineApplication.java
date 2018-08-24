@@ -16,6 +16,14 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 /* from cmd >mvn package*/
 /* to create build of front end--- npm run --prod*/
+/*
+ * FOR PRODCTION MAKE SURE 
+ * in application.properties u have spring.profiles.active=prod 
+ * dev is for Developers
+ * in Front end 
+ * app.component.ts static API_URL="/ruleengine"; 
+ * angular.json line no 17 "index": "src/index.jsp",
+ */
 
 @SpringBootApplication(exclude = { JpaRepositoriesAutoConfiguration.class,
  HibernateJpaAutoConfiguration.class})

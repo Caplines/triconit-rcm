@@ -23,7 +23,7 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginComponent ,canActivate: [UrlLoggedInCheck]},
   { path: 'register', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
   { path: 'report', component: ReportComponent,canActivate: [UrlPermission]  },
-  { path: 'treatmentplan', component: TreatmentPlanComponent,canActivate: [UrlPermission]  },
+  { path: 'ivftreatmentplan', component: TreatmentPlanComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
 
   // otherwise redirect to profile

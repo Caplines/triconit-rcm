@@ -65,12 +65,15 @@ export class ReportComponent implements OnInit {
 		this.showLoading = true;
 		this.accountService.validateReport(this.report,(result) => {
 			this.showLoading = false;
-			if (result.status=='OK' && result.data){
+			if (result.status=='OK'){
 				this.reportData = result.data;
 				this.arrayOfKeys = Object.keys(this.reportData);
 				this.showReportData = true;
 				if (this.isEmpty(this.reportData)){
 					alert("No Data Found.");
+					this.showReportData = false;
+				}else{
+					
 				}
 			} else {
 				this.showReportData = false;

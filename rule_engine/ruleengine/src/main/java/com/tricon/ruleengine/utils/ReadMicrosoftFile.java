@@ -192,8 +192,13 @@ public class ReadMicrosoftFile {
 					treatmentPlanDetails.setDateLastUpdated(currentCell.getStringCellValue());
 				else if (colCt == 9)
 					tp.setSurface(currentCell.getStringCellValue());
-				else if (colCt == 10)
+				else if (colCt == 10) {
 					tp.setTooth(currentCell.getStringCellValue());
+					if (tp.getTooth() == null)
+						tp.setTooth("NA");
+					else if (tp.getTooth() != null && tp.getTooth().trim().equals(""))
+						tp.setTooth("NA");// NA Mean All Tooth.. like cleaning..
+				}
 				else if (colCt == 11)
 					tp.setStatus(currentCell.getStringCellValue());
 				else if (colCt == 12)
@@ -212,10 +217,8 @@ public class ReadMicrosoftFile {
 				else if (colCt == 18)
 					tp.setPatientPortion(currentCell.getStringCellValue());
 				//
-				if (tp.getTooth() == null)
-					tp.setTooth("NA");
-				else if (tp.getTooth() != null && tp.getTooth().trim().equals(""))
-					tp.setTooth("NA");// NA Mean All Tooth.. like cleaning..
+				
+				
 
 			}
 			if (added) {

@@ -43,6 +43,30 @@ public class DateUtils {
 
 	}
 
+	
+	public static int[] calculateAgeYMD(String bd,boolean isIVF) throws ParseException {
+		
+		Date birthDate=null;
+		
+				if (isIVF)birthDate=Constants.SIMPLE_DATE_FORMAT_IVF.parse(bd);
+				else birthDate=Constants.SIMPLE_DATE_FORMAT.parse(bd);
+		ZoneId defaultZoneId = ZoneId.systemDefault();
+		LocalDate today = LocalDate.now();
+		Instant instant = birthDate.toInstant();
+
+        //2. Instant + system default time zone + toLocalDate() = LocalDate
+        LocalDate localBDate = instant.atZone(defaultZoneId).toLocalDate();
+		
+		
+		//LocalDate birthday = LocalDate.of(1960, Month.JANUARY, 1);
+		Period p = Period.between(localBDate, today);
+		 
+		//Now access the values as below
+		//System.out.println(p.getDays());ma
+		//System.out.println(p.getMonths());
+		//System.out.println(p.getYears());
+		return new int[] {p.getYears(),p.getMonths(),p.getDays()};
+	}
 	private static int calculateAge(Date birthDate) throws ParseException {
 		Date today = new Date();
 		Instant instant = Instant.ofEpochMilli(today.getTime());
@@ -81,6 +105,13 @@ public class DateUtils {
 	}
 
 	public static void main(String[] a) throws ParseException {
+		int x[]=calculateAgeYMD("8/22/1998",false);
+		System.out.println("---------------");
+		System.out.println(x[0]);
+		System.out.println(x[1]);
+		System.out.println(x[2]);
+		System.out.println(checkForAgeLimit(x, 20));
+		/*
 		getFiscalYear(5);
 
 		Object[] ab = new Object[] { "s", 1 };
@@ -90,6 +121,7 @@ public class DateUtils {
 		Date x= new Date();
 		x= Constants.SIMPLE_DATE_FORMAT.parse("01/01/2019");
 		System.out.println(x+"--"+isDatesBetweenDates(aa[0],aa[1],x));
+		*/
 	}
 
 	public static Date[] getFiscalYear(int times) {
@@ -160,6 +192,24 @@ public class DateUtils {
 
 		return a.compareTo(d) * d.compareTo(b) >= 0;
 
+	}
+	
+	public static boolean checkForAgeLimit(int[] age,int limit) {
+		
+		boolean properage=true;
+		if (age.length==3) {
+			
+			//Compare Age Years
+			//years 36 limit 80
+			if (age[0]==limit && (age[1]>0  || age[2]>0)) {
+				properage =false;
+			}else if (age[0]>limit) {
+				properage =false;
+				
+			}
+		}
+		
+		return properage;
 	}
 
 }
