@@ -225,6 +225,15 @@ button.btn:active:focus, button.btn.active:focus {
     width: 70%;
 }
 .top-location, .top-time {display: none;}
+
+.ivf-form-validation .form-group {margin-right: 0;}
+.ivf-form-validation .login-form {display: block;}
+.ivf-form-validation .login-signup-form-field {
+    width: 100%;
+}
+.ivf-form-validation p {
+    float: inherit;
+}
 }
 
 
@@ -252,6 +261,17 @@ button.btn:active:focus, button.btn.active:focus {
     width: auto;
 }
 .top-location, .top-time {display: none;}
+
+
+.ivf-form-validation .form-group {margin-right: 0!important;}
+.ivf-form-validation .login-form {display: block!important;}
+.ivf-form-validation .login-signup-form-field {
+    width: 100%!important;
+}
+.ivf-form-validation p {
+    float: inherit!important;
+}
+
 }
 
 .top-content .login-signup-form-field {
