@@ -1907,12 +1907,18 @@ public class RuleBook {
 							|| ivf.getCrownsD2750D2740Downgrade().trim().equalsIgnoreCase("yes"))) {
 				// If Yes then pull all the applicable codes and tooth numbers using the
 				// Downgrading Mapping tables...
-				List<Mappings> mapps = getMappingDownGradeFromList(mappings);
-
+				List<Mappings> mappsP = null;
+				List<Mappings> mappsC = null;
+				if (ivf.getPosteriorCompositesD2391Downgrade().trim().equalsIgnoreCase("yes")) mappsP=getMappingDownGradeFromListByType(mappings,"posterior composites");
+				if (ivf.getCrownsD2750D2740Downgrade().trim().equalsIgnoreCase("yes")) mappsC = getMappingDownGradeFromListByType(mappings,"crowns");
+                List<Mappings> mapps=new ArrayList<>();
+                if (mappsP!=null) mapps.addAll(mappsP);
+                if (mappsC!=null) mapps.addAll(mappsC);
+        				
 				for (Object t : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) t;
 					Collection<Mappings> mL = Collections2.filter(mapps,
-							y -> y.getAdaCodes().getCode().equals((tp).getServiceCode()));
+							y -> y.getAdaCodes().getCode().equals((tp.getServiceCode())));
 					/*
 					 * if (ivf.getPosteriorCompositesD2391Downgrade().trim().equalsIgnoreCase("yes")
 					 * && !( tp.getServiceCode().equals("D2391") ||
@@ -1933,6 +1939,8 @@ public class RuleBook {
 							List<String> th = ToothUtil.findCommonTooth(toothMa, toothTR);
 							if (th != null && th.size() > 0) {
 								// Tooth Matched
+								RuleEngineLogger.generateLogs(clazz, "SERVICE CODE " + tp.getServiceCode(),
+										Constants.rule_log_debug, bw);
 								RuleEngineLogger.generateLogs(clazz, "CommonTooth-" + String.join(",", th),
 										Constants.rule_log_debug, bw);
 								RuleEngineLogger.generateLogs(clazz, "DownGrading -" + m.getDowngrading(),
@@ -2983,16 +2991,27 @@ public class RuleBook {
 		return r;
 	}
 
-	private List<Mappings> getMappingDownGradeFromList(List<Mappings> map) {
+	private List<Mappings> getMappingDownGradeFromListByType(List<Mappings> map, String downgradingType) {
 		List<Mappings> r = new ArrayList<>();
 		Collection<Mappings> ruleGen = Collections2.filter(map, rule -> (!rule.getDowngrading().equalsIgnoreCase("NA")
-				&& !rule.getDowngrading().equalsIgnoreCase("No")));
+				&& !rule.getDowngrading().equalsIgnoreCase("No"))  && rule.getDowngradingCaCrown().trim().equalsIgnoreCase(downgradingType));
 		for (Mappings rule : ruleGen) {
 			r.add(rule);
 		}
 		return r;
 	}
 
+	/*
+	private List<Mappings> getMappingDownGradeFromListCR(List<Mappings> map) {
+		List<Mappings> r = new ArrayList<>();
+		Collection<Mappings> ruleGen = Collections2.filter(map, rule -> (!rule.getDowngrading().equalsIgnoreCase("NA")
+				&& !rule.getDowngrading().equalsIgnoreCase("No")) && rule.getDowngradingCaCrown().equalsIgnoreCase("crowns"));
+		for (Mappings rule : ruleGen) {
+			r.add(rule);
+		}
+		return r;
+	}
+	*/
 	private List<Mappings> getMappingFrequencyApplicableFomList(List<Mappings> map) {
 		List<Mappings> r = new ArrayList<>();
 		Collection<Mappings> ruleGen = Collections2.filter(map,

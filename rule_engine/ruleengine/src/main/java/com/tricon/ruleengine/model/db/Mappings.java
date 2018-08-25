@@ -17,7 +17,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "mappings_1")
+@Table(name = "mappings_2")
 public class Mappings implements java.io.Serializable {
 
 	/**
@@ -29,6 +29,7 @@ public class Mappings implements java.io.Serializable {
 	private ServiceCodeCategory serviceCodeCategory;
 	private String coveredUnderMedical;
 	private String downgrading;
+	private String downgradingCaCrown;
 	private String toothNoForDowngrading;
 	private String fillingToothNoMapping;
 	private String freqencyLimitationApplicable;
@@ -185,4 +186,14 @@ public class Mappings implements java.io.Serializable {
 		this.ageLimitApplicable = ageLimitApplicable;
 	}
 
+	public String getDowngradingCaCrown() {
+		return downgradingCaCrown;
+	}
+
+	public void setDowngradingCaCrown(String downgradingCaCrown) {
+		this.downgradingCaCrown = downgradingCaCrown;
+	}
+
+	
+	
 }
