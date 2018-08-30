@@ -131,41 +131,18 @@ public class IVFTableSheet {
 	private String orthoAgeLimit;//DT
 	private String orthoSubjectDeductible;//DU
 	private String FillingsBundling;//DV
-	private String history1Code;//DW
-	private String history1Tooth;//DX
-	private String history1DOS;//DY
-	private String history2Code;//DZ
-	private String history2Tooth;//EA
-	private String history2DOS;//EB
-	private String history3Code;//EC
-	private String history3Tooth;//ED
-	private String history3DOS;//EE
-	private String history4Code;//EF
-	private String history4Tooth;//EG
-	private String history4DOS;//EH
-	private String history5Code;//EI
-	private String history5Tooth;//EJ
-	private String history5DOS;//EK
-	private String history6Code;//EL
-	private String history6Tooth;//EM
-	private String history6DOS;//EN
-	private String history7Code;//EO
-	private String history7Tooth;//EP
-	private String history7DOS;//EQ
-	private String history8Code;//ER
-	private String history8Tooth;//ES
-	private String history8DOS;//ET
-	private String history9Code;//EU
-	private String history9Tooth;//EV
-	private String history9DOS;//EW
-	private String comments;//EX
-	private String generalBenefitsVerifiedBy;//EY
-	private String generalDateIVwasDone;//EZ
-	private String patientId;//FA
-	private String uniqueID;//FB
+	private String comments;//DX
+	private String generalBenefitsVerifiedBy;//DY
+	private String generalDateIVwasDone;//DZ
+	private String patientId;//EA
+    //history
+	private IVFHistorySheet hs;
+	private String uniqueID;//EB
 	
 	
-	
+	public IVFTableSheet() {
+		
+	}
 	public IVFTableSheet(String officeName, String patientName, String insName, String taxId, String policyHolder,
 			String patientDOB, String insContact, String cSRName, String policyHolderDOB, String employerName,
 			String contTxRecallNP, String ref, String memberSSN, String group, String cOBStatus, String memberId,
@@ -203,13 +180,8 @@ public class IVFTableSheet {
 			String crownsD2750D2740Downgrade, String nightGuardsD9940Percentage, String d9310Percentage, String d9310fl,
 			String buildUpsD2950Covered, String buildUpsD2950FL, String buildUpsD2950SameDayCrown,
 			String orthoPercentage, String orthoMax, String orthoAgeLimit, String orthoSubjectDeductible,
-			String fillingsBundling, String history1Code, String history1Tooth, String history1dos, String history2Code,
-			String history2Tooth, String history2dos, String history3Code, String history3Tooth, String history3dos,
-			String history4Code, String history4Tooth, String history4dos, String history5Code, String history5Tooth,
-			String history5dos, String history6Code, String history6Tooth, String history6dos, String history7Code,
-			String history7Tooth, String history7dos, String history8Code, String history8Tooth, String history8dos,
-			String history9Code, String history9Tooth, String history9dos, String comments,
-			String generalBenefitsVerifiedBy, String generalDateIVwasDone, String patientId, String uniqueID) {
+			String fillingsBundling, String comments, String generalBenefitsVerifiedBy, String generalDateIVwasDone,
+			String patientId,  IVFHistorySheet hs,String uniqueID) {
 		super();
 		this.officeName = officeName;
 		this.patientName = patientName;
@@ -337,37 +309,11 @@ public class IVFTableSheet {
 		this.orthoAgeLimit = orthoAgeLimit;
 		this.orthoSubjectDeductible = orthoSubjectDeductible;
 		FillingsBundling = fillingsBundling;
-		this.history1Code = history1Code;
-		this.history1Tooth = history1Tooth;
-		history1DOS = history1dos;
-		this.history2Code = history2Code;
-		this.history2Tooth = history2Tooth;
-		history2DOS = history2dos;
-		this.history3Code = history3Code;
-		this.history3Tooth = history3Tooth;
-		history3DOS = history3dos;
-		this.history4Code = history4Code;
-		this.history4Tooth = history4Tooth;
-		history4DOS = history4dos;
-		this.history5Code = history5Code;
-		this.history5Tooth = history5Tooth;
-		history5DOS = history5dos;
-		this.history6Code = history6Code;
-		this.history6Tooth = history6Tooth;
-		history6DOS = history6dos;
-		this.history7Code = history7Code;
-		this.history7Tooth = history7Tooth;
-		history7DOS = history7dos;
-		this.history8Code = history8Code;
-		this.history8Tooth = history8Tooth;
-		history8DOS = history8dos;
-		this.history9Code = history9Code;
-		this.history9Tooth = history9Tooth;
-		history9DOS = history9dos;
 		this.comments = comments;
 		this.generalBenefitsVerifiedBy = generalBenefitsVerifiedBy;
 		this.generalDateIVwasDone = generalDateIVwasDone;
 		this.patientId = patientId;
+		this.hs = hs;
 		this.uniqueID = uniqueID;
 	}
 	public String getOfficeName() {
@@ -1126,168 +1072,6 @@ public class IVFTableSheet {
 	public void setFillingsBundling(String fillingsBundling) {
 		FillingsBundling = fillingsBundling;
 	}
-	public String getHistory1Code() {
-		return history1Code;
-	}
-	public void setHistory1Code(String history1Code) {
-		this.history1Code = history1Code;
-	}
-	public String getHistory1Tooth() {
-		return history1Tooth;
-	}
-	public void setHistory1Tooth(String history1Tooth) {
-		this.history1Tooth = history1Tooth;
-	}
-	public String getHistory1DOS() {
-		return history1DOS;
-	}
-	public void setHistory1DOS(String history1dos) {
-		history1DOS = history1dos;
-	}
-	public String getHistory2Code() {
-		return history2Code;
-	}
-	public void setHistory2Code(String history2Code) {
-		this.history2Code = history2Code;
-	}
-	public String getHistory2Tooth() {
-		return history2Tooth;
-	}
-	public void setHistory2Tooth(String history2Tooth) {
-		this.history2Tooth = history2Tooth;
-	}
-	public String getHistory2DOS() {
-		return history2DOS;
-	}
-	public void setHistory2DOS(String history2dos) {
-		history2DOS = history2dos;
-	}
-	public String getHistory3Code() {
-		return history3Code;
-	}
-	public void setHistory3Code(String history3Code) {
-		this.history3Code = history3Code;
-	}
-	public String getHistory3Tooth() {
-		return history3Tooth;
-	}
-	public void setHistory3Tooth(String history3Tooth) {
-		this.history3Tooth = history3Tooth;
-	}
-	public String getHistory3DOS() {
-		return history3DOS;
-	}
-	public void setHistory3DOS(String history3dos) {
-		history3DOS = history3dos;
-	}
-	public String getHistory4Code() {
-		return history4Code;
-	}
-	public void setHistory4Code(String history4Code) {
-		this.history4Code = history4Code;
-	}
-	public String getHistory4Tooth() {
-		return history4Tooth;
-	}
-	public void setHistory4Tooth(String history4Tooth) {
-		this.history4Tooth = history4Tooth;
-	}
-	public String getHistory4DOS() {
-		return history4DOS;
-	}
-	public void setHistory4DOS(String history4dos) {
-		history4DOS = history4dos;
-	}
-	public String getHistory5Code() {
-		return history5Code;
-	}
-	public void setHistory5Code(String history5Code) {
-		this.history5Code = history5Code;
-	}
-	public String getHistory5Tooth() {
-		return history5Tooth;
-	}
-	public void setHistory5Tooth(String history5Tooth) {
-		this.history5Tooth = history5Tooth;
-	}
-	public String getHistory5DOS() {
-		return history5DOS;
-	}
-	public void setHistory5DOS(String history5dos) {
-		history5DOS = history5dos;
-	}
-	public String getHistory6Code() {
-		return history6Code;
-	}
-	public void setHistory6Code(String history6Code) {
-		this.history6Code = history6Code;
-	}
-	public String getHistory6Tooth() {
-		return history6Tooth;
-	}
-	public void setHistory6Tooth(String history6Tooth) {
-		this.history6Tooth = history6Tooth;
-	}
-	public String getHistory6DOS() {
-		return history6DOS;
-	}
-	public void setHistory6DOS(String history6dos) {
-		history6DOS = history6dos;
-	}
-	public String getHistory7Code() {
-		return history7Code;
-	}
-	public void setHistory7Code(String history7Code) {
-		this.history7Code = history7Code;
-	}
-	public String getHistory7Tooth() {
-		return history7Tooth;
-	}
-	public void setHistory7Tooth(String history7Tooth) {
-		this.history7Tooth = history7Tooth;
-	}
-	public String getHistory7DOS() {
-		return history7DOS;
-	}
-	public void setHistory7DOS(String history7dos) {
-		history7DOS = history7dos;
-	}
-	public String getHistory8Code() {
-		return history8Code;
-	}
-	public void setHistory8Code(String history8Code) {
-		this.history8Code = history8Code;
-	}
-	public String getHistory8Tooth() {
-		return history8Tooth;
-	}
-	public void setHistory8Tooth(String history8Tooth) {
-		this.history8Tooth = history8Tooth;
-	}
-	public String getHistory8DOS() {
-		return history8DOS;
-	}
-	public void setHistory8DOS(String history8dos) {
-		history8DOS = history8dos;
-	}
-	public String getHistory9Code() {
-		return history9Code;
-	}
-	public void setHistory9Code(String history9Code) {
-		this.history9Code = history9Code;
-	}
-	public String getHistory9Tooth() {
-		return history9Tooth;
-	}
-	public void setHistory9Tooth(String history9Tooth) {
-		this.history9Tooth = history9Tooth;
-	}
-	public String getHistory9DOS() {
-		return history9DOS;
-	}
-	public void setHistory9DOS(String history9dos) {
-		history9DOS = history9dos;
-	}
 	public String getComments() {
 		return comments;
 	}
@@ -1318,9 +1102,15 @@ public class IVFTableSheet {
 	public void setUniqueID(String uniqueID) {
 		this.uniqueID = uniqueID;
 	}
+	public IVFHistorySheet getHs() {
+		return hs;
+	}
+	public void setHs(IVFHistorySheet hs) {
+		this.hs = hs;
+	}
+	
 	
 
-	
 
 
 	

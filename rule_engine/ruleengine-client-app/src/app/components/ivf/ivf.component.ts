@@ -2,7 +2,7 @@ import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
 import {IVFModel} from "../../model/model.ivf";
 import {Office} from "../../model/model.office";
 import {AccountService} from "../../services/account.service";
-import {Router} from "@angular/router";
+import {Router,ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: 'app-ivf',
@@ -21,10 +21,15 @@ export class IVFComponent implements OnInit {
   showLoading: boolean = false;
   showIvfData: boolean = false;
 
-  constructor(public accountService: AccountService, public router: Router) {
+  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
+	  
+	//console.log(this.route.snapshot.data['offs'].data);
+	this.offices =this.route.snapshot.data['offs'].data;
+	/*  
       this.accountService.getOffices((result) => {
           this.offices=result;
         });
+    */    
   }
 
   ngOnInit() {

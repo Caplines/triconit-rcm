@@ -9,8 +9,9 @@ import {ReportModel} from "../model/model.report";
 import {TreatmentPlanModel} from "../model/model.treatmentplan";
 import {AuthHeader} from "../util/auth.header";
 import {AppComponent} from "../app.component";
-import { map,flatMap,mergeMap,switchMap } from 'rxjs/operators';
+import { map,flatMap,mergeMap,switchMap,catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AccountService {
@@ -69,6 +70,17 @@ export class AccountService {
        });
     }
   
+  /*
+   * return this.http.post(newsUrl, news).pipe(
+      map( (dataFromApi) => dataFromApi ),
+      catchError( (err) => Observable.throw(err.json().error) )
+    )
+   */
+  getOfficesPrior(){
+      return this.htt.get(AppComponent.API_URL+'/open/getoffices').pipe(
+    	map( (resp=>resp.json() ),
+       catchError( (err) => Observable.throw(err.json().error) )));
+    }
   validateIVF(ivf:IVFModel,ivfValidateName,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
           console.log((<any>data).token);

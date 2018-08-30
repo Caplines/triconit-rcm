@@ -178,10 +178,10 @@ button.btn:active:focus, button.btn.active:focus {
 .navbar-brand {
 	float: left;
     height: 80px;
-    background: url(../assets/img/Smilepoint-Dental.png) no-repeat 15px 10px;
+    background: url(../assets/img/logo.png) no-repeat 15px 16px;
     text-indent: -9999px;
     background-repeat: no-repeat;
-    width: 402px;
+    width:255px;
   }
   .navbar-default .navbar-text {    color: #3d5273;
     padding: 0px;
@@ -364,6 +364,8 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
 .message-container { line-height: 22px; font-size: 14px; margin-bottom: 10px; padding-left: 20px;}
 .message-container .error-message-api{color:red;}
 .message-container .success-message-api{color:green;}
+.message-container .alert-message-api{color:blue;}
+
 
 .top-content .dropdown .btn-block.dropdown-toggle { 
 	text-align: left;    margin-top: 9px;
@@ -428,30 +430,23 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
     width: 100%;
     top: 80px;
 	left: 0px;
-    z-index: 9999;
+    z-index: 999;
     background: #fff;
     height: 60px;
     border-top: 2px solid #ccc;
 	box-shadow: 0px 5px 7px 0px #eee;
 }
 
-.close-btn img{
-    top: 10px;
-    right: 10px;
-	width:35px;
-	height:35px;
-	position:absolute;
-	-webkit-transition:-webkit-transform .25s, opacity .25s;
-    -moz-transition:-moz-transform .25s, opacity .25s;
-    transition: transform .25s, opacity .25s;
-	opacity:.4;
+.close-btn a{
+        float: right;
+    color: #1b0cff;
+    font-weight: bold;
+    margin-right: 20px;
+    margin-top: 13px;
 }
 
-.close-btn img:hover{
-	-webkit-transform: rotate(270deg);
-	-moz-transform: rotate(270deg);
-	transform: rotate(270deg);
-	opacity:1;
+.close-btn a:hover{
+text-decoration: underline;
 }
 
 .table-container h3 {
@@ -472,6 +467,9 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
 	color:green;
 }
 
+.alert-message-api{
+	color:blue;
+}
 	
 .ivf-form-validation .inner-bg { padding:0px;}
 .ivf-form-validation .container { width: auto; margin:0px;}
@@ -522,9 +520,15 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea
 	background: #39b7e7;
 }
 
-
-
-
+.scope-link {    position: relative;
+    top: 25px;
+    right: 10px;
+    float: right;
+        color: #00a5fb;
+    text-decoration: underline;
+    }
+.table-heading {min-width: 350px;}
+.table-heading .label  {font-size:14px; margin-right: 3px;}
 
 
 

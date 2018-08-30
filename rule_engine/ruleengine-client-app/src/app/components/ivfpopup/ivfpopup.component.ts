@@ -15,20 +15,54 @@ export class IVFPopupComponent implements OnInit {
 	@Output() emitToParent = new EventEmitter<any>();
 	ivfmData: any;
 	arrayOfKeys: any;
+	countP:number =0;
+	countF:number =0;
+	countA:number =0;
 	
 	constructor(public accountService: AccountService) { }
 
 	ngOnInit() {
 		this.validateIVF();
-	}
+		}
 	
-	validateIVF() {  
+	validateIVF() {
+	    let ths=this;	
+		ths.countP=0;
+		ths.countF=0;
+		ths.countA=0;
 		this.accountService.validateIVF(this.ivfm, this.ivfValidateName, (result) => { 
 			this.emitToParent.emit({action: "showLoading", value: false});
 			if (result.status=='OK' && result.data){
 				this.ivfmData = result.data;
-				console.log(this.ivfmData);
+				//console.log(this.ivfmData);
 				this.arrayOfKeys = Object.keys(this.ivfmData);
+				Object.keys(ths.ivfmData).forEach(function(key) {
+				    ths.countP=0;
+					ths.countF=0;
+					ths.countA=0;
+					ths.ivfmData[key].countP=ths.countP;
+					ths.ivfmData[key].countA=ths.countA;
+					ths.ivfmData[key].countF=ths.countF;
+				    
+					
+				    ths.ivfmData[key].forEach(function(a,i) {
+				    	
+				    	if (a.resultType.toLowerCase().indexOf("pass")>=0
+				    		|| a.resultType.toLowerCase().indexOf("not applicable")>=0	){
+				    		ths.countP= ths.countP+1;
+				    		ths.ivfmData[key].countP=ths.countP;
+				    	}
+				    	if (a.resultType.toLowerCase().indexOf("alert")>=0){
+				    		ths.countA=ths.countA+1;
+				    		ths.ivfmData[key].countA=ths.countA;
+				    	}
+				    	if (a.resultType.toLowerCase().indexOf("fail")>=0){
+				    		ths.countF=ths.countF+1;
+				    		ths.ivfmData[key].countF=ths.countF;
+				    	}
+				    	});
+				    
+				});
 				this.emitToParent.emit({action: "showIvfData", value: true});
 				if (this.isEmpty(this.ivfmData)){
 					alert("No Data Found.");

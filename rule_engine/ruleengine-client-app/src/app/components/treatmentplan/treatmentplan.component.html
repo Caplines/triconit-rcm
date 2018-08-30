@@ -47,7 +47,7 @@
 	<div *ngIf="showTreatmentPlanData">
 		<div class="close-btn">
 			<a href="javascript:void(0)" (click)="closeTreatmentPlanDataModal()">
-				<img src="assets/img/close-btn.png" alt="X" />
+				Go Back
 			</a>
 		</div>	
 		<div *ngFor="let key of arrayOfKeys" class="table-container">
@@ -55,13 +55,15 @@
 			<table class="table table-bordered table-striped">
 				<thead>
 					<tr>
-						<th>Treatment Description</th>
+						<th>Treatment Plan Description</th>
+						<th>Date Last Updated</th>
 						<th>Treatment Plan Id</th>
 					</tr>
 				</thead>
 				<tbody *ngFor="let data of treatmentplanData[key]; let i=index">
 					<tr>
 						<td [innerHTML]="data.tDescription"></td>
+						<td [innerHTML]="data.dateLastUpdated"></td>
 						<td><a class="ivf-data-anchor" href="javascript:void(0)" [innerHTML]="data.treatmentPlanId" (click)="getTreatmentPlanData(data.treatmentPlanId, i)"></a>
 							<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
 						</td>

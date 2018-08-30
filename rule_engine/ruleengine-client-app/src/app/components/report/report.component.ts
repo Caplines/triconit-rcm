@@ -3,7 +3,7 @@ import {DatepickerOptions} from 'ng2-datepicker';
 import {Office} from "../../model/model.office";
 import {ReportModel} from "../../model/model.report";
 import {AccountService} from "../../services/account.service";
-import {Router} from "@angular/router";
+import {Router,ActivatedRoute} from "@angular/router";
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -28,10 +28,8 @@ export class ReportComponent implements OnInit {
   };
   showParam:any = {TreatmentId: false, IvfId: false, Date: false, PatientName: false}
   
-  constructor(public accountService: AccountService, public router: Router, private datePipe: DatePipe) {
-	this.accountService.getOffices((result) => {
-      this.offices=result;
-    });
+  constructor(public accountService: AccountService, public router: Router, private datePipe: DatePipe,private route: ActivatedRoute) {
+	  this.offices =this.route.snapshot.data['offs'].data;
   }
 
   ngOnInit() {

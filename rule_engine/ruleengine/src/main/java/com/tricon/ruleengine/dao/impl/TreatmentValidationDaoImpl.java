@@ -122,7 +122,7 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 		
 		updateEntity(reports);
 		
-		
+	
 	}
 
 	@Override

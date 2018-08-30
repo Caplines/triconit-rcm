@@ -11,18 +11,20 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 /**
  * @author Deepak.Dogra
- *
+ *	
  */
-
-/* from cmd >mvn package*/
+//https://graph.microsoft.com/v1.0/me/drive/root/children from graph explorer to get ID of sheet..
+/* 
 /* to create build of front end--- npm run --prod*/
+//from cmd in folder \capline\rule_engine\ruleengine>   mvn package
 /*
  * FOR PRODCTION MAKE SURE 
  * in application.properties u have spring.profiles.active=prod 
  * dev is for Developers
  * in Front end 
- * app.component.ts static API_URL="/ruleengine"; 
+ * app.component.ts static API_URL="http://ip"; 
  * angular.json line no 17 "index": "src/index.jsp",
+ * Password --capline 
  */
 
 @SpringBootApplication(exclude = { JpaRepositoriesAutoConfiguration.class,
@@ -37,4 +39,10 @@ public class RuleengineApplication extends SpringBootServletInitializer{
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(RuleengineApplication.class, args);
 	}
+	
+	/*
+	 * https://apps.dev.microsoft.com
+	 * office365@caplineservices.com     Smilepoint00 for corbsy
+
+	 */
 }

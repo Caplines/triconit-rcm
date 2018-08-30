@@ -26,7 +26,7 @@
 								id="ivfId" [(ngModel)]="ivfm.ivfId" #ivfId="ngModel"
 								(paste)="onPaste($event)"
 								(ngModelChange)="getDataFromPasteEvent($event)"
-								placeholder="IVF Id..." required>
+								placeholder="Example : 1,2,3,4,5,6" required>
 								</textarea>
 							<div *ngIf="f.submitted && !ivfId.valid" class="error-msg">Please
 								enter IVF Id.</div>

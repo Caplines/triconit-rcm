@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gdata.data.dublincore.Date;
 import com.tricon.ruleengine.dto.FreqencyDto;
@@ -358,7 +359,66 @@ public class FreqencyUtils {
 			alikecodepresent = true;
 		}
 
+       
+		
+		// 3C D2391, M2391, P2391
+       if (compairThreeVlaues(tpCodes, historyCode, "D2391", "M2391", "P2391")!=null) {
+			alikecodepresent = true;
+		}
+		// 3C D2392, M2392, P2392
+		if (compairThreeVlaues(tpCodes, historyCode, "D2392", "M2392", "P2392")!=null) {
+			alikecodepresent = true;
+		}
+        //
+		// 3C D2393, M2393, P2393
+		if (compairThreeVlaues(tpCodes, historyCode, "D2393", "M2393", "P2393")!=null) {
+			alikecodepresent = true;
+		}
+        //
+		// 3C D2394, M2394, P2394
+		if (compairThreeVlaues(tpCodes, historyCode, "D2394", "M2394", "P2394")!=null) {
+			alikecodepresent = true;
+		}
+		
+
 		return alikecodepresent;
+	}
+	
+	
+	
+	private static Boolean  compairThreeVlaues(String tpCodes,String historyCode,String one ,String two, String three) {
+		Boolean b=null;
+		//boolean alikecodepresent=false;
+		
+		if (tpCodes.equals(one) && historyCode.equals(two)) {
+			b = true;
+		}
+		if (tpCodes.equals(two) && historyCode.equals(one)) {
+			b = true;
+		}
+		if (tpCodes.equals(two) && historyCode.equals(three)) {
+			b = true;
+		}
+		if (tpCodes.equals(three) && historyCode.equals(two)) {
+			b = true;
+		}
+		if (tpCodes.equals(one) && historyCode.equals(three)) {
+			b = true;
+		}
+		if (tpCodes.equals(three) && historyCode.equals(one)) {
+			b = true;
+		}
+		return b;
+	}
+	
+	public static void addToFailedSet(Set<String> failedCodeSet,Object[] m) {
+		
+		if (failedCodeSet!=null && m!=null && m.length>0) {
+			failedCodeSet.add((String)m[0]);
+		}
+		
+		
+		
 	}
 
 	public static void main(String a[]) {

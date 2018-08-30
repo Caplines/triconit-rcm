@@ -27,15 +27,16 @@
 <div *ngIf="showIvfData">
 	<div class="close-btn">
 		<a href="javascript:void(0)" (click)="closePopup()">
-			<img src="assets/img/close-btn.png" alt="X" />
+			 Go Back
 		</a>
 	</div>	
 	<div *ngFor="let key of arrayOfKeys" class="table-container">
 		<h3 [innerHTML]="key"></h3>
 		<table class="table table-bordered table-striped">
 			<thead>
-				<tr>
-					<th>Rule Name</th>
+				<tr> 
+					<th style="min-width: 350px" class="table-heading">Rule Name 
+					<span class="label label-success">PASS: {{ivfmData[key].countP}}</span> <span class="label label-danger" *ngIf="ivfmData[key].countF>0"> FAIL: {{ivfmData[key].countF}}</span> <span class="label label-info" *ngIf="ivfmData[key].countA>0">ALERT: {{ivfmData[key].countA}}</span></th>
 					<th>Messages</th>
 				</tr>
 			</thead>

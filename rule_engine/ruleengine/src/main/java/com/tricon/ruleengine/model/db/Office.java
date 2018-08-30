@@ -79,7 +79,7 @@ public class Office implements java.io.Serializable {
 		this.company = company;
 	}
 
-	@Column(name = "name", length = 45)
+	@Column(name = "name", length = 45,unique=true)
 	public String getName() {
 		return this.name;
 	}

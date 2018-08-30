@@ -7,6 +7,8 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from "./services/auth.service";
+import { OfficeResolve } from "./resolver/office_resolver";
+
 import {HttpModule} from "@angular/http";
 import {AccountService} from "./services/account.service";
 import { ProfileComponent } from './components/profile/profile.component';
@@ -46,6 +48,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule
   ],
   providers: [AuthService,AccountService,UrlPermission,UrlAdminPermission,UrlLoggedInCheck,
+	  OfficeResolve,
        {
           provide: HTTP_INTERCEPTORS,
           useClass: TokenInterceptor,

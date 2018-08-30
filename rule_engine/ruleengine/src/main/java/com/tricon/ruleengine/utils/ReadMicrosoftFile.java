@@ -32,6 +32,11 @@ public class ReadMicrosoftFile {
 
 	private Object[] getFileFromEagelSoft(String urlStr, String sheetName) throws IOException {
 
+		System.out.println("URL");
+		System.out.println(urlStr);
+		System.out.println("sheetName--"+sheetName);
+		
+		
 		URL url = new URL(urlStr);
 
 		// InputStream is = new FileInputStream(new File("/path/to/workbook.xlsx"));
@@ -188,8 +193,13 @@ public class ReadMicrosoftFile {
 					// break;
 					// else
 					added = true;
-				} else if (colCt == 8)
-					treatmentPlanDetails.setDateLastUpdated(currentCell.getStringCellValue());
+				} else if (colCt == 8) {
+					//System.out.println("77777777777777777777");
+					//Constants.SIMPLE_DATE_FORMAT.format(currentCell.getDateCellValue());
+					//System.out.println(currentCell.getDateCellValue());
+					treatmentPlanDetails.setDateLastUpdated(Constants.SIMPLE_DATE_FORMAT.format(currentCell.getDateCellValue()));
+					//System.out.println(Constants.SIMPLE_DATE_FORMAT.format(currentCell.getDateCellValue()));
+				}
 				else if (colCt == 9)
 					tp.setSurface(currentCell.getStringCellValue());
 				else if (colCt == 10) {

@@ -2,7 +2,7 @@ import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {Office} from "../../model/model.office";
 import {TreatmentPlanModel} from "../../model/model.treatmentplan";
 import {AccountService} from "../../services/account.service";
-import {Router} from "@angular/router";
+import {Router,ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-treatmentplan',
@@ -21,10 +21,8 @@ export class TreatmentPlanComponent implements OnInit {
   treatmentPlanId: any;
   selectedIndex: any;
   
-  constructor(public accountService: AccountService, public router: Router) {
-	this.accountService.getOffices((result) => {
-      this.offices=result;
-    });
+  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
+	  this.offices =this.route.snapshot.data['offs'].data;
   }
 
   ngOnInit() {

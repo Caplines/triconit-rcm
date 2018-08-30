@@ -12,18 +12,40 @@ import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.c
 import {UrlPermission} from "./urlPermission/url.permission";
 import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
 import {UrlLoggedInCheck} from "./urlPermission/url.checkloginstate";
+import { OfficeResolve } from "./resolver/office_resolver";
+
 
 
 
 const appRoutes: Routes = [
   { path: 'profile', component: ProfileComponent ,canActivate: [UrlPermission] },
-  { path: 'ivf', component: IVFComponent ,canActivate: [UrlPermission] },
-  { path: 'ivfbatch', component: IVFBatchComponent ,canActivate: [UrlPermission] },
-  { path: 'ivfbatchpre', component: IVFBatchPreComponent ,canActivate: [UrlPermission] },
+  { path: 'ivf',
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+	  component: IVFComponent ,canActivate: [UrlPermission] },
+  { path: 'ivfbatch',
+		  resolve: {
+			    offs: OfficeResolve
+			  },
+	  component: IVFBatchComponent ,canActivate: [UrlPermission] },
+  { path: 'ivfbatchpre',
+		  resolve: {
+			    offs: OfficeResolve
+			  },
+	  component: IVFBatchPreComponent ,canActivate: [UrlPermission] },
   { path: 'login', component: LoginComponent ,canActivate: [UrlLoggedInCheck]},
   { path: 'register', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
-  { path: 'report', component: ReportComponent,canActivate: [UrlPermission]  },
-  { path: 'ivftreatmentplan', component: TreatmentPlanComponent,canActivate: [UrlPermission]  },
+  { path: 'report', 
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+  component: ReportComponent,canActivate: [UrlPermission]  },
+  { path: 'ivftreatmentplan',
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+  component: TreatmentPlanComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
 
   // otherwise redirect to profile
