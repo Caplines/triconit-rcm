@@ -6,6 +6,7 @@ import {IVFComponent} from "./components/ivf/ivf.component";
 import {IVFBatchPreComponent} from "./components/ivfbatchpre/ivfbatchpre.component";
 import {IVFBatchComponent} from "./components/ivfbatch/ivfbatch.component";
 import {LogoutComponent} from "./components/logout/logout.component";
+import {HelpComponent} from "./components/help/help.component";
 import {ReportComponent} from "./components/report/report.component";
 import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
 
@@ -47,7 +48,7 @@ const appRoutes: Routes = [
 		  },
   component: TreatmentPlanComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
-
+  { path: 'help', component: HelpComponent  },
   // otherwise redirect to profile
   { path: '**', redirectTo: '/login' }
 ];

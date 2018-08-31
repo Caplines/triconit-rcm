@@ -132,6 +132,8 @@ public class Constants {
 	public static NumberFormat formatter = new DecimalFormat("#0.00");
 	
 	
+	public static String notFound="<b style='color:red' class='error-message-api'> NOT FOUND </b>";
+	
 
 
 

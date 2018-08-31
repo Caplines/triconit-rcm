@@ -1,9 +1,9 @@
 
 	<nav class="navbar navbar-default navbar-fixed-top user-tab">
 	  <div class="container-fluid">
+	  <div class="l3-eng">LC3 Engine</div>
 				<div class="navbar-header">
-						<a class="navbar-brand" href="#">Capline </a>
-						<p class="navbar-text">Dental Clinic Insurance</p>
+						<a class="navbar-brand" href="#">Capline </a>						
 					</div>
 					
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -13,16 +13,18 @@
 			  <span></span> {{userName?userName: 'Guest'}}<span *ngIf="userName" class="caret"></span></a>
 			  <ul class="dropdown-menu" *ngIf="userName">
 				<li><a *ngIf="userTypeAdmin" href="javascript:void(0)" [routerLink]="['/register']">Register New User</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivf']">Validate Rules</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivfbatch']">Validate Batch Rules</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivfbatchpre']">Validate Batch Pre Rules</a></li>
+				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivftreatmentplan']">Find Tx. Plan Id</a></li>
+				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivf']">Validate Tx. Plan</a></li>
+				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivfbatch']">Validate Tx. Plan Batch</a></li>
+				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivfbatchpre']">Validate IV Batch</a></li>
 				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/report']">Reports</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivftreatmentplan']">Generate Treatment Plan Id</a></li>
+				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/help']">Help</a></li>
+			
 				<li><a *ngIf="userName" href="javascript:void(0)" [routerLink]="['/logout']">Log Out</a></li>
 			  </ul>
 			</li>
 		  </ul>
-		  <a class="scope-link" href="https://docs.google.com/document/d/1SwZG-VVuarmDucBx4h9xG-dt-El8V6Dghj3aBojLtDU/edit#" target="_blank">Scope Document</a>
+		 <!--  <a class="scope-link" href="https://docs.google.com/document/d/1SwZG-VVuarmDucBx4h9xG-dt-El8V6Dghj3aBojLtDU/edit#" target="_blank">Scope Document</a>-->
 		</div><!-- /.navbar-collapse -->
 	  </div><!-- /.container-fluid -->
 	</nav>

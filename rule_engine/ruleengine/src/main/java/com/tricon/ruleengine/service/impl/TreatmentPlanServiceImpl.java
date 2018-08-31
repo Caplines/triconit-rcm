@@ -495,8 +495,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 						// RULE_ID_6 "Percentage Coverage Check"
 						rule = getRulesFromList(rules, Constants.RULE_ID_6);
+						
 						dtoRL = new ArrayList<>();
-						if (espatients != null) {
+						if (espatients != null && esempmaster!=null) {
 							dtoRL = rb.Rule6(ivfMap.get(ivx).get(0), messageSource, rule, esempmaster.get(empMasterKey),
 									espatients.get(patKey), bw);
 							if (dtoRL != null) {
@@ -507,11 +508,18 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
-						} else {
+						} else if (espatients==null){
 							dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule.patient.notfound", new Object[] { "" }, locale),
 									Constants.FAIL));
+							list.addAll(dtoRL);
 
+						}else {
+							dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule.employer.notfound", new Object[] { empMasterKey }, locale),
+									Constants.FAIL));
+							list.addAll(dtoRL);
+							
 						}
 
 						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_6,
@@ -807,9 +815,19 @@ IVF ID(2) Treatment Plan ID (7181) Patient ID (11217) - Debug
 To: 
 TP.id - 7181 IV.id - 2 Of.Name - [office name] PT.id - 11217 Pt.Name - [pt. name] - Detailed Log"
 					*/
+					if (ivfMap==null && tList==null) {
+						returnMap.put("TP.id "+Constants.notFound+" - " + trx + " IV.id  "+Constants.notFound+" - " + ivx + " Of.Name -  "+off.getName(), list);
+						
+					}else if (ivfMap==null) {
+						returnMap.put("TP.id - " + trx + " IV.id "+Constants.notFound+" - " + ivx + " Of.Name -  "+off.getName(), list);
+
+					}else if (tList==null) {
+						returnMap.put("TP.id "+Constants.notFound+" - " + trx + " IV.id  - " + ivx + " Of.Name -  "+off.getName(), list);
 					
+					}else {
 					returnMap.put("TP.id - " + trx + " IV.id - " + ivx + " Of.Name -  "+off.getName()+ " PT.id - "
 							+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "+((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName()+ debug, list);
+					}
 					//returnMap.put("IVF ID(" + ivx + ") Treatment Plan IDTP.id (" + trx + ") Patient ID ("
 					//		+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + ")" + debug, list);
 				} // For loop
@@ -1185,7 +1203,7 @@ TP.id - 7181 IV.id - 2 Of.Name - [office name] PT.id - 11217 Pt.Name - [pt. name
 						list.add(dtoR);
 						if (returnMap == null)
 							returnMap = new HashMap<String, List<TPValidationResponseDto>>();
-						returnMap.put("IVF ID(" + ivx + ")", list);
+						returnMap.put("IVF ID -"+Constants.notFound + ivx , list);
 						continue;
 					}
 					// RULE_ID_1 (Eligibility of the patient)
@@ -1275,7 +1293,9 @@ TP.id - 7181 IV.id - 2 Of.Name - [office name] PT.id - 11217 Pt.Name - [pt. name
 					returnMap.put(" IV.id - " + ivx + " Of.Name -  "+off.getName()+ " PT.id - "
 						+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "+((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName(), list);
 
-				else returnMap.put("IVF ID(" + ivx + ")", list);
+				else if (ivx==null) {
+					returnMap.put("IVF ID "+Constants.notFound+" - " + ivx , list);
+				}else returnMap.put("IVF ID -" + ivx , list);
 			} // For LOOP
 
 		}

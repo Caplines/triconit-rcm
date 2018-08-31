@@ -20,6 +20,7 @@ import com.google.common.collect.Collections2;
 import com.monitorjbl.xlsx.StreamingReader;
 import com.tricon.ruleengine.dto.MicroSoftSheetJson;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
+import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
@@ -30,12 +31,11 @@ import com.tricon.ruleengine.model.sheet.TreatmentPlanPatient;
 
 public class ReadMicrosoftFile {
 
+	static Class<?> clazz = ReadMicrosoftFile.class;
 	private Object[] getFileFromEagelSoft(String urlStr, String sheetName) throws IOException {
 
-		System.out.println("URL");
-		System.out.println(urlStr);
-		System.out.println("sheetName--"+sheetName);
-		
+		RuleEngineLogger.generateLogs(clazz, " URL -"+urlStr,Constants.rule_log_debug, null);
+		RuleEngineLogger.generateLogs(clazz, " sheetName -"+sheetName,Constants.rule_log_debug, null);
 		
 		URL url = new URL(urlStr);
 
@@ -223,8 +223,10 @@ public class ReadMicrosoftFile {
 				else if (colCt == 16)
 					treatmentPlanDetails.setDescription(currentCell.getStringCellValue());
 				else if (colCt == 17)
-					tp.setEstInsurance(currentCell.getStringCellValue());
+					tp.setProviderLastName(currentCell.getStringCellValue());
 				else if (colCt == 18)
+					tp.setEstInsurance(currentCell.getStringCellValue());
+				else if (colCt == 19)
 					tp.setPatientPortion(currentCell.getStringCellValue());
 				//
 				
@@ -440,8 +442,9 @@ public class ReadMicrosoftFile {
 					fn.setEmployerMaximumCoverage(currentCell.getStringCellValue());
 				else if (colCt == 4)
 					fn.setServiceTtypeId(currentCell.getStringCellValue());
-				else if (colCt == 5)
+				else if (colCt == 5) {
 					fn.setServiceTypeDescription(currentCell.getStringCellValue());
+				}
 				if (colCt == 6)
 					fn.setPercentage(currentCell.getStringCellValue());
 				else if (colCt == 7)

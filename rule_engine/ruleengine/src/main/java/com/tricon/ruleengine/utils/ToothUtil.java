@@ -10,8 +10,8 @@ public class ToothUtil {
 		String s[] =getToothsFromTooth("1,A-7,10-15,32,34-34");
 		System.out.println(s[0]);
 		String s1[] =getToothsFromTooth(null);
-		System.out.println(s1[0]);
-		System.out.println("d");
+		//System.out.println(s1[0]);
+		//System.out.println("d");
 		findCommonTooth(new String [] {"1"},new String [] {"a","1","ddd"});
 		
 			// TODO Auto-generated method stub
@@ -26,7 +26,7 @@ public class ToothUtil {
 
         for(int i = 0; i < a.length ;i++) {
             for(int j = 0; j< b.length ; j++) {
-            	System.out.println(a[i]+"-"+b[j]);
+            	//System.out.println(a[i]+"-"+b[j]);
                     if(a[i].trim().equalsIgnoreCase(b[j].trim())) {  
                     //Check if the list already contains the common element
                         if(!commonElements.contains(a[i])) {
@@ -36,9 +36,9 @@ public class ToothUtil {
                     }
             }
         }
-        System.out.println(commonElements.size());
+        //System.out.println(commonElements.size());
        for(String aa:commonElements) {
-    	   System.out.println(aa);
+    	   //System.out.println(aa);
        }
         return commonElements;
     }

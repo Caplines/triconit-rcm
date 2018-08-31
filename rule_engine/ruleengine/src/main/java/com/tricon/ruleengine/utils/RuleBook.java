@@ -175,6 +175,20 @@ public class RuleBook {
 			}
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			boolean pass = true;
+			
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (!tp.getProviderLastName().trim().equalsIgnoreCase(ivf.getProviderName())) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
+							messageSource.getMessage("rule4.error.message_5", new Object[] {ivf.getProviderName(),tp.getProviderLastName(),}, locale),
+							Constants.FAIL));
+			      
+					pass=false;
+					break;//only one needs to be displayed.
+				}
+				
+			}
+			
 			if (espatients != null && espatients.get(0) != null) {
 				EagleSoftPatient pat = espatients.get(0);
 
@@ -539,10 +553,10 @@ public class RuleBook {
 			 * ivf.getD9310Percentage();// D9310_%
 			 */
 			List<Rule6Dto> druleList = new ArrayList<>();
-			druleList.add(new Rule6Dto("Preventive_%", ivf.getPreventivePercentage(), "Preventative"));
+			druleList.add(new Rule6Dto("Preventive_%", ivf.getPreventivePercentage(), "Preventive"));
 			druleList.add(new Rule6Dto("Diagnostic_%", ivf.getDiagnosticPercentage(), "Diagnostic"));
 			druleList.add(new Rule6Dto("PA_XRays_%", ivf.getpAXRaysPercentage(), "PAs/FMX"));
-			druleList.add(new Rule6Dto("Sealants_D1351_%", ivf.getSealantsD1351Percentage(), "Preventative"));
+			druleList.add(new Rule6Dto("Sealants_D1351_%", ivf.getSealantsD1351Percentage(), "Preventive"));
 			druleList.add(new Rule6Dto("Basic_%", ivf.getBasicPercentage(), "Basic"));
 			druleList.add(new Rule6Dto("Endodontics_%", ivf.getEndodonticsPercentage(), "Endodontics"));
 			druleList.add(new Rule6Dto("PerioSurgery_%", ivf.getPerioSurgeryPercentage(), "Periodontal Surgery"));
@@ -1024,7 +1038,7 @@ public class RuleBook {
 					// String.join(", ", primaryMolarT)
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule14.error.message1",
-									new Object[] { " Primary Molar (Tooth-" + String.join(",", primaryMolarT) + ")" },
+									new Object[] { " Primary Molar (Tooth # " + String.join(",", primaryMolarT) + ")" },
 									locale),
 							Constants.FAIL));
 
@@ -1034,7 +1048,7 @@ public class RuleBook {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule14.error.message1",
 									new Object[] {
-											" Permanent Molar (Tooth-" + String.join(",", permamentMolarT) + ")" },
+											" Permanent Molar (Tooth # " + String.join(",", permamentMolarT) + ")" },
 									locale),
 							Constants.FAIL));
 					pass = false;
@@ -1042,7 +1056,7 @@ public class RuleBook {
 				if (preMolarT.size() > 0) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule14.error.message1",
-									new Object[] { " Pre-Molar (Tooth-" + String.join(",", preMolarT) + ")" }, locale),
+									new Object[] { " Pre-Molar (Tooth  # " + String.join(",", preMolarT) + ")" }, locale),
 							Constants.FAIL));
 					pass = false;
 				}
@@ -1134,6 +1148,7 @@ public class RuleBook {
 			}
 
 			// No. of Days Check
+			/*Not neede Now.
 			RuleEngineLogger.generateLogs(clazz, "datybetweenTr - " + datybetweenTr, Constants.rule_log_debug, bw);
 			if (Integer.parseInt(datybetweenTr) > 0 && size > 0) {
 				pass = false;
@@ -1141,7 +1156,7 @@ public class RuleBook {
 						messageSource.getMessage("rule15.error.message2", new Object[] { datybetweenTr }, locale),
 						Constants.FAIL));
 			}
-
+            */
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
@@ -2631,7 +2646,7 @@ public class RuleBook {
 				Method hcm = c2.getMethod(hc);
 				Method hdm = c2.getMethod(hd);
 				Method htm = c2.getMethod(ht);
-				System.out.println((String)hcm.invoke(hisSheet));
+				//System.out.println((String)hcm.invoke(hisSheet));
 				hdto = new ToothHistoryDto(
 						(String)hcm.invoke(hisSheet), (String)hdm.invoke(hisSheet), (String)htm.invoke(hisSheet)
 						);

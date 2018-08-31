@@ -17,6 +17,7 @@ public class TreatmentPlan {
 	private String 	tooth;
 	private String 	status;
 	private String 	fee;
+	private String  providerLastName;
 	private String 	estInsurance;
 	private String 	PatientPortion;
 	private String 	estPrimary;
@@ -130,6 +131,14 @@ public class TreatmentPlan {
 
 	public void setEstPrimary(String estPrimary) {
 		this.estPrimary = estPrimary;
+	}
+
+	public String getProviderLastName() {
+		return providerLastName;
+	}
+
+	public void setProviderLastName(String providerLastName) {
+		this.providerLastName = providerLastName;
 	}
 	
 	

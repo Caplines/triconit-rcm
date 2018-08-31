@@ -12,6 +12,7 @@ import {Router,ActivatedRoute } from "@angular/router";
 })
 export class IVFComponent implements OnInit {
   @Input() treatmentPlanId:any;
+  @Input() officeId:any;
   ivfm: IVFModel = new IVFModel();
   errorMessage: string;
   offices:any;
@@ -34,6 +35,9 @@ export class IVFComponent implements OnInit {
 
   ngOnInit() {
 	this.ivfm.treatmentPlanId = this.treatmentPlanId;
+	//console.log(this.officeId);
+	if(this.officeId)this.ivfm.officeId = this.officeId;
+	
   }
 
   validateIVF() {
@@ -51,6 +55,14 @@ export class IVFComponent implements OnInit {
 		if(!this.showIvfData) {
 			this.showPopup = false;
 		}
+	}else if(event['action'] == "callAgain") {
+		this.showIvfData=false;
+		this.showPopup=false;
+		this.showLoading = false;
+		setTimeout(() => {
+			this.validateIVF();	
+		}, 500);
+		
 	}
   }
   

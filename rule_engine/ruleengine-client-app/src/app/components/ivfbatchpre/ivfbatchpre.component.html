@@ -6,8 +6,7 @@
 			<div class="col-sm-6 col-sm-offset-3 form-box">
 				<div class="form-top">
 					<div class="form-top-left">
-						<h3 class="ivf-title">Enter Details for Validating (Multiple)
-							IVF Form's (Pre Batch Mode)</h3>
+						<h3 class="ivf-title">Enter Details for Validating IV in Batch</h3>
 					</div>
 				</div>
 
@@ -26,7 +25,7 @@
 								id="ivfId" [(ngModel)]="ivfm.ivfId" #ivfId="ngModel"
 								(paste)="onPaste($event)"
 								(ngModelChange)="getDataFromPasteEvent($event)"
-								placeholder="Example : 1,2,3,4,5,6" required>
+								placeholder="IV Ids : 1,2,3,4,5,6" required>
 								</textarea>
 							<div *ngIf="f.submitted && !ivfId.valid" class="error-msg">Please
 								enter IVF Id.</div>
@@ -45,8 +44,7 @@
 
 
 						<p>
-							<button [disabled]="showLoading" type="submit" class="btn">Validate
-								Treatment Plan</button>
+							<button [disabled]="showLoading" type="submit" class="btn"> Validate IVs</button>
 						</p>
 
 						<div *ngIf="showLoading" class="loader"></div>

@@ -42,6 +42,14 @@ export class IVFBatchComponent implements OnInit {
 		if(!this.showIvfData) {
 			this.showPopup = false;
 		}
+	}else if(event['action'] == "callAgain") {
+		this.showIvfData=false;
+		this.showPopup=false;
+		this.showLoading = false;
+		setTimeout(() => {
+			this.validateIVF();	
+		}, 500);
+		
 	}
   }
   

@@ -17,6 +17,7 @@ import { IVFBatchPreComponent } from './components/ivfbatchpre/ivfbatchpre.compo
 import { IVFBatchComponent } from './components/ivfbatch/ivfbatch.component';
 import { ReportComponent } from './components/report/report.component';
 import { LogoutComponent } from './components/logout/logout.component';
+import { HelpComponent } from './components/help/help.component';
 import { HeaderComponent } from './components/header/header.component';
 import { IVFPopupComponent } from './components/ivfpopup/ivfpopup.component';
 import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
@@ -40,6 +41,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
     IVFBatchPreComponent,
     ReportComponent,
     LogoutComponent,
+    HelpComponent,
     HeaderComponent,
     IVFPopupComponent,
 	TreatmentPlanComponent

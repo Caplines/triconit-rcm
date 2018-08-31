@@ -83,18 +83,18 @@ export class AccountService {
     }
   validateIVF(ivf:IVFModel,ivfValidateName,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
-          console.log((<any>data).token);
+          //console.log((<any>data).token);
           localStorage.setItem("token", (<any>data).token);
           console.log("token is set");
             return  this.http.post(AppComponent.API_URL+'/'+ivfValidateName,ivf);
           },
           )    
       ).subscribe(data => {
-              console.log(data);
+              //console.log(data);
               callback((<any>data));
           },
           error => {
-              console.log(33);
+              //console.log(33);
               if (error.status==401){
               this.router.navigate(['/logout']);
               }
@@ -104,7 +104,7 @@ export class AccountService {
               }
           },
           () => {
-              console.log(111);
+              //console.log(111);
           }
           
           );
@@ -186,13 +186,13 @@ export class AccountService {
 			if (error.status==401){ 
 				this.router.navigate(['/logout']);
 			}
-            if (error.status==500){
+			else if (error.status==500){
 				alert("Some un-Wanted Chnages Done to Google Sheets");
 				callback(error);
             }
         },
         () => {        
-			console.log(111);   
+			//console.log(111);   
 			}
 		);   
 	}
@@ -207,7 +207,7 @@ export class AccountService {
 			callback((<any>data));
 		},
 		error => {  
-			console.log(33);
+			//console.log(33);
 			if (error.status==401){ 
 				this.router.navigate(['/logout']);
 			}
@@ -217,7 +217,7 @@ export class AccountService {
             }
         },
         () => {        
-			console.log(111);   
+			//console.log(111);   
 			}
 		);  
 	}

@@ -199,7 +199,7 @@ public class SendPostAndReadJSon {
 			stream = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
             String result = reader.readLine();
-            System.out.println("ssssssss-0"+result);
+            //System.out.println("ssssssss-0"+result);
             //System.out.println(result.split("&usid=")[0].split("\",\"id\":\"")[1]);
             //Player p = g.fromJson(jsonString, Player.class)
             if (pasreRes) return result.split("&usid=")[0].split("\",\"id\":\"")[1];

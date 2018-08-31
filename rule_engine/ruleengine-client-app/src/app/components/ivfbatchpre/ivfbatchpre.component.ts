@@ -41,12 +41,19 @@ export class IVFBatchPreComponent implements OnInit {
 		if(!this.showIvfData) {
 			this.showPopup = false;
 		}
+	}else if(event['action'] == "callAgain") {
+		this.showIvfData=false;
+		this.showPopup=false;
+		this.showLoading = false;
+		setTimeout(() => {
+			this.validateIVF();	
+		}, 500);
+		
 	}
   }
  
   onPaste(evt) {
 		let content = '';
-		  console.log(2);
 		if (evt.clipboardData && evt.clipboardData.getData) {
 			content = evt.clipboardData.getData('text/plain');
 		} 

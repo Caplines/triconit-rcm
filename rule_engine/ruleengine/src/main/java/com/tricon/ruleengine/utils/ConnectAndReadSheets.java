@@ -147,8 +147,8 @@ public class ConnectAndReadSheets {
 
 		while (li.hasPrevious()) {
 			ArrayList<String> obj = (ArrayList<String>) li.previous();
-			System.out.println(obj.size());
-			System.out.println(obj);
+			//System.out.println(obj.size());
+			//System.out.println(obj);
 			String uniqueId = "";
 			// System.out.println("maxlengthT"+maxlengthT);
 			// for(String uniqueId:uniqueIds) {
@@ -231,7 +231,7 @@ public class ConnectAndReadSheets {
 			} catch (Exception ex) {
 				continue;
 			}
-			System.out.println(uniqueId);
+			//System.out.println(uniqueId);
 
 			if (map == null)
 				map = new HashMap<>();

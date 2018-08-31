@@ -19,6 +19,8 @@ export class TreatmentPlanComponent implements OnInit {
   showLoading: boolean = false;
   showTreatmentPlanData: boolean = false;
   treatmentPlanId: any;
+  officeId: any;
+
   selectedIndex: any;
   
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
@@ -35,14 +37,20 @@ export class TreatmentPlanComponent implements OnInit {
 		this.showLoading = true;
 		this.accountService.generateTreatmentPlanId(this.treatmentplan,(result) => {
 			this.showLoading = false;
+			
 			if (result.status=='OK' && result.data){
 				this.treatmentplanData = result.data;
 				this.arrayOfKeys = Object.keys(this.treatmentplanData);
 				this.showTreatmentPlanData = true;
+				console.log(this.treatmentplanData);
+                console.log(this.isEmpty(this.treatmentplanData));
 				if (this.isEmpty(this.treatmentplanData)){
-					alert("No Data Found.");
+					alert("This Patient Id was NOT found");
 				}
 			} else {
+				if (!result.data){
+					alert("This Patient Id was NOT found.");
+				}
 				this.showTreatmentPlanData = false;
 			}
 		});
@@ -59,6 +67,7 @@ export class TreatmentPlanComponent implements OnInit {
   
   getTreatmentPlanData(value, index) {
 	this.treatmentPlanId = value;
+	this.officeId=this.treatmentplan.officeId;
 	this.selectedIndex = index;
   }
   
