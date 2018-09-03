@@ -5,20 +5,6 @@ import java.util.List;
 
 public class ToothUtil {
 
-	public static void main(String[] args) {
-		
-		String s[] =getToothsFromTooth("1,A-7,10-15,32,34-34");
-		System.out.println(s[0]);
-		String s1[] =getToothsFromTooth(null);
-		//System.out.println(s1[0]);
-		//System.out.println("d");
-		findCommonTooth(new String [] {"1"},new String [] {"a","1","ddd"});
-		
-			// TODO Auto-generated method stub
-
-	}
-	
-	
 	public static List<String> findCommonTooth(String[] a, String[] b) {
 
 		if (a==null   || b==null) return null; 

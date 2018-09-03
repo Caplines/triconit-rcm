@@ -104,25 +104,7 @@ public class DateUtils {
 		return tm.convert(diffInMillies, TimeUnit.MILLISECONDS);
 	}
 
-	public static void main(String[] a) throws ParseException {
-		int x[]=calculateAgeYMD("8/22/1998",false);
-		System.out.println("---------------");
-		System.out.println(x[0]);
-		System.out.println(x[1]);
-		System.out.println(x[2]);
-		System.out.println(checkForAgeLimit(x, 20));
-		/*
-		getFiscalYear(5);
-
-		Object[] ab = new Object[] { "s", 1 };
-		System.out.println(getNextYear(new Date()));
-		System.out.println("ddddddd");
-		Date aa[]=getCalendarYear(1);
-		Date x= new Date();
-		x= Constants.SIMPLE_DATE_FORMAT.parse("01/01/2019");
-		System.out.println(x+"--"+isDatesBetweenDates(aa[0],aa[1],x));
-		*/
-	}
+	
 
 	public static Date[] getFiscalYear(int times) {
 		int CurrentYear = Calendar.getInstance().get(Calendar.YEAR);

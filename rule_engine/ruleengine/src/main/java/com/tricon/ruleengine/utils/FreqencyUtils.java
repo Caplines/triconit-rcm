@@ -421,11 +421,5 @@ public class FreqencyUtils {
 		
 	}
 
-	public static void main(String a[]) {
-
-		FreqencyDto d = parseFrequecy("1x5CY");
-		System.out.println(d.getCy());
-		Date treatmentDate = new Date();
-
-	}
+	
 }
