@@ -192,13 +192,16 @@ public class RuleBook {
 			if (espatients != null && espatients.get(0) != null) {
 				EagleSoftPatient pat = espatients.get(0);
 
-				if (ivf.getPlanCoverageBook() != null && (ivf.getPlanCoverageBook().equals("")
-						|| ivf.getPlanCoverageBook().equalsIgnoreCase("none"))) {
+				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null && (ivf.getPlanCoverageBook().equals("")
+						|| ivf.getPlanCoverageBook().equalsIgnoreCase("none")) &&
+						( pat.getCovBookHeaderName().equals("")
+								|| pat.getCovBookHeaderName().equalsIgnoreCase("none"))
+						) {
 
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_4", new Object[] {}, locale),
-							Constants.FAIL));
-					return dList;
+							Constants.ALERT));
+					//return dList;
 				}
 				// String esp_ = ivf.getPlanFeeScheduleName();
 				RuleEngineLogger.generateLogs(clazz, "Coverage Book-" + ivf.getPlanCoverageBook()
@@ -323,13 +326,16 @@ public class RuleBook {
 				RuleEngineLogger.generateLogs(clazz, "CovBookHeaderName-" + pat.getCovBookHeaderName(),
 						Constants.rule_log_debug, bw);
 
-				if (ivf.getPlanCoverageBook() != null && (ivf.getPlanCoverageBook().equals("")
-						|| ivf.getPlanCoverageBook().equalsIgnoreCase("none"))) {
+				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null && (ivf.getPlanCoverageBook().equals("")
+						|| ivf.getPlanCoverageBook().equalsIgnoreCase("none")) &&
+						( pat.getCovBookHeaderName().equals("")
+								|| pat.getCovBookHeaderName().equalsIgnoreCase("none"))
+						) {
 
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_4", new Object[] {}, locale),
-							Constants.FAIL));
-					return dList;
+							Constants.ALERT));
+					//return dList;
 				}
 
 				// String esp_ = ivf.getPlanFeeScheduleName();
@@ -401,9 +407,9 @@ public class RuleBook {
 					Constants.rule_log_debug, bw);
 
 			try {
-				planAnnualMax = Double.parseDouble(ivf.getPlanAnnualMax());
-				planAnnualMaxRem = Double.parseDouble(ivf.getPlanAnnualMaxRemaining());
-				planIndDedRem = Double.parseDouble(ivf.getPlanIndividualDeductibleRemaining());// Plan_IndividualDeductibleRemaining
+				planAnnualMax = Double.parseDouble(ivf.getPlanAnnualMax().replaceAll(",", ""));
+				planAnnualMaxRem = Double.parseDouble(ivf.getPlanAnnualMaxRemaining().replaceAll(",", ""));
+				planIndDedRem = Double.parseDouble(ivf.getPlanIndividualDeductibleRemaining().replaceAll(",", ""));// Plan_IndividualDeductibleRemaining
 			} catch (Exception e) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.error.message",
@@ -423,9 +429,9 @@ public class RuleBook {
 				EagleSoftPatient pat = espatients.get(0);
 				boolean pass = true;
 				try {
-					primeMaxCov = Double.parseDouble(pat.getMaximumCoverage());
-					primeBenefitRem = Double.parseDouble(pat.getPrimBenefitsRemaining());
-					primeRemDed = Double.parseDouble(pat.getPrimRemainingDeductible());
+					primeMaxCov = Double.parseDouble(pat.getMaximumCoverage().replaceAll(",", ""));
+					primeBenefitRem = Double.parseDouble(pat.getPrimBenefitsRemaining().replaceAll(",", ""));
+					primeRemDed = Double.parseDouble(pat.getPrimRemainingDeductible().replaceAll(",", ""));
 
 					/*
 					 * Compare (Plan_AnnualMax with prim_maximum_coverage), (
@@ -556,7 +562,7 @@ public class RuleBook {
 			druleList.add(new Rule6Dto("Preventive_%", ivf.getPreventivePercentage(), "Preventive"));
 			druleList.add(new Rule6Dto("Diagnostic_%", ivf.getDiagnosticPercentage(), "Diagnostic"));
 			druleList.add(new Rule6Dto("PA_XRays_%", ivf.getpAXRaysPercentage(), "PAs/FMX"));
-			druleList.add(new Rule6Dto("Sealants_D1351_%", ivf.getSealantsD1351Percentage(), "Preventive"));
+			druleList.add(new Rule6Dto("Sealants_D1351_%", ivf.getSealantsD1351Percentage(), "Sealants"));
 			druleList.add(new Rule6Dto("Basic_%", ivf.getBasicPercentage(), "Basic"));
 			druleList.add(new Rule6Dto("Endodontics_%", ivf.getEndodonticsPercentage(), "Endodontics"));
 			druleList.add(new Rule6Dto("PerioSurgery_%", ivf.getPerioSurgeryPercentage(), "Periodontal Surgery"));
@@ -572,10 +578,10 @@ public class RuleBook {
 					"Perio Maintenance"));
 			druleList.add(new Rule6Dto("FMD_D4355_%", ivf.getFMDD4355Percentage(), "Full Mouth Debridement"));
 			druleList.add(
-					new Rule6Dto("CrownLength_D4249_%", ivf.getCrownLengthD4249Percentage(), "Periodontal Surgery"));
+					new Rule6Dto("CrownLength_D4249_%", ivf.getCrownLengthD4249Percentage(), "Crown Lengthening"));
 			druleList.add(new Rule6Dto("PostComposites_D2391_%", ivf.getPostCompositesD2391Percentage(),
 					"Posterior Composites"));
-			druleList.add(new Rule6Dto("IVSedation_D9248_%", ivf.getiVSedationD9248Percentage(), "Sedation 9248"));
+			druleList.add(new Rule6Dto("IVSedation_D9248_%", ivf.getiVSedationD9248Percentage(), "Sedation 9248"));//Sedation 9248
 			druleList.add(new Rule6Dto("IVSedation_D9243_%", ivf.getiVSedationD9243Percentage(), "Sedation 9243"));
 			druleList.add(new Rule6Dto("Nitrous_D9230_%", ivf.getNitrousD9230Percentage(), "Nitrous"));
 			druleList.add(new Rule6Dto("Ortho_%", ivf.getOrthoPercentage(), "Orthodontics"));
@@ -590,7 +596,7 @@ public class RuleBook {
 			druleList.add(new Rule6Dto("ImplantSupportedPorcCeramic_D6065_%",
 					ivf.getImplantSupportedPorcCeramicD6065Percentage(), "Implant Supported Prosthetics"));
 			druleList.add(new Rule6Dto("Crowns_D2750_D2740_%", ivf.getCrownsD2750D2740Percentage(), "Crowns"));
-			druleList.add(new Rule6Dto("D9310_%", ivf.getD9310Percentage(), "Adjunctive General Services"));
+			druleList.add(new Rule6Dto("D9310_%", ivf.getD9310Percentage(), "D9310"));
 			List<String> mess = new ArrayList<>();
 			//
 			if (espatients != null && esempmaster != null && espatients.get(0) != null && esempmaster.get(0) != null) {
@@ -640,7 +646,7 @@ public class RuleBook {
 			}
 			if (!pass) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-						"rule6.error.message", new Object[] { String.join(",", mess) }, locale), Constants.FAIL));
+						"rule6.error.message", new Object[] { String.join(", ", mess) }, locale), Constants.FAIL));
 			}
 			if (pass) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1095,6 +1101,8 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String srpperday = ivf.getsRPD4341QuadsPerDay();
 		String datybetweenTr = ivf.getsRPD4341DaysBwTreatment();
+		if (srpperday!=null && ( srpperday.trim().equalsIgnoreCase("no") || srpperday.trim().equalsIgnoreCase("")))  srpperday="0";
+		if (datybetweenTr!=null && ( datybetweenTr.trim().equalsIgnoreCase("no") || datybetweenTr.trim().equalsIgnoreCase("")))  datybetweenTr="0";
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		try {
 			if (tpList == null) {
@@ -1104,6 +1112,7 @@ public class RuleBook {
 			}
 			boolean pass = true;
 			try {
+				
 				Integer.parseInt(srpperday);
 			} catch (NumberFormatException e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1115,7 +1124,7 @@ public class RuleBook {
 				Integer.parseInt(datybetweenTr);
 			} catch (NumberFormatException e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.error.message", new Object[] { srpperday }, locale),
+						messageSource.getMessage("rule.error.message", new Object[] { datybetweenTr }, locale),
 						Constants.FAIL));
 				return d;
 			}
@@ -2621,6 +2630,9 @@ public class RuleBook {
 				// Calendar calendar = new GregorianCalendar();
 				// calendar.setTime(Constants.SIMPLE_DATE_FORMAT.parse(ivf.getPlanEffectiveDate()));
 				planDate = Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivf.getPlanEffectiveDate());
+				RuleEngineLogger.generateLogs(clazz,
+						"planDate-"+planDate.toString(),
+						Constants.rule_log_debug, bw);
 
 			} catch (ParseException e1) {
 				// TODO Auto-generated catch block
@@ -2784,7 +2796,7 @@ public class RuleBook {
 
 											RuleEngineLogger.generateLogs(clazz, "Frequency- " + freq,
 													Constants.rule_log_debug, bw);
-											if (freq.equalsIgnoreCase("NF"))
+											if (freq.equalsIgnoreCase("NF") || freq.equalsIgnoreCase("no frequency"))
 												continue;
 											FreqencyDto FDTO = FreqencyUtils.parseFrequecy(freq);
 											Date[] datesFIS = DateUtils.getFiscalYear(FDTO.getFy());
@@ -2946,7 +2958,7 @@ public class RuleBook {
 															" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
 															Constants.rule_log_debug, bw);
 
-													continue;
+													//continue;
 												}
 												Calendar nextAvailbleDate = new GregorianCalendar();
 												nextAvailbleDate.setTime(dos);
@@ -2981,7 +2993,7 @@ public class RuleBook {
 															" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
 															Constants.rule_log_debug, bw);
 
-													continue;
+													//continue;
 												}
 												Calendar nextAvailbleDate = new GregorianCalendar();
 												nextAvailbleDate.setTime(dos);
@@ -3012,7 +3024,7 @@ public class RuleBook {
 															" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
 															Constants.rule_log_debug, bw);
 
-													continue;
+													//continue;
 												}
 												Calendar nextAvailbleDate = new GregorianCalendar();
 												nextAvailbleDate.setTime(dos);

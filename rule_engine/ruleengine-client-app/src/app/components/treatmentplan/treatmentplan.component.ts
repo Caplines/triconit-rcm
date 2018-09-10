@@ -45,11 +45,11 @@ export class TreatmentPlanComponent implements OnInit {
 				console.log(this.treatmentplanData);
                 console.log(this.isEmpty(this.treatmentplanData));
 				if (this.isEmpty(this.treatmentplanData)){
-					alert("This Patient Id was NOT found");
+					alert("The Patient ID was NOT found. Check Patient ID and ensure that Treatment Plan has been processed for the Patient");
 				}
 			} else {
 				if (!result.data){
-					alert("This Patient Id was NOT found.");
+					alert("The Patient ID was NOT found. Check Patient ID and ensure that Treatment Plan has been processed for the Patient");
 				}
 				this.showTreatmentPlanData = false;
 			}

@@ -156,32 +156,42 @@ public class ReadMicrosoftFile {
 			if (rowCt == 0) {
 				continue;
 			} // Ignore First Row
-			Iterator<Cell> cellIterator = currentRow.iterator();
-			int colCt = -1;
+			//Iterator<Cell> cellIterator = currentRow.iterator();
+			//int colCt = -1;
 			tp = new TreatmentPlan();
 			patient = new TreatmentPlanPatient();
 			treatmentPlanDetails = new TreatmentPlanDetails();
 			boolean added = false;
-			while (cellIterator.hasNext()) {
-				colCt++;
-				Cell currentCell = cellIterator.next();
+			for (int colCt = 0; colCt < currentRow.getLastCellNum(); colCt++) {
+			Cell cell = currentRow.getCell(colCt, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+			String c="";
+	          if (cell == null) {
+	             // The spreadsheet is empty in this cell
+	          } else {
+	        	  c=cell.getStringCellValue();
+	             // Do something useful with the cell's contents
+	          }
+
+			//while (cellIterator.hasNext()) {
+				//colCt++;
+				//Cell currentCell = cellIterator.next();
 				if (colCt == 0)
-					tp.setApptId(currentCell.getStringCellValue());
+					tp.setApptId(c);
 				else if (colCt == 1)
-					patient.setId(currentCell.getStringCellValue());
+					patient.setId(c);
 				else if (colCt == 2)
-					patient.setName(currentCell.getStringCellValue());
+					patient.setName(c);
 				else if (colCt == 3)
-					patient.setLastName(currentCell.getStringCellValue());
+					patient.setLastName(c);
 				else if (colCt == 4)
-					tp.setLineItem(currentCell.getStringCellValue());
+					tp.setLineItem(c);
 				else if (colCt == 5)
-					tp.setServiceCode(currentCell.getStringCellValue());
+					tp.setServiceCode(c);
 				else if (colCt == 6)
-					tp.setDescription(currentCell.getStringCellValue());
+					tp.setDescription(c);
 				else if (colCt == 7) {
 					added = false;
-					tp.setId(currentCell.getStringCellValue());
+					tp.setId(c);
 					final String a = tp.getId();
 					Collection<String> ruleGen = Collections2.filter(treatmentPlanIdsL, name -> name.equals(a));
 					if (ruleGen != null && ruleGen.size() > 0) {
@@ -197,37 +207,37 @@ public class ReadMicrosoftFile {
 					//System.out.println("77777777777777777777");
 					//Constants.SIMPLE_DATE_FORMAT.format(currentCell.getDateCellValue());
 					//System.out.println(currentCell.getDateCellValue());
-					treatmentPlanDetails.setDateLastUpdated(Constants.SIMPLE_DATE_FORMAT.format(currentCell.getDateCellValue()));
+					treatmentPlanDetails.setDateLastUpdated(Constants.SIMPLE_DATE_FORMAT.format(cell.getDateCellValue()));
 					//System.out.println(Constants.SIMPLE_DATE_FORMAT.format(currentCell.getDateCellValue()));
 				}
 				else if (colCt == 9)
-					tp.setSurface(currentCell.getStringCellValue());
+					tp.setSurface(c);
 				else if (colCt == 10) {
-					tp.setTooth(currentCell.getStringCellValue());
+					tp.setTooth(c);
 					if (tp.getTooth() == null)
 						tp.setTooth("NA");
 					else if (tp.getTooth() != null && tp.getTooth().trim().equals(""))
 						tp.setTooth("NA");// NA Mean All Tooth.. like cleaning..
 				}
 				else if (colCt == 11)
-					tp.setStatus(currentCell.getStringCellValue());
+					tp.setStatus(c);
 				else if (colCt == 12)
-					treatmentPlanDetails.setStatus(currentCell.getStringCellValue());
+					treatmentPlanDetails.setStatus(c);
 				else if (colCt == 13)
-					tp.setFee(currentCell.getStringCellValue());
+					tp.setFee(c);
 				else if (colCt == 14)
-					tp.setEstPrimary(currentCell.getStringCellValue());
+					tp.setEstPrimary(c);
 
 				else if (colCt == 15)
-					treatmentPlanDetails.setEstSecondary(currentCell.getStringCellValue());
+					treatmentPlanDetails.setEstSecondary(c);
 				else if (colCt == 16)
-					treatmentPlanDetails.setDescription(currentCell.getStringCellValue());
+					treatmentPlanDetails.setDescription(c);
 				else if (colCt == 17)
-					tp.setProviderLastName(currentCell.getStringCellValue());
+					tp.setProviderLastName(c);
 				else if (colCt == 18)
-					tp.setEstInsurance(currentCell.getStringCellValue());
+					tp.setEstInsurance(c);
 				else if (colCt == 19)
-					tp.setPatientPortion(currentCell.getStringCellValue());
+					tp.setPatientPortion(c);
 				//
 				
 				
@@ -273,19 +283,28 @@ public class ReadMicrosoftFile {
 			if (rowCt == 0) {
 				continue;
 			} // Ignore First Row
-			Iterator<Cell> cellIterator = currentRow.iterator();
-			int colCt = -1;
+			//Iterator<Cell> cellIterator = currentRow.iterator();
+			//int colCt = -1;
 			tp = new TreatmentPlan();
 			patient = new TreatmentPlanPatient();
 			treatmentPlanDetails = new TreatmentPlanDetails();
 			boolean added = false;
-			while (cellIterator.hasNext()) {
-				colCt++;
-				Cell currentCell = cellIterator.next();
+			for (int colCt = 0; colCt < currentRow.getLastCellNum(); colCt++) {
+			Cell cell = currentRow.getCell(colCt, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+			String c="";
+	          if (cell == null) {
+	             // The spreadsheet is empty in this cell
+	          } else {
+	        	  c=cell.getStringCellValue();
+	             // Do something useful with the cell's contents
+	          }
+			//while (cellIterator.hasNext()) {
+			//	colCt++;
+				//Cell currentCell = cellIterator.next();
 				if (colCt == 0)
-					tp.setApptId(currentCell.getStringCellValue());
+					tp.setApptId(c);
 				else if (colCt == 1) {
-					patient.setId(currentCell.getStringCellValue());
+					patient.setId(c);
 					
 					if (patient.getId()!=null && patient.getId().trim().equalsIgnoreCase(patientId)) {
 						added=true;	
@@ -294,40 +313,40 @@ public class ReadMicrosoftFile {
 					}
 
 				} else if (colCt == 2)
-					patient.setName(currentCell.getStringCellValue());
+					patient.setName(c);
 				else if (colCt == 3)
-					patient.setLastName(currentCell.getStringCellValue());
+					patient.setLastName(c);
 				else if (colCt == 4)
-					tp.setLineItem(currentCell.getStringCellValue());
+					tp.setLineItem(c);
 				else if (colCt == 5)
-					tp.setServiceCode(currentCell.getStringCellValue());
+					tp.setServiceCode(c);
 				else if (colCt == 6)
-					tp.setDescription(currentCell.getStringCellValue());
+					tp.setDescription(c);
 				else if (colCt == 7) {
-					tp.setId(currentCell.getStringCellValue());
+					tp.setId(c);
 				} else if (colCt == 8)
-					treatmentPlanDetails.setDateLastUpdated(currentCell.getStringCellValue());
+					treatmentPlanDetails.setDateLastUpdated(c);
 				else if (colCt == 9)
-					tp.setSurface(currentCell.getStringCellValue());
+					tp.setSurface(c);
 				else if (colCt == 10)
-					tp.setTooth(currentCell.getStringCellValue());
+					tp.setTooth(c);
 				else if (colCt == 11)
-					tp.setStatus(currentCell.getStringCellValue());
+					tp.setStatus(c);
 				else if (colCt == 12)
-					treatmentPlanDetails.setStatus(currentCell.getStringCellValue());
+					treatmentPlanDetails.setStatus(c);
 				else if (colCt == 13)
-					tp.setFee(currentCell.getStringCellValue());
+					tp.setFee(c);
 				else if (colCt == 14)
-					tp.setEstPrimary(currentCell.getStringCellValue());
+					tp.setEstPrimary(c);
 
 				else if (colCt == 15)
-					treatmentPlanDetails.setEstSecondary(currentCell.getStringCellValue());
+					treatmentPlanDetails.setEstSecondary(c);
 				else if (colCt == 16)
-					treatmentPlanDetails.setDescription(currentCell.getStringCellValue());
+					treatmentPlanDetails.setDescription(c);
 				else if (colCt == 17)
-					tp.setEstInsurance(currentCell.getStringCellValue());
+					tp.setEstInsurance(c);
 				else if (colCt == 18)
-					tp.setPatientPortion(currentCell.getStringCellValue());
+					tp.setPatientPortion(c);
 				//
 				if (tp.getTooth() == null)
 					tp.setTooth("NA");
@@ -364,22 +383,31 @@ public class ReadMicrosoftFile {
 				rowCt++;
 				continue;
 			} // Ignore First Row
-			Iterator<Cell> cellIterator = currentRow.iterator();
-			int colCt = -1;
+			//Iterator<Cell> cellIterator = currentRow.iterator();
+			//int colCt = -1;
 			fn = new EagleSoftFeeShedule();
-			while (cellIterator.hasNext()) {
-				colCt++;
+			for (int colCt = 0; colCt < currentRow.getLastCellNum(); colCt++) {
+			Cell cell = currentRow.getCell(colCt, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+			String c="";
+	          if (cell == null) {
+	             // The spreadsheet is empty in this cell
+	          } else {
+	        	  c=cell.getStringCellValue();
+	             // Do something useful with the cell's contents
+	          }
+			//while (cellIterator.hasNext()) {
+			//	colCt++;
 
-				Cell currentCell = cellIterator.next();
+				//Cell currentCell = cellIterator.next();
 				// currentCell.setCellType(CellType.STRING);
 				if (colCt == 0)
-					fn.setFeeId(currentCell.getStringCellValue());
+					fn.setFeeId(c);
 				else if (colCt == 1)
-					fn.setName(currentCell.getStringCellValue());
+					fn.setName(c);
 				else if (colCt == 2)
-					fn.setFeesServiceCode(currentCell.getStringCellValue());
+					fn.setFeesServiceCode(c);
 				else if (colCt == 3)
-					fn.setFeesFee(currentCell.getStringCellValue());
+					fn.setFeesFee(c);
 
 			}
 			//final String cd = fn.getFeesServiceCode();
@@ -425,30 +453,39 @@ public class ReadMicrosoftFile {
 				rowCt++;
 				continue;
 			} // Ignore First Row
-			Iterator<Cell> cellIterator = currentRow.iterator();
-			int colCt = -1;
+			//Iterator<Cell> cellIterator = currentRow.iterator();
+			//int colCt = -1;
 			fn = new EagleSoftEmployerMaster();
-			while (cellIterator.hasNext()) {
-				colCt++;
-				Cell currentCell = cellIterator.next();
+			for (int colCt = 0; colCt < currentRow.getLastCellNum(); colCt++) {
+			Cell cell = currentRow.getCell(colCt, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+			String c="";
+	          if (cell == null) {
+	             // The spreadsheet is empty in this cell
+	          } else {
+	        	  c=cell.getStringCellValue();
+	             // Do something useful with the cell's contents
+	          }
+			//while (cellIterator.hasNext()) {
+			//	colCt++;
+			//	Cell currentCell = cellIterator.next();
 				// currentCell.setCellType(CellType.STRING);
 				if (colCt == 0)
-					fn.setEmployerId(currentCell.getStringCellValue());
+					fn.setEmployerId(c);
 				else if (colCt == 1)
-					fn.setEmployerName(currentCell.getStringCellValue());
+					fn.setEmployerName(c);
 				else if (colCt == 2)
-					fn.setEmployerGroupNumber(currentCell.getStringCellValue());
+					fn.setEmployerGroupNumber(c);
 				else if (colCt == 3)
-					fn.setEmployerMaximumCoverage(currentCell.getStringCellValue());
+					fn.setEmployerMaximumCoverage(c);
 				else if (colCt == 4)
-					fn.setServiceTtypeId(currentCell.getStringCellValue());
+					fn.setServiceTtypeId(c);
 				else if (colCt == 5) {
-					fn.setServiceTypeDescription(currentCell.getStringCellValue());
+					fn.setServiceTypeDescription(c);
 				}
 				if (colCt == 6)
-					fn.setPercentage(currentCell.getStringCellValue());
+					fn.setPercentage(c);
 				else if (colCt == 7)
-					fn.setDeductibleApplies(currentCell.getStringCellValue());
+					fn.setDeductibleApplies(c);
 
 			}
 
@@ -499,13 +536,23 @@ public class ReadMicrosoftFile {
 				rowCt++;
 				continue;
 			} // Ignore First Row
-			Iterator<Cell> cellIterator = currentRow.iterator();
-			int colCt = -1;
+			//Iterator<Cell> cellIterator = currentRow.iterator();
+			//int colCt = -1;
 			fn = new EagleSoftPatient();
-			while (cellIterator.hasNext()) {
-				colCt++;
-				Cell currentCell = cellIterator.next();
-				String c = currentCell.getStringCellValue();
+			for (int colCt = 0; colCt < currentRow.getLastCellNum(); colCt++) {
+			Cell cell = currentRow.getCell(colCt, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+			String c="";
+	          if (cell == null) {
+	             // The spreadsheet is empty in this cell
+	          } else {
+	        	  c=cell.getStringCellValue();
+	             // Do something useful with the cell's contents
+	          }
+			//while (cellIterator.hasNext()) {
+				//colCt++;
+				//Cell currentCell = cellIterator.next();
+				//String c = currentCell.getStringCellValue();
+				//System.out.println("CCCCCCCCCC-"+c);
 				
 				//System.out.println("ii--"+c);
 				if (c == null)
@@ -525,8 +572,8 @@ public class ReadMicrosoftFile {
 					fn.setLastName(c);// C
 				else if (colCt == 3) {
 
-					if (currentCell.getDateCellValue() != null) {
-						fn.setBirthDate(Constants.SIMPLE_DATE_FORMAT.format(currentCell.getDateCellValue()));
+					if (cell!=null && cell.getDateCellValue() != null) {
+						fn.setBirthDate(Constants.SIMPLE_DATE_FORMAT.format(cell.getDateCellValue()));
 					} else {
 						fn.setBirthDate("");// D
 					}
@@ -568,6 +615,7 @@ public class ReadMicrosoftFile {
 			try {
 
 				// using for-each loop for iteration over Map.entrySet()
+				//System.out.println(fn.getEmployerId());
 				if (ivMap != null) {
 					for (Map.Entry<String, List<Object>> entry : ivMap.entrySet()) {
 						if (entry.getValue() != null) {
@@ -582,6 +630,12 @@ public class ReadMicrosoftFile {
 							// .equalsIgnoreCase(Constants.SIMPLE_DATE_FORMAT
 							// .format(Constants.SIMPLE_DATE_FORMAT.parse(ivfSheet.getPatientDOB()))
 							// + ivfSheet.getPatientName())) {
+							/*
+							 * fn.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId())  ||
+									fn.getPatientId().trim().replaceAll(",", "").equalsIgnoreCase(ivfSheet.getPatientId().replaceAll(",", "")) 
+								
+									)
+							 */
 							if ((fn.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
 								if (map == null)
 									map = new HashMap<>();
@@ -791,33 +845,4 @@ public class ReadMicrosoftFile {
 		return list;
 	}
 
-	/*
-	 * private List<Object> readPatientJson(Object obj, TreatmentPlanValidationDto
-	 * dto) { List<Object> list = null; MicroSoftSheetJson graph =
-	 * (MicroSoftSheetJson) obj; EagleSoftPatient fn = null; int rowCt = 0; for
-	 * (Object o : graph.getData()) { List<Object> l = (ArrayList<Object>) o; if
-	 * (rowCt == 0) { rowCt++; continue; } // Ignore First Row if (list == null) {
-	 * list = new ArrayList<>(); }
-	 * 
-	 * int colCt = -1; fn = new EagleSoftPatient(); for (Object x : l) { colCt++;
-	 * String val = x.toString(); if (colCt == 0) fn.setPatientId(val); else if
-	 * (colCt == 1) fn.setFirstName(val); else if (colCt == 2) fn.setLastName(val);
-	 * else if (colCt == 3) fn.setBirthDate(val); else if (colCt == 4)
-	 * fn.setSocialSecurity(val); else if (colCt == 5) fn.setPrimMemberId(val); else
-	 * if (colCt == 6) fn.setResponsiblePartyStatus(val); else if (colCt == 7)
-	 * fn.setResponsibleParty(val); else if (colCt == 8)
-	 * fn.setPrimMaximumCcoverage(val); else if (colCt == 9)
-	 * fn.setPrimBenefitsRemaining(val); else if (colCt == 10)
-	 * fn.setPrimRemainingDeductible(val); else if (colCt == 11)
-	 * fn.setSecBenefitsRemaining(val); else if (colCt == 12)
-	 * fn.setSecRemainingDeductible(val); else if (colCt == 13)
-	 * fn.setPlannedServicesServiceCode(val); else if (colCt == 14)
-	 * fn.setPlannedServicesFee(val); else if (colCt == 15) fn.setEmployerId(val);
-	 * else if (colCt == 16) fn.setEmployerName(val); else if (colCt == 17)
-	 * fn.setPlannedServicesCompletionDate(val); else if (colCt == 18)
-	 * fn.setFeeScheduleId(val); else if (colCt == 19) fn.setFeeScheduleName(val);
-	 * else if (colCt == 20) fn.setCovBookHeaderName(val);
-	 * 
-	 * } if (list != null) list.add(fn); } return list; }
-	 */
 }

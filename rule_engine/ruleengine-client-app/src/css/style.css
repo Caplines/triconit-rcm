@@ -239,10 +239,15 @@ button.btn:active:focus, button.btn.active:focus {
 
 @media (max-width: 415px) {
 	
+	.l3-eng {width: auto!important;
+    right: 7px;
+    line-height: inherit!important;
+    top: 35px;
+    font-size: 27px!important;}
+	
 	h1, h2 { font-size: 32px; }
 	.form-box {margin-left:15px; margin-right:15px;}
-.navbar-brand {    width: 340px;
-    background-size: 100%;
+  .navbar-brand {    width: 340px;
     background-position: 20px;}
     .top-content .navbar-default .navbar-nav>li>a {padding: 10px!important;
     margin: 0px;}
