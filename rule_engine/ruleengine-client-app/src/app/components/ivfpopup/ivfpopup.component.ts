@@ -18,6 +18,8 @@ export class IVFPopupComponent implements OnInit {
 	countP:number =0;
 	countF:number =0;
 	countA:number =0;
+	countE:number =0;
+	
 	
 	constructor(public accountService: AccountService) { }
 
@@ -30,6 +32,7 @@ export class IVFPopupComponent implements OnInit {
 		ths.countP=0;
 		ths.countF=0;
 		ths.countA=0;
+		ths.countE=0;
 		this.ivfmData=[];
 		this.arrayOfKeys=[];
 		this.accountService.validateIVF(this.ivfm, this.ivfValidateName, (result) => { 
@@ -42,9 +45,11 @@ export class IVFPopupComponent implements OnInit {
 				    ths.countP=0;
 					ths.countF=0;
 					ths.countA=0;
+					ths.countE=0;
 					ths.ivfmData[key].countP=ths.countP;
 					ths.ivfmData[key].countA=ths.countA;
 					ths.ivfmData[key].countF=ths.countF;
+					ths.ivfmData[key].countE=ths.countE;
 				    
 					
 				    ths.ivfmData[key].forEach(function(a,i) {
@@ -61,6 +66,10 @@ export class IVFPopupComponent implements OnInit {
 				    	if (a.resultType.toLowerCase().indexOf("fail")>=0){
 				    		ths.countF=ths.countF+1;
 				    		ths.ivfmData[key].countF=ths.countF;
+				    	}
+				      	if (a.resultType.toLowerCase().indexOf("exit")>=0){
+				    		ths.countE=ths.countE+1;
+				    		ths.ivfmData[key].countE=ths.countE;
 				    	}
 				    	});
 				    

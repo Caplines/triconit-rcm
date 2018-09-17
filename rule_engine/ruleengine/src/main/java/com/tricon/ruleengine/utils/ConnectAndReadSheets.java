@@ -144,7 +144,7 @@ public class ConnectAndReadSheets {
 		// int maxlength= values.size();
 		// int maxlengthT= values.size();
 		// System.out.println("maxlengthT30::"+maxlengthT);
-
+        int Column_NO_UNIQUE=312;
 		while (li.hasPrevious()) {
 			ArrayList<String> obj = (ArrayList<String>) li.previous();
 			//System.out.println(obj.size());
@@ -153,13 +153,13 @@ public class ConnectAndReadSheets {
 			// System.out.println("maxlengthT"+maxlengthT);
 			// for(String uniqueId:uniqueIds) {
 			try {
-				if (obj.get(310).toLowerCase().startsWith("Unique_ID"))
+				if (obj.get(Column_NO_UNIQUE).toLowerCase().startsWith("Unique_ID"))
 					break;
 				//System.out.println("id---" + ivds.get(0));
 				//System.out.println("id---" + officeName + "_" + ivds.get(0));
 				//System.out.println("888888:;" + (obj.get(157)));
 				Collection<String> ruleGen = Collections2.filter(ivds,
-						id -> (officeName + "_" + id).equals(obj.get(310)));
+						id -> (officeName + "_" + id).equals(obj.get(Column_NO_UNIQUE)));
 				if (ruleGen != null && ruleGen.size() > 0) {
 					//uniqueId = ruleGen.get(0);//obj.get(157);
                     for(String i:ruleGen) {
@@ -221,7 +221,7 @@ public class ConnectAndReadSheets {
 									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
 									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
 									obj.get(++x)
-									),obj.get(++x)
+									),obj.get(++x),obj.get(++x),obj.get(++x)
 							
 							);
 					

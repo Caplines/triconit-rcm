@@ -15,16 +15,18 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  */
 //https://graph.microsoft.com/v1.0/me/drive/root/children from graph explorer to get ID of sheet..
 /* 
-/* to create build of front end--- npm run --prod*/
+/* to create build of front end--- ng  build --prod*/
 //from cmd in folder \capline\rule_engine\ruleengine>   mvn package
 /*
  * FOR PRODCTION MAKE SURE 
- * in application.properties u have spring.profiles.active=prod 
+ * in application.properties u have spring.profiles.active=prod
+ *  prod.properties -->application.url needs change when needed
  * dev is for Developers
  * in Front end 
  * app.component.ts static API_URL="http://ip"; 
  * angular.json line no 17 "index": "src/index.jsp",
  * Password --capline 
+ * 
  */
 
 @SpringBootApplication(exclude = { JpaRepositoriesAutoConfiguration.class,

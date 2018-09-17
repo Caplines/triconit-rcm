@@ -131,13 +131,16 @@ public class IVFTableSheet {
 	private String orthoAgeLimit;//DT
 	private String orthoSubjectDeductible;//DU
 	private String FillingsBundling;//DV
-	private String comments;//DX
-	private String generalBenefitsVerifiedBy;//DY
-	private String generalDateIVwasDone;//DZ
-	private String patientId;//EA
+	private String comments;//DW
+	private String generalBenefitsVerifiedBy;//DW
+	private String generalDateIVwasDone;//DY
+	private String patientId;//DZ
     //history
 	private IVFHistorySheet hs;
-	private String uniqueID;//EB
+	private String craRequired;//KY
+	private String claimFillingLimit;//KZ
+	private String uniqueID;//LA
+	
 	
 	
 	public IVFTableSheet() {
@@ -181,7 +184,7 @@ public class IVFTableSheet {
 			String buildUpsD2950Covered, String buildUpsD2950FL, String buildUpsD2950SameDayCrown,
 			String orthoPercentage, String orthoMax, String orthoAgeLimit, String orthoSubjectDeductible,
 			String fillingsBundling, String comments, String generalBenefitsVerifiedBy, String generalDateIVwasDone,
-			String patientId,  IVFHistorySheet hs,String uniqueID) {
+			String patientId,  IVFHistorySheet hs,String craRequired, String claimFillingLimit, String uniqueID) {
 		super();
 		this.officeName = officeName;
 		this.patientName = patientName;
@@ -300,7 +303,7 @@ public class IVFTableSheet {
 		this.crownsD2750D2740Downgrade = crownsD2750D2740Downgrade;
 		this.nightGuardsD9940Percentage = nightGuardsD9940Percentage;
 		this.d9310Percentage = d9310Percentage;
-		d9310FL = d9310fl;
+		this.d9310FL = d9310fl;
 		this.buildUpsD2950Covered = buildUpsD2950Covered;
 		this.buildUpsD2950FL = buildUpsD2950FL;
 		this.buildUpsD2950SameDayCrown = buildUpsD2950SameDayCrown;
@@ -314,6 +317,8 @@ public class IVFTableSheet {
 		this.generalDateIVwasDone = generalDateIVwasDone;
 		this.patientId = patientId;
 		this.hs = hs;
+		this.craRequired=craRequired;
+		this.claimFillingLimit=claimFillingLimit;
 		this.uniqueID = uniqueID;
 	}
 	public String getOfficeName() {
@@ -1107,6 +1112,18 @@ public class IVFTableSheet {
 	}
 	public void setHs(IVFHistorySheet hs) {
 		this.hs = hs;
+	}
+	public String getClaimFillingLimit() {
+		return claimFillingLimit;
+	}
+	public void setClaimFillingLimit(String claimFillingLimit) {
+		this.claimFillingLimit = claimFillingLimit;
+	}
+	public String getCraRequired() {
+		return craRequired;
+	}
+	public void setCraRequired(String craRequired) {
+		this.craRequired = craRequired;
 	}
 	
 	

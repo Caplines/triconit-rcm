@@ -54,6 +54,7 @@ public class Constants {
 	public static final String RULE_ID_19="Downgrading";
 	public static final String RULE_ID_20="Do not use Reserved";
 	public static final String RULE_ID_21="Frequency Limitations";
+	public static final String RULE_ID_22="CRA";
 	
 	
 	/*
@@ -74,6 +75,8 @@ public class Constants {
    public static final String FAIL = "FAIL";
    public static final String PASS = "PASS";
    public static final String DEBUG = "DEBUG";
+   public static final String EXTI_ENGINE = "EXIT";
+   
    public static final String NotApplicable = "Not Applicable";
    public static final String ALERT = "Alert";
    public static final String NotNeeded = "Not Needed";

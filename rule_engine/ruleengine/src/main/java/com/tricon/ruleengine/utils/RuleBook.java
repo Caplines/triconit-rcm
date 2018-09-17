@@ -20,9 +20,9 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.collect.Collections2;
 import com.tricon.ruleengine.dto.FreqencyDto;
-import com.tricon.ruleengine.dto.HistoryMatcherDto;
+//import com.tricon.ruleengine.dto.HistoryMatcherDto;
 import com.tricon.ruleengine.dto.Rule6Dto;
-import com.tricon.ruleengine.dto.ServiceCodeDateDto;
+//import com.tricon.ruleengine.dto.ServiceCodeDateDto;
 import com.tricon.ruleengine.dto.ServiceCodeIvfTimesFreqFieldDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
@@ -63,99 +63,90 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		Date currentDate = new Date();
-		if (!onlyIVF) {
-            
-			if (!onlyIVF && tpList == null) {
-				return new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL);
-			}
-			if (tpList != null) {
-				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
-					if (!ivf.getPatientId().equals(tp.getPatient().getId())) {
-						return new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule1.error.message.patientId",
-										new Object[] { ivf.getPatientId(), tp.getPatient().getId() }, locale),
-								Constants.FAIL);
+		Date ivfPlanTermDate = null;
+		boolean proceed = false;
+		try {
+			String td = ivf.getPlanTermedDate();
+			RuleEngineLogger.generateLogs(clazz, "PlanTermedDate --" + td, Constants.rule_log_debug, bw);
+			if (td != null && (!td.trim().equals("") && !td.trim().equalsIgnoreCase("NA"))) {
+				/*
+				 * RuleEngineLogger.generateLogs(clazz, "Exit Engine ",
+				 * Constants.rule_log_debug, bw); return new
+				 * TPValidationResponseDto(rule.getId(), rule.getName(),
+				 * messageSource.getMessage("rule1.error.message.exitE", null, locale),
+				 * Constants.EXTI_ENGINE);
+				 */
 
+				ivfPlanTermDate = Constants.SIMPLE_DATE_FORMAT_IVF.parse(td);
+
+				if (ivfPlanTermDate != null && ivfPlanTermDate.compareTo(currentDate) <= 0) {
+					proceed = true;
+				} else {
+
+					// Exit Engine
+					RuleEngineLogger.generateLogs(clazz, "Exit Engine ", Constants.rule_log_debug, bw);
+					return new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule1.error.message.plantermedDate", new Object[] { td }, locale),
+							Constants.EXTI_ENGINE);
+				}
+			} else {
+				proceed = true;
+			}
+		} catch (Exception ex) {
+			return new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					"rule1.error.message.date", new Object[] { ivf.getPlanTermedDate() }, locale), Constants.FAIL);
+
+		}
+		try {
+			if (proceed) {
+				if (!onlyIVF) {
+
+					if (!onlyIVF && tpList == null) {
+						return new TPValidationResponseDto(rule.getId(), rule.getName(),
+								Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
+								Constants.FAIL);
+					}
+					if (tpList != null) {
+						for (Object obj : tpList) {
+							TreatmentPlan tp = (TreatmentPlan) obj;
+							if (!ivf.getPatientId().equals(tp.getPatient().getId())) {
+								return new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule1.error.message.patientId",
+												new Object[] { ivf.getPatientId(), tp.getPatient().getId() }, locale),
+										Constants.FAIL);
+
+							}
+						}
 					}
 				}
-			}
-		}
-		Date ivfDate = null;
+				Date ivfDate = null;
 
-		//
-		try {
-			ivfDate = Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivf.getPlanEffectiveDate());
-			RuleEngineLogger.generateLogs(clazz, "Current Date:" + currentDate + "- PlanEffective Date:" + ivfDate,
-					Constants.rule_log_debug, bw);
-			if (ivfDate != null && DateUtils.compareDates(currentDate, ivfDate)) {
-				// pass --RULE_ID_1
+				ivfDate = Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivf.getPlanEffectiveDate());
+				RuleEngineLogger.generateLogs(clazz, "Current Date:" + currentDate + "- PlanEffective Date:" + ivfDate,
+						Constants.rule_log_debug, bw);
+				if (ivfDate != null && DateUtils.compareDates(currentDate, ivfDate)) {
+					// pass --RULE_ID_1
 
-				return new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS);
+					return new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS);
 
-			} else {
+				} else {
 
-				return new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule1.error.message", new Object[] {
-								Constants.SIMPLE_DATE_FORMAT_IVF.format(currentDate), ivf.getPlanEffectiveDate() },
-								locale),
-						Constants.FAIL);
-
+					return new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule1.error.message", new Object[] {
+									Constants.SIMPLE_DATE_FORMAT_IVF.format(currentDate), ivf.getPlanEffectiveDate() },
+									locale),
+							Constants.FAIL);
+				}
 			}
 		} catch (Exception ex) {
 			return new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 					"rule1.error.message.date", new Object[] { ivf.getPlanEffectiveDate() }, locale), Constants.FAIL);
 
 		}
-		/*
-		 * 
-		 * for (Object obj : tpList) { TreatmentPlan tp = (TreatmentPlan) obj; try {
-		 * System.out.println("0000000000"); System.out.println(tp);
-		 * System.out.println(tp.getId());
-		 * DateUtils.CheckForStringInDate(tp.getTreatmentPlanDetails().
-		 * getDateLastUpdated()); } catch (Exception e) { e.printStackTrace(); return
-		 * new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
-		 * .getMessage("rule1.error.message.date", new Object[] {
-		 * tp.getTreatmentPlanDetails().getDateLastUpdated() }, locale),
-		 * Constants.FAIL);
-		 * 
-		 * } try { System.out.println("RRR" +
-		 * tp.getTreatmentPlanDetails().getDateLastUpdated()); tpDate =
-		 * Constants.SIMPLE_DATE_FORMAT.parse(tp.getTreatmentPlanDetails().
-		 * getDateLastUpdated()); } catch (ParseException e) { // TODO Auto-generated
-		 * catch block // e.printStackTrace(); return new
-		 * TPValidationResponseDto(rule.getId(), rule.getName(),
-		 * messageSource.getMessage("rule1.error.message.date", new Object[] {
-		 * tp.getTreatmentPlanDetails().getDateLastUpdated() }, locale),
-		 * Constants.FAIL); // throw new RuleEngineException(""); } try {
-		 * DateUtils.CheckForStringInDate(ivf.getPlanEffectiveDate()); } catch
-		 * (RuleEngineDateException e) { return new
-		 * TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
-		 * .getMessage("rule1.error.message.date", new Object[] {
-		 * ivf.getPlanEffectiveDate() }, locale), Constants.FAIL); } try {
-		 * System.out.println("RRRQQ" + ivf.getPlanEffectiveDate()); ivfDate =
-		 * Constants.SIMPLE_DATE_FORMAT.parse(ivf.getPlanEffectiveDate()); } catch
-		 * (ParseException e) { return new TPValidationResponseDto(rule.getId(),
-		 * rule.getName(), messageSource .getMessage("rule1.error.message.date", new
-		 * Object[] { ivf.getPlanEffectiveDate() }, locale), Constants.FAIL);
-		 * 
-		 * } // DOS > Effective Date then error
-		 * System.out.println("DateUtils.compareDates(tpDate,ivfDate)" +
-		 * DateUtils.compareDates(tpDate, ivfDate)); if (tpDate != null && ivfDate !=
-		 * null && DateUtils.compareDates(tpDate, ivfDate)) { // pass --RULE_ID_1 return
-		 * new TPValidationResponseDto(rule.getId(), rule.getName(),
-		 * messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS);
-		 * 
-		 * } else { return new TPValidationResponseDto(rule.getId(), rule.getName(),
-		 * messageSource.getMessage("rule1.error.message", new Object[] {
-		 * tp.getTreatmentPlanDetails().getDateLastUpdated(), ivf.getPlanEffectiveDate()
-		 * }, locale), Constants.FAIL);
-		 * 
-		 * } }
-		 */
-		// return null;// see this
+		return new TPValidationResponseDto(rule.getId(), rule.getName(),
+				messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS);
+
 	}
 
 	// Compare Coverage Book, Fee Schedule and Fee in IV and Eaglesoft - B -- Normal
@@ -175,33 +166,34 @@ public class RuleBook {
 			}
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			boolean pass = true;
-			
+
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
 				if (!tp.getProviderLastName().trim().equalsIgnoreCase(ivf.getProviderName())) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
-							messageSource.getMessage("rule4.error.message_5", new Object[] {ivf.getProviderName(),tp.getProviderLastName(),}, locale),
+							messageSource.getMessage("rule4.error.message_5",
+									new Object[] { ivf.getProviderName(), tp.getProviderLastName(), }, locale),
 							Constants.FAIL));
-			      
-					pass=false;
-					break;//only one needs to be displayed.
+
+					pass = false;
+					break;// only one needs to be displayed.
 				}
-				
+				break;// only Read first record .as per new Req (Enhancement).
+
 			}
-			
+
 			if (espatients != null && espatients.get(0) != null) {
 				EagleSoftPatient pat = espatients.get(0);
 
-				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null && (ivf.getPlanCoverageBook().equals("")
-						|| ivf.getPlanCoverageBook().equalsIgnoreCase("none")) &&
-						( pat.getCovBookHeaderName().equals("")
-								|| pat.getCovBookHeaderName().equalsIgnoreCase("none"))
-						) {
+				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null
+						&& (ivf.getPlanCoverageBook().equals("") || ivf.getPlanCoverageBook().equalsIgnoreCase("none"))
+						&& (pat.getCovBookHeaderName().equals("")
+								|| pat.getCovBookHeaderName().equalsIgnoreCase("none"))) {
 
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_4", new Object[] {}, locale),
 							Constants.ALERT));
-					//return dList;
+					// return dList;
 				}
 				// String esp_ = ivf.getPlanFeeScheduleName();
 				RuleEngineLogger.generateLogs(clazz, "Coverage Book-" + ivf.getPlanCoverageBook()
@@ -326,16 +318,15 @@ public class RuleBook {
 				RuleEngineLogger.generateLogs(clazz, "CovBookHeaderName-" + pat.getCovBookHeaderName(),
 						Constants.rule_log_debug, bw);
 
-				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null && (ivf.getPlanCoverageBook().equals("")
-						|| ivf.getPlanCoverageBook().equalsIgnoreCase("none")) &&
-						( pat.getCovBookHeaderName().equals("")
-								|| pat.getCovBookHeaderName().equalsIgnoreCase("none"))
-						) {
+				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null
+						&& (ivf.getPlanCoverageBook().equals("") || ivf.getPlanCoverageBook().equalsIgnoreCase("none"))
+						&& (pat.getCovBookHeaderName().equals("")
+								|| pat.getCovBookHeaderName().equalsIgnoreCase("none"))) {
 
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_4", new Object[] {}, locale),
 							Constants.ALERT));
-					//return dList;
+					// return dList;
 				}
 
 				// String esp_ = ivf.getPlanFeeScheduleName();
@@ -394,7 +385,25 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		String  planType= ivf.getPlanType();
+		String cMedicate="Children Medicaid";
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		
+		RuleEngineLogger.generateLogs(clazz,
+				"planType-"+planType,
+				Constants.rule_log_debug, bw);
+		
+		if (planType!=null && planType.trim().equalsIgnoreCase(cMedicate)) {
+			RuleEngineLogger.generateLogs(clazz,
+					" BY pass the rule ",
+					Constants.rule_log_debug, bw);
+			
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule5.error.message_M", new Object[] {}, locale),
+					Constants.NotApplicable));
+
+			return dList;
+		}
 		try {
 			double planAnnualMax = 0;
 			double planAnnualMaxRem = 0;
@@ -527,37 +536,6 @@ public class RuleBook {
 		boolean pass = true;
 		List<TPValidationResponseDto> li = new ArrayList<>();
 		try {
-			/*
-			 * String paxrays = ivf.getpAXRaysPercentage(); String selantsD1351 =
-			 * ivf.getSealantsD1351Percentage(); String basicp = ivf.getBasicPercentage();
-			 * String endodon = ivf.getEndodonticsPercentage(); String periosurgery =
-			 * ivf.getPerioSurgeryPercentage();// PerioSurgery_% String gingivD4346 =
-			 * ivf.getGingivitisD4346Percentage();// Gingivitis_D4346_% String srpd4341 =
-			 * ivf.getsRPD4341Percentage();// SRP_D4341_% String subginivIrraD4921 =
-			 * "";//NOT PRESENT//ivf.getSub;//Sub-GingivalIrrigation_D4921_% String
-			 * perioMainTenanceD4910 =ivf.getPerioMaintenanceD4910Percentage();//
-			 * PerioMaintenance_D4910_% String gfmdd4355 = ivf.getFMDD4355Percentage();//
-			 * FMD_D4355_% String crownLengthD4249 = ivf.getCrownLengthD4249Percentage();//
-			 * CrownLength_D4249_% String postCompositeD2391 =
-			 * ivf.getPostCompositesD2391Percentage();// PostComposites_D2391_% String
-			 * ivSedationD9248 = ivf.getiVSedationD9248Percentage();// IVSedation_D9248_%
-			 * String ivSedationD9243 = ivf.getiVSedationD9243Percentage();//
-			 * IVSedation_D9243_% String nitrousD9230 = ivf.getNitrousD9230Percentage();//
-			 * Nitrous_D9230_% String ortho = ivf.getOrthoPercentage();// Ortho_% String
-			 * major = ivf.getMajorPercentage();// Major_% String estractionsMinor =
-			 * ivf.getExtractionsMinorPercentage();// Extractions_Minor_% String
-			 * estractionsMajor = ivf.getExtractionsMajorPercentage();// Extractions_Major_%
-			 * String implantCovD6010 =
-			 * ivf.getImplantCoverageD6010Percentage();//ImplantCoverage_D6010_% String
-			 * implantCovD6057 =
-			 * ivf.getImplantCoverageD6057Percentage();//ImplantCoverage_D6057_% String
-			 * implantCovD6190 = ivf.getImplantCoverageD6190Percentage()
-			 * ;//ImplantCoverage_D6190_% String implantSupportD6065 =
-			 * ivf.getImplantSupportedPorcCeramicD6065Percentage();//
-			 * ImplantSupportedPorcCeramic_D6065_% String crownD2750D2740 =
-			 * ivf.getCrownsD2750D2740Percentage();// Crowns_D2750_D2740_% String d9310 =
-			 * ivf.getD9310Percentage();// D9310_%
-			 */
 			List<Rule6Dto> druleList = new ArrayList<>();
 			druleList.add(new Rule6Dto("Preventive_%", ivf.getPreventivePercentage(), "Preventive"));
 			druleList.add(new Rule6Dto("Diagnostic_%", ivf.getDiagnosticPercentage(), "Diagnostic"));
@@ -567,7 +545,6 @@ public class RuleBook {
 			druleList.add(new Rule6Dto("Endodontics_%", ivf.getEndodonticsPercentage(), "Endodontics"));
 			druleList.add(new Rule6Dto("PerioSurgery_%", ivf.getPerioSurgeryPercentage(), "Periodontal Surgery"));
 			druleList.add(new Rule6Dto("Gingivitis_D4346_%", ivf.getGingivitisD4346Percentage(), "Gingivitis TX"));
-			//
 			// RuleEngineLogger.generateLogs(clazz,"Sub-GingivalIrrigation_D4921_% -- is
 			// missing", Constants.rule_log_debug,bw);
 			druleList.add(new Rule6Dto("SRP_D4341_%", ivf.getsRPD4341Percentage(), "SRP"));
@@ -577,11 +554,12 @@ public class RuleBook {
 			druleList.add(new Rule6Dto("PerioMaintenance_D4910_%", ivf.getPerioMaintenanceD4910Percentage(),
 					"Perio Maintenance"));
 			druleList.add(new Rule6Dto("FMD_D4355_%", ivf.getFMDD4355Percentage(), "Full Mouth Debridement"));
-			druleList.add(
-					new Rule6Dto("CrownLength_D4249_%", ivf.getCrownLengthD4249Percentage(), "Crown Lengthening"));
+			druleList
+					.add(new Rule6Dto("CrownLength_D4249_%", ivf.getCrownLengthD4249Percentage(), "Crown Lengthening"));
 			druleList.add(new Rule6Dto("PostComposites_D2391_%", ivf.getPostCompositesD2391Percentage(),
 					"Posterior Composites"));
-			druleList.add(new Rule6Dto("IVSedation_D9248_%", ivf.getiVSedationD9248Percentage(), "Sedation 9248"));//Sedation 9248
+			druleList.add(new Rule6Dto("IVSedation_D9248_%", ivf.getiVSedationD9248Percentage(), "Sedation 9248"));// Sedation
+																													// 9248
 			druleList.add(new Rule6Dto("IVSedation_D9243_%", ivf.getiVSedationD9243Percentage(), "Sedation 9243"));
 			druleList.add(new Rule6Dto("Nitrous_D9230_%", ivf.getNitrousD9230Percentage(), "Nitrous"));
 			druleList.add(new Rule6Dto("Ortho_%", ivf.getOrthoPercentage(), "Orthodontics"));
@@ -599,54 +577,77 @@ public class RuleBook {
 			druleList.add(new Rule6Dto("D9310_%", ivf.getD9310Percentage(), "D9310"));
 			List<String> mess = new ArrayList<>();
 			//
+			boolean namecheck = true;
 			if (espatients != null && esempmaster != null && espatients.get(0) != null && esempmaster.get(0) != null) {
 
-				for (Rule6Dto d6 : druleList) {
+				// Enhancement
+				EagleSoftPatient ep = espatients.get(0);
+				RuleEngineLogger.generateLogs(clazz, "IVF EMP NAME-" + ivf.getEmployerName(), Constants.rule_log_debug,
+						bw);
 
-					Collection<EagleSoftEmployerMaster> ivfESMap2 = Collections2.filter(esempmaster,
-							x -> x.getServiceTypeDescription().trim().equalsIgnoreCase(d6.getFsName().trim()));
-					if (ivfESMap2 != null && ivfESMap2.size() > 0) {
+				RuleEngineLogger.generateLogs(clazz, "ES EMP NAME-" + ep.getEmployerName(), Constants.rule_log_debug,
+						bw);
+				//NOTE IN REPLACE ALL it's not a space ..never remove it
+				if (!(ivf.getEmployerName().trim().replaceAll(" ","").equalsIgnoreCase(ep.getEmployerName().trim().replaceAll(" ","")))) {
 
-						for (EagleSoftEmployerMaster y : ivfESMap2) {
-
-							RuleEngineLogger.generateLogs(
-									clazz, "Employer -Percentage-" + y.getPercentage() + " ::IVF FROM Name- "
-											+ d6.getIvfName() + " ::IVF PERCENTAGE- " + d6.getPercentage(),
-									Constants.rule_log_debug, bw);
-
-							if (y.getPercentage().trim().equalsIgnoreCase(d6.getPercentage().trim())) {
-								// Pass
-							} else {
-								pass = false;
-								mess.add(d6.getIvfName());
-								/*
-								 * li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								 * messageSource.getMessage("rule6.error.message", new Object[] {
-								 * d6.getIvfName() + "(" + d6.getFsName() + ")" }, locale), Constants.FAIL));
-								 */
-							}
-							break;// Only one value will be there
-						}
-
-					} else {
-						// Name not found in Emp Master
-						pass = false;
-						RuleEngineLogger.generateLogs(clazz,
-								"ES Names in Employer Master not found--" + d6.getFsName() + "-" + d6.getIvfName(),
-								Constants.rule_log_debug, bw);
-
-						li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule6.error.message_2",
-										new Object[] { d6.getFsName() + "-" + d6.getIvfName() }, locale),
-								Constants.FAIL));
-					}
+					pass = false;
+					li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule6.error.message_2",
+									new Object[] { ep.getEmployerName(), ivf.getEmployerName() }, locale),
+							Constants.FAIL));
+					namecheck = false;
 
 				}
 
+				//
+				if (namecheck) {
+					for (Rule6Dto d6 : druleList) {
+
+						Collection<EagleSoftEmployerMaster> ivfESMap2 = Collections2.filter(esempmaster,
+								x -> x.getServiceTypeDescription().trim().equalsIgnoreCase(d6.getFsName().trim()));
+						if (ivfESMap2 != null && ivfESMap2.size() > 0) {
+
+							for (EagleSoftEmployerMaster y : ivfESMap2) {
+
+								RuleEngineLogger.generateLogs(clazz,
+										"Employer -Percentage-" + y.getPercentage() + " ::IVF FROM Name- "
+												+ d6.getIvfName() + " ::IVF PERCENTAGE- " + d6.getPercentage(),
+										Constants.rule_log_debug, bw);
+
+								if (y.getPercentage().trim().equalsIgnoreCase(d6.getPercentage().trim())) {
+									// Pass
+								} else {
+									pass = false;
+									mess.add(d6.getFsName()+" in ES = "+Constants.errorMessOPen+y.getPercentage()+Constants.errorMessClose+": "+d6.getIvfName()+" in IV = "+Constants.errorMessOPen + d6.getPercentage()
+									      + Constants.errorMessClose);
+									/*
+									 * li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									 * messageSource.getMessage("rule6.error.message", new Object[] {
+									 * d6.getIvfName() + "(" + d6.getFsName() + ")" }, locale), Constants.FAIL));
+									 */
+								}
+								break;// Only one value will be there
+							}
+
+						} else {
+							// Name not found in Emp Master
+							pass = false;
+							RuleEngineLogger.generateLogs(clazz,
+									"ES Names in Employer Master not found--" + d6.getFsName() + "-" + d6.getIvfName(),
+									Constants.rule_log_debug, bw);
+
+							li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule6.error.message_3",
+											new Object[] { d6.getFsName() + "-" + d6.getIvfName() }, locale),
+									Constants.FAIL));
+						}
+
+					}
+				}
 			}
-			if (!pass) {
+			if (!pass && namecheck) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-						"rule6.error.message", new Object[] { String.join(", ", mess) }, locale), Constants.FAIL));
+						"rule6.error.message", new Object[] { String.join("<br>", mess) }, locale), Constants.FAIL));
 			}
 			if (pass) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -895,9 +896,9 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_14,
 				Constants.rule_log_debug, bw);
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
-		String dob = ivf.getPatientDOB();
+		//String dob = ivf.getPatientDOB();
 		// String sealantPer=ivf.getSealantsD1351Percentage();
-		String sealantAL = ivf.getSealantsD1351AgeLimit();
+		//String sealantAL = ivf.getSealantsD1351AgeLimit();
 		String primaryMolar = ivf.getSealantsD1351PrimaryMolarsCovered();
 		String preMolar = ivf.getSealantsD1351PreMolarsCovered();
 		String premanentMolar = ivf.getSealantsD1351PermanentMolarsCovered();
@@ -927,11 +928,13 @@ public class RuleBook {
 		}
 		try {
 			boolean pass = true;
+			/*
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
+			*/
 			/*
 			 * int age[] = null; try { age = DateUtils.calculateAgeYMD(dob, true); } catch
 			 * (ParseException e) { d.add(new TPValidationResponseDto(rule.getId(),
@@ -1062,7 +1065,8 @@ public class RuleBook {
 				if (preMolarT.size() > 0) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule14.error.message1",
-									new Object[] { " Pre-Molar (Tooth  # " + String.join(",", preMolarT) + ")" }, locale),
+									new Object[] { " Pre-Molar (Tooth  # " + String.join(",", preMolarT) + ")" },
+									locale),
 							Constants.FAIL));
 					pass = false;
 				}
@@ -1101,8 +1105,11 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String srpperday = ivf.getsRPD4341QuadsPerDay();
 		String datybetweenTr = ivf.getsRPD4341DaysBwTreatment();
-		if (srpperday!=null && ( srpperday.trim().equalsIgnoreCase("no") || srpperday.trim().equalsIgnoreCase("")))  srpperday="0";
-		if (datybetweenTr!=null && ( datybetweenTr.trim().equalsIgnoreCase("no") || datybetweenTr.trim().equalsIgnoreCase("")))  datybetweenTr="0";
+		if (srpperday != null && (srpperday.trim().equalsIgnoreCase("no") || srpperday.trim().equalsIgnoreCase("")))
+			srpperday = "0";
+		if (datybetweenTr != null
+				&& (datybetweenTr.trim().equalsIgnoreCase("no") || datybetweenTr.trim().equalsIgnoreCase("")))
+			datybetweenTr = "0";
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		try {
 			if (tpList == null) {
@@ -1112,7 +1119,7 @@ public class RuleBook {
 			}
 			boolean pass = true;
 			try {
-				
+
 				Integer.parseInt(srpperday);
 			} catch (NumberFormatException e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1157,15 +1164,14 @@ public class RuleBook {
 			}
 
 			// No. of Days Check
-			/*Not neede Now.
-			RuleEngineLogger.generateLogs(clazz, "datybetweenTr - " + datybetweenTr, Constants.rule_log_debug, bw);
-			if (Integer.parseInt(datybetweenTr) > 0 && size > 0) {
-				pass = false;
-				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule15.error.message2", new Object[] { datybetweenTr }, locale),
-						Constants.FAIL));
-			}
-            */
+			/*
+			 * Not neede Now. RuleEngineLogger.generateLogs(clazz, "datybetweenTr - " +
+			 * datybetweenTr, Constants.rule_log_debug, bw); if
+			 * (Integer.parseInt(datybetweenTr) > 0 && size > 0) { pass = false; d.add(new
+			 * TPValidationResponseDto(rule.getId(), rule.getName(),
+			 * messageSource.getMessage("rule15.error.message2", new Object[] {
+			 * datybetweenTr }, locale), Constants.FAIL)); }
+			 */
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
@@ -1936,7 +1942,7 @@ public class RuleBook {
 
 					RuleEngineLogger.generateLogs(clazz, "WAIT -" + wt, Constants.rule_log_debug, bw);
 					RuleEngineLogger.generateLogs(clazz, "LAST UPDATED DATE-- " + dos, Constants.rule_log_debug, bw);
-                    Date x=nextAvailbleDate.getTime();
+					Date x = nextAvailbleDate.getTime();
 					if (x.compareTo(dos) >= 0) {
 						pass = false;
 						d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -2630,9 +2636,7 @@ public class RuleBook {
 				// Calendar calendar = new GregorianCalendar();
 				// calendar.setTime(Constants.SIMPLE_DATE_FORMAT.parse(ivf.getPlanEffectiveDate()));
 				planDate = Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivf.getPlanEffectiveDate());
-				RuleEngineLogger.generateLogs(clazz,
-						"planDate-"+planDate.toString(),
-						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "planDate-" + planDate.toString(), Constants.rule_log_debug, bw);
 
 			} catch (ParseException e1) {
 				// TODO Auto-generated catch block
@@ -2644,44 +2648,44 @@ public class RuleBook {
 			boolean historPresent = false;
 			int noOFhistory = 60;
 			List<ToothHistoryDto> list1 = null;
-			//Class<?> c1 = Class.forName("com.tricon.ruleengine.model.sheet.IVFTableSheet");
+			// Class<?> c1 =
+			// Class.forName("com.tricon.ruleengine.model.sheet.IVFTableSheet");
 			Class<?> c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
-		    //Object ot = vif;
-			IVFHistorySheet hisSheet=ivf.getHs();
+			// Object ot = vif;
+			IVFHistorySheet hisSheet = ivf.getHs();
 			for (int i = 1; i <= noOFhistory; i++) {
-				//String hs="getHs";
-				//Method hsm = c1.getMethod(hs);
-				//hisSheet = (IVFHistorySheet)hsm.invoke(ivf);
-				String hc="getHistory"+i+"Code";
-				String hd="getHistory"+i+"DOS";
-				String ht="getHistory"+i+"Tooth";
+				// String hs="getHs";
+				// Method hsm = c1.getMethod(hs);
+				// hisSheet = (IVFHistorySheet)hsm.invoke(ivf);
+				String hc = "getHistory" + i + "Code";
+				String hd = "getHistory" + i + "DOS";
+				String ht = "getHistory" + i + "Tooth";
 				Method hcm = c2.getMethod(hc);
 				Method hdm = c2.getMethod(hd);
 				Method htm = c2.getMethod(ht);
-				//System.out.println((String)hcm.invoke(hisSheet));
-				hdto = new ToothHistoryDto(
-						(String)hcm.invoke(hisSheet), (String)hdm.invoke(hisSheet), (String)htm.invoke(hisSheet)
-						);
-				
+				// System.out.println((String)hcm.invoke(hisSheet));
+				hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+						(String) htm.invoke(hisSheet));
+
 				/*
-				if (i == 1)
-					hdto = new ToothHistoryDto(ivf.getHistory1Code(), ivf.getHistory1DOS(), ivf.getHistory1Tooth());
-				else if (i == 2)
-					hdto = new ToothHistoryDto(ivf.getHistory2Code(), ivf.getHistory2DOS(), ivf.getHistory2Tooth());
-				else if (i == 3)
-					hdto = new ToothHistoryDto(ivf.getHistory3Code(), ivf.getHistory3DOS(), ivf.getHistory3Tooth());
-				else if (i == 4)
-					hdto = new ToothHistoryDto(ivf.getHistory4Code(), ivf.getHistory4DOS(), ivf.getHistory4Tooth());
-				else if (i == 5)
-					hdto = new ToothHistoryDto(ivf.getHistory5Code(), ivf.getHistory5DOS(), ivf.getHistory5Tooth());
-				else if (i == 6)
-					hdto = new ToothHistoryDto(ivf.getHistory6Code(), ivf.getHistory6DOS(), ivf.getHistory6Tooth());
-				else if (i == 7)
-					hdto = new ToothHistoryDto(ivf.getHistory7Code(), ivf.getHistory7DOS(), ivf.getHistory7Tooth());
-				else if (i == 8)
-					hdto = new ToothHistoryDto(ivf.getHistory8Code(), ivf.getHistory8DOS(), ivf.getHistory8Tooth());
-				else if (i == 9)
-					hdto = new ToothHistoryDto(ivf.getHistory9Code(), ivf.getHistory9DOS(), ivf.getHistory9Tooth());
+				 * if (i == 1) hdto = new ToothHistoryDto(ivf.getHistory1Code(),
+				 * ivf.getHistory1DOS(), ivf.getHistory1Tooth()); else if (i == 2) hdto = new
+				 * ToothHistoryDto(ivf.getHistory2Code(), ivf.getHistory2DOS(),
+				 * ivf.getHistory2Tooth()); else if (i == 3) hdto = new
+				 * ToothHistoryDto(ivf.getHistory3Code(), ivf.getHistory3DOS(),
+				 * ivf.getHistory3Tooth()); else if (i == 4) hdto = new
+				 * ToothHistoryDto(ivf.getHistory4Code(), ivf.getHistory4DOS(),
+				 * ivf.getHistory4Tooth()); else if (i == 5) hdto = new
+				 * ToothHistoryDto(ivf.getHistory5Code(), ivf.getHistory5DOS(),
+				 * ivf.getHistory5Tooth()); else if (i == 6) hdto = new
+				 * ToothHistoryDto(ivf.getHistory6Code(), ivf.getHistory6DOS(),
+				 * ivf.getHistory6Tooth()); else if (i == 7) hdto = new
+				 * ToothHistoryDto(ivf.getHistory7Code(), ivf.getHistory7DOS(),
+				 * ivf.getHistory7Tooth()); else if (i == 8) hdto = new
+				 * ToothHistoryDto(ivf.getHistory8Code(), ivf.getHistory8DOS(),
+				 * ivf.getHistory8Tooth()); else if (i == 9) hdto = new
+				 * ToothHistoryDto(ivf.getHistory9Code(), ivf.getHistory9DOS(),
+				 * ivf.getHistory9Tooth());
 				 */
 				if (hdto.getHistoryCode() != null && !hdto.getHistoryCode().equalsIgnoreCase("blank")) {
 					if (hdto.getHistoryTooth().trim().equals(""))
@@ -2958,7 +2962,7 @@ public class RuleBook {
 															" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
 															Constants.rule_log_debug, bw);
 
-													//continue;
+													// continue;
 												}
 												Calendar nextAvailbleDate = new GregorianCalendar();
 												nextAvailbleDate.setTime(dos);
@@ -2993,7 +2997,7 @@ public class RuleBook {
 															" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
 															Constants.rule_log_debug, bw);
 
-													//continue;
+													// continue;
 												}
 												Calendar nextAvailbleDate = new GregorianCalendar();
 												nextAvailbleDate.setTime(dos);
@@ -3024,7 +3028,7 @@ public class RuleBook {
 															" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
 															Constants.rule_log_debug, bw);
 
-													//continue;
+													// continue;
 												}
 												Calendar nextAvailbleDate = new GregorianCalendar();
 												nextAvailbleDate.setTime(dos);
@@ -3326,13 +3330,19 @@ public class RuleBook {
 						Object[] m = FreqencyUtils.getCountTimeServiceCode(s, entry2.getKey());
 						if (m != null) {
 
-							pass = false;
 							if (!failedCodeSet.contains(m[5])) {
-								dList.add(
-										new TPValidationResponseDto(rule.getId(), rule.getName(),
-												messageSource.getMessage("rule21.error.message",
-														new Object[] { m[5], m[1], m[2], m[4] }, locale),
-												Constants.FAIL));
+								RuleEngineLogger.generateLogs(clazz, "ACTUAL COUNT for" + m[5] + " -->" + m[0],
+										Constants.rule_log_debug, bw);
+								RuleEngineLogger.generateLogs(clazz, " FREQUENCY   for" + m[5] + " -->" + m[4],
+										Constants.rule_log_debug, bw);
+								if ((int) m[0] > (int) m[4]) {
+									pass = false;
+									dList.add(
+											new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule21.error.message",
+															new Object[] { m[5], m[1], m[2], m[4] }, locale),
+													Constants.FAIL));
+								}
 							}
 						}
 					}
@@ -3356,6 +3366,64 @@ public class RuleBook {
 
 		}
 		return dList;
+
+	}
+
+	// CRA
+	public List<TPValidationResponseDto> Rule22(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
+			Rules rule, BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_22,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		String cra = ivf.getCraRequired();
+		RuleEngineLogger.generateLogs(clazz, "CRA-"+cra, Constants.rule_log_debug, bw);
+		boolean pass = true;
+		List<TPValidationResponseDto> d = new ArrayList<>();
+		try {
+			if (tpList == null) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+				return d;
+			}
+			String codeFound1 = "";
+			String codeFound2 = "";
+
+			if (cra != null && cra.trim().equalsIgnoreCase("yes")) {
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+
+					if (tp.getServiceCode().equalsIgnoreCase("D0120") || tp.getServiceCode().equalsIgnoreCase("D0150")
+							|| tp.getServiceCode().equalsIgnoreCase("D0145")) {
+						codeFound1 = tp.getServiceCode();
+						RuleEngineLogger.generateLogs(clazz, "Service Code IN TP-"+tp.getServiceCode(), Constants.rule_log_debug, bw);
+
+					}
+					if (tp.getServiceCode().equalsIgnoreCase("D0601") || tp.getServiceCode().equalsIgnoreCase("D0602")
+							|| tp.getServiceCode().equalsIgnoreCase("D0603")) {
+						codeFound2 = tp.getServiceCode();
+						RuleEngineLogger.generateLogs(clazz, "Service Code IN TP-"+tp.getServiceCode(), Constants.rule_log_debug, bw);
+
+					}
+				} // For LOOP end
+				if (!codeFound1.equals("") && codeFound2.equals("")) {
+					pass = false;
+					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule22.error.message", new Object[] {ivf.getInsName()}, locale), Constants.FAIL));
+				}
+			}
+			if (pass)
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+		} catch (Exception x) {
+
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL));
+
+		}
+		return d;
 
 	}
 
@@ -3403,7 +3471,7 @@ public class RuleBook {
 		for (Mappings rule : ruleGen) {
 			r = rule;
 		}
-		// Debug me for nulll
+		// Debug me for null
 		return r;
 	}
 
@@ -3416,7 +3484,7 @@ public class RuleBook {
 		for (Mappings rule : ruleGen) {
 			r = rule;
 		}
-		// Debug me for nulll
+		// Debug me for null
 		return r;
 	}
 

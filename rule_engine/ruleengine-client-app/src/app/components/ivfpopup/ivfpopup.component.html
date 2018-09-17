@@ -39,7 +39,11 @@
 			<thead>
 				<tr> 
 					<th style="min-width: 350px" class="table-heading">Rule Name 
-					<span class="label label-success">PASS: {{ivfmData[key].countP}}</span> <span class="label label-danger" *ngIf="ivfmData[key].countF>0"> FAIL: {{ivfmData[key].countF}}</span> <span class="label label-info" *ngIf="ivfmData[key].countA>0">ALERT: {{ivfmData[key].countA}}</span></th>
+					<span class="label label-success">PASS: {{ivfmData[key].countP}}</span> 
+					<span class="label label-danger" *ngIf="ivfmData[key].countF>0"> FAIL: {{ivfmData[key].countF}}</span>
+					<span class="label label-danger" *ngIf="ivfmData[key].countE>0"> EXIT: {{ivfmData[key].countE}}</span>
+					<span class="label label-info" *ngIf="ivfmData[key].countA>0">ALERT: {{ivfmData[key].countA}}</span>
+					</th>
 					<th>Messages</th>
 				</tr>
 			</thead>
