@@ -3402,7 +3402,7 @@ public class RuleBook {
 									dList.add(
 											new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule21.error.message",
-															new Object[] { m[5], m[1], m[2], m[4] }, locale),
+															new Object[] { m[5], m[1], m[2], m[4],m[6] }, locale),
 													Constants.FAIL));
 								}
 							}

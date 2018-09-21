@@ -103,7 +103,7 @@ public class FreqencyUtils {
 			}
 			
 		}
-		return new Object[] { count, tooth, String.join(",", dos), fl, times,code };
+		return new Object[] { count, tooth, String.join(",", dos), fl, times,code,fr };
 	}
 
 	/*
@@ -147,15 +147,20 @@ public class FreqencyUtils {
 		if ( (actualmax>0 ) && (ct > 0 && ct > actualmax)) {
 			String dos = "";
 			String fl = "";
+			String fr = "";
 			if (l1 != null) {
 				dos = dos + " " + (String) c1[2];
 				fl = fl + " " + (String) c1[3];
+				fr = fr + " " + (String) c1[6];
+				
 			}
 			if (l2 != null) {
 				dos = dos + " " + (String) c2[2];
 				fl = fl + " " + (String) c2[3];
+				fr = fr + " " + (String) c2[6];
+				
 			}
-			mess = new Object[] { code,tooth,dos, actualmax };
+			mess = new Object[] { code,tooth,dos, actualmax,fr };
 
 		}
 		return mess;
@@ -189,21 +194,29 @@ public class FreqencyUtils {
 		if ( (actualmax>0 ) && (ct > 0 && ct > actualmax)) {
 			String dos = "";
 			String fl = "";
+			String fr = "";
+			
 			if (l1 != null) {
 				dos = dos + " " + (String) c1[2];
 				fl = fl + " " + (String) c1[3];
+				fr = fr + " " + (String) c1[6];
+				
 			}
 			if (l2 != null) {
 				dos = dos + " " + (String) c2[2];
 				fl = fl + " " + (String) c2[3];
+				fr = fr + " " + (String) c2[6];
+				
 			}
 			if (l3 != null) {
 				dos = dos + " " + (String) c3[2];
 				fl = fl + " " + (String) c3[3];
+				fr = fr + " " + (String) c3[6];
+				
 			}
 			
 			//3124 code ,TOOTH,DOS, TIMES
-			mess = new Object[] { code,tooth,dos, actualmax};
+			mess = new Object[] { code,tooth,dos, actualmax, fr};
 
 		}
 		return mess;
@@ -249,25 +262,35 @@ public class FreqencyUtils {
 		if ( (actualmax>0 ) && (ct > 0 && ct > actualmax)) {
 			String dos = "";
 			String fl = "";
+			String fr = "";
+			
 			if (l1 != null) {
 				dos = dos + " " + (String) c1[2];
 				fl = fl + " " + (String) c1[3];
+				fr = fr + " " + (String) c1[6];
+				
 			}
 			if (l2 != null) {
 				dos = dos + " " + (String) c2[2];
 				fl = fl + " " + (String) c2[3];
+				fr = fr + " " + (String) c2[6];
+				
 			}
 			if (l3 != null) {
 				dos = dos + " " + (String) c3[2];
 				fl = fl + " " + (String) c3[3];
+				fr = fr + " " + (String) c3[6];
+				
 			}
 			if (l4 != null) {
 				dos = dos + " " + (String) c4[2];
 				fl = fl + " " + (String) c4[3];
+				fr = fr + " " + (String) c4[6];
+				
 			}
 			
 			//3124 code ,TOOTH,DOS, TIMES
-			mess = new Object[] { code,tooth,dos, actualmax};
+			mess = new Object[] { code,tooth,dos, actualmax,fr};
 
 		}
 		return mess;
