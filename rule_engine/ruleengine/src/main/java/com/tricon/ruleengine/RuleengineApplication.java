@@ -1,4 +1,7 @@
 package com.tricon.ruleengine;
+import org.hibernate.cfg.Environment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 //https://o7planning.org/en/11543/create-a-login-application-with-spring-boot-spring-security-spring-jdbc
 //for reference we can use
 import org.springframework.boot.SpringApplication;
@@ -15,9 +18,9 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  */
 //https://graph.microsoft.com/v1.0/me/drive/root/children from graph explorer to get ID of sheet..
 /* 
-/* to create build of front end--- ng  build --prod*/
+/* to create build of front end--- ng  build --prod*/ //for local its npm start 
 //from cmd in folder \capline\rule_engine\ruleengine>   mvn package
-/*
+/* CD /opt/tomcat
  * FOR PRODCTION MAKE SURE 
  * in application.properties u have spring.profiles.active=prod
  *  prod.properties -->application.url needs change when needed
@@ -33,12 +36,14 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  HibernateJpaAutoConfiguration.class})
 public class RuleengineApplication extends SpringBootServletInitializer{
 
+	 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(RuleengineApplication.class);
 	}
 
 	public static void main(String[] args) throws Exception {
+		
 		SpringApplication.run(RuleengineApplication.class, args);
 	}
 	

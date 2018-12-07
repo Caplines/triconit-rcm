@@ -35,6 +35,7 @@ import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.GoogleSheets;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
@@ -49,10 +50,13 @@ import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
+import com.tricon.ruleengine.service.EagleSoftDBAccessService;
+import com.tricon.ruleengine.service.EagleSoftDBService;
 import com.tricon.ruleengine.service.SharePointService;
 import com.tricon.ruleengine.service.TreatmentPlanService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
+import com.tricon.ruleengine.utils.EagleSoftFetchData;
 import com.tricon.ruleengine.utils.ReadMicrosoftFile;
 import com.tricon.ruleengine.utils.RuleBook;
 import static java.util.Comparator.comparingInt;
@@ -104,6 +108,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	@Autowired
 	OfficeDao od;
 
+	@Autowired
+	EagleSoftDBService esService;
+
+	@Autowired
+	EagleSoftDBAccessService dbAccesService;
+	
 	static Class<?> clazz = TreatmentPlanServiceImpl.class;
 
 	private Object[] logFileToAppendData(String officeName) {
@@ -148,7 +158,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 	@Override
 	public Map<String, List<TPValidationResponseDto>> validateTreatmentPlan(TreatmentPlanValidationDto dtod) {
-
+		dbAccesService.setUpSSLCertificates();
 		Map<String, List<TPValidationResponseDto>> returnMap = null;
 		Date currentDate = new Date();
 		String fName = "";
@@ -170,13 +180,18 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			List<Mappings> mappings = tvd.getAllMappings();
 			MicroSoftGraphToken microsoft = null;
 
+			boolean eagleSoftDBAccessPresent=false;
 			List<GoogleSheets> sheets = tvd.getAllGoogleSheetByOffice(off);
+			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+			if (esDB!=null) {
+				eagleSoftDBAccessPresent=true;
+			}
 			List<OneDriveFile> fileOne = spd.getOneDriveFileByOfficeId(dtod.getOfficeId());
 			TPValidationResponseDto dtoR = null;
 			Map<String, List<Object>> ivfMap = null;
 			Rules rule = null;
 			OneDriveApp odriveApp = spd.getOneDriveAppDetailsByOfficeId(dtod.getOfficeId());
-			if (odriveApp != null && odriveApp.getRefreshToken() != null) {
+			if (eagleSoftDBAccessPresent ==false && (odriveApp != null && odriveApp.getRefreshToken() != null)) {
 
 				// Generate New Access Token and Refresh Token.
 				try {
@@ -202,7 +217,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					return returnMap;
 				}
 
-			} else {
+			} else if (eagleSoftDBAccessPresent==false){
 				RuleEngineLogger.generateLogs(clazz, "Office 365 sheet not registered with Rule Engine",
 						Constants.rule_log_debug, bw);
 				dtoR = new TPValidationResponseDto(0, "Generic", "Office 365 sheet not registered with Rule Engine.<br>"
@@ -217,6 +232,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				return returnMap;
 
 			}
+			
 			if (rules != null && rules.size() == 0) {
 				RuleEngineLogger.generateLogs(clazz, "Generic- No Active Rules Found", Constants.rule_log_debug, bw);
 				dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL);
@@ -229,110 +245,170 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			}
 
 			try {
-				// Read Treatment Plan...
-				OneDriveFile tpsheet = getOneDriveFileFromList(fileOne, Constants.microsoft_treatement_sheet_name);
-				String ivs[] = dtod.getIvfId().split(",");
-				String trids[] = dtod.getTreatmentPlanId().split(",");
-				ReadMicrosoftFile rmF = new ReadMicrosoftFile();
-				// Read Fee Treatment Plan key id IVF id ..
-
-				RuleEngineLogger.generateLogs(clazz,
-						Constants.rule_log_read_fil_start + "-" + Constants.microsoft_treatement_sheet_name,
-						Constants.rule_log_debug, bw);
-				Map<String, List<Object>> tMap = (Map<String, List<Object>>) (Map<String, ?>) rmF
-						.downloadAndReadUsingStream(spService.webUrlForMicrosoftSheets(tpsheet, odriveApp),
-								tpsheet.getSheetName(), Constants.microsoft_treatement_sheet_name, trids, null, null,
-								null);
-
-				RuleEngineLogger.generateLogs(clazz,
-						Constants.rule_log_read_fil_end + "-" + Constants.microsoft_treatement_sheet_name,
-						Constants.rule_log_debug, bw);
-				// End
-				GoogleSheets ivsheet = null;
-				if (sheets != null && sheets.size() > 0) {
-					ivsheet = sheets.get(0);
-				} else {
-					rule = getRulesFromList(rules, Constants.RULE_ID_2);
-					RuleEngineLogger.generateLogs(clazz, "No IVF Sheet Found for Selected Office" + off.getName(),
-							Constants.rule_log_debug, bw);
-					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
-							"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
-							Constants.FAIL);
-					list2.add(dtoR);
-					if (returnMap == null)
-						returnMap = new HashMap<String, List<TPValidationResponseDto>>();
-					returnMap.put(
-							"IVF ID(" + dtod.getIvfId() + ") Treatment Plan ID (" + dtod.getTreatmentPlanId() + ")",
-							list2);
-
-					return returnMap;
-				}
-				// Read IVF Sheet From Google key is IVF id
-
-				RuleEngineLogger.generateLogs(clazz,
-						Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
-						bw);
-				ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
-						off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-						off.getName());
-
-				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
-						Constants.rule_log_debug, bw);
-				// End
-
-				// Read Patient Key is Unique Id from IVF sheet
-				OneDriveFile espatient = getOneDriveFileFromList(fileOne, Constants.microsoft_patient);
-				// String[] treatmentPlanIds, List<String> codes, Map<String, List<Object>>
-				// ivMap,
-				// Map<String, List<Object>> patientsMap
-				RuleEngineLogger.generateLogs(clazz,
-						Constants.rule_log_read_fil_start + "-" + Constants.microsoft_patient, Constants.rule_log_debug,
-						bw);
-				Map<String, List<EagleSoftPatient>> espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) rmF
-						.downloadAndReadUsingStream(spService.webUrlForMicrosoftSheets(espatient, odriveApp),
-								espatient.getSheetName(), Constants.microsoft_patient, null, null, ivfMap, null);
-				RuleEngineLogger.generateLogs(clazz,
-						Constants.rule_log_read_fil_end + "-" + Constants.microsoft_patient, Constants.rule_log_debug,
-						bw);
-				// End
-				// Read emp_master Key is employee ID
+				
+				Map<String, List<EagleSoftPatient>> espatients=null;
+				Map<String, List<Object>> tMap=null;
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				Map<String, List<EagleSoftFeeShedule>> esfeess = null;
-				if (espatients != null && espatients.size() > 0) {
-					RuleEngineLogger.generateLogs(clazz,
-							Constants.rule_log_read_fil_start + "-" + Constants.microsoft_emp_master,
-							Constants.rule_log_debug, bw);
-					OneDriveFile esfemp = getOneDriveFileFromList(fileOne, Constants.microsoft_emp_master);
-					// if (tList != null) {
-					esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) rmF
-							.downloadAndReadUsingStream(spService.webUrlForMicrosoftSheets(esfemp, odriveApp),
-									esfemp.getSheetName(), Constants.microsoft_emp_master, null, null, null,
-									espatients);
-					// }
+				
+				
+				String ivs[] = dtod.getIvfId().split(",");
+				String trids[] = dtod.getTreatmentPlanId().split(",");
+				// Read Treatment Plan...
+				OneDriveFile tpsheet =null;
+				if (eagleSoftDBAccessPresent== false) {
+					
+					ReadMicrosoftFile rmF = new ReadMicrosoftFile();
+					// Read Fee Treatment Plan key id IVF id ..
 
 					RuleEngineLogger.generateLogs(clazz,
-							Constants.rule_log_read_fil_end + "-" + Constants.microsoft_emp_master,
+							Constants.rule_log_read_fil_start + "-" + Constants.microsoft_treatement_sheet_name,
 							Constants.rule_log_debug, bw);
-
-					/// FEE SCHEDULE
-					OneDriveFile feeScheduleMaster = getOneDriveFileFromList(fileOne,
-							Constants.microsoft_feeSchedule_master);
-					RuleEngineLogger.generateLogs(clazz,
-							Constants.rule_log_read_fil_start + "-" + Constants.microsoft_feeSchedule_master,
-							Constants.rule_log_debug, bw);
-					esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) rmF.downloadAndReadUsingStream(
-							spService.webUrlForMicrosoftSheets(feeScheduleMaster, odriveApp),
-							feeScheduleMaster.getSheetName(), Constants.microsoft_feeSchedule_master, null, null, null,
-							espatients);
+					tMap = (Map<String, List<Object>>) (Map<String, ?>) rmF
+							.downloadAndReadUsingStream(spService.webUrlForMicrosoftSheets(tpsheet, odriveApp),
+									tpsheet.getSheetName(), Constants.microsoft_treatement_sheet_name, trids, null, null,
+									null);
 
 					RuleEngineLogger.generateLogs(clazz,
-							Constants.rule_log_read_fil_end + "-" + Constants.microsoft_feeSchedule_master,
+							Constants.rule_log_read_fil_end + "-" + Constants.microsoft_treatement_sheet_name,
 							Constants.rule_log_debug, bw);
+					// End
+					GoogleSheets ivsheet = null;
+					if (sheets != null && sheets.size() > 0) {
+						ivsheet = sheets.get(0);
+					} else {
+						rule = getRulesFromList(rules, Constants.RULE_ID_2);
+						RuleEngineLogger.generateLogs(clazz, "No IVF Sheet Found for Selected Office" + off.getName(),
+								Constants.rule_log_debug, bw);
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
+								"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
+								Constants.FAIL);
+						list2.add(dtoR);
+						if (returnMap == null)
+							returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+						returnMap.put(
+								"IVF ID(" + dtod.getIvfId() + ") Treatment Plan ID (" + dtod.getTreatmentPlanId() + ")",
+								list2);
 
-					// END
+						return returnMap;
+					}
+					// Read IVF Sheet From Google key is IVF id
 
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
+							bw);
+					ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+							off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
+							off.getName());
+
+					RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
+							Constants.rule_log_debug, bw);
+					// End
+
+					// Read Patient Key is Unique Id from IVF sheet
+					OneDriveFile espatient = getOneDriveFileFromList(fileOne, Constants.microsoft_patient);
+					// String[] treatmentPlanIds, List<String> codes, Map<String, List<Object>>
+					// ivMap,
+					// Map<String, List<Object>> patientsMap
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_read_fil_start + "-" + Constants.microsoft_patient, Constants.rule_log_debug,
+							bw);
+					espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) rmF
+							.downloadAndReadUsingStream(spService.webUrlForMicrosoftSheets(espatient, odriveApp),
+									espatient.getSheetName(), Constants.microsoft_patient, null, null, ivfMap, null);
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_read_fil_end + "-" + Constants.microsoft_patient, Constants.rule_log_debug,
+							bw);
+					// End
+					// Read emp_master Key is employee ID
+					
+					if (espatients != null && espatients.size() > 0) {
+						RuleEngineLogger.generateLogs(clazz,
+								Constants.rule_log_read_fil_start + "-" + Constants.microsoft_emp_master,
+								Constants.rule_log_debug, bw);
+						OneDriveFile esfemp = getOneDriveFileFromList(fileOne, Constants.microsoft_emp_master);
+						// if (tList != null) {
+						esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) rmF
+								.downloadAndReadUsingStream(spService.webUrlForMicrosoftSheets(esfemp, odriveApp),
+										esfemp.getSheetName(), Constants.microsoft_emp_master, null, null, null,
+										espatients);
+						// }
+
+						RuleEngineLogger.generateLogs(clazz,
+								Constants.rule_log_read_fil_end + "-" + Constants.microsoft_emp_master,
+								Constants.rule_log_debug, bw);
+
+						/// FEE SCHEDULE
+						OneDriveFile feeScheduleMaster = getOneDriveFileFromList(fileOne,
+								Constants.microsoft_feeSchedule_master);
+						RuleEngineLogger.generateLogs(clazz,
+								Constants.rule_log_read_fil_start + "-" + Constants.microsoft_feeSchedule_master,
+								Constants.rule_log_debug, bw);
+						esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) rmF.downloadAndReadUsingStream(
+								spService.webUrlForMicrosoftSheets(feeScheduleMaster, odriveApp),
+								feeScheduleMaster.getSheetName(), Constants.microsoft_feeSchedule_master, null, null, null,
+								espatients);
+
+						RuleEngineLogger.generateLogs(clazz,
+								Constants.rule_log_read_fil_end + "-" + Constants.microsoft_feeSchedule_master,
+								Constants.rule_log_debug, bw);
+
+						// END
+
+					}
+	
+					tpsheet =getOneDriveFileFromList(fileOne, Constants.microsoft_treatement_sheet_name);
+				}else {
+					
+					//In New Approach 
+					
+					if (eagleSoftDBAccessPresent) {
+						tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
+						
+                         //
+						// Read IVF Sheet From Google key is IVF id
+						GoogleSheets ivsheet = null;
+						if (sheets != null && sheets.size() > 0) {
+							ivsheet = sheets.get(0);
+						} else {
+							rule = getRulesFromList(rules, Constants.RULE_ID_2);
+							RuleEngineLogger.generateLogs(clazz, "No IVF Sheet Found for Selected Office" + off.getName(),
+									Constants.rule_log_debug, bw);
+							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
+									"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
+									Constants.FAIL);
+							list2.add(dtoR);
+							if (returnMap == null)
+								returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+							returnMap.put(
+									"IVF ID(" + dtod.getIvfId() + ") Treatment Plan ID (" + dtod.getTreatmentPlanId() + ")",
+									list2);
+
+							return returnMap;
+						}
+
+						RuleEngineLogger.generateLogs(clazz,
+								Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
+								bw);
+						ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+								off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
+								off.getName());
+
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
+								Constants.rule_log_debug, bw);
+
+						//
+						espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,bw);
+								
+						if (espatients != null && espatients.size() > 0) {
+							esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,bw);
+							esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) dbAccesService.getFeeScheduleData(espatients, esDB,bw);
+	                     }
+					}		
+			
 				}
-
+				
+				
 				// End
 				List<TPValidationResponseDto> list = null;
 				for (int y = 0; y < ivs.length; y++) {
@@ -944,6 +1020,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 */
 	private void saveReportsList(Authentication authentication, List<Rules> rules, TreatmentPlan tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off) {
+		//int a=1;
+		//if (a==1)return ;
 		try {
 			if (ivfSheet == null || tp == null)
 				return;
@@ -1097,7 +1175,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	@Override
 	public Map<String, List<TPValidationResponseDto>> validateTreatmentPlanPreBatch(
 			TreatmentPlanBatchValidationDto dto) {
-
+		dbAccesService.setUpSSLCertificates();
+//		System.setProperty("javax.net.ssl.trustStore", "c:/es/client/cacerts.jks");
+//		System.setProperty("javax.net.ssl.keyStore", "c:/es/client/keystore.jks");
+//		System.setProperty("javax.net.ssl.keyStorePassword", "p@ssw0rd");
 		Map<String, List<TPValidationResponseDto>> returnMap = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List<TPValidationResponseDto> list = new ArrayList<TPValidationResponseDto>();
@@ -1107,15 +1188,25 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		ReadMicrosoftFile rmF = new ReadMicrosoftFile();
 
 		Office off = od.getOfficeByUuid(dto.getOfficeId());
-		List<GoogleSheets> sheets = tvd.getAllGoogleSheet();
-		List<OneDriveFile> fileOne = spd.getOneDriveFileByOfficeId(dto.getOfficeId());
+		List<GoogleSheets> sheets = tvd.getAllGoogleSheetByOffice(off);
+		
+		
+		boolean eagleSoftDBAccessPresent=false;
+		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+		if (esDB!=null) {
+		
+			eagleSoftDBAccessPresent=true;
+		}
+		List<OneDriveFile> fileOne = null;
+		if (eagleSoftDBAccessPresent==false) fileOne= spd.getOneDriveFileByOfficeId(dto.getOfficeId());
 		TPValidationResponseDto dtoR = null;
 		Map<String, List<Object>> ivfMap = null;
 
 		// List<Object> ivfList = null;
 		Rules rule = null;
-		OneDriveApp odriveApp = spd.getOneDriveAppDetailsByOfficeId(dto.getOfficeId());
-		if (odriveApp != null && odriveApp.getRefreshToken() != null) {
+		OneDriveApp odriveApp = null;
+		if (eagleSoftDBAccessPresent==false) odriveApp = spd.getOneDriveAppDetailsByOfficeId(dto.getOfficeId());
+		if (eagleSoftDBAccessPresent ==false && (odriveApp != null && odriveApp.getRefreshToken() != null)) {
 
 			// Generate New Access Token and Refresh Token.
 			try {
@@ -1137,7 +1228,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				return returnMap;
 			}
 
-		} else {
+		} else if (eagleSoftDBAccessPresent==false) {
 			dtoR = new TPValidationResponseDto(0, "Generic",
 					"Office 365 sheet not registered with Rule Engine.<br>"
 							+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
@@ -1180,21 +1271,25 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		try {
 			// READ IVF Google Sheet
-			ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
-					off.getName() + " " + ivsheet.getAppSheetName(), ids, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-					off.getName());
 			/// END
 			// Read Patient Key is Unique Id from IVF sheet
-			OneDriveFile espatient = getOneDriveFileFromList(fileOne, Constants.microsoft_patient);
+			OneDriveFile espatient=null;
+			Map<String, List<EagleSoftPatient>> espatients=null;
+			Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
+			
+			if (eagleSoftDBAccessPresent==false) {
+				ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+						off.getName() + " " + ivsheet.getAppSheetName(), ids, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
+						off.getName());
+			espatient = getOneDriveFileFromList(fileOne, Constants.microsoft_patient);
 			// String[] treatmentPlanIds, List<String> codes, Map<String, List<Object>>
 			// ivMap,
 			// Map<String, List<Object>> patientsMap
-			Map<String, List<EagleSoftPatient>> espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) rmF
+			espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) rmF
 					.downloadAndReadUsingStream(spService.webUrlForMicrosoftSheets(espatient, odriveApp),
 							espatient.getSheetName(), Constants.microsoft_patient, null, null, ivfMap, null);
 			// End
 			// Read emp_master Key is employee ID
-			Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 			if (espatients != null && espatients.size() > 0) {
 				OneDriveFile esfemp = getOneDriveFileFromList(fileOne, Constants.microsoft_emp_master);
 				// if (tList != null) {
@@ -1202,8 +1297,57 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						.downloadAndReadUsingStream(spService.webUrlForMicrosoftSheets(esfemp, odriveApp),
 								esfemp.getSheetName(), Constants.microsoft_emp_master, null, null, null, espatients);
 				// }
-			}
+			 }
+			}else {
+			       // new Approach ....	
+				
+				
+				if (eagleSoftDBAccessPresent) {
+					//tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
+					
+                     //
+					// Read IVF Sheet From Google key is IVF id
+					if (sheets != null && sheets.size() > 0) {
+						ivsheet = sheets.get(0);
+					} else {
+						rule = getRulesFromList(rules, Constants.RULE_ID_2);
+						RuleEngineLogger.generateLogs(clazz, "No IVF Sheet Found for Selected Office" + off.getName(),
+								Constants.rule_log_debug, null);
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
+								"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
+								Constants.FAIL);
+						list.add(dtoR);
+						if (returnMap == null)
+							returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+						returnMap.put("no", list);
 
+						return returnMap;
+					}
+
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
+							null);
+					ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+							off.getName() + " " + ivsheet.getAppSheetName(), ids, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
+							off.getName());
+
+					RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
+							Constants.rule_log_debug, null);
+
+					//
+					espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,null);
+							
+					if (espatients != null && espatients.size() > 0) {
+						esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,null);
+						//esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) dbAccesService.getFeeScheduleData(espatients, esDB,bw);
+                     }
+				}		
+		
+			
+
+				
+				
+			}
 			for (int y = 0; y < ids.length; y++) {
 				list = new ArrayList<TPValidationResponseDto>();
 				// IMPORTANT --SEE THIS --WHY DONE in IVF sheet need to match Officename_IVFID
@@ -1336,7 +1480,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 	@Override
 	public Map<String, List<PatientTreamentDto>> getTreatments(TreatmentPlanDto dto) {
-
+		dbAccesService.setUpSSLCertificates();
 		List<PatientTreamentDto> list = null;
 		Map<String, List<PatientTreamentDto>> map = null;
 		PatientTreamentDto ptd = null;
@@ -1347,7 +1491,17 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		OneDriveApp odriveApp = spd.getOneDriveAppDetailsByOfficeId(dto.getOfficeId());
 		OneDriveFile tpsheet = getOneDriveFileFromList(fileOne, Constants.microsoft_treatement_sheet_name);
 		String name = "";
-		if (odriveApp != null && odriveApp.getRefreshToken() != null) {
+		
+		boolean eagleSoftDBAccessPresent=false;
+		Office off = od.getOfficeByUuid(dto.getOfficeId());
+		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+		if (esDB!=null) {
+		
+			eagleSoftDBAccessPresent=true;
+		}
+
+		
+		if (eagleSoftDBAccessPresent ==false && (odriveApp != null && odriveApp.getRefreshToken() != null)) {
 
 			// Generate New Access Token and Refresh Token.
 			try {
@@ -1360,15 +1514,17 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				return null;
 			}
 
-		} else {
+		} else if(eagleSoftDBAccessPresent==true){
 
+			//nothing for now...
+
+		}else {
 			return null;
-
 		}
 
 		try {
 			// READ Treatment Plan
-
+            if(eagleSoftDBAccessPresent==false) {
 			List<TreatmentPlan> tlist = rmF.downloadAndReadUsingStreamForTreatOnly(
 					spService.webUrlForMicrosoftSheets(tpsheet, odriveApp), tpsheet.getSheetName(), dto.getPatientId());
 			if (tlist != null) {
@@ -1384,8 +1540,26 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				}
 			}
 
+		}else {
+			
+			// new approach
+			List<TreatmentPlan> tlist = dbAccesService.getTreatmentPlanDataByPatient(dto.getPatientId(), esDB, null);
+			if (tlist != null) {
+				for (TreatmentPlan tp : tlist) {
+					if (list == null)
+						list = new ArrayList<>();
+					ptd = new PatientTreamentDto();
+					name = tp.getPatient().getName() + " " + tp.getPatient().getLastName();
+					ptd.settDescription(tp.getTreatmentPlanDetails().getDescription());
+					ptd.setDateLastUpdated(tp.getTreatmentPlanDetails().getDateLastUpdated());
+					ptd.setTreatmentPlanId(tp.getId());
+					list.add(ptd);
+				}
+			}	
+					
 		}
-
+            
+		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

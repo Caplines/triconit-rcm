@@ -54,6 +54,12 @@ public class OfficeDaoImpl extends BaseDaoImpl implements OfficeDao{
 		// TODO Auto-generated method stub
 		return (Office)getEntityByColumnName(Office.class, "uuid", uuid);
 	}
+
+	@Override
+	public Office getOfficeByName(String name) {
+		// TODO Auto-generated method stub
+		return (Office)getEntityByColumnName(Office.class, "name", name);
+	}
 	
 	
 

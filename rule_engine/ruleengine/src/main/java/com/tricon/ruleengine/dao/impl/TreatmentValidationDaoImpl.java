@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
+import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.GoogleSheets;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
@@ -164,5 +165,24 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 
 		}
 		return list;
+	}
+
+
+	@Override
+	public EagleSoftDBDetails getESDBDetailsByOffice(Office off) {
+		Session session = getSession();
+		EagleSoftDBDetails es = null;
+		try {
+			Criteria criteria = session.createCriteria(EagleSoftDBDetails.class);
+			criteria.createAlias("office", "off");//
+			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
+			criteria.add(Restrictions.eq("server", true));
+			es=(EagleSoftDBDetails) criteria.uniqueResult();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return es;
 	}
 }

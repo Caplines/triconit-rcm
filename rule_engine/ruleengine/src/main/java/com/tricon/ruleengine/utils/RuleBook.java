@@ -235,7 +235,7 @@ public class RuleBook {
 										" FS FEE -" + fs.getFeesFee() + " :: Treatment Plan Fee-" + tp.getFee(),
 										Constants.rule_log_debug, bw);
 
-								if (!fs.getFeesFee().equals(tp.getFee())) {
+								if (Double.parseDouble(fs.getFeesFee())!=Double.parseDouble(tp.getFee())) {
 									missing_code.add(tp.getServiceCode());
 									missing_name.add(fs.getName());
 
@@ -611,14 +611,14 @@ public class RuleBook {
 
 								RuleEngineLogger.generateLogs(clazz,
 										"Employer -Percentage-" + y.getPercentage() + " ::IVF FROM Name- "
-												+ d6.getIvfName() + " ::IVF PERCENTAGE- " + d6.getPercentage(),
+												+ d6.getIvfName() + " ::IVF PERCENTAGE- " + d6.getPercentage().replace("$", ""),
 										Constants.rule_log_debug, bw);
 
-								if (y.getPercentage().trim().equalsIgnoreCase(d6.getPercentage().trim())) {
+								if (y.getPercentage().trim().equalsIgnoreCase(d6.getPercentage().replace("$", "").trim())) {
 									// Pass
 								} else {
 									pass = false;
-									mess.add(d6.getFsName()+" in ES = "+Constants.errorMessOPen+y.getPercentage()+Constants.errorMessClose+": "+d6.getIvfName()+" in IV = "+Constants.errorMessOPen + d6.getPercentage()
+									mess.add(d6.getFsName()+" in ES = "+Constants.errorMessOPen+y.getPercentage()+Constants.errorMessClose+": "+d6.getIvfName()+" in IV = "+Constants.errorMessOPen + d6.getPercentage().replace("$", "")
 									      + Constants.errorMessClose);
 									/*
 									 * li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),

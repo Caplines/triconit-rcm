@@ -3,6 +3,7 @@ package com.tricon.ruleengine.dao;
 import java.io.Serializable;
 import java.util.List;
 
+import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.GoogleSheets;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
@@ -35,5 +36,7 @@ public interface TreatmentValidationDao {
 	public Reports getReportsByName(String name);
 	
 	public void updateReportDate(Reports reports);
+	
+	public EagleSoftDBDetails getESDBDetailsByOffice(Office off);
 
 }

@@ -162,16 +162,5 @@ public class RuleEngineValidationController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Treatment Ids Fetched Successfully", map));
 	}
 
-	@CrossOrigin
-	@RequestMapping(value = "/generateTreatmentId1", method = RequestMethod.GET)
-	public ResponseEntity<?> generatTreatmentId1() {
-		TreatmentPlanDto dto= new TreatmentPlanDto();
-		dto.setOfficeId("fc1d7afd-7df2-11e8-8432-8c16451459cd");
-		dto.setPatientId("9396");
-		
-		Map<String,List<PatientTreamentDto>> map = tPService.getTreatments(dto);
-		
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Treatment Ids Fetched Successfully", map));
-	}
 
 }

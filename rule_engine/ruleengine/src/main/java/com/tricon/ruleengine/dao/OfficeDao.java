@@ -15,4 +15,6 @@ public interface OfficeDao {
 	public Optional<List<OfficeDto>> getAllOffices();
 
 	public Office getOfficeByUuid(String uuid);
+
+	public Office getOfficeByName(String name);
 }
