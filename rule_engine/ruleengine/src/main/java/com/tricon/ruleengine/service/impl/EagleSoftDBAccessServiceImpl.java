@@ -506,7 +506,9 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 			EagleSoftDBDetails esDB, BufferedWriter bw) {
 		EagleSoftFetchData d = new EagleSoftFetchData();
 		Map<String, List<String>> dataMap = null;
-		EagleSoftQueryObject q = prepairEagleSoftQueryObject(ids.split(","), query, columnCount);
+		EagleSoftQueryObject q = null;
+		if (ids!=null)q =prepairEagleSoftQueryObject(ids.split(","), query, columnCount);
+		else q=prepairEagleSoftQueryObject(null, query, columnCount);
 		String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
 		if (data != null) {
 			try {
@@ -549,17 +551,19 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		String comma = "";
 		String id = "";
 
+		if (ids!=null) {
 		for (String trid : ids) {
 			rep = rep + comma + "?";
 			id = id + comma + trid;
 			comma = ",";
 		}
-
+		}
 		query = query.replace(EagleSoftQuery.contstant_REP, rep);
 		EagleSoftQueryObject o = new EagleSoftQueryObject();
 		o.setColumnCount(columnCount);
 		o.setIds(id);
-		o.setPrepStCount(ids.length);
+		if (ids!=null)o.setPrepStCount(ids.length);
+		else o.setPrepStCount(0);
 		o.setQuery(query);
 
 		return o;

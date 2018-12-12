@@ -42,6 +42,9 @@ public class EagleSoftDBDetails extends BaseAudit implements Serializable{
 	private int eSport;
 
 
+	@Column(name = "password")
+	private String password;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "office_id", unique=true)
 	private Office office;
@@ -97,7 +100,18 @@ public class EagleSoftDBDetails extends BaseAudit implements Serializable{
 	public void setServer(boolean server) {
 		this.server = server;
 	}
+
+
+	public String getPassword() {
+		return password;
+	}
+
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	
  
+	
 
 }

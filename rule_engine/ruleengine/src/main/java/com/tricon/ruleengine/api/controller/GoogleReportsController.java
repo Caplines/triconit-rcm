@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.api.controller;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -42,7 +44,8 @@ public class GoogleReportsController {
 	@RequestMapping(value = "/googleReport")
 	public ResponseEntity<Object> fethESresponse(@RequestParam(value = "query", required = true) String query,
 			@RequestParam(value = "ids", required = false) String ids,
-			@RequestParam(value = "columnCount", required = true) int columnCount,
+			@RequestParam(value = "password", required = true) String password,
+            @RequestParam(value = "columnCount", required = true) int columnCount,
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
 			HttpServletResponse response) {
 		//
@@ -51,7 +54,7 @@ public class GoogleReportsController {
 		// query = " select " + + query;
 		System.out.println(office);
 		System.out.println(ids);
-		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office);
+		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", dataMap));
 
 	}
@@ -64,7 +67,8 @@ public class GoogleReportsController {
 			@RequestParam(value = "selectcolumns", required = true) String selectcolumns,
 			@RequestParam(value = "query", required = true) String query,
 			@RequestParam(value = "ids", required = false) String ids,
-			@RequestParam(value = "columnCount", required = true) int columnCount,
+			@RequestParam(value = "password", required = true) String password,
+            @RequestParam(value = "columnCount", required = true) int columnCount,
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
 			HttpServletResponse response) throws JSONException {
 		//
@@ -76,7 +80,7 @@ public class GoogleReportsController {
 		System.out.println(office);
 		System.out.println(ids);
 		System.out.println(query);
-		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office);
+		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
 		String finalData = "";
 		if (dataMap != null) {
 			String a[] = selectcolumns.split(",");
@@ -132,13 +136,14 @@ public class GoogleReportsController {
 			@RequestParam(value = "selectcolumns", required = true) String selectcolumns,
 			@RequestParam(value = "query", required = true) String query,
 			@RequestParam(value = "ids", required = false) String ids,
-			//@RequestParam(value = "columnCount", required = true) int columnCount,
+			@RequestParam(value = "columnCount", required = true) int columnCount,
+			@RequestParam(value = "password", required = true) String password,
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
-			HttpServletResponse response) throws JSONException {
+			HttpServletResponse response) throws JSONException, MalformedURLException {
 		//
 		es.setUpSSLCertificates();
-	
-		System.out.println("DPPPPPPPPPP--"+request.getRequestURI());
+		/*
+	    System.out.println("DPPPPPPPPPP--"+request.getRequestURI());
 		System.out.println("DPPPPPPPPPP--"+request.getHeaderNames());
 		for (Enumeration<?> e = request.getHeaderNames(); e.hasMoreElements();) {
 		    String nextHeaderName = (String) e.nextElement();
@@ -148,23 +153,28 @@ public class GoogleReportsController {
 		    
 			}
 		
+		System.out.println("----------------------");
+		System.out.println("---------URL-------------"+request.getRequestURL());
+		System.out.println("RRRRRRRRRRRRR---------"+request.getRemoteHost() );
 		
+		System.out.println(new URL(request.getRequestURL().toString()).getHost());
+		*/
 		List<GoogleReportDTO> beanList = new ArrayList<>();
 		GoogleReportDTO dataBean = null;
-		String a[] = selectcolumns.split(",");
+		//String a[] = selectcolumns.split(",");
 		query = " select " + selectcolumns + " " + query;
-		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, a.length, office);
-		String finalData = "";
+		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
+		//String finalData = "";
 		if (dataMap != null) {
-			List<String> li = Arrays.asList(a);
-			String comma = "";
+			//List<String> li = Arrays.asList(a);
+			//String comma = "";
 			for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
 				if (entry.getValue() != null) {
 					List<String> des = (List<String>) (entry.getValue());
 					int x = 0;
-					finalData = finalData + comma + "{";
+					//finalData = finalData + comma + "{";
 					dataBean = new GoogleReportDTO();// dataBean
-					for (String da : li) {
+					for (int y=0;y<columnCount;y++) {
 						String v = des.get(x);
 						setUPResponseData(dataBean, x, v);
 						x++;

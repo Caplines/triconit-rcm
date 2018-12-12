@@ -26,13 +26,15 @@ public class GoogleReportServiceImpl implements GoogleReportService{
 	EagleSoftDBAccessService es;
 	
 	@Override
-    public Map<String, List<String>> getESDataFromServer(String query, String ids,int columnCount, String officeName) {
+    public Map<String, List<String>> getESDataFromServer(String query, String ids,int columnCount, String officeName,
+    		String password) {
 		// TODO Auto-generated method stub
 		
 		Office office= od.getOfficeByName(officeName);
 		Map<String, List<String>> data=null;
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
-		if (esDB!=null) {
+		
+		if (esDB!=null && esDB.getPassword().equals(password)) {
 			data= es.getGoogleReportData(query, ids, columnCount, esDB, null);
 			
 		}

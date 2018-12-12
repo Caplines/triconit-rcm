@@ -1,7 +1,4 @@
 package com.tricon.ruleengine;
-import org.hibernate.cfg.Environment;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 //https://o7planning.org/en/11543/create-a-login-application-with-spring-boot-spring-security-spring-jdbc
 //for reference we can use
 import org.springframework.boot.SpringApplication;

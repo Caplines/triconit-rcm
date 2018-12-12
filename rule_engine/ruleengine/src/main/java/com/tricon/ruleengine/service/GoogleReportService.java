@@ -5,6 +5,7 @@ import java.util.Map;
 
 public interface GoogleReportService {
 	
-	public Map<String, List<String>> getESDataFromServer(String query,String ids,int columnCount,String office);
+	public Map<String, List<String>> getESDataFromServer(String query,String ids,int columnCount,String office,
+			String password);
 
 }
