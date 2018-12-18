@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {User} from "../model/model.user";
 import {IVFModel} from "../model/model.ivf";
+import {DiagnosticModel} from "../model/model.diagnostic";
 import {IVFBatchPreModel} from "../model/model.ivfbatchpre";
 import {IVFBatchModel} from "../model/model.ivfbatch";
 import {ReportModel} from "../model/model.report";
@@ -99,7 +100,7 @@ export class AccountService {
               this.router.navigate(['/logout']);
               }
               if (error.status==500){
-                  alert("Some un-Wanted Chnages Done to Google Sheets");
+                  alert("Some un-Wanted Changes Done to Google Sheets");
                   callback(error);
               }
           },
@@ -111,6 +112,35 @@ export class AccountService {
               
   }
   
+  doDiagCheck(diagm:DiagnosticModel,callback){
+      this.generateRefreshToken().pipe(switchMap(data => {
+          //console.log((<any>data).token);
+          localStorage.setItem("token", (<any>data).token);
+          console.log("token is set");
+            return  this.http.post(AppComponent.API_URL+'/diagnosticcheck',diagm);
+          },
+          )    
+      ).subscribe(data => {
+              //console.log(data);
+              callback((<any>data));
+          },
+          error => {
+              //console.log(33);
+              if (error.status==401){
+              this.router.navigate(['/logout']);
+              }
+              if (error.status==500){
+                  alert("Some Service Error- Contact Admin..");
+                  callback(error);
+              }
+          },
+          () => {
+              //console.log(111);
+          }
+          
+          );
+              
+  }
   /* validateIVFPreBatch(ivf:IVFBatchPreModel,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
           console.log((<any>data).token);

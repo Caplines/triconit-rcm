@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.ruleengine.dto.DiagnosticDTO;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.PatientTreamentDto;
 import com.tricon.ruleengine.dto.ReportDto;
@@ -36,6 +37,8 @@ import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.service.EagleSoftDBAccessService;
+import com.tricon.ruleengine.service.GoogleReportService;
 import com.tricon.ruleengine.service.ReportService;
 import com.tricon.ruleengine.service.TreatmentPlanService;
 import com.tricon.ruleengine.service.UserService;
@@ -60,6 +63,12 @@ public class RuleEngineValidationController {
 	
 	@Autowired
 	TreatmentPlanService tPService;
+	
+	@Autowired
+	EagleSoftDBAccessService es;
+	
+	@Autowired
+	GoogleReportService gs;
 	
 	@CrossOrigin
 	@GetMapping
@@ -163,4 +172,17 @@ public class RuleEngineValidationController {
 	}
 
 
+	@CrossOrigin
+	@PostMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/diagnosticcheck", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> diagnosticCheck(@RequestBody DiagnosticDTO dto) {
+
+		es.setUpSSLCertificates();
+		
+		String[] result= es.doDiagnosticCheck(dto.getOfficeId());
+
+		
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", result));
+	}
 }

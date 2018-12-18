@@ -137,6 +137,11 @@ public class Constants {
 	
 	public static String notFound="<b style='color:red' class='error-message-api'> NOT FOUND </b>";
 	
+	public static String socketworkingFine="Connection to office working fine. Agent is running successfully.";
+	
+	public static String socketnotworkingFine="Connection to office is <b style=\"color:red\" class=\"error-message-api\">not</b> working propertly. Make sure Agent is running / router is configured properly.";
+	
+	
 
 
 

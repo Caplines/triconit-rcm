@@ -1,0 +1,31 @@
+<div *ngIf="showDiagData">
+	<div class="close-btn">
+		<a href="javascript:void(0)" (click)="closePopup()">
+			 Go Back
+		</a>
+		<a href="javascript:void(0)" (click)="runAgain()">
+			 Run Again
+		</a>
+	</div>	
+	<div class="table-container">
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr> 
+					<th>Message</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+				  <td> Office Name: <span [innerHTML]="diagData[2]"></span></td>
+			    </tr>
+				<tr>
+				  <td> IP Address : <span [innerHTML]="diagData[1]"></span></td>
+			    </tr>
+				<tr>
+				  <td><span [innerHTML]="diagData[0]"></span></td>
+			    </tr>
+				
+			</tbody>						
+		</table>
+	</div>
+</div>

@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.service.impl;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,12 +27,12 @@ public class GoogleReportServiceImpl implements GoogleReportService{
 	EagleSoftDBAccessService es;
 	
 	@Override
-    public Map<String, List<String>> getESDataFromServer(String query, String ids,int columnCount, String officeName,
+    public LinkedHashMap<String, List<String>> getESDataFromServer(String query, String ids,int columnCount, String officeName,
     		String password) {
 		// TODO Auto-generated method stub
 		
 		Office office= od.getOfficeByName(officeName);
-		Map<String, List<String>> data=null;
+		LinkedHashMap<String, List<String>> data=null;
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
 		
 		if (esDB!=null && esDB.getPassword().equals(password)) {

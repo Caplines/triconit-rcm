@@ -20,7 +20,10 @@ import { LogoutComponent } from './components/logout/logout.component';
 import { HelpComponent } from './components/help/help.component';
 import { HeaderComponent } from './components/header/header.component';
 import { IVFPopupComponent } from './components/ivfpopup/ivfpopup.component';
+import { DiagnosticPopupComponent } from './components/diagnosticpopup/diagnosticpopup.component';
 import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
+import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
+
 
 import {routing} from "./app.routing";
 import {UrlPermission} from "./urlPermission/url.permission";
@@ -44,7 +47,9 @@ import { TokenInterceptor } from './auth/token.interceptor';
     HelpComponent,
     HeaderComponent,
     IVFPopupComponent,
-	TreatmentPlanComponent
+    DiagnosticPopupComponent,
+	TreatmentPlanComponent,
+	DiagnosticComponent
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule

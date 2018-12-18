@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,11 +76,11 @@ public class GoogleReportsController {
 		es.setUpSSLCertificates();
 		List<FlexBean> beanList = new ArrayList<>();
 		FlexBean dataBean = null;
-		System.out.println(query);
+		//System.out.println(query);
 		query = " select " + selectcolumns + " " + query;
-		System.out.println(office);
-		System.out.println(ids);
-		System.out.println(query);
+		//System.out.println(office);
+		//System.out.println(ids);
+		//System.out.println(query);
 		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
 		String finalData = "";
 		if (dataMap != null) {
@@ -163,7 +164,7 @@ public class GoogleReportsController {
 		GoogleReportDTO dataBean = null;
 		//String a[] = selectcolumns.split(",");
 		query = " select " + selectcolumns + " " + query;
-		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
+		LinkedHashMap<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
 		//String finalData = "";
 		if (dataMap != null) {
 			//List<String> li = Arrays.asList(a);
@@ -190,7 +191,9 @@ public class GoogleReportsController {
 	}
 
 	private GoogleReportDTO setUPResponseData(GoogleReportDTO dataBean, int x, String data) {
-
+		
+		if (data==null)
+            data="-NO-DATA-";
 		if (dataBean != null) {
 			if (x == 0)
 				dataBean.setC1(data);
@@ -252,6 +255,146 @@ public class GoogleReportsController {
 				dataBean.setC29(data);
 			else if (x == 29)
 				dataBean.setC30(data);
+			else if (x == 30)
+				dataBean.setC31(data);
+			else if (x == 31)
+				dataBean.setC32(data);
+			else if (x == 32)
+				dataBean.setC33(data);
+			else if (x == 33)
+				dataBean.setC34(data);
+			else if (x == 34)
+				dataBean.setC35(data);
+			else if (x == 35)
+				dataBean.setC36(data);
+			else if (x == 36)
+				dataBean.setC37(data);
+			else if (x == 37)
+				dataBean.setC38(data);
+			else if (x == 38)
+				dataBean.setC39(data);
+			else if (x == 39)
+				dataBean.setC40(data);
+			else if (x == 40)
+				dataBean.setC41(data);
+			else if (x == 41)
+				dataBean.setC42(data);
+			else if (x == 42)
+				dataBean.setC43(data);
+			else if (x == 43)
+				dataBean.setC44(data);
+			else if (x == 44)
+				dataBean.setC45(data);
+			else if (x == 45)
+				dataBean.setC46(data);
+			else if (x == 46)
+				dataBean.setC47(data);
+			else if (x == 47)
+				dataBean.setC48(data);
+			else if (x == 48)
+				dataBean.setC49(data);
+			else if (x == 49)
+				dataBean.setC50(data);
+			else if (x == 50)
+				dataBean.setC51(data);
+			else if (x == 51)
+				dataBean.setC52(data);
+			else if (x == 52)
+				dataBean.setC53(data);
+			else if (x == 53)
+				dataBean.setC54(data);
+			else if (x == 54)
+				dataBean.setC55(data);
+			else if (x == 55)
+				dataBean.setC56(data);
+			else if (x == 56)
+				dataBean.setC57(data);
+			else if (x == 57)
+				dataBean.setC58(data);
+			else if (x == 58)
+				dataBean.setC59(data);
+			else if (x == 59)
+				dataBean.setC60(data);
+			else if (x == 60)
+				dataBean.setC61(data);
+			else if (x == 61)
+				dataBean.setC62(data);
+			else if (x == 62)
+				dataBean.setC63(data);
+			else if (x == 63)
+				dataBean.setC64(data);
+			else if (x == 64)
+				dataBean.setC65(data);
+			else if (x == 65)
+				dataBean.setC66(data);
+			else if (x == 66)
+				dataBean.setC67(data);
+			else if (x == 67)
+				dataBean.setC68(data);
+			else if (x == 68)
+				dataBean.setC69(data);
+			else if (x == 69)
+				dataBean.setC70(data);
+			else if (x == 70)
+				dataBean.setC71(data);
+			else if (x == 71)
+				dataBean.setC72(data);
+			else if (x == 72)
+				dataBean.setC73(data);
+			else if (x == 73)
+				dataBean.setC74(data);
+			else if (x == 74)
+				dataBean.setC75(data);
+			else if (x == 75)
+				dataBean.setC76(data);
+			else if (x == 76)
+				dataBean.setC77(data);
+			else if (x == 77)
+				dataBean.setC78(data);
+			else if (x == 78)
+				dataBean.setC79(data);
+			else if (x == 79)
+				dataBean.setC80(data);
+			else if (x == 80)
+				dataBean.setC81(data);
+			else if (x == 81)
+				dataBean.setC82(data);
+			else if (x == 82)
+				dataBean.setC83(data);
+			else if (x == 83)
+				dataBean.setC84(data);
+			else if (x == 84)
+				dataBean.setC85(data);
+			else if (x == 85)
+				dataBean.setC86(data);
+			else if (x == 86)
+				dataBean.setC87(data);
+			else if (x == 87)
+				dataBean.setC88(data);
+			else if (x == 88)
+				dataBean.setC89(data);
+			else if (x == 89)
+				dataBean.setC90(data);
+			else if (x == 90)
+				dataBean.setC91(data);
+			else if (x == 91)
+				dataBean.setC92(data);
+			else if (x == 92)
+				dataBean.setC93(data);
+			else if (x == 93)
+				dataBean.setC94(data);
+			else if (x == 94)
+				dataBean.setC95(data);
+			else if (x ==95)
+				dataBean.setC96(data);
+			else if (x == 96)
+				dataBean.setC97(data);
+			else if (x == 97)
+				dataBean.setC98(data);
+			else if (x == 98)
+				dataBean.setC99(data);
+			else if (x == 99)
+				dataBean.setC100(data);
 
 		}
 		return dataBean;

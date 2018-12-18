@@ -2,6 +2,7 @@ package com.tricon.ruleengine.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -34,7 +35,7 @@ public class EagleSoftFetchData {
 			    System.setProperties(systemProps);
 			    Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 			*/
-			socket =((SSLSocketFactory) SSLSocketFactory.getDefault()).createSocket(esDB.getIpAddress(), esDB.geteSport());
+			socket =getConnectionToES(esDB);
 			OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(),"UTF-8");
 				BufferedReader reader=new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 		    JSONObject jsonObject=new JSONObject();
@@ -58,6 +59,30 @@ public class EagleSoftFetchData {
 		
 		return data;	
 
+	}
+	
+	public Socket getConnectionToES(EagleSoftDBDetails esDB) {
+		
+		try {
+			return ((SSLSocketFactory) SSLSocketFactory.getDefault()).createSocket(esDB.getIpAddress(), esDB.geteSport());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+			
+	}
+
+	public void closeConnectionToES(Socket socket) {
+		if (socket != null) {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+			
 	}
 
 }

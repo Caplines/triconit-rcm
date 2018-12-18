@@ -1,6 +1,7 @@
 package com.tricon.ruleengine.service;
 
 import java.io.BufferedWriter;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,9 @@ public interface EagleSoftDBAccessService {
 
 	public List<TreatmentPlan> getTreatmentPlanDataByPatient(String patientId,EagleSoftDBDetails esDB,BufferedWriter bw);
 
-	public Map<String, List<String>> getGoogleReportData(String query, String ids,int columnCount,EagleSoftDBDetails esDB,BufferedWriter bw);
+	public LinkedHashMap<String, List<String>> getGoogleReportData(String query, String ids,int columnCount,EagleSoftDBDetails esDB,BufferedWriter bw);
 
-   public void setUpSSLCertificates();
+    public void setUpSSLCertificates();
+
+    public String[] doDiagnosticCheck(String officeUuidB);
 }

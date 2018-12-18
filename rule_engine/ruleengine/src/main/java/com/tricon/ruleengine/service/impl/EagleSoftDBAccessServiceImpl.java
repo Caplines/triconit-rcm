@@ -1,19 +1,26 @@
 package com.tricon.ruleengine.service.impl;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tricon.ruleengine.dao.OfficeDao;
+import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
+import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
@@ -40,6 +47,12 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	private String password;
 
 	static Class<?> clazz = EagleSoftDBAccessServiceImpl.class;
+
+	@Autowired
+	TreatmentValidationDao tvd;
+
+	@Autowired
+	OfficeDao od;
 
 	@Override
 	public Map<String, List<?>> getPatientData(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,
@@ -433,7 +446,6 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		RuleEngineLogger.generateLogs(clazz, " Treatment Plan START FETCH DATA for patient-" + patientId,
 				Constants.rule_log_debug, bw);
 
-		
 		EagleSoftQueryObject q = prepairEagleSoftQueryObject(new String[] { patientId },
 				EagleSoftQuery.treatment_plan_by_pat_query, EagleSoftQuery.treatment_plan_by_pat_query_CL_COUNT);
 		String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
@@ -502,13 +514,15 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	}
 
 	@Override
-	public Map<String, List<String>> getGoogleReportData(String query, String ids, int columnCount,
+	public LinkedHashMap<String, List<String>> getGoogleReportData(String query, String ids, int columnCount,
 			EagleSoftDBDetails esDB, BufferedWriter bw) {
 		EagleSoftFetchData d = new EagleSoftFetchData();
-		Map<String, List<String>> dataMap = null;
+		LinkedHashMap<String, List<String>> dataMap = null;
 		EagleSoftQueryObject q = null;
-		if (ids!=null)q =prepairEagleSoftQueryObject(ids.split(","), query, columnCount);
-		else q=prepairEagleSoftQueryObject(null, query, columnCount);
+		if (ids != null)
+			q = prepairEagleSoftQueryObject(ids.split(","), query, columnCount);
+		else
+			q = prepairEagleSoftQueryObject(null, query, columnCount);
 		String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
 		if (data != null) {
 			try {
@@ -519,7 +533,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
 				RuleEngineLogger.generateLogs(clazz, "Google Report Query-" + cMap.get("dataMap").toString(),
 						Constants.rule_log_debug, bw);
-				dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+				dataMap = (LinkedHashMap<String, List<String>>) cMap.get("dataMap");
 				/*
 				 * for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) { if
 				 * (entry.getValue() != null) { List<String> des = (List<String>)
@@ -551,30 +565,60 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		String comma = "";
 		String id = "";
 
-		if (ids!=null) {
-		for (String trid : ids) {
-			rep = rep + comma + "?";
-			id = id + comma + trid;
-			comma = ",";
-		}
+		if (ids != null) {
+			for (String trid : ids) {
+				rep = rep + comma + "?";
+				id = id + comma + trid;
+				comma = ",";
+			}
 		}
 		query = query.replace(EagleSoftQuery.contstant_REP, rep);
 		EagleSoftQueryObject o = new EagleSoftQueryObject();
 		o.setColumnCount(columnCount);
 		o.setIds(id);
-		if (ids!=null)o.setPrepStCount(ids.length);
-		else o.setPrepStCount(0);
+		if (ids != null)
+			o.setPrepStCount(ids.length);
+		else
+			o.setPrepStCount(0);
 		o.setQuery(query);
 
 		return o;
 	}
-	
+
 	@Override
 	public void setUpSSLCertificates() {
 		System.setProperty("javax.net.ssl.trustStore", trustStore);
 		System.setProperty("javax.net.ssl.keyStore", keyStore);
 		System.setProperty("javax.net.ssl.keyStorePassword", password);
 
+	}
+
+	@Override
+	public String[] doDiagnosticCheck(String officeUuid) {
+		// TODO Auto-generated method stub
+
+		Office office = od.getOfficeByUuid(officeUuid);
+		String[] ret = new String[3];
+		ret[2]=office.getName();
+		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
+		if (esDB != null) {
+			ret[1]=esDB.getIpAddress();
+			
+			EagleSoftFetchData d = new EagleSoftFetchData();
+			Socket socket = d.getConnectionToES(esDB);
+			if (socket != null) {
+				d.closeConnectionToES(socket);
+				ret[0] = Constants.socketworkingFine;
+			} else {
+				ret[0] = Constants.socketnotworkingFine;
+			}
+		}else {
+			ret[1] = "No IP configured.";
+			ret[0] = Constants.socketnotworkingFine;
+			
+			
+		}
+		return ret;
 	}
 
 }
