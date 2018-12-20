@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
+import com.tricon.ruleengine.dto.OfficeDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.Office;
@@ -599,11 +601,11 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
 		Office office = od.getOfficeByUuid(officeUuid);
 		String[] ret = new String[3];
-		ret[2]=office.getName();
+		ret[2] = office.getName();
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
 		if (esDB != null) {
-			ret[1]=esDB.getIpAddress();
-			
+			ret[1] = esDB.getIpAddress();
+
 			EagleSoftFetchData d = new EagleSoftFetchData();
 			Socket socket = d.getConnectionToES(esDB);
 			if (socket != null) {
@@ -612,13 +614,48 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 			} else {
 				ret[0] = Constants.socketnotworkingFine;
 			}
-		}else {
+		} else {
 			ret[1] = "No IP configured.";
 			ret[0] = Constants.socketnotworkingFine;
-			
-			
+
 		}
 		return ret;
 	}
 
+	@Override
+	public List<String[]> doDiagnosticCheck() {
+		// TODO Auto-generated method stub
+
+		Optional<List<OfficeDto>> offices = od.getAllOffices();
+		List<String[]> rList = new ArrayList<>();
+		String[] ret = null;
+		if (offices.isPresent() && offices.get() != null) {
+			List<OfficeDto> dtoList = offices.get();
+			for (OfficeDto dto : dtoList) {
+				ret = new String[3];
+				
+				ret[2] = dto.getName();
+				EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(od.getOfficeByName(dto.getName()));
+				if (esDB != null) {
+					ret[1] = esDB.getIpAddress();
+
+					EagleSoftFetchData d = new EagleSoftFetchData();
+					Socket socket = d.getConnectionToES(esDB);
+					if (socket != null) {
+						d.closeConnectionToES(socket);
+						ret[0] = Constants.socketworkingFine;
+					} else {
+						ret[0] = Constants.socketnotworkingFine;
+					}
+				} else {
+					ret[1] = "No IP configured.";
+					ret[0] = Constants.socketnotworkingFine;
+
+				}
+				rList.add(ret);
+				
+			}
+		}
+		return rList;
+	}
 }

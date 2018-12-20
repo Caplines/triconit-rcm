@@ -53,40 +53,40 @@ import com.tricon.ruleengine.utils.Constants;
 public class RuleEngineValidationController {
 
 	static Class<?> clazz = RuleEngineValidationController.class;
-	
+
 	@Value("${app.debug.folder}")
 	private String appLogFolder;
-	
+
 	@Autowired
 	private ReportService reportService;
 
-	
 	@Autowired
 	TreatmentPlanService tPService;
-	
+
 	@Autowired
 	EagleSoftDBAccessService es;
-	
+
 	@Autowired
 	GoogleReportService gs;
-	
+
 	@CrossOrigin
 	@GetMapping
 	@RequestMapping(value = "/appdebug/{fname}")
-	public void readLogFile(@PathVariable(value = "fname", required = true) String name,
-			HttpServletRequest request,HttpServletResponse response) {
-		
-		 try {
-		      // get your file as InputStream
-			 InputStream is = new FileInputStream(appLogFolder+name);
-		      // copy it to response's OutputStream
-		      org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
-		      response.setContentType("text/plain");
-		      response.flushBuffer();
-		    } catch (IOException ex) {
-		      //log.info("Error writing file to output stream. Filename was '{}'", name, ex);
-		      throw new RuntimeException("IOError writing file to output stream");
-		    }	}
+	public void readLogFile(@PathVariable(value = "fname", required = true) String name, HttpServletRequest request,
+			HttpServletResponse response) {
+
+		try {
+			// get your file as InputStream
+			InputStream is = new FileInputStream(appLogFolder + name);
+			// copy it to response's OutputStream
+			org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+			response.setContentType("text/plain");
+			response.flushBuffer();
+		} catch (IOException ex) {
+			// log.info("Error writing file to output stream. Filename was '{}'", name, ex);
+			throw new RuntimeException("IOError writing file to output stream");
+		}
+	}
 
 	@CrossOrigin
 	@PostMapping
@@ -94,27 +94,24 @@ public class RuleEngineValidationController {
 	@RequestMapping(value = "/validateTreatmentPlan", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Object> validateTreatementPlan(@RequestBody TreatmentPlanValidationDto dto) {
 
-		//dto.setTreatmentPlanId("22095");
-		Map<String,List<TPValidationResponseDto>> map=	tPService.validateTreatmentPlan(dto);
-		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug,null);
-		
-		
+		// dto.setTreatmentPlanId("22095");
+		Map<String, List<TPValidationResponseDto>> map = tPService.validateTreatmentPlan(dto);
+		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug, null);
+
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", map));
 	}
 
-	
 	@CrossOrigin
 	@PostMapping
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	@RequestMapping(value = "/validateTreatmentPlanPreBatch", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Object> validateTreatementPlanPreBatch(@RequestBody TreatmentPlanBatchValidationDto dto) {
 
-		//dto.setTreatmentPlanId("22095");
-		Map<String,List<TPValidationResponseDto>> map=	tPService.validateTreatmentPlanPreBatch(dto);
-		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug,null);
+		// dto.setTreatmentPlanId("22095");
+		Map<String, List<TPValidationResponseDto>> map = tPService.validateTreatmentPlanPreBatch(dto);
+		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug, null);
 		System.out.println("calledddddddddd-----------");
-		
-		
+
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", map));
 	}
 
@@ -124,14 +121,13 @@ public class RuleEngineValidationController {
 	@RequestMapping(value = "/validateTreatmentPlanBatch", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Object> validateTreatementPlanBatch(@RequestBody TreatmentPlanValidationDto dto) {
 
-		//dto.setTreatmentPlanId("22095");
-		Map<String,List<TPValidationResponseDto>> map=	tPService.validateTreatmentPlan(dto);
-		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug,null);
-		
-		
+		// dto.setTreatmentPlanId("22095");
+		Map<String, List<TPValidationResponseDto>> map = tPService.validateTreatmentPlan(dto);
+		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug, null);
+
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", map));
 	}
-	
+
 	@CrossOrigin
 	@RequestMapping(value = "/report", method = RequestMethod.POST)
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -139,15 +135,17 @@ public class RuleEngineValidationController {
 		List<ReportResponseDto> li = reportService.getReports(dto);
 		Map<String, List<ReportResponseDto>> map = new LinkedHashMap<>();
 		List<ReportResponseDto> a = new ArrayList<>();
-		String k="";
+		String k = "";
 		if (li != null)
 			for (ReportResponseDto d : li) {
-				 k=d.getRd_group_run()+"). Patient ID- "+d.getPatient_id()+ " Patient Name- "+d.getPatient_name() + " IVF ID-"+d.getIvf_form_id() +" TR. ID-"+d.getTreatement_plan_id();
-					if (map.containsKey(k)) {
+				k = d.getRd_group_run() + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
+						+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " TR. ID-"
+						+ d.getTreatement_plan_id();
+				if (map.containsKey(k)) {
 					// if the key has already been used,
 					// we'll just grab the array list and add the value to it
 					a = (List<ReportResponseDto>) map.get(k + "");
-					
+
 					a.add(d);
 				} else {
 					// if the key hasn't been used yet,
@@ -166,11 +164,10 @@ public class RuleEngineValidationController {
 	@RequestMapping(value = "/generateTreatmentId", method = RequestMethod.POST)
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	public ResponseEntity<?> generatTreatmentId(@RequestBody TreatmentPlanDto dto) {
-		Map<String,List<PatientTreamentDto>> map = tPService.getTreatments(dto);
-		
+		Map<String, List<PatientTreamentDto>> map = tPService.getTreatments(dto);
+
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Treatment Ids Fetched Successfully", map));
 	}
-
 
 	@CrossOrigin
 	@PostMapping
@@ -179,10 +176,15 @@ public class RuleEngineValidationController {
 	public ResponseEntity<Object> diagnosticCheck(@RequestBody DiagnosticDTO dto) {
 
 		es.setUpSSLCertificates();
-		
-		String[] result= es.doDiagnosticCheck(dto.getOfficeId());
+		List<String[]> list =null;
 
-		
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", result));
+		if (!dto.getOfficeId().equals("All offices")) {
+			 list =new ArrayList<>();
+			list.add(es.doDiagnosticCheck(dto.getOfficeId()));
+		} else {
+			list= es.doDiagnosticCheck();
+		}
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", list));
 	}
 }

@@ -11,19 +11,20 @@
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr> 
+					<th>Office Name</th>
+					<th>IP</th>
 					<th>Message</th>
 				</tr>
 			</thead>
 			<tbody>
+			
+			
+			<tr *ngFor="let data of diagData">
+					<td><span [innerHTML]="data[2]"></span></td>
+					<td><span [innerHTML]="data[1]"></span></td>
+					<td><span [innerHTML]="data[0]"></span></td>
 				<tr>
-				  <td> Office Name: <span [innerHTML]="diagData[2]"></span></td>
-			    </tr>
-				<tr>
-				  <td> IP Address : <span [innerHTML]="diagData[1]"></span></td>
-			    </tr>
-				<tr>
-				  <td><span [innerHTML]="diagData[0]"></span></td>
-			    </tr>
+				
 				
 			</tbody>						
 		</table>

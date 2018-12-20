@@ -100,6 +100,14 @@ public class CommonRedirectController {
 		forwardRedirect(request, response);
 	}
 	
+	@CrossOrigin
+	@RequestMapping(value = "/diagnosticcheck", method = RequestMethod.GET)
+	public void diagnosticcheckForward(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		forwardRedirect(request, response);
+	}
+
 	private void forwardRedirect(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		
 		request.getRequestDispatcher("/").forward(request, response);

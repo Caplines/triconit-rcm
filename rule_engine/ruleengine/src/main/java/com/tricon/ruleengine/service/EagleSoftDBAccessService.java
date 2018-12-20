@@ -27,4 +27,6 @@ public interface EagleSoftDBAccessService {
     public void setUpSSLCertificates();
 
     public String[] doDiagnosticCheck(String officeUuidB);
+    
+    public List<String[]> doDiagnosticCheck();
 }

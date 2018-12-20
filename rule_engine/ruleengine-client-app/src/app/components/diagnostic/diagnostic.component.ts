@@ -22,6 +22,7 @@ export class DiagnosticComponent implements OnInit {
 
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
 	  this.offices =this.route.snapshot.data['offs'].data;
+	  this.offices.push({"name":"All OFFICES","uuid":"All offices"});
   }
 
   ngOnInit() {
