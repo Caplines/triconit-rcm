@@ -2,6 +2,7 @@ package com.tricon.ruleengine.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ToothUtil {
 
@@ -56,6 +57,61 @@ public class ToothUtil {
 		}
 		
 		return finalTooths.toArray(new String[finalTooths.size()]);
+		
+	}
+
+	public static String[] getQuadToothsFromTooth(String toothNumbers) {
+		
+		List<String> finalTooths=new ArrayList<>();
+		if (toothNumbers==null ) return new String[] {""};
+		String commaLevel[]=toothNumbers.split(",");
+		for(String cl:commaLevel) {
+			String [] dashLevel=cl.split("-");
+			if (dashLevel.length==2) {
+					
+			}else {
+				if (dashLevel[0].equals("UL") || dashLevel[0].equals("LL") ||
+						dashLevel[0].equals("LR") || dashLevel[0].equals("UR")	) {
+				finalTooths.add(dashLevel[0]);
+				}
+			}
+		}
+		
+		return finalTooths.toArray(new String[finalTooths.size()]);
+		
+	}
+
+	
+	//Lower order Filling found in History on SAME Surface
+	/**
+	 * Map<String,List<String>> historyMap here map contains data from last 12 monthns and only
+	 * and has same surface and same Teeth
+	 * Lower order Filling codes.
+	 * @param codeTosearch
+	 * @param historyMap
+	 * @return
+	 */
+    public static String lowerHigerOrderFillingFound(String codeTosearch,String surface,String[] tooth,
+    		Map<String,List<String>> historyMap,boolean low
+    		) {
+		
+		String r=null;
+    	for (Map.Entry<String, List<String>> entry : historyMap.entrySet()) {
+		     String codeH=entry.getKey();
+		     String[] tooths=(String[])entry.getValue().toArray();
+		     
+		     int codeHINT=Integer.parseInt(codeH.substring(1));
+		     int codeSINT=Integer.parseInt(codeTosearch.substring(1));
+		     //Lower order check..
+		     if (low && (codeSINT>codeHINT)) {
+		    	findCommonTooth(tooth, tooths);
+		    	 r=codeHINT+"###"+String.join(",", findCommonTooth(tooth, tooths))+"###"+surface;
+		    	 break;
+		     }else if(low && (codeSINT<codeHINT)) {
+		    	 
+		     }
+		}
+		return r;
 		
 	}
 

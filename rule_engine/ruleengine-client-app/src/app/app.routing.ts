@@ -9,6 +9,8 @@ import {LogoutComponent} from "./components/logout/logout.component";
 import {HelpComponent} from "./components/help/help.component";
 import {ReportComponent} from "./components/report/report.component";
 import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
+import {UserInputComponent} from "./components/userinput/userinput.component";
+
 import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
 
 import {UrlPermission} from "./urlPermission/url.permission";
@@ -48,6 +50,11 @@ const appRoutes: Routes = [
 		    offs: OfficeResolve
 		  },
   component: TreatmentPlanComponent,canActivate: [UrlPermission]  },
+  { path: 'userinput',
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+  component: UserInputComponent,canActivate: [UrlPermission]  },
   { path: 'diagnosticcheck',
 	  resolve: {
 		    offs: OfficeResolve

@@ -110,7 +110,7 @@ public class RuleEngineValidationController {
 		// dto.setTreatmentPlanId("22095");
 		Map<String, List<TPValidationResponseDto>> map = tPService.validateTreatmentPlanPreBatch(dto);
 		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug, null);
-		System.out.println("calledddddddddd-----------");
+		//System.out.println("calledddddddddd-----------");
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", map));
 	}

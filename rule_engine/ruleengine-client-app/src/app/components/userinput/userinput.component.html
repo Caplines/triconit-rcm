@@ -1,0 +1,59 @@
+
+<div class="inner-bg">
+	<div *ngIf="!showIvfData" class="container"> 
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Enter Details To Fetch Treatment
+							Plan User Input</h3>
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form"
+						(ngSubmit)="f.form.valid && getuserQuestions()" #f="ngForm" novalidate>
+						<!-- <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div> -->
+						<span id="reauth-email" class="reauth-email"></span>
+
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f.submitted && !treatmentPlanId.valid }">
+							<label class="sr-only" for="treatmentPlanId">Treatment
+								Plan Id</label> <input type="text"
+								class="login-signup-form-field form-control"
+								name="treatmentPlanId" id="treatmentPlanId"
+								[(ngModel)]="uim.treatmentPlanId" #treatmentPlanId="ngModel"
+								placeholder="Treatment Plan Id..." required />
+							<div *ngIf="f.submitted && !treatmentPlanId.valid"
+								class="error-msg">Please enter Treatment Plan Id.</div>
+						</div>						
+
+						
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="officeId">Office Name</label> <select
+								name="officeId" [(ngModel)]="uim.officeId"
+								class="login-signup-form-field form-control" id="officeId">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+							<div *ngIf="f.submitted && uim.officeId==''" class="error-msg">The
+								Office Name is required</div>
+						</div>
+		
+						<p>
+							<button [disabled]="showLoading" type="submit" class="btn">Get Treatment Plan User Input</button>
+						</p>
+
+						<div *ngIf="showLoading" class="loader"></div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+	<app-ivfpopup *ngIf="showPopup" [ivfm]="ivfm" (emitToParent)="receiveChildrenEmitter($event)" 
+		[ivfValidateName]="'validateTreatmentPlan'" [showIvfData]="showIvfData"></app-ivfpopup>	
+	
+</div>

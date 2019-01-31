@@ -1,6 +1,7 @@
 package com.tricon.ruleengine.utils;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -163,7 +164,7 @@ public class DateUtils {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(date);
 		calendar.set(calendar.get(Calendar.YEAR) + 1, calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE) - 1);
-		System.out.println(calendar.get(Calendar.YEAR));
+		//System.out.println(calendar.get(Calendar.YEAR));
 		// calendar.set(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH)-1,
 		// calendar.get(Calendar.DATE));
 
@@ -194,4 +195,37 @@ public class DateUtils {
 		return properage;
 	}
 
+	
+	/**
+	 * Check if given date is in 12 month range
+	 * @param historyDate
+	 * @return
+	 */
+	public static boolean checkfor12m(Date historyDate,Date dos) {
+		
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(historyDate);
+		calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH)+12, calendar.get(Calendar.DATE));
+		Date date12m=calendar.getTime();
+		System.out.println(date12m);
+		if (dos.compareTo(date12m)>0 ){
+			return true;
+		}else{
+			return false;
+		}
+		
+	}
+	
+	public static void main(String[] a) {
+	  SimpleDateFormat sdf= new SimpleDateFormat("dd/mm/yyyy");
+	  String x="01/01/2018";
+	  String y="01/02/2018";
+	 try {
+		System.out.println(checkfor12m(sdf.parse(x),sdf.parse(y)));
+	} catch (ParseException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	  
+	}
 }

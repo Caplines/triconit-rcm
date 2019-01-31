@@ -55,6 +55,23 @@ public class Constants {
 	public static final String RULE_ID_20="Do not use Reserved";
 	public static final String RULE_ID_21="Frequency Limitations";
 	public static final String RULE_ID_22="CRA";
+	public static final String RULE_ID_23="Medicaid-1";
+	public static final String RULE_ID_24="Medicaid-2";
+	public static final String RULE_ID_25="Medicaid-3";
+	public static final String RULE_ID_26="Crown";
+	public static final String RULE_ID_27="Filling";
+	public static final String RULE_ID_28="Extraction";
+	public static final String RULE_ID_29="Exam Codes";
+	public static final String RULE_ID_30="Cleaning";
+	public static final String RULE_ID_31="D4910";
+	public static final String RULE_ID_32="Same Quad";
+	public static final String RULE_ID_34="Post and Core";
+	public static final String RULE_ID_35="Bone Graft/Alveoplasty";
+	public static final String RULE_ID_36="D5130, D5140";
+	public static final String RULE_ID_37="Extraction -2";
+	public static final String RULE_ID_39="Age Limitation Prophylaxis_D1110/D1120";
+	public static final String RULE_ID_40="Space Maintainer-Billateral_D1515";
+		
 	
 	
 	/*
@@ -117,6 +134,10 @@ public class Constants {
 	public static String microsoft_emp_master="Employer Master";
 	public static String microsoft_patient="Patient";
 	public static String google_ivf_sheet="IVF Sheet";
+	public static String insurance_Medicaid="Medicaid";
+	public static double insurance_Medicaid_max_fee=70.64;
+	public static int history_codes_size=60;
+	
 	
 	
 	//public static String microsoft_Rem_bal_ded_max="Rem. Bal, Rem. Ded., Max  ";
@@ -142,7 +163,17 @@ public class Constants {
 	public static String socketnotworkingFine="Connection to office is <b style=\"color:red\" class=\"error-message-api\">not</b> working propertly. Make sure Agent is running / router is configured properly.";
 	
 	
-
+    //Service Codes //Phase 2
+	public static String EXTRACTION_SC="D7140,D7210,D7220,D7230,D7240,D7241,D7250";
+	public static String CROWN_SC="D2740,D2750,D2790,D2791";
+	public static String FILLING_AT_SC="D2330,D2331,D2332,D2335";
+	public static String FILLING_PT_SC="D2391,D2392,D2393,D2394,P2391,P2392,P2393,P2394";
+	public static String SEALANT_SC="D1351";
+	public static String COMPLETE_DENTURE_SC=" D5110,D5120,D5130,D5140";
+	public static String PARTIAL_DENTURE_SC="D5211,D5212,D5213,D5214,D5225,D5226";
+	public static String DENTURE_SC="D5110,D5120,D5130,D5140";
+	
+	
 
 
 }

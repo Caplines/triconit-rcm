@@ -31,7 +31,6 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.common.collect.Collections2;
-import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 
@@ -84,14 +83,14 @@ public class ConnectAndReadSheets {
 	 * @throws IOException
 	 */
 	public static Map<String, List<Object>> readSheet(String spreadsheetId, String sheetName, String[] id,
-			String clientDir, String clientFolder, String officeName) throws IOException {
+			String clientDir, String clientFolder, String officeName,boolean idsPatient) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
 		// if (sheetType==Constants.treatmentPlanSheetID) return
 		// readTPSheetData(response, id);
 		// if (sheetType==Constants.ivTableDataSheetID)
-		return readIVFSheet(response, id, officeName);
+		return readIVFSheet(response, id, officeName,idsPatient);
 		// if (sheetType==Constants.mappingSheetID_CM) return
 		// readMappingDataCM(response);
 		// if (sheetType==Constants.mappingSheetID_FEE) return
@@ -132,41 +131,50 @@ public class ConnectAndReadSheets {
 	 * 
 	 * }
 	 */
-	public static Map<String, List<Object>> readIVFSheet(ValueRange range, String[] uniqueIds, String officeName) {
+	public static Map<String, List<Object>> readIVFSheet(ValueRange range, String[] uniqueIds, String officeName,boolean idsPatient) {
 
 		List<List<Object>> values = range.getValues();
 		Map<String, List<Object>> map = null;
 		List<String> ivds = Arrays.asList(uniqueIds);
 		ListIterator li = values.listIterator(values.size());
 		IVFTableSheet vif = null;
-		IVFHistorySheet vifH = null;
+		//IVFHistorySheet vifH = null;
 		List<Object> ivList = null;
 		// int maxlength= values.size();
 		// int maxlengthT= values.size();
 		// System.out.println("maxlengthT30::"+maxlengthT);
         int Column_NO_UNIQUE=312;
+        int Column_NO_PATIENT=129;
+        
 		while (li.hasPrevious()) {
 			ArrayList<String> obj = (ArrayList<String>) li.previous();
-			//System.out.println(obj.size());
-			//System.out.println(obj);
 			String uniqueId = "";
-			// System.out.println("maxlengthT"+maxlengthT);
-			// for(String uniqueId:uniqueIds) {
 			try {
 				if (obj.get(Column_NO_UNIQUE).toLowerCase().startsWith("Unique_ID"))
 					break;
 				//System.out.println("id---" + ivds.get(0));
 				//System.out.println("id---" + officeName + "_" + ivds.get(0));
 				//System.out.println("888888:;" + (obj.get(157)));
-				Collection<String> ruleGen = Collections2.filter(ivds,
-						id -> (officeName + "_" + id).equals(obj.get(Column_NO_UNIQUE)));
+				Collection<String> ruleGen =null;
+				if (idsPatient) {
+					ruleGen = Collections2.filter(ivds,
+						id -> id.equals(obj.get(Column_NO_PATIENT)));
+				}else {
+					ruleGen = Collections2.filter(ivds,
+							id -> (officeName + "_" + id).equals(obj.get(Column_NO_UNIQUE)));
+				}
 				if (ruleGen != null && ruleGen.size() > 0) {
 					//uniqueId = ruleGen.get(0);//obj.get(157);
-                    for(String i:ruleGen) {
+                    if (idsPatient) {
+                    	uniqueId=obj.get(Column_NO_PATIENT).split("_")[1];	
+					/*for(String i:ruleGen) {
                     	uniqueId=i;	
+                    }*/
+                    }else {
+                    	for(String i:ruleGen) {
+                        	uniqueId=i;	
+                         }
                     }
-					//System.out.println("ADDEDDDDD");
-					// if (!obj.get(157).equals(uniqueId)) continue;
 					int x = -1;
 					vif = new IVFTableSheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),

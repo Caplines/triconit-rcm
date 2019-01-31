@@ -1,9 +1,11 @@
 package com.tricon.ruleengine.utils;
 
 import java.io.BufferedWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,14 +13,19 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
 
+import com.google.api.client.util.Lists;
 import com.google.common.collect.Collections2;
+import com.tricon.ruleengine.dto.FeeToothDto;
 import com.tricon.ruleengine.dto.FreqencyDto;
 //import com.tricon.ruleengine.dto.HistoryMatcherDto;
 import com.tricon.ruleengine.dto.Rule6Dto;
@@ -35,6 +42,8 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
+
+import edu.umd.cs.findbugs.DiscoverSourceDirectories.Progress;
 
 /**
  * @author Deepak.Dogra
@@ -1661,8 +1670,46 @@ public class RuleBook {
 
 				}
 
-			}
+				//PHASE -2 
+				/*
+	            if (ivf.getPlanType().equalsIgnoreCase(Constants.insurance_Medicaid)) {
+	       	
+					int noOFhistory = Constants.history_codes_size;
+					Class<?> c2;
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
 
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							String hd = "getHistory" + i + "DOS";
+							String ht = "getHistory" + i + "Tooth";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							String code = (String) hcm.invoke(hisSheet);
+							Collection<String> prit = Collections2.filter(fillingCodeList,
+									cd -> cd.equals(code.toUpperCase()));
+			         		
+							if (prit!=null && prit.size()>0) {
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet));
+				              if (mapHistory.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistory.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistory.put(code, l);
+								}
+							}
+						}
+						RuleEngineLogger.generateLogs(clazz, " History of Sealants found.- " + historyPresent,
+								Constants.rule_log_debug, bw);
+                        
+	            }
+                  */
+			}
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
@@ -2648,7 +2695,7 @@ public class RuleBook {
 			Date TP_Date = null;
 			ToothHistoryDto hdto = null;
 			boolean historPresent = false;
-			int noOFhistory = 60;
+			int noOFhistory = Constants.history_codes_size;
 			List<ToothHistoryDto> list1 = null;
 			// Class<?> c1 =
 			// Class.forName("com.tricon.ruleengine.model.sheet.IVFTableSheet");
@@ -3157,7 +3204,7 @@ public class RuleBook {
 					List<ServiceCodeIvfTimesFreqFieldDto> D0274 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D0150 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D0120 = null;
-					List<ServiceCodeIvfTimesFreqFieldDto> D0140 = null;
+					//List<ServiceCodeIvfTimesFreqFieldDto> D0140 = null;--Phase 2 removed from a-like codes
 
 					// New Codes
 					List<ServiceCodeIvfTimesFreqFieldDto> D2391 = null;
@@ -3172,7 +3219,11 @@ public class RuleBook {
 					List<ServiceCodeIvfTimesFreqFieldDto> D2394 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> M2394 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> P2394 = null;
-
+					
+					List<ServiceCodeIvfTimesFreqFieldDto> D5110 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D5130 = null;
+					
+					
 					List<ServiceCodeIvfTimesFreqFieldDto> RestC1 = null;
 
 					for (ServiceCodeIvfTimesFreqFieldDto d : li) {
@@ -3227,11 +3278,11 @@ public class RuleBook {
 							if (D0120 == null)
 								D0120 = new ArrayList<>();
 							D0120.add(d);
-						} else if (d.getServiceCode().equals("D0140")) {
+						}/* else if (d.getServiceCode().equals("D0140")) {//Phase 2 - Removed D0140
 							if (D0140 == null)
 								D0140 = new ArrayList<>();
 							D0140.add(d);
-						} ///
+						} *///
 						else if (d.getServiceCode().equals("D2391")) {
 							if (D2391 == null)
 								D2391 = new ArrayList<>();
@@ -3280,6 +3331,14 @@ public class RuleBook {
 							if (P2394 == null)
 								P2394 = new ArrayList<>();
 							P2394.add(d);
+						} else if (d.getServiceCode().equals("D5110")) {
+							if (D5110 == null)
+								D5110 = new ArrayList<>();
+							D5110.add(d);
+						} else if (d.getServiceCode().equals("D5130")) {
+							if (D5130 == null)
+								D5130 = new ArrayList<>();
+							D5130.add(d);
 						}
 					} // For Loop d:li
 						// Alike code
@@ -3321,8 +3380,8 @@ public class RuleBook {
 
 						}
 					}
-					if (D0150 != null || D0120 != null || D0140 != null) {
-						Object[] m = FreqencyUtils.getError(D0150, D0120, D0140, "D0150", "D0120", "D0140", tooth);
+					if (D0150 != null || D0120 != null ) {//Phase 2 : removed D0140 From alike codes
+						Object[] m = FreqencyUtils.getError(D0150, D0120, "D0150", "D0120", tooth);
 						if (m != null) {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
@@ -3372,6 +3431,15 @@ public class RuleBook {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
 
+						}
+					}
+					if (D5110 != null && D5130 != null) {
+						Object[] m = FreqencyUtils.getError(D5110, D5130, "D5110", "D5130", tooth);
+						if (m != null) {
+							pass = false;
+							FreqencyUtils.addToFailedSet(failedCodeSet, m);
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
 						}
 					}
 					// if (pass) {
@@ -3506,6 +3574,1902 @@ public class RuleBook {
 
 	}
 
+
+	// Medicaid-1
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule23(List<Object> tpList,Object ivfSheet, MessageSource messageSource, Rules rule,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_23,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		String planType = ivf.getPlanType();
+		String cMedicate = Constants.insurance_Medicaid;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+
+		RuleEngineLogger.generateLogs(clazz, "planType-" + planType, Constants.rule_log_debug, bw);
+        try {
+		if (planType != null && planType.trim().equalsIgnoreCase(cMedicate)) {
+			double fee = 0;
+
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D0220") || tp.getServiceCode().equalsIgnoreCase("D0230")
+						|| tp.getServiceCode().equalsIgnoreCase("D0272")
+						|| tp.getServiceCode().equalsIgnoreCase("D0274")) {
+					RuleEngineLogger.generateLogs(clazz, " Fee for " + tp.getServiceCode() + " = " + tp.getFee(),
+							Constants.rule_log_debug, bw);
+					double fees=0;
+					if (!tp.getFee().trim().equals(""))
+					fees= Double.parseDouble(tp.getFee());
+					fee = fee +fees;
+				}
+
+			}
+
+			if (fee > Constants.insurance_Medicaid_max_fee) {
+				RuleEngineLogger.generateLogs(clazz,
+						" Rule Fails  (" + Constants.insurance_Medicaid_max_fee + ")<" + fee, Constants.rule_log_debug,
+						bw);
+
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule23.error.message", new Object[] {
+								Constants.insurance_Medicaid_max_fee, Constants.insurance_Medicaid_max_fee }, locale),
+						Constants.FAIL));
+
+			} else {
+				RuleEngineLogger.generateLogs(clazz, " BY pass the rule ", Constants.rule_log_debug, bw);
+
+				dList.add(
+						new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule23.pass.message",
+										new Object[] { Constants.insurance_Medicaid_max_fee }, locale),
+								Constants.PASS));
+
+			}
+		} else {
+			RuleEngineLogger.generateLogs(clazz, " BY pass the rule - Medicaid not present ", Constants.rule_log_debug,
+					bw);
+
+			dList.add(
+					new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule23.pass.message1",
+									new Object[] {  planType }, locale),
+							Constants.PASS));
+
+
+		}
+        }catch (Exception x) {
+        	dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL));
+   
+       }
+    	return dList;
+	}
+
+	// Medicaid-2
+	
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param esfeess
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule24(List<Object> tpList,Object ivfSheet,  MessageSource messageSource, Rules rule,
+			List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_24,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		String planType = ivf.getPlanType();
+		String cMedicate = Constants.insurance_Medicaid;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+
+		Map<String, FeeToothDto> mapE = new HashMap<>();
+		Map<String, List<ToothHistoryDto>> mapHistory = new HashMap<>();
+		try {
+			boolean checkForHistory = false;
+			boolean historyPresent = false;
+
+			if (planType.equalsIgnoreCase(cMedicate)) {
+				
+				List<String> reqList = Arrays.asList(Constants.FILLING_AT_SC.split(","));
+                reqList.addAll(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+				List<String> historyCheckList = Arrays.asList(Constants.SEALANT_SC.split(","));
+				
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+
+					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
+								bw);
+						RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
+						checkForHistory = true;
+						if (mapE.containsKey(tp.getServiceCode())) {
+							FeeToothDto ft = mapE.get(tp.getServiceCode());
+							List<String> l = ft.getTooth();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						} else {
+							List<String> l = new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							FeeToothDto ft = new FeeToothDto();
+							ft.setFees(tp.getFee());
+							ft.setTooth(l);
+							mapE.put(tp.getServiceCode(), ft);
+						}
+					}
+
+				}
+				ToothHistoryDto hdto=null;
+				if (checkForHistory) {
+					int noOFhistory = Constants.history_codes_size;
+					Class<?> c2;
+					try {
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							String hd = "getHistory" + i + "DOS";
+							String ht = "getHistory" + i + "Tooth";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							String code = (String) hcm.invoke(hisSheet);
+							if (historyCheckList.contains(code.toUpperCase())) {
+								historyPresent = true;
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet));
+				              if (mapHistory.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistory.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistory.put(code, l);
+								}
+							}
+						}
+						RuleEngineLogger.generateLogs(clazz, " History of Sealants found.- " + historyPresent,
+								Constants.rule_log_debug, bw);
+					    Date TP_DATE=null;	
+						if (historyPresent) {
+							TP_DATE= new Date();
+							boolean breakAll=false;
+							for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
+								List<ToothHistoryDto> d=entry.getValue();
+								
+								for (Map.Entry<String, FeeToothDto> entry2 : mapE.entrySet()) {
+									FeeToothDto fd=entry2.getValue();
+									List<String> t=fd.getTooth();
+									for(ToothHistoryDto hisd:d) {
+										String [] a= ToothUtil.getToothsFromTooth(hisd.getHistoryTooth());
+										 String[] objects =t.toArray(new String[0]);
+							     		List<String> cm= ToothUtil.findCommonTooth( objects, a);
+							     		if (cm!=null && cm.size()>0) {
+							     		//if (t.contains(hisd.getHistoryTooth())) {
+											Date dos = null;
+											try {
+												dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(hisd.getHistoryDos());
+												RuleEngineLogger.generateLogs(clazz,
+														"History DOS-" + hisd.getHistoryDos(),
+														Constants.rule_log_debug, bw);
+												
+												
+											} catch (ParseException e2) {
+												// TODO Auto-generated catch block
+												e2.printStackTrace();
+											}
+											RuleEngineLogger.generateLogs(clazz,
+													"TP_DATE-" + TP_DATE,
+													Constants.rule_log_debug, bw);
+										
+										if (!DateUtils.checkfor12m(TP_DATE, dos)) {
+											RuleEngineLogger.generateLogs(clazz,
+													"RULE FAILS-" + TP_DATE,
+													Constants.rule_log_debug, bw);
+											Collection<EagleSoftFeeShedule> ruleGen = Collections2.filter(esfeess,
+													name -> name.getFeesServiceCode().equals(hisd.getHistoryCode()));
+											if (ruleGen != null) {
+												for (EagleSoftFeeShedule fs : ruleGen) {
+													RuleEngineLogger.generateLogs(clazz, "TP ("+entry2.getKey()+")Fee -" + fd.getFees(),
+															Constants.rule_log_debug, bw);
+													RuleEngineLogger.generateLogs(clazz, "ES ("+hisd.getHistoryCode()+") Fee -" + fs.getFeesFee(),
+															Constants.rule_log_debug, bw);
+											double diff= Double.parseDouble(fd.getFees())-Double.parseDouble(fs.getFeesFee());
+											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule24.error.message", new Object[] { diff  }, locale),
+													Constants.FAIL));
+										
+												}		
+											}else{
+												RuleEngineLogger.generateLogs(clazz, "Fee Not found for "+hisd.getHistoryCode()+" in Fee Schedule",
+														Constants.rule_log_debug, bw);
+												dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+														messageSource.getMessage("rule.fee.notfound", new Object[] {  }, locale),
+														Constants.FAIL));
+												
+											}
+											breakAll=true;
+											break;
+										}
+						
+									}
+										if (breakAll) break;
+								}//FOR-hisd
+								if (breakAll) break;
+							}//FOR -ft
+						}//FOR -ft
+						if (!breakAll) {
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule24.pass1.message", new Object[] {  }, locale),
+									Constants.PASS));
+			
+						}
+						
+					 }//if history
+						else {
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule24.pass1.message", new Object[] {  }, locale),
+									Constants.PASS));
+			
+						}
+					}catch (Exception e) {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
+								Constants.FAIL));
+								}
+				}
+			} else {
+				RuleEngineLogger.generateLogs(clazz, " Plan type not Medicaid",
+						Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule24.pass3.message", new Object[] {  }, locale),
+						Constants.PASS));
+
+			}
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+	}
+
+	
+	// Medicaid-3
+	
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param esfeess
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule25(Object ivfSheet, MessageSource messageSource, Rules rule,
+			List<Object> tpList,List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_25,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		String planType = ivf.getPlanType();
+		String cMedicate = Constants.insurance_Medicaid;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+
+		Map<String, FeeToothDto> mapE = new HashMap<>();
+		Map<String, List<ToothHistoryDto>> mapHistory = new HashMap<>();
+		try {
+			boolean checkForHistory = false;
+			boolean historyPresent = false;
+
+			if (planType.equalsIgnoreCase(cMedicate)) {
+				
+				List<String> reqList = Arrays.asList(Constants.CROWN_SC.split(","));
+                List<String> historyCheckList = Arrays.asList(Constants.FILLING_AT_SC.split(","));
+                historyCheckList.addAll(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+				
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+
+					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
+								bw);
+						RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
+						checkForHistory = true;
+						if (mapE.containsKey(tp.getServiceCode())) {
+							FeeToothDto ft = mapE.get(tp.getServiceCode());
+							List<String> l = ft.getTooth();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						} else {
+							List<String> l = new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							FeeToothDto ft = new FeeToothDto();
+							ft.setFees(tp.getFee());
+							ft.setTooth(l);
+							mapE.put(tp.getServiceCode(), ft);
+						}
+					}
+
+				}
+				ToothHistoryDto hdto=null;
+				if (checkForHistory) {
+					int noOFhistory = Constants.history_codes_size;
+					Class<?> c2;
+					try {
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							String hd = "getHistory" + i + "DOS";
+							String ht = "getHistory" + i + "Tooth";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							String code = (String) hcm.invoke(hisSheet);
+							if (historyCheckList.contains(code.toUpperCase())) {
+								historyPresent = true;
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet));
+				              if (mapHistory.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistory.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistory.put(code, l);
+								}
+							}
+						}
+						RuleEngineLogger.generateLogs(clazz, " History of Filling found.- " + historyPresent,
+								Constants.rule_log_debug, bw);
+					    Date TP_DATE=null;	
+						if (historyPresent) {
+							TP_DATE= new Date();
+							boolean breakAll=false;
+							for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
+								List<ToothHistoryDto> d=entry.getValue();
+								
+								for (Map.Entry<String, FeeToothDto> entry2 : mapE.entrySet()) {
+									FeeToothDto fd=entry2.getValue();
+									List<String> t=fd.getTooth();
+									for(ToothHistoryDto hisd:d) {
+										if (t.contains(hisd.getHistoryTooth())) {
+											Date dos = null;
+											try {
+												dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(hisd.getHistoryDos());
+												RuleEngineLogger.generateLogs(clazz,
+														"History DOS-" + hisd.getHistoryDos(),
+														Constants.rule_log_debug, bw);
+												
+												
+											} catch (ParseException e2) {
+												// TODO Auto-generated catch block
+												e2.printStackTrace();
+											}
+											RuleEngineLogger.generateLogs(clazz,
+													"TP_DATE-" + TP_DATE,
+													Constants.rule_log_debug, bw);
+										
+										if (!DateUtils.checkfor12m(TP_DATE, dos)) {
+											RuleEngineLogger.generateLogs(clazz,
+													"RULE FAILS-" + TP_DATE,
+													Constants.rule_log_debug, bw);
+											Collection<EagleSoftFeeShedule> ruleGen = Collections2.filter(esfeess,
+													name -> name.getFeesServiceCode().equals(hisd.getHistoryCode()));
+											if (ruleGen != null) {
+												for (EagleSoftFeeShedule fs : ruleGen) {
+													RuleEngineLogger.generateLogs(clazz, "TP ("+entry2.getKey()+")Fee -" + fd.getFees(),
+															Constants.rule_log_debug, bw);
+													RuleEngineLogger.generateLogs(clazz, "ES ("+hisd.getHistoryCode()+") Fee -" + fs.getFeesFee(),
+															Constants.rule_log_debug, bw);
+											double diff= Double.parseDouble(fd.getFees())-Double.parseDouble(fs.getFeesFee());
+											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule25.error.message", new Object[] { fs.getFeesServiceCode(), diff  }, locale),
+													Constants.FAIL));
+										
+												}		
+											}else{
+												RuleEngineLogger.generateLogs(clazz, "Fee Not found for "+hisd.getHistoryCode()+" in Fee Schedule",
+														Constants.rule_log_debug, bw);
+												dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+														messageSource.getMessage("rule.fee.notfound", new Object[] {  }, locale),
+														Constants.FAIL));
+												
+											}
+											breakAll=true;
+											break;
+										}
+						
+									}
+										if (breakAll) break;
+								}//FOR-hisd
+								if (breakAll) break;
+							}//FOR -ft
+						}//FOR -ft
+						if (!breakAll) {
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule25.pass1.message", new Object[] {  }, locale),
+									Constants.PASS));
+			
+						}
+						
+					 }//if history
+						else {
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule25.pass1.message", new Object[] {  }, locale),
+									Constants.PASS));
+			
+						}
+					}catch (Exception e) {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
+								Constants.FAIL));
+								}
+				}
+			} else {
+				RuleEngineLogger.generateLogs(clazz, " Plan type not Medicaid",
+						Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule25.pass3.message", new Object[] {  }, locale),
+						Constants.PASS));
+
+			}
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+	}
+
+	// Crown
+	
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param esfeess
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule26(Object ivfSheet, MessageSource messageSource, Rules rule,
+			List<Object> tpList,List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_26,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+
+		Map<String, FeeToothDto> mapE = new HashMap<>();
+		Map<String, FeeToothDto> mapD = new HashMap<>();
+		Map<String, List<ToothHistoryDto>> mapHistory = new HashMap<>();
+		try {
+			boolean checkForMajorLogic = false;
+			boolean historyPresent = false;
+
+				
+				List<String> reqList = Arrays.asList(Constants.CROWN_SC.split(","));
+                List<String> historyCheckList = Arrays.asList(Constants.CROWN_SC.split(","));
+                List<String> c1List = Arrays.asList(Constants.FILLING_PT_SC.split(","));
+                c1List.addAll(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
+                c1List.addAll(Arrays.asList(Constants.SEALANT_SC.split(",")));
+                
+                
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+
+					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
+								bw);
+						checkForMajorLogic = true;
+						if (mapE.containsKey(tp.getServiceCode())) {
+							FeeToothDto ft = mapE.get(tp.getServiceCode());
+							List<String> l = ft.getTooth();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						} else {
+							List<String> l = new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							FeeToothDto ft = new FeeToothDto();
+							ft.setFees(tp.getFee());
+							ft.setTooth(l);
+							mapE.put(tp.getServiceCode(), ft);
+						}
+					}
+					if (c1List.contains(tp.getServiceCode().toUpperCase())) {
+						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
+								bw);
+						if (mapD.containsKey(tp.getServiceCode())) {
+							FeeToothDto ft = mapD.get(tp.getServiceCode());
+							List<String> l = ft.getTooth();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						} else {
+							List<String> l = new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							FeeToothDto ft = new FeeToothDto();
+							ft.setFees(tp.getFee());
+							ft.setTooth(l);
+							mapD.put(tp.getServiceCode(), ft);
+						}
+					}
+
+				}
+				ToothHistoryDto hdto=null;
+				if (checkForMajorLogic) {
+					int noOFhistory = Constants.history_codes_size;
+					Class<?> c2;
+					try {
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							String hd = "getHistory" + i + "DOS";
+							String ht = "getHistory" + i + "Tooth";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							String code = (String) hcm.invoke(hisSheet);
+							if (historyCheckList.contains(code.toUpperCase())) {
+								historyPresent = true;
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet));
+				              if (mapHistory.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistory.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistory.put(code, l);
+								}
+							}
+						}
+						RuleEngineLogger.generateLogs(clazz, " History of Crown found.- " + historyPresent,
+								Constants.rule_log_debug, bw);
+						boolean breakAll=false;
+						if (historyPresent) {
+							for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
+								List<ToothHistoryDto> d=entry.getValue();
+								
+								for (Map.Entry<String, FeeToothDto> entry2 : mapD.entrySet()) {
+									FeeToothDto fd=entry2.getValue();
+									List<String> t=fd.getTooth();
+									for(ToothHistoryDto hisd:d) {
+										if (t.contains(hisd.getHistoryTooth())) {
+											breakAll=true;
+											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule26.error.message", new Object[] {hisd.getHistoryTooth()  }, locale),
+													Constants.FAIL));
+							
+											break;
+									}
+										if (breakAll) break;
+								}//FOR-hisd
+								if (breakAll) break;
+							}//FOR -ft
+						 }//FOR -ft
+						}
+						if (!breakAll) {
+							for (Map.Entry<String, FeeToothDto> entry : mapE.entrySet()) {
+								FeeToothDto d=entry.getValue();
+								
+								for (Map.Entry<String, FeeToothDto> entry2 : mapD.entrySet()) {
+									FeeToothDto fd=entry2.getValue();
+									List<String> t=fd.getTooth();
+									
+									for(String hisd:d.getTooth()) {
+										
+										if (t.contains(hisd)) {
+											breakAll=true;
+											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule26.error.message", new Object[] { hisd }, locale),
+													Constants.FAIL));
+											break;
+									}
+										if (breakAll) break;
+								}//FOR-hisd
+								if (breakAll) break;
+							}//FOR -ft
+						 }//FOR -ft
+						}
+						if (!breakAll) {
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule26.pass1.message", new Object[] {  }, locale),
+									Constants.PASS));
+			
+						}
+						
+					}catch (Exception e) {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
+								Constants.FAIL));
+								}
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule26.pass1.message", new Object[] {  }, locale),
+							Constants.PASS));
+				}
+			} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+	}
+
+	// Filling
+	
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param esfeess
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule27(Object ivfSheet, MessageSource messageSource, Rules rule,
+			List<Object> tpList,List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_27,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+
+		Map<String, FeeToothDto> mapE = new HashMap<>();
+		Map<String, FeeToothDto> mapD = new HashMap<>();
+		Map<String, List<ToothHistoryDto>> mapHistory = new HashMap<>();
+		try {
+			boolean checkForMajorLogic = false;
+			boolean historyPresent = false;
+
+				
+				List<String> reqList = Arrays.asList(Constants.FILLING_PT_SC.split(","));
+				reqList.addAll(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
+                
+                List<String> historyCheckList = Arrays.asList(Constants.FILLING_PT_SC.split(","));
+                historyCheckList.addAll(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
+                
+                List<String> c1List = Arrays.asList(Constants.SEALANT_SC.split(","));
+                
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+
+					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
+								bw);
+						checkForMajorLogic = true;
+						if (mapE.containsKey(tp.getServiceCode())) {
+							FeeToothDto ft = mapE.get(tp.getServiceCode());
+							List<String> l = ft.getTooth();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						} else {
+							List<String> l = new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							FeeToothDto ft = new FeeToothDto();
+							ft.setFees(tp.getFee());
+							ft.setTooth(l);
+							mapE.put(tp.getServiceCode(), ft);
+						}
+					}
+					if (c1List.contains(tp.getServiceCode().toUpperCase())) {
+						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
+								bw);
+						if (mapD.containsKey(tp.getServiceCode())) {
+							FeeToothDto ft = mapD.get(tp.getServiceCode());
+							List<String> l = ft.getTooth();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						} else {
+							List<String> l = new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							FeeToothDto ft = new FeeToothDto();
+							ft.setFees(tp.getFee());
+							ft.setTooth(l);
+							mapD.put(tp.getServiceCode(), ft);
+						}
+					}
+
+				}
+				ToothHistoryDto hdto=null;
+				if (checkForMajorLogic) {
+					int noOFhistory = Constants.history_codes_size;
+					Class<?> c2;
+					try {
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							String hd = "getHistory" + i + "DOS";
+							String ht = "getHistory" + i + "Tooth";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							String code = (String) hcm.invoke(hisSheet);
+							if (historyCheckList.contains(code.toUpperCase())) {
+								historyPresent = true;
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet));
+				              if (mapHistory.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistory.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistory.put(code, l);
+								}
+							}
+						}
+						RuleEngineLogger.generateLogs(clazz, " History of Filling found.- " + historyPresent,
+								Constants.rule_log_debug, bw);
+						boolean breakAll=false;
+						if (historyPresent) {
+							for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
+								List<ToothHistoryDto> d=entry.getValue();
+								
+								for (Map.Entry<String, FeeToothDto> entry2 : mapD.entrySet()) {
+									FeeToothDto fd=entry2.getValue();
+									List<String> t=fd.getTooth();
+									for(ToothHistoryDto hisd:d) {
+										if (t.contains(hisd.getHistoryTooth())) {
+											breakAll=true;
+											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule27.error.message", new Object[] {hisd.getHistoryTooth()  }, locale),
+													Constants.FAIL));
+							
+											break;
+									}
+										if (breakAll) break;
+								}//FOR-hisd
+								if (breakAll) break;
+							}//FOR -ft
+						 }//FOR -ft
+						}
+						if (!breakAll) {
+							for (Map.Entry<String, FeeToothDto> entry : mapE.entrySet()) {
+								FeeToothDto d=entry.getValue();
+								
+								for (Map.Entry<String, FeeToothDto> entry2 : mapD.entrySet()) {
+									FeeToothDto fd=entry2.getValue();
+									List<String> t=fd.getTooth();
+									
+									for(String hisd:d.getTooth()) {
+										
+										if (t.contains(hisd)) {
+											breakAll=true;
+											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule27.error.message", new Object[] { hisd }, locale),
+													Constants.FAIL));
+											break;
+									}
+										if (breakAll) break;
+								}//FOR-hisd
+								if (breakAll) break;
+							}//FOR -ft
+						 }//FOR -ft
+						}
+						if (!breakAll) {
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule27.pass1.message", new Object[] {  }, locale),
+									Constants.PASS));
+			
+						}
+						
+					}catch (Exception e) {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
+								Constants.FAIL));
+								}
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule27.pass1.message", new Object[] {  }, locale),
+							Constants.PASS));
+				}
+			} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+	}
+
+	// Extraction
+	
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param esfeess
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule28(Object ivfSheet, MessageSource messageSource, Rules rule,
+			List<Object> tpList,List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_28,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+
+		Map<String, FeeToothDto> mapE = new HashMap<>();
+		Map<String, FeeToothDto> mapD = new HashMap<>();
+		Map<String, List<ToothHistoryDto>> mapHistory = new HashMap<>();
+		try {
+			boolean checkForMajorLogic = false;
+			boolean historyPresent = false;
+
+				
+				List<String> reqList = Arrays.asList(Constants.EXTRACTION_SC.split(","));
+				
+                List<String> historyCheckList = Arrays.asList(Constants.EXTRACTION_SC.split(","));
+                
+                List<String> c1List = Arrays.asList(Constants.SEALANT_SC.split(","));
+                historyCheckList.addAll(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
+                historyCheckList.addAll(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+                historyCheckList.addAll(Arrays.asList(Constants.CROWN_SC.split(",")));
+                historyCheckList.addAll(Arrays.asList(Constants.EXTRACTION_SC.split(",")));
+                
+                
+                
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+
+					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
+								bw);
+						checkForMajorLogic = true;
+						if (mapE.containsKey(tp.getServiceCode())) {
+							FeeToothDto ft = mapE.get(tp.getServiceCode());
+							List<String> l = ft.getTooth();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						} else {
+							List<String> l = new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							FeeToothDto ft = new FeeToothDto();
+							ft.setFees(tp.getFee());
+							ft.setTooth(l);
+							mapE.put(tp.getServiceCode(), ft);
+						}
+					}
+					if (c1List.contains(tp.getServiceCode().toUpperCase())) {
+						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
+								bw);
+						if (mapD.containsKey(tp.getServiceCode())) {
+							FeeToothDto ft = mapD.get(tp.getServiceCode());
+							List<String> l = ft.getTooth();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						} else {
+							List<String> l = new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							FeeToothDto ft = new FeeToothDto();
+							ft.setFees(tp.getFee());
+							ft.setTooth(l);
+							mapD.put(tp.getServiceCode(), ft);
+						}
+					}
+
+				}
+				ToothHistoryDto hdto=null;
+				if (checkForMajorLogic) {
+					int noOFhistory = Constants.history_codes_size;
+					Class<?> c2;
+					try {
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							String hd = "getHistory" + i + "DOS";
+							String ht = "getHistory" + i + "Tooth";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							String code = (String) hcm.invoke(hisSheet);
+							if (historyCheckList.contains(code.toUpperCase())) {
+								historyPresent = true;
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet));
+				              if (mapHistory.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistory.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistory.put(code, l);
+								}
+							}
+						}
+						RuleEngineLogger.generateLogs(clazz, " History of Extraction found.- " + historyPresent,
+								Constants.rule_log_debug, bw);
+						boolean breakAll=false;
+						if (historyPresent) {
+							for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
+								List<ToothHistoryDto> d=entry.getValue();
+								
+								for (Map.Entry<String, FeeToothDto> entry2 : mapD.entrySet()) {
+									FeeToothDto fd=entry2.getValue();
+									List<String> t=fd.getTooth();
+									for(ToothHistoryDto hisd:d) {
+										if (t.contains(hisd.getHistoryTooth())) {
+											breakAll=true;
+											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule28.error.message", new Object[] {hisd.getHistoryTooth()  }, locale),
+													Constants.FAIL));
+							
+											break;
+									}
+										if (breakAll) break;
+								}//FOR-hisd
+								if (breakAll) break;
+							}//FOR -ft
+						 }//FOR -ft
+						}
+						if (!breakAll) {
+							for (Map.Entry<String, FeeToothDto> entry : mapE.entrySet()) {
+								FeeToothDto d=entry.getValue();
+								
+								for (Map.Entry<String, FeeToothDto> entry2 : mapD.entrySet()) {
+									FeeToothDto fd=entry2.getValue();
+									List<String> t=fd.getTooth();
+									
+									for(String hisd:d.getTooth()) {
+										
+										if (t.contains(hisd)) {
+											breakAll=true;
+											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule28.error.message", new Object[] { hisd }, locale),
+													Constants.FAIL));
+											break;
+									}
+										if (breakAll) break;
+								}//FOR-hisd
+								if (breakAll) break;
+							}//FOR -ft
+						 }//FOR -ft
+						}
+						if (!breakAll) {
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule28.pass1.message", new Object[] {  }, locale),
+									Constants.PASS));
+			
+						}
+						
+					}catch (Exception e) {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
+								Constants.FAIL));
+								}
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule28.pass1.message", new Object[] {  }, locale),
+							Constants.PASS));
+				}
+			} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+	}
+	
+	// One exam
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule29(Object ivfSheet, MessageSource messageSource, Rules rule,
+			List<Object> tpList, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_29,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		String  planType= ivf.getPlanType();
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		List<String> codes= new ArrayList<>();
+		RuleEngineLogger.generateLogs(clazz,
+				"planType-"+planType,
+				Constants.rule_log_debug, bw);
+		
+			int  counter=0;
+			
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D0150") || tp.getServiceCode().equalsIgnoreCase("D0120") || 
+				    tp.getServiceCode().equalsIgnoreCase("D0145") || tp.getServiceCode().equalsIgnoreCase("D0140") ) {
+					RuleEngineLogger.generateLogs(clazz,"code ="+ tp.getServiceCode(),Constants.rule_log_debug, bw);
+					counter =counter+  1;
+					codes.add(tp.getServiceCode());
+				}
+				
+			}
+			
+			if (counter> 1) {
+				RuleEngineLogger.generateLogs(clazz,
+						" Rule Fails  => No. of Exam present ="+counter ,
+						Constants.rule_log_debug, bw);
+				
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule29.error.message",
+								new Object[] { String.join(",", codes) },
+								locale),
+						Constants.FAIL));
+				
+			}else {
+			RuleEngineLogger.generateLogs(clazz,
+					" BY pass the rule ",
+					Constants.rule_log_debug, bw);
+			
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule29.pass.message", new Object[] {String.join(",", codes) }, locale),
+					Constants.PASS));
+
+			}
+		
+			return dList;
+				
+		
+
+	}
+
+	// Cleaning
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule30(Object ivfSheet, MessageSource messageSource, Rules rule,
+			List<Object> tpList, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_30,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		String  planType= ivf.getPlanType();
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		List<String> codes= new ArrayList<>();
+		RuleEngineLogger.generateLogs(clazz,
+				"planType-"+planType,
+				Constants.rule_log_debug, bw);
+		
+			int  counter=0;
+			
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D4346") || tp.getServiceCode().equalsIgnoreCase("D4341") || 
+				    tp.getServiceCode().equalsIgnoreCase("D4342") || tp.getServiceCode().equalsIgnoreCase("D1110")  ||
+				    tp.getServiceCode().equalsIgnoreCase("D1120") || tp.getServiceCode().equalsIgnoreCase("D4910") || 
+					 tp.getServiceCode().equalsIgnoreCase("D4355")) {
+						RuleEngineLogger.generateLogs(clazz,"code ="+ tp.getServiceCode(),Constants.rule_log_debug, bw);
+					counter =counter+  1;
+					codes.add(tp.getServiceCode());
+				}
+				
+			}
+			
+			if (counter> 1) {
+				RuleEngineLogger.generateLogs(clazz,
+						" Rule Fails  => No. of Cleaning Codes  present ="+counter ,
+						Constants.rule_log_debug, bw);
+				
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule30.error.message",
+								new Object[] { String.join(",", codes) },
+								locale),
+						Constants.FAIL));
+				
+			}else {
+			RuleEngineLogger.generateLogs(clazz,
+					" BY pass the rule ",
+					Constants.rule_log_debug, bw);
+			
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule30.pass.message", new Object[] {String.join(",", codes) }, locale),
+					Constants.PASS));
+
+			}
+		
+			return dList;
+				
+		
+
+	}
+
+	// D4910 (Limit)
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule31(Object ivfSheet, MessageSource messageSource, Rules rule,
+			List<Object> tpList, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_31,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+			int  counter_1=0;
+			int  counter_2=0;
+			
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D4910")) {
+						RuleEngineLogger.generateLogs(clazz,"code ="+ tp.getServiceCode(),Constants.rule_log_debug, bw);
+					//Check history
+						
+						
+						int noOFhistory = Constants.history_codes_size;
+						Class<?> c2;
+						try {
+							c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+						
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							Method hcm = c2.getMethod(hc);
+							String code=(String) hcm.invoke(hisSheet);
+							if (code.equalsIgnoreCase("D4341")) {
+					    	    counter_1++;		
+							}else if (code.equalsIgnoreCase("D4342")) {
+						        counter_2++;		
+								}
+							//
+						}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						 // For end
+						
+				}
+				
+			}
+			
+			if (counter_1> 1 || counter_2> 1) {
+				
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule31.pass.message",
+								new Object[] {},
+								locale),
+						Constants.PASS));
+				
+			}else {
+			RuleEngineLogger.generateLogs(clazz,
+					" Fail the Rule ",
+					Constants.rule_log_debug, bw);
+			
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule31.error.message", new Object[] { }, locale),
+					Constants.FAIL));
+
+			}
+		
+			return dList;
+				
+		
+
+	}
+
+
+	// Same Quad
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule32(MessageSource messageSource, Rules rule, List<Object> tpList,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_32,
+				Constants.rule_log_debug, bw);
+
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		String toothTR1[] = null;
+		String toothTR2[] = null;
+		try {
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D4341")) {
+					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
+					toothTR1 = ToothUtil.getQuadToothsFromTooth(tp.getTooth());
+
+				}
+				if (tp.getServiceCode().equalsIgnoreCase("D4342")) {
+					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
+					toothTR2 = ToothUtil.getQuadToothsFromTooth(tp.getTooth());
+
+				}
+			}
+			if (toothTR1 == null && toothTR2 == null) {
+				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule32.pass2.message", new Object[] {}, locale), Constants.PASS));
+
+			} else if (toothTR1 == null || toothTR2 == null) {
+				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule32.pass3.message", new Object[] {}, locale), Constants.PASS));
+
+			} else if (toothTR1 != null && toothTR2 != null) {
+				List<String> li = new ArrayList<>();
+
+				// Remove Duplicates from Tooth
+				Set<String> set1 = new LinkedHashSet<>();
+				Set<String> set2 = new LinkedHashSet<>();
+
+				// Add the elements to set
+				set1.addAll(Arrays.asList(toothTR1));
+				set2.addAll(Arrays.asList(toothTR2));
+
+				for (String toothTR11 : set1) {
+					for (String toothTR12 : set2) {
+						if (toothTR11.equals(toothTR12))
+							li.add(toothTR12);
+					}
+				}
+
+				if (li.size() == set1.size() && set1.size() == set2.size()) {
+					// FAIL
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
+							.getMessage("rule32.error.message", new Object[] { StringUtils.join(li, ',') }, locale),
+							Constants.FAIL));
+				} else {
+					// PASS
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule32.pass1.message", new Object[] {}, locale), Constants.PASS));
+
+				}
+
+			}
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
+
+	// Post and Core
+	/**
+	 * 
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule34(MessageSource messageSource, Rules rule, List<Object> tpList,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_34,
+				Constants.rule_log_debug, bw);
+
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		String toothTR1[] = null;
+		String toothTR2[] = null;
+		try {
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D2954")) {
+					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
+					toothTR1 = ToothUtil.getToothsFromTooth(tp.getTooth());
+				}
+				if (tp.getServiceCode().equalsIgnoreCase("D2950")) {
+					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
+					toothTR2 = ToothUtil.getToothsFromTooth(tp.getTooth());
+				}
+			}
+			if (toothTR1 == null && toothTR2 == null) {
+				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule34.pass2.message", new Object[] {}, locale), Constants.PASS));
+
+			} else if (toothTR1 == null || toothTR2 == null) {
+				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule34.pass3.message", new Object[] {}, locale), Constants.PASS));
+
+			} else if (toothTR1 != null && toothTR2 != null) {
+				List<String> li = new ArrayList<>();
+
+				// Remove Duplicates from Tooth
+				Set<String> set1 = new LinkedHashSet<>();
+				Set<String> set2 = new LinkedHashSet<>();
+
+				// Add the elements to set
+				set1.addAll(Arrays.asList(toothTR1));
+				set2.addAll(Arrays.asList(toothTR2));
+
+				for (String toothTR11 : set1) {
+					for (String toothTR12 : set2) {
+						if (toothTR11.equals(toothTR12))
+							li.add(toothTR12);
+					}
+				}
+
+				if (li.size() == set1.size() && set1.size() == set2.size()) {
+					// FAIL
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
+							.getMessage("rule34.error.message", new Object[] { StringUtils.join(li, ',') }, locale),
+							Constants.FAIL));
+				} else {
+					// PASS
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule34.pass1.message", new Object[] {}, locale), Constants.PASS));
+
+				}
+
+			}
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
+	
+
+	// Bone Graft/Alveoplasty
+	/**
+	 * 
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule35(MessageSource messageSource, Rules rule, List<Object> tpList,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_35,
+				Constants.rule_log_debug, bw);
+
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		List<String> teethList = new ArrayList<>();
+		try {
+			int counter=0;
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D7953") || tp.getServiceCode().equalsIgnoreCase("D7310") ||
+						tp.getServiceCode().equalsIgnoreCase("D7311")||tp.getServiceCode().equalsIgnoreCase("D7320") ||	
+						tp.getServiceCode().equalsIgnoreCase("D7321")) {
+					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
+					teethList.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					counter++;
+				}
+			}
+			if (counter>1) {
+				RuleEngineLogger.generateLogs(clazz, " Fail the rule ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule35.fail.message", new Object[] {String.join(",", teethList)}, locale), Constants.FAIL));
+
+			} else if (counter==1) {
+				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule35.pass1.message", new Object[] {}, locale), Constants.PASS));
+
+			} else  {
+				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule35.pass2.message", new Object[] {}, locale), Constants.PASS));
+				
+			}
+
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
+	
+	// D5130, D5140
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule36(Object ivfSheet,MessageSource messageSource, Rules rule, List<Object> tpList,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_36,
+				Constants.rule_log_debug, bw);
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		List<String> dcodes = new ArrayList<>();
+	    Map<String,List<String>> map = new HashMap<>();
+		try {
+			boolean checkForHistory=false;
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D5130") || tp.getServiceCode().equalsIgnoreCase("D5140")) {
+					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
+					checkForHistory=true;
+					if (map.containsKey(tp.getServiceCode())) {
+						List<String> t=map.get(tp.getServiceCode());
+						t.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					}else {
+						List<String> l= new ArrayList<>();
+						l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						map.put(tp.getServiceCode(), l);
+					}
+					dcodes.add(tp.getServiceCode());
+				}
+			}
+			if (checkForHistory) {
+				int noOFhistory = Constants.history_codes_size;
+				Class<?> c2;
+				try {
+					c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+				
+				IVFHistorySheet hisSheet = ivf.getHs();
+				
+				for (int i = 1; i <= noOFhistory; i++) {
+					String hc = "getHistory" + i + "Code";
+					String ht = "getHistory" + i + "Tooth";
+					Method hcm = c2.getMethod(hc);
+					Method htm = c2.getMethod(ht);
+					String code=(String) hcm.invoke(hisSheet);
+					String tooth=(String) htm.invoke(hisSheet);
+					if (code.equalsIgnoreCase("D4341") || code.equalsIgnoreCase("D5120") ||
+						code.equalsIgnoreCase("D5130") || code.equalsIgnoreCase("D5140")) {
+						//Iterate HashMap
+						for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+							List<String> s = entry.getValue();
+						if (s.contains(tooth)) {
+							//Fail
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule36.error.message", new Object[] {code, entry.getKey()}, locale), Constants.FAIL));
+  			                 break;
+						}
+			    	}
+				 }
+				 }
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+			} else  {
+				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule36.pass2.message", new Object[] {}, locale), Constants.PASS));
+				
+			}
+
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
+	
+	
+	// Extraction-2
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule37(Object ivfSheet,MessageSource messageSource, Rules rule, List<Object> tpList,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_37,
+				Constants.rule_log_debug, bw);
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		//List<String> dcodes = new ArrayList<>();
+	    Map<String,List<String>> mapE = new HashMap<>();
+	    Map<String,List<String>> mapD = new HashMap<>();
+	    Map<String,List<String>> mapHistory = new HashMap<>();
+		try {
+			boolean checkForHistory=false;
+			boolean denturePresent=false;
+			boolean historyPresent=false;
+			
+			
+			List<String> extList= Arrays.asList( Constants.EXTRACTION_SC.split(","));
+			List<String> dentureList= Arrays.asList( Constants.DENTURE_SC.split(","));
+			
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (extList.contains(tp.getServiceCode().toUpperCase())) {
+					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
+					checkForHistory=true;
+					if (mapE.containsKey(tp.getServiceCode())) {
+						List<String> t=mapE.get(tp.getServiceCode());
+						t.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					}else {
+						List<String> l= new ArrayList<>();
+						l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						mapE.put(tp.getServiceCode(), l);
+					}
+					//dcodes.add(tp.getServiceCode());
+				}
+				if (dentureList.contains(tp.getServiceCode().toUpperCase())) {
+					denturePresent=true;
+					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
+					if (mapD.containsKey(tp.getServiceCode())) {
+						List<String> t=mapD.get(tp.getServiceCode());
+						t.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					}else {
+						List<String> l= new ArrayList<>();
+						l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						mapD.put(tp.getServiceCode(), l);
+					}
+					//dcodes.add(tp.getServiceCode());
+				}
+				
+				
+			}
+			if (checkForHistory && denturePresent) {
+				int noOFhistory = Constants.history_codes_size;
+				Class<?> c2;
+				try {
+					c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+				
+				IVFHistorySheet hisSheet = ivf.getHs();
+				List<String> allExtractionTooth=new ArrayList<>();
+				List<String> allDentureTooth=new ArrayList<>();
+				List<String> allDentureToothHis=new ArrayList<>();
+				
+				for (int i = 1; i <= noOFhistory; i++) {
+					String hc = "getHistory" + i + "Code";
+					String ht = "getHistory" + i + "Tooth";
+					Method hcm = c2.getMethod(hc);
+					Method htm = c2.getMethod(ht);
+					String code=(String) hcm.invoke(hisSheet);
+					String tooth=(String) htm.invoke(hisSheet);
+					if (dentureList.contains(code.toUpperCase())) {
+						historyPresent=true;
+						if (mapHistory.containsKey(code)) {
+							List<String> t=mapHistory.get(code);
+							t.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+						}else {
+							List<String> l= new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+							mapHistory.put(code, l);
+						/*	
+						*/
+				      }
+					}
+				}
+				RuleEngineLogger.generateLogs(clazz, " History of Denture found.- "+historyPresent, Constants.rule_log_debug, bw);
+				
+				if (historyPresent) {
+					//Get TOOTH from map Extraction
+					for (Map.Entry<String, List<String>> entry : mapE.entrySet()) {
+						allExtractionTooth.addAll(entry.getValue());
+					}
+					//Get TOOTH from map Denture
+					for (Map.Entry<String, List<String>> entry : mapD.entrySet()) {
+						allDentureTooth.addAll(entry.getValue());
+					}
+					//Get TOOTH from map Denture history
+					for (Map.Entry<String, List<String>> entry : mapHistory.entrySet()) {
+						allDentureToothHis.addAll(entry.getValue());
+					}
+					
+					//Collection<String> allDentureToothC = new ArrayList<>(allExtractionTooth);
+					//Collection<String> allDentureToothHisC = new ArrayList<>(allDentureToothHis);
+					//List<String> allDentureToothCopy = new ArrayList<String>(allDentureTooth);
+					//List<String> allDentureToothHisCopy = new ArrayList<String>(allDentureToothHis);
+					List<String> common = allDentureTooth.stream().filter(allDentureToothHis::contains).collect(Collectors.toList());
+					//allDentureToothHisCopy.removeAll(allDentureToothC);
+					//means Already history for same teeth
+					List<String> docodesforDisplay=new ArrayList<>();
+					RuleEngineLogger.generateLogs(clazz, " Denture  tooth for current TP- "+String.join(",",allDentureTooth), Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, " Denture  tooth for HISTORY -"+String.join(",",allDentureToothHis), Constants.rule_log_debug, bw);
+					
+					if (common!=null && common.size()>0) {
+						//rule will fail
+						for(String t:common) {
+							for (Map.Entry<String, List<String>> entry : mapHistory.entrySet()) {
+								List<String> tList=entry.getValue();
+								for(String t2:tList) {
+									if (t2.equals(t)) {
+										docodesforDisplay.add(entry.getKey());
+									}
+								}
+							}
+									
+						}
+						RuleEngineLogger.generateLogs(clazz, " Fail the rule ", Constants.rule_log_debug, bw);
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule37.fail.message", new Object[] {String.join(",", docodesforDisplay)}, locale), Constants.FAIL));
+
+					}else {
+						RuleEngineLogger.generateLogs(clazz, " No history for denture for Same tooth.", Constants.rule_log_debug, bw);
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule37.pass2.message", new Object[] {}, locale), Constants.PASS));
+							
+					}
+					
+				}else {
+					//No HISTORY for denture found
+					RuleEngineLogger.generateLogs(clazz, " No history for denture.", Constants.rule_log_debug, bw);
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule37.pass2.message", new Object[] {}, locale), Constants.PASS));
+						
+				}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+			} else  {
+				if (checkForHistory && !denturePresent) {
+				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule37.pass1.message", new Object[] {}, locale), Constants.PASS));
+				}else if((!checkForHistory && denturePresent) && (!checkForHistory && !denturePresent)) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule37.pass3.message", new Object[] {}, locale), Constants.PASS));
+						
+				}
+			}
+
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
+
+    // Medicaid Provider Limitation for D0150,D0210,D0330
+	//38
+	
+	// Age Limitation Prophylaxis_D1110/D1120
+
+	//39
+	public List<TPValidationResponseDto> Rule39(Object ivfSheet,MessageSource messageSource, Rules rule, List<Object> tpList,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_39,
+				Constants.rule_log_debug, bw);
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		try {
+			
+			
+            boolean needCheck=false;
+            String tpCode="";
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D1110") || tp.getServiceCode().equalsIgnoreCase("D1120")) {
+					needCheck=true;
+					tpCode=tp.getServiceCode();
+					RuleEngineLogger.generateLogs(clazz, "TP Code- "+tpCode,
+							Constants.rule_log_debug, bw);
+								
+				}
+				
+			}
+			if (needCheck) {
+				int rollAge =0;
+				RuleEngineLogger.generateLogs(clazz,"Roll Age IVF -"+ivf.getName1201110RollOverAgYe(),
+						Constants.rule_log_debug, bw);
+						try {
+					rollAge= Integer.parseInt(ivf.getName1201110RollOverAgYe().trim());
+				}catch (Exception e) {
+					RuleEngineLogger.generateLogs(clazz,"Roll Age IVF set as 99",
+							Constants.rule_log_debug, bw);
+					rollAge=99;	
+					// TODO: handle exception
+				}
+						int[] age = null;
+						String dob = ivf.getPatientDOB();
+						try {
+							age = DateUtils.calculateAgeYMD(dob, true);
+							RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
+							RuleEngineLogger.generateLogs(clazz,
+									"Age- " + age[0] + " Years, " + age[1] + " Months & " + age[2] + " Days",
+									Constants.rule_log_debug, bw);
+							if (age[0]<rollAge) {
+							if (tpCode.equalsIgnoreCase("D1120")) {	
+								//Correct Code
+								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule39.pass2.message", new Object[] {  }, locale),
+										Constants.PASS));
+							}else {
+							    //in-correct code	
+								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule39.error.message", new Object[] { tpCode,rollAge }, locale),
+										Constants.FAIL));
+							 }
+							}else {
+								if (tpCode.equalsIgnoreCase("D1110")) {	
+								//correct code
+									dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+											messageSource.getMessage("rule39.pass2.message", new Object[] {  }, locale),
+											Constants.PASS));
+								}else {
+									//incorrect code
+									dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+											messageSource.getMessage("rule39.error.message", new Object[] { tpCode,rollAge }, locale),
+											Constants.FAIL));
+								}
+								
+							}
+						} catch (ParseException e) {
+							RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule1.error.message.date", new Object[] { dob }, locale),
+									Constants.FAIL));
+							return dList;
+						}
+				
+
+			}else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule39.pass1.message", new Object[] {  }, locale),
+						Constants.PASS));
+			}
+
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
+
+	// Space Maintainer-Billateral_D1515 Need to bill on Arch
+	//40
+	public List<TPValidationResponseDto> Rule40(MessageSource messageSource, Rules rule, List<Object> tpList,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_40,
+				Constants.rule_log_debug, bw);
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean pass=true;
+		try {
+			
+			String[] codes=new String[2];
+			String[] tooths=new String[2];
+			
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				if (tp.getServiceCode().equalsIgnoreCase("D1515")) {
+					codes[0]="D1515";
+					tooths[0]=tp.getTooth();
+								
+				}else if (tp.getServiceCode().equalsIgnoreCase("D1510")) {
+					codes[1]="D1510";
+					tooths[1]=tp.getTooth();
+				}
+				
+			}
+			List<String> issueTeeth= null;
+			List<String> normalteeth= null;
+			
+			RuleEngineLogger.generateLogs(clazz, "TP Code- "+codes[0]+"-"+codes[1],
+					Constants.rule_log_debug, bw);
+
+			if (codes[0].equalsIgnoreCase("D1515")) {
+				   String[] tooth= ToothUtil.getToothsFromTooth(tooths[0]);
+				   for(String t: tooth) {
+					   if (t.equalsIgnoreCase("LA") || t.equalsIgnoreCase("UA")) {
+						   //pass
+						   if (normalteeth==null) normalteeth=new ArrayList<>();
+						   normalteeth.add(t);
+					   }else {
+						   pass=false;		
+						   if (issueTeeth==null) issueTeeth=new ArrayList<>();
+						   issueTeeth.add(t);
+					   }
+				   }
+			} 
+			if (codes[1].equalsIgnoreCase("D1510")) {
+				   String[] tooth= ToothUtil.getToothsFromTooth(tooths[1]);
+				   for(String t: tooth) {
+					   if (t.equalsIgnoreCase("LL") || t.equalsIgnoreCase("LR") ||
+						   t.equalsIgnoreCase("UL")  || t.equalsIgnoreCase("UR") ) {
+						   //pass
+						   if (normalteeth==null) normalteeth=new ArrayList<>();
+						   normalteeth.add(t);
+					   }else {
+						   pass=false;
+						   if (issueTeeth==null) issueTeeth=new ArrayList<>();
+						   issueTeeth.add(t);
+					   }
+				   }
+			} 
+
+			String x="";
+			if (pass) {
+				if (codes[0].equals("") && codes[1].equals("")) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule40.message1.pass", new Object[] {}, locale),
+						Constants.PASS));
+				}else {
+					if (!codes[0].equals("")) x= x+ codes[0];
+					if (!codes[1].equals("")) {
+						if (!x.equals("")) x=x+",";
+						x= x+ codes[1];
+					}
+						
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule40.message2.pass", new Object[] { x, String.join(",", normalteeth) }, locale),
+							Constants.PASS));
+						
+				}
+			}else {
+				
+				if (!codes[0].equals("")) x= x+ codes[0];
+				if (!codes[1].equals("")) {
+					if (!x.equals("")) x=x+",";
+					x= x+ codes[1];
+				}
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule40.error.message", new Object[] { x,String.join(",", issueTeeth) }, locale),
+						Constants.FAIL));
+				}
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
+	
+	
 	/*
 	 * private Mappings getMappingFromList(List<Mappings> map, String code) {
 	 * Mappings r = null; System.out.println("codecode---" + code);

@@ -299,7 +299,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							bw);
 					ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 							off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-							off.getName());
+							off.getName(),false);
 
 					RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
 							Constants.rule_log_debug, bw);
@@ -392,7 +392,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								bw);
 						ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 								off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-								off.getName());
+								off.getName(),false);
 
 						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
 								Constants.rule_log_debug, bw);
@@ -869,6 +869,40 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// END "CRA
 
+							// RULE_ID_23 "Medicaid-1
+							rule = getRulesFromList(rules, Constants.RULE_ID_23);
+							dtoRL = rb.Rule23(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_23,
+									Constants.rule_log_debug, bw);
+
+							// END "Medicaid-1
+
+							//  Medicaid-2 
+							rule = getRulesFromList(rules, Constants.RULE_ID_24);
+							dtoRL = rb.Rule24(tList, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_24,
+									Constants.rule_log_debug, bw);
+
+							// END  Medicaid-2
+
 						}
 
 					} else {
@@ -1020,8 +1054,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 */
 	private void saveReportsList(Authentication authentication, List<Rules> rules, TreatmentPlan tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off) {
-		//int a=1;
-		//if (a==1)return ;
+		int a=1;
+		if (a==1)return ;
 		try {
 			if (ivfSheet == null || tp == null)
 				return;
@@ -1266,7 +1300,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				returnMap = new HashMap<String, List<TPValidationResponseDto>>();
 			returnMap.put("no", list);
 		}
-		String id = dto.getIvfId();// These will be Like 1,2,3,4,5 ..We need to Convert it like
+		String id =null;
+		boolean isPat=false;
+		id= dto.getIvfId();// These will be Like 1,2,3,4,5 ..We need to Convert it like
+		if (id==null) {
+			id= dto.getPatientId();// These will be Like 1,2,3,4,5 ..We need to Convert it like
+			isPat=true;	
+		}
 		String[] ids = id.split(",");
 
 		try {
@@ -1280,7 +1320,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			if (eagleSoftDBAccessPresent==false) {
 				ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 						off.getName() + " " + ivsheet.getAppSheetName(), ids, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-						off.getName());
+						off.getName(),isPat);
 			espatient = getOneDriveFileFromList(fileOne, Constants.microsoft_patient);
 			// String[] treatmentPlanIds, List<String> codes, Map<String, List<Object>>
 			// ivMap,
@@ -1329,7 +1369,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							null);
 					ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 							off.getName() + " " + ivsheet.getAppSheetName(), ids, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-							off.getName());
+							off.getName(),isPat);
 
 					RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
 							Constants.rule_log_debug, null);

@@ -23,6 +23,7 @@ import { IVFPopupComponent } from './components/ivfpopup/ivfpopup.component';
 import { DiagnosticPopupComponent } from './components/diagnosticpopup/diagnosticpopup.component';
 import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
 import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
+import {UserInputComponent} from "./components/userinput/userinput.component";
 
 
 import {routing} from "./app.routing";
@@ -49,7 +50,8 @@ import { TokenInterceptor } from './auth/token.interceptor';
     IVFPopupComponent,
     DiagnosticPopupComponent,
 	TreatmentPlanComponent,
-	DiagnosticComponent
+	DiagnosticComponent,
+	UserInputComponent
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule

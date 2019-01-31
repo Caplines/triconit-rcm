@@ -1,0 +1,20 @@
+https://stackoverflow.com/questions/9548807/sslhandshakeexception-no-cipher-suites-in-common
+increase validity by -validity 3600
+------------Server
+keytool -genkey -alias serverkey -keyalg RSA -keypass p@ssw0rd -storepass p@ssw0rd -keystore keystore.jks -validity 3600
+keytool -export -alias serverkey -storepass p@ssw0rd -file server.cer -keystore keystore.jks -validity 3600
+keytool -import -v -trustcacerts -alias clientkey -file ../client/client.cer -keystore cacerts.jks -keypass p@ssw0rd -storepass p@ssw0rd -validity 3600
+
+---CLient
+keytool -genkey -alias clientkey -keyalg RSA -keypass changeit -storepass changeit -keystore keystore.jks -validity 3600
+keytool -export -alias clientkey -storepass changeit -file client.cer -keystore keystore.jks -validity 3600
+keytool -import -v -trustcacerts -alias serverkey -file ../server/server.cer -keystore cacerts.jks -keypass changeit -storepass changeit -validity 3600
+-------------------
+in Server we need to place Clients cacerts.jks  & Keystore.jks
+in Client  we need to place Servers cacerts.jks & Keystore.jks
+Similar for keystore.jks Path of all jks files should be parallel to project location..
+example validity increase 
+keytool -import -v -trustcacerts -alias clientkey -file ../client/client.cer -keystore cacerts.jks -keypass p@ssw0rd -storepass p@ssw0rd
+------------
+Check validty
+keytool -list -v -keystore keystore.jks
