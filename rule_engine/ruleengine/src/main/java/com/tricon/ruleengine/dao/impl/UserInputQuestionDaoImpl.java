@@ -1,6 +1,7 @@
 package com.tricon.ruleengine.dao.impl;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -18,6 +19,7 @@ import com.tricon.ruleengine.dto.QuestionAnswerDto;
 import com.tricon.ruleengine.dto.QuestionHeaderDto;
 import com.tricon.ruleengine.dto.UserInputDto;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.model.db.UserInputRuleQuestionAnswer;
 import com.tricon.ruleengine.model.db.UserInputRuleQuestionHeader;
 import com.tricon.ruleengine.dao.OfficeDao;
@@ -49,10 +51,32 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 			pjList.add(Projections.property("answerAppender"), "answerAppender");
 			pjList.add(Projections.property("answerAppenderPosition"), "answerAppenderPosition");
 			pjList.add(Projections.property("hardCodedAnswer"), "hardCodedAnswer");
-			
+			pjList.add(Projections.property("canChangeAnswer"), "canChangeAnswer");
 			
 			criteria.setProjection(pjList);
 			criteria.setResultTransformer(Transformers.aliasToBean(QuestionHeaderDto.class));
+			dtoList = criteria.list();
+			//transaction.commit();
+		} finally {
+			closeSession(session);
+
+		}
+		return dtoList;
+	
+	}
+
+	@Override
+	public List<UserInputRuleQuestionHeader> getAllUserInputQuestionsDbModel() {
+		
+		Session session = getSession();
+		List<UserInputRuleQuestionHeader> dtoList  = null;
+		try {
+			//Transaction transaction = session.beginTransaction();
+			Criteria criteria = session.createCriteria(UserInputRuleQuestionHeader.class);
+			criteria.add(Restrictions.eq("active", 1));
+			criteria.addOrder(Order.asc("id"));
+			criteria.addOrder(Order.asc("ruleName"));
+			criteria.addOrder(Order.asc("questionOrder"));
 			dtoList = criteria.list();
 			//transaction.commit();
 		} finally {
@@ -71,8 +95,6 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 			//Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(UserInputRuleQuestionAnswer.class);
 			criteria.add(Restrictions.eq("tpId", dto.getTreatmentPlanId()));
-			System.out.println(dto.getOfficeId());
-			System.out.println(dto.getTreatmentPlanId());
 			
 			criteria.createAlias("office", "off");
 			criteria.add(Restrictions.eq("off.uuid", dto.getOfficeId()));
@@ -98,18 +120,18 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 	}
 
 	@Override
-	public UserInputRuleQuestionAnswer getUserAnswersByQuestionId(UserInputDto dto,int questionId) {
+	public UserInputRuleQuestionAnswer getUserAnswersByQuestionIdServiceCode(UserInputDto dto,int questionId,String serviceCode) {
 		Session session = getSession();
 		UserInputRuleQuestionAnswer dtoA  = null;
 		try {
 			Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(UserInputRuleQuestionAnswer.class);
 			criteria.add(Restrictions.eq("tpId", dto.getTreatmentPlanId()));
+			criteria.add(Restrictions.eqOrIsNull("serviceCode", serviceCode));
 			criteria.createAlias("office", "off");
 			criteria.add(Restrictions.eq("off.uuid", dto.getOfficeId()));
-			criteria.add(Restrictions.eq("off.uuid", questionId));
+			criteria.add(Restrictions.eq("userInputRuleQuestionHeader.id", questionId));
 						
-			criteria.setResultTransformer(Transformers.aliasToBean(QuestionAnswerDto.class));
 			dtoA = (UserInputRuleQuestionAnswer) criteria.uniqueResult();
 			transaction.commit();
 		} finally {
@@ -119,12 +141,12 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 		return dtoA;
 	}
 	@Override
-	public Serializable saveAndUpdateAnswers(QuestionAnswerDto dto,Office off,UserInputRuleQuestionHeader userInputRuleQuestionHeader) {
+	public Serializable saveAndUpdateAnswers(QuestionAnswerDto dto,Office off,UserInputRuleQuestionHeader userInputRuleQuestionHeader,User user,String serviceCode) {
 		//get Already Persisted Data
         UserInputDto d= new UserInputDto();
         d.setOfficeId(dto.getOfficeId());
         d.setTreatmentPlanId(dto.getTpId());
-        UserInputRuleQuestionAnswer ans= getUserAnswersByQuestionId(d, userInputRuleQuestionHeader.getId());
+        UserInputRuleQuestionAnswer ans= getUserAnswersByQuestionIdServiceCode(d, userInputRuleQuestionHeader.getId(),serviceCode);
         if (ans==null) {
         	UserInputRuleQuestionAnswer a = new UserInputRuleQuestionAnswer();
             a.setAnswer(dto.getAnswer());
@@ -132,13 +154,19 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
             a.setOffice(off);
             a.setPatId(dto.getPatId());
             a.setTpId(dto.getTpId());
+            a.setServiceCode(serviceCode);
+            a.setCreatedBy(user);
+            
             a.setUserInputRuleQuestionHeader(userInputRuleQuestionHeader);
              	return saveEntiy(a);
         	
         }else {
         	//update answer
         	ans.setAnswer(dto.getAnswer());
-            updateEntity(ans);
+            ans.setUpdatedBy(user);
+            ans.setUpdatedDate(new Date());
+            
+        	updateEntity(ans);
          	return ans.getId();
             	
         }

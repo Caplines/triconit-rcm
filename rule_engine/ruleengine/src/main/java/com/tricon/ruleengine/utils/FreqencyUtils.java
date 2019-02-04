@@ -37,10 +37,10 @@ public class FreqencyUtils {
 					} else if (temp.indexOf("cy") > -1) {
 						dto.setCy(Integer.parseInt(temp.replace("cy", "")));
 
-					} else if (temp.indexOf("cy") > -1) {
+					} else if (temp.indexOf("fy") > -1) {
 						dto.setFy(Integer.parseInt(temp.replace("fy", "")));
 
-					} else if (temp.indexOf("cy") > -1) {
+					} else if (temp.indexOf("py") > -1) {
 						dto.setFy(Integer.parseInt(temp.replace("py", "")));
 
 					} else if (temp.indexOf("lt") > -1) {

@@ -41,6 +41,9 @@ public class UserInputRuleQuestionHeader extends BaseAudit implements java.io.Se
 	@Column(name = "hard_coded_answer",nullable=true)
 	private String hardCodedAnswer;
 
+	@Column(name = "can_change_answer",nullable=false)
+	private int canChangeAnswer;
+
 	@Column(name = "active",nullable=false)
 	private int active;
 
@@ -99,6 +102,31 @@ public class UserInputRuleQuestionHeader extends BaseAudit implements java.io.Se
 	public void setAnswerAppenderPosition(String answerAppenderPosition) {
 		this.answerAppenderPosition = answerAppenderPosition;
 	}
+
+	public String getHardCodedAnswer() {
+		return hardCodedAnswer;
+	}
+
+	public void setHardCodedAnswer(String hardCodedAnswer) {
+		this.hardCodedAnswer = hardCodedAnswer;
+	}
+
+	public int getCanChangeAnswer() {
+		return canChangeAnswer;
+	}
+
+	public void setCanChangeAnswer(int canChangeAnswer) {
+		this.canChangeAnswer = canChangeAnswer;
+	}
+
+	public int getActive() {
+		return active;
+	}
+
+	public void setActive(int active) {
+		this.active = active;
+	}
+	
 	
 	
 

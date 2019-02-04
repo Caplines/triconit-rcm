@@ -10,6 +10,14 @@ public class QuestionHeaderDto {
 	private String answerAppender;
 	private String answerAppenderPosition;
 	private String hardCodedAnswer;
+	private int canChangeAnswer;
+	
+	public int getCanChangeAnswer() {
+		return canChangeAnswer;
+	}
+	public void setCanChangeAnswer(int canChangeAnswer) {
+		this.canChangeAnswer = canChangeAnswer;
+	}
 	public int getId() {
 		return id;
 	}

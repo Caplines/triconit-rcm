@@ -12,8 +12,10 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "user_input_rule_question_answer",uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"tp_id","ivf_id","office_id","pat_id"}) })
+@Table(name = "user_input_rule_question_answer"
+//,uniqueConstraints = {
+//		@UniqueConstraint(columnNames = {"tp_id","ivf_id","office_id","pat_id","question_id","anwser"}) }
+)
 public class UserInputRuleQuestionAnswer extends BaseAudit implements java.io.Serializable {
 	
 	
@@ -53,6 +55,9 @@ public class UserInputRuleQuestionAnswer extends BaseAudit implements java.io.Se
 	@Column(name = "anwser",nullable=true)
 	private String answer;
 
+	@Column(name = "service_code",nullable=true)
+	private String serviceCode;
+	
 	public int getId() {
 		return id;
 	}
@@ -108,11 +113,16 @@ public class UserInputRuleQuestionAnswer extends BaseAudit implements java.io.Se
 	public void setAnswer(String answer) {
 		this.answer = answer;
 	}
+
+	public String getServiceCode() {
+		return serviceCode;
+	}
+
+	public void setServiceCode(String serviceCode) {
+		this.serviceCode = serviceCode;
+	}
 	
-	/*
-	@Column(name = "answer_order",nullable=false)
-	private int answerOrder;
-	*/
+	
 	
 	
 }

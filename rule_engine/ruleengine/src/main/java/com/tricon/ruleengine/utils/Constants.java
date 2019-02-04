@@ -134,7 +134,7 @@ public class Constants {
 	public static String microsoft_emp_master="Employer Master";
 	public static String microsoft_patient="Patient";
 	public static String google_ivf_sheet="IVF Sheet";
-	public static String insurance_Medicaid="Medicaid";
+	public static String insurance_Medicaid="medicaid";
 	public static double insurance_Medicaid_max_fee=70.64;
 	public static int history_codes_size=60;
 	
@@ -172,6 +172,40 @@ public class Constants {
 	public static String COMPLETE_DENTURE_SC=" D5110,D5120,D5130,D5140";
 	public static String PARTIAL_DENTURE_SC="D5211,D5212,D5213,D5214,D5225,D5226";
 	public static String DENTURE_SC="D5110,D5120,D5130,D5140";
+	
+	
+	
+	//Constants Related to Questions (user_input_rule_question_header) talbe;
+	
+	public static String User_Input_Name_Question_RULE_10="RULE_10";
+	public static String User_Input_Name_Question_OVERALL="OVERALL";
+	public static String User_Input_Name_Question_RULE_ORTHO="RULE_ORTHO";
+	public static String User_Input_Name_Question_RULE_PREAUTH="RULE_PREAUTH";
+	public static String User_Input_Name_Question_RULE_PC="RULE_PC";
+	
+	
+	public static int RULE_10_question_header_id_checkpoints=1;
+	public static int RULE_10_question_header_id_toothno=2;
+	public static int RULE_10_question_header_id_require=3;
+	public static int RULE_10_question_header_id_a_all_met=4;
+	public static int RULE_10_question_header_id_notes_nar=5;
+	
+	public static int RULE_OVERALL_question_header_id_checkpoints=6;
+	public static int RULE_OVERALL_question_header_id_a_all_met=7;
+	
+	public static int RULE_ORTHO_question_header_id_narrtive=8;
+	public static int RULE_ORTHO_question_header_id_turation=9;
+	public static int RULE_ORTHO_question_header_id_month_r=10;
+	public static int RULE_ORTHO_question_header_id_downpayment=11;
+	public static int RULE_ORTHO_question_header_id_banding_date=12;
+	
+	public static int RULE_PRE_AUTH_question_header_id_avail=13;
+	public static int RULE_PRE_AUTH_question_header_id_refno=14;
+	
+	public static int RULE_PC_question_header_id_provider_change=15;
+	public static int RULE_PC_question_header_id_patient_change_provier=16;
+	public static int RULE_PC_question_header_id_ref_missing=17;
+	
 	
 	
 

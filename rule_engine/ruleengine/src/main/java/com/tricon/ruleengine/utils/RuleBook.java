@@ -2869,8 +2869,9 @@ public class RuleBook {
 
 											RuleEngineLogger.generateLogs(clazz, "Frequency- " + freq,
 													Constants.rule_log_debug, bw);
-											if (freq.equalsIgnoreCase("NF") || freq.equalsIgnoreCase("no frequency"))
+											if (freq.equalsIgnoreCase("") || freq.equalsIgnoreCase("NF") || freq.equalsIgnoreCase("no frequency"))
 												continue;
+											System.out.println("DDDDDDDDDDDDDD-"+freq);
 											FreqencyDto FDTO = FreqencyUtils.parseFrequecy(freq);
 											Date[] datesFIS = DateUtils.getFiscalYear(FDTO.getFy());
 											int ti = FDTO.getTimes();
@@ -3597,8 +3598,9 @@ public class RuleBook {
 
 		RuleEngineLogger.generateLogs(clazz, "planType-" + planType, Constants.rule_log_debug, bw);
         try {
-		if (planType != null && planType.trim().equalsIgnoreCase(cMedicate)) {
-			double fee = 0;
+		//if (planType != null ) {
+		if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
+					double fee = 0;
 
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
@@ -3668,6 +3670,7 @@ public class RuleBook {
 	 * @param bw
 	 * @return
 	 */
+	
 	public List<TPValidationResponseDto> Rule24(List<Object> tpList,Object ivfSheet,  MessageSource messageSource, Rules rule,
 			List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_24,
@@ -3684,10 +3687,10 @@ public class RuleBook {
 			boolean checkForHistory = false;
 			boolean historyPresent = false;
 
-			if (planType.equalsIgnoreCase(cMedicate)) {
-				
-				List<String> reqList = Arrays.asList(Constants.FILLING_AT_SC.split(","));
-                reqList.addAll(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+			if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
+						
+				List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
+                reqList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(","))));
 				List<String> historyCheckList = Arrays.asList(Constants.SEALANT_SC.split(","));
 				
 				for (Object obj : tpList) {
@@ -3881,8 +3884,8 @@ public class RuleBook {
 
 			if (planType.equalsIgnoreCase(cMedicate)) {
 				
-				List<String> reqList = Arrays.asList(Constants.CROWN_SC.split(","));
-                List<String> historyCheckList = Arrays.asList(Constants.FILLING_AT_SC.split(","));
+				List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.CROWN_SC.split(",")));
+                List<String> historyCheckList = new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
                 historyCheckList.addAll(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
 				
 				for (Object obj : tpList) {
@@ -4069,10 +4072,10 @@ public class RuleBook {
 			boolean historyPresent = false;
 
 				
-				List<String> reqList = Arrays.asList(Constants.CROWN_SC.split(","));
-                List<String> historyCheckList = Arrays.asList(Constants.CROWN_SC.split(","));
-                List<String> c1List = Arrays.asList(Constants.FILLING_PT_SC.split(","));
-                c1List.addAll(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
+				List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.CROWN_SC.split(",")));
+                List<String> historyCheckList = new ArrayList<String>(Arrays.asList(Constants.CROWN_SC.split(",")));
+                List<String> c1List = new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+                c1List.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
                 c1List.addAll(Arrays.asList(Constants.SEALANT_SC.split(",")));
                 
                 
@@ -4246,11 +4249,11 @@ public class RuleBook {
 			boolean historyPresent = false;
 
 				
-				List<String> reqList = Arrays.asList(Constants.FILLING_PT_SC.split(","));
-				reqList.addAll(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
+				List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+				reqList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
                 
-                List<String> historyCheckList = Arrays.asList(Constants.FILLING_PT_SC.split(","));
-                historyCheckList.addAll(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
+                List<String> historyCheckList = new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+                historyCheckList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
                 
                 List<String> c1List = Arrays.asList(Constants.SEALANT_SC.split(","));
                 
@@ -4424,15 +4427,15 @@ public class RuleBook {
 			boolean historyPresent = false;
 
 				
-				List<String> reqList = Arrays.asList(Constants.EXTRACTION_SC.split(","));
+				List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.EXTRACTION_SC.split(",")));
 				
-                List<String> historyCheckList = Arrays.asList(Constants.EXTRACTION_SC.split(","));
+                List<String> historyCheckList = new ArrayList<String>(Arrays.asList(Constants.EXTRACTION_SC.split(",")));
                 
-                List<String> c1List = Arrays.asList(Constants.SEALANT_SC.split(","));
-                historyCheckList.addAll(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
-                historyCheckList.addAll(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
-                historyCheckList.addAll(Arrays.asList(Constants.CROWN_SC.split(",")));
-                historyCheckList.addAll(Arrays.asList(Constants.EXTRACTION_SC.split(",")));
+                List<String> c1List = new ArrayList<String>(Arrays.asList(Constants.SEALANT_SC.split(",")));
+                historyCheckList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
+                historyCheckList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(","))));
+                historyCheckList.addAll(new ArrayList<String>(Arrays.asList(Constants.CROWN_SC.split(","))));
+                historyCheckList.addAll(new ArrayList<String>(Arrays.asList(Constants.EXTRACTION_SC.split(","))));
                 
                 
                 
@@ -5490,7 +5493,7 @@ public class RuleBook {
 		return r;
 	}
 
-	private Mappings getMappingFromListAdditionalInformationNeeded(List<Mappings> map, String code) {
+	public Mappings getMappingFromListAdditionalInformationNeeded(List<Mappings> map, String code) {
 		Mappings r = null;
 		Collection<Mappings> ruleGen = Collections2.filter(map,
 				rule -> (!rule.getAdditionalInformationNeeded().equalsIgnoreCase("No")
@@ -5504,7 +5507,7 @@ public class RuleBook {
 		return r;
 	}
 
-	private Mappings getMappingFromListPreAuth(List<Mappings> map, String code) {
+	public Mappings getMappingFromListPreAuth(List<Mappings> map, String code) {
 		Mappings r = null;
 		Collection<Mappings> ruleGen = Collections2.filter(map, rule -> (!rule.getPreAuthNeeded().equalsIgnoreCase("No")
 				&& !rule.getPreAuthNeeded().equalsIgnoreCase("NA") && !rule.getPreAuthNeeded().equalsIgnoreCase("None")

@@ -30,10 +30,13 @@ import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.MicroSoftGraphToken;
 import com.tricon.ruleengine.dto.PatientTreamentDto;
+import com.tricon.ruleengine.dto.QuestionAnswerDto;
+import com.tricon.ruleengine.dto.QuestionHeaderDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
+import com.tricon.ruleengine.dto.UserInputDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.GoogleSheets;
@@ -45,6 +48,7 @@ import com.tricon.ruleengine.model.db.ReportDetail;
 import com.tricon.ruleengine.model.db.Reports;
 import com.tricon.ruleengine.model.db.Rules;
 import com.tricon.ruleengine.model.db.User;
+import com.tricon.ruleengine.model.db.UserInputRuleQuestionHeader;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
@@ -59,6 +63,7 @@ import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.EagleSoftFetchData;
 import com.tricon.ruleengine.utils.ReadMicrosoftFile;
 import com.tricon.ruleengine.utils.RuleBook;
+import com.tricon.ruleengine.dao.UserInputQuestionDao;
 import static java.util.Comparator.comparingInt;
 import static java.util.Comparator.comparing;
 
@@ -113,6 +118,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 	@Autowired
 	EagleSoftDBAccessService dbAccesService;
+	
+	@Autowired
+    UserInputQuestionDao  userInputQuestionDao;
 	
 	static Class<?> clazz = TreatmentPlanServiceImpl.class;
 
@@ -453,6 +461,20 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 					if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null) {
 
+						//Save User input first
+						TreatmentPlan t1= new  TreatmentPlan();
+						t1.setServiceCode("D2740");
+						t1.setTooth("asds");
+						t1.setId("TEST");
+						
+						saveUserInputs(authentication, rules, t1, ivfMap.get(ivx).get(0), list, off, mappings);
+						
+						TreatmentPlan t12= new  TreatmentPlan();
+						t12.setServiceCode("D3320");
+						t12.setTooth("asadds");
+						t12.setId("TEST");
+						//Phase 2 User Input Work.
+						saveUserInputs(authentication, rules, t12, ivfMap.get(ivx).get(0), list, off, mappings);
 						// RULE_ID_1 (Eligibility of the patient)
 
 						rule = getRulesFromList(rules, Constants.RULE_ID_1);
@@ -1054,8 +1076,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 */
 	private void saveReportsList(Authentication authentication, List<Rules> rules, TreatmentPlan tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off) {
-		int a=1;
-		if (a==1)return ;
+		//int a=1;
+		//if (a==1)return ;
 		try {
 			if (ivfSheet == null || tp == null)
 				return;
@@ -1122,6 +1144,127 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//
 	}
 
+   /**
+    * Call this just before Rules validation starts
+    * @param authentication
+    * @param rules
+    * @param tp
+    * @param ivfSheet
+    * @param list
+    * @param off
+    * @param mappings
+    */
+	private void saveUserInputs(Authentication authentication, List<Rules> rules, TreatmentPlan tp,
+			Object ivfSheet, List<TPValidationResponseDto> list, Office off,List<Mappings> mappings) {
+		RuleBook rb =new RuleBook();
+		List<UserInputRuleQuestionHeader> qhList=userInputQuestionDao.getAllUserInputQuestionsDbModel();
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		try {
+			if (ivfSheet == null || tp == null)
+				return;
+			String email = "admin@admin.com";
+
+			User user = null;
+			if (authentication != null) {
+				user = userDao.findUserAndOfficeByEmail(authentication.getName());
+				// Hibernate.initialize(user.getOffice());
+			} else {
+				user = userDao.findUserByEmail(email);
+			}
+			
+			UserInputDto dto = new UserInputDto();
+			dto.setOfficeId(off.getUuid());
+			dto.setTreatmentPlanId(tp.getId());
+			//List<QuestionAnswerDto> qansList=userInputQuestionDao.getUserAnswers(dto);
+//			if (qansList!=null && qansList.size()>0) {
+//				
+//				for(QuestionAnswerDto d:qansList) {
+//					d.getAnswer();
+//				}
+//			}else {
+//				//for null case
+				 for (UserInputRuleQuestionHeader qh:qhList) {
+					 
+				
+				   //For Rule 10 -- START
+					 if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_10)) {
+					Mappings mapA = rb.getMappingFromListAdditionalInformationNeeded(mappings, tp.getServiceCode());
+					Mappings mapP = rb.getMappingFromListPreAuth(mappings, tp.getServiceCode());
+					QuestionAnswerDto qadto= new QuestionAnswerDto();
+					qadto.setAnswer("");
+					if (qh.getId()==Constants.RULE_10_question_header_id_checkpoints) 
+					   qadto.setAnswer(tp.getServiceCode());
+					else if (qh.getId()==Constants.RULE_10_question_header_id_toothno) 
+						   qadto.setAnswer(tp.getTooth());
+					else if (qh.getId()==Constants.RULE_10_question_header_id_require) 
+						   qadto.setAnswer(mapA.getAdditionalInformationNeeded());
+			           qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+			           qadto.setOfficeId(off.getUuid());
+			           qadto.setPatId(ivf.getPatientId());
+			           qadto.setTpId(tp.getId());
+					if (mapA != null) {
+						//SAVE DATA HERE ...
+						userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
+						}
+					if (mapP != null) {
+						//SAVE DATA HERE ...
+						userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
+					}
+					 }
+					//For Rule 10 -- END
+					//For Rule Overall-- START
+					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_OVERALL)) {
+						 QuestionAnswerDto qadto= new QuestionAnswerDto();
+						 qadto.setAnswer("");
+						 if (qh.getId()==Constants.RULE_OVERALL_question_header_id_checkpoints) 
+							   qadto.setAnswer(qh.getHardCodedAnswer());
+						 else if (qh.getId()==Constants.RULE_OVERALL_question_header_id_a_all_met)  
+							 qadto.setAnswer("");
+						 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+				         qadto.setOfficeId(off.getUuid());
+				         qadto.setPatId(ivf.getPatientId());
+				         qadto.setTpId(tp.getId());
+				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+					 }
+					//For Rule Overall-- END
+					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_ORTHO)) {
+						 QuestionAnswerDto qadto= new QuestionAnswerDto();
+						 qadto.setAnswer("");
+						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+				         qadto.setOfficeId(off.getUuid());
+				         qadto.setPatId(ivf.getPatientId());
+				         qadto.setTpId(tp.getId());
+				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+					 }
+					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_PREAUTH)) {
+						 QuestionAnswerDto qadto= new QuestionAnswerDto();
+						 qadto.setAnswer("");
+						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+				         qadto.setOfficeId(off.getUuid());
+				         qadto.setPatId(ivf.getPatientId());
+				         qadto.setTpId(tp.getId());
+				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+					 }
+					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_PC)) {
+						 QuestionAnswerDto qadto= new QuestionAnswerDto();
+						 qadto.setAnswer("");
+						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+				         qadto.setOfficeId(off.getUuid());
+				         qadto.setPatId(ivf.getPatientId());
+				         qadto.setTpId(tp.getId());
+				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+					 }
+				 }
+			//}
+
+		} catch (Exception x) {
+
+			x.printStackTrace();
+
+		}
+		//
+	}
+	
 	private void saveReportsListBatch(Authentication authentication, List<Rules> rules, IVFTableSheet ivfSheet,
 			List<TPValidationResponseDto> list, Office off) {
 		if (ivfSheet == null)

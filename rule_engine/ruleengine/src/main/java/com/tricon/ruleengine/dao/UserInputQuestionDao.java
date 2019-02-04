@@ -7,18 +7,20 @@ import com.tricon.ruleengine.dto.QuestionAnswerDto;
 import com.tricon.ruleengine.dto.QuestionHeaderDto;
 import com.tricon.ruleengine.dto.UserInputDto;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.model.db.UserInputRuleQuestionAnswer;
 import com.tricon.ruleengine.model.db.UserInputRuleQuestionHeader;
 
 public interface UserInputQuestionDao {
 
 	public List<QuestionHeaderDto> getAllUserInputQuestions();
+	
+	public List<UserInputRuleQuestionHeader> getAllUserInputQuestionsDbModel();
 
 	public List<QuestionAnswerDto> getUserAnswers(UserInputDto dto);
 
-	public Serializable saveAndUpdateAnswers(QuestionAnswerDto dto, Office off,
-			UserInputRuleQuestionHeader userInputRuleQuestionHeader);
+	public Serializable saveAndUpdateAnswers(QuestionAnswerDto dto,Office off,UserInputRuleQuestionHeader userInputRuleQuestionHeader,User user,String serviceCode);
 
-	public UserInputRuleQuestionAnswer getUserAnswersByQuestionId(UserInputDto dto, int questionId);
+	public UserInputRuleQuestionAnswer getUserAnswersByQuestionIdServiceCode(UserInputDto dto, int questionId,String serivceCode);
 
 }
