@@ -24,7 +24,7 @@ import { DiagnosticPopupComponent } from './components/diagnosticpopup/diagnosti
 import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
 import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
 import {UserInputComponent} from "./components/userinput/userinput.component";
-
+import { QuestionformPopupComponent } from './components/questionformpopup/questionformpopup.component';
 
 import {routing} from "./app.routing";
 import {UrlPermission} from "./urlPermission/url.permission";
@@ -51,7 +51,8 @@ import { TokenInterceptor } from './auth/token.interceptor';
     DiagnosticPopupComponent,
 	TreatmentPlanComponent,
 	DiagnosticComponent,
-	UserInputComponent
+	UserInputComponent,
+	QuestionformPopupComponent
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule

@@ -15,11 +15,9 @@ export class UserInputComponent implements OnInit {
   uim: UserInputModel = new UserInputModel();
   errorMessage: string;
   offices:any;
-  userName: any;
-  userType: any;
-  showPopup: boolean = false;
   showLoading: boolean = false;
-  showIvfData: boolean = false;
+  showQuestionData: boolean = false;
+  questionData:any;
 
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
 	  
@@ -32,17 +30,19 @@ export class UserInputComponent implements OnInit {
   }
 
   getuserQuestions(){
-	  this.accountService.getUserInputs(this.uim,(result) => {
-		  
-		  
+	this.showLoading = true;
+	  this.accountService.getUserInputs(this.uim,(result) => {		
+		this.showLoading = false;
+		if (result.status=='OK'){
+			this.showQuestionData = true;
+			this.questionData = result.data;	
+		}
 	  });
-  }
+  }  
   
   receiveChildrenEmitter(event) {
-	if(event['action'] == "showLoading") {
-	
-	}else if(event['action'] == "callAgain") {
-		
+	if(event['action'] == "showQuestionData") {
+		this.showQuestionData = event['value']
 	}
   }
   

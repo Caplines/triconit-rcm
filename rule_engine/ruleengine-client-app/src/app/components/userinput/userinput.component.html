@@ -1,6 +1,6 @@
 
 <div class="inner-bg">
-	<div *ngIf="!showIvfData" class="container"> 
+	<div *ngIf="!showQuestionData" class="container"> 
 		<div class="row">
 			<div class="col-sm-6 col-sm-offset-3 form-box">
 				<div class="form-top">
@@ -53,7 +53,6 @@
 
 	</div>
 	
-	<app-ivfpopup *ngIf="showPopup" [ivfm]="ivfm" (emitToParent)="receiveChildrenEmitter($event)" 
-		[ivfValidateName]="'validateTreatmentPlan'" [showIvfData]="showIvfData"></app-ivfpopup>	
+	<app-questionformpopup *ngIf="showQuestionData" [questionData]="questionData" (emitToParent)="receiveChildrenEmitter($event)"></app-questionformpopup>	
 	
 </div>

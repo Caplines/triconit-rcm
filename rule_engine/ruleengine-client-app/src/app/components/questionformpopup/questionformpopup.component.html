@@ -1,0 +1,105 @@
+<div>
+	<div class="close-btn">
+		<a href="javascript:void(0)" (click)="closePopup()">
+			Go Back
+		</a>
+	</div>	
+	<div *ngFor="let key of arrayOfKeys" class="table-container">
+		<h3>{{key}}</h3>
+		
+		<div *ngIf = "key == 'RULE_10'">
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th *ngFor="let data of questionFormData[key]">{{data.question}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td *ngFor="let data of questionFormData[key]">
+							<table>
+								<tr *ngFor="let answer of data.questionAnswers">
+									<td *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
+										<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+									</td>
+									<td *ngIf="data.questionType == 'Y_N'">
+										<input type="radio" [(ngModel)]="answer.answer" value="Yes" (change)="saveChanges(answer)" />Yes
+										<input type="radio" [(ngModel)]="answer.answer" value="No" (change)="saveChanges(answer)" />No
+									</td>
+								</tr>
+							</table>						
+						</td>
+					<tr>
+				</tbody>						
+			</table>
+		</div>
+		
+		<div *ngIf = "key == 'OVERALL'">
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th *ngFor="let data of questionFormData[key]">{{data.question}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td *ngFor="let data of questionFormData[key]">
+							<table>
+								<tr *ngFor="let answer of data.questionAnswers">
+									<td *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
+										<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+									</td>
+									<td *ngIf="data.questionType == 'Y_N'">
+										<input type="radio" [(ngModel)]="answer.answer" value="Yes" (change)="saveChanges(answer)" />Yes
+										<input type="radio" [(ngModel)]="answer.answer" value="No" (change)="saveChanges(answer)" />No
+									</td>
+								</tr>
+							</table>						
+						</td>
+					<tr>
+				</tbody>						
+			</table>
+		</div>
+		
+		<div *ngIf = "key == 'RULE_ORTHO'">
+			<div *ngFor="let data of questionFormData[key]">
+				{{data.questionOrder}}. {{data.question}} {{data.answerAppenderPosition == '1'? data.answerAppender: ''}}
+				<div *ngFor="let answer of data.questionAnswers">
+					<span *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
+						<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+					</span>
+				</div>
+				{{data.answerAppenderPosition == '3'? data.answerAppender: ''}}
+			</div>
+		</div>
+		
+		<div *ngIf = "key == 'RULE_PREAUTH'">
+			<div *ngFor="let data of questionFormData[key]">
+				{{data.question}}
+				<div *ngFor="let answer of data.questionAnswers">
+					<span *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
+						<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+					</span>
+					<span *ngIf="data.questionType == 'Y_N'">
+						<input type="radio" [(ngModel)]="answer.answer" value="Yes" (change)="saveChanges(answer)" />Yes
+						<input type="radio" [(ngModel)]="answer.answer" value="No" (change)="saveChanges(answer)" />No
+					</span>
+				</div>
+			</div>
+		</div>
+		
+		<div *ngIf = "key == 'RULE_PC'">
+			<div *ngFor="let data of questionFormData[key]">
+				{{data.questionOrder}}. {{data.question}}
+				<div *ngFor="let answer of data.questionAnswers">
+					<span *ngIf="data.questionType == 'C_B' || data.questionType == 'C_B_A'">
+						<input type="checkbox" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" />
+					</span>
+					<span *ngIf="data.questionType == 'C_B_A'">
+						<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>	
