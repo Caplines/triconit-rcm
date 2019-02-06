@@ -52,7 +52,7 @@ export class IVFBatchPreComponent implements OnInit {
 	}
   }
  
-  onPaste(evt) {
+  onPaste(evt,id) {
 		let content = '';
 		if (evt.clipboardData && evt.clipboardData.getData) {
 			content = evt.clipboardData.getData('text/plain');
@@ -60,12 +60,22 @@ export class IVFBatchPreComponent implements OnInit {
 		let words = content.replace(/\n/g, "");
 		this.past = words.replace(/\s/g, ",");
 		setTimeout(() => {
-			this.ivfm.ivfId =this.past;
+			id =this.past;
 		  }, 0);
 		
 		
 	  }
-  
+
+  onPasteI(evt) {
+	  this.onPaste(evt,this.ivfm.ivfId);
+		
+		
+	  }
+  onPasteP(evt) {
+	  this.onPaste(evt,this.ivfm.patientId);
+		
+		
+	  }
   getDataFromPasteEvent(evt) {
 	  // console.log(3);
 	  // console.log(evt);

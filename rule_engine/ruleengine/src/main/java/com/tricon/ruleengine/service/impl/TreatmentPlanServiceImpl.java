@@ -462,19 +462,19 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null) {
 
 						//Save User input first
-						TreatmentPlan t1= new  TreatmentPlan();
-						t1.setServiceCode("D2740");
-						t1.setTooth("asds");
-						t1.setId("TEST");
+						//TreatmentPlan t1= new  TreatmentPlan();
+						//t1.setServiceCode("D2740");
+						//t1.setTooth("asds");
+						//t1.setId("TEST");
 						
-						saveUserInputs(authentication, rules, t1, ivfMap.get(ivx).get(0), list, off, mappings);
+						saveUserInputs(authentication, rules, tp, ivfMap.get(ivx).get(0), list, off, mappings);
 						
-						TreatmentPlan t12= new  TreatmentPlan();
-						t12.setServiceCode("D3320");
-						t12.setTooth("asadds");
-						t12.setId("TEST");
+						//TreatmentPlan t12= new  TreatmentPlan();
+						//t12.setServiceCode("D3320");
+						//t12.setTooth("asadds");
+						//t12.setId("TEST");
 						//Phase 2 User Input Work.
-						saveUserInputs(authentication, rules, t12, ivfMap.get(ivx).get(0), list, off, mappings);
+						//saveUserInputs(authentication, rules, t12, ivfMap.get(ivx).get(0), list, off, mappings);
 						// RULE_ID_1 (Eligibility of the patient)
 
 						rule = getRulesFromList(rules, Constants.RULE_ID_1);
@@ -739,7 +739,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_17 " Bundling - Fillings
 							rule = getRulesFromList(rules, Constants.RULE_ID_17);
-							dtoRL = rb.Rule17(tList, ivfMap.get(ivx).get(0), messageSource, rule, bw);
+							dtoRL = rb.Rule17(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -925,6 +925,22 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// END  Medicaid-2
 
+							//  Medicaid-3 
+							rule = getRulesFromList(rules, Constants.RULE_ID_25);
+							dtoRL = rb.Rule25(tList, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_25,
+									Constants.rule_log_debug, bw);
+
+							// END  Medicaid-3
 						}
 
 					} else {
@@ -1076,8 +1092,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 */
 	private void saveReportsList(Authentication authentication, List<Rules> rules, TreatmentPlan tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off) {
-		//int a=1;
-		//if (a==1)return ;
+		int a=1;
+		if (a==1)return ;
 		try {
 			if (ivfSheet == null || tp == null)
 				return;
@@ -1175,29 +1191,32 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			UserInputDto dto = new UserInputDto();
 			dto.setOfficeId(off.getUuid());
 			dto.setTreatmentPlanId(tp.getId());
-			//List<QuestionAnswerDto> qansList=userInputQuestionDao.getUserAnswers(dto);
-//			if (qansList!=null && qansList.size()>0) {
-//				
-//				for(QuestionAnswerDto d:qansList) {
-//					d.getAnswer();
-//				}
-//			}else {
-//				//for null case
+			List<QuestionAnswerDto> qansList=userInputQuestionDao.getUserAnswers(dto);
+ 			if (qansList!=null && qansList.size()>0) {
+ 				
+				for(QuestionAnswerDto d:qansList) {
+					d.getAnswer();
+				}
+			}else {
+				//for null case
 				 for (UserInputRuleQuestionHeader qh:qhList) {
 					 
 				
 				   //For Rule 10 -- START
 					 if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_10)) {
 					Mappings mapA = rb.getMappingFromListAdditionalInformationNeeded(mappings, tp.getServiceCode());
-					Mappings mapP = rb.getMappingFromListPreAuth(mappings, tp.getServiceCode());
 					QuestionAnswerDto qadto= new QuestionAnswerDto();
 					qadto.setAnswer("");
-					if (qh.getId()==Constants.RULE_10_question_header_id_checkpoints) 
+					
+					if (qh.getId()==Constants.RULE_10_question_header_id_checkpoints) {
+						
 					   qadto.setAnswer(tp.getServiceCode());
+					}
 					else if (qh.getId()==Constants.RULE_10_question_header_id_toothno) 
 						   qadto.setAnswer(tp.getTooth());
-					else if (qh.getId()==Constants.RULE_10_question_header_id_require) 
+					else if (qh.getId()==Constants.RULE_10_question_header_id_require && mapA!=null) {
 						   qadto.setAnswer(mapA.getAdditionalInformationNeeded());
+					}
 			           qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 			           qadto.setOfficeId(off.getUuid());
 			           qadto.setPatId(ivf.getPatientId());
@@ -1206,10 +1225,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						//SAVE DATA HERE ...
 						userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
 						}
-					if (mapP != null) {
+					//if (mapP != null) {
 						//SAVE DATA HERE ...
-						userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
-					}
+					//	userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
+					//}
 					 }
 					//For Rule 10 -- END
 					//For Rule Overall-- START
@@ -1236,14 +1255,23 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         qadto.setTpId(tp.getId());
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 					 }
-					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_PREAUTH)) {
+					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_PREAUTH) ) {
+						 Mappings mapP = rb.getMappingFromListPreAuth(mappings, tp.getServiceCode());
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
+						 if (qh.getId()==Constants.RULE_PRE_AUTH_question_header_id_avail) {
+							 
+						 }else if (qh.getId()==Constants.RULE_PRE_AUTH_question_header_id_refno) {
+							 
+						 }
+							 
 						 qadto.setAnswer("");
 						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
 				         qadto.setTpId(tp.getId());
-				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+				         if (mapP!=null) {
+				        	 userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+				         }
 					 }
 					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_PC)) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
@@ -1253,9 +1281,17 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         qadto.setPatId(ivf.getPatientId());
 				         qadto.setTpId(tp.getId());
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+					 }else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_BONE_GRAFT)) {
+						 QuestionAnswerDto qadto= new QuestionAnswerDto();
+						 qadto.setAnswer("");
+						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+				         qadto.setOfficeId(off.getUuid());
+				         qadto.setPatId(ivf.getPatientId());
+				         qadto.setTpId(tp.getId());
+				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 					 }
 				 }
-			//}
+			}
 
 		} catch (Exception x) {
 
@@ -1530,6 +1566,17 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 				
 				
+			}
+			if (isPat && ivfMap!=null) {
+				//ids=null;
+				List<String> x=new ArrayList<>();
+				for (Map.Entry<String,List<Object>> entry : ivfMap.entrySet())  {
+			
+			 	IVFTableSheet ivf = (IVFTableSheet) entry.getValue().get(0);
+			 	x.add(ivf.getUniqueID().split("_")[1]);
+				}
+				
+				ids=x.toArray(new String[0]);
 			}
 			for (int y = 0; y < ids.length; y++) {
 				list = new ArrayList<TPValidationResponseDto>();

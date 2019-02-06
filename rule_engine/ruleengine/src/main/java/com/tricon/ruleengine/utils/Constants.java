@@ -182,6 +182,7 @@ public class Constants {
 	public static String User_Input_Name_Question_RULE_ORTHO="RULE_ORTHO";
 	public static String User_Input_Name_Question_RULE_PREAUTH="RULE_PREAUTH";
 	public static String User_Input_Name_Question_RULE_PC="RULE_PC";
+	public static String User_Input_Name_Question_RULE_BONE_GRAFT="RULE_BONE_GRAFT";
 	
 	
 	public static int RULE_10_question_header_id_checkpoints=1;
@@ -206,6 +207,7 @@ public class Constants {
 	public static int RULE_PC_question_header_id_patient_change_provier=16;
 	public static int RULE_PC_question_header_id_ref_missing=17;
 	
+	public static int RULE_BONE_GRAFT_IMPLANT=18;
 	
 	
 

@@ -5,14 +5,17 @@ public class ToothHistoryDto {
 	String historyCode;
 	String historyDos;
 	String historyTooth;
+	String surfaceTooth;
 	
 	
 	
-	public ToothHistoryDto(String historyCode, String historyDos, String historyTooth) {
+	
+	public ToothHistoryDto(String historyCode, String historyDos, String historyTooth,String surfaceTooth) {
 		super();
 		this.historyCode = historyCode;
 		this.historyDos = historyDos;
 		this.historyTooth = historyTooth;
+		this.surfaceTooth = surfaceTooth;
 	}
 	public String getHistoryCode() {
 		return historyCode;
@@ -30,7 +33,14 @@ public class ToothHistoryDto {
 		return historyTooth;
 	}
 	public void setHistoryTooth(String historyTooth) {
+		
 		this.historyTooth = historyTooth;
+	}
+	public String getSurfaceTooth() {
+		return surfaceTooth;
+	}
+	public void setSurfaceTooth(String surfaceTooth) {
+		this.surfaceTooth = surfaceTooth;
 	}
 
 	

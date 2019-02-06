@@ -1,187 +1,248 @@
 package com.tricon.ruleengine.model.sheet;
 
+
 public class IVFHistorySheet {
 	
 	private  String history1Code;
 	private  String history1Tooth;
+	private  String history1Surface;
 	private  String history1DOS;
 	private  String history2Code;
 	private  String history2Tooth;
+	private  String history2Surface;
 	private  String history2DOS;
 	private  String history3Code;
 	private  String history3Tooth;
+	private  String history3Surface;
 	private  String history3DOS;
 	private  String history4Code;
 	private  String history4Tooth;
+	private  String history4Surface;
 	private  String history4DOS;
 	private  String history5Code;
 	private  String history5Tooth;
+	private  String history5Surface;
 	private  String history5DOS;
 	private  String history6Code;
 	private  String history6Tooth;
+	private  String history6Surface;
 	private  String history6DOS;
 	private  String history7Code;
 	private  String history7Tooth;
+	private  String history7Surface;
 	private  String history7DOS;
 	private  String history8Code;
 	private  String history8Tooth;
+	private  String history8Surface;
 	private  String history8DOS;
 	private  String history9Code;
 	private  String history9Tooth;
+	private  String history9Surface;
 	private  String history9DOS;
 	private  String history10Code;
 	private  String history10Tooth;
+	private  String history10Surface;
 	private  String history10DOS;
 	//
 	private String  history11Code;
 	private String  history11Tooth;
+	private  String history11Surface;
 	private String  history11DOS;
 	private String  history12Code;
 	private String  history12Tooth;
+	private  String history12Surface;
 	private String  history12DOS;
 	private String  history13Code;
 	private String  history13Tooth;
+	private  String history13Surface;
 	private String  history13DOS;
 	private String  history14Code;
 	private String  history14Tooth;
+	private  String history14Surface;
 	private String  history14DOS;
 	private String  history15Code;
 	private String  history15Tooth;
+	private  String history15Surface;
 	private String  history15DOS;
 	private String  history16Code;
 	private String  history16Tooth;
+	private  String history16Surface;
 	private String  history16DOS;
 	private String  history17Code;
 	private String  history17Tooth;
+	private  String history17Surface;
 	private String  history17DOS;
 	private String  history18Code;
 	private String  history18Tooth;
+	private  String history18Surface;
 	private String  history18DOS;
 	private String  history19Code;
 	private String  history19Tooth;
+	private  String history19Surface;
 	private String  history19DOS;
 	private String  history20Code;
 	private String  history20Tooth;
+	private  String history20Surface;
 	private String  history20DOS;
 	private String  history21Code;
 	private String  history21Tooth;
+	private  String history21Surface;
 	private String  history21DOS;
 	private String  history22Code;
 	private String  history22Tooth;
+	private  String history22Surface;
 	private String  history22DOS;
 	private String  history23Code;
 	private String  history23Tooth;
+	private  String history23Surface;
 	private String  history23DOS;
 	private String  history24Code;
 	private String  history24Tooth;
+	private  String history24Surface;
 	private String  history24DOS;
 	private String  history25Code;
 	private String  history25Tooth;
+	private  String history25Surface;
 	private String  history25DOS;
 	private String  history26Code;
 	private String  history26Tooth;
+	private  String history26Surface;
 	private String  history26DOS;
 	private String  history27Code;
 	private String  history27Tooth;
+	private  String history27Surface;
 	private String  history27DOS;
 	private String  history28Code;
 	private String  history28Tooth;
+	private  String history28Surface;
 	private String  history28DOS;
 	private String  history29Code;
 	private String  history29Tooth;
+	private  String history29Surface;
 	private String  history29DOS;
 	private String  history30Code;
 	private String  history30Tooth;
+	private  String history30Surface;
 	private String  history30DOS;
 	private String  history31Code;
 	private String  history31Tooth;
+	private  String history31Surface;
 	private String  history31DOS;
 	private String  history32Code;
 	private String  history32Tooth;
+	private  String history32Surface;
 	private String  history32DOS;
 	private String  history33Code;
 	private String  history33Tooth;
+	private  String history33Surface;
 	private String  history33DOS;
 	private String  history34Code;
 	private String  history34Tooth;
+	private  String history34Surface;
 	private String  history34DOS;
 	private String  history35Code;
 	private String  history35Tooth;
+	private  String history35Surface;
 	private String  history35DOS;
 	private String  history36Code;
 	private String  history36Tooth;
+	private  String history36Surface;
 	private String  history36DOS;
 	private String  history37Code;
 	private String  history37Tooth;
+	private  String history37Surface;
 	private String  history37DOS;
 	private String  history38Code;
 	private String  history38Tooth;
+	private  String history38Surface;
 	private String  history38DOS;
 	private String  history39Code;
 	private String  history39Tooth;
+	private  String history39Surface;
 	private String  history39DOS;
 	private String  history40Code;
 	private String  history40Tooth;
+	private  String history40Surface;
 	private String  history40DOS;
 	private String history41Code;
 	private String history41Tooth;
+	private  String history41Surface;
 	private String history41DOS;
 	private String history42Code;
 	private String history42Tooth;
+	private  String history42Surface;
 	private String history42DOS;
 	private String history43Code;
 	private String history43Tooth;
+	private String history43Surface;
 	private String history43DOS;
 	private String history44Code;
 	private String history44Tooth;
+	private String history44Surface;
 	private String history44DOS;
 	private String history45Code;
 	private String history45Tooth;
+	private String history45Surface;
 	private String history45DOS;
 	private String history46Code;
 	private String history46Tooth;
+	private String history46Surface;
 	private String history46DOS;
 	private String history47Code;
 	private String history47Tooth;
+	private String history47Surface;
 	private String history47DOS;
 	private String history48Code;
 	private String history48Tooth;
+	private String history48Surface;
 	private String history48DOS;
 	private String history49Code;
 	private String history49Tooth;
+	private String history49Surface;
 	private String history49DOS;
 	private String history50Code;
 	private String history50Tooth;
+	private String history50Surface;
 	private String history50DOS;
 	private String  history51Code;
 	private String  history51Tooth;
+	private String  history51Surface;
 	private String  history51DOS;
 	private String  history52Code;
 	private String  history52Tooth;
+	private String  history52Surface;
 	private String  history52DOS;
 	private String  history53Code;
 	private String  history53Tooth;
+	private String  history53Surface;
 	private String  history53DOS;
 	private String  history54Code;
 	private String  history54Tooth;
+	private String  history54Surface;
 	private String  history54DOS;
 	private String  history55Tooth;
 	private String  history55Code;
+	private String  history55Surface;
 	private String  history55DOS;
 	private String  history56Code;
 	private String  history56Tooth;
+	private String  history56Surface;
 	private String  history56DOS;
 	private String  history57Code;
 	private String  history57Tooth;
+	private String  history57Surface;
 	private String  history57DOS;
 	private String  history58Code;
 	private String  history58Tooth;
+	private  String history58Surface;
 	private String  history58DOS;
 	private String  history59Code;
 	private String  history59Tooth;
+	private  String history59Surface;
 	private String  history59DOS;
 	private String  history60Code;
 	private String  history60Tooth;
+	private  String history60Surface;
 	private String  history60DOS;
 	
 	public IVFHistorySheet() {
@@ -234,6 +295,7 @@ public class IVFHistorySheet {
 		history1DOS = history1dos;
 		this.history2Code = history2Code;
 		this.history2Tooth = history2Tooth;
+		
 		history2DOS = history2dos;
 		this.history3Code = history3Code;
 		this.history3Tooth = history3Tooth;
@@ -409,6 +471,325 @@ public class IVFHistorySheet {
 		this.history60Code = history60Code;
 		this.history60Tooth = history60Tooth;
 		history60DOS = history60dos;
+		
+		//set Surface
+		
+		if (this.history1Tooth.split("-").length==2)
+		     this.history1Surface=this.history1Tooth.split("-")[1];
+		else this.history1Surface="";
+		this.history1Tooth=this.history1Tooth.split("-")[0];
+		
+		if (this.history2Tooth.split("-").length==2)
+		    this.history2Surface=this.history2Tooth.split("-")[1];
+		else this.history2Surface="";
+		this.history2Tooth=this.history2Tooth.split("-")[0];
+		
+		if (this.history3Tooth.split("-").length==2)
+		    this.history3Surface=this.history3Tooth.split("-")[1];
+		else this.history3Surface="";
+		this.history3Tooth=this.history3Tooth.split("-")[0];
+			
+		if (this.history4Tooth.split("-").length==2)
+		    this.history4Surface=this.history4Tooth.split("-")[1];
+		else this.history4Surface="";
+		this.history4Tooth=this.history4Tooth.split("-")[0];
+		
+		
+		if (this.history5Tooth.split("-").length==2)
+		    this.history5Surface=this.history5Tooth.split("-")[1];
+		else this.history5Surface="";
+		this.history5Tooth=this.history5Tooth.split("-")[0];
+		
+		
+		if (this.history6Tooth.split("-").length==2)
+		    this.history6Surface=this.history6Tooth.split("-")[1];
+		else this.history6Surface="";
+		this.history6Tooth=this.history6Tooth.split("-")[0];
+		
+		if (this.history7Tooth.split("-").length==2)
+		    this.history7Surface=this.history7Tooth.split("-")[1];
+		else this.history7Surface="";
+		this.history7Tooth=this.history7Tooth.split("-")[0];
+		
+		if (this.history8Tooth.split("-").length==2)
+		    this.history8Surface=this.history8Tooth.split("-")[1];
+		else this.history8Surface="";
+		this.history8Tooth=this.history8Tooth.split("-")[0];
+
+		if (this.history9Tooth.split("-").length==2)
+		    this.history9Surface=this.history9Tooth.split("-")[1];
+		else this.history9Surface="";
+		this.history9Tooth=this.history9Tooth.split("-")[0];
+
+		if (this.history10Tooth.split("-").length==2)
+		    this.history10Surface=this.history10Tooth.split("-")[1];
+		else this.history10Surface="";
+		this.history10Tooth=this.history10Tooth.split("-")[0];
+
+		 /////////
+		if (this.history11Tooth.split("-").length==2)
+		     this.history11Surface=this.history11Tooth.split("-")[1];
+		else this.history11Surface="";
+		this.history11Tooth=this.history11Tooth.split("-")[0];
+		
+		if (this.history12Tooth.split("-").length==2)
+		    this.history12Surface=this.history12Tooth.split("-")[1];
+		else this.history12Surface="";
+		this.history12Tooth=this.history12Tooth.split("-")[0];
+		
+		if (this.history13Tooth.split("-").length==2)
+		    this.history13Surface=this.history13Tooth.split("-")[1];
+		else this.history13Surface="";
+		this.history13Tooth=this.history13Tooth.split("-")[0];
+			
+		if (this.history14Tooth.split("-").length==2)
+		    this.history14Surface=this.history14Tooth.split("-")[1];
+		else this.history14Surface="";
+		this.history14Tooth=this.history14Tooth.split("-")[0];
+		
+		
+		if (this.history15Tooth.split("-").length==2)
+		    this.history15Surface=this.history15Tooth.split("-")[1];
+		else this.history15Surface="";
+		this.history15Tooth=this.history15Tooth.split("-")[0];
+		
+		
+		if (this.history16Tooth.split("-").length==2)
+		    this.history16Surface=this.history16Tooth.split("-")[1];
+		else this.history16Surface="";
+		this.history16Tooth=this.history16Tooth.split("-")[0];
+		
+		if (this.history17Tooth.split("-").length==2)
+		    this.history17Surface=this.history17Tooth.split("-")[1];
+		else this.history17Surface="";
+		this.history17Tooth=this.history17Tooth.split("-")[0];
+		
+		if (this.history18Tooth.split("-").length==2)
+		    this.history18Surface=this.history18Tooth.split("-")[1];
+		else this.history8Surface="";
+		this.history18Tooth=this.history18Tooth.split("-")[0];
+
+		if (this.history19Tooth.split("-").length==2)
+		    this.history19Surface=this.history19Tooth.split("-")[1];
+		else this.history19Surface="";
+		this.history19Tooth=this.history19Tooth.split("-")[0];
+
+		if (this.history20Tooth.split("-").length==2)
+		    this.history20Surface=this.history20Tooth.split("-")[1];
+		else this.history20Surface="";
+		this.history20Tooth=this.history20Tooth.split("-")[0];
+		//
+		if (this.history21Tooth.split("-").length==2)
+		     this.history21Surface=this.history21Tooth.split("-")[1];
+		else this.history21Surface="";
+		this.history21Tooth=this.history21Tooth.split("-")[0];
+		
+		if (this.history22Tooth.split("-").length==2)
+		    this.history22Surface=this.history22Tooth.split("-")[1];
+		else this.history22Surface="";
+		this.history22Tooth=this.history22Tooth.split("-")[0];
+		
+		if (this.history23Tooth.split("-").length==2)
+		    this.history23Surface=this.history23Tooth.split("-")[1];
+		else this.history23Surface="";
+		this.history23Tooth=this.history23Tooth.split("-")[0];
+			
+		if (this.history24Tooth.split("-").length==2)
+		    this.history24Surface=this.history24Tooth.split("-")[1];
+		else this.history24Surface="";
+		this.history24Tooth=this.history24Tooth.split("-")[0];
+		
+		
+		if (this.history25Tooth.split("-").length==2)
+		    this.history25Surface=this.history25Tooth.split("-")[1];
+		else this.history25Surface="";
+		this.history25Tooth=this.history25Tooth.split("-")[0];
+		
+		
+		if (this.history26Tooth.split("-").length==2)
+		    this.history26Surface=this.history26Tooth.split("-")[1];
+		else this.history26Surface="";
+		this.history26Tooth=this.history26Tooth.split("-")[0];
+		
+		if (this.history27Tooth.split("-").length==2)
+		    this.history27Surface=this.history27Tooth.split("-")[1];
+		else this.history27Surface="";
+		this.history27Tooth=this.history27Tooth.split("-")[0];
+		
+		if (this.history28Tooth.split("-").length==2)
+		    this.history28Surface=this.history28Tooth.split("-")[1];
+		else this.history28Surface="";
+		this.history28Tooth=this.history28Tooth.split("-")[0];
+
+		if (this.history29Tooth.split("-").length==2)
+		    this.history29Surface=this.history29Tooth.split("-")[1];
+		else this.history29Surface="";
+		this.history29Tooth=this.history29Tooth.split("-")[0];
+
+		if (this.history30Tooth.split("-").length==2)
+		    this.history30Surface=this.history30Tooth.split("-")[1];
+		else this.history30Surface="";
+		this.history30Tooth=this.history30Tooth.split("-")[0];
+		
+		//
+		if (this.history31Tooth.split("-").length==2)
+		     this.history31Surface=this.history31Tooth.split("-")[1];
+		else this.history31Surface="";
+		this.history31Tooth=this.history31Tooth.split("-")[0];
+		
+		if (this.history32Tooth.split("-").length==2)
+		    this.history32Surface=this.history32Tooth.split("-")[1];
+		else this.history32Surface="";
+		this.history32Tooth=this.history32Tooth.split("-")[0];
+		
+		if (this.history33Tooth.split("-").length==2)
+		    this.history33Surface=this.history33Tooth.split("-")[1];
+		else this.history33Surface="";
+		this.history33Tooth=this.history33Tooth.split("-")[0];
+			
+		if (this.history34Tooth.split("-").length==2)
+		    this.history34Surface=this.history34Tooth.split("-")[1];
+		else this.history34Surface="";
+		this.history34Tooth=this.history34Tooth.split("-")[0];
+		
+		
+		if (this.history35Tooth.split("-").length==2)
+		    this.history35Surface=this.history35Tooth.split("-")[1];
+		else this.history35Surface="";
+		this.history35Tooth=this.history35Tooth.split("-")[0];
+		
+		
+		if (this.history36Tooth.split("-").length==2)
+		    this.history36Surface=this.history36Tooth.split("-")[1];
+		else this.history36Surface="";
+		this.history36Tooth=this.history36Tooth.split("-")[0];
+		
+		if (this.history37Tooth.split("-").length==2)
+		    this.history37Surface=this.history37Tooth.split("-")[1];
+		else this.history37Surface="";
+		this.history37Tooth=this.history37Tooth.split("-")[0];
+		
+		if (this.history38Tooth.split("-").length==2)
+		    this.history38Surface=this.history38Tooth.split("-")[1];
+		else this.history38Surface="";
+		this.history38Tooth=this.history38Tooth.split("-")[0];
+
+		if (this.history39Tooth.split("-").length==2)
+		    this.history39Surface=this.history39Tooth.split("-")[1];
+		else this.history39Surface="";
+		this.history39Tooth=this.history39Tooth.split("-")[0];
+
+		if (this.history40Tooth.split("-").length==2)
+		    this.history40Surface=this.history40Tooth.split("-")[1];
+		else this.history40Surface="";
+		this.history40Tooth=this.history40Tooth.split("-")[0];
+
+       //
+		if (this.history41Tooth.split("-").length==2)
+		     this.history41Surface=this.history41Tooth.split("-")[1];
+		else this.history41Surface="";
+		this.history41Tooth=this.history41Tooth.split("-")[0];
+		
+		if (this.history42Tooth.split("-").length==2)
+		    this.history42Surface=this.history42Tooth.split("-")[1];
+		else this.history42Surface="";
+		this.history42Tooth=this.history42Tooth.split("-")[0];
+		
+		if (this.history43Tooth.split("-").length==2)
+		    this.history43Surface=this.history43Tooth.split("-")[1];
+		else this.history43Surface="";
+		this.history43Tooth=this.history43Tooth.split("-")[0];
+			
+		if (this.history44Tooth.split("-").length==2)
+		    this.history44Surface=this.history44Tooth.split("-")[1];
+		else this.history44Surface="";
+		this.history44Tooth=this.history44Tooth.split("-")[0];
+		
+		
+		if (this.history45Tooth.split("-").length==2)
+		    this.history45Surface=this.history45Tooth.split("-")[1];
+		else this.history45Surface="";
+		this.history45Tooth=this.history45Tooth.split("-")[0];
+		
+		
+		if (this.history46Tooth.split("-").length==2)
+		    this.history46Surface=this.history46Tooth.split("-")[1];
+		else this.history46Surface="";
+		this.history46Tooth=this.history46Tooth.split("-")[0];
+		
+		if (this.history47Tooth.split("-").length==2)
+		    this.history47Surface=this.history47Tooth.split("-")[1];
+		else this.history47Surface="";
+		this.history47Tooth=this.history47Tooth.split("-")[0];
+		
+		if (this.history48Tooth.split("-").length==2)
+		    this.history48Surface=this.history48Tooth.split("-")[1];
+		else this.history48Surface="";
+		this.history48Tooth=this.history48Tooth.split("-")[0];
+
+		if (this.history49Tooth.split("-").length==2)
+		    this.history49Surface=this.history49Tooth.split("-")[1];
+		else this.history49Surface="";
+		this.history49Tooth=this.history49Tooth.split("-")[0];
+
+		if (this.history50Tooth.split("-").length==2)
+		    this.history50Surface=this.history50Tooth.split("-")[1];
+		else this.history50Surface="";
+		this.history50Tooth=this.history50Tooth.split("-")[0];
+
+       //
+		if (this.history51Tooth.split("-").length==2)
+		     this.history51Surface=this.history51Tooth.split("-")[1];
+		else this.history51Surface="";
+		this.history51Tooth=this.history51Tooth.split("-")[0];
+		
+		if (this.history52Tooth.split("-").length==2)
+		    this.history52Surface=this.history52Tooth.split("-")[1];
+		else this.history52Surface="";
+		this.history52Tooth=this.history52Tooth.split("-")[0];
+		
+		if (this.history53Tooth.split("-").length==2)
+		    this.history53Surface=this.history53Tooth.split("-")[1];
+		else this.history53Surface="";
+		this.history53Tooth=this.history53Tooth.split("-")[0];
+			
+		if (this.history54Tooth.split("-").length==2)
+		    this.history54Surface=this.history54Tooth.split("-")[1];
+		else this.history54Surface="";
+		this.history54Tooth=this.history54Tooth.split("-")[0];
+		
+		
+		if (this.history55Tooth.split("-").length==2)
+		    this.history55Surface=this.history55Tooth.split("-")[1];
+		else this.history55Surface="";
+		this.history55Tooth=this.history55Tooth.split("-")[0];
+		
+		
+		if (this.history56Tooth.split("-").length==2)
+		    this.history56Surface=this.history56Tooth.split("-")[1];
+		else this.history56Surface="";
+		this.history56Tooth=this.history56Tooth.split("-")[0];
+		
+		if (this.history57Tooth.split("-").length==2)
+		    this.history57Surface=this.history57Tooth.split("-")[1];
+		else this.history57Surface="";
+		this.history57Tooth=this.history57Tooth.split("-")[0];
+		
+		if (this.history58Tooth.split("-").length==2)
+		    this.history58Surface=this.history58Tooth.split("-")[1];
+		else this.history58Surface="";
+		this.history58Tooth=this.history58Tooth.split("-")[0];
+
+		if (this.history59Tooth.split("-").length==2)
+		    this.history59Surface=this.history59Tooth.split("-")[1];
+		else this.history59Surface="";
+		this.history59Tooth=this.history59Tooth.split("-")[0];
+
+		if (this.history60Tooth.split("-").length==2)
+		    this.history60Surface=this.history60Tooth.split("-")[1];
+		else this.history60Surface="";
+		this.history60Tooth=this.history60Tooth.split("-")[0];
+
 	}
 	public String getHistory1Code() {
 		return history1Code;
@@ -1490,6 +1871,487 @@ public class IVFHistorySheet {
 	public void setHistory60DOS(String history60dos) {
 		history60DOS = history60dos;
 	}
+
+	public String getHistory1Surface() {
+		return history1Surface;
+	}
+
+	public void setHistory1Surface(String history1Surface) {
+		this.history1Surface = history1Surface;
+	}
+
+	public String getHistory2Surface() {
+		return history2Surface;
+	}
+
+	public void setHistory2Surface(String history2Surface) {
+		this.history2Surface = history2Surface;
+	}
+
+	public String getHistory3Surface() {
+		return history3Surface;
+	}
+
+	public void setHistory3Surface(String history3Surface) {
+		this.history3Surface = history3Surface;
+	}
+
+	public String getHistory4Surface() {
+		return history4Surface;
+	}
+
+	public void setHistory4Surface(String history4Surface) {
+		this.history4Surface = history4Surface;
+	}
+
+	public String getHistory5Surface() {
+		return history5Surface;
+	}
+
+	public void setHistory5Surface(String history5Surface) {
+		this.history5Surface = history5Surface;
+	}
+
+	public String getHistory6Surface() {
+		return history6Surface;
+	}
+
+	public void setHistory6Surface(String history6Surface) {
+		this.history6Surface = history6Surface;
+	}
+
+	public String getHistory7Surface() {
+		return history7Surface;
+	}
+
+	public void setHistory7Surface(String history7Surface) {
+		this.history7Surface = history7Surface;
+	}
+
+	public String getHistory8Surface() {
+		return history8Surface;
+	}
+
+	public void setHistory8Surface(String history8Surface) {
+		this.history8Surface = history8Surface;
+	}
+
+	public String getHistory9Surface() {
+		return history9Surface;
+	}
+
+	public void setHistory9Surface(String history9Surface) {
+		this.history9Surface = history9Surface;
+	}
+
+	public String getHistory10Surface() {
+		return history10Surface;
+	}
+
+	public void setHistory10Surface(String history10Surface) {
+		this.history10Surface = history10Surface;
+	}
+
+	public String getHistory11Surface() {
+		return history11Surface;
+	}
+
+	public void setHistory11Surface(String history11Surface) {
+		this.history11Surface = history11Surface;
+	}
+
+	public String getHistory12Surface() {
+		return history12Surface;
+	}
+
+	public void setHistory12Surface(String history12Surface) {
+		this.history12Surface = history12Surface;
+	}
+
+	public String getHistory13Surface() {
+		return history13Surface;
+	}
+
+	public void setHistory13Surface(String history13Surface) {
+		this.history13Surface = history13Surface;
+	}
+
+	public String getHistory14Surface() {
+		return history14Surface;
+	}
+
+	public void setHistory14Surface(String history14Surface) {
+		this.history14Surface = history14Surface;
+	}
+
+	public String getHistory15Surface() {
+		return history15Surface;
+	}
+
+	public void setHistory15Surface(String history15Surface) {
+		this.history15Surface = history15Surface;
+	}
+
+	public String getHistory16Surface() {
+		return history16Surface;
+	}
+
+	public void setHistory16Surface(String history16Surface) {
+		this.history16Surface = history16Surface;
+	}
+
+	public String getHistory17Surface() {
+		return history17Surface;
+	}
+
+	public void setHistory17Surface(String history17Surface) {
+		this.history17Surface = history17Surface;
+	}
+
+	public String getHistory18Surface() {
+		return history18Surface;
+	}
+
+	public void setHistory18Surface(String history18Surface) {
+		this.history18Surface = history18Surface;
+	}
+
+	public String getHistory19Surface() {
+		return history19Surface;
+	}
+
+	public void setHistory19Surface(String history19Surface) {
+		this.history19Surface = history19Surface;
+	}
+
+	public String getHistory20Surface() {
+		return history20Surface;
+	}
+
+	public void setHistory20Surface(String history20Surface) {
+		this.history20Surface = history20Surface;
+	}
+
+	public String getHistory21Surface() {
+		return history21Surface;
+	}
+
+	public void setHistory21Surface(String history21Surface) {
+		this.history21Surface = history21Surface;
+	}
+
+	public String getHistory22Surface() {
+		return history22Surface;
+	}
+
+	public void setHistory22Surface(String history22Surface) {
+		this.history22Surface = history22Surface;
+	}
+
+	public String getHistory23Surface() {
+		return history23Surface;
+	}
+
+	public void setHistory23Surface(String history23Surface) {
+		this.history23Surface = history23Surface;
+	}
+
+	public String getHistory24Surface() {
+		return history24Surface;
+	}
+
+	public void setHistory24Surface(String history24Surface) {
+		this.history24Surface = history24Surface;
+	}
+
+	public String getHistory25Surface() {
+		return history25Surface;
+	}
+
+	public void setHistory25Surface(String history25Surface) {
+		this.history25Surface = history25Surface;
+	}
+
+	public String getHistory26Surface() {
+		return history26Surface;
+	}
+
+	public void setHistory26Surface(String history26Surface) {
+		this.history26Surface = history26Surface;
+	}
+
+	public String getHistory27Surface() {
+		return history27Surface;
+	}
+
+	public void setHistory27Surface(String history27Surface) {
+		this.history27Surface = history27Surface;
+	}
+
+	public String getHistory28Surface() {
+		return history28Surface;
+	}
+
+	public void setHistory28Surface(String history28Surface) {
+		this.history28Surface = history28Surface;
+	}
+
+	public String getHistory29Surface() {
+		return history29Surface;
+	}
+
+	public void setHistory29Surface(String history29Surface) {
+		this.history29Surface = history29Surface;
+	}
+
+	public String getHistory30Surface() {
+		return history30Surface;
+	}
+
+	public void setHistory30Surface(String history30Surface) {
+		this.history30Surface = history30Surface;
+	}
+
+	public String getHistory31Surface() {
+		return history31Surface;
+	}
+
+	public void setHistory31Surface(String history31Surface) {
+		this.history31Surface = history31Surface;
+	}
+
+	public String getHistory32Surface() {
+		return history32Surface;
+	}
+
+	public void setHistory32Surface(String history32Surface) {
+		this.history32Surface = history32Surface;
+	}
+
+	public String getHistory33Surface() {
+		return history33Surface;
+	}
+
+	public void setHistory33Surface(String history33Surface) {
+		this.history33Surface = history33Surface;
+	}
+
+	public String getHistory34Surface() {
+		return history34Surface;
+	}
+
+	public void setHistory34Surface(String history34Surface) {
+		this.history34Surface = history34Surface;
+	}
+
+	public String getHistory35Surface() {
+		return history35Surface;
+	}
+
+	public void setHistory35Surface(String history35Surface) {
+		this.history35Surface = history35Surface;
+	}
+
+	public String getHistory36Surface() {
+		return history36Surface;
+	}
+
+	public void setHistory36Surface(String history36Surface) {
+		this.history36Surface = history36Surface;
+	}
+
+	public String getHistory37Surface() {
+		return history37Surface;
+	}
+
+	public void setHistory37Surface(String history37Surface) {
+		this.history37Surface = history37Surface;
+	}
+
+	public String getHistory38Surface() {
+		return history38Surface;
+	}
+
+	public void setHistory38Surface(String history38Surface) {
+		this.history38Surface = history38Surface;
+	}
+
+	public String getHistory39Surface() {
+		return history39Surface;
+	}
+
+	public void setHistory39Surface(String history39Surface) {
+		this.history39Surface = history39Surface;
+	}
+
+	public String getHistory40Surface() {
+		return history40Surface;
+	}
+
+	public void setHistory40Surface(String history40Surface) {
+		this.history40Surface = history40Surface;
+	}
+
+	public String getHistory41Surface() {
+		return history41Surface;
+	}
+
+	public void setHistory41Surface(String history41Surface) {
+		this.history41Surface = history41Surface;
+	}
+
+	public String getHistory42Surface() {
+		return history42Surface;
+	}
+
+	public void setHistory42Surface(String history42Surface) {
+		this.history42Surface = history42Surface;
+	}
+
+	public String getHistory43Surface() {
+		return history43Surface;
+	}
+
+	public void setHistory43Surface(String history43Surface) {
+		this.history43Surface = history43Surface;
+	}
+
+	public String getHistory44Surface() {
+		return history44Surface;
+	}
+
+	public void setHistory44Surface(String history44Surface) {
+		this.history44Surface = history44Surface;
+	}
+
+	public String getHistory45Surface() {
+		return history45Surface;
+	}
+
+	public void setHistory45Surface(String history45Surface) {
+		this.history45Surface = history45Surface;
+	}
+
+	public String getHistory46Surface() {
+		return history46Surface;
+	}
+
+	public void setHistory46Surface(String history46Surface) {
+		this.history46Surface = history46Surface;
+	}
+
+	public String getHistory47Surface() {
+		return history47Surface;
+	}
+
+	public void setHistory47Surface(String history47Surface) {
+		this.history47Surface = history47Surface;
+	}
+
+	public String getHistory48Surface() {
+		return history48Surface;
+	}
+
+	public void setHistory48Surface(String history48Surface) {
+		this.history48Surface = history48Surface;
+	}
+
+	public String getHistory49Surface() {
+		return history49Surface;
+	}
+
+	public void setHistory49Surface(String history49Surface) {
+		this.history49Surface = history49Surface;
+	}
+
+	public String getHistory50Surface() {
+		return history50Surface;
+	}
+
+	public void setHistory50Surface(String history50Surface) {
+		this.history50Surface = history50Surface;
+	}
+
+	public String getHistory51Surface() {
+		return history51Surface;
+	}
+
+	public void setHistory51Surface(String history51Surface) {
+		this.history51Surface = history51Surface;
+	}
+
+	public String getHistory52Surface() {
+		return history52Surface;
+	}
+
+	public void setHistory52Surface(String history52Surface) {
+		this.history52Surface = history52Surface;
+	}
+
+	public String getHistory53Surface() {
+		return history53Surface;
+	}
+
+	public void setHistory53Surface(String history53Surface) {
+		this.history53Surface = history53Surface;
+	}
+
+	public String getHistory54Surface() {
+		return history54Surface;
+	}
+
+	public void setHistory54Surface(String history54Surface) {
+		this.history54Surface = history54Surface;
+	}
+
+	public String getHistory55Surface() {
+		return history55Surface;
+	}
+
+	public void setHistory55Surface(String history55Surface) {
+		this.history55Surface = history55Surface;
+	}
+
+	public String getHistory56Surface() {
+		return history56Surface;
+	}
+
+	public void setHistory56Surface(String history56Surface) {
+		this.history56Surface = history56Surface;
+	}
+
+	public String getHistory57Surface() {
+		return history57Surface;
+	}
+
+	public void setHistory57Surface(String history57Surface) {
+		this.history57Surface = history57Surface;
+	}
+
+	public String getHistory58Surface() {
+		return history58Surface;
+	}
+
+	public void setHistory58Surface(String history58Surface) {
+		this.history58Surface = history58Surface;
+	}
+
+	public String getHistory59Surface() {
+		return history59Surface;
+	}
+
+	public void setHistory59Surface(String history59Surface) {
+		this.history59Surface = history59Surface;
+	}
+
+	public String getHistory60Surface() {
+		return history60Surface;
+	}
+
+	public void setHistory60Surface(String history60Surface) {
+		this.history60Surface = history60Surface;
+	}
+	
 	
 	
 	

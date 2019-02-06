@@ -108,6 +108,14 @@ public class RuleEngineValidationController {
 	public ResponseEntity<Object> validateTreatementPlanPreBatch(@RequestBody TreatmentPlanBatchValidationDto dto) {
 
 		// dto.setTreatmentPlanId("22095");
+		if (dto.getIvfId()!=null &&  dto.getIvfId().equals("")) {
+			dto.setIvfId(null);
+			
+		}
+		if (dto.getPatientId()!=null &&  dto.getPatientId().equals("")) {
+			dto.setPatientId(null);
+			
+		}
 		Map<String, List<TPValidationResponseDto>> map = tPService.validateTreatmentPlanPreBatch(dto);
 		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug, null);
 		//System.out.println("calledddddddddd-----------");

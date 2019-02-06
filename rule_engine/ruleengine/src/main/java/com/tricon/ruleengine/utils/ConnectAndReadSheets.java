@@ -166,7 +166,7 @@ public class ConnectAndReadSheets {
 				if (ruleGen != null && ruleGen.size() > 0) {
 					//uniqueId = ruleGen.get(0);//obj.get(157);
                     if (idsPatient) {
-                    	uniqueId=obj.get(Column_NO_PATIENT).split("_")[1];	
+                    	uniqueId=obj.get(Column_NO_UNIQUE).split("_")[1];	
 					/*for(String i:ruleGen) {
                     	uniqueId=i;	
                     }*/

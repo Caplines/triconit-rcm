@@ -201,14 +201,18 @@ public class DateUtils {
 	 * @param historyDate
 	 * @return
 	 */
-	public static boolean checkfor12m(Date historyDate,Date dos) {
+	public static boolean checkfor12m(Date tpDate,Date dos) {
 		
+		Calendar calendarC = new GregorianCalendar();
+		calendarC.setTime(new Date());
+		//
 		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(historyDate);
+		calendar.setTime(dos);
 		calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH)+12, calendar.get(Calendar.DATE));
 		Date date12m=calendar.getTime();
 		System.out.println(date12m);
-		if (dos.compareTo(date12m)>0 ){
+		//isDatesBetweenDates(a, b, d)
+		if (tpDate.compareTo(date12m)>0 ){
 			return true;
 		}else{
 			return false;
@@ -218,10 +222,10 @@ public class DateUtils {
 	
 	public static void main(String[] a) {
 	  SimpleDateFormat sdf= new SimpleDateFormat("dd/mm/yyyy");
-	  String x="01/01/2018";
-	  String y="01/02/2018";
+	  String tpd="01/01/2019";
+	  String dos="01/03/2017";
 	 try {
-		System.out.println(checkfor12m(sdf.parse(x),sdf.parse(y)));
+		System.out.println(checkfor12m(sdf.parse(tpd),sdf.parse(dos)));
 	} catch (ParseException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

@@ -1,7 +1,6 @@
 package com.tricon.ruleengine.utils;
 
 import java.io.BufferedWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -1291,7 +1290,7 @@ public class RuleBook {
 	}
 
 	// Bundling - Fillings -
-	public List<TPValidationResponseDto> Rule17(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
+	public List<TPValidationResponseDto> Rule17(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
 			Rules rule, BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_17,
 				Constants.rule_log_debug, bw);
@@ -1671,9 +1670,34 @@ public class RuleBook {
 				}
 
 				//PHASE -2 
-				/*
-	            if (ivf.getPlanType().equalsIgnoreCase(Constants.insurance_Medicaid)) {
+				/**/
+				String planType = ivf.getPlanType();
+				String cMedicate = Constants.insurance_Medicaid;
+				ToothHistoryDto hdto = null;
+				Map<String, List<ToothHistoryDto>> mapHistoryD = new HashMap<>();
+				Map<String, List<ToothHistoryDto>> mapHistoryP = new HashMap<>();
+				Map<String, List<ToothHistoryDto>> mapHistoryM = new HashMap<>();
+	            if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
+	       	        List<String> dList=new ArrayList<>();
+	       	        dList.add("D2330");
+	       	        dList.add("D2331");
+			       	dList.add("D2332");
+			       	dList.add("D2391");
+			       	dList.add("D2392");
+			       	dList.add("D2393");
+			       	        
+	       	       List<String> pList=new ArrayList<>();
+	       	        pList.add("P2391");
+	       	        pList.add("P2392");
+	       	        pList.add("P2393");
+	       	       
+	       	       List<String> mList=new ArrayList<>();
+	       	       mList.add("M2391");
+	       	       mList.add("M2392");
+	       	       mList.add("M2393");
 	       	
+       	       
+       	        
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
 						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
@@ -1684,31 +1708,143 @@ public class RuleBook {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
 							String ht = "getHistory" + i + "Tooth";
+							String hs = "getHistory" + i + "Surface";
 							Method hcm = c2.getMethod(hc);
 							Method htm = c2.getMethod(ht);
 							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);	
 							String code = (String) hcm.invoke(hisSheet);
-							Collection<String> prit = Collections2.filter(fillingCodeList,
-									cd -> cd.equals(code.toUpperCase()));
+							Collection<String> pritd = Collections2.filter(dList,
+									cd -> cd.substring(0,1).equals(code.toUpperCase().substring(0, 1)) && 
+										 cd.substring(1,cd.length()-1).equals(code.toUpperCase().substring(1,code.length()))
+										 );
+									  
+							Collection<String> pritp = Collections2.filter(pList,
+									cd -> cd.substring(0,1).equals(code.toUpperCase().substring(0, 1)) && 
+									 cd.substring(1,cd.length()-1).equals(code.toUpperCase().substring(1,code.length()))
+									 );
+							Collection<String> pritm = Collections2.filter(mList,
+									cd -> cd.substring(0,1).equals(code.toUpperCase().substring(0, 1)) && 
+									 cd.substring(1,cd.length()-1).equals(code.toUpperCase().substring(1,code.length()))
+									 );
 			         		
-							if (prit!=null && prit.size()>0) {
+							if (pritd!=null && pritd.size()>0) {
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-										(String) htm.invoke(hisSheet));
-				              if (mapHistory.containsKey(code)) {
-									List<ToothHistoryDto> t = mapHistory.get(code);
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistoryD.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryD.get(code);
 									t.add(hdto);
 								} else {
 									List<ToothHistoryDto> l = new ArrayList<>();
 									l.add(hdto);
-									mapHistory.put(code, l);
+									mapHistoryD.put(code, l);
+								}
+							}
+							if (pritp!=null && pritp.size()>0) {
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistoryP.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryP.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryP.put(code, l);
+								}
+							}
+							if (pritm!=null && pritm.size()>0) {
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistoryM.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryM.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryM.put(code, l);
 								}
 							}
 						}
-						RuleEngineLogger.generateLogs(clazz, " History of Sealants found.- " + historyPresent,
-								Constants.rule_log_debug, bw);
-                        
+						Date TP_Date = new Date();
+						for (Object obj1 : tpList) {
+						TreatmentPlan tp = (TreatmentPlan) obj1;
+						List<String> res= new ArrayList<>();
+						//LOW ORDER SAME SURFACE
+						List<String> rDLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryD, true, TP_Date, true, bw);
+						if (rDLSS!=null && rDLSS.size()>0) {
+							List<String> dx=ToothUtil.generateErrorListForRule171(tp,esfeess,rDLSS,bw);
+							for(String p:dx) {
+							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule17.error.message1", new Object[] {(p.split("---")[2]+"-"+p.split("---")[3]),p.split("---")[4] }, locale), Constants.FAIL));
+							}
+							pass= false;
+						}
+						
+						List<String> rPLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryP, true, TP_Date, true, bw);
+						if (rPLSS!=null && rPLSS.size()>0) {
+							List<String> dx=ToothUtil.generateErrorListForRule172(tp,esfeess,rPLSS,bw);
+							for(String p:dx) {
+							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule17.error.message2", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale), Constants.FAIL));
+							}
+							pass= false;
+						}
+						List<String> rMLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryM, true, TP_Date, true, bw);
+						if (rMLSS!=null && rMLSS.size()>0) {
+							List<String> dx=ToothUtil.generateErrorListForRule172(tp,esfeess,rMLSS,bw);
+							for(String p:dx) {
+							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule17.error.message3", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale), Constants.FAIL));
+							}
+							pass= false;
+						}
+						
+						
+						
+						//LOW ORDER DIFF SURFACE
+						res= new ArrayList<>();
+						List<String>   r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryD, true, TP_Date, false, bw);
+						if (r!=null && r.size()>0) {
+							res.addAll(new ArrayList<String>(r));
+							pass= false;
+						}
+												
+						            r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryP, true, TP_Date, false, bw);
+						if (r!=null && r.size()>0) {
+							res.addAll(new ArrayList<String>(r));
+							pass= false;
+						}
+						            r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryM, true, TP_Date, false, bw);
+						if (r!=null && r.size()>0) {
+							res.addAll(new ArrayList<String>(r));
+							pass= false;
+						}
+						
+						//HIGH ORDER
+						res= new ArrayList<>();
+			                       r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryD, false, TP_Date, true, bw);
+						if (r!=null && r.size()>0) {
+							res.addAll(new ArrayList<String>(r));
+							pass= false;
+						}             
+						            r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryP, false, TP_Date, true, bw);
+						if (r!=null && r.size()>0) {
+							res.addAll(new ArrayList<String>(r));
+							pass= false;
+						}
+						            r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryM, false, TP_Date, true, bw);
+						if (r!=null && r.size()>0) {
+							res.addAll(new ArrayList<String>(r));
+							pass= false;
+						}
+						
+						
+						
+						//RuleEngineLogger.generateLogs(clazz, " History of Sealants found.- " + historyPresent,
+					    //			Constants.rule_log_debug, bw);
+						}
 	            }
-                  */
+                  /**/
 			}
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -2714,12 +2850,16 @@ public class RuleBook {
 				String hc = "getHistory" + i + "Code";
 				String hd = "getHistory" + i + "DOS";
 				String ht = "getHistory" + i + "Tooth";
+				String hs = "getHistory" + i + "Surface";
+				
 				Method hcm = c2.getMethod(hc);
 				Method hdm = c2.getMethod(hd);
 				Method htm = c2.getMethod(ht);
+				Method hss = c2.getMethod(hs);
+				
 				// System.out.println((String)hcm.invoke(hisSheet));
 				hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-						(String) htm.invoke(hisSheet));
+						(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
 
 				/*
 				 * if (i == 1) hdto = new ToothHistoryDto(ivf.getHistory1Code(),
@@ -2871,7 +3011,7 @@ public class RuleBook {
 													Constants.rule_log_debug, bw);
 											if (freq.equalsIgnoreCase("") || freq.equalsIgnoreCase("NF") || freq.equalsIgnoreCase("no frequency"))
 												continue;
-											System.out.println("DDDDDDDDDDDDDD-"+freq);
+											//System.out.println("DDDDDDDDDDDDDD-"+freq);
 											FreqencyDto FDTO = FreqencyUtils.parseFrequecy(freq);
 											Date[] datesFIS = DateUtils.getFiscalYear(FDTO.getFy());
 											int ti = FDTO.getTimes();
@@ -3729,14 +3869,18 @@ public class RuleBook {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
 							String ht = "getHistory" + i + "Tooth";
+							String hs = "getHistory" + i + "Surface";
+							
 							Method hcm = c2.getMethod(hc);
 							Method htm = c2.getMethod(ht);
 							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);
+							
 							String code = (String) hcm.invoke(hisSheet);
 							if (historyCheckList.contains(code.toUpperCase())) {
 								historyPresent = true;
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-										(String) htm.invoke(hisSheet));
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
 				              if (mapHistory.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistory.get(code);
 									t.add(hdto);
@@ -3761,7 +3905,7 @@ public class RuleBook {
 									List<String> t=fd.getTooth();
 									for(ToothHistoryDto hisd:d) {
 										String [] a= ToothUtil.getToothsFromTooth(hisd.getHistoryTooth());
-										 String[] objects =t.toArray(new String[0]);
+									    String[] objects =t.toArray(new String[0]);
 							     		List<String> cm= ToothUtil.findCommonTooth( objects, a);
 							     		if (cm!=null && cm.size()>0) {
 							     		//if (t.contains(hisd.getHistoryTooth())) {
@@ -3866,8 +4010,8 @@ public class RuleBook {
 	 * @param bw
 	 * @return
 	 */
-	public List<TPValidationResponseDto> Rule25(Object ivfSheet, MessageSource messageSource, Rules rule,
-			List<Object> tpList,List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
+	public List<TPValidationResponseDto> Rule25(List<Object> tpList,Object ivfSheet, MessageSource messageSource, Rules rule,
+			List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_25,
 				Constants.rule_log_debug, bw);
 
@@ -3882,7 +4026,7 @@ public class RuleBook {
 			boolean checkForHistory = false;
 			boolean historyPresent = false;
 
-			if (planType.equalsIgnoreCase(cMedicate)) {
+			if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
 				
 				List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.CROWN_SC.split(",")));
                 List<String> historyCheckList = new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
@@ -3924,14 +4068,18 @@ public class RuleBook {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
 							String ht = "getHistory" + i + "Tooth";
+							String hs = "getHistory" + i + "Surface";
+							
 							Method hcm = c2.getMethod(hc);
 							Method htm = c2.getMethod(ht);
 							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);
+
 							String code = (String) hcm.invoke(hisSheet);
 							if (historyCheckList.contains(code.toUpperCase())) {
 								historyPresent = true;
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-										(String) htm.invoke(hisSheet));
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
 				              if (mapHistory.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistory.get(code);
 									t.add(hdto);
@@ -3955,7 +4103,11 @@ public class RuleBook {
 									FeeToothDto fd=entry2.getValue();
 									List<String> t=fd.getTooth();
 									for(ToothHistoryDto hisd:d) {
-										if (t.contains(hisd.getHistoryTooth())) {
+										String [] a= ToothUtil.getToothsFromTooth(hisd.getHistoryTooth());
+									    String[] objects =t.toArray(new String[0]);
+							     		List<String> cm= ToothUtil.findCommonTooth( objects, a);
+							     		if (cm!=null && cm.size()>0) {
+							     		//if (t.contains(hisd.getHistoryTooth())) {
 											Date dos = null;
 											try {
 												dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(hisd.getHistoryDos());
@@ -4027,6 +4179,10 @@ public class RuleBook {
 								messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
 								Constants.FAIL));
 								}
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule25.pass1.message", new Object[] {  }, locale),
+							Constants.PASS));
 				}
 			} else {
 				RuleEngineLogger.generateLogs(clazz, " Plan type not Medicaid",
@@ -4130,14 +4286,18 @@ public class RuleBook {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
 							String ht = "getHistory" + i + "Tooth";
+							String hs = "getHistory" + i + "Surface";
+
 							Method hcm = c2.getMethod(hc);
 							Method htm = c2.getMethod(ht);
 							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);
+							
 							String code = (String) hcm.invoke(hisSheet);
 							if (historyCheckList.contains(code.toUpperCase())) {
 								historyPresent = true;
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-										(String) htm.invoke(hisSheet));
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
 				              if (mapHistory.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistory.get(code);
 									t.add(hdto);
@@ -4159,7 +4319,11 @@ public class RuleBook {
 									FeeToothDto fd=entry2.getValue();
 									List<String> t=fd.getTooth();
 									for(ToothHistoryDto hisd:d) {
-										if (t.contains(hisd.getHistoryTooth())) {
+										String [] a= ToothUtil.getToothsFromTooth(hisd.getHistoryTooth());
+									    String[] objects =t.toArray(new String[0]);
+							     		List<String> cm= ToothUtil.findCommonTooth( objects, a);
+							     		if (cm!=null && cm.size()>0) {
+							     		//if (t.contains(hisd.getHistoryTooth())) {
 											breakAll=true;
 											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule26.error.message", new Object[] {hisd.getHistoryTooth()  }, locale),
@@ -4308,14 +4472,18 @@ public class RuleBook {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
 							String ht = "getHistory" + i + "Tooth";
+							String hs = "getHistory" + i + "Surface";
+							
 							Method hcm = c2.getMethod(hc);
 							Method htm = c2.getMethod(ht);
 							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);
+
 							String code = (String) hcm.invoke(hisSheet);
 							if (historyCheckList.contains(code.toUpperCase())) {
 								historyPresent = true;
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-										(String) htm.invoke(hisSheet));
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
 				              if (mapHistory.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistory.get(code);
 									t.add(hdto);
@@ -4337,7 +4505,11 @@ public class RuleBook {
 									FeeToothDto fd=entry2.getValue();
 									List<String> t=fd.getTooth();
 									for(ToothHistoryDto hisd:d) {
-										if (t.contains(hisd.getHistoryTooth())) {
+										String [] a= ToothUtil.getToothsFromTooth(hisd.getHistoryTooth());
+									    String[] objects =t.toArray(new String[0]);
+							     		List<String> cm= ToothUtil.findCommonTooth( objects, a);
+							     		if (cm!=null && cm.size()>0) {
+							     		//if (t.contains(hisd.getHistoryTooth())) {
 											breakAll=true;
 											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule27.error.message", new Object[] {hisd.getHistoryTooth()  }, locale),
@@ -4490,14 +4662,17 @@ public class RuleBook {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
 							String ht = "getHistory" + i + "Tooth";
+							String hs = "getHistory" + i + "Surface";
+
 							Method hcm = c2.getMethod(hc);
 							Method htm = c2.getMethod(ht);
 							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);
 							String code = (String) hcm.invoke(hisSheet);
 							if (historyCheckList.contains(code.toUpperCase())) {
 								historyPresent = true;
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-										(String) htm.invoke(hisSheet));
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
 				              if (mapHistory.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistory.get(code);
 									t.add(hdto);
@@ -4519,7 +4694,11 @@ public class RuleBook {
 									FeeToothDto fd=entry2.getValue();
 									List<String> t=fd.getTooth();
 									for(ToothHistoryDto hisd:d) {
-										if (t.contains(hisd.getHistoryTooth())) {
+										String [] a= ToothUtil.getToothsFromTooth(hisd.getHistoryTooth());
+									    String[] objects =t.toArray(new String[0]);
+							     		List<String> cm= ToothUtil.findCommonTooth( objects, a);
+							     		if (cm!=null && cm.size()>0) {
+							     		//if (t.contains(hisd.getHistoryTooth())) {
 											breakAll=true;
 											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule28.error.message", new Object[] {hisd.getHistoryTooth()  }, locale),
@@ -5056,10 +5235,15 @@ public class RuleBook {
 				for (int i = 1; i <= noOFhistory; i++) {
 					String hc = "getHistory" + i + "Code";
 					String ht = "getHistory" + i + "Tooth";
+					String hs = "getHistory" + i + "Surface";
+					
 					Method hcm = c2.getMethod(hc);
 					Method htm = c2.getMethod(ht);
+					//Method hss = c2.getMethod(hs);
 					String code=(String) hcm.invoke(hisSheet);
 					String tooth=(String) htm.invoke(hisSheet);
+					tooth=tooth.split("-")[0];
+					
 					if (code.equalsIgnoreCase("D4341") || code.equalsIgnoreCase("D5120") ||
 						code.equalsIgnoreCase("D5130") || code.equalsIgnoreCase("D5140")) {
 						//Iterate HashMap
@@ -5176,6 +5360,8 @@ public class RuleBook {
 					Method htm = c2.getMethod(ht);
 					String code=(String) hcm.invoke(hisSheet);
 					String tooth=(String) htm.invoke(hisSheet);
+					tooth=tooth.split("-")[0];
+					
 					if (dentureList.contains(code.toUpperCase())) {
 						historyPresent=true;
 						if (mapHistory.containsKey(code)) {
