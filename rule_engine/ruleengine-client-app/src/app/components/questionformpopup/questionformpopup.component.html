@@ -23,8 +23,8 @@
 										<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 									</td>
 									<td *ngIf="data.questionType == 'Y_N'">
-										<input type="radio" [(ngModel)]="answer.answer" value="Yes" (change)="saveChanges(answer)" />Yes
-										<input type="radio" [(ngModel)]="answer.answer" value="No" (change)="saveChanges(answer)" />No
+										<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" (change)="saveRadioChanges(answer, 'Yes')" />Yes
+										<input type="radio" [checked]="answer.answer=='No'" value="No" (change)="saveRadioChanges(answer, 'No')" />No
 									</td>
 								</tr>
 							</table>						
@@ -50,8 +50,8 @@
 										<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 									</td>
 									<td *ngIf="data.questionType == 'Y_N'">
-										<input type="radio" [(ngModel)]="answer.answer" value="Yes" (change)="saveChanges(answer)" />Yes
-										<input type="radio" [(ngModel)]="answer.answer" value="No" (change)="saveChanges(answer)" />No
+										<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" (change)="saveRadioChanges(answer, 'Yes')" />Yes
+										<input type="radio" [checked]="answer.answer=='No'" value="No" (change)="saveRadioChanges(answer, 'No')" />No
 									</td>
 								</tr>
 							</table>						
@@ -81,8 +81,8 @@
 						<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 					</span>
 					<span *ngIf="data.questionType == 'Y_N'">
-						<input type="radio" [(ngModel)]="answer.answer" value="Yes" (change)="saveChanges(answer)" />Yes
-						<input type="radio" [(ngModel)]="answer.answer" value="No" (change)="saveChanges(answer)" />No
+						<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" (change)="saveRadioChanges(answer, 'Yes')" />Yes
+						<input type="radio" [checked]="answer.answer=='No'" value="No" (change)="saveRadioChanges(answer, 'No')" />No
 					</span>
 				</div>
 			</div>

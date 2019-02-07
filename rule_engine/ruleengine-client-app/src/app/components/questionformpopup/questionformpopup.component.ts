@@ -47,5 +47,10 @@ export class QuestionformPopupComponent implements OnInit {
   closePopup() {
 	this.emitToParent.emit({action: "showQuestionData", value: false});
   }
+  
+  saveRadioChanges(result, value) {
+	result.answer = value;
+	this.saveChanges(result);
+  }
 
 }
