@@ -11,6 +11,7 @@ export class QuestionformPopupComponent implements OnInit {
   @Output() emitToParent = new EventEmitter<any>();
   arrayOfKeys:any;
   questionFormData:any;
+  answerData:any = [];
   
   constructor() { }
 
@@ -23,7 +24,6 @@ export class QuestionformPopupComponent implements OnInit {
 		});
 	});
 	this.questionFormData = this.groupBy(this.questionData.dataHeader, 'ruleName');
-	console.log(this.questionFormData);
 	this.arrayOfKeys = Object.keys(this.questionFormData);
   }
   
@@ -35,8 +35,13 @@ export class QuestionformPopupComponent implements OnInit {
 	  }, {});
   }
   
-  saveChanges(answer) {
-	console.log(answer);
+  saveChanges(result) {
+	let index = this.answerData.findIndex(updateAns => updateAns.answerId == result.answerId);
+	if(index != -1) {
+		this.answerData[index].answer = result.answer;
+	} else {
+		this.answerData.push({'answerId': result.answerId, 'answer': result.answer});		
+	}
   }
   
   closePopup() {
