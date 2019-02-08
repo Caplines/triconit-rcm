@@ -9,16 +9,20 @@ public class ServiceCodeIvfTimesFreqFieldDto {
 	int times;
 	String tooth;
 	String dos;
+	String surface;
+	
 	
 	
 
-	public ServiceCodeIvfTimesFreqFieldDto(String serviceCode, String fieldName, String freqency,int count,int times) {
+	public ServiceCodeIvfTimesFreqFieldDto(String serviceCode, String fieldName, String freqency,int count,int times,String surface) {
 		super();
 		this.serviceCode = serviceCode;
 		this.fieldName = fieldName;
 		this.freqency = freqency;
 		this.count = count;
 		this.times = times;
+		this.surface = surface;
+		
 		
 	}
 
@@ -76,6 +80,14 @@ public class ServiceCodeIvfTimesFreqFieldDto {
 
 	public void setDos(String dos) {
 		this.dos = dos;
+	}
+
+	public String getSurface() {
+		return surface;
+	}
+
+	public void setSurface(String surface) {
+		this.surface = surface;
 	}
 	
 	

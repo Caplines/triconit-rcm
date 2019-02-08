@@ -69,6 +69,7 @@ public class Constants {
 	public static final String RULE_ID_35="Bone Graft/Alveoplasty";
 	public static final String RULE_ID_36="D5130, D5140";
 	public static final String RULE_ID_37="Extraction -2";
+	public static final String RULE_ID_38="Medicaid Provider Limitation";
 	public static final String RULE_ID_39="Age Limitation Prophylaxis_D1110/D1120";
 	public static final String RULE_ID_40="Space Maintainer-Billateral_D1515";
 		
@@ -211,5 +212,7 @@ public class Constants {
 	
 	
 
-
+   //patient History check month in limitation rule
+	public static int Medicaid_Provider_Limitation_MONTH=-36;
+	public static String dateFormatStringESHis="yyyy/MM/dd";
 }

@@ -6,6 +6,10 @@ public class EagleSoftQuery {
 	
 	public final static String  contstant_REP= " _REPLACE_ME ";
 	
+	public final static String  contstant_REP_DATE= " _RE_DATE_STRING_ME ";
+	
+	public final static String  contstant_REP_MONTH= " _RE_MONTH_STRING_ME ";
+	
 	public final static String  treatment_plan_query="select pla.appt_id as app_id,tp.treatment_plan_id as id,"
 			+ "pat.patient_id as pat_id,pat.first_name as name, pat.last_name as last_name,pat.birth_date as dob,"
 			+ "pla.date_planned as date_of_service,tp.status as status ,tpi.est_secondary as est_secondary,"
@@ -71,4 +75,21 @@ public class EagleSoftQuery {
 
 	
 	public final static int  treatment_plan_by_pat_query_CL_COUNT=21;
+	
+	
+	//HERE 111 - YYYY/MM/DD
+	public final static String patient_history_by_months="select wpat.statement_num as statement_num,  wpat.patient_id as  patient_id,"
+			+ "tran.tran_date as tran_date, tran.service_code as service_code, tran.provider_id as provider_id, tran.old_tooth as old_tooth,"
+			+ "tran.surface as surface, tran.fee as fee ,"
+			+ "pr.first_name as provider_f,pr.last_name as provider_l"
+			+ " from  walkout_patient wpat, transactions tran,"
+			+ " provider pr where "
+			+ " wpat.patient_id in ("+contstant_REP+") "
+			+ " and wpat.patient_id=tran.patient_id and  tran.provider_id=pr.provider_id "
+			+ " and birth_date between DATEADD( MONTH, "+contstant_REP_MONTH+", '"+contstant_REP_DATE+"' ) and convert(datetime, '"+contstant_REP_DATE+"', 111)";
+
+
+	
+	public final static int  patient_history_by_months_CL_COUNT=10;
+	
 }

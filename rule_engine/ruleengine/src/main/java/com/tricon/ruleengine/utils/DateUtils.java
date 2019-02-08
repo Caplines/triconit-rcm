@@ -196,19 +196,15 @@ public class DateUtils {
 	}
 
 	
-	/**
-	 * Check if given date is in 12 month range
-	 * @param historyDate
-	 * @return
-	 */
-	public static boolean checkfor12m(Date tpDate,Date dos) {
+	
+	public static boolean checkforXm(Date tpDate,Date dos,int months) {
 		
-		Calendar calendarC = new GregorianCalendar();
-		calendarC.setTime(new Date());
+		//Calendar calendarC = new GregorianCalendar();
+		//calendarC.setTime(new Date());
 		//
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(dos);
-		calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH)+12, calendar.get(Calendar.DATE));
+		calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH)+months, calendar.get(Calendar.DATE));
 		Date date12m=calendar.getTime();
 		System.out.println(date12m);
 		//isDatesBetweenDates(a, b, d)
@@ -219,13 +215,13 @@ public class DateUtils {
 		}
 		
 	}
-	
+
 	public static void main(String[] a) {
 	  SimpleDateFormat sdf= new SimpleDateFormat("dd/mm/yyyy");
 	  String tpd="01/01/2019";
 	  String dos="01/03/2017";
 	 try {
-		System.out.println(checkfor12m(sdf.parse(tpd),sdf.parse(dos)));
+		System.out.println(checkforXm(sdf.parse(tpd),sdf.parse(dos),12));
 	} catch (ParseException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

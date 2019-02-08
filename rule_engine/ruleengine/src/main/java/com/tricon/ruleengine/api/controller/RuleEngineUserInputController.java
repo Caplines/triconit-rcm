@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
 import com.tricon.ruleengine.dto.QuestionHeaderDto;
+import com.tricon.ruleengine.dto.UserAnswerDto;
 import com.tricon.ruleengine.dto.UserInputDto;
 import com.tricon.ruleengine.dto.UserInputQuestionAnswerDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
@@ -53,4 +54,18 @@ public class RuleEngineUserInputController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", d));
 	}
 
+	@CrossOrigin
+	@PostMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/saveUserInput", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> saveUserInput(@RequestBody List<UserAnswerDto> userAnswerDto) {
+
+	//List<UserAnswerDto>	li=dtoList.getAnswerList();
+	RuleEngineLogger.generateLogs(clazz, "RuleEngineUserInputController", Constants.rule_log_debug, null);
+		
+	    userInputService.saveUserAnswers(userAnswerDto);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", ""));
+	
+
+ }
 }

@@ -81,6 +81,7 @@ public class FreqencyUtils {
 		int ctr = 0;
 		String tooth = "";
 		String code = "";
+		String surface = "";
 
 		List<String> dos = new ArrayList<>();
 		String fr = "";
@@ -94,6 +95,7 @@ public class FreqencyUtils {
 					code = s.getServiceCode();
 					tooth = s.getTooth();
 					fr = s.getFreqency();
+					surface=s.getSurface();
 					if (ctr == 0)
 						times = s.getTimes();
 					else if (times > s.getTimes())
@@ -103,7 +105,8 @@ public class FreqencyUtils {
 			}
 			
 		}
-		return new Object[] { count, tooth, String.join(",", dos), fl, times,code,fr };
+		if (!surface.equals("")) surface="("+surface+")";
+		return new Object[] { count, tooth, String.join(",", dos), fl, times,code,fr,surface };
 	}
 
 	/*
@@ -148,19 +151,21 @@ public class FreqencyUtils {
 			String dos = "";
 			String fl = "";
 			String fr = "";
-			if (l1 != null) {
+			String sur = "";
+				if (l1 != null) {
 				dos = dos + " " + (String) c1[2];
 				fl = fl + " " + (String) c1[3];
 				fr = fr + " " + (String) c1[6];
-				
+				sur = sur + " " + (String) c1[7];
 			}
 			if (l2 != null) {
 				dos = dos + " " + (String) c2[2];
 				fl = fl + " " + (String) c2[3];
 				fr = fr + " " + (String) c2[6];
-				
+				sur = sur + " " + (String) c2[7];
 			}
-			mess = new Object[] { code,tooth,dos, actualmax,fr };
+			if (!sur.equals("")) sur="("+sur+")";
+			mess = new Object[] { code,tooth,dos, actualmax,fr,sur };
 
 		}
 		return mess;
@@ -195,28 +200,33 @@ public class FreqencyUtils {
 			String dos = "";
 			String fl = "";
 			String fr = "";
+			String sur = "";
 			
 			if (l1 != null) {
 				dos = dos + " " + (String) c1[2];
 				fl = fl + " " + (String) c1[3];
 				fr = fr + " " + (String) c1[6];
+				sur = sur + " " + (String) c1[7];
 				
 			}
 			if (l2 != null) {
 				dos = dos + " " + (String) c2[2];
 				fl = fl + " " + (String) c2[3];
 				fr = fr + " " + (String) c2[6];
+				sur = sur + " " + (String) c2[7];
 				
 			}
 			if (l3 != null) {
 				dos = dos + " " + (String) c3[2];
 				fl = fl + " " + (String) c3[3];
 				fr = fr + " " + (String) c3[6];
+				sur = sur + " " + (String) c3[7];
 				
 			}
 			
 			//3124 code ,TOOTH,DOS, TIMES
-			mess = new Object[] { code,tooth,dos, actualmax, fr};
+			if (!sur.equals("")) sur="("+sur+")";
+			mess = new Object[] { code,tooth,dos, actualmax, fr,sur};
 
 		}
 		return mess;
@@ -263,34 +273,40 @@ public class FreqencyUtils {
 			String dos = "";
 			String fl = "";
 			String fr = "";
+			String sur = "";
 			
 			if (l1 != null) {
 				dos = dos + " " + (String) c1[2];
 				fl = fl + " " + (String) c1[3];
 				fr = fr + " " + (String) c1[6];
+				sur = sur + " " + (String) c1[7];
 				
 			}
 			if (l2 != null) {
 				dos = dos + " " + (String) c2[2];
 				fl = fl + " " + (String) c2[3];
 				fr = fr + " " + (String) c2[6];
+				sur = sur + " " + (String) c2[7];
 				
 			}
 			if (l3 != null) {
 				dos = dos + " " + (String) c3[2];
 				fl = fl + " " + (String) c3[3];
 				fr = fr + " " + (String) c3[6];
+				sur = sur + " " + (String) c3[7];
 				
 			}
 			if (l4 != null) {
 				dos = dos + " " + (String) c4[2];
 				fl = fl + " " + (String) c4[3];
 				fr = fr + " " + (String) c4[6];
+				sur = sur + " " + (String) c4[7];
 				
 			}
 			
 			//3124 code ,TOOTH,DOS, TIMES
-			mess = new Object[] { code,tooth,dos, actualmax,fr};
+			if (!sur.equals("")) sur="("+sur+")";
+			mess = new Object[] { code,tooth,dos, actualmax,fr,sur};
 
 		}
 		return mess;

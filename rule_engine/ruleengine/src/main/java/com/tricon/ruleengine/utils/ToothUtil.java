@@ -1,6 +1,8 @@
 package com.tricon.ruleengine.utils;
 
 import java.io.BufferedWriter;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,6 +99,44 @@ public class ToothUtil {
 	}
 
 	
+	public static boolean commonSurfaceLogic(String a, String b) {
+
+		boolean result=false;
+		/*
+		for (int z=0;b.length()>z;z++) {
+			for (int y=0;a.length()>y;y++) {
+				if (String.valueOf(a.charAt(y)).equalsIgnoreCase(String.valueOf(b.charAt(z)))) {
+					result =true;
+					break;
+				}
+			}
+			if (result) break;
+		}
+		*/
+		if (a.equals("") && a.equals(b)) result =false;
+		else if (a.length()<b.length()) {
+			result =true;
+		}
+		return result;
+	}
+	
+	public static boolean diffSurfaceLogic(String a, String b) {
+		
+		boolean result=false;
+		for (int z=0;b.length()>z;z++) {
+			for (int y=0;a.length()>y;y++) {
+				if (String.valueOf(a.charAt(y)).equalsIgnoreCase(String.valueOf(b.charAt(z)))) {
+					result =true;
+					break;
+				}
+			}
+			if (result) break;
+		}
+		result=!result;
+		if (a.equals("") && a.equals(b)) result =false;
+		return result;
+		
+	}
 	//Lower order Filling found in History on SAME Surface
 	/**
 	 * Map<String,List<String>> historyMap here map contains data from last 12 months and only
@@ -119,12 +159,14 @@ public class ToothUtil {
 		     int codeHINT=Integer.parseInt(codeH.substring(1));
 		     int codeSINT=Integer.parseInt(tp.getServiceCode().substring(1));
 		     //Lower order check..
+		     
 		     if (codeH.substring(0, 1).equals(tp.getServiceCode().substring(0,1)) &&  low && (codeSINT>codeHINT)) {
 		    	 for(ToothHistoryDto d:eL) {
 		    		 String[] tooths=	ToothUtil.getToothsFromTooth(tp.getTooth());
-		    		 RuleEngineLogger.generateLogs(clazz, "Surface TP-" + tp.getSurface()+" -Surface History- "+d.getSurfaceTooth(),
+		    		 RuleEngineLogger.generateLogs(clazz, "Service Code - "+tp.getServiceCode()+"- "+"Surface TP-" + tp.getSurface()+" -Surface History- "+d.getSurfaceTooth()+" TOOTH -"+tp.getTooth(),
 								Constants.rule_log_debug, bw);
 		    		 Date dos = null;
+		    		 if (d.getSurfaceTooth().equals("")) continue;
 						try {
 							dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos());
 							RuleEngineLogger.generateLogs(clazz,
@@ -134,14 +176,16 @@ public class ToothUtil {
 							
 						
 						
-					    if (sameSruface && !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && d.getSurfaceTooth().toLowerCase().equals(tp.getSurface().toLowerCase())) {
-					    	r=tp.getServiceCode()+"---"+d.getHistoryCode() +"---"+d.getHistoryTooth()+"--"+d.getSurfaceTooth();
+					    //if (sameSruface && !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && d.getSurfaceTooth().toLowerCase().equals(tp.getSurface().toLowerCase())) {
+					      if (sameSruface && !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && commonSurfaceLogic(d.getSurfaceTooth(), tp.getSurface())) {
+						    	r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
 						     if (allCodes==null) allCodes= new ArrayList<>();
 						     allCodes.add(r);
 								
 						  }
-					    if (!sameSruface && !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && !d.getSurfaceTooth().toLowerCase().equals(tp.getSurface().toLowerCase())) {
-					    	r=tp.getServiceCode()+"---"+d.getHistoryCode() +"---"+d.getHistoryTooth()+"--"+d.getSurfaceTooth();
+					   // if (!sameSruface && !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && !d.getSurfaceTooth().toLowerCase().equals(tp.getSurface().toLowerCase())) {
+					      if (!sameSruface && !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && diffSurfaceLogic(d.getSurfaceTooth(), tp.getSurface())) {
+							    	r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
 						     if (allCodes==null) allCodes= new ArrayList<>();
 						     allCodes.add(r);
 										
@@ -161,6 +205,7 @@ public class ToothUtil {
 		    		 RuleEngineLogger.generateLogs(clazz, "Surface TP-" + tp.getSurface()+" -Surface History- "+d.getSurfaceTooth(),
 								Constants.rule_log_debug, bw);
 		    		 Date dos = null;
+		    		 if (d.getSurfaceTooth().equals("")) continue;
 						try {
 							dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos());
 							RuleEngineLogger.generateLogs(clazz,
@@ -170,7 +215,7 @@ public class ToothUtil {
 							
 						
 						
-					    if ( !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth())) {
+					    if ( !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth())) {
 						    r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
 						    if (allCodes==null) allCodes= new ArrayList<>();
 						     allCodes.add(r);
@@ -191,6 +236,8 @@ public class ToothUtil {
     public static List<String> generateErrorListForRule171(TreatmentPlan tp,List<EagleSoftFeeShedule> esfeess,List<String> res
     		,BufferedWriter bw){
     	List<String> dList=new ArrayList<>();
+        DecimalFormat d= new DecimalFormat("#.##");
+        d.setRoundingMode(RoundingMode.HALF_DOWN);
     	for(String data:res) {
 			String[] datas=data.split(splitter);
 		
@@ -202,7 +249,7 @@ public class ToothUtil {
 								" FS FEE -" + fs.getFeesFee() + " :: Treatment Plan Fee-" + tp.getFee(),
 								Constants.rule_log_debug, bw);
                        double diff=Double.parseDouble(fs.getFeesFee())-Double.parseDouble(tp.getFee());
-                       dList.add(datas[0]+splitter+datas[1]+splitter+datas[2]+splitter+datas[3]+splitter+diff);
+                       dList.add(datas[0]+splitter+datas[1]+splitter+datas[2]+splitter+datas[3]+splitter+d.format(diff));
 						
 					}
 				} else {
@@ -249,7 +296,10 @@ public class ToothUtil {
 
     public static void main(String a []) {
     	String aa ="D3420";
-    	System.err.println(aa.substring(1, aa.length()));
+    	System.out.println(commonSurfaceLogic("", "b"));
+    	System.out.println(diffSurfaceLogic("","b"));
+    	
+    	
     }
 
 }

@@ -23,6 +23,10 @@ public interface EagleSoftDBAccessService {
 	public List<TreatmentPlan> getTreatmentPlanDataByPatient(String patientId,EagleSoftDBDetails esDB,BufferedWriter bw);
 
 	public LinkedHashMap<String, List<String>> getGoogleReportData(String query, String ids,int columnCount,EagleSoftDBDetails esDB,BufferedWriter bw);
+	
+	
+	public Map<String, List<?>> getPatientHistoryES(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,String dateString,int months,
+	BufferedWriter bw);
 
     public void setUpSSLCertificates();
 

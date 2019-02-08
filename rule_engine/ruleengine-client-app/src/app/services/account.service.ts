@@ -281,7 +281,38 @@ export class AccountService {
 	          
 	          );
 	              
-	  }	
+	  }
+	  
+	  saveUserInput(answerData:any,callback){
+	      this.generateRefreshToken().pipe(switchMap(data => {
+	          //console.log((<any>data).token);
+	          localStorage.setItem("token", (<any>data).token);
+	          console.log("token is set");
+	            return  this.http.post(AppComponent.API_URL+'/saveUserInput',answerData);
+	          },
+	          )    
+	      ).subscribe(data => {
+	              //console.log(data);
+	              callback((<any>data));
+	          },
+	          error => {
+	              //console.log(33);
+	              if (error.status==401){
+	              this.router.navigate(['/logout']);
+	              }
+	              if (error.status==500){
+	                  alert("Some un-Wanted Changes Done to Database");
+	                  callback(error);
+	              }
+	          },
+	          () => {
+	              //console.log(111);
+	          }
+	          
+	          );
+	              
+	  }
+	  
   
   generateRefreshToken(){
       return this.http.get(AppComponent.API_URL+'/refresh');

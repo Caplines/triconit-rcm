@@ -38,6 +38,7 @@ import com.tricon.ruleengine.model.db.Rules;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
+import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
@@ -1668,7 +1669,7 @@ public class RuleBook {
 					}
 
 				}
-
+			}
 				//PHASE -2 
 				/**/
 				String planType = ivf.getPlanType();
@@ -1714,18 +1715,19 @@ public class RuleBook {
 							Method hdm = c2.getMethod(hd);
 							Method hss = c2.getMethod(hs);	
 							String code = (String) hcm.invoke(hisSheet);
+							if (code.equals("")) continue ;
 							Collection<String> pritd = Collections2.filter(dList,
 									cd -> cd.substring(0,1).equals(code.toUpperCase().substring(0, 1)) && 
-										 cd.substring(1,cd.length()-1).equals(code.toUpperCase().substring(1,code.length()))
+										 cd.substring(1,cd.length()).equals(code.toUpperCase().substring(1,code.length()))
 										 );
 									  
 							Collection<String> pritp = Collections2.filter(pList,
 									cd -> cd.substring(0,1).equals(code.toUpperCase().substring(0, 1)) && 
-									 cd.substring(1,cd.length()-1).equals(code.toUpperCase().substring(1,code.length()))
+									 cd.substring(1,cd.length()).equals(code.toUpperCase().substring(1,code.length()))
 									 );
 							Collection<String> pritm = Collections2.filter(mList,
 									cd -> cd.substring(0,1).equals(code.toUpperCase().substring(0, 1)) && 
-									 cd.substring(1,cd.length()-1).equals(code.toUpperCase().substring(1,code.length()))
+									 cd.substring(1,cd.length()).equals(code.toUpperCase().substring(1,code.length()))
 									 );
 			         		
 							if (pritd!=null && pritd.size()>0) {
@@ -1782,19 +1784,19 @@ public class RuleBook {
 						
 						List<String> rPLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryP, true, TP_Date, true, bw);
 						if (rPLSS!=null && rPLSS.size()>0) {
-							List<String> dx=ToothUtil.generateErrorListForRule172(tp,esfeess,rPLSS,bw);
+							List<String> dx=ToothUtil.generateErrorListForRule171(tp,esfeess,rPLSS,bw);
 							for(String p:dx) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule17.error.message2", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale), Constants.FAIL));
+									messageSource.getMessage("rule17.error.message1", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale), Constants.FAIL));
 							}
 							pass= false;
 						}
 						List<String> rMLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryM, true, TP_Date, true, bw);
 						if (rMLSS!=null && rMLSS.size()>0) {
-							List<String> dx=ToothUtil.generateErrorListForRule172(tp,esfeess,rMLSS,bw);
+							List<String> dx=ToothUtil.generateErrorListForRule171(tp,esfeess,rMLSS,bw);
 							for(String p:dx) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule17.error.message3", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale), Constants.FAIL));
+									messageSource.getMessage("rule17.error.message1", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale), Constants.FAIL));
 							}
 							pass= false;
 						}
@@ -1820,6 +1822,14 @@ public class RuleBook {
 							pass= false;
 						}
 						
+						 if (res.size()>0) {
+							 for (String p:res) {
+								 d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+											messageSource.getMessage("rule17.error.message2", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale), Constants.FAIL));
+										 
+							 }
+					
+						 }
 						//HIGH ORDER
 						res= new ArrayList<>();
 			                       r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryD, false, TP_Date, true, bw);
@@ -1838,14 +1848,20 @@ public class RuleBook {
 							pass= false;
 						}
 						
-						
+						 for (String p:res) {
+							 d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule17.error.message3", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale), Constants.FAIL));
+									 
+						 }
+					
 						
 						//RuleEngineLogger.generateLogs(clazz, " History of Sealants found.- " + historyPresent,
 					    //			Constants.rule_log_debug, bw);
-						}
+						}//For loop End
+						
 	            }
                   /**/
-			}
+			
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
@@ -2455,121 +2471,121 @@ public class RuleBook {
 			ServiceCodeIvfTimesFreqFieldDto scivftff = null;
 			List<ServiceCodeIvfTimesFreqFieldDto> dL = null;
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1208", "Flouride_D1208_FL", ivf.getFlourideD1208FL(), 0,
-					0);
+					0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D1208", dL);
 			// mapFlIVF.put("D1208", new String[] { "FlourideD1208FL",
 			// ivf.getFlourideD1208FL() });// 1 Flouride_D1208_FL
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1206", "Varnish_D1206_FL", ivf.getVarnishD1206FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1206", "Varnish_D1206_FL", ivf.getVarnishD1206FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D1206", dL);
 			// mapFlIVF.put("D1206", new String[] { "Varnish_D1206_FL",
 			// ivf.getVarnishD1206FL() });// 2
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1110", "ProphyD1110_FL", ivf.getProphyD1110FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1110", "ProphyD1110_FL", ivf.getProphyD1110FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D1110", dL);
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1120", "ProphyD1120_FL", ivf.getProphyD1120FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1120", "ProphyD1120_FL", ivf.getProphyD1120FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D1120", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2391", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2391", dL);
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0270", "XRaysBWS_FL", ivf.getxRaysBWSFL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0270", "XRaysBWS_FL", ivf.getxRaysBWSFL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0270", dL);
 			// mapFlIVF.put("D0270", new String[] { "XRaysBWS_FL", ivf.getxRaysBWSFL() });//
 			// 3
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0272", "getxRaysBWSFL", ivf.getxRaysBWSFL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0272", "getxRaysBWSFL", ivf.getxRaysBWSFL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0272", dL);
 			// mapFlIVF.put("D0272", new String[] { "XRaysBWS_FL", ivf.getxRaysBWSFL() });//
 			// 4
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0273", "XRaysBWS_FL", ivf.getxRaysBWSFL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0273", "XRaysBWS_FL", ivf.getxRaysBWSFL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0273", dL);
 			// mapFlIVF.put("D0273", new String[] { "XRaysBWS_FL", ivf.getxRaysBWSFL() });//
 			// 5
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0274", "XRaysBWS_FL", ivf.getxRaysBWSFL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0274", "XRaysBWS_FL", ivf.getxRaysBWSFL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0274", dL);
 			// mapFlIVF.put("D0274", new String[] { "XRaysBWS_FL", ivf.getxRaysBWSFL() });//
 			// 6
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0220", "XRaysPA_D0220_FL", ivf.getxRaysPAD0220FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0220", "XRaysPA_D0220_FL", ivf.getxRaysPAD0220FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0220", dL);
 			// mapFlIVF.put("D0220", new String[] { "XRaysPA_D0220_FL",
 			// ivf.getxRaysPAD0220FL() });// 7
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0230", "XRaysPA_D0230_FL", ivf.getxRaysPAD0230FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0230", "XRaysPA_D0230_FL", ivf.getxRaysPAD0230FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0230", dL);
 			// mapFlIVF.put("D0230", new String[] { "XRaysPA_D0230_FL",
 			// ivf.getxRaysPAD0230FL() });// 8
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0210", "XRaysFMX_FL", ivf.getxRaysFMXFL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0210", "XRaysFMX_FL", ivf.getxRaysFMXFL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0210", dL);
 			// mapFlIVF.put("D0210", new String[] { "XRaysFMX_FL", ivf.getxRaysFMXFL() });//
 			// 9
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0150", "ExamsD0150_FL", ivf.getExamsD0150FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0150", "ExamsD0150_FL", ivf.getExamsD0150FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0150", dL);
 			// mapFlIVF.put("D0150", new String[] { "ExamsD0150_FL", ivf.getExamsD0150FL()
 			// });// 10
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0145", "ExamsD0145_FL", ivf.geteExamsD0145FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0145", "ExamsD0145_FL", ivf.geteExamsD0145FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0145", dL);
 			// mapFlIVF.put("D0145", new String[] { "ExamsD0145_FL", ivf.geteExamsD0145FL()
 			// });// 11
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0140", "ExamsD0140_FL", ivf.getExamsD0140FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0140", "ExamsD0140_FL", ivf.getExamsD0140FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0140", dL);
 			// mapFlIVF.put("D0140", new String[] { "ExamsD0140_FL", ivf.getExamsD0140FL()
 			// });// 12
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0120", "ExamsD0120_FL", ivf.getExamsD0120FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0120", "ExamsD0120_FL", ivf.getExamsD0120FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D0120", dL);
 			// mapFlIVF.put("D0120", new String[] { "ExamsD0120_FL", ivf.getExamsD0120FL()
 			// });// 13
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2930", "SSC_D2930_FL", ivf.getsSCD2930FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2930", "SSC_D2930_FL", ivf.getsSCD2930FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2930", dL);
 			// mapFlIVF.put("D2930", new String[] { "SSC_D2930_FL", ivf.getsSCD2930FL()
 			// });// 14
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2931", "SSC_D2931_FL", ivf.getsSCD2931FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2931", "SSC_D2931_FL", ivf.getsSCD2931FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2931", dL);
@@ -2577,7 +2593,7 @@ public class RuleBook {
 			// });// 15
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D1351", "Sealants_D1351_FL", ivf.getSealantsD1351FL(), 0,
-					0);
+					0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D1351", dL);
@@ -2585,14 +2601,14 @@ public class RuleBook {
 			// ivf.getSealantsD1351FL() });// 16
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D4346", "Gingivitis_D4346_FL", ivf.getGingivitisD4346FL(),
-					0, 0);
+					0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D4346", dL);
 			// mapFlIVF.put("D4346", new String[] { "Gingivitis_D4346_FL",
 			// ivf.getGingivitisD4346FL() });// 17
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D4341", "SRP_D4341_FL", ivf.getsRPD4341FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D4341", "SRP_D4341_FL", ivf.getsRPD4341FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D4341", dL);
@@ -2600,7 +2616,7 @@ public class RuleBook {
 			// });// 18
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D9940", "NightGuards_D9940_FL", ivf.getNightGuardsD9940FL(),
-					0, 0);
+					0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D9940", dL);
@@ -2608,14 +2624,14 @@ public class RuleBook {
 			// ivf.getNightGuardsD9940FL() });// 19
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D4910", "PerioMaintenance_D4910_FL",
-					ivf.getPerioMaintenanceD4910FL(), 0, 0);
+					ivf.getPerioMaintenanceD4910FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D4910", dL);
 			// mapFlIVF.put("D4910", new String[] { "PerioMaintenance_D4910_FL",
 			// ivf.getPerioMaintenanceD4910FL() });// 20
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D4355", "FMD_D4355_FL", ivf.getfMDD4355FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D4355", "FMD_D4355_FL", ivf.getfMDD4355FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D4355", dL);
@@ -2623,7 +2639,7 @@ public class RuleBook {
 			// });// 21
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D4249", "CrownLength_D4249_FL", ivf.getCrownLengthD4249FL(),
-					0, 0);
+					0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D4249", dL);
@@ -2631,7 +2647,7 @@ public class RuleBook {
 			// ivf.getCrownLengthD4249FL() });// 22
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2950", "BuildUps_D2950_FL", ivf.getBuildUpsD2950FL(), 0,
-					0);
+					0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2950", dL);
@@ -2639,21 +2655,21 @@ public class RuleBook {
 			// ivf.getBuildUpsD2950FL() });// 23
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D7953", "BoneGrafts_D7953_FL", ivf.getBoneGraftsD7953FL(),
-					0, 0);
+					0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D7953", dL);
 			// mapFlIVF.put("D7953", new String[] { "BoneGrafts_D7953_FL",
 			// ivf.getBoneGraftsD7953FL() });// 24
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D7311", "Alveo_D7311_FL", ivf.getAlveoD7311FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D7311", "Alveo_D7311_FL", ivf.getAlveoD7311FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D7311", dL);
 			// mapFlIVF.put("D7311", new String[] { "Alveo_D7311_FL", ivf.getAlveoD7311FL()
 			// });// 25
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D7310", "Alveo_D7310_FL", ivf.getAlveoD7310FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D7310", "Alveo_D7310_FL", ivf.getAlveoD7310FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D7310", dL);
@@ -2661,7 +2677,7 @@ public class RuleBook {
 			// });// 26
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2750", "Crowns_D2750_D2740_FL",
-					ivf.getCrownsD2750D2740FL(), 0, 0);
+					ivf.getCrownsD2750D2740FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2750", dL);
@@ -2669,7 +2685,7 @@ public class RuleBook {
 			// ivf.getCrownsD2750D2740FL() });// 27
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2740", "Crowns_D2750_D2740_FL",
-					ivf.getCrownsD2750D2740FL(), 0, 0);
+					ivf.getCrownsD2750D2740FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2740", dL);
@@ -2677,7 +2693,7 @@ public class RuleBook {
 			// ivf.getCrownsD2750D2740FL() });// 28
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5110", "CompleteDentures_D5110_D5120_FL",
-					ivf.getCompleteDenturesD5110D5120FL(), 0, 0);
+					ivf.getCompleteDenturesD5110D5120FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D5110", dL);
@@ -2685,7 +2701,7 @@ public class RuleBook {
 			// ivf.getCompleteDenturesD5110D5120FL() });// 29
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5120", "CompleteDentures_D5110_D5120_FL",
-					ivf.getCompleteDenturesD5110D5120FL(), 0, 0);
+					ivf.getCompleteDenturesD5110D5120FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D5120", dL);
@@ -2693,7 +2709,7 @@ public class RuleBook {
 			// ivf.getCompleteDenturesD5110D5120FL() });// 30
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5130", "ImmediateDentures_D5130_D5140_FL",
-					ivf.getImmediateDenturesD5130D5140FL(), 0, 0);
+					ivf.getImmediateDenturesD5130D5140FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D5130", dL);
@@ -2701,7 +2717,7 @@ public class RuleBook {
 			// ivf.getImmediateDenturesD5130D5140FL() });// 31
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5140", "ImmediateDentures_D5130_D5140_FL",
-					ivf.getImmediateDenturesD5130D5140FL(), 0, 0);
+					ivf.getImmediateDenturesD5130D5140FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D5140", dL);
@@ -2709,7 +2725,7 @@ public class RuleBook {
 			// ivf.getImmediateDenturesD5130D5140FL() });// 32
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5213", "PartialDentures_D5213_D5214_FL",
-					ivf.getPartialDenturesD5213D5214FL(), 0, 0);
+					ivf.getPartialDenturesD5213D5214FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D5213", dL);
@@ -2717,11 +2733,11 @@ public class RuleBook {
 			// ivf.getPartialDenturesD5213D5214FL() });// 33
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5214", "PartialDentures_D5213_D5214_FL",
-					ivf.getPartialDenturesD5213D5214FL(), 0, 0);
+					ivf.getPartialDenturesD5213D5214FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5214", "InterimPartialDentures_D5214_FL",
-					ivf.getInterimPartialDenturesD5214FL(), 0, 0);
+					ivf.getInterimPartialDenturesD5214FL(), 0, 0,"");
 			dL.add(scivftff);
 			mapFlIVF.put("D5214", dL);
 			// mapFlIVF.put("D5214", new String[] { "PartialDentures_D5213_D5214_FL",
@@ -2730,80 +2746,80 @@ public class RuleBook {
 			// "InterimPartialDentures_D5214_FL", ivf.getInterimPartialDenturesD5214FL()
 			// });// 34
 
-			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D9310", "D9310_FL", ivf.getD9310FL(), 0, 0);
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D9310", "D9310_FL", ivf.getD9310FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D9310", dL);
 			// mapFlIVF.put("D9310", new String[] { "D9310_FL", ivf.getD9310FL() });// 35
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2391", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2391", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("M2391", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("M2391", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("P2391", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("P2391", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2392", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2392", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("M2392", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("M2392", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("P2392", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("P2392", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2393", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2393", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("M2393", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("M2393", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("P2393", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("P2393", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2394", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D2394", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("M2394", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("M2394", dL);
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("P2394", "PostComposites_D2391_FL",
-					ivf.getPostCompositesD2391FL(), 0, 0);
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("P2394", dL);
@@ -2997,8 +3013,9 @@ public class RuleBook {
 											String freq = scivfTFD.getFreqency();
 
 											ServiceCodeIvfTimesFreqFieldDto scivfTFDFinal = new ServiceCodeIvfTimesFreqFieldDto(
-													tpCode, scivfTFD.getFieldName(), scivfTFD.getFreqency(), 0, 0);
+													tpCode, scivfTFD.getFieldName(), scivfTFD.getFreqency(), 0, 0,"");
 											scivfTFDFinal.setTooth(tooth);
+											scivfTFDFinal.setSurface(historyD.getSurfaceTooth());
 											scivfTFDFinal.setDos(historyD.getHistoryDos());
 											RuleEngineLogger.generateLogs(clazz,
 													"HISTORY CODE- " + historyD.getHistoryCode(),
@@ -3611,7 +3628,7 @@ public class RuleBook {
 									dList.add(
 											new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule21.error.message",
-															new Object[] { m[5], m[1], m[2], m[4],m[6] }, locale),
+															new Object[] { m[5], m[1], m[2], m[4],m[6],m[7] }, locale),
 													Constants.FAIL));
 								}
 							}
@@ -3925,7 +3942,7 @@ public class RuleBook {
 													"TP_DATE-" + TP_DATE,
 													Constants.rule_log_debug, bw);
 										
-										if (!DateUtils.checkfor12m(TP_DATE, dos)) {
+										if (!DateUtils.checkforXm(TP_DATE, dos,12)) {
 											RuleEngineLogger.generateLogs(clazz,
 													"RULE FAILS-" + TP_DATE,
 													Constants.rule_log_debug, bw);
@@ -4124,7 +4141,7 @@ public class RuleBook {
 													"TP_DATE-" + TP_DATE,
 													Constants.rule_log_debug, bw);
 										
-										if (!DateUtils.checkfor12m(TP_DATE, dos)) {
+										if (!DateUtils.checkforXm(TP_DATE, dos,12)) {
 											RuleEngineLogger.generateLogs(clazz,
 													"RULE FAILS-" + TP_DATE,
 													Constants.rule_log_debug, bw);
@@ -5462,7 +5479,163 @@ public class RuleBook {
 	}
 
     // Medicaid Provider Limitation for D0150,D0210,D0330
-	//38
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param messageSource
+	 * @param rule
+	 * @param tpList
+	 * @param pHistories
+	 * @param bw
+	 * @return
+	 */
+	public List<TPValidationResponseDto> Rule38(Object ivfSheet,List<Object> tpList,List<EagleSoftPatientWalkHistory> pHistories,
+			MessageSource messageSource, Rules rule,
+			 BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_38,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+
+		String planType = ivf.getPlanType();
+		String cMedicate = Constants.insurance_Medicaid;
+		boolean pass = true;
+		Map<String, List<ToothHistoryDto>> mapHistory = new HashMap<>();
+		Date TP_DATE = new Date();
+		String codes="D0150,D0210,D0330";
+		try {
+			boolean present = false;
+			if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
+				
+				List<String> reqList = new ArrayList<String>(Arrays.asList(codes.split(",")));
+				
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+
+					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						RuleEngineLogger.generateLogs(clazz, " Service Code -"+tp.getServiceCode(), Constants.rule_log_debug, bw);
+						present=true;
+						break;
+				 }
+				}
+				if (present) {
+					//check in ES history
+					 if (pHistories!=null && pHistories.size()>0) {
+						 for(EagleSoftPatientWalkHistory phis :pHistories) {
+							 RuleEngineLogger.generateLogs(clazz, " History Service Code -"+phis.getServiceCode()+" Provider -"+ivf.getProviderName()+
+							  " Provider ES -"+phis.getLastNameP(), Constants.rule_log_debug, bw);
+							 if (reqList.contains(phis.getServiceCode().toUpperCase()) && phis.getLastNameP().trim().equalsIgnoreCase(ivf.getProviderName().trim())) { 
+								 //fail as Provider is same
+								 pass=false;
+								 RuleEngineLogger.generateLogs(clazz, " Fail ", Constants.rule_log_debug, bw);
+								 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+											messageSource.getMessage("rule38.error.message", new Object[] { codes,phis.getServiceCode()}, locale),
+											Constants.FAIL));
+							 }
+						 }
+					 }
+					 
+					 if (pass) {
+						 ToothHistoryDto hdto=null;
+						 int noOFhistory = Constants.history_codes_size;
+							Class<?> c2;
+							try {
+								c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+
+								IVFHistorySheet hisSheet = ivf.getHs();
+								
+								for (int i = 1; i <= noOFhistory; i++) {
+									String hc = "getHistory" + i + "Code";
+									String hd = "getHistory" + i + "DOS";
+									String ht = "getHistory" + i + "Tooth";
+									String hs = "getHistory" + i + "Surface";
+									
+									Method hcm = c2.getMethod(hc);
+									Method htm = c2.getMethod(ht);
+									Method hdm = c2.getMethod(hd);
+									Method hss = c2.getMethod(hs);
+
+									String code = (String) hcm.invoke(hisSheet);
+									if (reqList.contains(code.toUpperCase())) {
+										hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+												(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+						              if (mapHistory.containsKey(code)) {
+											List<ToothHistoryDto> t = mapHistory.get(code);
+											t.add(hdto);
+										} else {
+											List<ToothHistoryDto> l = new ArrayList<>();
+											l.add(hdto);
+											mapHistory.put(code, l);
+										}
+									}
+									
+									
+							 }
+								if (mapHistory!=null && mapHistory.size()>0) {
+									//Check for Date in 36 Months
+									for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
+										List<ToothHistoryDto> d=entry.getValue();
+										for(ToothHistoryDto dto:d) {
+											if (dto.getHistoryDos()!="") {
+												Date dos = null;
+												try {
+													dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(dto.getHistoryDos());
+													RuleEngineLogger.generateLogs(clazz,
+															"History DOS-" + dto.getHistoryDos(),
+															Constants.rule_log_debug, bw);
+										           if ( !DateUtils.checkforXm(TP_DATE, dos, 36)) {		
+										        	pass=false;
+										            RuleEngineLogger.generateLogs(clazz,
+															"RULE FAILS-" + TP_DATE+" DOS history- "+dto.getHistoryDos(),
+															Constants.rule_log_debug, bw);
+													 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+																messageSource.getMessage("rule38.error.message", new Object[] { codes,dto.getHistoryCode()}, locale),
+																Constants.FAIL));
+										           }
+												} catch (ParseException e2) {
+													// TODO Auto-generated catch block
+													e2.printStackTrace();
+												}
+											}
+										}
+									}	
+								}
+										
+								
+							}catch (Exception e) {
+								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
+										Constants.FAIL));
+										}
+						 
+					 }
+					 if(pass) {
+						 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule38.pass2.message", new Object[] { codes }, locale),
+									Constants.PASS));
+					 }
+					
+				}else {
+					//pass
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule38.pass3.message", new Object[] { codes }, locale),
+							Constants.PASS));
+				}
+			}else {
+				//not medicaid
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule38.pass4.message", new Object[] { planType }, locale),
+						Constants.PASS));
+			}
+					///
+			} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+	}
 	
 	// Age Limitation Prophylaxis_D1110/D1120
 
@@ -5657,6 +5830,9 @@ public class RuleBook {
 		return dList;
 
 	}
+	
+	
+
 	
 	
 	/*

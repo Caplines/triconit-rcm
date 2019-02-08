@@ -26,6 +26,7 @@ import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
+import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
@@ -552,6 +553,102 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		return dataMap;
 
 	}
+	
+	
+	@Override
+	public Map<String, List<?>> getPatientHistoryES(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,String dateString,int months,
+			BufferedWriter bw) {
+		// TODO Auto-generated method stub
+		EagleSoftFetchData d = new EagleSoftFetchData();
+		Map<String, List<?>> returnMap = null;
+		RuleEngineLogger.generateLogs(clazz, "Patient Data Start ", Constants.rule_log_debug, bw);
+
+		if (ivfMap != null) {
+			List<String> ids = new ArrayList<>();
+			for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
+				if (entry.getValue() != null) {
+
+					IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
+					ids.add(ivfSheet.getPatientId());
+				}
+			}
+
+			String[] pids = ids.toArray(new String[ids.size()]);
+
+			EagleSoftQueryObject q = prepairEagleSoftQueryObjectPatHis(pids, EagleSoftQuery.patient_history_by_months,
+					EagleSoftQuery.patient_history_by_months_CL_COUNT,dateString,months);
+			String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
+			if (data != null) {
+				EagleSoftPatientWalkHistory pat = null;
+				try {
+					ObjectMapper map = new ObjectMapper();
+					// Patient patQ = map.readValue(r, Patient.class);
+					Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
+					});
+
+					RuleEngineLogger.generateLogs(clazz, "Patient DATA-" + cMap.get("dataMap").toString(),
+							Constants.rule_log_debug, bw);
+					Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+					List<Object> list = null;
+					for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+						if (entry.getValue() != null) {
+							List<String> des = (List<String>) (entry.getValue());
+							pat = new EagleSoftPatientWalkHistory();
+
+							pat.setStatementNumber(des.get(0));
+							pat.setPatientId(des.get(1));
+							pat.setTransDate(Constants.SIMPLE_DATE_FORMAT
+									.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse((des.get(2)))));
+							pat.setServiceCode(des.get(3));
+							pat.setProviderId(des.get(4));
+							pat.setOldTooth(des.get(5));
+							pat.setSurface(des.get(6));
+							pat.setFees(des.get(7));
+							pat.setFirstNameP(des.get(8));
+							pat.setLastNameP(des.get(9));
+						
+							//
+							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
+								if (entry.getValue() != null) {
+
+									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
+									if ((pat.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+										if (returnMap == null)
+											returnMap = new HashMap<>();
+										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
+											// if the key has already been used,
+											// we'll just grab the array list and add the value to it
+											list = (List<Object>) (List<?>) returnMap.get(ivfSheet.getUniqueID());
+											list.add(pat);
+										} else {
+											// if the key hasn't been used yet,
+											// we'll create a new ArrayList<String> object, add the value
+											// and put it in the array list with the new key
+											list = new ArrayList<>();
+											list.add(pat);
+											returnMap.put(ivfSheet.getUniqueID(), list);
+										}
+									}
+								}
+							}
+
+							//
+
+						}
+					}
+
+				} catch (Exception e) {
+					RuleEngineLogger.generateLogs(clazz, " Patient History Data- ERROR- " + e.getMessage(),
+							Constants.rule_log_debug, bw);
+				}
+			}
+
+		}
+
+		return returnMap;
+	}
+
+	
 
 	/**
 	 * Never send trids as null send empty
@@ -575,6 +672,43 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 			}
 		}
 		query = query.replace(EagleSoftQuery.contstant_REP, rep);
+		EagleSoftQueryObject o = new EagleSoftQueryObject();
+		o.setColumnCount(columnCount);
+		o.setIds(id);
+		if (ids != null)
+			o.setPrepStCount(ids.length);
+		else
+			o.setPrepStCount(0);
+		o.setQuery(query);
+
+		return o;
+	}
+
+	/**
+	 * Never send trids as null send empty
+	 * 
+	 * @param trids
+	 * @param query
+	 * @param columnCount
+	 * @return
+	 */
+	private EagleSoftQueryObject prepairEagleSoftQueryObjectPatHis(String[] ids, String query, int columnCount,String dateString,int months) {
+
+		String rep = "";
+		String comma = "";
+		String id = "";
+
+		if (ids != null) {
+			for (String trid : ids) {
+				rep = rep + comma + "?";
+				id = id + comma + trid;
+				comma = ",";
+			}
+		}
+		query = query.replace(EagleSoftQuery.contstant_REP, rep);
+		query = query.replaceAll(EagleSoftQuery.contstant_REP_DATE, dateString);
+		query = query.replaceAll(EagleSoftQuery.contstant_REP_MONTH, months+"");
+				
 		EagleSoftQueryObject o = new EagleSoftQueryObject();
 		o.setColumnCount(columnCount);
 		o.setIds(id);

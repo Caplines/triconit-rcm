@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -52,6 +53,7 @@ import com.tricon.ruleengine.model.db.UserInputRuleQuestionHeader;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
+import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
@@ -255,6 +257,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			try {
 				
 				Map<String, List<EagleSoftPatient>> espatients=null;
+				Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis=null;
 				Map<String, List<Object>> tMap=null;
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				Map<String, List<EagleSoftFeeShedule>> esfeess = null;
@@ -407,7 +410,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 						//
 						espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,bw);
-								
+						
+						espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
+								new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
+						
 						if (espatients != null && espatients.size() > 0) {
 							esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,bw);
 							esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) dbAccesService.getFeeScheduleData(espatients, esDB,bw);
@@ -941,6 +947,33 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									Constants.rule_log_debug, bw);
 
 							// END  Medicaid-3
+							
+							// Medicaid Provider Limitation for D0150,D0210,D0330
+							rule = getRulesFromList(rules, Constants.RULE_ID_38);
+							if (espatientsHis != null && espatientsHis.get(patKey) != null
+									&& espatientsHis.get(patKey).size() > 0) {
+								dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tList ,espatientsHis.get(patKey),messageSource, rule, bw);
+
+								
+							   	
+							}else {
+								dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tList ,null,messageSource, rule, bw);
+								
+							}
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_38,
+									Constants.rule_log_debug, bw);
+								
+							//END Medicaid Provider Limitation for D0150,D0210,D0330
+							
 						}
 
 					} else {
@@ -1281,7 +1314,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         qadto.setPatId(ivf.getPatientId());
 				         qadto.setTpId(tp.getId());
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
-					 }else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_BONE_GRAFT)) {
+					 }else  if (tp.getServiceCode().equals("D7953") && qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_BONE_GRAFT)) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
 						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
@@ -1494,6 +1527,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			// Read Patient Key is Unique Id from IVF sheet
 			OneDriveFile espatient=null;
 			Map<String, List<EagleSoftPatient>> espatients=null;
+			
+			//Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis=null;
+			
 			Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 			
 			if (eagleSoftDBAccessPresent==false) {
@@ -1555,6 +1591,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 					//
 					espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,null);
+					
+					//espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
+					//		new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
+
 							
 					if (espatients != null && espatients.size() > 0) {
 						esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,null);
