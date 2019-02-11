@@ -1,10 +1,10 @@
-<div>
+<div class="question-form table-container">
 	<div class="close-btn">
 		<a href="javascript:void(0)" (click)="closePopup()">
 			Go Back
 		</a>
 	</div>	
-	<div *ngFor="let key of arrayOfKeys" class="table-container">
+	<div *ngFor="let key of arrayOfKeys">
 		<h3>{{key}}</h3>
 		
 		<div *ngIf = "key == 'RULE_10'">
@@ -20,11 +20,13 @@
 							<table>
 								<tr *ngFor="let answer of data.questionAnswers">
 									<td *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
-										<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+										<input class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 									</td>
 									<td *ngIf="data.questionType == 'Y_N'">
-										<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" (change)="saveRadioChanges(answer, 'Yes')" />Yes
-										<input type="radio" [checked]="answer.answer=='No'" value="No" (change)="saveRadioChanges(answer, 'No')" />No
+										<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
+										<label for="yes_{{answer.answerId}}">Yes</label>										
+										<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
+										<label for="no_{{answer.answerId}}">No</label>
 									</td>
 								</tr>
 							</table>						
@@ -32,6 +34,7 @@
 					<tr>
 				</tbody>						
 			</table>
+		<hr/>
 		</div>
 		
 		<div *ngIf = "key == 'OVERALL'">
@@ -47,11 +50,13 @@
 							<table>
 								<tr *ngFor="let answer of data.questionAnswers">
 									<td *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
-										<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+										<input class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 									</td>
 									<td *ngIf="data.questionType == 'Y_N'">
-										<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" (change)="saveRadioChanges(answer, 'Yes')" />Yes
-										<input type="radio" [checked]="answer.answer=='No'" value="No" (change)="saveRadioChanges(answer, 'No')" />No
+										<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
+										<label for="yes_{{answer.answerId}}">Yes</label>										
+										<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
+										<label for="no_{{answer.answerId}}">No</label>
 									</td>
 								</tr>
 							</table>						
@@ -59,47 +64,82 @@
 					<tr>
 				</tbody>						
 			</table>
+		<hr/>
 		</div>
 		
 		<div *ngIf = "key == 'RULE_ORTHO'">
 			<div *ngFor="let data of questionFormData[key]">
 				{{data.questionOrder}}. {{data.question}} {{data.answerAppenderPosition == '1'? data.answerAppender: ''}}
-				<div *ngFor="let answer of data.questionAnswers">
+				<span *ngFor="let answer of data.questionAnswers">
 					<span *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
-						<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+						<input class="inp-custom fill-blanks" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 					</span>
-				</div>
+				</span>
 				{{data.answerAppenderPosition == '3'? data.answerAppender: ''}}
 			</div>
+		<hr/>
 		</div>
 		
 		<div *ngIf = "key == 'RULE_PREAUTH'">
 			<div *ngFor="let data of questionFormData[key]">
 				{{data.question}}
-				<div *ngFor="let answer of data.questionAnswers">
+				<span *ngFor="let answer of data.questionAnswers">
 					<span *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
-						<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+						<input class="inp-custom fill-blanks" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 					</span>
 					<span *ngIf="data.questionType == 'Y_N'">
-						<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" (change)="saveRadioChanges(answer, 'Yes')" />Yes
-						<input type="radio" [checked]="answer.answer=='No'" value="No" (change)="saveRadioChanges(answer, 'No')" />No
+						<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
+						<label for="yes_{{answer.answerId}}">Yes</label>										
+						<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
+						<label for="no_{{answer.answerId}}">No</label>
 					</span>
-				</div>
+				</span>
 			</div>
+		<hr/>
 		</div>
 		
 		<div *ngIf = "key == 'RULE_PC'">
 			<div *ngFor="let data of questionFormData[key]">
 				{{data.questionOrder}}. {{data.question}}
-				<div *ngFor="let answer of data.questionAnswers">
-					<span *ngIf="data.questionType == 'C_B' || data.questionType == 'C_B_A'">
-						<input type="checkbox" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" />
+				<span *ngFor="let answer of data.questionAnswers">
+					<span *ngIf="data.questionType == 'C_B'">
+						<label class="checbox-container">
+							<input type="checkbox" [(ngModel)]="answer.answer" (change)="saveChanges(answer)">
+							<span class="checkmark"></span>
+						</label>
 					</span>
 					<span *ngIf="data.questionType == 'C_B_A'">
-						<input type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+						<label class="checbox-container">
+							<input type="checkbox" [(ngModel)]="answer.answer1" (change)="mergeAnswer(answer)">
+							<span class="checkmark"></span>
+						</label>
+						<input class="inp-custom fill-blanks" type="text" [(ngModel)]="answer.answer2" (change)="mergeAnswer(answer)" [disabled]="data.canChangeAnswer == 0" />
 					</span>
-				</div>
+				</span>
 			</div>
+		<hr/>
 		</div>
+		
+		<div *ngIf = "key == 'RULE_BONE_GRAFT'">
+			<div *ngFor="let data of questionFormData[key]">
+				{{data.question}}
+				<span *ngFor="let answer of data.questionAnswers">
+					<span *ngIf="data.questionType == 'Y_N'">
+						<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
+						<label for="yes_{{answer.answerId}}">Yes</label>										
+						<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
+						<label for="no_{{answer.answerId}}">No</label>
+					</span>
+				</span>
+			</div>
+		<hr/>
+		</div>
+		
 	</div>
+	
+	<p class="text-center">
+		<button [disabled]="showLoading" type="submit" class="btn" (click)="saveFormData()">Save</button>		
+	</p>
+	<div class="clear"></div>
+	
 </div>	

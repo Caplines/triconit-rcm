@@ -13,25 +13,27 @@ export class QuestionformPopupComponent implements OnInit {
   arrayOfKeys:any;
   questionFormData:any;
   answerData:any = [];
+  showLoading: boolean = false;
   
   constructor(public accountService: AccountService) { }
 
   ngOnInit() {
 	let answers = this.groupBy(this.questionData.questionAnswer, 'questionId');
-	console.log(this.questionData.dataHeader);
-	console.log(answers);
 	this.questionData.dataHeader.forEach((question, index)=> {
 		question['questionAnswers'] = [];
-		console.log(answers[index+1]);
 		if (answers[index+1]){
-		answers[index+1].forEach((answer) => {
-			question['questionAnswers'].push(answer);
-		});
-		}
-	
+			answers[index+1].forEach((answer) => {
+				question['questionAnswers'].push(answer);
+				if(question.questionType == 'C_B_A') {
+					this.splitAnswer(question['questionAnswers']);
+				}
+			});
+		}	
 	});
 	this.questionFormData = this.groupBy(this.questionData.dataHeader, 'ruleName');
 	this.arrayOfKeys = Object.keys(this.questionFormData);
+	
+	console.log(this.questionFormData);
   }
   
   groupBy(arr, property) {
@@ -50,21 +52,18 @@ export class QuestionformPopupComponent implements OnInit {
 		this.answerData[index].answer = result.answer;
 	} else {
 		this.answerData.push({'answerId': result.answerId, 'answer': result.answer,'questionId':result.questionId});		
-	}
-	console.log(this.answerData);
-	this.accountService.saveUserInput(this.answerData,  (result) => { 
-		this.emitToParent.emit({action: "showLoading", value: false});
-		if (result.status=='OK' && result.data){
-			this.emitToParent.emit({action: "showIvfData", value: true});
-			
-		} else {
-				this.emitToParent.emit({action: "showIvfData", value: false});
-		}
-	});
-	
+	}	
   }
   
-  
+  saveFormData() {
+	this.showLoading = true;
+	console.log(this.answerData);
+	this.accountService.saveUserInput(this.answerData,  (result) => {
+		this.showLoading = false;	
+		console.log(result);
+		this.answerData = [];
+	});	
+  }
   
   closePopup() {
 	this.emitToParent.emit({action: "showQuestionData", value: false});
@@ -72,6 +71,21 @@ export class QuestionformPopupComponent implements OnInit {
   
   saveRadioChanges(result, value) {
 	result.answer = value;
+	this.saveChanges(result);
+  }
+  
+  splitAnswer(value) {
+	if(value[0].answer == "") {
+		value[0]['answer1'] = "";
+		value[0]['answer2'] = "";
+	} else {	
+		value[0]['answer1'] = (value[0].answer.split(" ")[0] == 'true');
+		value[0]['answer2'] = value[0].answer.split(" ")[1];
+	}		
+  }
+  
+  mergeAnswer(result) {
+	result.answer = result.answer1 + " " + result.answer2;
 	this.saveChanges(result);
   }
 

@@ -545,6 +545,34 @@ text-decoration: underline;
     font-weight: 700;
 }
 
+.question-form .inp-custom {
+	height: 38px;
+    margin: 0;
+    padding: 0 10px;
+    vertical-align: middle;
+    background: #ffffff;
+    border: 1px solid #dadada;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 38px;
+    color: #888;
+    border-radius: 4px;
+    box-shadow: none;
+    transition: all .3s;
+	margin-bottom:10px;
+} 
+
+.question-form .inp-custom.fill-blanks  {
+	border: 0pc;
+    border-bottom: 1px solid #666;
+    border-radius: 0px;
+    padding-bottom: 0px;
+    height: 20px;
+    padding: 0px;
+    vertical-align: initial;
+    margin-left: 5px;
+}
 
 
 
@@ -554,7 +582,123 @@ text-decoration: underline;
 
 
 
+/* custom radio and checkbox */
 
+[type="radio"]:checked,
+[type="radio"]:not(:checked) {
+    position: absolute;
+    left: -9999px;
+}
+[type="radio"]:checked + label,
+[type="radio"]:not(:checked) + label
+{
+    position: relative;
+    padding-left: 23px;
+    cursor: pointer;
+    line-height: 20px;
+    display: inline-block;
+    color: #666;
+    font-weight: normal;
+    margin-right: 15px;
+}
+[type="radio"]:checked + label:before,
+[type="radio"]:not(:checked) + label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ddd;
+    border-radius: 100%;
+    background: #fff;
+}
+[type="radio"]:checked + label:after,
+[type="radio"]:not(:checked) + label:after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: #00a8fb;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    border-radius: 100%;
+    -webkit-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+[type="radio"]:not(:checked) + label:after {
+    opacity: 0;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+}
+[type="radio"]:checked + label:after {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
 
+.question-form .checbox-container {
+  display: inline-block;;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 
+/* Hide the browser's default checkbox */
+.question-form .checbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
 
+/* Create a custom checkbox */
+.question-form .checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 22px;
+  width: 22px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* When the checkbox is checked, add a blue background */
+.question-form .checbox-container input:checked ~ .checkmark {
+	background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.question-form .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.question-form .checbox-container input:checked ~ .checkmark:after {
+  display: inline-block;;
+}
+
+/* Style the checkmark/indicator */
+.question-form .checbox-container .checkmark:after {
+	left: 7px;
+    top: 2px;
+    width: 7px;
+    height: 13px;
+    border: solid #00a8fb;
+    border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
