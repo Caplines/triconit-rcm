@@ -9,11 +9,12 @@ import {AccountService} from "../../services/account.service";
 export class QuestionformPopupComponent implements OnInit {
 	
   @Input() questionData:any;
+  @Input() showValidation:any;
   @Output() emitToParent = new EventEmitter<any>();
   arrayOfKeys:any;
   questionFormData:any;
   answerData:any = [];
-  showLoading: boolean = false;
+  showQuestionSaveLoading: boolean = false;
   
   constructor(public accountService: AccountService) { }
 
@@ -52,16 +53,19 @@ export class QuestionformPopupComponent implements OnInit {
 		this.answerData[index].answer = result.answer;
 	} else {
 		this.answerData.push({'answerId': result.answerId, 'answer': result.answer,'questionId':result.questionId});		
-	}	
+	}
   }
   
   saveFormData() {
-	this.showLoading = true;
-	console.log(this.answerData);
+	this.showQuestionSaveLoading = true;
 	this.accountService.saveUserInput(this.answerData,  (result) => {
-		this.showLoading = false;	
-		console.log(result);
+		this.showQuestionSaveLoading = false;	
 		this.answerData = [];
+		//From IVF Screen Condition
+		if (this.showValidation=="1"){
+			this.emitToParent.emit({action: "showValidation", value: true});
+		}
+
 	});	
   }
   

@@ -6,6 +6,8 @@ public class TreatmentPlanValidationDto {
 	private String ivfId;
 	private String officeId;
 	private boolean debugMode;
+	private boolean inputMode;
+	
 	
 	public String getTreatmentPlanId() {
 		return treatmentPlanId;
@@ -31,6 +33,14 @@ public class TreatmentPlanValidationDto {
 	public void setDebugMode(boolean debugMode) {
 		this.debugMode = debugMode;
 	}
+	public boolean isInputMode() {
+		return inputMode;
+	}
+	public void setInputMode(boolean inputMode) {
+		this.inputMode = inputMode;
+	}
+	
+	
 
 
 

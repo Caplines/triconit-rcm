@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.GoogleSheets;
+import com.tricon.ruleengine.model.db.MVPandVAP;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.OneDriveApp;
@@ -184,5 +185,20 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 
 		}
 		return es;
+	}
+
+	@Override
+	public List<MVPandVAP> getAllMVPVAP() {
+		Session session = getSession();
+		List<MVPandVAP> mvpvap = null;
+		try {
+			Criteria criteria = session.createCriteria(MVPandVAP.class);
+			mvpvap=(List<MVPandVAP>) criteria.list();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return mvpvap;
 	}
 }

@@ -146,10 +146,11 @@ public class ToothUtil {
 	 * @param historyMap
 	 * @return
 	 */
+	//NOTE SURFACE DOES NOT MATTER NOW
     public static List<String> lowerHigherOrderFillingFound(TreatmentPlan tp,
-    		Map<String,List<ToothHistoryDto>> historyMap,boolean low,Date tpDate,boolean sameSruface, BufferedWriter bw
+    		Map<String,List<ToothHistoryDto>> historyMap,boolean low,Date tpDate,boolean sameSruface1, BufferedWriter bw
     		) {
-		
+    	//NOTE SURFACE DOES NOT MATTER NOW	
     	List<String> allCodes=null;
 		String r=null;
     	for (Map.Entry<String, List<ToothHistoryDto>> entry : historyMap.entrySet()) {
@@ -177,19 +178,23 @@ public class ToothUtil {
 						
 						
 					    //if (sameSruface && !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && d.getSurfaceTooth().toLowerCase().equals(tp.getSurface().toLowerCase())) {
-					      if (sameSruface && !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && commonSurfaceLogic(d.getSurfaceTooth(), tp.getSurface())) {
+					   //   if (sameSruface && !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && commonSurfaceLogic(d.getSurfaceTooth(), tp.getSurface())) {
+						    if (!DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) ) {
 						    	r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
 						     if (allCodes==null) allCodes= new ArrayList<>();
 						     allCodes.add(r);
 								
 						  }
 					   // if (!sameSruface && !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && !d.getSurfaceTooth().toLowerCase().equals(tp.getSurface().toLowerCase())) {
+					     //OUT OF SCOPE
+					      /*
 					      if (!sameSruface && !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && diffSurfaceLogic(d.getSurfaceTooth(), tp.getSurface())) {
 							    	r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
 						     if (allCodes==null) allCodes= new ArrayList<>();
 						     allCodes.add(r);
 										
 					       }
+					      */
 					     } catch (ParseException e2) {
 							// TODO Auto-generated catch block
 							e2.printStackTrace();

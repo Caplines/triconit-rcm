@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.MicroSoftGraphToken;
 import com.tricon.ruleengine.dto.PatientTreamentDto;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
-import com.tricon.ruleengine.dto.QuestionHeaderDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanDto;
@@ -41,6 +41,7 @@ import com.tricon.ruleengine.dto.UserInputDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.GoogleSheets;
+import com.tricon.ruleengine.model.db.MVPandVAP;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.OneDriveApp;
@@ -60,13 +61,12 @@ import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.EagleSoftDBService;
 import com.tricon.ruleengine.service.SharePointService;
 import com.tricon.ruleengine.service.TreatmentPlanService;
+import com.tricon.ruleengine.service.UserInputService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
-import com.tricon.ruleengine.utils.EagleSoftFetchData;
 import com.tricon.ruleengine.utils.ReadMicrosoftFile;
 import com.tricon.ruleengine.utils.RuleBook;
 import com.tricon.ruleengine.dao.UserInputQuestionDao;
-import static java.util.Comparator.comparingInt;
 import static java.util.Comparator.comparing;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -123,6 +123,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	
 	@Autowired
     UserInputQuestionDao  userInputQuestionDao;
+	
+	@Autowired
+	UserInputService userInputService;
 	
 	static Class<?> clazz = TreatmentPlanServiceImpl.class;
 
@@ -258,6 +261,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				
 				Map<String, List<EagleSoftPatient>> espatients=null;
 				Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis=null;
+				List<MVPandVAP> mvpVapList=null;
 				Map<String, List<Object>> tMap=null;
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				Map<String, List<EagleSoftFeeShedule>> esfeess = null;
@@ -414,6 +418,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 								new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
 						
+						mvpVapList=tvd.getAllMVPVAP();
 						if (espatients != null && espatients.size() > 0) {
 							esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,bw);
 							esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) dbAccesService.getFeeScheduleData(espatients, esDB,bw);
@@ -468,19 +473,17 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null) {
 
 						//Save User input first
-						//TreatmentPlan t1= new  TreatmentPlan();
-						//t1.setServiceCode("D2740");
-						//t1.setTooth("asds");
-						//t1.setId("TEST");
-						
-						saveUserInputs(authentication, rules, tp, ivfMap.get(ivx).get(0), list, off, mappings);
-						
-						//TreatmentPlan t12= new  TreatmentPlan();
-						//t12.setServiceCode("D3320");
-						//t12.setTooth("asadds");
-						//t12.setId("TEST");
 						//Phase 2 User Input Work.
-						//saveUserInputs(authentication, rules, t12, ivfMap.get(ivx).get(0), list, off, mappings);
+						
+						saveUserInputs(authentication, rules, tList, ivfMap.get(ivx).get(0), list, off, mappings);
+						//
+						List<QuestionAnswerDto> ansL=null;
+						if (tp!=null) {
+						UserInputDto userInputDto=new UserInputDto();
+						userInputDto.setOfficeId(off.getUuid());
+						userInputDto.setTreatmentPlanId(tp.getId());
+						ansL=userInputService.getUserAnswers(userInputDto);
+						}
 						// RULE_ID_1 (Eligibility of the patient)
 
 						rule = getRulesFromList(rules, Constants.RULE_ID_1);
@@ -831,7 +834,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_10 "Pre Auth
 							rule = getRulesFromList(rules, Constants.RULE_ID_10);
-							dtoRL = rb.Rule10(tList, messageSource, rule, mappings, bw);
+							dtoRL = rb.Rule10(tList,ansL, messageSource, rule, mappings, bw);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -948,6 +951,210 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// END  Medicaid-3
 							
+							//  Crown
+							rule = getRulesFromList(rules, Constants.RULE_ID_26);
+							dtoRL = rb.Rule26(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_26,
+									Constants.rule_log_debug, bw);
+
+							// END  Crown
+
+							//  Filling
+							rule = getRulesFromList(rules, Constants.RULE_ID_27);
+							dtoRL = rb.Rule27(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_27,
+									Constants.rule_log_debug, bw);
+
+							// END  Filling
+							
+							//  Extraction
+							rule = getRulesFromList(rules, Constants.RULE_ID_28);
+							dtoRL = rb.Rule28(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_28,
+									Constants.rule_log_debug, bw);
+
+							// END  Extraction
+
+							//  Exam Codes
+							rule = getRulesFromList(rules, Constants.RULE_ID_29);
+							dtoRL = rb.Rule29(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_29,
+									Constants.rule_log_debug, bw);
+
+							// END  Exam Codes
+							
+							//  Cleaning
+							rule = getRulesFromList(rules, Constants.RULE_ID_30);
+							dtoRL = rb.Rule30(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_30,
+									Constants.rule_log_debug, bw);
+
+							// END  Cleaning
+
+							//  D4910 (Limit)
+							rule = getRulesFromList(rules, Constants.RULE_ID_31);
+							dtoRL = rb.Rule31(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_31,
+									Constants.rule_log_debug, bw);
+
+							// END  D4910 (Limit)
+							
+							//  Same Quad
+							rule = getRulesFromList(rules, Constants.RULE_ID_32);
+							dtoRL = rb.Rule32(tList,messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_32,
+									Constants.rule_log_debug, bw);
+
+							// END  Same Quad
+
+							//  Filling & Endo
+							rule = getRulesFromList(rules, Constants.RULE_ID_33);
+							dtoRL = rb.Rule33(tList,messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_33,
+									Constants.rule_log_debug, bw);
+
+							// END  Filling & Endo
+
+							//  Post and Core
+							rule = getRulesFromList(rules, Constants.RULE_ID_34);
+							dtoRL = rb.Rule34(tList,messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_34,
+									Constants.rule_log_debug, bw);
+
+							// END  Post and Core
+
+							//  Bone Graft/Alveoplasty
+							rule = getRulesFromList(rules, Constants.RULE_ID_35);
+							dtoRL = rb.Rule35(tList,messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_35,
+									Constants.rule_log_debug, bw);
+
+							// END  Bone Graft/Alveoplasty
+
+							//  D5130, D5140
+							rule = getRulesFromList(rules, Constants.RULE_ID_36);
+							dtoRL = rb.Rule36(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_36,
+									Constants.rule_log_debug, bw);
+
+							// END  D5130, D5140
+
+							//  Extraction -2
+							rule = getRulesFromList(rules, Constants.RULE_ID_37);
+							dtoRL = rb.Rule37(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw);
+
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_37,
+									Constants.rule_log_debug, bw);
+
+							// END  Extraction -2
+
 							// Medicaid Provider Limitation for D0150,D0210,D0330
 							rule = getRulesFromList(rules, Constants.RULE_ID_38);
 							if (espatientsHis != null && espatientsHis.get(patKey) != null
@@ -974,6 +1181,141 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								
 							//END Medicaid Provider Limitation for D0150,D0210,D0330
 							
+							//Age Limitation Prophylaxis
+							rule = getRulesFromList(rules, Constants.RULE_ID_39);
+							dtoRL = rb.Rule39(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_39,
+									Constants.rule_log_debug, bw);
+								
+							//END Age Limitation Prophylaxis
+							
+							//Space Maintainer-Billateral
+							rule = getRulesFromList(rules, Constants.RULE_ID_40);
+							dtoRL = rb.Rule40(tList ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_40,
+									Constants.rule_log_debug, bw);
+								
+							//END Space Maintainer-Billateral
+
+							//MVP VAP
+							rule = getRulesFromList(rules, Constants.RULE_ID_41);
+							dtoRL = rb.Rule41(tList,mvpVapList ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_41,
+									Constants.rule_log_debug, bw);
+								
+							//END MVP VAP
+
+							//Duplicate TP Codes
+							rule = getRulesFromList(rules, Constants.RULE_ID_42);
+							dtoRL = rb.Rule42(tList ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_42,
+									Constants.rule_log_debug, bw);
+								
+							//END Duplicate TP Codes
+
+							//Bone Graft (User Input)
+							rule = getRulesFromList(rules, Constants.RULE_ID_43);
+							dtoRL = rb.Rule43(tList,ansL ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_43,
+									Constants.rule_log_debug, bw);
+								
+							//END Bone Graft (User Input)
+							
+							//Signed Consent Requirements (User Input)
+							rule = getRulesFromList(rules, Constants.RULE_ID_44);
+							dtoRL = rb.Rule44(ansL ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_44,
+									Constants.rule_log_debug, bw);
+								
+							//END Signed Consent Requirements (User Input)
+							
+							//Ortho (User Input)
+							rule = getRulesFromList(rules, Constants.RULE_ID_45);
+							dtoRL = rb.Rule45(tList,ansL ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_45,
+									Constants.rule_log_debug, bw);
+								
+							//END Ortho (User Input)
+
+							//Pre-Auth (User Input)
+							rule = getRulesFromList(rules, Constants.RULE_ID_46);
+							dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_46,
+									Constants.rule_log_debug, bw);
+								
+							//END Pre-Auth (User Input)
 						}
 
 					} else {
@@ -1032,6 +1374,287 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					// Patient ID ("
 					// + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + ")" + debug,
 					// list);
+				} // For loop
+
+				// Save Reports
+
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+				RuleEngineLogger.generateLogs(clazz, e.getMessage(), Constants.rule_log_debug, bw);
+
+			}
+
+			//
+		} finally {
+
+			closeBuffer((BufferedWriter) o[1], (FileWriter) o[2]);
+			if (!tempFname.equals("")) {
+				// fName="";
+				// String n = new Date().toString().trim().replaceAll(" ", "").replaceAll(":",
+				// "-") + ".txt";
+				File newFile = new File(appLogFolder + tempFname);
+				File oldFile = new File(appLogFolder + fName);
+				oldFile.renameTo(newFile);
+				// Rename file
+			}
+
+		}
+		// TODO Auto-generated method stub
+
+		return returnMap;
+	}
+
+	@Override
+	public Map<String, List<TPValidationResponseDto>> saveDisplayUserInputsOnly(TreatmentPlanValidationDto dtod) {
+		dbAccesService.setUpSSLCertificates();
+		Map<String, List<TPValidationResponseDto>> returnMap = null;
+		Date currentDate = new Date();
+		String fName = "";
+		BufferedWriter bw = null;
+		Object[] o = null;
+		String tempFname = "";
+		Office off = od.getOfficeByUuid(dtod.getOfficeId());
+		try {
+			o = logFileToAppendData(off.getName().trim());
+			fName = (String) o[0];
+			bw = (BufferedWriter) o[1];
+
+			RuleEngineLogger.generateLogs(clazz, "Entering To Validate Treatment Plan", Constants.rule_log_debug, bw);
+			// RuleEngineLogger.generateLogs(clazz,
+			// "RuleEngineValidationController", Constants.rule_log_debug,bw);
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			List<TPValidationResponseDto> list2 = new ArrayList<TPValidationResponseDto>();
+			List<Rules> rules = tvd.getAllActiveRules();
+			List<Mappings> mappings = tvd.getAllMappings();
+			MicroSoftGraphToken microsoft = null;
+
+			boolean eagleSoftDBAccessPresent=false;
+			List<GoogleSheets> sheets = tvd.getAllGoogleSheetByOffice(off);
+			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+			if (esDB!=null) {
+				eagleSoftDBAccessPresent=true;
+			}
+			List<OneDriveFile> fileOne = spd.getOneDriveFileByOfficeId(dtod.getOfficeId());
+			TPValidationResponseDto dtoR = null;
+			Map<String, List<Object>> ivfMap = null;
+			Rules rule = null;
+			OneDriveApp odriveApp = spd.getOneDriveAppDetailsByOfficeId(dtod.getOfficeId());
+			if (eagleSoftDBAccessPresent ==false && (odriveApp != null && odriveApp.getRefreshToken() != null)) {
+
+				// Generate New Access Token and Refresh Token.
+				try {
+					microsoft = spService.reGenerateAccAndRefreshTokens(odriveApp, odriveApp.getRefreshToken());
+					spService.saveAccessAndRefreshTokenByAuthToken(odriveApp, dtod.getOfficeId(), null,
+							microsoft.getAccess_token(), microsoft.getRefresh_token());
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					RuleEngineLogger.generateLogs(clazz, "Office 365 sheet not registered with Rule Engine",
+							Constants.rule_log_debug, bw);
+					dtoR = new TPValidationResponseDto(0, "Generic",
+							"Office 365 sheet not registered with Rule Engine.<br>"
+									+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
+									+ SharepointInit + "?officeId=" + dtod.getOfficeId()
+									+ "'> Register Office With App </a>",
+							Constants.FAIL);
+					list2.add(dtoR);
+					if (returnMap == null)
+						returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+					returnMap.put("no", list2);
+
+					return returnMap;
+				}
+
+			} else if (eagleSoftDBAccessPresent==false){
+				RuleEngineLogger.generateLogs(clazz, "Office 365 sheet not registered with Rule Engine",
+						Constants.rule_log_debug, bw);
+				dtoR = new TPValidationResponseDto(0, "Generic", "Office 365 sheet not registered with Rule Engine.<br>"
+						+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
+						+ SharepointInit + "?officeId=" + dtod.getOfficeId() + "'> Register Office With App </a>",
+						Constants.FAIL);
+				list2.add(dtoR);
+				if (returnMap == null)
+					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+				returnMap.put("no", list2);
+
+				return returnMap;
+
+			}
+			
+			if (rules != null && rules.size() == 0) {
+				RuleEngineLogger.generateLogs(clazz, "Generic- No Active Rules Found", Constants.rule_log_debug, bw);
+				dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL);
+				list2.add(dtoR);
+				if (returnMap == null)
+					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+				returnMap.put("No Rule Found", list2);
+
+				return returnMap;
+			}
+
+			try {
+				
+				Map<String, List<Object>> tMap=null;
+				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
+				Map<String, List<EagleSoftFeeShedule>> esfeess = null;
+				
+				
+				String ivs[] = dtod.getIvfId().split(",");
+				String trids[] = dtod.getTreatmentPlanId().split(",");
+				// Read Treatment Plan...
+				OneDriveFile tpsheet =null;
+				if (eagleSoftDBAccessPresent== false) {
+					
+					ReadMicrosoftFile rmF = new ReadMicrosoftFile();
+					// Read Fee Treatment Plan key id IVF id ..
+
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_read_fil_start + "-" + Constants.microsoft_treatement_sheet_name,
+							Constants.rule_log_debug, bw);
+					tMap = (Map<String, List<Object>>) (Map<String, ?>) rmF
+							.downloadAndReadUsingStream(spService.webUrlForMicrosoftSheets(tpsheet, odriveApp),
+									tpsheet.getSheetName(), Constants.microsoft_treatement_sheet_name, trids, null, null,
+									null);
+
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_read_fil_end + "-" + Constants.microsoft_treatement_sheet_name,
+							Constants.rule_log_debug, bw);
+					// End
+					GoogleSheets ivsheet = null;
+					if (sheets != null && sheets.size() > 0) {
+						ivsheet = sheets.get(0);
+					} else {
+						rule = getRulesFromList(rules, Constants.RULE_ID_2);
+						RuleEngineLogger.generateLogs(clazz, "No IVF Sheet Found for Selected Office" + off.getName(),
+								Constants.rule_log_debug, bw);
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
+								"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
+								Constants.FAIL);
+						list2.add(dtoR);
+						if (returnMap == null)
+							returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+						returnMap.put(
+								"IVF ID(" + dtod.getIvfId() + ") Treatment Plan ID (" + dtod.getTreatmentPlanId() + ")",
+								list2);
+
+						return returnMap;
+					}
+					// Read IVF Sheet From Google key is IVF id
+
+					RuleEngineLogger.generateLogs(clazz,
+							Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
+							bw);
+					ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+							off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
+							off.getName(),false);
+
+					RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
+							Constants.rule_log_debug, bw);
+					// End
+
+					// Read emp_master Key is employee ID
+					
+					
+	
+					tpsheet =getOneDriveFileFromList(fileOne, Constants.microsoft_treatement_sheet_name);
+				}else {
+					
+					//In New Approach 
+					
+					if (eagleSoftDBAccessPresent) {
+						tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
+						
+                         //
+						// Read IVF Sheet From Google key is IVF id
+						GoogleSheets ivsheet = null;
+						if (sheets != null && sheets.size() > 0) {
+							ivsheet = sheets.get(0);
+						} else {
+							rule = getRulesFromList(rules, Constants.RULE_ID_2);
+							RuleEngineLogger.generateLogs(clazz, "No IVF Sheet Found for Selected Office" + off.getName(),
+									Constants.rule_log_debug, bw);
+							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
+									"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
+									Constants.FAIL);
+							list2.add(dtoR);
+							if (returnMap == null)
+								returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+							returnMap.put(
+									"IVF ID(" + dtod.getIvfId() + ") Treatment Plan ID (" + dtod.getTreatmentPlanId() + ")",
+									list2);
+
+							return returnMap;
+						}
+
+						RuleEngineLogger.generateLogs(clazz,
+								Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
+								bw);
+						ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+								off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
+								off.getName(),false);
+
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
+								Constants.rule_log_debug, bw);
+
+						
+					}		
+			
+				}
+				
+				
+				// End
+				List<TPValidationResponseDto> list = null;
+				for (int y = 0; y < ivs.length; y++) {
+					list = new ArrayList<TPValidationResponseDto>();
+					// IMPORTANT --SEE THIS --WHY DONE in IVF sheet need to match Officename_IVFID
+					String ivx = ivs[y];// off.getName() + "_" +
+					String trx = trids[y];// off.getName() + "_" +
+					// String feeKey = "1";
+					TreatmentPlan tp = null;
+					
+
+					// Treatment Plan Sheet
+					// Get web Url of TP sheet
+					List<Object> tList = null;
+					if (tMap == null) {
+						rule = getRulesFromList(rules, Constants.RULE_ID_2);
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
+								Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
+								Constants.FAIL);
+						// saveReport(authentication, rule, dtoR, trx, null,off);
+						list.add(dtoR);
+
+					} else if (tMap != null && tMap.get(trx) == null) {
+						rule = getRulesFromList(rules, Constants.RULE_ID_2);
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
+								Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
+								Constants.FAIL);
+						// saveReport(authentication, rule, dtoR, trx, null,off);
+						list.add(dtoR);
+					} else {
+						tList = tMap.get(trx);
+						// Create File Name to rename latter..
+						tp = (TreatmentPlan) tList.get(0);
+						if (y == 0)
+							tempFname = tp.getPatient().getId();
+
+					}
+
+					if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null) {
+
+						saveUserInputs(authentication, rules, tList, ivfMap.get(ivx).get(0), list, off, mappings);
+
+					} else {
+						rule = getRulesFromList(rules, Constants.RULE_ID_2);
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
+								"<b class='error-message-api'>No Data Found in IVF Sheet.</b>", Constants.FAIL);
+						list.add(dtoR);
+						// saveReports(authentication, rule,dtoR, dto,(IVFTableSheet)(ivfList.get(0)));
+					}
+
+					if (returnMap == null)
+						returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+					
 				} // For loop
 
 				// Save Reports
@@ -1203,13 +1826,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
     * @param off
     * @param mappings
     */
-	private void saveUserInputs(Authentication authentication, List<Rules> rules, TreatmentPlan tp,
+	private void saveUserInputs(Authentication authentication, List<Rules> rules, List<Object> tpList,
 			Object ivfSheet, List<TPValidationResponseDto> list, Office off,List<Mappings> mappings) {
 		RuleBook rb =new RuleBook();
 		List<UserInputRuleQuestionHeader> qhList=userInputQuestionDao.getAllUserInputQuestionsDbModel();
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		try {
-			if (ivfSheet == null || tp == null)
+			if (ivfSheet == null || tpList == null)
 				return;
 			String email = "admin@admin.com";
 
@@ -1220,18 +1843,23 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			} else {
 				user = userDao.findUserByEmail(email);
 			}
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				
 			
 			UserInputDto dto = new UserInputDto();
 			dto.setOfficeId(off.getUuid());
 			dto.setTreatmentPlanId(tp.getId());
 			List<QuestionAnswerDto> qansList=userInputQuestionDao.getUserAnswers(dto);
  			if (qansList!=null && qansList.size()>0) {
- 				
-				for(QuestionAnswerDto d:qansList) {
-					d.getAnswer();
-				}
-			}else {
+ 				break;
+ 			}	
+				//for(QuestionAnswerDto d:qansList) {
+			//		d.getAnswer();
+			//	}
+			//}else {
 				//for null case
+ 			    List<String> orthoList= Arrays.asList( Constants.ORTHO_CODE_UI.split(","));
 				 for (UserInputRuleQuestionHeader qh:qhList) {
 					 
 				
@@ -1258,10 +1886,6 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						//SAVE DATA HERE ...
 						userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
 						}
-					//if (mapP != null) {
-						//SAVE DATA HERE ...
-					//	userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
-					//}
 					 }
 					//For Rule 10 -- END
 					//For Rule Overall-- START
@@ -1279,7 +1903,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 					 }
 					//For Rule Overall-- END
-					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_ORTHO)) {
+					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_ORTHO)
+							 && (orthoList.contains(tp.getServiceCode()))
+							 ) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
 						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
@@ -1309,7 +1935,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_PC)) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
-						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+						 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
 				         qadto.setTpId(tp.getId());
@@ -1324,8 +1950,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 					 }
 				 }
+			 //}//else
 			}
-
 		} catch (Exception x) {
 
 			x.printStackTrace();

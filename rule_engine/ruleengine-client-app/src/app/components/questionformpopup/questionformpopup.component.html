@@ -4,6 +4,9 @@
 			Go Back
 		</a>
 	</div>	
+	<div *ngIf="arrayOfKeys.length==0">
+	  NO DATA FOUND. Please Run Rule First with the Corresponding TP / TP is invalid.
+	</div>
 	<div *ngFor="let key of arrayOfKeys">
 		<h3>{{key}}</h3>
 		
@@ -22,7 +25,7 @@
 									<td *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
 										<input class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 									</td>
-									<td *ngIf="data.questionType == 'Y_N'">
+									<td *ngIf="data.questionType == 'Y_N'" class="yes-no">
 										<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
 										<label for="yes_{{answer.answerId}}">Yes</label>										
 										<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
@@ -52,7 +55,7 @@
 									<td *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
 										<input class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 									</td>
-									<td *ngIf="data.questionType == 'Y_N'">
+									<td *ngIf="data.questionType == 'Y_N'" class="yes-no">
 										<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
 										<label for="yes_{{answer.answerId}}">Yes</label>										
 										<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
@@ -87,7 +90,7 @@
 					<span *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
 						<input class="inp-custom fill-blanks" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 					</span>
-					<span *ngIf="data.questionType == 'Y_N'">
+					<span *ngIf="data.questionType == 'Y_N'" class="yes-no">
 						<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
 						<label for="yes_{{answer.answerId}}">Yes</label>										
 						<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
@@ -124,7 +127,7 @@
 			<div *ngFor="let data of questionFormData[key]">
 				{{data.question}}
 				<span *ngFor="let answer of data.questionAnswers">
-					<span *ngIf="data.questionType == 'Y_N'">
+					<span *ngIf="data.questionType == 'Y_N'" class="yes-no">
 						<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
 						<label for="yes_{{answer.answerId}}">Yes</label>										
 						<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
@@ -137,9 +140,10 @@
 		
 	</div>
 	
-	<p class="text-center">
-		<button [disabled]="showLoading" type="submit" class="btn" (click)="saveFormData()">Save</button>		
+	<p class="text-center" *ngIf="arrayOfKeys.length>0">
+		<button [disabled]="showQuestionSaveLoading" type="submit" class="btn" (click)="saveFormData()">Save</button>		
 	</p>
+	<div *ngIf="showQuestionSaveLoading" class="loader"></div>
 	<div class="clear"></div>
 	
 </div>	

@@ -55,6 +55,12 @@
 								#debugMode="ngModel"  />
 							<label class="sr-checkbox" for="debugMode">Detailed Log </label>
 
+							 <input
+								type="checkbox" class=""
+								name="inputModeD" id="inputModeModeD" [(ngModel)]="ivfm.inputModeD"
+								#debugMode="ngModel"  />
+							<label class="sr-checkbox" for="inputModeD">Input Mode </label>
+
 						</div>
 
 						<p>
@@ -74,4 +80,7 @@
 	<app-ivfpopup *ngIf="showPopup" [ivfm]="ivfm" (emitToParent)="receiveChildrenEmitter($event)" 
 		[ivfValidateName]="'validateTreatmentPlan'" [showIvfData]="showIvfData"></app-ivfpopup>	
 	
+	<app-questionformpopup *ngIf="showPopupInput" [questionData]="questionData" (emitToParent)="receiveChildrenEmitter($event)"
+	[showValidation]="'1'" 
+	></app-questionformpopup>	
 </div>

@@ -9,6 +9,8 @@ public class QuestionAnswerDto {
 	private String patId;
 	private String officeId;
 	private String answer;
+	private String serviceCode;
+	
 	public int getAnswerId() {
 		return answerId;
 	}
@@ -50,6 +52,12 @@ public class QuestionAnswerDto {
 	}
 	public void setAnswer(String answer) {
 		this.answer = answer;
+	}
+	public String getServiceCode() {
+		return serviceCode;
+	}
+	public void setServiceCode(String serviceCode) {
+		this.serviceCode = serviceCode;
 	}
 	
 	

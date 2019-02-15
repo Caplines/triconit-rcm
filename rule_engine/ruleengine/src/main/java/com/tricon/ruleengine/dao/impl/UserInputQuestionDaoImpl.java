@@ -112,6 +112,7 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 			pjList.add(Projections.property("patId"), "patId");
 			pjList.add(Projections.property("office.uuid"), "officeId");
 			pjList.add(Projections.property("answer"), "answer");
+			pjList.add(Projections.property("serviceCode"), "serviceCode");
 
 			criteria.setProjection(pjList);
 			criteria.setResultTransformer(Transformers.aliasToBean(QuestionAnswerDto.class));
@@ -130,7 +131,6 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 		Session session = getSession();
 		UserInputRuleQuestionAnswer dtoA = null;
 		try {
-			Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(UserInputRuleQuestionAnswer.class);
 			criteria.add(Restrictions.eq("tpId", dto.getTreatmentPlanId()));
 			criteria.add(Restrictions.eqOrIsNull("serviceCode", serviceCode));
@@ -139,7 +139,6 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 			criteria.add(Restrictions.eq("userInputRuleQuestionHeader.id", questionId));
 
 			dtoA = (UserInputRuleQuestionAnswer) criteria.uniqueResult();
-			transaction.commit();
 		} finally {
 			closeSession(session);
 

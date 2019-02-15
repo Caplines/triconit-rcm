@@ -30,17 +30,22 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.ruleengine.dto.DiagnosticDTO;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.PatientTreamentDto;
+import com.tricon.ruleengine.dto.QuestionAnswerDto;
+import com.tricon.ruleengine.dto.QuestionHeaderDto;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
+import com.tricon.ruleengine.dto.UserInputDto;
+import com.tricon.ruleengine.dto.UserInputQuestionAnswerDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.GoogleReportService;
 import com.tricon.ruleengine.service.ReportService;
 import com.tricon.ruleengine.service.TreatmentPlanService;
+import com.tricon.ruleengine.service.UserInputService;
 import com.tricon.ruleengine.service.UserService;
 import com.tricon.ruleengine.utils.Constants;
 
@@ -53,6 +58,9 @@ import com.tricon.ruleengine.utils.Constants;
 public class RuleEngineValidationController {
 
 	static Class<?> clazz = RuleEngineValidationController.class;
+	
+	@Autowired
+	UserInputService userInputService;
 
 	@Value("${app.debug.folder}")
 	private String appLogFolder;
@@ -95,10 +103,43 @@ public class RuleEngineValidationController {
 	public ResponseEntity<Object> validateTreatementPlan(@RequestBody TreatmentPlanValidationDto dto) {
 
 		// dto.setTreatmentPlanId("22095");
-		Map<String, List<TPValidationResponseDto>> map = tPService.validateTreatmentPlan(dto);
-		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug, null);
+		Map<String, List<TPValidationResponseDto>> map=null;
+		RuleEngineLogger.generateLogs(clazz, "RuleEngineUserInputController", Constants.rule_log_debug, null);
+		if (dto.isInputMode()) {
+		        tPService.saveDisplayUserInputsOnly(dto);
+				List<QuestionHeaderDto> data1 = userInputService.getUserInput();
+				UserInputDto uDto=new UserInputDto();
+				uDto.setOfficeId(dto.getOfficeId());
+				uDto.setTreatmentPlanId(dto.getTreatmentPlanId());
+				
+				List<QuestionAnswerDto> ansL=userInputService.getUserAnswers(uDto);
+				
+				List<QuestionHeaderDto> data1F = new ArrayList<>();
+				List<Integer> qid=new ArrayList<>();
+				if (ansL!=null) {
+					for(QuestionAnswerDto a:ansL) {
+						qid.add(a.getQuestionId());
+					}
+				}
+				if (data1!=null) {
+				for(QuestionHeaderDto q:data1) {
+					if(qid.contains(q.getId())) {
+						data1F.add(q);
+					}
+				 }
+				}
+				UserInputQuestionAnswerDto d=new UserInputQuestionAnswerDto();
+				d.setDataHeader(data1F);
+				d.setQuestionAnswer(ansL);
+				return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", d));
+		     
+		}
+		else {
+			 map = tPService.validateTreatmentPlan(dto);
+				RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", map));
+		}
 
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", map));
 	}
 
 	@CrossOrigin
@@ -130,6 +171,7 @@ public class RuleEngineValidationController {
 	public ResponseEntity<Object> validateTreatementPlanBatch(@RequestBody TreatmentPlanValidationDto dto) {
 
 		// dto.setTreatmentPlanId("22095");
+		dto.setInputMode(false);//always do this..we will not Open in Input mode for Batch..... 
 		Map<String, List<TPValidationResponseDto>> map = tPService.validateTreatmentPlan(dto);
 		RuleEngineLogger.generateLogs(clazz, "RuleEngineValidationController", Constants.rule_log_debug, null);
 

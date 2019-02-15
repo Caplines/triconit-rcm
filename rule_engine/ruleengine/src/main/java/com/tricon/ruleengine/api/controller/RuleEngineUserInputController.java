@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.api.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,6 @@ import com.tricon.ruleengine.dto.UserAnswerDto;
 import com.tricon.ruleengine.dto.UserInputDto;
 import com.tricon.ruleengine.dto.UserInputQuestionAnswerDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
-import com.tricon.ruleengine.model.db.UserInputRuleQuestionAnswer;
 import com.tricon.ruleengine.service.UserInputService;
 import com.tricon.ruleengine.utils.Constants;
 
@@ -47,8 +47,22 @@ public class RuleEngineUserInputController {
 		List<QuestionHeaderDto> data1 = userInputService.getUserInput();
 		List<QuestionAnswerDto> ansL=userInputService.getUserAnswers(dto);
 		
+		List<QuestionHeaderDto> data1F = new ArrayList<>();
+		List<Integer> qid=new ArrayList<>();
+		if (ansL!=null) {
+			for(QuestionAnswerDto a:ansL) {
+				qid.add(a.getQuestionId());
+			}
+		}
+		if (data1!=null) {
+		for(QuestionHeaderDto q:data1) {
+			if(qid.contains(q.getId())) {
+				data1F.add(q);
+			}
+		 }
+		}
 		UserInputQuestionAnswerDto d=new UserInputQuestionAnswerDto();
-		d.setDataHeader(data1);
+		d.setDataHeader(data1F);
 		d.setQuestionAnswer(ansL);
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", d));

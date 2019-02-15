@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.GoogleSheets;
+import com.tricon.ruleengine.model.db.MVPandVAP;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ReportDetail;
@@ -38,5 +39,8 @@ public interface TreatmentValidationDao {
 	public void updateReportDate(Reports reports);
 	
 	public EagleSoftDBDetails getESDBDetailsByOffice(Office off);
+	
+	public List<MVPandVAP> getAllMVPVAP();
+	
 
 }

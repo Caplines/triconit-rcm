@@ -23,6 +23,8 @@ public interface TreatmentPlanService {
 	 * @return
 	 */
 	public Map<String,List<TPValidationResponseDto>> validateTreatmentPlan(TreatmentPlanValidationDto dto);
+	
+	public Map<String, List<TPValidationResponseDto>> saveDisplayUserInputsOnly(TreatmentPlanValidationDto dtod);
 
 	public Map<String,List<TPValidationResponseDto>> validateTreatmentPlanPreBatch(TreatmentPlanBatchValidationDto dto);
 

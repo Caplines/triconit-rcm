@@ -4,4 +4,7 @@ export class IVFModel {
   ivfId: string="";
   officeId:string="";
   debugMode:boolean=false;
+  inputModeD:boolean=false;
+  inputMode:boolean=false;
+
 }

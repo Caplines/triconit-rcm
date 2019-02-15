@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
 import {IVFModel} from "../../model/model.ivf";
+import {UserInputModel} from "../../model/model.userinput";
 import {Office} from "../../model/model.office";
 import {AccountService} from "../../services/account.service";
 import {Router,ActivatedRoute } from "@angular/router";
@@ -14,13 +15,17 @@ export class IVFComponent implements OnInit {
   @Input() treatmentPlanId:any;
   @Input() officeId:any;
   ivfm: IVFModel = new IVFModel();
+  uim: UserInputModel = new UserInputModel();
   errorMessage: string;
   offices:any;
   userName: any;
   userType: any;
   showPopup: boolean = false;
   showLoading: boolean = false;
+  showPopupInput: boolean = false;
+  
   showIvfData: boolean = false;
+  questionData:any;
 
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
 	  
@@ -42,14 +47,49 @@ export class IVFComponent implements OnInit {
 
   validateIVF() {
 	if(this.ivfm.officeId) {
-		this.showPopup=true;
+		
+		
 		this.showLoading = true;
+		if (this.ivfm.inputModeD){
+		    this.uim.treatmentPlanId =this.ivfm.treatmentPlanId ;
+		    this.uim.officeId =this.ivfm.officeId ;
+		    this.uim.ivfId=this.ivfm.ivfId;
+		    this.uim.inputMode=this.ivfm.inputModeD;
+			//this.showLoading = true;
+
+		    //this.accountService.validateIVF(this.ivfm, this.ivfValidateName, (result) => {
+		    this.accountService.validateIVF(this.uim, 'validateTreatmentPlan', (result) => {		
+				if (result.status=='OK'){
+				    this.showPopupInput = true;
+					this.questionData = result.data;
+					this.showIvfData=true;
+				}
+			  });
+		    
+		    
+		}else{
+			this.showPopup=true;
+		}
 	}
   }
   
   receiveChildrenEmitter(event) {
-	if(event['action'] == "showLoading") {
+	if(event['action'] == "showLoading" ) {
 		this.showLoading = event['value'];
+	}else if(event['action']=="showQuestionData" ) {
+		this.showIvfData = event['value'];
+		this.showLoading = event['value'];
+		if(!this.showIvfData) {
+			this.showPopupInput = false;
+		}
+	} else if(event['action'] == "showValidation") {//From User input Screen
+		this.showPopup=true;
+		let ths=this;
+		this.showLoading = true;
+		this.ivfm.inputMode=false;
+		this.showPopupInput = false;
+		this.showIvfData=false;
+		
 	} else if(event['action'] == "showIvfData") {
 		this.showIvfData = event['value'];
 		if(!this.showIvfData) {
@@ -59,6 +99,7 @@ export class IVFComponent implements OnInit {
 		this.showIvfData=false;
 		this.showPopup=false;
 		this.showLoading = false;
+		this.showPopupInput = false;
 		setTimeout(() => {
 			this.validateIVF();	
 		}, 500);

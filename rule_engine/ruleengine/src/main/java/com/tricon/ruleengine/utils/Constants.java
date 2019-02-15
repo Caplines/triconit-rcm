@@ -63,16 +63,23 @@ public class Constants {
 	public static final String RULE_ID_28="Extraction";
 	public static final String RULE_ID_29="Exam Codes";
 	public static final String RULE_ID_30="Cleaning";
-	public static final String RULE_ID_31="D4910";
+	public static final String RULE_ID_31="D4910 (Limit)";
 	public static final String RULE_ID_32="Same Quad";
+	public static final String RULE_ID_33="Filling & Endo";
 	public static final String RULE_ID_34="Post and Core";
 	public static final String RULE_ID_35="Bone Graft/Alveoplasty";
 	public static final String RULE_ID_36="D5130, D5140";
 	public static final String RULE_ID_37="Extraction -2";
 	public static final String RULE_ID_38="Medicaid Provider Limitation";
-	public static final String RULE_ID_39="Age Limitation Prophylaxis_D1110/D1120";
-	public static final String RULE_ID_40="Space Maintainer-Billateral_D1515";
-		
+	public static final String RULE_ID_39="Age Limitation Prophylaxis";
+	public static final String RULE_ID_40="Space Maintainer-Billateral";
+	public static final String RULE_ID_41="MVP VAP";
+	public static final String RULE_ID_42="Duplicate TP Codes";
+	public static final String RULE_ID_43="Bone Graft (User Input)";
+	public static final String RULE_ID_44="Signed Consent Requirements";
+	public static final String RULE_ID_45="Ortho (User Input)";
+	public static final String RULE_ID_46="Pre-Auth (User Input)";
+	public static final String RULE_ID_47="Provider Change (User Input)";
 	
 	
 	/*
@@ -174,6 +181,8 @@ public class Constants {
 	public static String PARTIAL_DENTURE_SC="D5211,D5212,D5213,D5214,D5225,D5226";
 	public static String DENTURE_SC="D5110,D5120,D5130,D5140";
 	
+	public static String ORTHO_CODE_UI="D8080,D8070,D8090,D8010";
+	
 	
 	
 	//Constants Related to Questions (user_input_rule_question_header) talbe;
@@ -196,7 +205,7 @@ public class Constants {
 	public static int RULE_OVERALL_question_header_id_a_all_met=7;
 	
 	public static int RULE_ORTHO_question_header_id_narrtive=8;
-	public static int RULE_ORTHO_question_header_id_turation=9;
+	public static int RULE_ORTHO_question_header_id_duration=9;
 	public static int RULE_ORTHO_question_header_id_month_r=10;
 	public static int RULE_ORTHO_question_header_id_downpayment=11;
 	public static int RULE_ORTHO_question_header_id_banding_date=12;
@@ -205,8 +214,8 @@ public class Constants {
 	public static int RULE_PRE_AUTH_question_header_id_refno=14;
 	
 	public static int RULE_PC_question_header_id_provider_change=15;
-	public static int RULE_PC_question_header_id_patient_change_provier=16;
-	public static int RULE_PC_question_header_id_ref_missing=17;
+	public static int RULE_PC_question_header_id_patient_change_provider=16;
+	//public static int RULE_PC_question_header_id_ref_missing=17;//Not used now
 	
 	public static int RULE_BONE_GRAFT_IMPLANT=18;
 	

@@ -26,7 +26,8 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  * app.component.ts static API_URL="http://ip"; 
  * angular.json line no 17 "index": "src/index.jsp",
  * Password --capline 
- * 
+ * aws location cd /opt/project/tricon/client/
+ * cd /opt/tomcat
  */
 
 @SpringBootApplication(exclude = { JpaRepositoriesAutoConfiguration.class,
