@@ -66,6 +66,9 @@ import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.ReadMicrosoftFile;
 import com.tricon.ruleengine.utils.RuleBook;
+
+import edu.umd.cs.findbugs.ba.constant.Constant;
+
 import com.tricon.ruleengine.dao.UserInputQuestionDao;
 import static java.util.Comparator.comparing;
 
@@ -1316,6 +1319,23 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									Constants.rule_log_debug, bw);
 								
 							//END Pre-Auth (User Input)
+							
+							//Provider Change (User Input)
+							rule = getRulesFromList(rules, Constants.RULE_ID_47);
+							dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_47,
+									Constants.rule_log_debug, bw);
+								
+							//END Provider Change (User Input)
 						}
 
 					} else {
@@ -1843,6 +1863,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			} else {
 				user = userDao.findUserByEmail(email);
 			}
+			int check=0;
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
 				
@@ -1851,9 +1872,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			dto.setOfficeId(off.getUuid());
 			dto.setTreatmentPlanId(tp.getId());
 			List<QuestionAnswerDto> qansList=userInputQuestionDao.getUserAnswers(dto);
- 			if (qansList!=null && qansList.size()>0) {
+ 			if (qansList!=null && qansList.size()>0 && check==0) {
  				break;
  			}	
+ 			check++;
 				//for(QuestionAnswerDto d:qansList) {
 			//		d.getAnswer();
 			//	}
@@ -1877,7 +1899,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						   qadto.setAnswer(tp.getTooth());
 					else if (qh.getId()==Constants.RULE_10_question_header_id_require && mapA!=null) {
 						   qadto.setAnswer(mapA.getAdditionalInformationNeeded());
-					}
+					}else if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
+						 qadto.setAnswer("No");
+					 }
 			           qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 			           qadto.setOfficeId(off.getUuid());
 			           qadto.setPatId(ivf.getPatientId());
@@ -1892,10 +1916,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_OVERALL)) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
+						 
 						 if (qh.getId()==Constants.RULE_OVERALL_question_header_id_checkpoints) 
 							   qadto.setAnswer(qh.getHardCodedAnswer());
 						 else if (qh.getId()==Constants.RULE_OVERALL_question_header_id_a_all_met)  
-							 qadto.setAnswer("");
+							 qadto.setAnswer("No");
+						 else if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
+							 qadto.setAnswer("No");
+						 }
 						 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
@@ -1908,12 +1936,16 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							 ) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
+						 if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
+							 qadto.setAnswer("No");
+						 }
 						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
 				         qadto.setTpId(tp.getId());
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 					 }
+					 
 					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_PREAUTH) ) {
 						 Mappings mapP = rb.getMappingFromListPreAuth(mappings, tp.getServiceCode());
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
@@ -1924,6 +1956,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						 }
 							 
 						 qadto.setAnswer("");
+						 if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
+							 qadto.setAnswer("No");
+						 }
 						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
@@ -1932,9 +1967,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				        	 userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 				         }
 					 }
-					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_PC)) {
+					 else  if (ivf.getPlanType().trim().toLowerCase().contains(Constants.insurance_Medicaid) && qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_PC)) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
+						 if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
+							 qadto.setAnswer("No");
+						 }
 						 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
@@ -1943,6 +1981,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					 }else  if (tp.getServiceCode().equals("D7953") && qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_BONE_GRAFT)) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
+						 if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
+							 qadto.setAnswer("No");
+						 }
 						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());

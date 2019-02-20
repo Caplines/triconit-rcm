@@ -130,6 +130,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //"/fetchesdata/*/*",
                 "/ivftreatmentplan",
                 "/diagnosticcheck",
+                "/userinput",
                 "/",
                 "/*.html",
                 "/index.jsp",

@@ -185,7 +185,7 @@ public class Constants {
 	
 	
 	
-	//Constants Related to Questions (user_input_rule_question_header) talbe;
+	//Constants Related to Questions (user_input_rule_question_header) table;
 	
 	public static String User_Input_Name_Question_RULE_10="RULE_10";
 	public static String User_Input_Name_Question_OVERALL="OVERALL";
@@ -218,6 +218,9 @@ public class Constants {
 	//public static int RULE_PC_question_header_id_ref_missing=17;//Not used now
 	
 	public static int RULE_BONE_GRAFT_IMPLANT=18;
+	
+	public static String QUESTION_TYPE="Y_N";
+	
 	
 	
 
