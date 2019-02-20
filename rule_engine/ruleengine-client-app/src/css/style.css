@@ -705,5 +705,9 @@ text-decoration: underline;
 .question-form li {
 	min-height: 40px;
     display: flex;
-    align-items: center
+    align-items: center;
+}
+
+.question-form ul {
+	padding-left: 0px;
 }

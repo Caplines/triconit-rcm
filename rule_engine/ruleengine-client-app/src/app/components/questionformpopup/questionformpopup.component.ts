@@ -22,8 +22,8 @@ export class QuestionformPopupComponent implements OnInit {
 	let answers = this.groupBy(this.questionData.questionAnswer, 'questionId');
 	this.questionData.dataHeader.forEach((question, index)=> {
 		question['questionAnswers'] = [];
-		if (answers[index+1]){
-			answers[index+1].forEach((answer) => {
+		if (answers[question.id]){
+			answers[question.id].forEach((answer) => {
 				question['questionAnswers'].push(answer);
 				if(question.questionType == 'C_B_A') {
 					this.splitAnswer(question['questionAnswers']);
