@@ -4176,6 +4176,7 @@ public class RuleBook {
 			if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
 				
 				List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.CROWN_SC.split(",")));
+				reqList.addAll(Arrays.asList(Constants.STAIN_LESS_STEEL_CROWN_SC.split(",")));//Added As per email : Sahil (23 Feb,2019 and same in Crown Rule)
                 List<String> historyCheckList = new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
                 historyCheckList.addAll(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
 				
@@ -4376,6 +4377,9 @@ public class RuleBook {
 
 					
 					List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.CROWN_SC.split(",")));
+					reqList.addAll(new ArrayList<String>(Arrays.asList(Constants.STAIN_LESS_STEEL_CROWN_SC.split(","))));
+					//List<String> hs_extraList = new ArrayList<String>(Arrays.asList(Constants.STAIN_LESS_STEEL_CROWN_SC.split(",")));
+					
 					
 	                List<String> checkList = new ArrayList<String>(Arrays.asList(Constants.SEALANT_SC.split(",")));
 	                checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
@@ -4452,8 +4456,8 @@ public class RuleBook {
 							//Method hss = c2.getMethod(hs);
 							String code = (String) hcm.invoke(hisSheet);
 							String tooth = (String) htm.invoke(hisSheet);
-							
-							if (reqList.contains(code.toUpperCase())) {
+							//|| hs_extraList.contains(code.toUpperCase())
+							if (reqList.contains(code.toUpperCase()) ) {
 								RuleEngineLogger.generateLogs(clazz, "i="+i+" -code H=" + code, Constants.rule_log_debug,
 										bw);
 								RuleEngineLogger.generateLogs(clazz, "Tooth H=" + tooth, Constants.rule_log_debug,
@@ -5568,7 +5572,7 @@ public class RuleBook {
 								pass=false;
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule33.error.message", new Object[] {
-												entryFM.getKey(),entryEM.getKey(), t2}, locale), Constants.PASS));
+												entryFM.getKey(),entryEM.getKey(), t2}, locale), Constants.FAIL));
 								
 							}
 							
@@ -5836,7 +5840,7 @@ public class RuleBook {
 	}
 	
 	
-	// Extraction-2
+	// Extraction- Denture
     /**
      * 
      * @param tpList
@@ -5854,7 +5858,7 @@ public class RuleBook {
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		//List<String> dcodes = new ArrayList<>();
 	    Map<String,List<String>> mapE = new HashMap<>();
-	    Map<String,List<String>> mapD = new HashMap<>();
+	    //Map<String,List<String>> mapD = new HashMap<>();
 	    Map<String,List<String>> mapHistory = new HashMap<>();
 		try {
 			boolean checkForHistory=false;
@@ -5906,7 +5910,7 @@ public class RuleBook {
 				
 				IVFHistorySheet hisSheet = ivf.getHs();
 				List<String> allExtractionTooth=new ArrayList<>();
-				List<String> allDentureTooth=new ArrayList<>();
+				//List<String> allDentureTooth=new ArrayList<>();
 				List<String> allDentureToothHis=new ArrayList<>();
 				
 				for (int i = 1; i <= noOFhistory; i++) {
@@ -5947,8 +5951,19 @@ public class RuleBook {
 					}
 					*/
 					//Get TOOTH from map Denture history
+					String UA="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16";
+					String LA="17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37";
 					for (Map.Entry<String, List<String>> entry : mapHistory.entrySet()) {
-						allDentureToothHis.addAll(entry.getValue());
+						//allDentureToothHis.addAll(entry.getValue());//As per Sahil => we need to match tooth number, for UA - 1-16, for LA - 17-32
+						List<String> th=entry.getValue();
+						if (th!=null) {
+							for(String x:th) {
+								if (x.equalsIgnoreCase("UA")) allDentureToothHis.addAll(
+										new ArrayList<String>(Arrays.asList(UA.split(","))));
+								else if (x.equalsIgnoreCase("LA")) allDentureToothHis.addAll(
+										new ArrayList<String>(Arrays.asList(LA.split(",")))); 
+							}
+						}
 					}
 					
 					//Collection<String> allDentureToothC = new ArrayList<>(allExtractionTooth);
@@ -5967,7 +5982,19 @@ public class RuleBook {
 						for(String t:common) {
 							for (Map.Entry<String, List<String>> entry : mapHistory.entrySet()) {
 								List<String> tList=entry.getValue();
-								for(String t2:tList) {
+								List<String> tListnew=new ArrayList<>();
+								
+								if (tList!=null) {
+									for(String x:tList) {
+										if (x.equalsIgnoreCase("UA")) tListnew.addAll(
+												new ArrayList<String>(Arrays.asList(UA.split(","))));
+										else if (x.equalsIgnoreCase("LA")) tListnew.addAll(
+												new ArrayList<String>(Arrays.asList(LA.split(",")))); 
+									}
+								}
+								
+								
+								for(String t2:tListnew) {
 									if (t2.equals(t)) {
 										docodesforDisplay.add(entry.getKey());
 									}

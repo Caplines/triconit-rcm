@@ -69,7 +69,7 @@ public class Constants {
 	public static final String RULE_ID_34="Post and Core";
 	public static final String RULE_ID_35="Bone Graft/Alveoplasty";
 	public static final String RULE_ID_36="D5130, D5140";
-	public static final String RULE_ID_37="Extraction -2";
+	public static final String RULE_ID_37="Extraction- Denture";
 	public static final String RULE_ID_38="Medicaid Provider Limitation";
 	public static final String RULE_ID_39="Age Limitation Prophylaxis";
 	public static final String RULE_ID_40="Space Maintainer-Billateral";
@@ -180,9 +180,9 @@ public class Constants {
 	public static String COMPLETE_DENTURE_SC=" D5110,D5120,D5130,D5140";
 	public static String PARTIAL_DENTURE_SC="D5211,D5212,D5213,D5214,D5225,D5226";
 	public static String DENTURE_SC="D5110,D5120,D5130,D5140";
+	public static String STAIN_LESS_STEEL_CROWN_SC="D2930";
 	
 	public static String ORTHO_CODE_UI="D8080,D8070,D8090,D8010";
-	
 	
 	
 	//Constants Related to Questions (user_input_rule_question_header) table;

@@ -19,6 +19,12 @@ export class IVFPopupComponent implements OnInit {
 	countF:number =0;
 	countA:number =0;
 	countE:number =0;
+	activeClP:boolean=false;
+	activeClF:boolean=false;
+	activeClE:boolean=false;
+	activeClA:boolean=false;
+	
+	filterType:string='All';
 	
 	
 	constructor(public accountService: AccountService) { }
@@ -103,6 +109,23 @@ export class IVFPopupComponent implements OnInit {
 		  return false;
 		}
 	  return true;
+	}
+	
+	
+	toggleResult(result:string){
+		this.activeClP=this.activeClE=this.activeClA=this.activeClF=false;
+		if ((result=='fail' ||result=='pass' || result=='alert' || result=='exit')
+			 && this.filterType!=result){
+	       this.filterType=result;
+	       
+	        if (result=='fail') this.activeClF=true;
+	        else if (result=='pass') this.activeClP=true;
+	        else if (result=='alert') this.activeClA=true;
+	        else if (result=='exit') this.activeClE=true;
+	       
+		}else{
+		   this.filterType='All';
+	     }
 	}
 	
 }

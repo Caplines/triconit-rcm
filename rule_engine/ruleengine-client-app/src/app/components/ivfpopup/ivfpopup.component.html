@@ -39,16 +39,16 @@
 			<thead>
 				<tr> 
 					<th style="min-width: 350px" class="table-heading">Rule Name 
-					<span class="label label-success">PASS: {{ivfmData[key].countP}}</span> 
-					<span class="label label-danger" *ngIf="ivfmData[key].countF>0"> FAIL: {{ivfmData[key].countF}}</span>
-					<span class="label label-danger" *ngIf="ivfmData[key].countE>0"> EXIT: {{ivfmData[key].countE}}</span>
-					<span class="label label-info" *ngIf="ivfmData[key].countA>0">ALERT: {{ivfmData[key].countA}}</span>
+					<span class="label label-success" [ngClass]="{'active':activeClP}" (click)="toggleResult('pass')">PASS: {{ivfmData[key].countP}}</span> 
+					<span class="label label-danger" [ngClass]="{'active':activeClF}" *ngIf="ivfmData[key].countF>0" (click)="toggleResult('fail')"> FAIL: {{ivfmData[key].countF}}</span>
+					<span class="label label-danger" [ngClass]="{'active':activeClE}" *ngIf="ivfmData[key].countE>0" (click)="toggleResult('exit')"> EXIT: {{ivfmData[key].countE}}</span>
+					<span class="label label-info" [ngClass]="{'active':activeClA}" *ngIf="ivfmData[key].countA>0" (click)="toggleResult('alert')">ALERT: {{ivfmData[key].countA}}</span>
 					</th>
 					<th>Messages</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr *ngFor="let data of ivfmData[key]">
+				<tr *ngFor="let data of ivfmData[key] | resultTypeFilter:filterType">
 					<td><span [innerHTML]="data.ruleName"></span></td>
 					<td><span [innerHTML]="data.message"></span></td>
 				<tr>

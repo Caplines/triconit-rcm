@@ -1,0 +1,7 @@
+.table-heading .active {
+	filter : contrast(200%);
+}
+.table-heading .label {
+	cursor : pointer;
+	display: inline-block;
+}
