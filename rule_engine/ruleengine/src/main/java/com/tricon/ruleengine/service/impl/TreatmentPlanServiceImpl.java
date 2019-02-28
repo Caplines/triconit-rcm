@@ -21,6 +21,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -85,6 +86,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 	private static Locale locale = new Locale("en");
 
+	@Autowired
+	Environment env;
 	@Value("${google.credential.folder}")
 	private String CREDENTIALS_FOLDER;
 
@@ -1141,7 +1144,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// END  D5130, D5140
 
-							//  Extraction -2
+							//  Extraction- Denture
 							rule = getRulesFromList(rules, Constants.RULE_ID_37);
 							dtoRL = rb.Rule37(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw);
 
@@ -1156,7 +1159,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_37,
 									Constants.rule_log_debug, bw);
 
-							// END  Extraction -2
+							// END  Extraction- Denture
 
 							// Medicaid Provider Limitation for D0150,D0210,D0330
 							rule = getRulesFromList(rules, Constants.RULE_ID_38);
@@ -1768,8 +1771,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 */
 	private void saveReportsList(Authentication authentication, List<Rules> rules, TreatmentPlan tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off) {
-		int a=1;
-		if (a==1)return ;
+		String[] p=env.getActiveProfiles();
+		if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
 		try {
 			if (ivfSheet == null || tp == null)
 				return;

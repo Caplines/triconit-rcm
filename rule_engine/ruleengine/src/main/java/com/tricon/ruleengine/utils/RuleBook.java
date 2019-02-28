@@ -2073,7 +2073,7 @@ public class RuleBook {
 				Mappings mapA = getMappingFromListAdditionalInformationNeeded(mappings, tp.getServiceCode());
 				Mappings mapP = getMappingFromListPreAuth(mappings, tp.getServiceCode());
 
-				if (mapA != null) {
+				if (mapA != null && !tp.getServiceCode().equalsIgnoreCase("D0120")) {//Added on Sahil Suggestion on email/chat 27 Feb
 					RuleEngineLogger.generateLogs(clazz,
 							"Addtion Info Needed present" + mapA.getAdditionalInformationNeeded(),
 							Constants.rule_log_debug, bw);
@@ -2081,7 +2081,7 @@ public class RuleBook {
 					combined1.add(tp.getServiceCode() + " - " + mapA.getAdditionalInformationNeeded() + "<br>");
 					
 				}
-				if (mapP != null) {
+				if (mapP != null && !tp.getServiceCode().equalsIgnoreCase("D7953")) {//Added on Sahil Suggestion on Chat 27 Feb
 					RuleEngineLogger.generateLogs(clazz, "PreAuth  present" + mapP.getPreAuthNeeded(),
 							Constants.rule_log_debug, bw);
 					pass = false;
@@ -2121,7 +2121,7 @@ public class RuleBook {
 						
 					  }//if 
 					}//for
-					if (found) {
+					if (found && !scode.equalsIgnoreCase("D0120")) {//Added on Sahil Suggestion on Chat 27 Feb
 						RuleEngineLogger.generateLogs(clazz, " narrative-" + narrative+"- reqmet-" + reqmet
 								+"- tooth-" + tooth+"- notes-" + notes+"- scode-" + scode,
 								Constants.rule_log_debug, bw);
@@ -2955,6 +2955,37 @@ public class RuleBook {
 			dL.add(scivftff);
 			mapFlIVF.put("P2394", dL);
 
+
+			/*
+			 * Phase 2 new Codes Added Note Here PostComposites_D2391_FL will be used in new  Codes (Email Text- 25 Feb,2019).
+			   Deepak -I need the IVF Columns names from where I can take values for D2330 ,D2331 ,D2332, D2335  and Their corresponding Frequency, I am not able to figure out the corresponding Columns in IVF. - 
+			   Sahil - For Frequency please refer column DG -  PostComposites_D2391_FL. 
+			 */
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2330", "PostComposites_D2391_FL",
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
+			dL = new ArrayList<>();
+			dL.add(scivftff);
+			mapFlIVF.put("D2330", dL);
+
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2331", "PostComposites_D2391_FL",
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
+			dL = new ArrayList<>();
+			dL.add(scivftff);
+			mapFlIVF.put("D2331", dL);
+			
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2332", "PostComposites_D2391_FL",
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
+			dL = new ArrayList<>();
+			dL.add(scivftff);
+			mapFlIVF.put("D2332", dL);
+
+			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2335", "PostComposites_D2391_FL",
+					ivf.getPostCompositesD2391FL(), 0, 0,"");
+			dL = new ArrayList<>();
+			dL.add(scivftff);
+			mapFlIVF.put("D2335", dL);
+            
+			//End Phase 2 new Codes Added 
 			RuleEngineLogger.generateLogs(clazz,
 					"Create Map with Key as Service Code..and values as Given in the Document ..-mapFlIVF",
 					Constants.rule_log_debug, bw);
@@ -2974,6 +3005,8 @@ public class RuleBook {
 				RuleEngineLogger.generateLogs(clazz, "PlanEffectiveDate issue-" + ivf.getPlanEffectiveDate(), Constants.rule_log_debug, bw);
 
 			}
+			
+			
 			Map<String, List<ToothHistoryDto>> mapHistoryTooth = new HashMap<>();
 			Date TP_Date = null;
 			ToothHistoryDto hdto = null;
@@ -3982,7 +4015,7 @@ public class RuleBook {
 				
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
-
+                    
 					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
 						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
 								bw);
@@ -5255,6 +5288,8 @@ public class RuleBook {
 		String  planType= ivf.getPlanType();
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		List<String> codes= new ArrayList<>();
+		Map<String,List<String>> codesTeethMap= new HashMap<>();
+		boolean pass=true;
 		RuleEngineLogger.generateLogs(clazz,
 				"planType-"+planType,
 				Constants.rule_log_debug, bw);
@@ -5263,18 +5298,46 @@ public class RuleBook {
 			try {
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
-				if (tp.getServiceCode().equalsIgnoreCase("D4346") || tp.getServiceCode().equalsIgnoreCase("D4341") || 
-				    tp.getServiceCode().equalsIgnoreCase("D4342") || tp.getServiceCode().equalsIgnoreCase("D1110")  ||
+				//|| tp.getServiceCode().equalsIgnoreCase("D4341") ||tp.getServiceCode().equalsIgnoreCase("D4342") -->These Two are exceptions
+				if (tp.getServiceCode().equalsIgnoreCase("D4346")  || 
+				     tp.getServiceCode().equalsIgnoreCase("D1110")  ||
 				    tp.getServiceCode().equalsIgnoreCase("D1120") || tp.getServiceCode().equalsIgnoreCase("D4910") || 
 					 tp.getServiceCode().equalsIgnoreCase("D4355")) {
 						RuleEngineLogger.generateLogs(clazz,"code ="+ tp.getServiceCode(),Constants.rule_log_debug, bw);
 					counter =counter+  1;
 					codes.add(tp.getServiceCode());
 				}
+				if (tp.getServiceCode().equalsIgnoreCase("D4341") ||tp.getServiceCode().equalsIgnoreCase("D4342")) {
+					if (codesTeethMap.containsKey(tp.getServiceCode())) {
+						List<String> x = codesTeethMap.get(tp.getServiceCode());
+						x.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					} else {
+						List<String> x = new ArrayList<>();
+						x.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						codesTeethMap.put(tp.getServiceCode(), x);
+					}
+					
+					
+				}
 				
 			}
 			
-			if (counter> 1) {
+			for (Map.Entry<String,List<String>> entry : codesTeethMap.entrySet())  {
+				Set<String> set = new LinkedHashSet<>(); 
+				List<String> list= entry.getValue();
+				set.addAll(list); 
+		        if (set.size()!=list.size()) {
+		        	RuleEngineLogger.generateLogs(clazz,
+							" For -"+entry.getKey()+" common Quad present" +set,
+							Constants.rule_log_debug, bw);
+		        	pass=false;
+		        	codes.add(entry.getKey());
+		        }
+		       
+		       
+			}
+			
+			if (counter> 1 || pass==false) {
 				RuleEngineLogger.generateLogs(clazz,
 						" Rule Fails  => No. of Cleaning Codes  present ="+counter ,
 						Constants.rule_log_debug, bw);
@@ -5285,7 +5348,7 @@ public class RuleBook {
 								locale),
 						Constants.FAIL));
 				
-			}else if (counter== 1) {
+			}else if (counter== 1 && pass) {
 			RuleEngineLogger.generateLogs(clazz,
 					" Pass the rule ",
 					Constants.rule_log_debug, bw);
@@ -5756,7 +5819,7 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		List<String> dcodes = new ArrayList<>();
-	    //Map<String,List<String>> map = new HashMap<>();
+	    boolean pass=true;
 		try {
 			boolean checkForHistory=false;
 			for (Object obj : tpList) {
@@ -5765,16 +5828,6 @@ public class RuleBook {
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
 					checkForHistory=true;
-					/*
-					if (map.containsKey(tp.getServiceCode())) {
-						List<String> t=map.get(tp.getServiceCode());
-						t.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
-					}else {
-						List<String> l= new ArrayList<>();
-						l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
-						map.put(tp.getServiceCode(), l);
-					}
-					*/
 					dcodes.add(tp.getServiceCode());
 				}
 			}
@@ -5794,32 +5847,27 @@ public class RuleBook {
 					Method hcm = c2.getMethod(hc);
 					Method htm = c2.getMethod(ht);
 					//Method hss = c2.getMethod(hs);
-					String code=(String) hcm.invoke(hisSheet);
+					String hcode=(String) hcm.invoke(hisSheet);
 					String tooth=(String) htm.invoke(hisSheet);
-					//tooth=tooth.split("-")[0];
 					//D5110,D5120, D5130, D5140
-					if (code.equalsIgnoreCase("D5110") || code.equalsIgnoreCase("D5120") ||
-						code.equalsIgnoreCase("D5130") || code.equalsIgnoreCase("D5140")) {
-						RuleEngineLogger.generateLogs(clazz, "code HISTORY=" + code +"("+tooth+")", Constants.rule_log_debug, bw);
+					if ((hcode.equalsIgnoreCase("D5110") && dcodes.contains("D5130")) 
+						                                  ||
+						(hcode.equalsIgnoreCase("D5120") && dcodes.contains("D5140"))) {
+						RuleEngineLogger.generateLogs(clazz, "code HISTORY=" + hcode +"("+tooth+")", Constants.rule_log_debug, bw);
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule36.error.message", new Object[] {code}, locale), Constants.FAIL));
-						//Iterate HashMap
-						/* no need to chheck for tooth
-						for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-							List<String> s = entry.getValue();
-						if (s.contains(tooth)) {
-							//Fail
-							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule36.error.message", new Object[] {code, entry.getKey()}, locale), Constants.FAIL));
-  			                 break;
-						}
-						
-			    	}*/
-				 }
+								messageSource.getMessage("rule36.error.message", new Object[] {hcode}, locale), Constants.FAIL));
+						pass=false;
+				     }
 				 }
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}
+				
+				if(pass) {
+					RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule36.pass2.message", new Object[] {}, locale), Constants.PASS));
 				}
 
 
@@ -6945,8 +6993,8 @@ public class RuleBook {
 							
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tp.getId())) {
-								if (Constants.RULE_PC_question_header_id_patient_change_provider==ans.getQuestionId()) {//15
-									if (!ans.getAnswer().equals("yes")){
+								if (Constants.RULE_PC_question_header_id_provider_change==ans.getQuestionId()) {//15
+									if (!ans.getAnswer().equals("true")){
 										pass=false;
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 												messageSource.getMessage("rule47.error.message1", new Object[] {  }, locale),
@@ -6955,19 +7003,19 @@ public class RuleBook {
 								 }
 								}						
 							}
-							if (!pass) {
+							if (pass) {
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tp.getId())) {
-								if (Constants.RULE_PC_question_header_id_provider_change==ans.getQuestionId()) {//16
+								if (Constants.RULE_PC_question_header_id_patient_change_provider==ans.getQuestionId()) {//16
 									String sp=ans.getAnswer().trim();
-									if (!sp.startsWith("true ") && sp.startsWith("true")) {
+									if (!sp.startsWith("true ") && sp.startsWith("true") && pass) {
 										//This means answer is present but reference no missing
 										pass=false;
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 												messageSource.getMessage("rule47.error.message1", new Object[] {  }, locale),
 												Constants.FAIL));
 									}
-                                    if (sp.startsWith("false")) {
+                                    if (sp.startsWith("false") && pass) {
                                     	//This means answer is not present we can say reference no missing
                                     	pass=false;
                                     	d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
