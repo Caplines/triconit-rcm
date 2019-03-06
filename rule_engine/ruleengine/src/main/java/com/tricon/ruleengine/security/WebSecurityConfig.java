@@ -126,6 +126,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ivfbatchpre",
                 "/report",
                 "/register",
+                "/writeData",
+                "/enreports",
                 //"/fetchesdata/*",
                 //"/fetchesdata/*/*",
                 "/ivftreatmentplan",

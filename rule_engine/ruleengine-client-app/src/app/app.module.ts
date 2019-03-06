@@ -9,8 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from "./services/auth.service";
 import { OfficeResolve } from "./resolver/office_resolver";
 
-import {HttpModule} from "@angular/http";
-import {AccountService} from "./services/account.service";
+import { HttpModule} from "@angular/http";
+import { AccountService} from "./services/account.service";
 import { ProfileComponent } from './components/profile/profile.component';
 import { IVFComponent } from './components/ivf/ivf.component';
 import { IVFBatchPreComponent } from './components/ivfbatchpre/ivfbatchpre.component';
@@ -21,15 +21,18 @@ import { HelpComponent } from './components/help/help.component';
 import { HeaderComponent } from './components/header/header.component';
 import { IVFPopupComponent } from './components/ivfpopup/ivfpopup.component';
 import { DiagnosticPopupComponent } from './components/diagnosticpopup/diagnosticpopup.component';
-import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
-import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
-import {UserInputComponent} from "./components/userinput/userinput.component";
+import { TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
+import { DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
+import { UserInputComponent} from "./components/userinput/userinput.component";
 import { QuestionformPopupComponent } from './components/questionformpopup/questionformpopup.component';
-import {ResultTypeFilterPipe} from './filter/result_type_filter';
-import {routing} from "./app.routing";
-import {UrlPermission} from "./urlPermission/url.permission";
-import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
-import {UrlLoggedInCheck} from "./urlPermission/url.checkloginstate";
+import { EnReportsComponent} from "./components/enhanced_reports/enreports.component";
+import { EnReportspopupComponent } from './components/enhanced_reportspopup/enreportspopup.component';
+
+import { ResultTypeFilterPipe} from './filter/result_type_filter';
+import { routing} from "./app.routing";
+import { UrlPermission} from "./urlPermission/url.permission";
+import { UrlAdminPermission} from "./urlPermission/url.adminpermission";
+import { UrlLoggedInCheck} from "./urlPermission/url.checkloginstate";
 import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './auth/token.interceptor';
 
@@ -53,7 +56,9 @@ import { TokenInterceptor } from './auth/token.interceptor';
 	DiagnosticComponent,
 	UserInputComponent,
 	QuestionformPopupComponent,
-	ResultTypeFilterPipe
+	ResultTypeFilterPipe,
+	EnReportsComponent,
+	EnReportspopupComponent
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule

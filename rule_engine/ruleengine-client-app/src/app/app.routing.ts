@@ -12,6 +12,7 @@ import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.c
 import {UserInputComponent} from "./components/userinput/userinput.component";
 
 import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
+import {EnReportsComponent} from "./components/enhanced_reports/enreports.component";
 
 import {UrlPermission} from "./urlPermission/url.permission";
 import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
@@ -60,6 +61,11 @@ const appRoutes: Routes = [
 		    offs: OfficeResolve
 		  },
   component: DiagnosticComponent,canActivate: [UrlPermission]  },
+  { path: 'enreports',
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+  component: EnReportsComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
   { path: 'help', component: HelpComponent  },
   // otherwise redirect to profile

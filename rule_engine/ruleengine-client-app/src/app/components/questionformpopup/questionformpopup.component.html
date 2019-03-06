@@ -10,7 +10,7 @@
 	<div *ngFor="let key of arrayOfKeys">
 		<h3>{{key}}</h3>
 		
-		<div *ngIf = "key == 'RULE_10'">
+		<div *ngIf = "key == 'Attachment Required'">
 			<table class="table table-bordered table-striped">
 				<thead>
 					<tr>
@@ -38,7 +38,7 @@
 		<hr/>
 		</div>
 		
-		<div *ngIf = "key == 'OVERALL'">
+		<div *ngIf = "key == 'Forms Required'">
 			<table class="table table-bordered table-striped">
 				<thead>
 					<tr>
@@ -79,7 +79,7 @@
 		<hr/>
 		</div>
 		
-		<div *ngIf = "key == 'RULE_PREAUTH'">
+		<div *ngIf = "key == 'Pre-Authorization'">
 			<div *ngFor="let data of questionFormData[key]">
 				{{data.question}}
 				<span *ngFor="let answer of data.questionAnswers">
@@ -97,7 +97,7 @@
 		<hr/>
 		</div>
 		
-		<div *ngIf = "key == 'RULE_PC'">
+		<div *ngIf = "key == 'Provider Change'">
 			<div *ngFor="let data of questionFormData[key]">
 				{{data.questionOrder}}. {{data.question}}
 				<span *ngFor="let answer of data.questionAnswers">
