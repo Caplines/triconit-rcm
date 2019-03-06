@@ -28,7 +28,7 @@ public class MVPandVAP  implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", unique = true, nullable = false)
-	private int id;
+	private Integer id;
 
 
 	@Column(name = "base_group")
@@ -62,11 +62,11 @@ public class MVPandVAP  implements Serializable{
 	@Column(name = "vap7")
 	private String vap7;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -149,6 +149,35 @@ public class MVPandVAP  implements Serializable{
 	public void setVap7(String vap7) {
 		this.vap7 = vap7;
 	}
+
+
+
+
+@Override
+public int hashCode() {
+  final int prime = 31;
+  int result = 1;
+  result = prime * result + ((id == null) ? 0 : id.hashCode());
+  return result;
+}
+
+@Override
+public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    MVPandVAP other = (MVPandVAP) obj;
+    if (id == null) {
+      if (other.id != null)
+        return false;
+    } else if (!baseGroup.equals(other.baseGroup))
+      return false;
+    return true;
+  }
+
 
 
 

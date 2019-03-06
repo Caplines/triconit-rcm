@@ -218,10 +218,19 @@ public class DateUtils {
 
 	public static void main(String[] a) {
 	  SimpleDateFormat sdf= new SimpleDateFormat("dd/mm/yyyy");
-	  String tpd="01/01/2019";
-	  String dos="01/03/2017";
+	  String term="12/03/2019";
+	  String dos="10/03/2019";
+	  Calendar calendar = new GregorianCalendar();
+	  
+	  ////ivfPlanTermDate.compareTo(currentDate)
 	 try {
-		System.out.println(checkforXm(sdf.parse(tpd),sdf.parse(dos),12));
+	   calendar.setTime(sdf.parse(term));
+	   calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)+60);
+	   Date dInterval= calendar.getTime();
+	   
+		System.out.println(sdf.parse(term).compareTo(sdf.parse(dos))>=0);
+		System.out.println(sdf.parse(term).compareTo(dInterval)>=0);
+		
 	} catch (ParseException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

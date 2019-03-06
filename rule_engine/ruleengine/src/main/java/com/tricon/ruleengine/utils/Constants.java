@@ -55,21 +55,21 @@ public class Constants {
 	public static final String RULE_ID_20="Do not use Reserved";
 	public static final String RULE_ID_21="Frequency Limitations";
 	public static final String RULE_ID_22="CRA";
-	public static final String RULE_ID_23="Medicaid-1";
-	public static final String RULE_ID_24="Medicaid-2";
-	public static final String RULE_ID_25="Medicaid-3";
-	public static final String RULE_ID_26="Crown";
-	public static final String RULE_ID_27="Filling";
-	public static final String RULE_ID_28="Extraction";
-	public static final String RULE_ID_29="Exam Codes";
-	public static final String RULE_ID_30="Cleaning";
-	public static final String RULE_ID_31="D4910 (Limit)";
-	public static final String RULE_ID_32="Same Quad";
-	public static final String RULE_ID_33="Filling & Endo";
-	public static final String RULE_ID_34="Post and Core";
-	public static final String RULE_ID_35="Bone Graft/Alveoplasty";
-	public static final String RULE_ID_36="D5130, D5140";
-	public static final String RULE_ID_37="Extraction- Denture";
+	public static final String RULE_ID_23="Xray Bundling";
+	public static final String RULE_ID_24="Filling Bundling";
+	public static final String RULE_ID_25="Crown Bundling with Fillings";
+	public static final String RULE_ID_26="Filling and Sealant Not Covered";
+	public static final String RULE_ID_27="Sealant Not Covered";
+	public static final String RULE_ID_28="Restoration Not Covered";
+	public static final String RULE_ID_29="Exams Limitation";
+	public static final String RULE_ID_30="Cleaning Limitation";
+	public static final String RULE_ID_31="Perio Maintainance Clause";
+	public static final String RULE_ID_32="SRP Limitation";
+	public static final String RULE_ID_33="Root Canal Clause";
+	public static final String RULE_ID_34="D2954 Clause";
+	public static final String RULE_ID_35="Bone Graft Rule";
+	public static final String RULE_ID_36="Immediate Denture";
+	public static final String RULE_ID_37="Extraction Limitation";
 	public static final String RULE_ID_38="Medicaid Provider Limitation";
 	public static final String RULE_ID_39="Age Limitation Prophylaxis";
 	public static final String RULE_ID_40="Space Maintainer-Billateral";
@@ -78,8 +78,10 @@ public class Constants {
 	public static final String RULE_ID_43="Bone Graft (User Input)";
 	public static final String RULE_ID_44="Signed Consent Requirements";
 	public static final String RULE_ID_45="Ortho (User Input)";
-	public static final String RULE_ID_46="Pre-Auth (User Input)";
-	public static final String RULE_ID_47="Provider Change (User Input)";
+	public static final String RULE_ID_46="Pre-Authorization";
+	public static final String RULE_ID_47="Provider Change";
+	public static final String RULE_ID_48="Exam limitation for CHIP";
+	public static final String RULE_ID_49="Sealant limitation in CHIP";
 	
 	
 	/*
@@ -143,6 +145,7 @@ public class Constants {
 	public static String microsoft_patient="Patient";
 	public static String google_ivf_sheet="IVF Sheet";
 	public static String insurance_Medicaid="medicaid";
+	public static String insurance_Chip="chip";
 	public static double insurance_Medicaid_max_fee=70.64;
 	public static int history_codes_size=60;
 	
@@ -187,22 +190,22 @@ public class Constants {
 	
 	//Constants Related to Questions (user_input_rule_question_header) table;
 	
-	public static String User_Input_Name_Question_RULE_10="RULE_10";
-	public static String User_Input_Name_Question_OVERALL="OVERALL";
+	public static String User_Input_Name_Question_Attachment_Required="Attachment Required";
+	public static String User_Input_Name_Question_Forms_Required="Forms Required";
 	public static String User_Input_Name_Question_RULE_ORTHO="RULE_ORTHO";
-	public static String User_Input_Name_Question_RULE_PREAUTH="RULE_PREAUTH";
-	public static String User_Input_Name_Question_RULE_PC="RULE_PC";
+	public static String User_Input_Name_Question_Pre_Authorization="Pre-Authorization";
+	public static String User_Input_Name_Question_Provider_Change="Provider Change";
 	public static String User_Input_Name_Question_RULE_BONE_GRAFT="RULE_BONE_GRAFT";
 	
 	
-	public static int RULE_10_question_header_id_checkpoints=1;
-	public static int RULE_10_question_header_id_toothno=2;
-	public static int RULE_10_question_header_id_require=3;
-	public static int RULE_10_question_header_id_a_all_met=4;
-	public static int RULE_10_question_header_id_notes_nar=5;
+	public static int Attachment_Required_question_header_id_checkpoints=1;
+	public static int Attachment_Required_question_header_id_toothno=2;
+	public static int Attachment_Required_question_header_id_require=3;
+	public static int Attachment_Required_question_header_id_a_all_met=4;
+	public static int Attachment_Required_question_header_id_notes_nar=5;
 	
-	public static int RULE_OVERALL_question_header_id_checkpoints=6;
-	public static int RULE_OVERALL_question_header_id_a_all_met=7;
+	public static int Forms_Required_question_header_id_checkpoints=6;
+	public static int Forms_Required_question_header_id_a_all_met=7;
 	
 	public static int RULE_ORTHO_question_header_id_narrtive=8;
 	public static int RULE_ORTHO_question_header_id_duration=9;
@@ -210,12 +213,12 @@ public class Constants {
 	public static int RULE_ORTHO_question_header_id_downpayment=11;
 	public static int RULE_ORTHO_question_header_id_banding_date=12;
 	
-	public static int RULE_PRE_AUTH_question_header_id_avail=13;
-	public static int RULE_PRE_AUTH_question_header_id_refno=14;
+	public static int Pre_Authorization_question_header_id_avail=13;
+	public static int Pre_Authorization_question_header_id_refno=14;
 	
-	public static int RULE_PC_question_header_id_provider_change=15;
-	public static int RULE_PC_question_header_id_patient_change_provider=16;
-	//public static int RULE_PC_question_header_id_ref_missing=17;//Not used now
+	public static int Provider_Change_question_header_id_provider_change=15;
+	public static int Provider_Change_question_header_id_patient_change_provider=16;
+	//public static int Provider_Change_question_header_id_ref_missing=17;//Not used now
 	
 	public static int RULE_BONE_GRAFT_IMPLANT=18;
 	

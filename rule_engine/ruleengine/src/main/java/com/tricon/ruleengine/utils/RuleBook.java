@@ -68,15 +68,17 @@ public class RuleBook {
 	 * @param ivfSheet
 	 *            (IV - Effective Date)
 	 */
-	public TPValidationResponseDto Rule1(Object ivfSheet, MessageSource messageSource, Rules rule, boolean onlyIVF,
+	public List<TPValidationResponseDto> Rule1(Object ivfSheet, MessageSource messageSource, Rules rule, boolean onlyIVF,
 			List<Object> tpList, BufferedWriter bw) {
 		// Date tpDate = null;
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_1,
 				Constants.rule_log_debug, bw);
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		Date currentDate = new Date();
+		List<TPValidationResponseDto> dList = new ArrayList<>();
 		Date ivfPlanTermDate = null;
 		boolean proceed = false;
+		boolean pass=true;
 		try {
 			String td = ivf.getPlanTermedDate();
 			RuleEngineLogger.generateLogs(clazz, "PlanTermedDate --" + td, Constants.rule_log_debug, bw);
@@ -91,22 +93,52 @@ public class RuleBook {
 
 				ivfPlanTermDate = Constants.SIMPLE_DATE_FORMAT_IVF.parse(td);
 
-				if (ivfPlanTermDate != null && ivfPlanTermDate.compareTo(currentDate) <= 0) {
+				if (ivfPlanTermDate != null && ivfPlanTermDate.compareTo(currentDate) > 0) {
 					proceed = true;
 				} else {
 
 					// Exit Engine
 					RuleEngineLogger.generateLogs(clazz, "Exit Engine ", Constants.rule_log_debug, bw);
-					return new TPValidationResponseDto(rule.getId(), rule.getName(),
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule1.error.message.plantermedDate", new Object[] { td }, locale),
-							Constants.EXTI_ENGINE);
+							Constants.EXTI_ENGINE));
+					pass=false;
+					return dList;
 				}
 			} else {
 				proceed = true;
 			}
+			
+			
+		//Added Logic
+			
+			if (proceed && td != null && (!td.trim().equals("") && !td.trim().equalsIgnoreCase("NA"))) {
+			    int extraDays=60;
+				  Calendar calendar = new GregorianCalendar();
+
+				  calendar.setTime(ivfPlanTermDate);
+				   calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)+extraDays);
+				   Date dInterval= calendar.getTime();
+			      if (dInterval.compareTo(currentDate) >= 0) {
+			    	  //Pass with Alert
+			    	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule1.error.message.termPlusExtra",
+										new Object[] { td }, locale),
+								Constants.ALERT));
+			    	  pass=false;
+			      }
+			      if (dInterval.compareTo(currentDate) < 0) {
+			    	  ///nothing just pass
+			      }
+			      
+			}
+			
+			
+			
 		} catch (Exception ex) {
-			return new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-					"rule1.error.message.date", new Object[] { ivf.getPlanTermedDate() }, locale), Constants.FAIL);
+			dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					"rule1.error.message.date", new Object[] { ivf.getPlanTermedDate() }, locale), Constants.FAIL));
+			return dList;
 
 		}
 		try {
@@ -114,18 +146,20 @@ public class RuleBook {
 				if (!onlyIVF) {
 
 					if (!onlyIVF && tpList == null) {
-						return new TPValidationResponseDto(rule.getId(), rule.getName(),
+						dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(),
 								Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
-								Constants.FAIL);
+								Constants.FAIL));
+						return dList;
 					}
 					if (tpList != null) {
 						for (Object obj : tpList) {
 							TreatmentPlan tp = (TreatmentPlan) obj;
 							if (!ivf.getPatientId().equals(tp.getPatient().getId())) {
-								return new TPValidationResponseDto(rule.getId(), rule.getName(),
+								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule1.error.message.patientId",
 												new Object[] { ivf.getPatientId(), tp.getPatient().getId() }, locale),
-										Constants.FAIL);
+										Constants.FAIL));
+								return dList;
 
 							}
 						}
@@ -139,25 +173,28 @@ public class RuleBook {
 				if (ivfDate != null && DateUtils.compareDates(currentDate, ivfDate)) {
 					// pass --RULE_ID_1
 
-					return new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS);
+					//if (pass)dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(),
+					//		messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS));
 
 				} else {
 
-					return new TPValidationResponseDto(rule.getId(), rule.getName(),
+					dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule1.error.message", new Object[] {
 									Constants.SIMPLE_DATE_FORMAT_IVF.format(currentDate), ivf.getPlanEffectiveDate() },
 									locale),
-							Constants.FAIL);
+							Constants.FAIL));
+					return dList;
 				}
 			}
 		} catch (Exception ex) {
-			return new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-					"rule1.error.message.date", new Object[] { ivf.getPlanEffectiveDate() }, locale), Constants.FAIL);
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					"rule1.error.message.date", new Object[] { ivf.getPlanEffectiveDate() }, locale), Constants.FAIL));
+			return dList;
 
 		}
-		return new TPValidationResponseDto(rule.getId(), rule.getName(),
-				messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS);
+		if (pass)dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+				messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS));
+		return dList;
 
 	}
 
@@ -2039,7 +2076,7 @@ public class RuleBook {
 
 	}
 
-	// Pre-Auth
+	// Pre-Auth // Attachment Required
 	public List<TPValidationResponseDto> Rule10(List<Object> tpList,List<QuestionAnswerDto> ansL, MessageSource messageSource, Rules rule,
 			List<Mappings> mappings, BufferedWriter bw) {
 
@@ -2103,19 +2140,19 @@ public class RuleBook {
 					for(QuestionAnswerDto ans:ansL) {
 						if (ans.getServiceCode()!=null && ans.getTpId().equalsIgnoreCase(tp.getId()) && ans.getServiceCode().equalsIgnoreCase(tp.getServiceCode())) {
 						found =true;
-						if (Constants.RULE_10_question_header_id_a_all_met==ans.getQuestionId()) {//4
+						if (Constants.Attachment_Required_question_header_id_a_all_met==ans.getQuestionId()) {//4
 							reqmet= ans.getAnswer();
 						}
-						if (Constants.RULE_10_question_header_id_require==ans.getQuestionId()) {//3
+						if (Constants.Attachment_Required_question_header_id_require==ans.getQuestionId()) {//3
 							narrative=ans.getAnswer();
 						}
-						if (Constants.RULE_10_question_header_id_toothno==ans.getQuestionId()) {//2
+						if (Constants.Attachment_Required_question_header_id_toothno==ans.getQuestionId()) {//2
 							tooth=ans.getAnswer();
 						}
-						if (Constants.RULE_10_question_header_id_notes_nar==ans.getQuestionId()) {//5
+						if (Constants.Attachment_Required_question_header_id_notes_nar==ans.getQuestionId()) {//5
 							notes=ans.getAnswer();
 						}
-						if (Constants.RULE_10_question_header_id_checkpoints==ans.getQuestionId()) {//1
+						if (Constants.Attachment_Required_question_header_id_checkpoints==ans.getQuestionId()) {//1
 							scode=ans.getAnswer();
 						}
 						
@@ -3616,7 +3653,7 @@ public class RuleBook {
 	}
 
 
-	// Medicaid-1
+	// Xray Bundling
     /**
      * 
      * @param tpList
@@ -3698,7 +3735,7 @@ public class RuleBook {
     	return dList;
 	}
 
-	// Medicaid-2
+	// Filling Bundling
 	
     /**
      * 
@@ -3897,7 +3934,7 @@ public class RuleBook {
 	}
 
 	
-	// Medicaid-3
+	// Crown Bundling with Fillings
 	
    /**
     * 
@@ -4100,7 +4137,7 @@ public class RuleBook {
 		return dList;
 	}
 
-	// Crown
+	// Filling and Sealant Not Covered
 	
    /**
     * 
@@ -4370,7 +4407,7 @@ public class RuleBook {
 			return dList;
 		}
 
-	// Filling
+	// Sealant Not Covered
 	
 	/**
 	 * 
@@ -4640,7 +4677,7 @@ public class RuleBook {
 		}
 
 	
-	// Extraction
+	// Restoration Not Covered
 	
     /**
      * 
@@ -4908,7 +4945,7 @@ public class RuleBook {
 		return dList;
 	}
 	
-	// Exam Codes
+	// Exams Limitation
 	/**
 	 * 
 	 * @param tpList
@@ -4987,7 +5024,7 @@ public class RuleBook {
 
 	}
 
-	// Cleaning
+	// Cleaning Limitation
 	
     /**
      * 
@@ -5097,7 +5134,7 @@ public class RuleBook {
 
 	}
 
-	// D4910 (Limit)
+	// Perio Maintainance Clause
 
 	/**
 	 * 
@@ -5209,7 +5246,7 @@ public class RuleBook {
 	}
 
 
-	// Same Quad
+	// SRP Limitation
 	/**
 	 * 
 	 * @param ivfSheet
@@ -5291,7 +5328,7 @@ public class RuleBook {
 
 	}
 
-	// Filling & Endo 
+	// Root Canal Clause
 	public List<TPValidationResponseDto> Rule33(List<Object> tpList,MessageSource messageSource, Rules rule,
 			BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_33,
@@ -5387,7 +5424,7 @@ public class RuleBook {
 	}
 	
 	
-	// Post and Core
+	// D2954 Clause
     /**
      * 
      * @param tpList
@@ -5467,7 +5504,7 @@ public class RuleBook {
 	}
 	
 
-	// Bone Graft/Alveoplasty
+	// Bone Graft Rule
     /**
      * 
      * @param tpList
@@ -5521,7 +5558,7 @@ public class RuleBook {
 
 	}
 	
-	// D5130, D5140
+	// Immediate Denture
     /**
      * 
      * @param tpList
@@ -5607,7 +5644,7 @@ public class RuleBook {
 	}
 	
 	
-	// Extraction- Denture
+	// Extraction Limitation
     /**
      * 
      * @param tpList
@@ -6218,14 +6255,20 @@ public class RuleBook {
 				Set<String> sf= new HashSet<>();
 				for (Map.Entry<String, Set<MVPandVAP>> entry : mvpvapMap.entrySet()) {
 					Set<MVPandVAP> d=entry.getValue();
-					for (Object obj : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj;
+					//List<String> dupList= new ArrayList<>();
+					
+					for (MVPandVAP m:d) {
+						
 						double bgfees=0;
 						double mvpfees=0;
 						MVPandVAP calc=null;
 						Set<String> s= new HashSet<>();
-						for(MVPandVAP m:d) {
+						String baseG="";
+						
+						for(Object obj : tpList) {
+							TreatmentPlan tp = (TreatmentPlan) obj;
 							if(m.getBase()!=null && m.getBaseGroup().equalsIgnoreCase(tp.getServiceCode())) {
+								baseG=m.getBaseGroup();
 								s.add(m.getBaseGroup());
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
 								RuleEngineLogger.generateLogs(clazz, "TP Code- "+tp.getServiceCode()
@@ -6236,7 +6279,20 @@ public class RuleBook {
 								if (m.getMvp()==null ) {
 									m.setMvp("0");
 								}
+								RuleEngineLogger.generateLogs(clazz, "THIS IS MVP FEES- "+m.getMvp(),
+			                        Constants.rule_log_debug, bw);
+								//Add Only once MVP codes
+								///if (!dupList.contains(tp.getServiceCode())) {
 								mvpfees=mvpfees+Double.parseDouble(m.getMvp());
+								//}
+								//dupList.add(tp.getServiceCode());
+								
+								RuleEngineLogger.generateLogs(clazz, "mvpfees (Commulative) - "+mvpfees,
+				                        Constants.rule_log_debug, bw);
+								
+								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
+				                        Constants.rule_log_debug, bw);
+									
 							}else if(m.getVap1()!=null && m.getVap1().equalsIgnoreCase(tp.getServiceCode())) {
 								s.add(m.getVap1());
 								RuleEngineLogger.generateLogs(clazz, "TP Code- "+tp.getServiceCode()
@@ -6244,6 +6300,8 @@ public class RuleBook {
 			                     Constants.rule_log_debug, bw);
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
 								calc=m;
+								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
+				                        Constants.rule_log_debug, bw);
 							}else if(m.getVap2()!=null && m.getVap2().equalsIgnoreCase(tp.getServiceCode())) {
 								RuleEngineLogger.generateLogs(clazz, "TP Code- "+tp.getServiceCode()
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 2- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
@@ -6251,6 +6309,8 @@ public class RuleBook {
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
 								s.add(m.getVap2());
 								calc=m;
+								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
+				                        Constants.rule_log_debug, bw);
 							}else if(m.getVap3()!=null && m.getVap3().equalsIgnoreCase(tp.getServiceCode())) {
 								RuleEngineLogger.generateLogs(clazz, "TP Code- "+tp.getServiceCode()
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 3- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
@@ -6258,6 +6318,8 @@ public class RuleBook {
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
 								s.add(m.getVap3());
 								calc=m;
+								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
+				                        Constants.rule_log_debug, bw);
 							}else if(m.getVap4()!=null && m.getVap4().equalsIgnoreCase(tp.getServiceCode())) {
 								RuleEngineLogger.generateLogs(clazz, "TP Code- "+tp.getServiceCode()
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 4- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
@@ -6265,6 +6327,8 @@ public class RuleBook {
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
 								s.add(m.getVap4());
 								calc=m;
+								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
+				                        Constants.rule_log_debug, bw);
 							}else if(m.getVap5()!=null && m.getVap5().equalsIgnoreCase(tp.getServiceCode())) {
 								RuleEngineLogger.generateLogs(clazz, "TP Code- "+tp.getServiceCode()
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 5- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
@@ -6272,6 +6336,8 @@ public class RuleBook {
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
 								s.add(m.getVap5());
 								calc=m;
+								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
+				                        Constants.rule_log_debug, bw);
 							}else if(m.getVap6()!=null && m.getVap6().equalsIgnoreCase(tp.getServiceCode())) {
 								RuleEngineLogger.generateLogs(clazz, "TP Code- "+tp.getServiceCode()
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 6- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
@@ -6279,9 +6345,15 @@ public class RuleBook {
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
 								s.add(m.getVap6());
 								calc=m;
+								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
+				                        Constants.rule_log_debug, bw);
 							}
-						}
-						if (calc!=null) {
+						}//For TP 
+						RuleEngineLogger.generateLogs(clazz, "MVP Fees - "+mvpfees
+                        +"- Base Group- "+baseG, Constants.rule_log_debug, bw);
+						RuleEngineLogger.generateLogs(clazz, "Base Group Found - "+!baseG.equals(""), Constants.rule_log_debug, bw);
+								
+						if (calc!=null && !baseG.equals("")) {
 							if (bgfees<mvpfees) {
 						      //fail
 								pass=false;
@@ -6292,8 +6364,8 @@ public class RuleBook {
 								
 							}
 						}
-					}
-				}
+					}//For TP
+				}//FOR MAP
 				if (!pass)
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule41.error.message", new Object[] {String.join(",",sf)}, locale),
@@ -6386,7 +6458,7 @@ public class RuleBook {
 
 	}
 
-	//Bone Graft (User Input)
+	// Bone Graft (User Input)
 	public List<TPValidationResponseDto> Rule43(List<Object> tpList,List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
 			BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_43,
@@ -6450,7 +6522,7 @@ public class RuleBook {
 
 	}
 
-	//Signed Consent Requirements (User Input)
+	// Signed Consent Requirements (User Input) //Forms Required
 	public List<TPValidationResponseDto> Rule44(List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
 			BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_44,
@@ -6464,7 +6536,7 @@ public class RuleBook {
 	      
 	    	  if (ansL!=null) {
 	    		  for(QuestionAnswerDto qDto: ansL) {
-	    			 if ( qDto.getQuestionId()==Constants.RULE_OVERALL_question_header_id_a_all_met) {
+	    			 if ( qDto.getQuestionId()==Constants.Forms_Required_question_header_id_a_all_met) {
 	    				 questionPresent=true;
 	    			   if (	qDto.getAnswer()!=null && qDto.getAnswer().equalsIgnoreCase("yes")) {
 	    				   //pass
@@ -6593,7 +6665,7 @@ public class RuleBook {
 
 	}
 
-	// Pre-Auth (User Input)
+	// Pre-Authorization (User Input)
 	public List<TPValidationResponseDto> Rule46(Object ivfSheet,List<Object> tpList,List<QuestionAnswerDto> ansL, MessageSource messageSource, Rules rule,
 			List<Mappings> mappings,BufferedWriter bw) {
 
@@ -6626,6 +6698,7 @@ public class RuleBook {
 				return d;
 			}
 			boolean pass = true;
+			boolean checkForAns=false;
 			String cMedicate = Constants.insurance_Medicaid;
 			String planType=ivf.getPlanType();
 			if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
@@ -6638,20 +6711,24 @@ public class RuleBook {
 									Constants.rule_log_debug, bw);
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tp.getId())) {
-								if (Constants.RULE_PRE_AUTH_question_header_id_avail==ans.getQuestionId()) {//13
-									if (!ans.getAnswer().equals("yes")){
-										pass=false;
+								if (Constants.Pre_Authorization_question_header_id_avail==ans.getQuestionId()) {//13
+									if (!ans.getAnswer().equalsIgnoreCase("yes")){
+										//pass=false;
+										/*
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 												messageSource.getMessage("rule46.error.message1", new Object[] {  }, locale),
 												Constants.FAIL));
+										*/		
+									}else {
+										checkForAns=true;
 									}
 								 }
 								}						
 							}
-							if (pass) {
+							if (checkForAns) {
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tp.getId())) {
-								if (Constants.RULE_PRE_AUTH_question_header_id_refno==ans.getQuestionId()) {//13
+								if (Constants.Pre_Authorization_question_header_id_refno==ans.getQuestionId()) {//14
 									if (ans.getAnswer().trim().equals("")){
 										pass=false;
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -6714,7 +6791,7 @@ public class RuleBook {
 							
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tp.getId())) {
-								if (Constants.RULE_PC_question_header_id_provider_change==ans.getQuestionId()) {//15
+								if (Constants.Provider_Change_question_header_id_provider_change==ans.getQuestionId()) {//15
 									if (!ans.getAnswer().equals("true")){
 										pass=false;
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -6727,7 +6804,7 @@ public class RuleBook {
 							if (pass) {
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tp.getId())) {
-								if (Constants.RULE_PC_question_header_id_patient_change_provider==ans.getQuestionId()) {//16
+								if (Constants.Provider_Change_question_header_id_patient_change_provider==ans.getQuestionId()) {//16
 									String sp=ans.getAnswer().trim();
 									if (!sp.startsWith("true ") && sp.startsWith("true") && pass) {
 										//This means answer is present but reference no missing
@@ -6768,6 +6845,99 @@ public class RuleBook {
 
 	}
 
+	// Exam limitation for CHIP
+	public List<TPValidationResponseDto> Rule48(Object ivfSheet,List<Object> tpList,MessageSource messageSource, Rules rule,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_48,
+				Constants.rule_log_debug, bw);
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean pass=true;
+		try {
+			
+			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+			String chip= ivf.getPlanType();
+			
+			if(chip.toLowerCase().contains(Constants.insurance_Chip)) {
+			
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				
+				if (tp.getServiceCode().equalsIgnoreCase("D0145")){
+					RuleEngineLogger.generateLogs(clazz, "Code Exam- "+tp.getServiceCode(),
+							Constants.rule_log_debug, bw);
+					pass=false;
+					break;
+				}
+			}
+		}
+          if (pass) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule48.pass.message", new Object[] {}, locale),
+					Constants.PASS));
+
+          }else {
+        	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+  					messageSource.getMessage("rule48.error.message", new Object[] {chip}, locale),
+  					Constants.FAIL));
+          }
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
+
+	// Sealant limitation in CHIP
+	public List<TPValidationResponseDto> Rule49(Object ivfSheet,List<Object> tpList,MessageSource messageSource, Rules rule,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_49,
+				Constants.rule_log_debug, bw);
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean pass=true;
+		List<String> tooth= new ArrayList<>();
+		try {
+			
+			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+			String chip= ivf.getPlanType();
+			
+			if(chip.toLowerCase().contains(Constants.insurance_Chip)) {
+			for (Object obj : tpList) {
+				TreatmentPlan tp = (TreatmentPlan) obj;
+				
+				if (tp.getServiceCode().equalsIgnoreCase("D1351")){
+					RuleEngineLogger.generateLogs(clazz, "Code Sealant- "+tp.getServiceCode(),
+							Constants.rule_log_debug, bw);
+				tooth.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+				RuleEngineLogger.generateLogs(clazz, "Sealant Tooth- "+tp.getTooth(),
+						Constants.rule_log_debug, bw);
+				
+				}
+			}
+			if (tooth.contains("20") || tooth.contains("21") || tooth.contains("28")
+				|| tooth.contains("29")	) {
+				pass=false;
+			}
+		}
+          if (pass) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule49.pass.message", new Object[] {}, locale),
+					Constants.PASS));
+
+          }else {
+        	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+  					messageSource.getMessage("rule49.error.message", new Object[] {chip,tooth}, locale),
+  					Constants.FAIL));
+          }
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
 	/*
 	 * private Mappings getMappingFromList(List<Mappings> map, String code) {
 	 * Mappings r = null; System.out.println("codecode---" + code);
