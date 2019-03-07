@@ -1934,12 +1934,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				 for (UserInputRuleQuestionHeader qh:qhList) {
 					 
 				
-				   //For Rule 10 -- START
+				   //For Rule 10 -- START --Attachment Required
 					 if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Attachment_Required)) {
 					Mappings mapA = rb.getMappingFromListAdditionalInformationNeeded(mappings, tp.getServiceCode());
 					QuestionAnswerDto qadto= new QuestionAnswerDto();
 					qadto.setAnswer("");
-					
+					if (tp.getServiceCode().equalsIgnoreCase("D0120")) continue;//This is a exceptional Case;
 					if (qh.getId()==Constants.Attachment_Required_question_header_id_checkpoints) {
 						
 					   qadto.setAnswer(tp.getServiceCode());

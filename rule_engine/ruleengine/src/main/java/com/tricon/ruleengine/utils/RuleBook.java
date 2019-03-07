@@ -5873,13 +5873,17 @@ public class RuleBook {
 
 		String planType = ivf.getPlanType();
 		String cMedicate = Constants.insurance_Medicaid;
+		String chip = Constants.insurance_Chip;
+		
 		boolean pass = true;
 		Map<String, List<ToothHistoryDto>> mapHistory = new HashMap<>();
 		Date TP_DATE = new Date();
 		String codes="D0150,D0210,D0330";
 		try {
 			boolean present = false;
-			if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
+			if (planType != null && 
+					(planType.trim().toLowerCase().contains(cMedicate) || planType.trim().toLowerCase().contains(chip)) 
+				) {
 				
 				List<String> reqList = new ArrayList<String>(Arrays.asList(codes.split(",")));
 				List<String> reqListNew = new ArrayList<>();
@@ -6901,7 +6905,7 @@ public class RuleBook {
 			
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			String chip= ivf.getPlanType();
-			
+			Set<String> issueSet=new HashSet<>();
 			if(chip.toLowerCase().contains(Constants.insurance_Chip)) {
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
@@ -6917,6 +6921,11 @@ public class RuleBook {
 			}
 			if (tooth.contains("20") || tooth.contains("21") || tooth.contains("28")
 				|| tooth.contains("29")	) {
+				if (tooth.contains("20")) issueSet.add("20");
+				if (tooth.contains("21")) issueSet.add("21");
+				if (tooth.contains("28")) issueSet.add("28");
+				if (tooth.contains("29")) issueSet.add("29");
+				
 				pass=false;
 			}
 		}
@@ -6927,7 +6936,7 @@ public class RuleBook {
 
           }else {
         	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-  					messageSource.getMessage("rule49.error.message", new Object[] {chip,tooth}, locale),
+  					messageSource.getMessage("rule49.error.message", new Object[] {chip,issueSet}, locale),
   					Constants.FAIL));
           }
 		} catch (Exception ex) {
