@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.ruleengine.dto.DiagnosticDTO;
@@ -32,8 +30,6 @@ import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.PatientTreamentDto;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
 import com.tricon.ruleengine.dto.QuestionHeaderDto;
-import com.tricon.ruleengine.dto.ReportDto;
-import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanDto;
@@ -43,10 +39,8 @@ import com.tricon.ruleengine.dto.UserInputQuestionAnswerDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.GoogleReportService;
-import com.tricon.ruleengine.service.ReportService;
 import com.tricon.ruleengine.service.TreatmentPlanService;
 import com.tricon.ruleengine.service.UserInputService;
-import com.tricon.ruleengine.service.UserService;
 import com.tricon.ruleengine.utils.Constants;
 
 /**
@@ -64,9 +58,6 @@ public class RuleEngineValidationController {
 
 	@Value("${app.debug.folder}")
 	private String appLogFolder;
-
-	@Autowired
-	private ReportService reportService;
 
 	@Autowired
 	TreatmentPlanService tPService;
@@ -178,37 +169,6 @@ public class RuleEngineValidationController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", map));
 	}
 
-	@CrossOrigin
-	@RequestMapping(value = "/report", method = RequestMethod.POST)
-	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-	public ResponseEntity<?> generateReport(@RequestBody ReportDto dto) {
-		List<ReportResponseDto> li = reportService.getReports(dto);
-		Map<String, List<ReportResponseDto>> map = new LinkedHashMap<>();
-		List<ReportResponseDto> a = new ArrayList<>();
-		String k = "";
-		if (li != null)
-			for (ReportResponseDto d : li) {
-				k = d.getRd_group_run() + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
-						+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " TR. ID-"
-						+ d.getTreatement_plan_id();
-				if (map.containsKey(k)) {
-					// if the key has already been used,
-					// we'll just grab the array list and add the value to it
-					a = (List<ReportResponseDto>) map.get(k + "");
-
-					a.add(d);
-				} else {
-					// if the key hasn't been used yet,
-					// we'll create a new ArrayList<String> object, add the value
-					// and put it in the array list with the new key
-					a = new ArrayList<>();
-					a.add(d);
-					map.put(k + "", a);
-				}
-
-			}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", map));
-	}
 
 	@CrossOrigin
 	@RequestMapping(value = "/generateTreatmentId", method = RequestMethod.POST)

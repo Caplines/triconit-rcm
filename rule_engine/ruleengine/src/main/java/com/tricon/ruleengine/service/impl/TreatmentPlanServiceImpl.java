@@ -27,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Collections2;
+import com.tricon.ruleengine.api.enums.HighLevelReportTypeEnum;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.SharePointDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
@@ -65,11 +66,9 @@ import com.tricon.ruleengine.service.TreatmentPlanService;
 import com.tricon.ruleengine.service.UserInputService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
+import com.tricon.ruleengine.utils.MessageUtil;
 import com.tricon.ruleengine.utils.ReadMicrosoftFile;
 import com.tricon.ruleengine.utils.RuleBook;
-
-import edu.umd.cs.findbugs.ba.constant.Constant;
-
 import com.tricon.ruleengine.dao.UserInputQuestionDao;
 import static java.util.Comparator.comparing;
 
@@ -1875,6 +1874,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rd.setRules(getRulesFromListByid(rules, d.getRuleId()));
 				rd.setCreatedBy(user);
 				rd.setReports(reports);
+				rd.setReportType(HighLevelReportTypeEnum.TXPLAN.getType());
+				rd.setMessageType(MessageUtil.getReportMessageType(d.getMessage()));
 				tvd.saveReportDestail(rd);
 			}
 		} catch (Exception x) {
@@ -2115,6 +2116,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rd.setRules(getRulesFromListByid(rules, d.getRuleId()));
 				rd.setCreatedBy(user);
 				rd.setReports(reports);
+				rd.setReportType(HighLevelReportTypeEnum.BATCH.getType());
+				rd.setMessageType(MessageUtil.getReportMessageType(d.getMessage()));
 				tvd.saveReportDestail(rd);
 			}
 		} catch (Exception x) {
@@ -2123,7 +2126,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		}
 	}
-
+/*
 	private List<String> getCodesfromTreamentPlanList(Map<String, List<Object>> tpMap) {
 		if (tpMap == null)
 			return null;
@@ -2137,7 +2140,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		}
 		return li;
 	}
-
+*/
 	@Override
 	public Map<String, List<TPValidationResponseDto>> validateTreatmentPlanPreBatch(
 			TreatmentPlanBatchValidationDto dto) {

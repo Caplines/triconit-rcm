@@ -1,21 +1,21 @@
 package com.tricon.ruleengine.dao.impl;
 
-import java.text.ParseException;
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 
+import com.tricon.ruleengine.api.enums.HighLevelReportTypeEnum;
 import com.tricon.ruleengine.api.enums.ReportTypeEnum;
 import com.tricon.ruleengine.dao.ReportDao;
+import com.tricon.ruleengine.dto.EnhancedReportDto;
+import com.tricon.ruleengine.dto.EnhancedValidateBatchNumReportDto;
+import com.tricon.ruleengine.dto.EnhancedValidateBatchReportDto;
+import com.tricon.ruleengine.dto.EnhancedValidateTxNumReportDto;
+import com.tricon.ruleengine.dto.EnhancedValidateTxReportDto;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
-import com.tricon.ruleengine.model.db.Reports;
 import com.tricon.ruleengine.utils.Constants;
 
 @Repository
@@ -76,7 +76,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 		
 			 //queryString=queryString+ " group  by rep.treatement_plan_id, rd.rule_id"
 			 queryString=queryString+ "	 order by rep.patient_id,rd.group_run desc";
-			 System.out.println(queryString);
+			 //System.out.println(queryString);
 			 list=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(ReportResponseDto.class)). list();
 			 
 		} catch (Exception e) {
@@ -90,6 +90,111 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		return list;
 		
 	}
-	
 
+	@Override
+	public List<?> getEnancedReport(EnhancedReportDto dto) {
+		// TODO Auto-generated method stub
+		Session session=null;
+        List<?> list =null;
+        Class<?> clazz=null;
+		try {
+			 session=getSession();
+		String queryString=null;
+		if (HighLevelReportTypeEnum.BATCH.getType()== dto.getReportType()) {
+			queryString=getBatchReport(dto);
+			clazz=EnhancedValidateBatchReportDto.class;
+		}
+		else if (HighLevelReportTypeEnum.BATCH_NUM.getType()== dto.getReportType()) {
+			queryString=getBatchNumReport(dto);
+			clazz=EnhancedValidateBatchNumReportDto.class;
+		}
+		else if (HighLevelReportTypeEnum.TXPLAN.getType()== dto.getReportType()) {
+			queryString=getTxReport(dto);
+			clazz=EnhancedValidateTxReportDto.class;
+		}
+		else if (HighLevelReportTypeEnum.TXPLAN_NUM.getType()== dto.getReportType()) {
+			queryString=getTxNumReport(dto);
+			clazz=EnhancedValidateTxNumReportDto.class;
+		}
+		
+		list=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(clazz)). list();
+		 
+		
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return list;
+	}
+	
+	private String getTxReport(EnhancedReportDto dto) {
+		String query=" select * from (" + 
+				 "select treatement_plan_id," + 
+				" GROUP_CONCAT( concat (ct,'"+Constants.EN_REP_TYPE_SEP+"',message_type) SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as resultsum," + 
+				" GROUP_CONCAT(distinct name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as office," + 
+				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pat_id," + 
+				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pat_name," + 
+				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivf from (" + 
+				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name,off.name" + 
+				" from reports rep, report_detail repd ,office off where "+
+				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
+		if (dto.getOfficeId() != null) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
+		if (dto.getPatId() != null) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
+		if (dto.getTpId() != null) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
+		if (dto.getIvfId() != null) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
+
+		if (dto.getEndDate()!=null && dto.getStartDate()!=null) {
+			query=query+	"  and (" + 
+				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+				"                 or" + 
+				"  (rep.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+				"" + 
+				" )" ;
+		}
+			query=query+ " group by repd.message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name  order by repd.message_type asc) a" + 
+				"  group by a.treatement_plan_id ) as b where b.resultsum is not null	"; 
+		return query;
+	}
+	
+	private String getTxNumReport(EnhancedReportDto dto) {
+		String query="";
+		return query;
+	}
+	private String getBatchReport(EnhancedReportDto dto) {
+		String query=" select * from (" + 
+				 "select treatement_plan_id," + 
+				" GROUP_CONCAT( concat (ct,'"+Constants.EN_REP_TYPE_SEP+"',message_type) SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as resultsum," + 
+				" GROUP_CONCAT(distinct name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as office," + 
+				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pat_id," + 
+				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pat_name," + 
+				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivf from (" + 
+				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name,off.name" + 
+				" from reports rep, report_detail repd ,office off where "+
+				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
+		if (dto.getOfficeId() != null) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
+		if (dto.getPatId() != null) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
+		if (dto.getTpId() != null) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
+		if (dto.getIvfId() != null) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
+
+		if (dto.getEndDate()!=null && dto.getStartDate()!=null) {
+			query=query+	"  and (" + 
+				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+				"                 or" + 
+				"  (rep.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+				"" + 
+				" )" ;
+		}
+			query=query+ " group by repd.message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name  order by repd.message_type asc) a" + 
+				"  group by a.ivf_form_id ) as b where b.resultsum is not null	"; 
+		return query;
+	}
+
+	private String getBatchNumReport(EnhancedReportDto dto) {
+		String query="";
+		return query;
+	}
 }

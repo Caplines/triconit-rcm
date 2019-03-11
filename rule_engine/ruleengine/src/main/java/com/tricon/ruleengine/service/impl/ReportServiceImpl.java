@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tricon.ruleengine.dao.ReportDao;
+import com.tricon.ruleengine.dto.EnhancedReportDto;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
-import com.tricon.ruleengine.model.db.Reports;
 import com.tricon.ruleengine.service.ReportService;
 
 @Transactional
@@ -28,5 +28,14 @@ public class ReportServiceImpl implements ReportService{
 		return reports;
 		
 	}
+
+	@Override
+	public List<?> getEnancedReport(EnhancedReportDto dto) {
+		List<?> reports= rd.getEnancedReport(dto);
+		// TODO Auto-generated method stub
+		return reports;
+	}
+	
+	
 
 }

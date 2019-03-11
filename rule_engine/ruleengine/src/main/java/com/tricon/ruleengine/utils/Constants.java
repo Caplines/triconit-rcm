@@ -230,4 +230,10 @@ public class Constants {
    //patient History check month in limitation rule
 	public static int Medicaid_Provider_Limitation_MONTH=-36;
 	public static String dateFormatStringESHis="yyyy/MM/dd";
+	
+	//Reports
+	public static String EN_REP_TYPE_SEP="TYPE";
+	public static String EN_REP_COUNT_SEP=";";
+	
+	
 }

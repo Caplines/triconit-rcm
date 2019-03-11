@@ -41,6 +41,11 @@ public class ReportDetail extends BaseAudit implements java.io.Serializable {
 	private String errorMessage;
 	@Column(name = "group_run")
 	private int groupRun;
+	@Column(name = "report_type")
+	private int reportType;
+	@Column(name = "message_type")
+	private int messageType;
+
 
 	public ReportDetail() {
 	}
@@ -96,5 +101,22 @@ public class ReportDetail extends BaseAudit implements java.io.Serializable {
 		this.groupRun = groupRun;
 	}
 
+	public int getReportType() {
+		return reportType;
+	}
+
+	public void setReportType(int reportType) {
+		this.reportType = reportType;
+	}
+
+	public int getMessageType() {
+		return messageType;
+	}
+
+	public void setMessageType(int messageType) {
+		this.messageType = messageType;
+	}
+
+	
 	
 }
