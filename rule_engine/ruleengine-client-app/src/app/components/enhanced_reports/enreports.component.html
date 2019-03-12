@@ -3,18 +3,71 @@
 	<div  class="container">
 		<div class="row">
 			<div class="col-sm-6 col-sm-offset-3 form-box">
-				<div class="form-top">
+				<div class="dropdown">
+					<button class="btn btn-block dropdown-toggle" type="button" data-toggle="dropdown" (click)="showReportForm = false">
+						<span class="caret"></span>Enhanced Reports
+					</button>
+					<ul class="dropdown-menu">
+						<li><a href="javascript:void(0)" (click)="reportParam('IvBatch')">IV Batch Report</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('TxPlan')">TX Plan Report</a></li>
+					</ul>
+				</div>
+				<!-- <div class="form-top">
 					<div class="form-top-left">
-						<h3 class="ivf-title">Enhanced Reports</h3>
+						<a href="javascript:void(0)" (click)="showReportForm = true"><h3 class="ivf-title">Select Report to Run</h3></a>
 					</div>
-				</div>
-
-				<div class="form-bottom">
-					Welcome  To Reports Page
-						
-
 					
-				</div>
+				</div> -->
+
+				<div *ngIf="showReportForm" class="form-bottom">
+					<form class="login-form" name="form" (ngSubmit)="f.form.valid && runReport()" #f="ngForm" novalidate>
+						<!--  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>  -->
+						<span id="reauth-email" class="reauth-email"></span>
+						
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="txPlanId">Tx Plan Id</label>
+							<div *ngIf="showParam.TxPlan">
+								<input type="text" class="login-signup-form-field form-control" name="txPlanId" id="txPlanId" [(ngModel)]="enreports.txPlanId" #txPlanId="ngModel" placeholder="Tx Plan Id..." required />
+								<div *ngIf="f.submitted && !txPlanId.valid" class="error-msg">Please enter Tx Plan Id.</div>
+							</div>	
+						</div>
+						
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="ivfId">IVF Id</label>
+							<input type="text" class="login-signup-form-field form-control" name="ivfId" id="ivfId" [(ngModel)]="enreports.ivfId" #ivfId="ngModel" placeholder="IVF Id..." required />
+							<div *ngIf="f.submitted && !ivfId.valid" class="error-msg">Please enter IVF Id.</div>
+						</div>
+						
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="patientId">Patient Id</label>
+							<input type="text" class="login-signup-form-field form-control" name="patientId" id="patientId" [(ngModel)]="enreports.patientId" #patientId="ngModel" placeholder="Patient Id..." required />
+							<div *ngIf="f.submitted && !patientId.valid" class="error-msg">Please enter Patient Id.</div>
+						</div>
+						
+						<div class="form-group date-dropdown" [ngClass]="{ 'has-error': f.submitted }">
+							<ng-datepicker [(ngModel)]="enreports.startDate" name="datePicker" [options]="dateOptions"></ng-datepicker>
+							<div *ngIf="f.submitted && enreports.startDate==''" class="error-msg">Please select valid Date.</div>								
+						</div>
+						
+						<div class="form-group date-dropdown" [ngClass]="{ 'has-error': f.submitted }">
+							<ng-datepicker [(ngModel)]="enreports.endDate" name="datePicker" [options]="dateOptions"></ng-datepicker>
+							<div *ngIf="f.submitted && enreports.endDate==''" class="error-msg">Please select valid Date.</div>								
+						</div>
+			
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="officeId">Office Name</label> 
+							<select class="login-signup-form-field form-control" name="officeId" id="officeId" [(ngModel)]="enreports.officeId">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+							<div *ngIf="f.submitted && enreports.officeId==''" class="error-msg">Office Name is required</div>
+						</div>
+						
+						<p><button [disabled]="showLoading" type="submit" class="btn">Submit</button></p>
+						
+						<div *ngIf="showLoading" class="loader"></div>							    
+					</form>
+				</div> 
 			</div>
 		</div>
 
