@@ -73,11 +73,11 @@ public class ReportController {
 	public ResponseEntity<?> generateEnancedReport() {
 		EnhancedReportDto dto=new EnhancedReportDto();
 		//dto.setOfficeId("da0c77a8-aaaf-11e8-8544-8c16451459cd");//Liberty..
-		dto.setStartDate("03/11/2018");
-		dto.setEndDate("03/11/2019");
+		//dto.setStartDate("03/11/2018");
+		//dto.setEndDate("03/11/2019");
 		//dto.setPatId("7152");
 		//dto.setTpId("6067");
-		dto.setReportType(HighLevelReportTypeEnum.BATCH.getType());
+		//dto.setReportType(HighLevelReportTypeEnum.BATCH.getType());
 		//dto.setReportType(HighLevelReportTypeEnum.BATCH_NUM.getType());
 		//dto.setReportType(HighLevelReportTypeEnum.TXPLAN.getType());
 		//dto.setReportType(HighLevelReportTypeEnum.TXPLAN_NUM.getType());
