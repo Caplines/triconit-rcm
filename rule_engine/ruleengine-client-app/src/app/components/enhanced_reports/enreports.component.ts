@@ -29,7 +29,7 @@ export class EnReportsComponent implements OnInit {
 	displayFormat: 'MM/DD/YYYY',
 	placeholder: 'Click to select a date'
   };
-  showParam:any = {IvBatch: false, TxPlan: false}
+  showParam:any = {IvBatch: false, TxPlan: false, IvBatchNumber: false, TxPlanNumber: false}
   
   
  
@@ -57,4 +57,7 @@ export class EnReportsComponent implements OnInit {
 	this.enreports.reportType = value;
   }
   
+  runEnReport() {
+	  console.log(this.enreports);
+  }
 }
