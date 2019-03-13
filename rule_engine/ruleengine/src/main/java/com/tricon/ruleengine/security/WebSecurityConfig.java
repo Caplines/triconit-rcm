@@ -127,7 +127,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/report",
                 "/register",
                 "/writeData",
-                "/enreports",
+                "/enreport",
                 //"/fetchesdata/*",
                 //"/fetchesdata/*/*",
                 "/ivftreatmentplan",

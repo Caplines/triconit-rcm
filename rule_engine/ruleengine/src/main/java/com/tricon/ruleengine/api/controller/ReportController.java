@@ -66,24 +66,26 @@ public class ReportController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", map));
 	}
 
-	/*
+	
 	@CrossOrigin
-	@RequestMapping(value = "/enreport", method = RequestMethod.POST)
-	//@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-	public ResponseEntity<?> generateEnancedReport(@RequestBody EnhancedReportDto dto) {
-		dto.setOfficeId("da0c77a8-aaaf-11e8-8544-8c16451459cd");//Liberty..
+	@RequestMapping(value = "/enreport", method = RequestMethod.GET)
+	//@PreAuthorize("hasAnyRole('USER', 'ADMIN')")//@RequestBody EnhancedReportDto dto
+	public ResponseEntity<?> generateEnancedReport() {
+		EnhancedReportDto dto=new EnhancedReportDto();
+		//dto.setOfficeId("da0c77a8-aaaf-11e8-8544-8c16451459cd");//Liberty..
 		dto.setStartDate("03/11/2018");
 		dto.setEndDate("03/11/2019");
-		dto.setPatId("7152");
-		//dto2.setReportType(HighLevelReportTypeEnum.BATCH.getType());
-		//dto2.setReportType(HighLevelReportTypeEnum.BATCH_NUM.getType());
-		dto.setReportType(HighLevelReportTypeEnum.TXPLAN.getType());
-		dto.setReportType(HighLevelReportTypeEnum.TXPLAN_NUM.getType());
+		//dto.setPatId("7152");
+		//dto.setTpId("6067");
+		dto.setReportType(HighLevelReportTypeEnum.BATCH.getType());
+		//dto.setReportType(HighLevelReportTypeEnum.BATCH_NUM.getType());
+		//dto.setReportType(HighLevelReportTypeEnum.TXPLAN.getType());
+		//dto.setReportType(HighLevelReportTypeEnum.TXPLAN_NUM.getType());
 		
 		
 		List<?> li = reportService.getEnancedReport(dto);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", li));
 	}
-    */
+    
 	
 }

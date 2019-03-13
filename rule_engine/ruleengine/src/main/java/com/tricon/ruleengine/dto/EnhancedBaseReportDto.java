@@ -8,9 +8,7 @@ public class EnhancedBaseReportDto {
 	private Integer pass;
 	private Integer fail;
 	private Integer alert;
-	private String allCount;
-	
-	
+	private String resultsum;
 	private String office;
 
 	public Integer getPass() {
@@ -45,14 +43,14 @@ public class EnhancedBaseReportDto {
 		this.office = office;
 	}
 
-	public String getAllCount() {
-		return allCount;
+	public String getResultsum() {
+		return resultsum;
 	}
 
-	public void setAllCount(String allCount) {
+	public void setResultsum(String resultsum) {
 		//12TYPE1;1TYPE3;35TYPE2
 		this.fail=this.pass=this.alert=0;
-		String[] ct=allCount.split(Constants.EN_REP_COUNT_SEP);
+		String[] ct=resultsum.split(Constants.EN_REP_COUNT_SEP);
 		if (ct!= null && ct.length>0) {
 			for(String c:ct) {
 				
@@ -66,7 +64,7 @@ public class EnhancedBaseReportDto {
 				}
 			}
 		}
-		this.allCount = "";//set it blank;
+		this.resultsum = "";//set it blank;
 	}
 	
 	

@@ -1,10 +1,8 @@
 package com.tricon.ruleengine.api.controller;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+//import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -118,10 +116,10 @@ public class GoogleReportsController {
 			}
 		}
 		finalData = "{\"data\":[" + finalData + "]}";
-		JSONObject jsonObj = new JSONObject(finalData);
-		System.out.println("FFFFFFFFF=" + finalData);
+		//JSONObject jsonObj = new JSONObject(finalData);
+		//System.out.println("FFFFFFFFF=" + finalData);
 
-		JSONObject jsonObj2 = new JSONObject("{\"phonetype\":\"N95\",\"cat\":\"WP\"}");
+		//JSONObject jsonObj2 = new JSONObject("{\"phonetype\":\"N95\",\"cat\":\"WP\"}");
 
 		// https://medium.com/@paulgambill/how-to-import-json-data-into-google-spreadsheets-in-less-than-5-minutes-a3fede1a014a
 		// return finalData;

@@ -16,6 +16,7 @@ import com.tricon.ruleengine.dto.EnhancedValidateTxNumReportDto;
 import com.tricon.ruleengine.dto.EnhancedValidateTxReportDto;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
+import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.utils.Constants;
 
 @Repository
@@ -97,8 +98,15 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		Session session=null;
         List<?> list =null;
         Class<?> clazz=null;
+        
+        //At least one data need to be present
+        if (dto.getIvfId() == null && dto.getOfficeId()== null && dto.getPatId()== null && dto.getTpId()== null && 
+        		(dto.getEndDate()==null || dto.getStartDate()==null )) {
+        	return null;
+        }
 		try {
 			 session=getSession();
+			 
 		String queryString=null;
 		if (HighLevelReportTypeEnum.BATCH.getType()== dto.getReportType()) {
 			queryString=getBatchReport(dto);
@@ -116,12 +124,11 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			queryString=getTxNumReport(dto);
 			clazz=EnhancedValidateTxNumReportDto.class;
 		}
-		
-		list=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(clazz)). list();
-		 
+		RuleEngineLogger.generateLogs(clazz, "Query run -"+queryString, Constants.rule_log_debug, null);
+		list= session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(clazz)). list();
 		
 		}catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -129,16 +136,16 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 	
 	private String getTxReport(EnhancedReportDto dto) {
 		String query=" select * from (" + 
-				 "select treatement_plan_id," + 
+				 "select treatement_plan_id as txP," + 
 				" GROUP_CONCAT( concat (ct,'"+Constants.EN_REP_TYPE_SEP+"',message_type) SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as resultsum," + 
 				" GROUP_CONCAT(distinct name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as office," + 
-				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pat_id," + 
-				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pat_name," + 
-				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivf from (" + 
-				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name,off.name" + 
+				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pid," + 
+				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pname," + 
+				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivfId from (" + 
+				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id ,patient_id,patient_name,off.name" + 
 				" from reports rep, report_detail repd ,office off where "+
 				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
-		if (dto.getOfficeId() != null) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
+		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		if (dto.getPatId() != null) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
 		if (dto.getTpId() != null) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
 		if (dto.getIvfId() != null) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
@@ -159,23 +166,23 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 	}
 	
 	private String getTxNumReport(EnhancedReportDto dto) {
-		String query="";
+		String query=queryNumber(dto, HighLevelReportTypeEnum.TXPLAN.getType());
 		return query;
 	}
 	private String getBatchReport(EnhancedReportDto dto) {
 		String query=" select * from (" + 
-				 "select treatement_plan_id," + 
+				 "select "+ 
 				" GROUP_CONCAT( concat (ct,'"+Constants.EN_REP_TYPE_SEP+"',message_type) SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as resultsum," + 
 				" GROUP_CONCAT(distinct name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as office," + 
-				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pat_id," + 
-				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pat_name," + 
-				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivf from (" + 
+				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pid," + 
+				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pname," + 
+				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivfId from (" + 
 				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name,off.name" + 
 				" from reports rep, report_detail repd ,office off where "+
-				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
+				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.BATCH.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
 		if (dto.getOfficeId() != null) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		if (dto.getPatId() != null) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
-		if (dto.getTpId() != null) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
+		//if (dto.getTpId() != null) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
 		if (dto.getIvfId() != null) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
 
 		if (dto.getEndDate()!=null && dto.getStartDate()!=null) {
@@ -188,13 +195,45 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				"" + 
 				" )" ;
 		}
-			query=query+ " group by repd.message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name  order by repd.message_type asc) a" + 
+			query=query+ " group by repd.message_type,ivf_form_id,patient_id,patient_name  order by repd.message_type asc) a" + 
 				"  group by a.ivf_form_id ) as b where b.resultsum is not null	"; 
 		return query;
 	}
 
 	private String getBatchNumReport(EnhancedReportDto dto) {
-		String query="";
+		String query=queryNumber(dto, HighLevelReportTypeEnum.BATCH.getType());
 		return query;
+	}
+	
+	private String queryNumber(EnhancedReportDto dto, int reportType) {
+		String rep=" ivf_form_id ";
+		if (HighLevelReportTypeEnum.TXPLAN.getType()==reportType) rep=" treatement_plan_id ";
+		String query=" "+
+		"select GROUP_CONCAT(distinct "+rep+" SEPARATOR ';') as ct," + 
+		"GROUP_CONCAT(distinct name SEPARATOR ';') as office," + 
+		"GROUP_CONCAT( concat (ct,'TYPE',message_type) SEPARATOR ';') as resultsum" + 
+		" from" + 
+		"(" + 
+		"select sum(ct) as ct,message_type,name,GROUP_CONCAT(distinct "+rep+" SEPARATOR ';') as "+rep+"   from (" + 
+		"select count(message_type) as ct,message_type," + 
+		" "+rep+" ,off.name    from reports rep, report_detail repd ,office off where  repd.report_id=rep.id and" + 
+		"     repd.report_type="+reportType+" and     off.uuid=rep.office_id and rep.group_run = repd.group_run";
+ 		         if (dto.getOfficeId() != null) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
+		         if (dto.getEndDate()!=null && dto.getStartDate()!=null) {
+		 			query=query+	"  and (" + 
+		 				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+		 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+		 				"                 or" + 
+		 				"  (rep.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+		 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+		 				"" + 
+		 				" )" ;
+		 		  }
+		         query=query+ "    group by repd.message_type, "+rep+"   order by repd.message_type asc" + 
+		         		"   )a group by name,message_type" + 
+		         		")b group by name" ;
+
+		return query;
+		
 	}
 }
