@@ -68,10 +68,10 @@ public class ReportController {
 
 	
 	@CrossOrigin
-	@RequestMapping(value = "/enreport", method = RequestMethod.GET)
-	//@PreAuthorize("hasAnyRole('USER', 'ADMIN')")//@RequestBody EnhancedReportDto dto
-	public ResponseEntity<?> generateEnancedReport() {
-		EnhancedReportDto dto=new EnhancedReportDto();
+	@RequestMapping(value = "/enreport", method = RequestMethod.POST)
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")//
+	public ResponseEntity<?> generateEnancedReport(@RequestBody EnhancedReportDto dto) {
+		//EnhancedReportDto dto=new EnhancedReportDto();
 		//dto.setOfficeId("da0c77a8-aaaf-11e8-8544-8c16451459cd");//Liberty..
 		//dto.setStartDate("03/11/2018");
 		//dto.setEndDate("03/11/2019");

@@ -146,11 +146,11 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				" from reports rep, report_detail repd ,office off where "+
 				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
 		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
-		if (dto.getPatId() != null) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
-		if (dto.getTpId() != null) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
-		if (dto.getIvfId() != null) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
+		if (dto.getPatId() != null && !dto.getPatId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
+		if (dto.getTpId() != null && !dto.getTpId().equals("")) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
+		if (dto.getIvfId() != null  && !dto.getIvfId().equals("")) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
 
-		if (dto.getEndDate()!=null && dto.getStartDate()!=null) {
+		if (dto.getEndDate()!=null && dto.getStartDate()!=null && !dto.getEndDate().equals("") && !dto.getStartDate().equals("")) {
 			query=query+	"  and (" + 
 				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
@@ -180,12 +180,15 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name,off.name" + 
 				" from reports rep, report_detail repd ,office off where "+
 				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.BATCH.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
-		if (dto.getOfficeId() != null) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
-		if (dto.getPatId() != null) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
-		//if (dto.getTpId() != null) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
-		if (dto.getIvfId() != null) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
-
-		if (dto.getEndDate()!=null && dto.getStartDate()!=null) {
+		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
+		if (dto.getPatId() != null && !dto.getPatId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
+		//if (dto.getTpId() != null && !dto.getTpId().equals("")) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
+		if (dto.getIvfId() != null  && !dto.getIvfId().equals("")) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
+		
+		
+		
+		
+		if (dto.getEndDate()!=null && dto.getStartDate()!=null  && !dto.getEndDate().equals("") && !dto.getStartDate().equals("")) {
 			query=query+	"  and (" + 
 				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
@@ -219,7 +222,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		" "+rep+" ,off.name    from reports rep, report_detail repd ,office off where  repd.report_id=rep.id and" + 
 		"     repd.report_type="+reportType+" and     off.uuid=rep.office_id and rep.group_run = repd.group_run";
  		         if (dto.getOfficeId() != null) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
-		         if (dto.getEndDate()!=null && dto.getStartDate()!=null) {
+		         if (dto.getEndDate()!=null && dto.getStartDate()!=null  && !dto.getEndDate().equals("") && !dto.getStartDate().equals("")) {
 		 			query=query+	"  and (" + 
 		 				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
 		 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
