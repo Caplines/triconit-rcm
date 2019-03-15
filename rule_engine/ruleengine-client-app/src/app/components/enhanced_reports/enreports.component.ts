@@ -20,22 +20,29 @@ export class EnReportsComponent implements OnInit {
   userName: any;
   userType: any;
   
-  reportData: any;
-  arrayOfKeys: any;
+  enreportData: any;
   showLoading: boolean = false;
   showReportForm: boolean = false;
-  showReportData: boolean = false;
+  showEnReportPopup: boolean = false;
+
+reportType:any;
+
   dateOptions: DatepickerOptions = {
 	displayFormat: 'MM/DD/YYYY',
 	placeholder: 'Click to select a date'
   };
-  showParam:any = {IvBatch: false, TxPlan: false, IvBatchNumber: false, TxPlanNumber: false}
-  
-  
- 
+  showParam:any = { TxPlan : false, IvBatch : false, IvBatchNumber : false, TxPlanNumber : false }
+  typeMap: any = {
+        'TxPlan': 1,
+        'IvBatch': 2,
+        'IvBatchNumber': 3,
+        'TxPlanNumber': 4,
+    };
+
+
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute, private datePipe: DatePipe) {
 	  this.offices =this.route.snapshot.data['offs'].data;
-	  this.offices.push({"name":"All OFFICES","uuid":"All offices"});
+	  this.offices.push({"name":"All OFFICES","uuid":"All"});
   }
 
   ngOnInit() {
@@ -54,10 +61,49 @@ export class EnReportsComponent implements OnInit {
 	  return filter;
 	});		
 	this.showReportForm = true;
-	this.enreports.reportType = value;
+	this.enreports.reportType = this.typeMap[value];
+	this.reportType = this.enreports.reportType;
   }
   
-  runEnReport() {
-	  console.log(this.enreports);
+  runEnReport()
+  {
+	  if((this.enreports.tpId || this.enreports.ivfId || this.enreports.pId || this.enreports.officeId) && 
+			  ((this.enreports.startDate!='' && (this.enreports.endDate > this.enreports.startDate)) || (this.enreports.startDate=='' && this.enreports.endDate=='')))
+	  {
+		  if(this.enreports.startDate!='')
+			  {this.enreports.startDate = this.datePipe.transform(this.enreports.startDate, 'MM/dd/yyyy');
+		  this.enreports.endDate = this.datePipe.transform(this.enreports.endDate, 'MM/dd/yyyy');}
+		  this.showLoading = true;
+		  this.accountService.validateEnReport(this.enreports,(result) =>{
+			  this.showLoading = false;
+				if (result.status=='OK'){
+					this.enreportData = result.data;
+					this.showEnReportPopup = true;
+					if (this.isEmpty(this.enreportData)){
+						alert("No Data Found.");
+							this.showEnReportPopup = false;
+						}else{
+							
+						}
+					} else {
+						this.showEnReportPopup = false;
+					}
+			  });
+	  }
   }
+  
+  isEmpty(obj) {
+	    for(var key in obj) {
+	      if(obj.hasOwnProperty(key))
+	        return false;
+	    }
+	    return true;
+  }
+  
+  receiveChildrenEmitter(event) {
+		if(event['action'] == "showEnReportPopup" ) {
+			this.showEnReportPopup = event['value'];
+		}
+  } 
+  
 }

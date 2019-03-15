@@ -80,7 +80,7 @@ img { max-width: 100%; }
 /***** Top content *****/
 
 .inner-bg {
-    padding: 140px 0 170px 0;
+    padding: 140px 0 50px 0;
 }
 
 .top-content .text {
@@ -711,3 +711,19 @@ text-decoration: underline;
 .question-form ul {
 	padding-left: 0px;
 }
+
+
+
+.td-width
+{
+	max-height:370px;
+}
+.tr-width
+{
+	width:120px;
+}
+.adjust-width
+{
+	width:103px;
+}
+

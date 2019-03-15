@@ -1,6 +1,6 @@
 
 <div class="inner-bg">
-	<div  class="container">
+	<div  *ngIf="!showEnReportPopup" class="container">
 		<div class="row">
 			<div class="col-sm-6 col-sm-offset-3 form-box">
 				<div class="dropdown">
@@ -8,8 +8,8 @@
 						<span class="caret"></span>Enhanced Reports
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="javascript:void(0)" (click)="reportParam('IvBatch')">IV Batch Report</a></li>
 						<li><a href="javascript:void(0)" (click)="reportParam('TxPlan')">TX Plan Report</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('IvBatch')">IV Batch Report</a></li>
 						<li><a href="javascript:void(0)" (click)="reportParam('IvBatchNumber')">IV Batch Report (Number Wise)</a></li>
 						<li><a href="javascript:void(0)" (click)="reportParam('TxPlanNumber')">TX Plan Report (Number Wise)</a></li>
 					</ul>
@@ -30,15 +30,15 @@
 					
 						<div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>
 						<span id="reauth-email" class="reauth-email"></span>
-						<div *ngIf="showParam.TxPlan" class="form-group" [ngClass]="{ 'has-error': f.submitted }">
-							<label class="sr-only" for="txPlanId">Tx Plan Id</label>
+						<div *ngIf="!(showParam.TxPlan || showParam.IvBatch || showParam.IvBatchNumber || showParam.TxPlanNumber)" class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="tpId">Tx Plan Id</label>
 							<div>
-								<input type="text" class="login-signup-form-field form-control" name="txPlanId" id="txPlanId" [(ngModel)]="enreports.txPlanId" #txPlanId="ngModel" placeholder="Tx Plan Id..." />
-								<!-- <div *ngIf="f.submitted && !txPlanId.valid" class="error-msg">Please enter Tx Plan Id.</div> -->
+								<input type="text" class="login-signup-form-field form-control" name="tpId" id="tpId" [(ngModel)]="enreports.tpId" #tpId="ngModel" placeholder="Tx Plan Id..." />
+								<!-- <div *ngIf="f.submitted && !tpId.valid" class="error-msg">Please enter Tx Plan Id.</div> -->
 							</div>	
 						</div>
 						
-						<div *ngIf="!(showParam.IvBatchNumber || showParam.TxPlanNumber)" class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+						<div *ngIf="!(showParam.IvBatchNumber || showParam.TxPlanNumber || showParam.TxPlan || showParam.IvBatch)" class="form-group" [ngClass]="{ 'has-error': f.submitted }">
 							<label class="sr-only" for="ivfId">IVF Id</label>
 							<div>
 								<input type="text" class="login-signup-form-field form-control" name="ivfId" id="ivfId" [(ngModel)]="enreports.ivfId" #ivfId="ngModel" placeholder="IVF Id..." />
@@ -47,15 +47,15 @@
 						</div>
 						
 						<div *ngIf="!(showParam.IvBatchNumber || showParam.TxPlanNumber)" class="form-group" [ngClass]="{ 'has-error': f.submitted }">
-							<label class="sr-only" for="patientId">Patient Id</label>
+							<label class="sr-only" for="pId">Patient Id</label>
 							<div>
-								<input type="text" class="login-signup-form-field form-control" name="patientId" id="patientId" [(ngModel)]="enreports.patientId" #patientId="ngModel" placeholder="Patient Id..." />
-								<!-- <div *ngIf="f.submitted && !patientId.valid" class="error-msg">Please enter Patient Id.</div> -->
+								<input type="text" class="login-signup-form-field form-control" name="pId" id="pId" [(ngModel)]="enreports.pId" #pId="ngModel" placeholder="Patient Id..." />
+								<!-- <div *ngIf="f.submitted && !pId.valid" class="error-msg">Please enter Patient Id.</div> -->
 							</div>
 						</div>
 						
 						<div class="form-group date-dropdown" [ngClass]="{ 'has-error': f.submitted }">
-							<ng-datepicker [(ngModel)]="enreports.startDate" name="datePicker" [options]="dateOptions"></ng-datepicker>
+							<ng-datepicker [(ngModel)]="enreports.startDate" name="datePicker1" [options]="dateOptions"></ng-datepicker>
 							<div *ngIf="f.submitted && enreports.endDate!='' && enreports.startDate==''" class="error-msg">Please select valid Date.</div>
 						</div>
 						
@@ -73,18 +73,29 @@
 							</select>
 							<!-- <div *ngIf="f.submitted && enreports.officeId==''" class="error-msg">Office Name is required</div> -->
 							
-							<div *ngIf="f.submitted && showParam.IvBatch && enreports.ivfId=='' && enreports.patientId=='' && enreports.officeId==''" class="error-msg">please enter either IVF Id or Patient Id or Office name ..</div>
-							<div *ngIf="f.submitted && showParam.TxPlan && enreports.txPlanId=='' && enreports.ivfId=='' && enreports.patientId=='' && enreports.officeId==''" class="error-msg">please enter either plan Id or IVF Id or Patient Id or Office name ..</div>
+							<div *ngIf="f.submitted && showParam.IvBatch && enreports.ivfId=='' && enreports.pId=='' && enreports.officeId==''" class="error-msg">please enter either IVF Id or Patient Id or Office name ..</div>
+							<div *ngIf="f.submitted && showParam.TxPlan && enreports.tpId=='' && enreports.ivfId=='' && enreports.pId=='' && enreports.officeId==''" class="error-msg">please enter either plan Id or IVF Id or Patient Id or Office name ..</div>
 							<div *ngIf="f.submitted && showParam.IvBatchNumber && enreports.officeId==''" class="error-msg">please select office...</div>
 							<div *ngIf="f.submitted && showParam.TxPlanNumber && enreports.officeId==''" class="error-msg">please select office...</div>
 						</div>
 						
 						<p><button [disabled]="showLoading" type="submit" class="btn">Submit</button></p>
 						
-						<div *ngIf="showLoading" class="loader"></div>							    
+						<div *ngIf="showLoading" class="loader"></div>					    
 					</form>
 				</div> 
 			</div>
 		</div>
 	</div>
+	
+	<app-enreportspopup *ngIf="showEnReportPopup" [enreportData]="enreportData" [reportType]="reportType" 
+	[showEnReportPopup]="showEnReportPopup" (emitToParent)="receiveChildrenEmitter($event)"></app-enreportspopup>
+
 </div>
+
+
+
+
+
+
+

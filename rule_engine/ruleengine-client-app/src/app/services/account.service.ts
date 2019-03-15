@@ -7,6 +7,7 @@ import {DiagnosticModel} from "../model/model.diagnostic";
 import {IVFBatchPreModel} from "../model/model.ivfbatchpre";
 import {IVFBatchModel} from "../model/model.ivfbatch";
 import {ReportModel} from "../model/model.report";
+import {EnReportsModel} from "../model/model.enreports";
 import {UserInputModel} from "../model/model.userinput";
 import {TreatmentPlanModel} from "../model/model.treatmentplan";
 import {AuthHeader} from "../util/auth.header";
@@ -40,7 +41,7 @@ export class AccountService {
         );
       
       /*
-      this.generateRefreshToken().pipe(flatMap(
+      		this.generateRefreshToken().pipe(flatMap(
               (result) => {
                   localStorage.setItem("token", result.token);
                   return this.http.post(AppComponent.API_URL+'/admin/register',user,AuthHeader.createAuthHeader())
@@ -55,8 +56,8 @@ export class AccountService {
                 },
                 () => {
 
-                });     
-        */  
+                });
+         */  
   }
 
   getOffices(callback){
@@ -222,7 +223,32 @@ export class AccountService {
 				callback(error);
             }
         },
-        () => {        
+        () => {   
+			//console.log(111);   
+			}
+		);   
+	}
+     // fields, officeId,startDate,endDate,pid,tpId,reportType
+  validateEnReport(enreports:EnReportsModel,callback){
+		this.generateRefreshToken().pipe(switchMap(data => {
+			localStorage.setItem("token", (<any>data).token);
+			return  this.http.post(AppComponent.API_URL+'/enreport',enreports);
+		})
+		).subscribe(data => {
+			//console.log(data['results']);
+			callback((<any>data));
+		},
+		error => {  
+			console.log(33);
+			if (error.status==401){ 
+				this.router.navigate(['/logout']);
+			}
+			else if (error.status==500){
+				alert("Some un-Wanted Chnages Done to Google Sheets");
+				callback(error);
+          }
+      },
+      () => {        
 			//console.log(111);   
 			}
 		);   

@@ -1,25 +1,54 @@
 
-<div class="inner-bg">
-	<div  class="container">
-		<div class="row">
-			<div class="col-sm-6 col-sm-offset-3 form-box">
-				<div class="form-top">
-					<div class="form-top-left">
-						<h3 class="ivf-title">Enhanced Reports</h3>
-					</div>
-				</div>
 
-				<div class="form-bottom">
-					Welcome  To Reports Page
+						<!-- table data -->	
+					<div *ngIf="showEnReportPopup">
+						<div class="close-btn">
+							<a href="javascript:void(0)" (click)="closePopup()">
+								Go Back
+							</a>
+						</div>
+						<div class="table-container">
+						<h3 style="text-align: center" *ngIf="(reportType==2 || reportType==3)">Validate IV Batch Report</h3>
+						<h3 style="text-align: center" *ngIf="(reportType==1 || reportType==4)">Validate TX Plan Report</h3>
 						
-
-					
-				</div>
-			</div>
-		</div>
-
-	</div>
+						<div>
+							<table  class="table table-bordered" style="margin-bottom:0px;">
+								<thead>
+									<tr>
+										<th style="width:200px;">Office Name</th>
+										<th class="tr-width" *ngIf="reportType==1">TX Plan</th>
+										<th class="tr-width" *ngIf="(reportType==1 || reportType==2)">IVF ID</th>
+										<th class="tr-width" *ngIf="(reportType==1 || reportType==2)">Patient ID</th>
+										<th *ngIf="(reportType==1 || reportType==2)">Patient Name</th>
+										<th *ngIf="reportType==3">Total No of IVF ID Run</th>
+										<th *ngIf="reportType==4">Total No of TX Plan Run</th>
+										<th class="tr-width">Rule Failed</th>
+										<th class="tr-width">Rule Passed</th>
+										<th class="tr-width">Alerts</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+											
+						<div [ngClass]="{'td-width':enreportData.length>10}" style="overflow:auto">
+						<table class="table table-bordered table-striped">
+								<tbody>
+									<tr *ngFor="let data of enreportData">
+										<td style="width:200px;"><span [innerHTML]="data.office"></span></td>
+										<td class="tr-width" *ngIf="reportType==1"><span [innerHTML]="data.txP"></span></td>
+										<td class="tr-width" *ngIf="(reportType==1 || reportType==2)"><span [innerHTML]="data.ivfId"></span></td>
+										<td class="tr-width" *ngIf="(reportType==1 || reportType==2)"><span [innerHTML]="data.pid"></span></td>
+										<td *ngIf="(reportType==1 || reportType==2)"><span [innerHTML]="data.pname"></span></td>
+										<td *ngIf="reportType==3"><span [innerHTML]="data.ctCount"></span></td>
+										<td *ngIf="reportType==4"><span [innerHTML]="data.ctCount"></span></td>
+										<td class="tr-width"><span [innerHTML]="data.fail"></span></td>
+										<td class="tr-width"><span [innerHTML]="data.pass"></span></td>
+										<!-- <td style="width:103px;"><span [innerHTML]="data.alert"></span></td> -->
+										<td [ngClass]="{'adjust-width':enreportData.length>10}" class="tr-width"><span [innerHTML]="data.alert"></span></td>
+									<tr>
+								</tbody>						
+							</table></div>
+							</div>
+					</div>
+			
 	
-	
-	
-</div>

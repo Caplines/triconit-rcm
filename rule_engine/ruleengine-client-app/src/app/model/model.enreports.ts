@@ -1,9 +1,9 @@
 export class EnReportsModel {
-  reportType: any;
-  txPlanId: string="";
-  ivfId: string="";
-  patientId: string="";
-  startDate: string="";
-  endDate: string="";
-  officeId:string="";
+reportType: number =0;
+tpId: string="";
+ivfId: string="";
+pId: string="";
+startDate: string="";
+endDate: string="";
+officeId:string="";
 }

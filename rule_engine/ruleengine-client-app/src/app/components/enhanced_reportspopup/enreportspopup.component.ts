@@ -1,15 +1,19 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
 import {Office} from "../../model/model.office";
 import {AccountService} from "../../services/account.service";
 import {Router,ActivatedRoute} from "@angular/router";
 
 @Component({
-  selector: 'app-enreports',
+  selector: 'app-enreportspopup',
   templateUrl: './enreportspopup.component.html',
   styleUrls: ['./enreportspopup.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class EnReportspopupComponent implements OnInit {
+  @Input() enreportData:any;
+  @Input() reportType:any;
+  @Input() showEnReportPopup:boolean;
+  @Output() emitToParent = new EventEmitter<any>();
   errorMessage: string;
   offices:any;
   userName: any;
@@ -23,5 +27,7 @@ export class EnReportspopupComponent implements OnInit {
   ngOnInit() {
   }
   
-  
+  closePopup() {
+	  this.emitToParent.emit({action: "showEnReportPopup", value: false});
+  }
 }
