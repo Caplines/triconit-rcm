@@ -18,11 +18,6 @@ export class EnReportspopupComponent implements OnInit {
   offices:any;
   userName: any;
   userType: any;
- 
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
-	  this.offices =this.route.snapshot.data['offs'].data;
-	  this.offices.push({"name":"All OFFICES","uuid":"All offices"});
-  }
 
   ngOnInit() {
   }

@@ -67,8 +67,8 @@ reportType:any;
   
   runEnReport()
   {
-	  if((this.enreports.tpId || this.enreports.ivfId || this.enreports.pId || this.enreports.officeId) && 
-			  ((this.enreports.startDate!='' && (this.enreports.endDate > this.enreports.startDate)) || (this.enreports.startDate=='' && this.enreports.endDate=='')))
+	  if(this.enreports.tpId || this.enreports.ivfId || this.enreports.pId || this.enreports.officeId ||
+			  (this.enreports.startDate!='' && (this.enreports.endDate > this.enreports.startDate)) )
 	  {
 		  if(this.enreports.startDate!='')
 			  {this.enreports.startDate = this.datePipe.transform(this.enreports.startDate, 'MM/dd/yyyy');

@@ -61,7 +61,7 @@
 						
 						<div class="form-group date-dropdown" [ngClass]="{ 'has-error': f.submitted }">
 							<ng-datepicker [(ngModel)]="enreports.endDate" name="datePicker" [options]="dateOptions"></ng-datepicker>
-							<div *ngIf="f.submitted && enreports.endDate=='' && enreports.startDate!=''" class="error-msg">Please select valid Date.</div>
+							<div *ngIf="f.submitted && enreports.endDate=='' && enreports.startDate!=''" class="error-msg">Please select Date.</div>
 							<div *ngIf="f.submitted && enreports.endDate !='' && enreports.startDate !='' && (enreports.startDate > enreports.endDate)" class="error-msg">End date must be greater than start date ..</div>							
 						</div>
 			
@@ -73,12 +73,9 @@
 							</select>
 							<!-- <div *ngIf="f.submitted && enreports.officeId==''" class="error-msg">Office Name is required</div> -->
 							
-							<div *ngIf="f.submitted && showParam.IvBatch && enreports.ivfId=='' && enreports.pId=='' && enreports.officeId==''" class="error-msg">please enter either IVF Id or Patient Id or Office name ..</div>
-							<div *ngIf="f.submitted && showParam.TxPlan && enreports.tpId=='' && enreports.ivfId=='' && enreports.pId=='' && enreports.officeId==''" class="error-msg">please enter either plan Id or IVF Id or Patient Id or Office name ..</div>
-							<div *ngIf="f.submitted && showParam.IvBatchNumber && enreports.officeId==''" class="error-msg">please select office...</div>
-							<div *ngIf="f.submitted && showParam.TxPlanNumber && enreports.officeId==''" class="error-msg">please select office...</div>
+							<div *ngIf="f.submitted && ((enreports.startDate=='' && enreports.endDate=='') || enreports.pId=='' || enreports.officeId=='' )" class="error-msg">
+							please enter atleast one field .. </div>
 						</div>
-						
 						<p><button [disabled]="showLoading" type="submit" class="btn">Submit</button></p>
 						
 						<div *ngIf="showLoading" class="loader"></div>					    
