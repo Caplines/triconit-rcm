@@ -73,7 +73,7 @@
 							</select>
 							<!-- <div *ngIf="f.submitted && enreports.officeId==''" class="error-msg">Office Name is required</div> -->
 							
-							<div *ngIf="f.submitted && ((enreports.startDate=='' && enreports.endDate=='') || enreports.pId=='' || enreports.officeId=='' )" class="error-msg">
+							<div *ngIf="f.submitted && ((enreports.startDate=='' && enreports.endDate=='') && enreports.pId=='' && enreports.officeId=='' )" class="error-msg">
 							please enter atleast one field .. </div>
 						</div>
 						<p><button [disabled]="showLoading" type="submit" class="btn">Submit</button></p>
