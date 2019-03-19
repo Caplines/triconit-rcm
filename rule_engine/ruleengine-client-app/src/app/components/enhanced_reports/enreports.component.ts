@@ -65,10 +65,23 @@ reportType:any;
 	this.reportType = this.enreports.reportType;
   }
   
+  
+  dateCheck(){
+	  let x=true;
+	  if (this.enreports.startDate!='' && this.enreports.endDate==''){
+		  x=false;
+	  }
+	  if (this.enreports.startDate=='' && this.enreports.endDate!=''){
+		  x=false;
+	  }
+	 return x; 
+  }
+  
   runEnReport()
   {
-	  if(this.enreports.tpId || this.enreports.ivfId || this.enreports.pId || this.enreports.officeId ||
-			  (this.enreports.startDate!='' && (this.enreports.endDate > this.enreports.startDate)) )
+	  if(this.dateCheck() && (this.enreports.tpId || this.enreports.ivfId || this.enreports.pId || this.enreports.officeId ||
+			  (this.dateCheck() && (this.enreports.endDate > this.enreports.startDate)))
+	    )
 	  {
 		  if(this.enreports.startDate!='')
 			  {this.enreports.startDate = this.datePipe.transform(this.enreports.startDate, 'MM/dd/yyyy');
