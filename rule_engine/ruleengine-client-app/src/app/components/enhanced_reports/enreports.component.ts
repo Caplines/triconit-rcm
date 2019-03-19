@@ -27,10 +27,14 @@ export class EnReportsComponent implements OnInit {
 
 reportType:any;
 
-  dateOptions: DatepickerOptions = {
+  dateOptionsS: DatepickerOptions = {
 	displayFormat: 'MM/DD/YYYY',
-	placeholder: 'Click to select a date'
+	placeholder: 'Click to select a Start date'
   };
+ dateOptionsE: DatepickerOptions = {
+		displayFormat: 'MM/DD/YYYY',
+		placeholder: 'Click to select a End date'
+	  };
   showParam:any = { TxPlan : false, IvBatch : false, IvBatchNumber : false, TxPlanNumber : false }
   typeMap: any = {
         'TxPlan': 1,
@@ -46,7 +50,8 @@ reportType:any;
   }
 
   ngOnInit() {
-	this.dateOptions.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
+	this.dateOptionsS.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
+	this.dateOptionsE.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
   }
   
   reportParam(value) {

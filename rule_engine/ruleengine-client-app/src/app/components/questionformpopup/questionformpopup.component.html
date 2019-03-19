@@ -7,14 +7,32 @@
 	<div *ngIf="arrayOfKeys.length==0">
 	  NO DATA FOUND. Please Run Rule First with the Corresponding TP / TP is invalid.
 	</div>
-	<div *ngFor="let key of arrayOfKeys">
+	<div *ngFor="let key of arrayOfKeys;let ii = index">
 		<h3>{{key}}</h3>
-		
-		<div *ngIf = "key == 'Attachment Required'">
+		<!-- Attachment Required -->
+		<div *ngIf = "key == 'X-Rays/Narratives/Perio Requirements'" class="questionpopup">
 			<table class="table table-bordered table-striped">
 				<thead>
 					<tr>
-						<th *ngFor="let data of questionFormData[key]">{{data.question}}</th>
+					<ng-container *ngFor="let data of questionFormData[key]">
+					 <ng-container *ngIf="data.question=='Service Codes'; else elseif1"><th width="10%" >{{data.question}}</th></ng-container>
+						<ng-template #elseif1>
+						    <ng-container *ngIf="data.question=='Tooth# / Arch / Quad'; else elseif2"><th width="160px" >{{data.question}}</th></ng-container>
+						</ng-template>
+						<ng-template #elseif2>
+						    <ng-container *ngIf="data.question=='Requirements'; else elseif3"><th >{{data.question}}</th></ng-container>
+						</ng-template>
+						<ng-template #elseif3>
+						    <ng-container *ngIf="data.question=='Are All Requiements Met?'; else elseif4"><th width="210px" >{{data.question}}</th></ng-container>
+						</ng-template>
+						<ng-template #elseif4>
+						    <ng-container *ngIf="data.question=='Notes/Narrative?'; else elseif5"><th width="20%" >{{data.question}}</th></ng-container>
+						</ng-template>
+						
+						<ng-template #elseif5><th width="20%" >{{data.question}}</th></ng-template>
+                     
+                     </ng-container>
+                     
 					</tr>
 				</thead>
 				<tbody>
@@ -38,11 +56,25 @@
 		<hr/>
 		</div>
 		
-		<div *ngIf = "key == 'Forms Required'">
+		<div *ngIf = "key == 'Consent Form Requirements'" class="questionpopup">
 			<table class="table table-bordered table-striped">
 				<thead>
 					<tr>
-						<th *ngFor="let data of questionFormData[key]">{{data.question}}</th>
+					<ng-container *ngFor="let data of questionFormData[key]">
+					 <ng-container *ngIf="data.question=='Service Codes'; else elseif1"><th width="10%" >{{data.question}}</th></ng-container>
+						<ng-template #elseif1>
+						    <ng-container *ngIf="data.question=='Tooth# / Arch / Quad'; else elseif2"><th width="160px" >{{data.question}}</th></ng-container>
+						</ng-template>
+						<ng-template #elseif2>
+						    <ng-container *ngIf="data.question=='Consent Form Name'; else elseif3"><th >{{data.question}}</th></ng-container>
+						</ng-template>
+						<ng-template #elseif3>
+						    <ng-container *ngIf="data.question=='Is Signed Consent Form Available?'; else elseif4"><th width="270px" >{{data.question}}</th></ng-container>
+						</ng-template>
+						<ng-template #elseif4><th width="20%" >{{data.question}}</th></ng-template>
+                     
+                     </ng-container>
+                     
 					</tr>
 				</thead>
 				<tbody>
@@ -65,7 +97,7 @@
 			</table>
 		<hr/>
 		</div>
-		
+		<!-- NOT USED -->
 		<div *ngIf = "key == 'RULE_ORTHO'">
 			<div *ngFor="let data of questionFormData[key]">
 				{{data.questionOrder}}. {{data.question}} {{data.answerAppenderPosition == '1'? data.answerAppender: ''}}
@@ -79,46 +111,103 @@
 		<hr/>
 		</div>
 		
-		<div *ngIf = "key == 'Pre-Authorization'">
-			<div *ngFor="let data of questionFormData[key]">
-				{{data.question}}
-				<span *ngFor="let answer of data.questionAnswers">
-					<span *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
-						<input class="inp-custom fill-blanks" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
-					</span>
-					<span *ngIf="data.questionType == 'Y_N'">
-						<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
-						<label for="yes_{{answer.answerId}}">Yes</label>										
-						<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
-						<label for="no_{{answer.answerId}}">No</label>
-					</span>
-				</span>
-			</div>
+		<div *ngIf = "key == 'Pre-Authorization Requirements'" class="questionpopup">
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th *ngFor="let data of questionFormData[key]">{{data.question}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td *ngFor="let data of questionFormData[key]">
+							<ul *ngFor="let answer of data.questionAnswers">
+								<li *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
+									<input class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+								</li>
+								<li *ngIf="data.questionType == 'Y_N'">
+									<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
+									<label for="yes_{{answer.answerId}}">Yes</label>										
+									<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
+									<label for="no_{{answer.answerId}}">No</label>
+								</li>
+							</ul>						
+						</td>
+					<tr>
+				</tbody>						
+			</table>
 		<hr/>
 		</div>
 		
-		<div *ngIf = "key == 'Provider Change'">
+		<div *ngIf = "key == 'Major Service Form Requirements'" class="questionpopup">
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th *ngFor="let data of questionFormData[key]">{{data.question}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td *ngFor="let data of questionFormData[key]">
+							<ul *ngFor="let answer of data.questionAnswers">
+								<li *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
+									<input class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+								</li>
+								<li *ngIf="data.questionType == 'Y_N'">
+									<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
+									<label for="yes_{{answer.answerId}}">Yes</label>										
+									<input type="radio" [checked]="answer.answer=='No'" value="No" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'No')" />
+									<label for="no_{{answer.answerId}}">No</label>
+								</li>
+							</ul>						
+						</td>
+					<tr>
+				</tbody>						
+			</table>
+		<hr/>
+		</div>
+		
+		<div *ngIf = "key == 'Provider Change'" class="questionpopup">
 			<div *ngFor="let data of questionFormData[key]">
-				{{data.questionOrder}}. {{data.question}}
+			<ng-container *ngIf="data.question=='Provider'">{{data.question}}</ng-container>
 				<span *ngFor="let answer of data.questionAnswers">
+					<span *ngIf="data.questionType == 'FILL'">
+					  listed in IV form <span style="text-decoration: underline;">{{answer.answer}}</span> 
+					<br> Select the correct option below. Enter the Reference No. if 2nd option is selected. 
+					</span>
+					
 					<span *ngIf="data.questionType == 'C_B'">
 						<label class="checbox-container">
-							<input type="checkbox" [(ngModel)]="answer.answer" (change)="saveChanges(answer)">
-							<span class="checkmark"></span>
+						<input type="checkbox" [(ngModel)]="answer.answer" (change)="saveChanges(answer)"><span class="checkmark"></span> 
 						</label>
+						<ng-container *ngIf="data.question!='Provider'">{{data.question}}</ng-container>
 					</span>
 					<span *ngIf="data.questionType == 'C_B_A'">
 						<label class="checbox-container">
 							<input type="checkbox" [(ngModel)]="answer.answer1" (change)="mergeAnswer(answer)">
-							<span class="checkmark"></span>
+							<span class="checkmark"></span> 
 						</label>
-						<input class="inp-custom fill-blanks" type="text" [(ngModel)]="answer.answer2" (change)="mergeAnswer(answer)" [disabled]="data.canChangeAnswer == 0" />
+						<ng-container *ngIf="data.question!='Provider'">{{data.question}}</ng-container>
+						<br>
+						<span style="padding-left: 36px">Reference No. <input class="inp-custom fill-blanks" type="text" [(ngModel)]="answer.answer2" (change)="mergeAnswer(answer)" [disabled]="data.canChangeAnswer == 0" />
+						</span>
 					</span>
 				</span>
 			</div>
 		<hr/>
 		</div>
 		
+		<div *ngIf = "key == 'Comments in IV Form'" class="comivf">
+			<div *ngFor="let data of questionFormData[key]">
+				<div *ngFor="let answer of data.questionAnswers">
+					<div *ngIf="answer.answer == ''">	________________ </div>
+					<div *ngIf="answer.answer != ''">	{{answer.answer}} </div>
+				</div>
+			</div>
+		
+		</div>
+		<hr/>
+		<!-- NOT USED -->
 		<div *ngIf = "key == 'RULE_BONE_GRAFT'">
 			<div *ngFor="let data of questionFormData[key]">
 				{{data.question}}

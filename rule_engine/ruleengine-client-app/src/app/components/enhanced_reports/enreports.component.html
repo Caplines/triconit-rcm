@@ -55,12 +55,12 @@
 						</div>
 						
 						<div class="form-group date-dropdown" [ngClass]="{ 'has-error': f.submitted }">
-							<ng-datepicker [(ngModel)]="enreports.startDate" name="datePicker1" [options]="dateOptions"></ng-datepicker>
+							<ng-datepicker [(ngModel)]="enreports.startDate" name="datePicker1" [options]="dateOptionsS"></ng-datepicker>
 							<div *ngIf="f.submitted && enreports.endDate!='' && enreports.startDate==''" class="error-msg">Please select valid Date.</div>
 						</div>
 						
 						<div class="form-group date-dropdown" [ngClass]="{ 'has-error': f.submitted }">
-							<ng-datepicker [(ngModel)]="enreports.endDate" name="datePicker" [options]="dateOptions"></ng-datepicker>
+							<ng-datepicker [(ngModel)]="enreports.endDate" name="datePicker" [options]="dateOptionsE"></ng-datepicker>
 							<div *ngIf="f.submitted && enreports.endDate=='' && enreports.startDate!=''" class="error-msg">Please select Date.</div>
 							<div *ngIf="f.submitted && enreports.endDate !='' && enreports.startDate !='' && (enreports.startDate > enreports.endDate)" class="error-msg">End date must be greater than start date ..</div>							
 						</div>
