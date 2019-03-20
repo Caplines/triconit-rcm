@@ -472,7 +472,7 @@ public class FreqencyUtils {
 		
 	}
 	
-	public static List<TPValidationResponseDto>  ivfFrequecnyLogic(List<ServiceCodeIvfTimesFreqFieldDto> dataIVF,String tpCode
+	public static List<TPValidationResponseDto>  ivfFrequencyLogic(List<ServiceCodeIvfTimesFreqFieldDto> dataIVF,String tpCode
 			,String tooth,ToothHistoryDto historyD,Class<?> clazz,BufferedWriter bw,int CurrentYear,
 			Date planDate, MessageSource messageSource,Rules rule,IVFTableSheet ivf,
 			Date TP_Date,Locale locale,Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVFFinal) {

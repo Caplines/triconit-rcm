@@ -118,7 +118,7 @@ public class CommonRedirectController {
 	}
 	
 	@CrossOrigin
-	@RequestMapping(value = "/enreports", method = RequestMethod.GET)
+	@RequestMapping(value = "/enreport", method = RequestMethod.GET)
 	public void enreportsForward(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 

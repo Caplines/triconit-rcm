@@ -853,6 +853,12 @@ public class RuleBook {
 
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equals("D1208")) {
 					if (!d1208) {
 						try {
@@ -1229,6 +1235,12 @@ public class RuleBook {
 			int size = 0;
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				Collection<String> prit = Collections2.filter(srpCodeTCList, th -> th.equals(tp.getServiceCode()));
 				if (prit != null)
 					size = size + prit.size();
@@ -1313,6 +1325,11 @@ public class RuleBook {
 
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
 					// X-Rays Code
 					Collection<String> prit = Collections2.filter(xrayCodeList, cd -> cd.equals(tp.getServiceCode()));
 					if (prit != null && prit.size() > 0) {
@@ -1587,6 +1604,11 @@ public class RuleBook {
 				List<String> list = null;
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
 					// fillingCodes
 					Collection<String> prit = Collections2.filter(fillingCodeList,
 							cd -> cd.equals(tp.getServiceCode()));
@@ -1889,7 +1911,7 @@ public class RuleBook {
 						TreatmentPlan tp = (TreatmentPlan) obj1;
 						List<String> res= new ArrayList<>();
 						//LOW ORDER SAME SURFACE
-						List<String> rDLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryD, true, TP_Date, true, bw);
+						List<String> rDLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryD, true, TP_Date, true,1,12, bw);
 						if (rDLSS!=null && rDLSS.size()>0) {
 							List<String> dx=ToothUtil.generateErrorListForRule171(tp,esfeess,rDLSS,bw);
 							for(String p:dx) {
@@ -1911,7 +1933,7 @@ public class RuleBook {
 						}
 						*/
 						//Higher order Filling
-						List<String> rMLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryM, true, TP_Date, true, bw);
+						List<String> rMLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryM, true, TP_Date, true,1,12, bw);
 						if (rMLSS!=null && rMLSS.size()>0) {
 							List<String> dx=ToothUtil.generateErrorListForRule171(tp,esfeess,rMLSS,bw);
 							for(String p:dx) {
@@ -1954,17 +1976,17 @@ public class RuleBook {
 						 */
 						//HIGH ORDER
 						res= new ArrayList<>();
-						List<String>   r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryD, false, TP_Date, true, bw);
+						List<String>   r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryD, false, TP_Date, true,1,12, bw);
 						if (r!=null && r.size()>0) {
 							res.addAll(new ArrayList<String>(r));
 							pass= false;
 						}             
-						            r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryP, false, TP_Date, true, bw);
+						            r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryP, false, TP_Date, true,1,12, bw);
 						if (r!=null && r.size()>0) {
 							res.addAll(new ArrayList<String>(r));
 							pass= false;
 						}
-						            r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryM, false, TP_Date, true, bw);
+						            r= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryM, false, TP_Date, true,1,12, bw);
 						if (r!=null && r.size()>0) {
 							res.addAll(new ArrayList<String>(r));
 							pass= false;
@@ -2014,6 +2036,12 @@ public class RuleBook {
 			boolean pass = true;
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (!tp.getTooth().equalsIgnoreCase("NA") && !tp.getTooth().equals("")) {
 					String scode = tp.getServiceCode();
 					String tooths[] = ToothUtil.getToothsFromTooth(tp.getTooth());
@@ -2107,6 +2135,12 @@ public class RuleBook {
 
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				Mappings mapA = getMappingFromListAdditionalInformationNeeded(mappings, tp.getServiceCode());
 				Mappings mapP = getMappingFromListPreAuth(mappings, tp.getServiceCode());
 
@@ -2152,7 +2186,7 @@ public class RuleBook {
 						if (Constants.Attachment_Required_question_header_id_notes_nar==ans.getQuestionId()) {//5
 							notes=ans.getAnswer();
 						}
-						if (Constants.Attachment_Required_question_header_id_checkpoints==ans.getQuestionId()) {//1
+						if (Constants.Attachment_Required_question_header_id_service_code==ans.getQuestionId()) {//1
 							scode=ans.getAnswer();
 						}
 						
@@ -2257,6 +2291,12 @@ public class RuleBook {
 			}
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				try {
 					DateUtils.CheckForStringInDate(tp.getTreatmentPlanDetails().getDateLastUpdated());
 					dos = Constants.SIMPLE_DATE_FORMAT.parse(tp.getTreatmentPlanDetails().getDateLastUpdated());
@@ -2355,6 +2395,12 @@ public class RuleBook {
 			if (ivf.getMissingToothClause() != null && ivf.getMissingToothClause().trim().equalsIgnoreCase("yes")) {
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
+
 					Collection<Mappings> mL = Collections2.filter(mappings,
 							y -> y.getAdaCodes().getCode().equals((tp).getServiceCode()));
 					if (mL == null) {
@@ -2428,6 +2474,12 @@ public class RuleBook {
 			// Email Dated & Phone Call: 1 August 2018
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D2950")) {
 					RuleEngineLogger.generateLogs(clazz, "D2950 code found", Constants.rule_log_debug, bw);
 					tooth = tp.getTooth();
@@ -2503,9 +2555,26 @@ public class RuleBook {
 					mapps.addAll(mappsP);
 				if (mappsC != null)
 					mapps.addAll(mappsC);
-
+                /*For Latter
+				boolean cont=false;
+				List<String> codestoCheck=  new ArrayList<>( Arrays.asList( new String[]{"D0120", "D0220","D0230"} ) );
 				for (Object t : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) t;
+					if (codestoCheck.contains(tp.getServiceCode())) { 
+						cont=true;break;
+					}
+				}
+				
+				if (!cont) return new ArrayList<>();
+				*/	
+					for (Object t : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) t;
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
+
 					Collection<Mappings> mL = Collections2.filter(mapps,
 							y -> y.getAdaCodes().getCode().equals((tp.getServiceCode())));
 					/*
@@ -3182,6 +3251,11 @@ public class RuleBook {
 				List<String> list = null;
 				for (Object t : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) t;
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
 					/*
 					 * NEED FOR SECOND PHASE.. try { //TP_Date = Constants.SIMPLE_DATE_FORMAT //
 					 * .parse(tp.getTreatmentPlanDetails().getDateLastUpdated()); } catch
@@ -3246,7 +3320,7 @@ public class RuleBook {
 										// if (tpCode.equalsIgnoreCase(historyD.getHistoryCode().trim())) {
 
 										List<ServiceCodeIvfTimesFreqFieldDto> dataIVF = mapFlIVF.get(tpCode);
-										List<TPValidationResponseDto> xL=  FreqencyUtils.ivfFrequecnyLogic(dataIVF, tpCode, tooth, historyD, c2,
+										List<TPValidationResponseDto> xL=  FreqencyUtils.ivfFrequencyLogic(dataIVF, tpCode, tooth, historyD, c2,
                                     		   bw, CurrentYear, planDate, messageSource, rule, ivf, TP_Date, locale,
                                                 mapFlIVFFinal);
 										if (xL.size()>0) return xL;
@@ -3601,6 +3675,11 @@ public class RuleBook {
 			if (cra != null && cra.trim().equalsIgnoreCase("yes")) {
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
 
 					if (tp.getServiceCode().equalsIgnoreCase("D0120") || tp.getServiceCode().equalsIgnoreCase("D0150")
 							|| tp.getServiceCode().equalsIgnoreCase("D0145")) {
@@ -3681,6 +3760,12 @@ public class RuleBook {
 
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D0220") || tp.getServiceCode().equalsIgnoreCase("D0230")
 						|| tp.getServiceCode().equalsIgnoreCase("D0272")
 						|| tp.getServiceCode().equalsIgnoreCase("D0274")) {
@@ -3771,7 +3856,12 @@ public class RuleBook {
 				
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
-                    
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
+
 					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
 						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
 								bw);
@@ -3971,6 +4061,11 @@ public class RuleBook {
 				
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
 
 					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
 						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
@@ -4183,7 +4278,13 @@ public class RuleBook {
 	                
 					for (Object obj : tpList) {
 						TreatmentPlan tp = (TreatmentPlan) obj;
+						RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+								Constants.rule_log_debug, bw);
+							
+						if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+							||	tp.getEstInsurance().equals("0.0")) continue;
 
+						
 						if (reqList.contains(tp.getServiceCode().toUpperCase())) {
 							RuleEngineLogger.generateLogs(clazz, "code R=" + tp.getServiceCode(), Constants.rule_log_debug,
 									bw);
@@ -4452,6 +4553,11 @@ public class RuleBook {
 	                
 					for (Object obj : tpList) {
 						TreatmentPlan tp = (TreatmentPlan) obj;
+						RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+								Constants.rule_log_debug, bw);
+							
+						if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+							||	tp.getEstInsurance().equals("0.0")) continue;
 
 						if (reqList.contains(tp.getServiceCode().toUpperCase())) {
 							RuleEngineLogger.generateLogs(clazz, "code R=" + tp.getServiceCode(), Constants.rule_log_debug,
@@ -4723,6 +4829,11 @@ public class RuleBook {
                 
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
 
 					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
 						RuleEngineLogger.generateLogs(clazz, "code R=" + tp.getServiceCode(), Constants.rule_log_debug,
@@ -4974,6 +5085,12 @@ public class RuleBook {
 		try {	
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D0150") || tp.getServiceCode().equalsIgnoreCase("D0120") || 
 				    tp.getServiceCode().equalsIgnoreCase("D0145") || tp.getServiceCode().equalsIgnoreCase("D0140") ) {
 					RuleEngineLogger.generateLogs(clazz,"code ="+ tp.getServiceCode(),Constants.rule_log_debug, bw);
@@ -5054,6 +5171,12 @@ public class RuleBook {
 			try {
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				//|| tp.getServiceCode().equalsIgnoreCase("D4341") ||tp.getServiceCode().equalsIgnoreCase("D4342") -->These Two are exceptions
 				if (tp.getServiceCode().equalsIgnoreCase("D4346")  || 
 				     tp.getServiceCode().equalsIgnoreCase("D1110")  ||
@@ -5158,6 +5281,13 @@ public class RuleBook {
 				Date TP_DATE= new Date();
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
+				
 				if (tp.getServiceCode().equalsIgnoreCase("D4910")) {
 						RuleEngineLogger.generateLogs(clazz,"code ="+ tp.getServiceCode(),Constants.rule_log_debug, bw);
 					//Check history
@@ -5267,6 +5397,12 @@ public class RuleBook {
 		try {
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D4341")) {
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					toothTR1 = ToothUtil.getQuadToothsFromTooth(tp.getTooth());
@@ -5348,6 +5484,12 @@ public class RuleBook {
 		try {
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (checkList.contains(tp.getServiceCode())) {
 					toothFILL= new ArrayList<>();
 					toothFILL.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
@@ -5444,6 +5586,12 @@ public class RuleBook {
 		try {
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D2954")) {
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					toothTR1 = ToothUtil.getToothsFromTooth(tp.getTooth());
@@ -5524,6 +5672,12 @@ public class RuleBook {
 			int counter=0;
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D7953") || tp.getServiceCode().equalsIgnoreCase("D7310") ||
 						tp.getServiceCode().equalsIgnoreCase("D7311")||tp.getServiceCode().equalsIgnoreCase("D7320") ||	
 						tp.getServiceCode().equalsIgnoreCase("D7321")) {
@@ -5580,6 +5734,13 @@ public class RuleBook {
 			boolean checkForHistory=false;
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D5130") || tp.getServiceCode().equalsIgnoreCase("D5140")) {
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
@@ -5675,6 +5836,12 @@ public class RuleBook {
 			
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (extList.contains(tp.getServiceCode().toUpperCase())) {
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
@@ -5889,6 +6056,13 @@ public class RuleBook {
 				List<String> reqListNew = new ArrayList<>();
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
+					
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
+
 					//present=false;
 
 					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
@@ -6033,6 +6207,12 @@ public class RuleBook {
             String tpCode="";
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D1110") || tp.getServiceCode().equalsIgnoreCase("D1120")) {
 					needCheck=true;
 					tpCode=tp.getServiceCode();
@@ -6127,6 +6307,12 @@ public class RuleBook {
 			codes[0]=codes[1]="";
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D1515")) {
 					codes[0]="D1515";
 					tooths[0]=tp.getTooth();
@@ -6237,6 +6423,12 @@ public class RuleBook {
 			
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if(mvpvapList != null) {	
 				for(MVPandVAP mvpvap:mvpvapList) {
 					//String base = mvpvap.getBase();
@@ -6408,6 +6600,12 @@ public class RuleBook {
 			
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				/*
 				if (codes.contains(tp.getServiceCode())) {
 					pass =false;
@@ -6462,7 +6660,7 @@ public class RuleBook {
 
 	}
 
-	// Bone Graft (User Input)
+	// Bone Graft (User Input) (Not Used)
 	public List<TPValidationResponseDto> Rule43(List<Object> tpList,List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
 			BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_43,
@@ -6475,6 +6673,12 @@ public class RuleBook {
 			boolean boneQuestionPresent=false;
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;//D4910  //D7953
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
 				if (tp.getServiceCode().equalsIgnoreCase("D4910")) {
 					bone=true;
 					break;
@@ -6526,7 +6730,7 @@ public class RuleBook {
 
 	}
 
-	// Signed Consent Requirements (User Input) //Forms Required
+	// Signed Consent Requirements (User Input) //Forms Required // Consent Form Requirements
 	public List<TPValidationResponseDto> Rule44(List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
 			BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_44,
@@ -6540,7 +6744,7 @@ public class RuleBook {
 	      
 	    	  if (ansL!=null) {
 	    		  for(QuestionAnswerDto qDto: ansL) {
-	    			 if ( qDto.getQuestionId()==Constants.Forms_Required_question_header_id_a_all_met) {
+	    			 if ( qDto.getQuestionId()==Constants.Consent_Form_Requirements_header_id_Is_Signed_Consent_Form_Available) {
 	    				 questionPresent=true;
 	    			   if (	qDto.getAnswer()!=null && qDto.getAnswer().equalsIgnoreCase("yes")) {
 	    				   //pass
@@ -6549,7 +6753,7 @@ public class RuleBook {
 	    				   //fail
 	    				   pass=false;
 	    			   }
-	    			   break;
+	    			   //break;
 	    			 }
 	    		  }
 	    	  }
@@ -6583,8 +6787,55 @@ public class RuleBook {
 
 	}
 	
+	// Major Service Form Requirements (User Input) //
+	public List<TPValidationResponseDto> Rule50(List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_50,
+				Constants.rule_log_debug, bw);
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean pass=true;
+		try {
+			
+			boolean questionPresent=false;
+			
+	      
+	    	  if (ansL!=null) {
+	    		  for(QuestionAnswerDto qDto: ansL) {
+	    			 if ( qDto.getQuestionId()==Constants.Major_Service_Form_header_id_Is_major_Available) {
+	    				 questionPresent=true;
+	    			   if (	qDto.getAnswer()!=null && qDto.getAnswer().equalsIgnoreCase("yes")) {
+	    				   //pass
+	    			   }
+	    			   else {
+	    				   //fail
+	    				   pass=false;
+	      			   }
+	    			 }
+	    		  }
+	    	  }
+	      
+           if (pass==false) {
+        		  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+      					messageSource.getMessage("rule50.error.message1", new Object[] { }, locale),
+      					Constants.FAIL));
+        	  }
+          
+          else  {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule50.pass.message", new Object[] {  }, locale),
+					Constants.PASS));
+
+          }
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL));
+		}
+		return dList;
+
+	}
 	
-	// Ortho (User Input)
+	// Ortho (User Input) (Not Used)
 	public List<TPValidationResponseDto> Rule45(List<Object> tpList,List<QuestionAnswerDto> ansL, MessageSource messageSource, Rules rule,
 			 BufferedWriter bw) {
 
@@ -6603,6 +6854,12 @@ public class RuleBook {
 			List<String> orthoList= Arrays.asList( Constants.ORTHO_CODE_UI.split(","));
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+
                 if (orthoList.contains(tp.getServiceCode())) {
  				if (ansL!= null) {
 
@@ -6669,7 +6926,7 @@ public class RuleBook {
 
 	}
 
-	// Pre-Authorization (User Input)
+	// Pre-Authorization Requirements (User Input)
 	public List<TPValidationResponseDto> Rule46(Object ivfSheet,List<Object> tpList,List<QuestionAnswerDto> ansL, MessageSource messageSource, Rules rule,
 			List<Mappings> mappings,BufferedWriter bw) {
 
@@ -6705,8 +6962,10 @@ public class RuleBook {
 			boolean checkForAns=false;
 			String cMedicate = Constants.insurance_Medicaid;
 			String planType=ivf.getPlanType();
-			if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
-				if (age[0]>=21){
+			//if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {//not needed for now
+			if (true) {
+				//if (age[0]>=21){//not needed for now..
+				if (true) {
 					for (Object obj : tpList) {
 						TreatmentPlan tp = (TreatmentPlan) obj;
 						Mappings mapP = getMappingFromListPreAuth(mappings, tp.getServiceCode());
@@ -6715,9 +6974,9 @@ public class RuleBook {
 									Constants.rule_log_debug, bw);
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tp.getId())) {
-								if (Constants.Pre_Authorization_question_header_id_avail==ans.getQuestionId()) {//13
+								if (Constants.Pre_Authorization_question_header_id_preauth_avail==ans.getQuestionId()) {//21
 									if (!ans.getAnswer().equalsIgnoreCase("yes")){
-										//pass=false;
+										pass=false;
 										/*
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 												messageSource.getMessage("rule46.error.message1", new Object[] {  }, locale),
@@ -6730,9 +6989,10 @@ public class RuleBook {
 								}						
 							}
 							if (checkForAns) {
+								
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tp.getId())) {
-								if (Constants.Pre_Authorization_question_header_id_refno==ans.getQuestionId()) {//14
+								if (Constants.Pre_Authorization_question_header_id_preauth_no==ans.getQuestionId()) {//22
 									if (ans.getAnswer().trim().equals("")){
 										pass=false;
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -6753,6 +7013,11 @@ public class RuleBook {
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+			else if (d.size()==0){
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule46.error.message1", new Object[] {  }, locale),
+						Constants.FAIL));
+			}
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -6865,7 +7130,12 @@ public class RuleBook {
 			
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
-				
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+	
 				if (tp.getServiceCode().equalsIgnoreCase("D0145")){
 					RuleEngineLogger.generateLogs(clazz, "Code Exam- "+tp.getServiceCode(),
 							Constants.rule_log_debug, bw);
@@ -6909,7 +7179,12 @@ public class RuleBook {
 			if(chip.toLowerCase().contains(Constants.insurance_Chip)) {
 			for (Object obj : tpList) {
 				TreatmentPlan tp = (TreatmentPlan) obj;
-				
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					||	tp.getEstInsurance().equals("0.0")) continue;
+	
 				if (tp.getServiceCode().equalsIgnoreCase("D1351")){
 					RuleEngineLogger.generateLogs(clazz, "Code Sealant- "+tp.getServiceCode(),
 							Constants.rule_log_debug, bw);
@@ -6947,6 +7222,260 @@ public class RuleBook {
 		return dList;
 
 	}
+	
+	
+	// Provider is Same -
+	public List<TPValidationResponseDto> Rule51(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
+			Rules rule, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_51,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> d = new ArrayList<>();
+		try {
+			boolean pass = true;
+			if (tpList == null) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+				return d;
+			}
+
+				//String planType = ivf.getPlanType();
+				//String cMedicate = Constants.insurance_Medicaid;
+				ToothHistoryDto hdto = null;
+				Map<String, List<ToothHistoryDto>> mapHistoryM = new HashMap<>();
+				String pname= ivf.getProviderName();
+				boolean providerSame=true;
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+					
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
+
+					RuleEngineLogger.generateLogs(clazz, " IVF provider -"+pname+" - Provider IN TP-"+tp.getProviderLastName(),
+							Constants.rule_log_debug, bw);
+					if (!pname.equalsIgnoreCase(tp.getProviderLastName())){
+						providerSame=false;
+					}
+				}
+	            //if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
+				RuleEngineLogger.generateLogs(clazz, " Provider is Same :"+providerSame,
+						Constants.rule_log_debug, bw);
+				Date TP_Date = new Date();
+				
+				if (providerSame) {
+	       	
+       	       
+       	        
+					int noOFhistory = Constants.history_codes_size;
+					Class<?> c2;
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							String hd = "getHistory" + i + "DOS";
+							String ht = "getHistory" + i + "Tooth";
+							String hs = "getHistory" + i + "Surface";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);	
+							String code = (String) hcm.invoke(hisSheet);
+							String dt = (String) hdm.invoke(hisSheet);
+							
+							if (code.equals("")) continue ;
+							if (dt.equals("")) continue ;
+							//check for future date 
+							try {
+							if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
+							}catch (Exception e) {
+								continue;
+							}
+							
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistoryM.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryM.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryM.put(code, l);
+								}
+						}
+						for (Object obj1 : tpList) {
+						TreatmentPlan tp = (TreatmentPlan) obj1;
+						//List<String> res= new ArrayList<>();
+						//LOW ORDER
+						List<String> rDLSS= ToothUtil.lowerHigherOrderFillingFound51_52(tp, mapHistoryM, true, TP_Date, true,1,36, bw);
+						if (rDLSS!=null && rDLSS.size()>0) {
+							List<String> dx=ToothUtil.generateErrorListForRule51_52(tp,esfeess,rDLSS,bw);
+							for(String p:dx) {
+							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule51.alert.message1", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2] }, locale), Constants.FAIL));
+							}
+							pass= false;
+						}
+						//LOW ORDER
+						rDLSS= ToothUtil.lowerHigherOrderFillingFound51_52(tp, mapHistoryM, true, TP_Date, true,2,36, bw);
+						if (rDLSS!=null && rDLSS.size()>0) {
+							List<String> dx=ToothUtil.generateErrorListForRule51_52(tp,esfeess,rDLSS,bw);
+							for(String p:dx) {
+							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule51.alert.message2", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2] }, locale), Constants.FAIL));
+							}
+							pass= false;
+						}
+						}//For loop End
+						
+	            }
+                  /**/
+			
+			if (pass)
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+		} catch (Exception x) {
+
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL));
+
+		}
+		return d;
+
+	}
+	
+	// Provider is Different -
+	public List<TPValidationResponseDto> Rule52(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
+			Rules rule, BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_52,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> d = new ArrayList<>();
+		try {
+			boolean pass = true;
+			if (tpList == null) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+				return d;
+			}
+
+				//String planType = ivf.getPlanType();
+				//String cMedicate = Constants.insurance_Medicaid;
+				ToothHistoryDto hdto = null;
+				Map<String, List<ToothHistoryDto>> mapHistoryM = new HashMap<>();
+				String pname= ivf.getProviderName();
+				boolean providerSame=true;
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+							Constants.rule_log_debug, bw);
+						
+					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+						||	tp.getEstInsurance().equals("0.0")) continue;
+
+					RuleEngineLogger.generateLogs(clazz, " IVF provider -"+pname+" - Provider IN TP-"+tp.getProviderLastName(),
+							Constants.rule_log_debug, bw);
+					if (!pname.equalsIgnoreCase(tp.getProviderLastName())){
+						providerSame=false;
+					}
+				}
+	            //if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
+				RuleEngineLogger.generateLogs(clazz, " Provider is Same :"+providerSame,
+						Constants.rule_log_debug, bw);
+				Date TP_Date = new Date();
+				
+				if (!providerSame) {
+	       	
+       	       
+       	        
+					int noOFhistory = Constants.history_codes_size;
+					Class<?> c2;
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							String hd = "getHistory" + i + "DOS";
+							String ht = "getHistory" + i + "Tooth";
+							String hs = "getHistory" + i + "Surface";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);	
+							String code = (String) hcm.invoke(hisSheet);
+							String dt = (String) hdm.invoke(hisSheet);
+							
+							if (code.equals("")) continue ;
+							if (dt.equals("")) continue ;
+							//check for future date 
+							try {
+							if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
+							}catch (Exception e) {
+								continue;
+							}
+
+							hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistoryM.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryM.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryM.put(code, l);
+								}
+						}
+						for (Object obj1 : tpList) {
+						TreatmentPlan tp = (TreatmentPlan) obj1;
+						//List<String> res= new ArrayList<>();
+						//LOW ORDER
+						List<String> rDLSS= ToothUtil.lowerHigherOrderFillingFound51_52(tp, mapHistoryM, true, TP_Date, true,1,12, bw);
+						if (rDLSS!=null && rDLSS.size()>0) {
+							List<String> dx=ToothUtil.generateErrorListForRule51_52(tp,esfeess,rDLSS,bw);
+							for(String p:dx) {
+							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule52.alert.message1", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2]}, locale), Constants.FAIL));
+							}
+							pass= false;
+						}
+						//LOW ORDER
+						rDLSS= ToothUtil.lowerHigherOrderFillingFound51_52(tp, mapHistoryM, true, TP_Date, true,2,12, bw);
+						if (rDLSS!=null && rDLSS.size()>0) {
+							List<String> dx=ToothUtil.generateErrorListForRule51_52(tp,esfeess,rDLSS,bw);
+							for(String p:dx) {
+							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule52.alert.message2", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2] }, locale), Constants.FAIL));
+							}
+							pass= false;
+						}
+
+						}//For loop End
+						
+	            }
+                  /**/
+			
+			if (pass)
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+		} catch (Exception x) {
+
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL));
+
+		}
+		return d;
+
+	}
+
 	/*
 	 * private Mappings getMappingFromList(List<Mappings> map, String code) {
 	 * Mappings r = null; System.out.println("codecode---" + code);
@@ -6973,6 +7502,36 @@ public class RuleBook {
 				rule -> (!rule.getAdditionalInformationNeeded().equalsIgnoreCase("No")
 						&& !rule.getAdditionalInformationNeeded().equalsIgnoreCase("NA")
 						&& !rule.getAdditionalInformationNeeded().equalsIgnoreCase("None")
+						&& rule.getAdaCodes().getCode().equals(code)));
+		for (Mappings rule : ruleGen) {
+			r = rule;
+		}
+		// Debug me for nulll
+		return r;
+	}
+
+	public Mappings getMappingFromListConsentNeeded(List<Mappings> map, String code) {
+		Mappings r = null;
+		Collection<Mappings> ruleGen = Collections2.filter(map,
+				rule -> (!rule.getConsentNeeded().equalsIgnoreCase("No")
+						&& !rule.getConsentNeeded().equalsIgnoreCase("NA")
+						&& !rule.getConsentNeeded().equalsIgnoreCase("")
+						&& !rule.getConsentNeeded().equalsIgnoreCase("None")
+						&& rule.getAdaCodes().getCode().equals(code)));
+		for (Mappings rule : ruleGen) {
+			r = rule;
+		}
+		// Debug me for nulll
+		return r;
+	}
+
+	public Mappings getMappingFromListMajorServiceForm(List<Mappings> map, String code) {
+		Mappings r = null;
+		Collection<Mappings> ruleGen = Collections2.filter(map,
+				rule -> (!rule.getMajorserviceForm().equalsIgnoreCase("No")
+						&& !rule.getMajorserviceForm().equalsIgnoreCase("NA")
+						&& !rule.getMajorserviceForm().equalsIgnoreCase("")
+						&& !rule.getMajorserviceForm().equalsIgnoreCase("None")
 						&& rule.getAdaCodes().getCode().equals(code)));
 		for (Mappings rule : ruleGen) {
 			r = rule;

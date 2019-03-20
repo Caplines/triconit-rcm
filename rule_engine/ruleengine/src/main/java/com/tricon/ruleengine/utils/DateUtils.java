@@ -216,20 +216,46 @@ public class DateUtils {
 		
 	}
 
+	public static boolean checkforXmMore(Date tpDate,Date dos,int months) {
+		
+		//Calendar calendarC = new GregorianCalendar();
+		//calendarC.setTime(new Date());
+		//
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(dos);
+		calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH)+months, calendar.get(Calendar.DATE));
+		Date date12m=calendar.getTime();
+		System.out.println(date12m);
+		System.out.println(tpDate.compareTo(date12m));
+		//isDatesBetweenDates(a, b, d)
+		if (tpDate.compareTo(date12m)<=0 ){
+			return false;
+		}else{
+			return true;
+		}
+		
+	}
 	public static void main(String[] a) {
-	  SimpleDateFormat sdf= new SimpleDateFormat("dd/mm/yyyy");
+	  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
 	  String term="12/03/2019";
-	  String dos="10/03/2019";
+	  String dos="12/02/2020";
 	  Calendar calendar = new GregorianCalendar();
+	  Calendar calendar2 = new GregorianCalendar();
 	  
 	  ////ivfPlanTermDate.compareTo(currentDate)
 	 try {
 	   calendar.setTime(sdf.parse(term));
-	   calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)+60);
-	   Date dInterval= calendar.getTime();
-	   
-		System.out.println(sdf.parse(term).compareTo(sdf.parse(dos))>=0);
-		System.out.println(sdf.parse(term).compareTo(dInterval)>=0);
+	   calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
+
+	   calendar2.setTime(sdf.parse(dos));
+	   calendar2.set(calendar2.get(Calendar.YEAR) , calendar2.get(Calendar.MONTH), calendar2.get(Calendar.DATE));
+
+	   Date termD= calendar.getTime();
+	   Date dosD= calendar2.getTime();
+	   System.out.println(checkforXmMore(termD, dosD, 1));
+	   System.out.println(checkforXm(termD, dosD, 1));
+		//System.out.println(sdf.parse(term).compareTo(sdf.parse(dos))>=0);
+		//System.out.println(sdf.parse(term).compareTo(dInterval)>=0);
 		
 	} catch (ParseException e) {
 		// TODO Auto-generated catch block

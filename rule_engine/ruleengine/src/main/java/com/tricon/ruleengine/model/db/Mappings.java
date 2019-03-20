@@ -17,7 +17,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "mappings_2")
+@Table(name = "mappings_3")
 public class Mappings implements java.io.Serializable {
 
 	/**
@@ -38,6 +38,8 @@ public class Mappings implements java.io.Serializable {
 	private String additionalInformationNeeded;
 	private String preAuthNeeded;
 	private String ageLimitApplicable;
+	private String consentNeeded;
+	private String majorserviceForm;
 
 	public Mappings() {
 	}
@@ -49,7 +51,9 @@ public class Mappings implements java.io.Serializable {
 	public Mappings(int id, AdaCodes adaCodes, ServiceCodeCategory serviceCodeCategory, String coveredUnderMedical,
 			String downgrading, String toothNoForDowngrading, String fillingToothNoMapping,
 			String freqencyLimitationApplicable, String missingToothClauseApplicable, String bundlingApplicable,
-			String additionalInformationNeeded, String preAuthNeeded, String ageLimitApplicable) {
+			String additionalInformationNeeded, String preAuthNeeded, String ageLimitApplicable,
+			String consentNeeded, String majorserviceForm
+			) {
 		this.id = id;
 		this.adaCodes = adaCodes;
 		this.serviceCodeCategory = serviceCodeCategory;
@@ -63,6 +67,9 @@ public class Mappings implements java.io.Serializable {
 		this.additionalInformationNeeded = additionalInformationNeeded;
 		this.preAuthNeeded = preAuthNeeded;
 		this.ageLimitApplicable = ageLimitApplicable;
+		this.consentNeeded = consentNeeded;
+		this.majorserviceForm = majorserviceForm;
+		
 	}
 
 	@Id
@@ -192,6 +199,22 @@ public class Mappings implements java.io.Serializable {
 
 	public void setDowngradingCaCrown(String downgradingCaCrown) {
 		this.downgradingCaCrown = downgradingCaCrown;
+	}
+
+	public String getConsentNeeded() {
+		return consentNeeded;
+	}
+
+	public void setConsentNeeded(String consentNeeded) {
+		this.consentNeeded = consentNeeded;
+	}
+
+	public String getMajorserviceForm() {
+		return majorserviceForm;
+	}
+
+	public void setMajorserviceForm(String majorserviceForm) {
+		this.majorserviceForm = majorserviceForm;
 	}
 
 	

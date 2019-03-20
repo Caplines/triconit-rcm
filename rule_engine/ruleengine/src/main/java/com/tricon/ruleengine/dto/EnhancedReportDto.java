@@ -6,7 +6,7 @@ public class EnhancedReportDto {
 	private int reportType;
 	private String startDate;
 	private String endDate;
-	private String patId;
+	private String pId;
 	private String tpId;
 	private String ivfId;
 	private String officeId;
@@ -29,11 +29,12 @@ public class EnhancedReportDto {
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
-	public String getPatId() {
-		return patId;
+	
+	public String getpId() {
+		return pId;
 	}
-	public void setPatId(String patId) {
-		this.patId = patId;
+	public void setpId(String pId) {
+		this.pId = pId;
 	}
 	public String getTpId() {
 		return tpId;

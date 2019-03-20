@@ -32,6 +32,9 @@ public class UserInputRuleQuestionHeader extends BaseAudit implements java.io.Se
 	@Column(name = "question_order",nullable=false)
 	private int questionOrder;
 
+	@Column(name = "question_order_main",nullable=false)
+	private int questionOrderMain;
+
 	@Column(name = "ans_appender",nullable=true)
 	private String answerAppender;
 
@@ -125,6 +128,14 @@ public class UserInputRuleQuestionHeader extends BaseAudit implements java.io.Se
 
 	public void setActive(int active) {
 		this.active = active;
+	}
+
+	public int getQuestionOrderMain() {
+		return questionOrderMain;
+	}
+
+	public void setQuestionOrderMain(int questionOrderMain) {
+		this.questionOrderMain = questionOrderMain;
 	}
 	
 	

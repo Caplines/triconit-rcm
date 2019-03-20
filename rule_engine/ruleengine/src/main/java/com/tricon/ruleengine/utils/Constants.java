@@ -82,6 +82,10 @@ public class Constants {
 	public static final String RULE_ID_47="Provider Change";
 	public static final String RULE_ID_48="Exam limitation for CHIP";
 	public static final String RULE_ID_49="Sealant limitation in CHIP";
+	public static final String RULE_ID_50="Major Service Form Requirements";
+	public static final String RULE_ID_51="Provider is Same";
+	public static final String RULE_ID_52="Provider is Different";
+	
 	
 	
 	/*
@@ -190,22 +194,26 @@ public class Constants {
 	
 	//Constants Related to Questions (user_input_rule_question_header) table;
 	
-	public static String User_Input_Name_Question_Attachment_Required="Attachment Required";
-	public static String User_Input_Name_Question_Forms_Required="Forms Required";
-	public static String User_Input_Name_Question_RULE_ORTHO="RULE_ORTHO";
-	public static String User_Input_Name_Question_Pre_Authorization="Pre-Authorization";
+	public static String User_Input_Name_Question_Attachment_Required="X-Rays/Narratives/Perio Requirements";//X-Rays/Narratives/Perio Requirements
+	//public static String User_Input_Name_Question_Forms_Required="Forms Required";
+	//public static String User_Input_Name_Question_RULE_ORTHO="RULE_ORTHO";
+	public static String User_Input_Name_Question_Pre_Authorization="Pre-Authorization Requirements";
 	public static String User_Input_Name_Question_Provider_Change="Provider Change";
-	public static String User_Input_Name_Question_RULE_BONE_GRAFT="RULE_BONE_GRAFT";
+	public static String User_Input_Name_Question_Consent_Form_Requirements="Consent Form Requirements";
+	//public static String User_Input_Name_Question_RULE_BONE_GRAFT="RULE_BONE_GRAFT";
+	public static String User_Input_Name_Question_Comments="Comments in IV Form";
+	public static String User_Input_Name_Question_Major_Service_Form_Requirements="Major Service Form Requirements";
 	
 	
-	public static int Attachment_Required_question_header_id_checkpoints=1;
+	
+	public static int Attachment_Required_question_header_id_service_code=1;
 	public static int Attachment_Required_question_header_id_toothno=2;
 	public static int Attachment_Required_question_header_id_require=3;
 	public static int Attachment_Required_question_header_id_a_all_met=4;
 	public static int Attachment_Required_question_header_id_notes_nar=5;
 	
-	public static int Forms_Required_question_header_id_checkpoints=6;
-	public static int Forms_Required_question_header_id_a_all_met=7;
+	//public static int Forms_Required_question_header_id_checkpoints=6;
+	//public static int Forms_Required_question_header_id_a_all_met=7;
 	
 	public static int RULE_ORTHO_question_header_id_narrtive=8;
 	public static int RULE_ORTHO_question_header_id_duration=9;
@@ -213,17 +221,34 @@ public class Constants {
 	public static int RULE_ORTHO_question_header_id_downpayment=11;
 	public static int RULE_ORTHO_question_header_id_banding_date=12;
 	
-	public static int Pre_Authorization_question_header_id_avail=13;
-	public static int Pre_Authorization_question_header_id_refno=14;
+	public static int Pre_Authorization_question_header_id_service_code=13;
+	public static int Pre_Authorization_question_header_id_tooth=14;
+	public static int Pre_Authorization_question_header_id_preauth_avail=21;
+	public static int Pre_Authorization_question_header_id_preauth_no=22;
 	
 	public static int Provider_Change_question_header_id_provider_change=15;
 	public static int Provider_Change_question_header_id_patient_change_provider=16;
+	public static int Provider_Change_question_header_id_provider=20;
+	
+	public static int Consent_Form_Requirements_header_id_service_code=23;
+	public static int Consent_Form_Requirements_header_id_tooth=24;
+	public static int Consent_Form_Requirements_header_id_Consent_Form_Name=25;
+	public static int Consent_Form_Requirements_header_id_Is_Signed_Consent_Form_Available=26;
+	
+	public static int Major_Service_Form_header_id_Service_code=27;
+	public static int Major_Service_Form_header_id_tooth=28;
+	public static int Major_Service_Form_header_id_Is_major_Available=29;
+	
+	
 	//public static int Provider_Change_question_header_id_ref_missing=17;//Not used now
 	
 	public static int RULE_BONE_GRAFT_IMPLANT=18;
 	
+	public static int Comments_IN_IV_question_header_id=19;
+	
 	public static String QUESTION_TYPE="Y_N";
 	
+	public static String QUESTION_TYPE_FILL="FILL";
 	
 	
 

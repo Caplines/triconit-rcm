@@ -44,8 +44,7 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 			// Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(UserInputRuleQuestionHeader.class);
 			criteria.add(Restrictions.eq("active", 1));
-			criteria.addOrder(Order.asc("id"));
-			criteria.addOrder(Order.asc("ruleName"));
+			criteria.addOrder(Order.asc("questionOrderMain"));
 			criteria.addOrder(Order.asc("questionOrder"));
 			ProjectionList pjList = Projections.projectionList();
 			pjList.add(Projections.property("id"), "id");

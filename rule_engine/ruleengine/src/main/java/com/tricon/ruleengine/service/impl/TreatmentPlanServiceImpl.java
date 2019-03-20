@@ -1265,6 +1265,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							//END Duplicate TP Codes
 
 							//Bone Graft (User Input)
+							/*
 							rule = getRulesFromList(rules, Constants.RULE_ID_43);
 							dtoRL = rb.Rule43(tList,ansL ,messageSource, rule, bw);
 							if (dtoRL != null) {
@@ -1280,7 +1281,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									Constants.rule_log_debug, bw);
 								
 							//END Bone Graft (User Input)
-							
+							*/
 							//Signed Consent Requirements (User Input) //Forms Required
 							rule = getRulesFromList(rules, Constants.RULE_ID_44);
 							dtoRL = rb.Rule44(ansL ,messageSource, rule, bw);
@@ -1299,6 +1300,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							//END Signed Consent Requirements (User Input) //Forms Required
 							
 							//Ortho (User Input)
+							/*
 							rule = getRulesFromList(rules, Constants.RULE_ID_45);
 							dtoRL = rb.Rule45(tList,ansL ,messageSource, rule, bw);
 							if (dtoRL != null) {
@@ -1314,7 +1316,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									Constants.rule_log_debug, bw);
 								
 							//END Ortho (User Input)
-
+                            */
 							//Pre-Authorization (User Input)
 							rule = getRulesFromList(rules, Constants.RULE_ID_46);
 							dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw);
@@ -1383,6 +1385,54 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								
 							//END Sealant limitation in CHIP
 							
+							// Major Service Form Requirements (User Input)
+							rule = getRulesFromList(rules, Constants.RULE_ID_50);
+							dtoRL = rb.Rule50(ansL ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_50,
+									Constants.rule_log_debug, bw);
+								
+							//END  Major Service Form Requirements (User Input)
+							// Provider is Same 
+							rule = getRulesFromList(rules, Constants.RULE_ID_51);
+							dtoRL = rb.Rule51(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_51,
+									Constants.rule_log_debug, bw);
+								
+							//END  Provider is Same
+							// Provider is Different)
+							rule = getRulesFromList(rules, Constants.RULE_ID_52);
+							dtoRL = rb.Rule52(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_52,
+									Constants.rule_log_debug, bw);
+								
+							//END  Provider is Different
 							
 						}
 
@@ -1901,6 +1951,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		RuleBook rb =new RuleBook();
 		List<UserInputRuleQuestionHeader> qhList=userInputQuestionDao.getAllUserInputQuestionsDbModel();
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		int ctConsent=0;
 		try {
 			if (ivfSheet == null || tpList == null)
 				return;
@@ -1935,13 +1986,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				 for (UserInputRuleQuestionHeader qh:qhList) {
 					 
 				
-				   //For Rule 10 -- START --Attachment Required
+				   //For Rule 10 -- START --Attachment Required //X-Rays/Narratives/Perio Requirements
 					 if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Attachment_Required)) {
 					Mappings mapA = rb.getMappingFromListAdditionalInformationNeeded(mappings, tp.getServiceCode());
 					QuestionAnswerDto qadto= new QuestionAnswerDto();
 					qadto.setAnswer("");
 					if (tp.getServiceCode().equalsIgnoreCase("D0120")) continue;//This is a exceptional Case;
-					if (qh.getId()==Constants.Attachment_Required_question_header_id_checkpoints) {
+					if (qh.getId()==Constants.Attachment_Required_question_header_id_service_code) {
 						
 					   qadto.setAnswer(tp.getServiceCode());
 					}
@@ -1962,25 +2013,75 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}
 					 }
 					//For Rule 10 -- END
-					//For Rule Overall-- START
-					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Forms_Required)) {
+					//For Rule Consent Form Requirements-- START
+					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Consent_Form_Requirements)) {
+						 
+						 //Exception case handled
+						 if (ctConsent<4){//4 is no of questions
+							 
+							 QuestionAnswerDto qadto= new QuestionAnswerDto();
+							 qadto.setAnswer("");
+							 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+					         qadto.setOfficeId(off.getUuid());
+					         qadto.setPatId(ivf.getPatientId());
+					         qadto.setTpId(tp.getId());
+					         if (qh.getId()==Constants.Consent_Form_Requirements_header_id_service_code) 
+								   qadto.setAnswer("General");
+							 else if (qh.getId()==Constants.Consent_Form_Requirements_header_id_tooth)  
+								 qadto.setAnswer("");
+							 else if (qh.getId()==Constants.Consent_Form_Requirements_header_id_Consent_Form_Name) {
+								 qadto.setAnswer("General Consent");
+							 }else if (qh.getId()==Constants.Consent_Form_Requirements_header_id_Is_Signed_Consent_Form_Available) {
+								 qadto.setAnswer("No");
+							 }
+					          userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+					          ctConsent++;
+						          	 
+						 }
+						 Mappings mapA = rb.getMappingFromListConsentNeeded(mappings, tp.getServiceCode());
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
 						 
-						 if (qh.getId()==Constants.Forms_Required_question_header_id_checkpoints) 
-							   qadto.setAnswer(qh.getHardCodedAnswer());
-						 else if (qh.getId()==Constants.Forms_Required_question_header_id_a_all_met)  
-							 qadto.setAnswer("No");
-						 else if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
+						 if (qh.getId()==Constants.Consent_Form_Requirements_header_id_service_code) 
+							   qadto.setAnswer(tp.getServiceCode());
+						 else if (qh.getId()==Constants.Consent_Form_Requirements_header_id_tooth)  
+							 qadto.setAnswer(tp.getTooth());
+						 else if (qh.getId()==Constants.Consent_Form_Requirements_header_id_Consent_Form_Name && mapA!=null) {
+							 qadto.setAnswer(mapA.getConsentNeeded());
+						 }else if (qh.getId()==Constants.Consent_Form_Requirements_header_id_Is_Signed_Consent_Form_Available) {
 							 qadto.setAnswer("No");
 						 }
 						 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
 				         qadto.setTpId(tp.getId());
-				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+				         if (mapA!=null) {
+				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
+				         }
+					 }else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Major_Service_Form_Requirements)) {
+						 
+						 Mappings mapA = rb.getMappingFromListMajorServiceForm(mappings, tp.getServiceCode());
+						 QuestionAnswerDto qadto= new QuestionAnswerDto();
+						 qadto.setAnswer("");
+						 
+						 if (qh.getId()==Constants.Major_Service_Form_header_id_Service_code) 
+							   qadto.setAnswer(tp.getServiceCode());
+						 else if (qh.getId()==Constants.Major_Service_Form_header_id_tooth)  
+							 qadto.setAnswer(tp.getTooth());
+						 else if (qh.getId()==Constants.Major_Service_Form_header_id_Is_major_Available) {
+							 qadto.setAnswer("No");
+						 }
+						 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+				         qadto.setOfficeId(off.getUuid());
+				         qadto.setPatId(ivf.getPatientId());
+				         qadto.setTpId(tp.getId());
+				         if (mapA!=null) {
+				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
+				         }
 					 }
-					//For Rule Overall-- END
+
+					//For Rule Consent Form Requirements-- END
+					 /*
 					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_ORTHO)
 							 && (orthoList.contains(tp.getServiceCode()))
 							 ) {
@@ -1995,20 +2096,24 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         qadto.setTpId(tp.getId());
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 					 }
-					 
+					 */
 					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Pre_Authorization) ) {
 						 Mappings mapP = rb.getMappingFromListPreAuth(mappings, tp.getServiceCode());
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
-						 if (qh.getId()==Constants.Pre_Authorization_question_header_id_avail) {
+						 if (qh.getId()==Constants.Pre_Authorization_question_header_id_service_code) {
+							 qadto.setAnswer(tp.getServiceCode());
 							 
-						 }else if (qh.getId()==Constants.Pre_Authorization_question_header_id_refno) {
+						 }else if (qh.getId()==Constants.Pre_Authorization_question_header_id_tooth) {
+							 qadto.setAnswer(tp.getTooth());
 							 
-						 }
-							 
-						 qadto.setAnswer("");
-						 if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
+						 }else if (qh.getId()==Constants.Pre_Authorization_question_header_id_preauth_avail && mapP!=null) {
 							 qadto.setAnswer("No");
+							 
+						 }else if (qh.getId()==Constants.Pre_Authorization_question_header_id_preauth_no) {
+							 qadto.setAnswer("");
+							 
 						 }
+							 
 						  qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
@@ -2020,15 +2125,34 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					 else  if (ivf.getPlanType().trim().toLowerCase().contains(Constants.insurance_Medicaid) && qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Provider_Change)) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
+						 /*
 						 if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
 							 qadto.setAnswer("No");
 						 }
+						 */
+						 if (qh.getId()==Constants.Provider_Change_question_header_id_provider_change) 
+							   qadto.setAnswer("");
+						 else if (qh.getId()==Constants.Provider_Change_question_header_id_patient_change_provider) 
+							   qadto.setAnswer("No");
+						 else if (qh.getId()==Constants.Provider_Change_question_header_id_provider) 
+							   qadto.setAnswer(ivf.getProviderName());
+							   
+						 
+						   qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+				         qadto.setOfficeId(off.getUuid());
+				         qadto.setPatId(ivf.getPatientId());
+				         qadto.setTpId(tp.getId());
+				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+					 }else  if ( qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Comments)) {
+						 QuestionAnswerDto qadto= new QuestionAnswerDto();
+						 qadto.setAnswer(ivf.getComments());
 						 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
 				         qadto.setTpId(tp.getId());
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
-					 }else  if (tp.getServiceCode().equals("D7953") && qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_BONE_GRAFT)) {
+					 }
+					 /*else  if (tp.getServiceCode().equals("D7953") && qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_BONE_GRAFT)) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
 						 if (qh.getQuestionType().equalsIgnoreCase(Constants.QUESTION_TYPE)) {
@@ -2040,6 +2164,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         qadto.setTpId(tp.getId());
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 					 }
+					 */
 				 }
 			 //}//else
 			}

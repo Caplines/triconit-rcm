@@ -100,7 +100,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
         Class<?> clazz=null;
         
         //At least one data need to be present
-        if (dto.getIvfId() == null && dto.getOfficeId()== null && dto.getPatId()== null && dto.getTpId()== null && 
+        if (dto.getIvfId() == null && dto.getOfficeId()== null && dto.getpId()== null && dto.getTpId()== null && 
         		(dto.getEndDate()==null || dto.getStartDate()==null )) {
         	return null;
         }
@@ -145,8 +145,8 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id ,patient_id,patient_name,off.name" + 
 				" from reports rep, report_detail repd ,office off where "+
 				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
-		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
-		if (dto.getPatId() != null && !dto.getPatId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
+		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
+		if (dto.getpId() != null && !dto.getpId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getpId()+"' " ; 
 		if (dto.getTpId() != null && !dto.getTpId().equals("")) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
 		if (dto.getIvfId() != null  && !dto.getIvfId().equals("")) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
 
@@ -180,8 +180,8 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name,off.name" + 
 				" from reports rep, report_detail repd ,office off where "+
 				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.BATCH.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
-		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
-		if (dto.getPatId() != null && !dto.getPatId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getPatId()+"' " ; 
+		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
+		if (dto.getpId() != null && !dto.getpId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getpId()+"' " ; 
 		//if (dto.getTpId() != null && !dto.getTpId().equals("")) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
 		if (dto.getIvfId() != null  && !dto.getIvfId().equals("")) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
 		
@@ -221,7 +221,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		"select count(message_type) as ct,message_type," + 
 		" "+rep+" ,off.name    from reports rep, report_detail repd ,office off where  repd.report_id=rep.id and" + 
 		"     repd.report_type="+reportType+" and     off.uuid=rep.office_id and rep.group_run = repd.group_run";
- 		         if (dto.getOfficeId() != null) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
+		         if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		         if (dto.getEndDate()!=null && dto.getStartDate()!=null  && !dto.getEndDate().equals("") && !dto.getStartDate().equals("")) {
 		 			query=query+	"  and (" + 
 		 				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 

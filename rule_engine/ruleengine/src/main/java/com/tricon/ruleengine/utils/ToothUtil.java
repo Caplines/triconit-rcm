@@ -148,8 +148,8 @@ public class ToothUtil {
 	 */
 	//NOTE SURFACE DOES NOT MATTER NOW
     public static List<String> lowerHigherOrderFillingFound(TreatmentPlan tp,
-    		Map<String,List<ToothHistoryDto>> historyMap,boolean low,Date tpDate,boolean sameSruface1, BufferedWriter bw
-    		) {
+    		Map<String,List<ToothHistoryDto>> historyMap,boolean low,Date tpDate,boolean sameSurface1, 
+    		int withinMonth,int months,BufferedWriter bw) {
     	//NOTE SURFACE DOES NOT MATTER NOW	
     	List<String> allCodes=null;
 		String r=null;
@@ -179,7 +179,13 @@ public class ToothUtil {
 						
 					    //if (sameSruface && !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && d.getSurfaceTooth().toLowerCase().equals(tp.getSurface().toLowerCase())) {
 					   //   if (sameSruface && !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && commonSurfaceLogic(d.getSurfaceTooth(), tp.getSurface())) {
-						    if (!DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) ) {
+						    if (withinMonth==1 && !DateUtils.checkforXm(tpDate, dos,months) && Arrays.asList(tooths).contains(d.getHistoryTooth()) ) {
+						    	r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
+						     if (allCodes==null) allCodes= new ArrayList<>();
+						     allCodes.add(r);
+								
+						  }
+						    if (withinMonth==2 && DateUtils.checkforXmMore(tpDate, dos,months) && Arrays.asList(tooths).contains(d.getHistoryTooth()) ) {
 						    	r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
 						     if (allCodes==null) allCodes= new ArrayList<>();
 						     allCodes.add(r);
@@ -220,7 +226,12 @@ public class ToothUtil {
 							
 						
 						
-					    if ( !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth())) {
+					    if (withinMonth==1 &&  !DateUtils.checkforXm(tpDate, dos,months) && Arrays.asList(tooths).contains(d.getHistoryTooth())) {
+						    r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
+						    if (allCodes==null) allCodes= new ArrayList<>();
+						     allCodes.add(r);
+					       }
+					    if (withinMonth==2 &&  DateUtils.checkforXmMore(tpDate, dos,months) && Arrays.asList(tooths).contains(d.getHistoryTooth())) {
 						    r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
 						    if (allCodes==null) allCodes= new ArrayList<>();
 						     allCodes.add(r);
@@ -238,6 +249,109 @@ public class ToothUtil {
 		
 	}
     
+	//NOTE SURFACE DOES NOT MATTER NOW
+    public static List<String> lowerHigherOrderFillingFound51_52(TreatmentPlan tp,
+    		Map<String,List<ToothHistoryDto>> historyMap,boolean low,Date tpDate,boolean sameSurface1, 
+    		int withinMonth,int months,BufferedWriter bw) {
+    	//NOTE SURFACE DOES NOT MATTER NOW	
+    	List<String> allCodes=null;
+		String r=null;
+    	for (Map.Entry<String, List<ToothHistoryDto>> entry : historyMap.entrySet()) {
+		     String codeH=entry.getKey();
+		     List<ToothHistoryDto> eL=entry.getValue();
+		     
+		     int codeHINT=Integer.parseInt(codeH.substring(1));
+		     int codeSINT=Integer.parseInt(tp.getServiceCode().substring(1));
+		     //Lower order check..
+		     
+		     if (codeH.substring(0, 1).equals(tp.getServiceCode().substring(0,1)) &&  low && (codeSINT>codeHINT)) {
+		    	 for(ToothHistoryDto d:eL) {
+		    		 String[] tooths=	ToothUtil.getToothsFromTooth(tp.getTooth());
+		    		 RuleEngineLogger.generateLogs(clazz, "Service Code - "+tp.getServiceCode()+"- "+"Surface TP-" + tp.getSurface()+" -Surface History- "+d.getSurfaceTooth()+" TOOTH -"+tp.getTooth(),
+								Constants.rule_log_debug, bw);
+		    		 Date dos = null;
+		    		 //if (d.getSurfaceTooth().equals("")) continue;
+						try {
+							dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos());
+							RuleEngineLogger.generateLogs(clazz,
+									"History DOS-" + d.getHistoryDos(),
+									Constants.rule_log_debug, bw);
+							
+							
+						
+						
+					    //if (sameSruface && !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && d.getSurfaceTooth().toLowerCase().equals(tp.getSurface().toLowerCase())) {
+					   //   if (sameSruface && !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && commonSurfaceLogic(d.getSurfaceTooth(), tp.getSurface())) {
+						    if (withinMonth==1 && !DateUtils.checkforXm(tpDate, dos,months) && Arrays.asList(tooths).contains(d.getHistoryTooth()) ) {
+						    	r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
+						     if (allCodes==null) allCodes= new ArrayList<>();
+						     allCodes.add(r);
+								
+						  }
+						    if (withinMonth==2 && DateUtils.checkforXmMore(tpDate, dos,months) && Arrays.asList(tooths).contains(d.getHistoryTooth()) ) {
+						    	r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
+						     if (allCodes==null) allCodes= new ArrayList<>();
+						     allCodes.add(r);
+								
+						  }
+					   // if (!sameSruface && !DateUtils.checkfor12m(tpDate, dos) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && !d.getSurfaceTooth().toLowerCase().equals(tp.getSurface().toLowerCase())) {
+					     //OUT OF SCOPE
+					      /*
+					      if (!sameSruface && !DateUtils.checkforXm(tpDate, dos,12) && Arrays.asList(tooths).contains(d.getHistoryTooth()) && diffSurfaceLogic(d.getSurfaceTooth(), tp.getSurface())) {
+							    	r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
+						     if (allCodes==null) allCodes= new ArrayList<>();
+						     allCodes.add(r);
+										
+					       }
+					      */
+					     } catch (ParseException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+		    	 }
+		    	 
+		     }
+		     //in case of Low = false => Surface ,boolean is not considered
+		     if (codeH.substring(0, 1).equals(tp.getServiceCode().substring(0,1)) &&  !low && codeSINT<codeHINT)  {
+		    	 
+		     	 for(ToothHistoryDto d:eL) {
+		    		 String[] tooths=	ToothUtil.getToothsFromTooth(tp.getTooth());
+		    		 RuleEngineLogger.generateLogs(clazz, "Surface TP-" + tp.getSurface()+" -Surface History- "+d.getSurfaceTooth(),
+								Constants.rule_log_debug, bw);
+		    		 Date dos = null;
+		    		 //if (d.getSurfaceTooth().equals("")) continue;
+						try {
+							dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos());
+							RuleEngineLogger.generateLogs(clazz,
+									"History DOS-" + d.getHistoryDos(),
+									Constants.rule_log_debug, bw);
+							
+							
+						
+						
+					    if (withinMonth==1 &&  !DateUtils.checkforXm(tpDate, dos,months) && Arrays.asList(tooths).contains(d.getHistoryTooth())) {
+						    r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
+						    if (allCodes==null) allCodes= new ArrayList<>();
+						     allCodes.add(r);
+					       }
+					    if (withinMonth==2 &&  DateUtils.checkforXmMore(tpDate, dos,months) && Arrays.asList(tooths).contains(d.getHistoryTooth())) {
+						    r=tp.getServiceCode()+splitter+d.getHistoryCode() +splitter+d.getHistoryTooth()+splitter+d.getSurfaceTooth();
+						    if (allCodes==null) allCodes= new ArrayList<>();
+						     allCodes.add(r);
+					       }
+					    
+						} catch (ParseException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+		    	 }
+		    	 
+		     }
+		}
+		return allCodes;
+		
+	}
+
     public static List<String> generateErrorListForRule171(TreatmentPlan tp,List<EagleSoftFeeShedule> esfeess,List<String> res
     		,BufferedWriter bw){
     	List<String> dList=new ArrayList<>();
@@ -298,6 +412,20 @@ public class ToothUtil {
     	return dList;
 		
     }
+
+    //For rule 51 and 52
+	public static List<String> generateErrorListForRule51_52(TreatmentPlan tp, List<EagleSoftFeeShedule> esfeess,
+			List<String> res, BufferedWriter bw) {
+		List<String> dList = new ArrayList<>();
+		for (String data : res) {
+			String[] datas = data.split(splitter);
+
+			dList.add(datas[0] + splitter + datas[1] + splitter + datas[2] + splitter + datas[3]);
+
+		}
+		return dList;
+
+	}
 
     public static void main(String a []) {
     	String aa ="D3420";
