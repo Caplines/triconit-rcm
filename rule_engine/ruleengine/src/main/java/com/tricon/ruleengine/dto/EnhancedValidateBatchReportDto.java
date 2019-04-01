@@ -10,6 +10,8 @@ public class EnhancedValidateBatchReportDto  extends EnhancedBaseReportDto{
 	private String ivfId;
 	private String pid;
 	private String pname;
+	private String name;
+	
 	
 	public String getIvfId() {
 		return ivfId;
@@ -33,6 +35,14 @@ public class EnhancedValidateBatchReportDto  extends EnhancedBaseReportDto{
 
 	public void setPname(String pname) {
 		this.pname = pname;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

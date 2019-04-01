@@ -3295,7 +3295,7 @@ public class RuleBook {
 						+ "is found in the Fields where we have to Check for Frequncy Limits ..Rest codes are ignored.-tpToothMap "
 						+ "", Constants.rule_log_debug, bw);
 
-				if (mapFlIVF != null) {
+				if (mapFlIVF != null && tpToothMap!=null) {
 
 					for (Map.Entry<String, List<String>> entry : tpToothMap.entrySet()) {
 						String tooth = entry.getKey();
@@ -3852,6 +3852,8 @@ public class RuleBook {
 						
 				List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
                 reqList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(","))));
+                reqList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
+                
 				List<String> historyCheckList = Arrays.asList(Constants.SEALANT_SC.split(","));
 				
 				for (Object obj : tpList) {
@@ -4058,6 +4060,8 @@ public class RuleBook {
 				reqList.addAll(Arrays.asList(Constants.STAIN_LESS_STEEL_CROWN_SC.split(",")));//Added As per email : Sahil (23 Feb,2019 and same in Crown Rule)
                 List<String> historyCheckList = new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
                 historyCheckList.addAll(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+                historyCheckList.addAll(Arrays.asList(Constants.FILLING_MM_SC.split(",")));
+                
 				
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
@@ -4268,6 +4272,8 @@ public class RuleBook {
 	                List<String> checkList = new ArrayList<String>(Arrays.asList(Constants.SEALANT_SC.split(",")));
 	                checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
 	                checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(","))));
+	                checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
+	                
 	                //List<String> c1List = new ArrayList<String>(Arrays.asList(Constants.EXTRACTION_SC.split(",")));
 	                //c1List.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
 	                //c1List.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(","))));
@@ -4539,6 +4545,7 @@ public class RuleBook {
 					
 					List<String> reqList = new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(",")));
 					reqList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(","))));
+					reqList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
 					
 	                List<String> checkList = new ArrayList<String>(Arrays.asList(Constants.SEALANT_SC.split(",")));
 	                
@@ -4816,6 +4823,8 @@ public class RuleBook {
                 List<String> checkList = new ArrayList<String>(Arrays.asList(Constants.EXTRACTION_SC.split(",")));
                 checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
                 checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(","))));
+                checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
+                
                 checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.CROWN_SC.split(","))));
                 checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.SEALANT_SC.split(","))));
                 
@@ -5473,6 +5482,8 @@ public class RuleBook {
 		List<TPValidationResponseDto> dList = new ArrayList<>();
         List<String> checkList = new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
         checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
+        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
+        
         int [] minMaxEndo= new int[2];
         minMaxEndo[0]=3000;
         minMaxEndo[1]=3999;
@@ -7224,7 +7235,7 @@ public class RuleBook {
 	}
 	
 	
-	// Provider is Same -
+	// DQ Fillings (Provider Same)
 	public List<TPValidationResponseDto> Rule51(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
 			Rules rule, BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_51,
@@ -7246,9 +7257,13 @@ public class RuleBook {
 				Map<String, List<ToothHistoryDto>> mapHistoryM = new HashMap<>();
 				String pname= ivf.getProviderName();
 				boolean providerSame=true;
+		        List<String> checkList = new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
+		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
+
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
-					
+					if (!checkList.contains(tp.getServiceCode())) continue;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -7268,7 +7283,6 @@ public class RuleBook {
 				
 				if (providerSame) {
 	       	
-       	       
        	        
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
@@ -7290,6 +7304,7 @@ public class RuleBook {
 							
 							if (code.equals("")) continue ;
 							if (dt.equals("")) continue ;
+							if (!checkList.contains(code)) continue;
 							//check for future date 
 							try {
 							if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
@@ -7310,6 +7325,7 @@ public class RuleBook {
 						}
 						for (Object obj1 : tpList) {
 						TreatmentPlan tp = (TreatmentPlan) obj1;
+						if (!checkList.contains(tp.getServiceCode())) continue;
 						//List<String> res= new ArrayList<>();
 						//LOW ORDER
 						List<String> rDLSS= ToothUtil.lowerHigherOrderFillingFound51_52(tp, mapHistoryM, true, TP_Date, true,1,36, bw);
@@ -7340,7 +7356,7 @@ public class RuleBook {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
 		} catch (Exception x) {
-
+            x.printStackTrace();
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
 					Constants.FAIL));
@@ -7350,7 +7366,7 @@ public class RuleBook {
 
 	}
 	
-	// Provider is Different -
+	// DQ Fillings (Provider Different)
 	public List<TPValidationResponseDto> Rule52(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
 			Rules rule, BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_52,
@@ -7372,10 +7388,14 @@ public class RuleBook {
 				Map<String, List<ToothHistoryDto>> mapHistoryM = new HashMap<>();
 				String pname= ivf.getProviderName();
 				boolean providerSame=true;
+		        List<String> checkList = new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
+		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
 				for (Object obj : tpList) {
 					TreatmentPlan tp = (TreatmentPlan) obj;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
+					if (!checkList.contains(tp.getServiceCode())) continue;
 						
 					if (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
 						||	tp.getEstInsurance().equals("0.0")) continue;
@@ -7415,6 +7435,7 @@ public class RuleBook {
 							
 							if (code.equals("")) continue ;
 							if (dt.equals("")) continue ;
+							if (!checkList.contains(code)) continue;
 							//check for future date 
 							try {
 							if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
@@ -7435,6 +7456,7 @@ public class RuleBook {
 						}
 						for (Object obj1 : tpList) {
 						TreatmentPlan tp = (TreatmentPlan) obj1;
+						if (!checkList.contains(tp.getServiceCode())) continue;
 						//List<String> res= new ArrayList<>();
 						//LOW ORDER
 						List<String> rDLSS= ToothUtil.lowerHigherOrderFillingFound51_52(tp, mapHistoryM, true, TP_Date, true,1,12, bw);

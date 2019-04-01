@@ -19,6 +19,7 @@ public class ReportResponseDto {
 	private String error_message;
 	private String rule_name;
 	private String patient_id;
+	private String name;
 	
 
 	public String getRep_created_by() {
@@ -114,6 +115,12 @@ public class ReportResponseDto {
 	}
 	public void setRd_group_run(int rd_group_run) {
 		this.rd_group_run = rd_group_run;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	

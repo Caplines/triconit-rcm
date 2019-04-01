@@ -32,7 +32,7 @@ public class Constants {
 	public static final int eagleSoftRemDedBalSheetID=8;
     */
 	
-	//Entry from Rules Table
+	//Entry from Rules Table (These values should Match from Database..)
 	public static final String RULE_ID_1="Eligibility of the patient";
 	public static final String RULE_ID_2="IVF Details not matched";
 	public static final String RULE_ID_3="Treatment Plan not valid";
@@ -83,8 +83,8 @@ public class Constants {
 	public static final String RULE_ID_48="Exam limitation for CHIP";
 	public static final String RULE_ID_49="Sealant limitation in CHIP";
 	public static final String RULE_ID_50="Major Service Form Requirements";
-	public static final String RULE_ID_51="Provider is Same";
-	public static final String RULE_ID_52="Provider is Different";
+	public static final String RULE_ID_51="DQ Fillings (Provider Same)";
+	public static final String RULE_ID_52="DQ Fillings (Provider Different)";
 	
 	
 	
@@ -183,6 +183,8 @@ public class Constants {
 	public static String CROWN_SC="D2740,D2750,D2790,D2791";
 	public static String FILLING_AT_SC="D2330,D2331,D2332,D2335";
 	public static String FILLING_PT_SC="D2391,D2392,D2393,D2394,P2391,P2392,P2393,P2394";
+	public static String FILLING_MM_SC="M2391,M2392,M2393M2394";
+
 	public static String SEALANT_SC="D1351";
 	public static String COMPLETE_DENTURE_SC=" D5110,D5120,D5130,D5140";
 	public static String PARTIAL_DENTURE_SC="D5211,D5212,D5213,D5214,D5225,D5226";

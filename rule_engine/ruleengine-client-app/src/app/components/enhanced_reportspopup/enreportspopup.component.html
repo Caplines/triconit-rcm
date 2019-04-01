@@ -20,6 +20,7 @@
 										<th class="tr-width" *ngIf="(reportType==1 || reportType==2)">IVF ID</th>
 										<th class="tr-width" *ngIf="(reportType==1 || reportType==2)">Patient ID</th>
 										<th *ngIf="(reportType==1 || reportType==2)">Patient Name</th>
+										<th style="width:200px;" *ngIf="(reportType==1 || reportType==2)">Run By</th>
 										<th *ngIf="reportType==3">Total No of IVF ID Run</th>
 										<th *ngIf="reportType==4">Total No of TX Plan Run</th>
 										<th class="tr-width">Rule Failed</th>
@@ -39,6 +40,7 @@
 										<td class="tr-width" *ngIf="(reportType==1 || reportType==2)"><span [innerHTML]="data.ivfId"></span></td>
 										<td class="tr-width" *ngIf="(reportType==1 || reportType==2)"><span [innerHTML]="data.pid"></span></td>
 										<td *ngIf="(reportType==1 || reportType==2)"><span [innerHTML]="data.pname"></span></td>
+										<td style="width:200px;" *ngIf="(reportType==1 || reportType==2)"><span [innerHTML]="data.name"></span></td>
 										<td *ngIf="reportType==3"><span [innerHTML]="data.ctCount"></span></td>
 										<td *ngIf="reportType==4"><span [innerHTML]="data.ctCount"></span></td>
 										<td class="tr-width"><span [innerHTML]="data.fail"></span></td>

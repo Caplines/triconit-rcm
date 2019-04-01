@@ -46,7 +46,7 @@ public class ReportController {
 			for (ReportResponseDto d : li) {
 				k = d.getRd_group_run() + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
 						+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " TR. ID-"
-						+ d.getTreatement_plan_id();
+						+ d.getTreatement_plan_id() +" Run By-"+d.getName();
 				if (map.containsKey(k)) {
 					// if the key has already been used,
 					// we'll just grab the array list and add the value to it

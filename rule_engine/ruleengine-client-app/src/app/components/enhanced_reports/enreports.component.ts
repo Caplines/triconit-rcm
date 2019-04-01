@@ -39,8 +39,8 @@ reportType:any;
   typeMap: any = {
         'TxPlan': 1,
         'IvBatch': 2,
-        'IvBatchNumber': 3,
-        'TxPlanNumber': 4,
+        'IvBatchNumber': 4,
+        'TxPlanNumber': 3,
     };
 
 

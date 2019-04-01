@@ -118,13 +118,21 @@ public class CommonRedirectController {
 	}
 	
 	@CrossOrigin
-	@RequestMapping(value = "/enreport", method = RequestMethod.GET)
+	@RequestMapping(value = "/enreports", method = RequestMethod.GET)
 	public void enreportsForward(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		forwardRedirect(request, response);
 	}
-	
+    /*	
+	@CrossOrigin
+	@RequestMapping(value = "/scrapsite", method = RequestMethod.GET)
+	public void scrapForward(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		forwardRedirect(request, response);
+	}
+    */
 	private void forwardRedirect(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		
 		request.getRequestDispatcher("/").forward(request, response);

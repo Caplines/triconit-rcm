@@ -12,6 +12,7 @@ public class EnhancedValidateTxReportDto extends EnhancedBaseReportDto {
 	private String txP;
 	private String pid;
 	private String pname;
+	private String name;
 	
 	
 	public String getIvfId() {
@@ -37,6 +38,12 @@ public class EnhancedValidateTxReportDto extends EnhancedBaseReportDto {
 	}
 	public void setPname(String pname) {
 		this.pname = pname;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

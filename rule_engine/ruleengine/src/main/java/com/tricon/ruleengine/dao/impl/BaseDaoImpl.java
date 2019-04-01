@@ -35,7 +35,7 @@ public class BaseDaoImpl {
 	}
 
 	protected void closeSession(Session s) {
-		System.out.println(s.isOpen());
+		//System.out.println(s.isOpen());
 		if (s != null && s.isOpen()) {
 			s.close();
 		}

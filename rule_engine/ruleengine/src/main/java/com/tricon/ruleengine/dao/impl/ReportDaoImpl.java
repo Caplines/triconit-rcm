@@ -51,7 +51,8 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				criteria.createAlias("createdBy", "cr");
 				
 				*/
-			 String queryString="SELECT DATE_FORMAT(rep.created_date,'%m/%d/%Y %T') as rep_create_date,rep.created_by as rep_created_by"
+			 String queryString="SELECT DATE_FORMAT(rep.created_date,'%m/%d/%Y %T') as rep_create_date,rep.created_by as rep_created_by, "+
+					 " CONCAT( first_name ,' ' ,last_name ) as name "
 			 		+ ", DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as rd_created_date," + 
 			 		"us.email as email,offi.name as office_name,rep.group_run as rep_group_run,rd.group_run as rd_group_run, " + 
 			 		"rep.treatement_plan_id as treatement_plan_id,rep.patient_dob as dob,"
@@ -136,15 +137,16 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 	
 	private String getTxReport(EnhancedReportDto dto) {
 		String query=" select * from (" + 
-				 "select treatement_plan_id as txP," + 
+				 "select CONCAT(fn,' ',ln) as name, treatement_plan_id as txP," + 
 				" GROUP_CONCAT( concat (ct,'"+Constants.EN_REP_TYPE_SEP+"',message_type) SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as resultsum," + 
 				" GROUP_CONCAT(distinct name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as office," + 
 				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pid," + 
 				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pname," + 
 				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivfId from (" + 
-				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id ,patient_id,patient_name,off.name" + 
-				" from reports rep, report_detail repd ,office off where "+
-				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
+				" select count(message_type) as ct,message_type,us.first_name as fn,us.last_name as ln,treatement_plan_id,ivf_form_id ,patient_id,patient_name,off.name" + 
+				" from reports rep, report_detail repd ,office off,user as us where "+
+				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run "+
+		        " and us.uuid=rep.created_by " ;
 		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		if (dto.getpId() != null && !dto.getpId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getpId()+"' " ; 
 		if (dto.getTpId() != null && !dto.getTpId().equals("")) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
@@ -172,14 +174,16 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 	private String getBatchReport(EnhancedReportDto dto) {
 		String query=" select * from (" + 
 				 "select "+ 
+				" CONCAT(fn,' ',ln) as name,"+
 				" GROUP_CONCAT( concat (ct,'"+Constants.EN_REP_TYPE_SEP+"',message_type) SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as resultsum," + 
 				" GROUP_CONCAT(distinct name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as office," + 
 				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pid," + 
 				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pname," + 
 				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivfId from (" + 
-				" select count(message_type) as ct,message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name,off.name" + 
-				" from reports rep, report_detail repd ,office off where "+
-				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.BATCH.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " ;
+				" select count(message_type) as ct,us.first_name as fn,us.last_name as ln,message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name,off.name" + 
+				" from reports rep, report_detail repd ,office off,user as us where "+
+				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.BATCH.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " +
+				" and us.uuid=rep.created_by ";
 		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		if (dto.getpId() != null && !dto.getpId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getpId()+"' " ; 
 		//if (dto.getTpId() != null && !dto.getTpId().equals("")) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 

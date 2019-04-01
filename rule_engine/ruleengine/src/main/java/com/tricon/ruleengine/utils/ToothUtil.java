@@ -419,8 +419,9 @@ public class ToothUtil {
 		List<String> dList = new ArrayList<>();
 		for (String data : res) {
 			String[] datas = data.split(splitter);
-
+           if (datas.length==4)
 			dList.add(datas[0] + splitter + datas[1] + splitter + datas[2] + splitter + datas[3]);
+           else dList.add(datas[0] + splitter + datas[1] + splitter + datas[2] + splitter + "");
 
 		}
 		return dList;

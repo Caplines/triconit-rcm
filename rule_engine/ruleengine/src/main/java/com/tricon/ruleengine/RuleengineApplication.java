@@ -16,7 +16,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 //https://graph.microsoft.com/v1.0/me/drive/root/children from graph explorer to get ID of sheet..
 /* 
 /* to create build of front end--- ng  build --prod*/ //for local its npm start 
-//from cmd in folder \capline\rule_engine\ruleengine>   mvn package
+//from cmd in folder \capline\rule_engine\ruleengine>   mvn initialize package
 /* CD /opt/tomcat
  * FOR PRODCTION MAKE SURE 
  * in application.properties u have spring.profiles.active=prod
@@ -45,7 +45,7 @@ public class RuleengineApplication extends SpringBootServletInitializer{
 		SpringApplication.run(RuleengineApplication.class, args);
 	}
 	
-	/*
+	/*	
 	 * https://apps.dev.microsoft.com
 	 * office365@caplineservices.com     Smilepoint00 for corbsy
 
