@@ -13,6 +13,7 @@ import {UserInputComponent} from "./components/userinput/userinput.component";
 
 import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
 import {EnReportsComponent} from "./components/enhanced_reports/enreports.component";
+import {ScrapComponent} from "./components/scrap/scrap.component";
 
 import {UrlPermission} from "./urlPermission/url.permission";
 import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
@@ -66,6 +67,11 @@ const appRoutes: Routes = [
 		    offs: OfficeResolve
 		  },
   component: EnReportsComponent,canActivate: [UrlPermission]  },
+  { path: 'scrap',
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+  component: ScrapComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
   { path: 'help', component: HelpComponent  },
   // otherwise redirect to profile

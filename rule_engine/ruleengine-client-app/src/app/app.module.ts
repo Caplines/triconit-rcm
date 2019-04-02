@@ -27,6 +27,8 @@ import { UserInputComponent} from "./components/userinput/userinput.component";
 import { QuestionformPopupComponent } from './components/questionformpopup/questionformpopup.component';
 import { EnReportsComponent} from "./components/enhanced_reports/enreports.component";
 import { EnReportspopupComponent } from './components/enhanced_reportspopup/enreportspopup.component';
+import { ScrapComponent} from "./components/scrap/scrap.component";
+import { ScrapPopupComponent } from './components/scrap_popup/scrappopup.component';
 
 import { ResultTypeFilterPipe} from './filter/result_type_filter';
 import { routing} from "./app.routing";
@@ -58,7 +60,10 @@ import { TokenInterceptor } from './auth/token.interceptor';
 	QuestionformPopupComponent,
 	ResultTypeFilterPipe,
 	EnReportsComponent,
-	EnReportspopupComponent
+	EnReportspopupComponent,
+	ScrapComponent,
+	ScrapPopupComponent,
+	
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule

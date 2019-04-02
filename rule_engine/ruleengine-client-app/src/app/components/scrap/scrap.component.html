@@ -1,0 +1,36 @@
+
+<div class="inner-bg">
+	<div  *ngIf="!showSrcapPopup" class="container">
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 form-box">
+				<div class="dropdown">
+					<button class="btn btn-block dropdown-toggle" type="button" data-toggle="dropdown" (click)="showScrapForm = false">
+						<span class="caret"></span>Scrap Sites
+					</button>
+					<ul class="dropdown-menu">
+						<li><a href="javascript:void(0)" (click)="reportParam('Roster')">Roster</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('MCNADENTAL')">Mcna Dental</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('MCNADENTALUI')">Mcna Dental (user input)</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('Dentaq')">Denta quest</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('DentaqUI')">Denta quest (user input)</a></li>
+					</ul>
+				</div>
+				
+				</div> 
+
+				
+			</div>
+		</div>
+		
+</div>
+	
+	
+
+
+
+
+
+
+
+
+
