@@ -235,7 +235,6 @@ export class AccountService {
 			return  this.http.post(AppComponent.API_URL+'/enreport',enreports);
 		})
 		).subscribe(data => {
-			//console.log(data['results']);
 			callback((<any>data));
 		},
 		error => {  

@@ -1,4 +1,9 @@
 export class ScrapModel {
-scrapType: String ="";
+firstName:string="";
+lastName:string="";
+subscriberId:string="";
+insurenceName:string="";
+dob:string="";
 officeId:string="";
+scrapType: String ="";
 }
