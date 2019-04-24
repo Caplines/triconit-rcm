@@ -128,7 +128,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/register",
                 "/writeData",
                 "/enreports",
-                "/scrapsite",
+                "/scrap",
                 //"/fetchesdata/*",
                 //"/fetchesdata/*/*",
                 "/ivftreatmentplan",

@@ -368,7 +368,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 				if (entry.getValue() != null) {
 
 					EagleSoftPatient pSheet = ((EagleSoftPatient) entry.getValue().get(0));
-					ids.add(pSheet.getFeeScheduleId());
+					if (pSheet.getFeeScheduleId()!=null) ids.add(pSheet.getFeeScheduleId());
 				}
 			}
 

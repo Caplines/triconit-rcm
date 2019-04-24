@@ -29,10 +29,22 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.CellData;
+import com.google.api.services.sheets.v4.model.DeleteNamedRangeRequest;
+import com.google.api.services.sheets.v4.model.ExtendedValue;
+import com.google.api.services.sheets.v4.model.GridCoordinate;
+import com.google.api.services.sheets.v4.model.Request;
+import com.google.api.services.sheets.v4.model.RowData;
+import com.google.api.services.sheets.v4.model.UpdateCellsRequest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.common.collect.Collections2;
+import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
+import com.tricon.ruleengine.dto.scrapping.HistoryDto;
+import com.tricon.ruleengine.dto.scrapping.RosterDetails;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
+import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
 
 @Configuration
 public class ConnectAndReadSheets {
@@ -41,7 +53,7 @@ public class ConnectAndReadSheets {
 
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-	private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
+	private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
 
 	private static NetHttpTransport HTTP_TRANSPORT = null;
 
@@ -83,14 +95,14 @@ public class ConnectAndReadSheets {
 	 * @throws IOException
 	 */
 	public static Map<String, List<Object>> readSheet(String spreadsheetId, String sheetName, String[] id,
-			String clientDir, String clientFolder, String officeName,boolean idsPatient) throws IOException {
+			String clientDir, String clientFolder, String officeName, boolean idsPatient) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
 		// if (sheetType==Constants.treatmentPlanSheetID) return
 		// readTPSheetData(response, id);
 		// if (sheetType==Constants.ivTableDataSheetID)
-		return readIVFSheet(response, id, officeName,idsPatient);
+		return readIVFSheet(response, id, officeName, idsPatient);
 		// if (sheetType==Constants.mappingSheetID_CM) return
 		// readMappingDataCM(response);
 		// if (sheetType==Constants.mappingSheetID_FEE) return
@@ -106,6 +118,207 @@ public class ConnectAndReadSheets {
 		// return null;
 	}
 
+	public static void updateSheetRoster(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
+			List<RosterDetails> rList, int rowCount) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		List<Request> requests = new ArrayList<>();
+		//100 original -- 90 now
+		//List<CellData> values = new ArrayList<>();
+		if (rList != null) {
+			List<CellData> valuesDel = new ArrayList<>();
+			if (rList.size() < rowCount) {
+				// now we have to delete Extra Rows
+				//int deleteCount = rowCount - rList.size();
+				//valuesDel = new ArrayList<>();
+				/*
+				for (int x = 0; x <= 7; x++) {
+					valuesDel.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("")));
+				}
+				*/
+				/*
+				for (int x = rList.size()+1; x <= rowCount+1; x++) {
+					requests.add(new Request()
+							.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(x))
+									// .setColumnIndex(3))
+									.setRows(Arrays.asList(new RowData().setValues(valuesDel)))
+									.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+					
+				}
+				*/
+
+			}
+			
+			
+			int x=1;	
+			for(RosterDetails rd:rList) {
+				List<CellData> values = new ArrayList<>();
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getPatFName())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getSubscriberId())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getAddress1()+" "+rd.getAddress2()+" "+rd.getCity()) ));
+				//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getAddress2())));
+				//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getCity())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getDob())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getTelephone())));
+				//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getAssignedDentistF())));
+				requests.add(new Request()
+						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(x))
+								// .setColumnIndex(3))
+								.setRows(Arrays.asList(new RowData().setValues(values)))
+								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+				x++;
+			}
+				
+			
+			List<CellData> values = new ArrayList<>();
+			values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("NO")));
+			requests.add(new Request()
+					.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(ConstantsScrapping.MCNA_ROSTER_ROW_INDEX_STATUS)//)
+							 .setColumnIndex(ConstantsScrapping.MCNA_ROSTER_COLUMN_INDEX_STATUS))
+							.setRows(Arrays.asList(new RowData().setValues(values)))
+							.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+
+	        
+		}
+        
+		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 99")));
+		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 22")));
+		
+		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+	}
+
+	public static void updateSheetMCNADentaRunStatus(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
+			String status,int rowNumber,int columnIndex) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		List<Request> requests = new ArrayList<>();
+		//100 original -- 90 now
+		//List<CellData> values = new ArrayList<>();
+		List<CellData> values = new ArrayList<>();
+		values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(status)));
+		requests.add(new Request()
+				.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(rowNumber)//)
+						 .setColumnIndex(columnIndex))
+						.setRows(Arrays.asList(new RowData().setValues(values)))
+						.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+
+        
+		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 99")));
+		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 22")));
+		
+		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+	}
+
+	public static void updateSheetMCNADenta(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
+			List<EligibilityDto> rList, int rowCount) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		List<Request> requests = new ArrayList<>();
+		rowCount=rowCount+3;
+		//100 original -- 90 now
+		//List<CellData> values = new ArrayList<>();
+		if (rList != null) {
+			List<CellData> valuesDel = new ArrayList<>();
+			if (rList.size() < rowCount) {
+				// now we have to delete Extra Rows
+				//int deleteCount = rowCount - rList.size();
+				valuesDel = new ArrayList<>();
+				for (int x = 0; x <= 7; x++) {
+					//valuesDel.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("")));
+				}
+				for (int x = rList.size()+1; x <= rowCount+1; x++) {
+				//	requests.add(new Request()
+					//		.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(0).setRowIndex(x))
+						//			// .setColumnIndex(3))
+							//		.setRows(Arrays.asList(new RowData().setValues(valuesDel)))
+								//	.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+					
+				}
+
+			}
+			
+			
+			int x = 4;	
+			int hiscMax = 100;
+			int his = 1;
+			for(EligibilityDto rd:rList) {
+				List<CellData> values = new ArrayList<>();
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getEligible())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getEmployerName())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderName())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBenefitRemaining())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getCopay())));
+				
+				for(HistoryDto d:rd.getHistoryList()) {
+					
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getCode())));
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getTooth())));
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getDos())));
+					his++;
+					if (his > hiscMax) break;
+				}
+				//setStart(new GridCoordinate().setSheetId(0)
+				requests.add(new Request()
+						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(Integer.parseInt(rd.getMcnaSheet().getRowNumber()))//)
+								 .setColumnIndex(8))
+								.setRows(Arrays.asList(new RowData().setValues(values)))
+								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+				x++;
+				//break;
+			}
+				
+
+			
+			List<CellData> values = new ArrayList<>();
+			values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("NO")));
+			requests.add(new Request()
+					.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(ConstantsScrapping.ELE_ROW_INDEX_STATUS)//)
+							 .setColumnIndex(ConstantsScrapping.ELE_COLUMN_INDEX_STATUS))
+							.setRows(Arrays.asList(new RowData().setValues(values)))
+							.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+
+    	
+	        
+		}
+        
+		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 99")));
+		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 22")));
+		
+		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+	}
+
+	//WORK IN PROGRESS ..AFTER CALL...
+	public static Map<String, List<Object>> readSheetMcnaDenta(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		// if (sheetType==Constants.treatmentPlanSheetID) return
+		// readTPSheetData(response, id);
+		// if (sheetType==Constants.ivTableDataSheetID)
+		return readMCNADentaSheet(response);
+		// if (sheetType==Constants.mappingSheetID_CM) return
+		// readMappingDataCM(response);
+		// if (sheetType==Constants.mappingSheetID_FEE) return
+		// readMappingDataFEE(response);
+		// if (sheetType==Constants.eagleSoftFSANDFEESheetID) return
+		// readEagleSoftFSFee(response);
+		// if (sheetType==Constants.eagleSoftCoverageSheetID) return
+		// readEagleSoftESCoverage(response);
+		// if (sheetType==Constants.eagleSoftFSNAMESheetID) return
+		// readEagleSoftFSName(response);
+		// if (sheetType==Constants.eagleSoftRemDedBalSheetID) return
+		// readEagleSoftRemDedMax(response);
+		// return null;
+	}
+
+	
 	/*
 	 * Not used Now public static List<Object> readTPSheetData(ValueRange
 	 * range,String treatmentPlanId) {
@@ -131,50 +344,50 @@ public class ConnectAndReadSheets {
 	 * 
 	 * }
 	 */
-	public static Map<String, List<Object>> readIVFSheet(ValueRange range, String[] uniqueIds, String officeName,boolean idsPatient) {
+	public static Map<String, List<Object>> readIVFSheet(ValueRange range, String[] uniqueIds, String officeName,
+			boolean idsPatient) {
 
 		List<List<Object>> values = range.getValues();
 		Map<String, List<Object>> map = null;
 		List<String> ivds = Arrays.asList(uniqueIds);
 		ListIterator li = values.listIterator(values.size());
 		IVFTableSheet vif = null;
-		//IVFHistorySheet vifH = null;
+		// IVFHistorySheet vifH = null;
 		List<Object> ivList = null;
 		// int maxlength= values.size();
 		// int maxlengthT= values.size();
 		// System.out.println("maxlengthT30::"+maxlengthT);
-        int Column_NO_UNIQUE=312;
-        int Column_NO_PATIENT=129;
-        
+		int Column_NO_UNIQUE = 312;
+		int Column_NO_PATIENT = 129;
+
 		while (li.hasPrevious()) {
 			ArrayList<String> obj = (ArrayList<String>) li.previous();
 			String uniqueId = "";
 			try {
 				if (obj.get(Column_NO_UNIQUE).toLowerCase().startsWith("Unique_ID"))
 					break;
-				//System.out.println("id---" + ivds.get(0));
-				//System.out.println("id---" + officeName + "_" + ivds.get(0));
-				//System.out.println("888888:;" + (obj.get(157)));
-				Collection<String> ruleGen =null;
+				// System.out.println("id---" + ivds.get(0));
+				// System.out.println("id---" + officeName + "_" + ivds.get(0));
+				// System.out.println("888888:;" + (obj.get(157)));
+				Collection<String> ruleGen = null;
 				if (idsPatient) {
-					ruleGen = Collections2.filter(ivds,
-						id -> id.equals(obj.get(Column_NO_PATIENT)));
-				}else {
+					ruleGen = Collections2.filter(ivds, id -> id.equals(obj.get(Column_NO_PATIENT)));
+				} else {
 					ruleGen = Collections2.filter(ivds,
 							id -> (officeName + "_" + id).equals(obj.get(Column_NO_UNIQUE)));
 				}
 				if (ruleGen != null && ruleGen.size() > 0) {
-					//uniqueId = ruleGen.get(0);//obj.get(157);
-                    if (idsPatient) {
-                    	uniqueId=obj.get(Column_NO_UNIQUE).split("_")[1];	
-					/*for(String i:ruleGen) {
-                    	uniqueId=i;	
-                    }*/
-                    }else {
-                    	for(String i:ruleGen) {
-                        	uniqueId=i;	
-                         }
-                    }
+					// uniqueId = ruleGen.get(0);//obj.get(157);
+					if (idsPatient) {
+						uniqueId = obj.get(Column_NO_UNIQUE).split("_")[1];
+						/*
+						 * for(String i:ruleGen) { uniqueId=i; }
+						 */
+					} else {
+						for (String i : ruleGen) {
+							uniqueId = i;
+						}
+					}
 					int x = -1;
 					vif = new IVFTableSheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
@@ -196,50 +409,51 @@ public class ConnectAndReadSheets {
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
-							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),//20*6 +5
-							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), //21*6 +5 =131
-							new IVFHistorySheet(obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-									obj.get(++x)
-									),obj.get(++x),obj.get(++x),obj.get(++x)
-							
-							);
-					
-				}else {
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), // 20*6
+																												// +5
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), // 21*6 +5 =131
+							new IVFHistorySheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x)),
+							obj.get(++x), obj.get(++x), obj.get(++x)
+
+					);
+
+				} else {
 					continue;
 				}
 			} catch (Exception ex) {
 				continue;
 			}
-			//System.out.println(uniqueId);
+			// System.out.println(uniqueId);
 
 			if (map == null)
 				map = new HashMap<>();
@@ -262,6 +476,69 @@ public class ConnectAndReadSheets {
 			// ivList.add(vif);
 			if (map != null && uniqueIds.length == map.size())
 				break;// Because
+			// }//For loop
+		} // While Loop - 1
+
+		return map;
+
+	}
+
+	public static Map<String, List<Object>> readMCNADentaSheet(ValueRange range) {
+
+		List<List<Object>> values = range.getValues();
+		Map<String, List<Object>> map = null;
+		ListIterator li = values.listIterator();
+		MCNADentaSheet mcna = null;
+		// IVFHistorySheet vifH = null;
+		List<Object> mcnaList = null;
+		// int maxlength= values.size();
+		// int maxlengthT= values.size();
+		// System.out.println("maxlengthT30::"+maxlengthT);
+		int heading_rows = 2;
+		int subscriberId = 15;
+        int ct=-1;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			String subscriber = "";
+			try {
+				ct++;
+				if (ct<=heading_rows)
+				continue;
+				// System.out.println("id---" + ivds.get(0));
+				// System.out.println("id---" + officeName + "_" + ivds.get(0));
+				// System.out.println("888888:;" + (obj.get(157)));
+				//Collection<String> ruleGen = null;
+				
+				int x = 2;
+				subscriber = obj.get(5);
+				mcna = new MCNADentaSheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),(ct)+"");
+					
+				
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				continue;
+			}
+			// System.out.println(uniqueId);
+
+			if (map == null)
+				map = new HashMap<>();
+
+			if (map.containsKey(subscriber)) {
+				// if the key has already been used,
+				// we'll just grab the array list and add the value to it
+				mcnaList = map.get(subscriber);
+				mcnaList.add(mcna);
+			} else {
+				// if the key hasn't been used yet,
+				// we'll create a new ArrayList<String> object, add the value
+				// and put it in the array list with the new key
+				mcnaList = new ArrayList<>();
+				mcnaList.add(mcna);
+				map.put(subscriber, mcnaList);
+			}
+
+			// if (ivList ==null) ivList= new ArrayList<>();
+			// ivList.add(vif);
 			// }//For loop
 		} // While Loop - 1
 

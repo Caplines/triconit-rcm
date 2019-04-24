@@ -2,6 +2,8 @@ import {Component, OnInit, ViewEncapsulation, Input, Output, EventEmitter} from 
 import {Office} from "../../model/model.office";
 import {AccountService} from "../../services/account.service";
 import {Router,ActivatedRoute} from "@angular/router";
+import {ScrapModel}  from "../../model/model.scrap";
+
 
 @Component({
   selector: 'app-scrappopup',
@@ -10,14 +12,89 @@ import {Router,ActivatedRoute} from "@angular/router";
   encapsulation: ViewEncapsulation.None
 })
 export class ScrapPopupComponent implements OnInit {
-  @Output() emitToParent = new EventEmitter<any>();
-  errorMessage: string;
-  offices:any;
-  userName: any;
-  userType: any;
+	@Input() scrapm:ScrapModel;
+	@Output() emitToParent = new EventEmitter<any>();
+	@Input() showScrapPopup:boolean;
+	@Input() scrapType:number;
+	scrapData: any;
+	filterType:string='All';
+	arrayOfKeys:any;
+	linkData:string="";
+	
+	constructor(public accountService: AccountService) { }
 
-  ngOnInit() {
-  }
-  
+	ngOnInit() {
+		console.log(555);
+		this.scrapDataSite();
+		}
+	
+	scrapDataSite() {
+	    let ths=this;	
+		this.scrapData=[];
+		this.arrayOfKeys=[];
+		this.accountService.scrapSite(this.scrapm, 'scrapsite', (result) => { 
+			this.emitToParent.emit({action: "showLoading", value: false});
+			if (result.status=='OK' && result.data){
+				console.log(result.data);
+				this.scrapData = result.data;
+				// console.log(this.ivfmData);
+				// this.arrayOfKeys = Object.keys(this.ivfmData);
+				this.arrayOfKeys = Object.keys(this.scrapData);
+				if (this.arrayOfKeys[0]=='Office Not Set up'){
+					alert(this.arrayOfKeys[0]);
+					this.emitToParent.emit({action: "showScrapPopup", value: false});
+				}
+				if (this.arrayOfKeys[0]=='Done'){
+					
+					this.emitToParent.emit({action: "showScrapPopup", value: true});
+					
+				}
+                if (this.arrayOfKeys[0].indexOf("Scrapping Initiated - ")>-1){
+				    let links=this.arrayOfKeys[0].split("Scrapping Initiated - ")[1];
+				    let link=links.split("-");
+				    this.linkData="https://docs.google.com/spreadsheets/d/"+link[0]+"/edit#gid="+link[1];
+					this.emitToParent.emit({action: "showScrapPopup", value: true});
+					
+				}
+                if (this.arrayOfKeys[0]=='Already Running'){
+					alert("Some one is already running the Scraping.. ");
+					this.emitToParent.emit({action: "showScrapPopup", value: false});
+					
+				}
+
+				// this.emitToParent.emit({action: "showScrapPopup", value:
+				// true});
+				if (this.isEmpty(this.scrapData)){
+					alert("No Data Found.");
+					this.emitToParent.emit({action: "showScrapPopup", value: false});
+					}
+				
+			} else {
+				if (!result.data){
+					alert("No Data found.");
+				}
+			
+				this.emitToParent.emit({action: "showScrapPopup", value: false});
+			}
+		});
+	}
+	
+	closePopup() {
+		this.emitToParent.emit({action: "showScrapPopup", value: false});
+	}
+	
+
+	
+	
+	isEmpty(obj) {
+	  for(var key in obj) {
+		if(obj.hasOwnProperty(key))
+		  return false;
+		}
+	  return true;
+	}
+	
+	
+	
 
 }

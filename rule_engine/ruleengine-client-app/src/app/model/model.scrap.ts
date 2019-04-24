@@ -1,9 +1,9 @@
+import { ScrapUserDataModel } from "./model.scrapuserdata";
+
 export class ScrapModel {
-firstName:string="";
-lastName:string="";
-subscriberId:string="";
-insurenceName:string="";
-dob:string="";
-officeId:string="";
-scrapType: String ="";
+	listUd = new Array() as Array<ScrapUserDataModel>;
+	officeId:string="";
+    scrapType:string ="";
+    onlyDisplay:boolean=false;
+	isdataFromUi:boolean=false;
 }

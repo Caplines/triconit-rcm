@@ -1,1 +1,57 @@
-HI DATA
+<div *ngIf="showScrapPopup">
+	<div class="close-btn">
+		<a href="javascript:void(0)" (click)="closePopup()">
+			 Go Back
+		</a>
+		
+	</div>	
+	<div *ngFor="let key of arrayOfKeys" class="table-container">
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr *ngIf="scrapm.isdataFromUi"> 
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>SubscriberId</th>
+					<th>DOB</th>
+					<th>Message</th>
+					<th>Eligible</th>
+					<th>Copay</th>
+					<th>BenefitRemaining</th>
+					<th>Employer Name</th>
+					<th>Provider Name</th>
+					<th>Provider Same</th>
+					
+				</tr>
+				<tr *ngIf="!scrapm.isdataFromUi"> 
+					<th>Message</th>
+					<th>Link</th>
+				</tr>
+			</thead>
+			<tbody>
+			<ng-container *ngIf="!scrapm.isdataFromUi" >
+				<tr>
+					<td><span>Scraping Initiated you can check the status at</span></td>
+					<td><span> <a [attr.href]="linkData" target="_blank" title="Google Sheet">LINK</a></span></td>
+					
+				<tr>
+			</ng-container>
+			<ng-container *ngIf="scrapm.isdataFromUi" >
+				<tr *ngFor="let data of scrapData[key]">
+					<td><span [innerHTML]="data.mcnaSheet.fName"></span></td>
+					<td><span [innerHTML]="data.mcnaSheet.lName"></span></td>
+					<td><span [innerHTML]="data.mcnaSheet.subscriberId"></span></td>
+					<td><span [innerHTML]="data.mcnaSheet.dob"></span></td>
+					<td><span [innerHTML]="data.message"></span></td>
+					<td><span [innerHTML]="data.eligible"></span></td>
+					<td><span [innerHTML]="data.copay"></span></td>
+					<td><span [innerHTML]="data.benefitRemaining"></span></td>
+					<td><span [innerHTML]="data.employerName"></span></td>
+					<td><span [innerHTML]="data.providerName"></span></td>
+					<td><span [innerHTML]="data.providerSame"></span></td>
+			</ng-container>    	
+					
+				<tr>
+			</tbody>						
+		</table>
+	</div>
+</div>
