@@ -1,0 +1,3 @@
+-- INSERT NEW ROSTER GOOGLE SHEET--
+insert into scrapping_site_details (id,created_date,is_running,password,user_name,created_by,office_id,scrapping_site_id,proxy_port,row_count,google_sheet_name,google_sheet_id,google_sub_id)
+value (2,now(),false,'Smile@5479','calallen.credentialing@smilepoint.us','082b32a4-5984-485f-a41f-8700831e71b5',(select uuid from office where name='Westgreen'),2,8812,0,'Westgreen','1iE2V_ciMsPj5A7IwZyBTiZNzTLI3ar2Tx1Pv3wYb12M','0');

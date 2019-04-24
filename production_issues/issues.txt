@@ -1,0 +1,5 @@
+1 . In generrated war check only one version of commons-lang-2.6.jar file is there.
+2 . /opt/project/tricon/files sholud have all permissions
+    sudo chmod -R 777 *
+3. 
+  
