@@ -16,15 +16,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 //import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
 import com.tricon.ruleengine.dto.scrapping.HistoryDto;
-import com.tricon.ruleengine.dto.scrapping.RosterDetails;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
-import com.tricon.ruleengine.service.MCNAEligibilityScrappingService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.ConstantsScrapping;
 //import java.util.function.Function;

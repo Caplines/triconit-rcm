@@ -29,7 +29,7 @@ public class ScrappingSiteDetails extends BaseAudit implements Serializable {
 
 	@Id
 	@Column(name = "id", unique = true, nullable = false)
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
