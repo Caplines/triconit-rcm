@@ -6,4 +6,9 @@ export class ScrapModel {
     scrapType:string ="";
     onlyDisplay:boolean=false;
 	isdataFromUi:boolean=false;
+	username:string="";
+	password:string="";
+	start:string="A";
+	end:string="Z";
+	
 }

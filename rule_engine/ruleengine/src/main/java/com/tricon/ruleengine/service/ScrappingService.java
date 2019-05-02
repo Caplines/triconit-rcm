@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import com.tricon.ruleengine.dto.ScrappingInputDto;
+import com.tricon.ruleengine.dto.ScrappingSiteDetailsDto;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 
 public interface ScrappingService {
 	
@@ -14,4 +16,10 @@ public interface ScrappingService {
 	public void updateScrapRunStatus(int siteId, Office office);
 	
 	public void updateScrapRunStatus();
+
+	public ScrappingSiteDetails getScrapsiteDetialsByOfficeAndType(int scrapType,String officeUUid);
+	
+	
+	public ScrappingSiteDetailsDto getScrappingSiteDetailsDetailSDto(int scrapType, String officeUUid);
+
 }

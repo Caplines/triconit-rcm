@@ -19,6 +19,8 @@ public class ConstantsScrapping {
 	public static final int ELE_ROW_INDEX_STATUS=1;
 	public static final int ELE_COLUMN_INDEX_STATUS=1;
 	
+	public static final String NAME_Separator="-_-_-";
+	
 	
 	
 }

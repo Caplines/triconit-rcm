@@ -16,6 +16,7 @@ export class ScrapPopupComponent implements OnInit {
 	@Output() emitToParent = new EventEmitter<any>();
 	@Input() showScrapPopup:boolean;
 	@Input() scrapType:number;
+	@Input() offName:string;
 	scrapData: any;
 	filterType:string='All';
 	arrayOfKeys:any;
@@ -24,7 +25,6 @@ export class ScrapPopupComponent implements OnInit {
 	constructor(public accountService: AccountService) { }
 
 	ngOnInit() {
-		console.log(555);
 		this.scrapDataSite();
 		}
 	
@@ -51,7 +51,7 @@ export class ScrapPopupComponent implements OnInit {
 				}
                 if (this.arrayOfKeys[0].indexOf("Scrapping Initiated - ")>-1){
 				    let links=this.arrayOfKeys[0].split("Scrapping Initiated - ")[1];
-				    let link=links.split("-");
+				    let link=links.split("-_-_-");
 				    this.linkData="https://docs.google.com/spreadsheets/d/"+link[0]+"/edit#gid="+link[1];
 					this.emitToParent.emit({action: "showScrapPopup", value: true});
 					

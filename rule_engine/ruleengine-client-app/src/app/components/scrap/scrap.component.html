@@ -1,62 +1,82 @@
 
 <div class="inner-bg">
-	<div  *ngIf="!showScrapMain" class="container">
+	<div *ngIf="!showScrapMain" class="container">
 		<div class="row">
 			<div class="col-sm-6 col-sm-offset-3 form-box">
 				<div class="dropdown">
-					<button class="btn btn-block dropdown-toggle" type="button" data-toggle="dropdown" (click)="showScrapForm = false">
+					<button class="btn btn-block dropdown-toggle" type="button"
+						data-toggle="dropdown" (click)="showScrapForm = false">
 						<span class="caret"></span>Scrap Sites
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="javascript:void(0)" (click)="scrapParam('Roster')">Roster</a></li>
-						<li><a href="javascript:void(0)" (click)="scrapParam('MCNADENTAL')">Mcna Dental</a></li>
-						<li><a href="javascript:void(0)" (click)="scrapParam('MCNADENTALUI')">Mcna Dental (user input)</a></li>
-						<li><a href="javascript:void(0)" (click)="scrapParam('Dentaq')">Denta quest</a></li>
-						<li><a href="javascript:void(0)" (click)="scrapParam('DentaqUI')">Denta quest (user input)</a></li>
+						<li><a href="javascript:void(0)"
+							(click)="scrapParam('Roster')">Mcna Roster</a></li>
+						<li><a href="javascript:void(0)"
+							(click)="scrapParam('MCNADENTAL')">Mcna Dental</a></li>
+						<li><a href="javascript:void(0)"
+							(click)="scrapParam('MCNADENTALUI')">Mcna Dental (user input)</a></li>
+						<li><a href="javascript:void(0)"
+							(click)="scrapParam('Dentaq')">Denta quest</a></li>
+						<li><a href="javascript:void(0)"
+							(click)="scrapParam('DentaqUI')">Denta quest (user input)</a></li>
 					</ul>
 				</div>
-				
+
 
 				<div *ngIf=showScrapForm class="form-bottom">
-					<form class="login-form" name="form" (ngSubmit)="f.form.valid && runScrapReport()" #f="ngForm" novalidate>
-					
-					<p *ngIf="showParam.Roster">Roster</p>
-					<p *ngIf="showParam.MCNADENTAL">Mcna Dental</p>
-					<p *ngIf="showParam.MCNADENTALUI">Mcna Dental (user input)</p>
-					<p *ngIf="showParam.Dentaq">Denta quest</p>
-					<p *ngIf="showParam.DentaqUI">Denta quest (user input)</p>
-					
-					
-					<div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>
-					<div *ngIf="(showParam.MCNADENTALUI || showParam.DentaqUI)" class="form-group" [ngClass]="{ 'has-error': f.submitted }">
-						<label class="sr-only" for="fname">First Name</label>
-						<div>
-							<input type="text" class="login-signup-form-field form-control" name="fname" id="fname" [(ngModel)]="scrap.listUd[0].firstName" #fname="ngModel" placeholder="please enter first name .." />
-							<!-- <div *ngIf="f.submitted && !fname.valid" class="error-msg">please enter first name ..</div> -->
-						</div>	
-					</div>
-					
-					<div *ngIf="(showParam.MCNADENTALUI || showParam.DentaqUI)" class="form-group" [ngClass]="{ 'has-error': f.submitted }">
-						<label class="sr-only" for="lname">Last Name</label>
-						<div>
-							<input type="text" class="login-signup-form-field form-control" name="lname" id="lname" [(ngModel)]="scrap.listUd[0].lastName" #lname="ngModel" placeholder="please enter last name .." />
-							<!-- <div *ngIf="f.submitted && !lname.valid" class="error-msg">Please enter last name..</div> -->
-						</div>	
-					</div>
-					
-					<div *ngIf="(showParam.MCNADENTALUI || showParam.DentaqUI)" class="form-group" [ngClass]="{ 'has-error': f.submitted }">
-						<label class="sr-only" for="sId">Subscriber Id</label>
-						<div>
-							<input type="text" class="login-signup-form-field form-control" name="sId" id="sId" [(ngModel)]="scrap.listUd[0].subscriberId" #sId="ngModel" placeholder="subscriber id" />
-							<!-- <div *ngIf="f.submitted && !sId.valid" class="error-msg">Subscriber Id</div> -->
-						</div>	
-					</div>
-					
-					<div *ngIf="(showParam.MCNADENTALUI || showParam.DentaqUI)" class="form-group date-dropdown" [ngClass]="{ 'has-error': f.submitted }">
-						<ng-datepicker [(ngModel)]="scrap.listUd[0].dob" name="datePicker" [options]="dateOptions"></ng-datepicker>
-						<!-- <div *ngIf="f.submitted && !tpId.valid" class="error-msg">Please select DOB..</div> -->	
-					</div>
-			       <!-- 		
+					<form class="login-form" name="form"
+						(ngSubmit)="f.form.valid && runScrapReport()" #f="ngForm"
+						novalidate>
+
+						<p *ngIf="showParam.Roster">Mcna Roster</p>
+						<p *ngIf="showParam.MCNADENTAL">Mcna Dental</p>
+						<p *ngIf="showParam.MCNADENTALUI">Mcna Dental (user input)</p>
+						<p *ngIf="showParam.Dentaq">Denta quest</p>
+						<p *ngIf="showParam.DentaqUI">Denta quest (user input)</p>
+
+
+						<div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>
+						<div *ngIf="(showParam.MCNADENTALUI || showParam.DentaqUI)"
+							class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="fname">First Name</label>
+							<div>
+								<input type="text" class="login-signup-form-field form-control"
+									name="fname" id="fname" [(ngModel)]="scrap.listUd[0].firstName"
+									#fname="ngModel" placeholder="please enter first name .." />
+								<!-- <div *ngIf="f.submitted && !fname.valid" class="error-msg">please enter first name ..</div> -->
+							</div>
+						</div>
+
+						<div *ngIf="(showParam.MCNADENTALUI || showParam.DentaqUI)"
+							class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="lname">Last Name</label>
+							<div>
+								<input type="text" class="login-signup-form-field form-control"
+									name="lname" id="lname" [(ngModel)]="scrap.listUd[0].lastName"
+									#lname="ngModel" placeholder="please enter last name .." />
+								<!-- <div *ngIf="f.submitted && !lname.valid" class="error-msg">Please enter last name..</div> -->
+							</div>
+						</div>
+
+						<div *ngIf="(showParam.MCNADENTALUI || showParam.DentaqUI)"
+							class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="sId">Subscriber Id</label>
+							<div>
+								<input type="text" class="login-signup-form-field form-control"
+									name="sId" id="sId" [(ngModel)]="scrap.listUd[0].subscriberId"
+									#sId="ngModel" placeholder="subscriber id" />
+								<!-- <div *ngIf="f.submitted && !sId.valid" class="error-msg">Subscriber Id</div> -->
+							</div>
+						</div>
+
+						<div *ngIf="(showParam.MCNADENTALUI || showParam.DentaqUI)"
+							class="form-group date-dropdown"
+							[ngClass]="{ 'has-error': f.submitted }">
+							<ng-datepicker [(ngModel)]="scrap.listUd[0].dob"
+								name="datePicker" [options]="dateOptions"></ng-datepicker>
+							<!-- <div *ngIf="f.submitted && !tpId.valid" class="error-msg">Please select DOB..</div> -->
+						</div>
+						<!-- 		
 					<div *ngIf="(showParam.MCNADENTALUI || showParam.DentaqUI)" class="form-group" [ngClass]="{ 'has-error': f.submitted }">
 						<label class="sr-only" for="iName">Insurance name</label>
 						<div>
@@ -64,15 +84,61 @@
 						</div>	
 					</div>
 			        -->
-					<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
-						<label class="sr-only" for="officeId">Office Name</label> 
-						<select class="login-signup-form-field form-control" name="officeId" id="officeId" [(ngModel)]="scrap.officeId">
-							<option value="">Office Name...</option>
-							<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
-						</select>
-						<div *ngIf="f.submitted && scrap.officeId==''" class="error-msg">Office Name is required</div> 
-					</div>
-					<!-- 
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="officeId">Office Name</label> <select
+								class="login-signup-form-field form-control" name="officeId"
+								id="officeId" [(ngModel)]="scrap.officeId"
+								(change)="onOfficeChange($event.target.value)">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+							<div *ngIf="f.submitted && scrap.officeId==''" class="error-msg">Office
+								Name is required</div>
+						</div>
+
+						<div class="form-horizontal" *ngIf="pd">
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="username">Sheet
+									Login Name </label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control inner-inp-2"
+										name="username" id="username" [(ngModel)]="scrap.username"
+										#username="ngModel" />
+								</div>
+							</div>
+
+							<div class="form-group" *ngIf="pd">
+								<label class="col-sm-3 control-label" for="password">Sheet
+									Password</label>
+								<div class="col-sm-9">
+									<input type="text" name="password" id="password"
+										class="form-control inner-inp-2" [(ngModel)]="scrap.password"
+										#password="ngModel" />
+
+								</div>
+							</div>
+							<div class="form-group" *ngIf="scrap.scrapType==2 && pd">
+								<label class="col-sm-3 control-label" for="password">Sheet
+									Start Alphabet</label>
+								<div class="col-sm-9" >
+									<input type="text" name="start" 
+										class="form-control inner-inp-2" [(ngModel)]="scrap.start"
+										#start="ngModel" />
+
+								</div>
+							</div>
+							<div class="form-group" *ngIf="scrap.scrapType==2 && pd">
+								<label class="col-sm-3 control-label" for="password">Sheet
+									End Alphabet</label>
+								<div class="col-sm-9">
+									<input type="text" name="end"
+										class="form-control inner-inp-2" [(ngModel)]="scrap.end"
+										#end="ngModel" />
+
+								</div>
+							</div>
+						</div>
+						<!-- 
 					<div class="form-group" >
 							 <input
 								type="checkbox" class=""
@@ -82,18 +148,22 @@
                       
 					</div>
 					-->
-					<p><button [disabled]="showLoading" type="submit" class="btn">Submit</button></p>
-					
-					<div *ngIf="showLoading" class="loader"></div>					    
+						<p>
+							<button [disabled]="showLoading" type="submit" class="btn">Submit</button>
+						</p>
+
+						<div *ngIf="showLoading" class="loader"></div>
 					</form>
 				</div>
-			</div> 
-				
+			</div>
+
 		</div>
 	</div>
-	
-		<app-scrappopup *ngIf="showScrapPopup" [scrapType]="scrap.scrapType" [scrapm]="scrap" (emitToParent)="receiveChildrenEmitter($event)" 
-		 showScrapPopup="showScrapPopup"></app-scrappopup>	
-	
-		
+
+	<app-scrappopup *ngIf="showScrapPopup" [scrapType]="scrap.scrapType"
+		[offName]="offName" [scrapm]="scrap"
+		(emitToParent)="receiveChildrenEmitter($event)"
+		showScrapPopup="showScrapPopup"></app-scrappopup>
+
+
 </div>

@@ -60,12 +60,30 @@ export class AccountService {
        },
        error => {
            callback(error);
+    
        },
        () => {
 
        });
     }
   
+  getSdDetails(callback,uuid,st){
+      this.generateRefreshToken().pipe(switchMap(data => {
+          localStorage.setItem("token", (<any>data).token);
+            return  this.http.get(AppComponent.API_URL+'/scrapsiteud/'+st+"/"+uuid)
+          })).subscribe(data => {
+                // console.log(data['results']);
+              callback((<any>data));
+          },
+          error => {
+              callback(error);
+              //this.router.navigate(['/logout']);
+          },
+          () => {
+          }
+          
+          );
+    }
   /*
 	 * return this.http.post(newsUrl, news).pipe( map( (dataFromApi) =>
 	 * dataFromApi ), catchError( (err) => Observable.throw(err.json().error) ) )

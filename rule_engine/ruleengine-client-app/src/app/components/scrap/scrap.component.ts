@@ -21,11 +21,13 @@ export class ScrapComponent implements OnInit {
   showScrapMain:boolean= false;
   errorMessage: string;
   offices:any;
+  offName:string;
   userName: any;
   userType: any;
   showLoading: boolean = false;
   showScrapForm: boolean = false;
   showScrapPopup: boolean = false;
+  pd:boolean=false;
   showParam:any = { Roster : false, MCNADENTAL : false, MCNADENTALUI : false, Dentaq : false, DentaqUI : false };
 
 dateOptions: DatepickerOptions = {
@@ -38,7 +40,11 @@ dateOptions: DatepickerOptions = {
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute, private datePipe: DatePipe) {
 	  this.offices =this.route.snapshot.data['offs'].data;
 	  //this.offices.push({"name":"All OFFICES","uuid":"All"});
+	  this.scrap.start="A";
+	  this.scrap.end="Z";
+	  
 	  this.scrap.listUd.push(new ScrapUserDataModel());
+	  
   }
 
   ngOnInit() {
@@ -63,30 +69,47 @@ dateOptions: DatepickerOptions = {
   }
   
   runScrapReport() {
-	  //console.log(this.scrap);
-	  //debugger;
 	  if (this.scrap.listUd[0].dob!='')this.scrap.listUd[0].dob = this.datePipe.transform(this.scrap.listUd[0].dob, 'MM/dd/yyyy');
+	  //console.log(this.scrap);
+	  
 	  if(this.scrap.officeId) {
+	  this.offName=this.offices.find(x=>x.uuid == this.scrap.officeId).name;
 	  this.showLoading = true;
 	  this.showScrapPopup= true;
 	  this.scrap.isdataFromUi=false;
 	  if (this.scrapTypeD == "b"){
 		  this.scrap.isdataFromUi=true;
+	    }
 	  }
-	  }
-	  console.log(this.scrap);
-		
-	  /*
-	  this.accountService.scrapSite(this.scrap, 'scrapsite', (result) => {		
-			if (result.status=='OK'){
-			    //this.showLoading = false;
-				this.scrapData = result.data;
-				this.showScrapPopup=true;
-			}
-		  });
-	  */
-	  
-	  }
+	
+	}
+  
+  onOfficeChange(value){
+	  this.showLoading=true;
+	  this.pd=false;
+	  this.getSdetails(value);
+  }
+  
+  getSdetails(value) {
+	this.scrap.username=this.scrap.password="";
+	  this.accountService.getSdDetails(
+			  (result)=>{
+				  if (result.status=='OK' && result.data){
+						if (result.data.data){
+							this.scrap.username=result.data.data.userName;
+							this.scrap.password=result.data.data.password;
+							this.showLoading=false;
+							this.pd=true;
+						}
+				  }else{
+					  alert("Oiffce not set up..");
+				  }
+				  
+			  }
+	  ,value
+	  ,this.scrap.scrapType)
+	}
+  
   
   
   

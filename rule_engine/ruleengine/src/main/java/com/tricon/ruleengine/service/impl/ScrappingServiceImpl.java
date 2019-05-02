@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.ScrappingDao;
 import com.tricon.ruleengine.dto.ScrappingInputDto;
+import com.tricon.ruleengine.dto.ScrappingSiteDetailsDto;
 import com.tricon.ruleengine.dto.ScrappingUserDataInputDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
@@ -59,6 +60,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 		Map<String, List<?>> map = new HashMap<>();
 		// ScrappingSite st= sDao.getScrappingSiteDetails(dto.getSiteId(), off);
 		ScrappingSiteDetails sd = sDao.getScrappingSiteDetailsDetail(dto.getScrapType(), off);
+		
 		// Hibernate.initialize(st.getSiteSiteDetails());
 		RuleEngineLogger.generateLogs(clazz, "ScrappingServiceImpl 1", Constants.rule_log_debug, null);
 		/*
@@ -75,6 +77,9 @@ public class ScrappingServiceImpl implements ScrappingService {
 		}
 		RuleEngineLogger.generateLogs(clazz, "ScrappingServiceImpl  " + sd.isRunning(), Constants.rule_log_debug,
 				null);
+		sd.setPassword(dto.getPassword());
+		sd.setUserName(dto.getUsername());
+		
 		if (!sd.isRunning()) {
 			sd.setRunning(true);
 			sDao.updateScrappingSiteRunningStatus(sd);
@@ -94,8 +99,8 @@ public class ScrappingServiceImpl implements ScrappingService {
 					ExecutorService service = Executors.newCachedThreadPool();// FixedThreadPool(1);
 
 					// Future<List<?>> rr =
-					service.submit(new MCNARosterScrappingServiceImpl(sd, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER));
-					map.put(ConstantsScrapping.SCRAPPING_INIT + sd.getGoogleSheetId() + "-" + sd.getGoogleSubId(),
+					service.submit(new MCNARosterScrappingServiceImpl(sd, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,dto));
+					map.put(ConstantsScrapping.SCRAPPING_INIT + sd.getGoogleSheetId() + ConstantsScrapping.NAME_Separator + sd.getGoogleSubId(),
 							null);
 
 					// List<?> r= rr.get();
@@ -155,7 +160,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 							if (update) {
 								service.submit(new MCNAEligibilityScrappingServiceImpl(sd, CLIENT_SECRET_DIR,
 										CREDENTIALS_FOLDER, mapData, update));
-								map.put(ConstantsScrapping.SCRAPPING_INIT + sd.getGoogleSheetId() + "-"
+								map.put(ConstantsScrapping.SCRAPPING_INIT + sd.getGoogleSheetId() + ConstantsScrapping.NAME_Separator
 										+ sd.getGoogleSubId(), null);
 
 							} else {
@@ -169,7 +174,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 							if (update) {
 								service.submit(new DentaQEligibilityScrappingServiceImpl(sd, CLIENT_SECRET_DIR,
 										CREDENTIALS_FOLDER, mapData, update));
-								map.put(ConstantsScrapping.SCRAPPING_INIT + sd.getGoogleSheetId() + "-"
+								map.put(ConstantsScrapping.SCRAPPING_INIT + sd.getGoogleSheetId() + ConstantsScrapping.NAME_Separator
 										+ sd.getGoogleSubId(), null);
 							} else {
 								Future<List<?>> rr = service.submit(new DentaQEligibilityScrappingServiceImpl(sd,
@@ -229,11 +234,6 @@ public class ScrappingServiceImpl implements ScrappingService {
 		return map;
 	}
 
-	@Override
-	public void updateScrapRunStatus(int siteId, Office office) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void updateScrapRunStatus() {
@@ -245,6 +245,30 @@ public class ScrappingServiceImpl implements ScrappingService {
 				sDao.updateScrappingSiteRunningStatus(sd);
 			}
 		}
+	}
+
+
+	@Override
+	public void updateScrapRunStatus(int siteId, Office office) {
+		
+		
+	}
+
+
+	@Override
+	public ScrappingSiteDetails getScrapsiteDetialsByOfficeAndType(int scrapType, String officeUUid) {
+		Office off = officeDoa.getOfficeByUuid(officeUUid);
+		ScrappingSiteDetails sd = sDao.getScrappingSiteDetailsDetail(scrapType, off);
+
+		return sd;
+	}
+
+
+	@Override
+	public ScrappingSiteDetailsDto getScrappingSiteDetailsDetailSDto(int scrapType, String officeUUid) {
+
+		Office off = officeDoa.getOfficeByUuid(officeUUid);
+		return sDao.getScrappingSiteDetailsDetailSDto(scrapType, off);
 	}
 
 }

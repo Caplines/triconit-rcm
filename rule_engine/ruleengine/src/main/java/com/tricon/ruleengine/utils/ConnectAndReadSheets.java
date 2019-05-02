@@ -119,39 +119,13 @@ public class ConnectAndReadSheets {
 	}
 
 	public static void updateSheetRoster(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
-			List<RosterDetails> rList, int rowCount) throws IOException {
+			List<RosterDetails> rList, int rowCount,int initRow,String status) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 
 		List<Request> requests = new ArrayList<>();
-		//100 original -- 90 now
-		//List<CellData> values = new ArrayList<>();
 		if (rList != null) {
-			List<CellData> valuesDel = new ArrayList<>();
-			if (rList.size() < rowCount) {
-				// now we have to delete Extra Rows
-				//int deleteCount = rowCount - rList.size();
-				//valuesDel = new ArrayList<>();
-				/*
-				for (int x = 0; x <= 7; x++) {
-					valuesDel.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("")));
-				}
-				*/
-				/*
-				for (int x = rList.size()+1; x <= rowCount+1; x++) {
-					requests.add(new Request()
-							.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(x))
-									// .setColumnIndex(3))
-									.setRows(Arrays.asList(new RowData().setValues(valuesDel)))
-									.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
-					
-				}
-				*/
-
-			}
-			
-			
-			int x=1;	
+			//int x=1;	
 			for(RosterDetails rd:rList) {
 				List<CellData> values = new ArrayList<>();
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getPatFName())));
@@ -163,16 +137,16 @@ public class ConnectAndReadSheets {
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getTelephone())));
 				//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getAssignedDentistF())));
 				requests.add(new Request()
-						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(x))
+						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(initRow))
 								// .setColumnIndex(3))
 								.setRows(Arrays.asList(new RowData().setValues(values)))
 								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
-				x++;
+				initRow++;
 			}
 				
 			
 			List<CellData> values = new ArrayList<>();
-			values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("NO")));
+			values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(status)));
 			requests.add(new Request()
 					.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(ConstantsScrapping.MCNA_ROSTER_ROW_INDEX_STATUS)//)
 							 .setColumnIndex(ConstantsScrapping.MCNA_ROSTER_COLUMN_INDEX_STATUS))
@@ -182,9 +156,6 @@ public class ConnectAndReadSheets {
 	        
 		}
         
-		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 99")));
-		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 22")));
-		
 		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
 		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
 	}
@@ -214,7 +185,7 @@ public class ConnectAndReadSheets {
 	}
 
 	public static void updateSheetMCNADenta(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
-			List<EligibilityDto> rList, int rowCount) throws IOException {
+			List<EligibilityDto> rList, int rowCount,String status) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 
@@ -223,7 +194,8 @@ public class ConnectAndReadSheets {
 		//100 original -- 90 now
 		//List<CellData> values = new ArrayList<>();
 		if (rList != null) {
-			List<CellData> valuesDel = new ArrayList<>();
+			//List<CellData> valuesDel = new ArrayList<>();
+			/*
 			if (rList.size() < rowCount) {
 				// now we have to delete Extra Rows
 				//int deleteCount = rowCount - rList.size();
@@ -241,9 +213,9 @@ public class ConnectAndReadSheets {
 				}
 
 			}
+			*/
 			
-			
-			int x = 4;	
+			//int x = 4;	
 			int hiscMax = 100;
 			int his = 1;
 			for(EligibilityDto rd:rList) {
@@ -268,14 +240,14 @@ public class ConnectAndReadSheets {
 								 .setColumnIndex(8))
 								.setRows(Arrays.asList(new RowData().setValues(values)))
 								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
-				x++;
+				//x++;
 				//break;
 			}
 				
 
 			
 			List<CellData> values = new ArrayList<>();
-			values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("NO")));
+			values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(status)));
 			requests.add(new Request()
 					.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(ConstantsScrapping.ELE_ROW_INDEX_STATUS)//)
 							 .setColumnIndex(ConstantsScrapping.ELE_COLUMN_INDEX_STATUS))

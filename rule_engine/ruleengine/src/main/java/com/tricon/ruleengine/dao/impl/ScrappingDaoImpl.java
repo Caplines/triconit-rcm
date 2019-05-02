@@ -8,12 +8,16 @@ import org.hibernate.Hibernate;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.ScrappingDao;
+import com.tricon.ruleengine.dto.OfficeDto;
+import com.tricon.ruleengine.dto.ScrappingSiteDetailsDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingSite;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
@@ -67,6 +71,38 @@ public class ScrappingDaoImpl extends BaseDaoImpl implements ScrappingDao {
 			criteria.add(Restrictions.eq("office.uuid", office.getUuid()));
 			criteria.add(Restrictions.eq("scrappingSite.id", siteDetailId));
 			s = (ScrappingSiteDetails) criteria.uniqueResult();
+
+		} finally {
+			closeSession(session);
+
+		}
+		return s;
+	}
+
+	@Override
+	public ScrappingSiteDetailsDto getScrappingSiteDetailsDetailSDto(int siteDetailId, Office office) {
+		// TODO Auto-generated method stub
+		Session session = null;
+		ScrappingSiteDetailsDto s = null;
+		try {
+			session = getSession();
+			Criteria criteria = session.createCriteria(ScrappingSiteDetails.class);
+			criteria.createAlias("office", "office");
+			criteria.createAlias("scrappingSite", "scrappingSite");
+			
+			criteria.add(Restrictions.eq("office.uuid", office.getUuid()));
+			criteria.add(Restrictions.eq("scrappingSite.id", siteDetailId));
+			ProjectionList pjList = Projections.projectionList();
+			pjList.add(Projections.property("userName"), "userName");
+			pjList.add(Projections.property("password"), "password");
+			pjList.add(Projections.property("googleSheetId"), "googleSheetId");
+			pjList.add(Projections.property("googleSheetName"), "googleSheetName");
+			pjList.add(Projections.property("googleSubId"), "googleSubId");
+			
+			
+			criteria.setProjection(pjList);
+			criteria.setResultTransformer(Transformers.aliasToBean(ScrappingSiteDetailsDto.class));
+			s = (ScrappingSiteDetailsDto) criteria.uniqueResult();
 
 		} finally {
 			closeSession(session);

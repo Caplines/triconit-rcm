@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.api.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -10,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.ScrappingInputDto;
+import com.tricon.ruleengine.dto.ScrappingSiteDetailsDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 import com.tricon.ruleengine.service.ScrappingService;
 import com.tricon.ruleengine.utils.Constants;
 
@@ -57,6 +62,20 @@ public class ScrappingController {
 
 	}
 
+	@CrossOrigin
+	@GetMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/scrapsiteud/{stype}/{uuid}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> scrapSite(@PathVariable String uuid,@PathVariable int stype)  {
+		Map<String, ScrappingSiteDetailsDto> map=new HashMap<>();
+		ScrappingSiteDetailsDto sd=  sService.getScrappingSiteDetailsDetailSDto(stype, uuid);
+		if (sd!=null) map.put("data", sd);
+		else map.put("no data", null);
+		
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", map));
+
+	}
 
 
 }

@@ -25,7 +25,8 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 	private String CLIENT_SECRET_DIR,CREDENTIALS_FOLDER;
 	private Map<String, List<Object>> mapData=null;
 	private boolean updateSheet=false;
-	
+	private final int  max=5;
+	private int  ctALL=0;
 
 	public ScrappingSiteDetails getScrappingSiteDetails() {
 		return scrappingSiteDetails;
@@ -53,7 +54,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		List<EligibilityDto> r=scrapSite(scrappingSiteDetails,mapData);
 		  try {
 			 if (updateSheet) ConnectAndReadSheets.updateSheetMCNADenta(scrappingSiteDetails.getGoogleSheetId(),
-					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)r,scrappingSiteDetails.getRowCount());
+					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)r,scrappingSiteDetails.getRowCount(),"NO");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,6 +79,33 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 					if (d!=null) {
 						d.setMcnaSheet(sh);
 						eList.add(d);
+						
+						
+						if (updateSheet) {
+							if (eList.size()>=max) {
+								try {
+									List<EligibilityDto> rListC = new ArrayList<>(eList);
+									//int q=1+(max*ctALL);
+									//if (q>1) q=q+1+ctALLO;
+									//ctALLO=ctALLO+1;
+									
+									ConnectAndReadSheets.updateSheetMCNADenta(scrappingSiteDetails.getGoogleSheetId(),
+											  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)rListC,scrappingSiteDetails.getRowCount(),"YES");
+
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								//size=size+rList.size();
+								ctALL=ctALL+1;
+								eList.clear();
+							}else {
+							 //size=size+1;
+							 //finalSize=size;
+							}	
+						}
+						
+						
 					}
 				}
 			}
