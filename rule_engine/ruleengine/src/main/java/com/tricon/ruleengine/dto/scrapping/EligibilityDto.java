@@ -22,6 +22,8 @@ public class EligibilityDto {
 	private List<HistoryDto> historyList = new ArrayList<>();
 	private String message;
 	private MCNADentaSheet mcnaSheet;
+	private String providerChange;
+	
 	
 	
 
@@ -117,6 +119,14 @@ public class EligibilityDto {
 
 	public void setMcnaSheet(MCNADentaSheet mcnaSheet) {
 		this.mcnaSheet = mcnaSheet;
+	}
+
+	public String getProviderChange() {
+		return providerChange;
+	}
+
+	public void setProviderChange(String providerChange) {
+		this.providerChange = providerChange;
 	}
 	
 	

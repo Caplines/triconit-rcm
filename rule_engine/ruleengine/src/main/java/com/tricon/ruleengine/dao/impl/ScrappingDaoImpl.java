@@ -98,7 +98,8 @@ public class ScrappingDaoImpl extends BaseDaoImpl implements ScrappingDao {
 			pjList.add(Projections.property("googleSheetId"), "googleSheetId");
 			pjList.add(Projections.property("googleSheetName"), "googleSheetName");
 			pjList.add(Projections.property("googleSubId"), "googleSubId");
-			
+			pjList.add(Projections.property("locationProvider"), "locationProvider");
+			pjList.add(Projections.property("scrappingSite.id"), "sid");
 			
 			criteria.setProjection(pjList);
 			criteria.setResultTransformer(Transformers.aliasToBean(ScrappingSiteDetailsDto.class));

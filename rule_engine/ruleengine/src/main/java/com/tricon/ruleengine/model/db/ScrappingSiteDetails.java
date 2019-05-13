@@ -64,6 +64,10 @@ public class ScrappingSiteDetails extends BaseAudit implements Serializable {
 
 	@Column(name = "google_sub_id")
 	private String googleSubId;
+	
+	@Column(name = "location_provider")
+	private String locationProvider;
+	
 
 	public int getId() {
 		return id;
@@ -153,6 +157,13 @@ public class ScrappingSiteDetails extends BaseAudit implements Serializable {
 		this.googleSubId = googleSubId;
 	}
 
-	
+	public String getLocationProvider() {
+		return locationProvider;
+	}
+
+	public void setLocationProvider(String locationProvider) {
+		this.locationProvider = locationProvider;
+	}
+
 	
 }

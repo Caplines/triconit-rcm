@@ -28,6 +28,8 @@ export class ScrapComponent implements OnInit {
   showScrapForm: boolean = false;
   showScrapPopup: boolean = false;
   pd:boolean=false;
+  lp:boolean=false;
+
   showParam:any = { Roster : false, MCNADENTAL : false, MCNADENTALUI : false, Dentaq : false, DentaqUI : false };
 
 dateOptions: DatepickerOptions = {
@@ -65,7 +67,9 @@ dateOptions: DatepickerOptions = {
 	  this.showScrapForm = true;
 	  this.scrapTypeD = this.typeMapD[value];
 	  this.scrap.scrapType = this.typeMap[value];
-	  
+	  this.pd=false;
+	  this.lp=false;
+	  this.scrap.officeId="";
   }
   
   runScrapReport() {
@@ -87,7 +91,13 @@ dateOptions: DatepickerOptions = {
   onOfficeChange(value){
 	  this.showLoading=true;
 	  this.pd=false;
-	  this.getSdetails(value);
+	  this.lp=false;
+	  if(this.scrap.officeId) {
+		  this.getSdetails(value);
+		 
+	  }else{
+		  this.showLoading=false;
+	  }
   }
   
   getSdetails(value) {
@@ -98,8 +108,10 @@ dateOptions: DatepickerOptions = {
 						if (result.data.data){
 							this.scrap.username=result.data.data.userName;
 							this.scrap.password=result.data.data.password;
+							this.scrap.locationProvider=result.data.data.locationProvider;
 							this.showLoading=false;
 							this.pd=true;
+							if (result.data.data.sid==3) this.lp=true;
 						}
 				  }else{
 					  alert("Oiffce not set up..");

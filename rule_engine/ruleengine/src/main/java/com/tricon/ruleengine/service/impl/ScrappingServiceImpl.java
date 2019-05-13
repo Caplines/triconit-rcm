@@ -79,6 +79,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 				null);
 		sd.setPassword(dto.getPassword());
 		sd.setUserName(dto.getUsername());
+		sd.setLocationProvider(dto.getLocationProvider());
 		
 		if (!sd.isRunning()) {
 			sd.setRunning(true);

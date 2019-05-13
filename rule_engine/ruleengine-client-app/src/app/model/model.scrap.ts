@@ -10,5 +10,6 @@ export class ScrapModel {
 	password:string="";
 	start:string="A";
 	end:string="Z";
+	locationProvider:string="";
 	
 }

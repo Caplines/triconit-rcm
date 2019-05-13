@@ -117,6 +117,15 @@
 
 								</div>
 							</div>
+							<div class="form-group" *ngIf="pd && lp">
+								<label class="col-sm-3 control-label" for="password">Location and Provider</label>
+								<div class="col-sm-9">
+									<input type="text" name="locationProvider" id="locationProvider"
+										class="form-control inner-inp-2" [(ngModel)]="scrap.locationProvider"
+										#password="ngModel" />
+
+								</div>
+							</div>
 							<div class="form-group" *ngIf="scrap.scrapType==2 && pd">
 								<label class="col-sm-3 control-label" for="password">Sheet
 									Start Alphabet</label>

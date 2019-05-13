@@ -7,8 +7,8 @@ public class ConstantsScrapping {
 	public static final String DENTA_ELIG = "Dentaquest - Eligibility Check";
 	public static final String ROSTER_FET = "MCNA - Roster Data Fetching";
 	public static final String OFFICE_NOT_SET ="Office Not Set up";
-	public static final String SUBSCRIBER_NOT_Eligible ="NO";
-	public static final String SUBSCRIBER_Eligible ="YES";
+	public static final String SUBSCRIBER_NOT_Eligible ="Not Eligible";
+	public static final String SUBSCRIBER_Eligible ="Eligible";
 	public static final String SUBSCRIBER_NOT_FOUND ="Subscriber not Found";
 	public static final String SUBSCRIBER_FOUND ="Subscriber Found";
 	public static final String SCRAPPING_INIT="Scrapping Initiated - ";

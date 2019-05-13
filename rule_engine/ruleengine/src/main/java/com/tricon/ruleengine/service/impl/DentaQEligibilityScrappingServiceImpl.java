@@ -54,7 +54,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		List<EligibilityDto> r=scrapSite(scrappingSiteDetails,mapData);
 		  try {
 			 if (updateSheet) ConnectAndReadSheets.updateSheetMCNADenta(scrappingSiteDetails.getGoogleSheetId(),
-					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)r,scrappingSiteDetails.getRowCount(),"NO");
+					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)r,scrappingSiteDetails.getRowCount(),"NO","D");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -75,7 +75,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 				List<Object> x = (List<Object>) entry.getValue();
 				for (Object obj : x) {
 					MCNADentaSheet sh = (MCNADentaSheet) obj;
-					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getlName(), sh.getZip());
+					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getlName(), sh.getZip(),scrappingSiteDetails.getLocationProvider());
 					if (d!=null) {
 						d.setMcnaSheet(sh);
 						eList.add(d);
@@ -90,7 +90,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 									//ctALLO=ctALLO+1;
 									
 									ConnectAndReadSheets.updateSheetMCNADenta(scrappingSiteDetails.getGoogleSheetId(),
-											  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)rListC,scrappingSiteDetails.getRowCount(),"YES");
+											  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)rListC,scrappingSiteDetails.getRowCount(),"YES","D");
 
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
@@ -125,7 +125,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 	
 	
 	private EligibilityDto parsePage(WebDriver driver,String dob,String subscriberId,
-			String verifyLastName,String verifyFirstName,String zip) throws Exception{
+			String verifyLastName,String verifyFirstName,String zip,String locationProvider) throws Exception{
 		navigatetoEligiblity(driver);
 		EligibilityDto dto= new EligibilityDto();
 		String[] dobA=dob.split("/");
@@ -134,8 +134,17 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 				.findElements(By.xpath("/html/body/table[3]/tbody/tr/td[3]/form/div[2]/select/option"));
 		
 		for (WebElement w : wList) {
-			((HtmlUnitWebElement) w).click();
-		//	break;
+			
+			if (locationProvider.equals("")) {
+				((HtmlUnitWebElement) w).click();
+			} else {
+				String nm = w.getText();
+				if (nm.replaceAll(" ", "").equalsIgnoreCase(locationProvider.replaceAll(" ", ""))) {
+					((HtmlUnitWebElement) w).click();
+					break;
+				}
+				((HtmlUnitWebElement) w).click();
+			}
 		}
 
 		WebElement element3 = driver.findElement(By.id("Q061MEMBER0dob"));

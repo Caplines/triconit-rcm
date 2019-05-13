@@ -185,7 +185,7 @@ public class ConnectAndReadSheets {
 	}
 
 	public static void updateSheetMCNADenta(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
-			List<EligibilityDto> rList, int rowCount,String status) throws IOException {
+			List<EligibilityDto> rList, int rowCount,String status,String medicaltype) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 
@@ -222,7 +222,8 @@ public class ConnectAndReadSheets {
 				List<CellData> values = new ArrayList<>();
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getEligible())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getEmployerName())));
-				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderName())));
+				if (medicaltype.equals("M"))values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderChange())));
+				if (medicaltype.equals("D"))values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderName())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBenefitRemaining())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getCopay())));
 				

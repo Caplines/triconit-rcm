@@ -13,6 +13,8 @@ public class ScrappingInputDto {
 	private String password;
 	private String start;
 	private String end;
+	private String locationProvider;
+	
 	
 	
 	
@@ -71,6 +73,12 @@ public class ScrappingInputDto {
 	}
 	public void setEnd(String end) {
 		this.end = end;
+	}
+	public String getLocationProvider() {
+		return locationProvider;
+	}
+	public void setLocationProvider(String locationProvider) {
+		this.locationProvider = locationProvider;
 	}
 	
 	

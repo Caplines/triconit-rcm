@@ -64,7 +64,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		List<EligibilityDto> r=scrapSite(scrappingSiteDetails,mapData);
 		  try {
 			 if (updateSheet) ConnectAndReadSheets.updateSheetMCNADenta(scrappingSiteDetails.getGoogleSheetId(),
-					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)r,scrappingSiteDetails.getRowCount(),"NO");
+					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)r,scrappingSiteDetails.getRowCount(),"NO","M");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -88,7 +88,12 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 				navigatetoEligiblity(driver);
 				for (Object obj : x) {
 					MCNADentaSheet sh = (MCNADentaSheet) obj;
-					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getlName(), sh.getZip());
+					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getlName(), sh.getZip(),false);
+					if (d.getEligible().equals(ConstantsScrapping.SUBSCRIBER_NOT_FOUND) && 
+							(sh.getSubscriberId().equalsIgnoreCase("NA") || sh.getSubscriberId().trim().equals(""))){
+						navigatetoEligiblity(driver);
+						d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),true);
+					}
 					if (d!=null) {
 						d.setMcnaSheet(sh);
 						eList.add(d);
@@ -102,7 +107,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 									//ctALLO=ctALLO+1;
 									
 									ConnectAndReadSheets.updateSheetMCNADenta(scrappingSiteDetails.getGoogleSheetId(),
-											  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)rListC,scrappingSiteDetails.getRowCount(),"YES");
+											  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)rListC,scrappingSiteDetails.getRowCount(),"YES","M");
 
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
@@ -135,7 +140,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 	}
 
 	private EligibilityDto parsePage(WebDriver driver,String dob,String subscriberId,
-			String verifyLastName,String verifyFirstName,String zip) throws Exception{
+			String verifyLastName,String verifyFirstName,String zip,boolean byName) throws Exception{
 		EligibilityDto dto= new EligibilityDto();
 		String[] dobA=dob.split("/");
 		WebElement element4 =driver.findElement(By.xpath("/html/body/div[6]/div[1]/div[2]"));
@@ -144,7 +149,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		element4 =driver.findElement(By.id("verifyDob"));
 		element4.sendKeys(dob);
 		driver.findElement(By.id("verifySubscriberId"));
-		if (subscriberId!=null && !subscriberId.equalsIgnoreCase("NA"))element4.sendKeys(subscriberId);
+		if (subscriberId!=null && !subscriberId.equalsIgnoreCase("NA") && !subscriberId.trim().equals(""))element4.sendKeys(subscriberId);
 		driver.findElement(By.id("verifyLastName"));
 		element4.sendKeys(verifyLastName);
 		driver.findElement(By.id("verifyFirstName"));
@@ -154,8 +159,8 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		Thread.sleep(1000);
 		driver.findElement(By.id("facilityId"));
 		String facilityId=driver.findElement(By.id("facilityId")).getAttribute("value");
-		createVerifyUrlAndNavigate(driver, dobA[0]+"%2F"+dobA[1]+"%2F"+dobA[2], subscriberId, verifyLastName, verifyFirstName, zip, facilityId);
-
+		if (!byName)createVerifyUrlAndNavigate(driver, dobA[0]+"%2F"+dobA[1]+"%2F"+dobA[2], subscriberId, verifyLastName, verifyFirstName, zip, facilityId);
+		else createVerifyUrlAndNavigate(driver, dobA[0]+"%2F"+dobA[1]+"%2F"+dobA[2], "0", verifyLastName, "", "", facilityId);
 		//Check for Valid data
 		String z=driver.getPageSource();
 		//use try catch here ...
@@ -166,6 +171,8 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
        String key = null;
        String insured="";
        String messageRes="";
+       String subsId="";
+       
        while(iterator.hasNext()){
            key = (String)iterator.next();
            if (key.equals("insured"))
@@ -173,12 +180,18 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
            if (key.equals("response_message")) {
         	   messageRes=(String) jsonChildObject.get(key);
            }
+           if (key.equals("insured")) {
+        	   subsId=(String)((JSONObject)jsonChildObject.get(key)).get("sub_id");
+           }
        }
            
        
        //                                                                insured /subsid   /dob      /hidden/0/1
 	   if (messageRes.equalsIgnoreCase("ok")) {
 	   dto.setMessage(ConstantsScrapping.SUBSCRIBER_FOUND);
+	   if (byName) {
+		   subscriberId=subsId;
+	   }
 	   driver.navigate().to("https://portal.mcna.net/provider/eligible/"+insured+"/"+subscriberId+"/"+dobA[2]+"-"+dobA[0]+"-"+dobA[1]+"/"+facilityId+"/0/1");
 		Thread.sleep(5000);
 		element4 =driver.findElement(By.xpath("/html/body/div[6]/div[1]/div[2]"));		
@@ -212,6 +225,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 			//System.out.println("PPPPPP"+txt);
 			if (txt.contains("YOU ARE NOT the")){
 				providerSame=false;
+				dto.setProviderChange("Change Provider");
 			}
 			dto.setProviderSame(providerSame+"");
 			if (txt.contains("The Main Dental Home provider is")) {

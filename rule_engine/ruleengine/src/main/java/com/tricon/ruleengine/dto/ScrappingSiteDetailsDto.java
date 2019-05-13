@@ -7,6 +7,10 @@ public class ScrappingSiteDetailsDto {
 	private String googleSheetId;
 	private String googleSheetName;
 	private String googleSubId;
+	private String locationProvider;
+	private int sid;
+	
+	
 	
 	public String getUserName() {
 		return userName;
@@ -38,6 +42,21 @@ public class ScrappingSiteDetailsDto {
 	public void setGoogleSubId(String googleSubId) {
 		this.googleSubId = googleSubId;
 	}
+	public String getLocationProvider() {
+		return locationProvider;
+	}
+	public void setLocationProvider(String locationProvider) {
+		this.locationProvider = locationProvider;
+	}
+	public int getSid() {
+		return sid;
+	}
+	public void setSid(int sid) {
+		this.sid = sid;
+	}
+	
+	
+	
 	
 	
 	
