@@ -75,7 +75,10 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 				List<Object> x = (List<Object>) entry.getValue();
 				for (Object obj : x) {
 					MCNADentaSheet sh = (MCNADentaSheet) obj;
-					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getlName(), sh.getZip(),scrappingSiteDetails.getLocationProvider());
+					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),scrappingSiteDetails.getLocationProvider(),true);
+					if (d!=null && d.getMessage().equals(ConstantsScrapping.SUBSCRIBER_NOT_FOUND)) {
+						d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),scrappingSiteDetails.getLocationProvider(),false);
+					}
 					if (d!=null) {
 						d.setMcnaSheet(sh);
 						eList.add(d);
@@ -125,7 +128,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 	
 	
 	private EligibilityDto parsePage(WebDriver driver,String dob,String subscriberId,
-			String verifyLastName,String verifyFirstName,String zip,String locationProvider) throws Exception{
+			String verifyLastName,String verifyFirstName,String zip,String locationProvider,boolean checkSub) throws Exception{
 		navigatetoEligiblity(driver);
 		EligibilityDto dto= new EligibilityDto();
 		String[] dobA=dob.split("/");
@@ -154,20 +157,20 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		element3 = driver.findElement(By.id("Q061MEMBER0memberNo"));
 		element3.clear();
 		
-		if (!subscriberId.equalsIgnoreCase("NA")) {
+		if (checkSub &&  (!subscriberId.equalsIgnoreCase("NA")) && !subscriberId.trim().equals("")) {
 			element3.sendKeys(subscriberId);
 		}
 		
 		element3 = driver.findElement(By.id("Q061MEMBER0lastName"));
 		element3.clear();
-		if (subscriberId.equalsIgnoreCase("NA")) {
+		if (!subscriberId.equalsIgnoreCase("NA")) {
  		element3.sendKeys(verifyLastName);
 		}
 		
 		element3 = driver.findElement(By.id("Q061MEMBER0firstName"));
 		element3.clear();
 		
-		if (subscriberId.equalsIgnoreCase("NA")) {
+		if (!subscriberId.equalsIgnoreCase("NA")) {
 		element3.sendKeys(verifyFirstName);
 		}
 		
@@ -267,8 +270,13 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 								  dto.setCopay("$"+cp[1]);
 								  	  
 							  }
-							 }else {
-							//  System.out.println("no copay");
+						  }else if (cp.length>1 && cp[1].contains(" Copay")) {
+					    	  cp=cp[1].split(" Copay");
+							  cp=cp[0].split("\\$");
+							  if (cp.length>1) {
+								  dto.setCopay("$"+cp[1]);
+								  	  
+							  }
 						  }
 					   }
 					  
@@ -279,8 +287,8 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 						   }else {
 							  List<WebElement> wListChildTDD=   ele.findElements(By.tagName("td"));
 							  if (wListChildTDD.size()>8) {
-								  System.out.println("Remaining ----"+ wListChildTDD.get(8).getText());
-								//  dto.setBenefitRemaining(wListChildTDD.get(8).getText());
+								//  System.out.println("Remaining ----"+ wListChildTDD.get(8).getText());
+								  dto.setBenefitRemaining(wListChildTDD.get(8).getText());
 							  }
 						   }
 					   }

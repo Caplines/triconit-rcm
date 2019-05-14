@@ -88,7 +88,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 				navigatetoEligiblity(driver);
 				for (Object obj : x) {
 					MCNADentaSheet sh = (MCNADentaSheet) obj;
-					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getlName(), sh.getZip(),false);
+					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),false);
 					if (d.getEligible().equals(ConstantsScrapping.SUBSCRIBER_NOT_FOUND) && 
 							(sh.getSubscriberId().equalsIgnoreCase("NA") || sh.getSubscriberId().trim().equals(""))){
 						navigatetoEligiblity(driver);
@@ -226,12 +226,14 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 			if (txt.contains("YOU ARE NOT the")){
 				providerSame=false;
 				dto.setProviderChange("Change Provider");
+			}else {
+				dto.setProviderChange("");
 			}
 			dto.setProviderSame(providerSame+"");
 			if (txt.contains("The Main Dental Home provider is")) {
 				dto.setProviderName(txt.split("The Main Dental Home provider is ")[1]);
 			}
-			
+			break;
 		}
 	wList= driver.findElements(By.xpath("/html/body/div[6]/div[1]/div[3]/table[2]/tbody/tr"));
 	String dos="";
