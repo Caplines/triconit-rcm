@@ -83,9 +83,9 @@ public class Constants {
 	public static final String RULE_ID_48="Exam limitation for CHIP";
 	public static final String RULE_ID_49="Sealant limitation in CHIP";
 	public static final String RULE_ID_50="Major Service Form Requirements";
-	public static final String RULE_ID_51="DQ Fillings (Provider Same)";
-	public static final String RULE_ID_52="DQ Fillings (Provider Different)";
-	
+	public static final String RULE_ID_51="DQ Fillings (Provider Same)";//NOT USED NOW
+	public static final String RULE_ID_52="DQ Fillings (Provider Different)";////NOT USED NOW
+	public static final String RULE_ID_53="DQ Fillings";
 	
 	
 	/*
@@ -262,5 +262,9 @@ public class Constants {
 	public static String EN_REP_TYPE_SEP="TYPE";
 	public static String EN_REP_COUNT_SEP=";";
 	
+	public static String DQ_PLAN_NAME_CHECK= "DQ Chip,DQ Medicaid,MCNA Chip,MCNA Medicaid,MCNA - MEDICAID," + 
+			                                 "DENTAQUEST - MEDICAID,MCNA - CHIP,DENTAQUEST - CHIP"; 
+			
+	 
 	
 }

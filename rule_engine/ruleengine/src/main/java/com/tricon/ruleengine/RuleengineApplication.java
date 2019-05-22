@@ -15,7 +15,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  */
 //https://graph.microsoft.com/v1.0/me/drive/root/children from graph explorer to get ID of sheet..
 /* 
-/* to create build of front end--- ng  build --prod*/ //for local its npm start 
+/* to create build of front end--- ng build --prod*/ //for local its npm start 
 //from cmd in folder \capline\rule_engine\ruleengine>   mvn initialize package
 /* CD /opt/tomcat
  * FOR PRODCTION MAKE SURE 

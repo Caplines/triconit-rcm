@@ -33,7 +33,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 	private Map<String, List<Object>> mapData=null;
 	private boolean updateSheet=false;
 	
-	private final int  max=5;
+	private final int  max=2;
 	private int  ctALL=0;
 
 	
@@ -89,7 +89,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 				for (Object obj : x) {
 					MCNADentaSheet sh = (MCNADentaSheet) obj;
 					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),false);
-					if (d.getEligible().equals(ConstantsScrapping.SUBSCRIBER_NOT_FOUND) && 
+					if (d!=null && d.getEligible().equals(ConstantsScrapping.SUBSCRIBER_NOT_FOUND) && 
 							(sh.getSubscriberId().equalsIgnoreCase("NA") || sh.getSubscriberId().trim().equals(""))){
 						navigatetoEligiblity(driver);
 						d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),true);
@@ -131,6 +131,11 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+		try {
+			driver.close();
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
 		return eList;
 	}
 
@@ -141,6 +146,9 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 
 	private EligibilityDto parsePage(WebDriver driver,String dob,String subscriberId,
 			String verifyLastName,String verifyFirstName,String zip,boolean byName) throws Exception{
+		
+		if (dob.equals("") ) return null;
+		if (subscriberId.equals("") &&  verifyLastName.equals("")) return null;
 		EligibilityDto dto= new EligibilityDto();
 		String[] dobA=dob.split("/");
 		WebElement element4 =driver.findElement(By.xpath("/html/body/div[6]/div[1]/div[2]"));
@@ -266,7 +274,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 			
 		}
 	   }else {
-			System.out.println(ConstantsScrapping.SUBSCRIBER_NOT_FOUND);	
+			//System.out.println(ConstantsScrapping.SUBSCRIBER_NOT_FOUND);	
 			dto.setMessage(ConstantsScrapping.SUBSCRIBER_NOT_FOUND);
 			dto.setEligible(ConstantsScrapping.SUBSCRIBER_NOT_FOUND);
 		}

@@ -216,13 +216,16 @@ public class ConnectAndReadSheets {
 			*/
 			
 			//int x = 4;	
-			int hiscMax = 100;
+			int hiscMax = 200;
 			int his = 1;
 			for(EligibilityDto rd:rList) {
 				List<CellData> values = new ArrayList<>();
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getEligible())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getEmployerName())));
-				if (medicaltype.equals("M"))values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderChange())));
+				if (medicaltype.equals("M")) {
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderChange())));
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderName())));
+				}
 				if (medicaltype.equals("D"))values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderName())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBenefitRemaining())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getCopay())));
@@ -233,7 +236,7 @@ public class ConnectAndReadSheets {
 					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getTooth())));
 					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getDos())));
 					his++;
-					if (his > hiscMax) break;
+					if (his > hiscMax) break; 
 				}
 				//setStart(new GridCoordinate().setSheetId(0)
 				requests.add(new Request()
@@ -468,7 +471,7 @@ public class ConnectAndReadSheets {
 		// int maxlengthT= values.size();
 		// System.out.println("maxlengthT30::"+maxlengthT);
 		int heading_rows = 2;
-		int subscriberId = 15;
+		int subscriberIdCT = 0;
         int ct=-1;
 		while (li.hasNext()) {
 			ArrayList<String> obj = (ArrayList<String>) li.next();
@@ -496,10 +499,10 @@ public class ConnectAndReadSheets {
 			if (map == null)
 				map = new HashMap<>();
 
-			if (map.containsKey(subscriber)) {
+			if (map.containsKey(subscriberIdCT+"")) {
 				// if the key has already been used,
 				// we'll just grab the array list and add the value to it
-				mcnaList = map.get(subscriber);
+				mcnaList = map.get(subscriberIdCT+"");
 				mcnaList.add(mcna);
 			} else {
 				// if the key hasn't been used yet,
@@ -507,9 +510,9 @@ public class ConnectAndReadSheets {
 				// and put it in the array list with the new key
 				mcnaList = new ArrayList<>();
 				mcnaList.add(mcna);
-				map.put(subscriber, mcnaList);
+				map.put(subscriberIdCT+"", mcnaList);
 			}
-
+			subscriberIdCT++;
 			// if (ivList ==null) ivList= new ArrayList<>();
 			// ivList.add(vif);
 			// }//For loop

@@ -25,7 +25,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 	private String CLIENT_SECRET_DIR,CREDENTIALS_FOLDER;
 	private Map<String, List<Object>> mapData=null;
 	private boolean updateSheet=false;
-	private final int  max=5;
+	private final int  max=2;
 	private int  ctALL=0;
 
 	public ScrappingSiteDetails getScrappingSiteDetails() {
@@ -116,6 +116,11 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+		try {
+		driver.close();
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 		return eList;
 
 	}
@@ -129,13 +134,31 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 	
 	private EligibilityDto parsePage(WebDriver driver,String dob,String subscriberId,
 			String verifyLastName,String verifyFirstName,String zip,String locationProvider,boolean checkSub) throws Exception{
+		if (dob.equals("") ) return null;
 		navigatetoEligiblity(driver);
 		EligibilityDto dto= new EligibilityDto();
 		String[] dobA=dob.split("/");
 		// Select select box with any option here we have selected last one.
 		List<WebElement> wList = driver
 				.findElements(By.xpath("/html/body/table[3]/tbody/tr/td[3]/form/div[2]/select/option"));
+       /*locationProvider="Geetika Rastogi";
 		
+		for (WebElement w : wList) {
+			
+			if (locationProvider.equals("")) {
+				//this will never work now but keep this
+				((HtmlUnitWebElement) w).click();
+			} else {
+				
+				String nm = w.getText();
+				if (nm.replaceAll(" ", "").replaceAll(" ","").toLowerCase().trim().contains(locationProvider.replaceAll(" ","").trim().toLowerCase())) {
+					((HtmlUnitWebElement) w).click();
+					break;
+				}
+				((HtmlUnitWebElement) w).click();
+			}
+		}
+		*/
 		for (WebElement w : wList) {
 			
 			if (locationProvider.equals("")) {
@@ -163,14 +186,14 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		
 		element3 = driver.findElement(By.id("Q061MEMBER0lastName"));
 		element3.clear();
-		if (!subscriberId.equalsIgnoreCase("NA")) {
+		if (!subscriberId.equalsIgnoreCase("NA") && !checkSub) {
  		element3.sendKeys(verifyLastName);
 		}
 		
 		element3 = driver.findElement(By.id("Q061MEMBER0firstName"));
 		element3.clear();
 		
-		if (!subscriberId.equalsIgnoreCase("NA")) {
+		if (!subscriberId.equalsIgnoreCase("NA") && !checkSub) {
 		element3.sendKeys(verifyFirstName);
 		}
 		

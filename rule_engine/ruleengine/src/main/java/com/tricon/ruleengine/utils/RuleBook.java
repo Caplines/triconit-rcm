@@ -7235,6 +7235,169 @@ public class RuleBook {
 	}
 	
 	
+	public List<TPValidationResponseDto> Rule53(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
+			Rules rule, BufferedWriter bw) {
+		//DQ_PLAN_NAME_CHECK
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_53,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> d = new ArrayList<>();
+		try {
+			boolean pass = true;
+			if (tpList == null) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.ALERT));
+				return d;
+			}
+               Set<String> issueTeeth=new HashSet<>();
+				String planType = ivf.getInsName();
+				if (planType==null) planType="";
+				else planType=planType.replaceAll(" ", "");
+				planType=planType.toLowerCase();
+				RuleEngineLogger.generateLogs(clazz, "planType->"+planType,
+						Constants.rule_log_debug, bw);
+				boolean needTocheck=false;
+				//String cMedicate = Constants.insurance_Medicaid;
+				String checkP= Constants.DQ_PLAN_NAME_CHECK.replaceAll(" ", "").trim().toLowerCase();
+				String[] checkPs= checkP.split(",");
+				for(String c:checkPs) {
+					if (c.equals(planType)) {
+						needTocheck=true;
+						break;
+					}
+				} 
+				if (needTocheck) {
+			       	
+				ToothHistoryDto hdto = null;
+				Map<String, List<ToothHistoryDto>> mapHistoryM = new HashMap<>();
+				List<String> checkList = new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
+		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
+		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
+
+		        List<String> tooth=new ArrayList<>();
+				for (Object obj : tpList) {
+					TreatmentPlan tp = (TreatmentPlan) obj;
+					if (!checkList.contains(tp.getServiceCode())) continue;
+					List<String> t=Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth()));
+					for(String t1:t) {
+						if (tooth.contains(t1)) {
+							//throw Error
+							pass=false;
+							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule53.alert.message1", new Object[] {t1}, locale), Constants.FAIL));
+ 
+							break;
+						}else {
+							tooth.add(t1);
+						}
+					}
+					
+				}
+	            //if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
+				Date TP_Date = new Date();
+				
+				
+       	        
+					int noOFhistory = Constants.history_codes_size;
+					Class<?> c2;
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+
+						IVFHistorySheet hisSheet = ivf.getHs();
+						
+						for (int i = 1; i <= noOFhistory; i++) {
+							String hc = "getHistory" + i + "Code";
+							String hd = "getHistory" + i + "DOS";
+							String ht = "getHistory" + i + "Tooth";
+							String hs = "getHistory" + i + "Surface";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);	
+							String code = (String) hcm.invoke(hisSheet);
+							String dt = (String) hdm.invoke(hisSheet);
+							
+							if (code.equals("")) continue ;
+							if (dt.equals("")) continue ;
+							if (!checkList.contains(code)) continue;
+							//check for future date 
+							try {
+							if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
+							}catch (Exception e) {
+								continue;
+							}
+							
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
+										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+							 if (checkList.contains(code)) {
+				              if ( mapHistoryM.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryM.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryM.put(code, l);
+								}
+							 }
+						}
+						for (Object obj1 : tpList) {
+						TreatmentPlan tp = (TreatmentPlan) obj1;
+						if (!checkList.contains(tp.getServiceCode())) continue;
+						//LOW ORDER
+						for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistoryM.entrySet()) {
+						     //String codeH=entry.getKey();
+						     List<ToothHistoryDto> eL=entry.getValue();
+						     for(ToothHistoryDto td:eL) {
+					    		 String[] tooths=	ToothUtil.getToothsFromTooth(tp.getTooth());
+					    		 //Check For Same Tooth
+					    		 
+					    		 Date dos = null;
+					    		 //if (d.getSurfaceTooth().equals("")) continue;
+									try {
+										dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(td.getHistoryDos());
+										RuleEngineLogger.generateLogs(clazz,
+												"History DOS-" + td.getHistoryDos(),
+												Constants.rule_log_debug, bw);
+					    		 
+					    		 
+					    		 //Arrays.asList(tooths).contains(td.getHistoryTooth())
+					    		if ( Arrays.asList(tooths).contains(td.getHistoryTooth())) {
+					    			if (!DateUtils.checkforXm(TP_Date, dos,36)) {
+					    		         pass=false;
+					    		         issueTeeth.add(td.getHistoryTooth());
+					    			}
+					    		}
+									}catch (Exception e) {
+										// TODO: handle exception
+									}
+						     }
+						     
+						}
+						
+						
+						}//For loop End
+						
+	            }
+                  /**/
+			if (!pass && issueTeeth.size()>0) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule53.alert.message2", new Object[] {String.join(",", issueTeeth)}, locale), Constants.ALERT));
+	
+			}
+			if (pass)
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+		} catch (Exception x) {
+            x.printStackTrace();
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL));
+
+		}
+		return d;
+
+
+	}
 	// DQ Fillings (Provider Same)
 	public List<TPValidationResponseDto> Rule51(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
 			Rules rule, BufferedWriter bw) {

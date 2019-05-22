@@ -948,7 +948,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									Constants.rule_log_debug, bw);
 
 							// END  Filling Bundling
-							
+                           /*NOW USED NOW							
 							// DQ Fillings (Provider Same)
 							rule = getRulesFromList(rules, Constants.RULE_ID_51);
 							dtoRL = rb.Rule51(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
@@ -981,7 +981,23 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									Constants.rule_log_debug, bw);
 								
 							//END  DQ Fillings (Provider Different)
-
+                            */
+							// DQ Fillings
+							rule = getRulesFromList(rules, Constants.RULE_ID_53);
+							dtoRL = rb.Rule53(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_53,
+									Constants.rule_log_debug, bw);
+								
+							//END  DQ Fillings
 
 							//  Crown Bundling with Fillings 
 							rule = getRulesFromList(rules, Constants.RULE_ID_25);
