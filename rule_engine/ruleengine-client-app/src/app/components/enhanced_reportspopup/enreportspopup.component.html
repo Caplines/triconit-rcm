@@ -8,8 +8,8 @@
 							</a>
 						</div>
 						<div class="table-container">
-						<h3 style="text-align: center" *ngIf="(reportType==2 || reportType==3)">Validate IV Batch Report</h3>
-						<h3 style="text-align: center" *ngIf="(reportType==1 || reportType==4)">Validate TX Plan Report</h3>
+						<h3 style="text-align: center" *ngIf="(reportType==2 || reportType==4)">Validate IV Batch Report</h3>
+						<h3 style="text-align: center" *ngIf="(reportType==1 || reportType==3)">Validate TX Plan Report</h3>
 						
 						<div>
 							<table  class="table table-bordered" style="margin-bottom:0px;">
@@ -21,8 +21,8 @@
 										<th class="tr-width" *ngIf="(reportType==1 || reportType==2)">Patient ID</th>
 										<th *ngIf="(reportType==1 || reportType==2)">Patient Name</th>
 										<th style="width:200px;" *ngIf="(reportType==1 || reportType==2)">Run By</th>
-										<th *ngIf="reportType==3">Total No of IVF ID Run</th>
-										<th *ngIf="reportType==4">Total No of TX Plan Run</th>
+										<th *ngIf="reportType==4">Total No of IVF ID Run</th>
+										<th *ngIf="reportType==3">Total No of TX Plan Run</th>
 										<th class="tr-width">Rule Failed</th>
 										<th class="tr-width">Rule Passed</th>
 										<th class="tr-width">Alerts</th>

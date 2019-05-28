@@ -90,7 +90,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 					MCNADentaSheet sh = (MCNADentaSheet) obj;
 					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),false);
 					if (d!=null && d.getEligible().equals(ConstantsScrapping.SUBSCRIBER_NOT_FOUND) && 
-							(sh.getSubscriberId().equalsIgnoreCase("NA") || sh.getSubscriberId().trim().equals(""))){
+							(!sh.getSubscriberId().equalsIgnoreCase("NA") || !sh.getSubscriberId().trim().equals(""))){
 						navigatetoEligiblity(driver);
 						d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),true);
 					}
