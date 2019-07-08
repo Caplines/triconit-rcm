@@ -5,6 +5,9 @@ import {Router,ActivatedRoute} from "@angular/router";
 import {EnReportsModel} from "../../model/model.enreports";
 import {DatepickerOptions} from 'ng2-datepicker';
 import { DatePipe } from '@angular/common';
+import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext"; 
+import Utils from '../../util/utils';
+
 
 @Component({
   selector: 'app-enreports',
@@ -24,9 +27,12 @@ export class EnReportsComponent implements OnInit {
   showLoading: boolean = false;
   showReportForm: boolean = false;
   showEnReportPopup: boolean = false;
-
+//claim and Treatment Text 
+hd1:string="";
+//hd2:string="";
 reportType:any;
-
+ur:string="/enreport";
+ut:string="1";
   dateOptionsS: DatepickerOptions = {
 	displayFormat: 'MM/DD/YYYY',
 	placeholder: 'Click to select a Start date'
@@ -47,11 +53,18 @@ reportType:any;
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute, private datePipe: DatePipe) {
 	  this.offices =this.route.snapshot.data['offs'].data;
 	  this.offices.push({"name":"All OFFICES","uuid":"All"});
+	  this.ut =Utils.fetchUserTypeFromLocalStorage();
   }
 
   ngOnInit() {
 	this.dateOptionsS.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
 	this.dateOptionsE.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
+	if (this.route.snapshot.url[0].path=='enreportscl'){
+		  this.hd1=ClaimTreatmentTextModel.claim;
+		  this.ur="/enreportcl";
+	  }else{
+		  this.hd1=ClaimTreatmentTextModel.txPlan;
+	  }
   }
   
   reportParam(value) {
@@ -92,7 +105,7 @@ reportType:any;
 			  {this.enreports.startDate = this.datePipe.transform(this.enreports.startDate, 'MM/dd/yyyy');
 		  this.enreports.endDate = this.datePipe.transform(this.enreports.endDate, 'MM/dd/yyyy');}
 		  this.showLoading = true;
-		  this.accountService.validateEnReport(this.enreports,(result) =>{
+		  this.accountService.validateEnReport(this.enreports,this.ur,(result) =>{
 			  this.showLoading = false;
 				if (result.status=='OK'){
 					this.enreportData = result.data;

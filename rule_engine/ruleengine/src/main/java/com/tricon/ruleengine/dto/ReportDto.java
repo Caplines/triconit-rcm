@@ -6,6 +6,7 @@ public class ReportDto {
 	private String officeId;
 	private String reportField1;
 	private String reportField2;
+	private String mType;
 	
 	public String getReportType() {
 		return reportType;
@@ -31,6 +32,14 @@ public class ReportDto {
 	public void setOfficeId(String officeId) {
 		this.officeId = officeId;
 	}
+	public String getmType() {
+		return mType;
+	}
+	public void setmType(String mType) {
+		this.mType = mType;
+	}
+	
+	
 	
 	
 

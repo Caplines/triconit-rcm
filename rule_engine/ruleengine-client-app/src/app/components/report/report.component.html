@@ -8,7 +8,7 @@
 							<span class="caret"></span>Select Report to Run
 						</button>
 						<ul class="dropdown-menu">
-							<li><a href="javascript:void(0)" (click)="reportParam('TreatmentId')">Treatment Plan Id</a></li>
+							<li><a href="javascript:void(0)" (click)="reportParam('TreatmentId')">{{hd1}}</a></li>
 							<li><a href="javascript:void(0)" (click)="reportParam('IvfId')">IV Form Id</a></li>
 							<li><a href="javascript:void(0)" (click)="reportParam('Date')">Date Run</a></li>
 							<li><a href="javascript:void(0)" (click)="reportParam('PatientName')">Patient Name</a></li>
@@ -29,15 +29,19 @@
 							<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
 								<label class="sr-only" for="reportField1">Report Field</label>
 								<div *ngIf="showParam.TreatmentId">
-									<input type="text" class="login-signup-form-field form-control" name="reportField1" id="reportField1" [(ngModel)]="report.reportField1" #reportField1="ngModel" placeholder="Treatment Plan Id..." required />
-									<div *ngIf="f.submitted && !reportField1.valid" class="error-msg">Please enter Treatment Plan Id.</div>
+									<input type="text" class="login-signup-form-field form-control" name="reportField1" id="reportField1" [(ngModel)]="report.reportField1" #reportField1="ngModel" placeholder="{{hd1}}..." required />
+									<div *ngIf="f.submitted && !reportField1.valid" class="error-msg">Please enter {{hd1}}.</div>
 								</div>
 								<div *ngIf="showParam.IvfId">
 									<input type="text" class="login-signup-form-field form-control" name="reportField1" id="reportField1" [(ngModel)]="report.reportField1" #reportField1="ngModel" placeholder="IVF Id..." required />
 									<div *ngIf="f.submitted && !reportField1.valid" class="error-msg">Please enter IVF Id.</div>
 								</div>
 								<div *ngIf="showParam.Date" class="date-dropdown">
-									<ng-datepicker [(ngModel)]="report.reportField1" name="datePicker" [options]="dateOptions"></ng-datepicker>
+									<!-- <input type="text" name="datePicker" [(ngModel)]="report.reportField1" (click)="datePicker.toggle()" />
+                                     <ng-datepicker name="datePicker" [headless]="true" #datePicker [(ngModel)]="report.reportField1" [options]="dateOptions"></ng-datepicker>
+                                    --> 
+                                    <ng-datepicker [(ngModel)]="report.reportField1" name="datePicker" [options]="dateOptions"></ng-datepicker>
+                                      
 									<div *ngIf="f.submitted && report.reportField1==''" class="error-msg">Please select valid Date.</div>
 								</div>
 								<div *ngIf="showParam.PatientName">

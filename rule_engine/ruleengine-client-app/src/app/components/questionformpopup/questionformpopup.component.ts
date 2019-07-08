@@ -48,7 +48,7 @@ export class QuestionformPopupComponent implements OnInit {
   
   saveChanges(result) {
 	let index = this.answerData.findIndex(updateAns => updateAns.answerId == result.answerId);
-	console.log(result);
+	//console.log(result);
 	if(index != -1) {
 		this.answerData[index].answer = result.answer;
 	} else {

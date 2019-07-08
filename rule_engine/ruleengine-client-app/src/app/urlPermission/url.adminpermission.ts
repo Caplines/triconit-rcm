@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import Utils from '../util/utils';
 
 @Injectable()
 export class UrlAdminPermission implements CanActivate {
@@ -14,7 +15,11 @@ export class UrlAdminPermission implements CanActivate {
 
     if (localStorage.getItem('currentUser')) {
         //this.router.navigate(['/ivf'], { queryParams: { returnUrl: state.url }});
-        this.router.navigate(['/ivf']);
+    	let ut =Utils.fetchUserTypeFromLocalStorage(); 
+        if (ut=='1')this.router.navigate(['/ivf']);
+        else this.router.navigate(['/ivfcl']);
+    	
+    	//this.router.navigate(['/ivf']);
         return false;
       }
     // not logged in so redirect to login page with the return url

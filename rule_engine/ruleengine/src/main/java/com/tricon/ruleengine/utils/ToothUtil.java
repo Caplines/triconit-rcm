@@ -14,6 +14,7 @@ import java.util.Map;
 import com.google.common.collect.Collections2;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.model.sheet.CommonDataCheck;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 
@@ -147,7 +148,7 @@ public class ToothUtil {
 	 * @return
 	 */
 	//NOTE SURFACE DOES NOT MATTER NOW
-    public static List<String> lowerHigherOrderFillingFound(TreatmentPlan tp,
+    public static List<String> lowerHigherOrderFillingFound(CommonDataCheck tp,
     		Map<String,List<ToothHistoryDto>> historyMap,boolean low,Date tpDate,boolean sameSurface1, 
     		int withinMonth,int months,BufferedWriter bw) {
     	//NOTE SURFACE DOES NOT MATTER NOW	
@@ -216,7 +217,7 @@ public class ToothUtil {
 		    		 RuleEngineLogger.generateLogs(clazz, "Surface TP-" + tp.getSurface()+" -Surface History- "+d.getSurfaceTooth(),
 								Constants.rule_log_debug, bw);
 		    		 Date dos = null;
-		    		 if (d.getSurfaceTooth().equals("")) continue;
+		    		 if (d.getSurfaceTooth()==null || d.getSurfaceTooth().equals("")) continue;
 						try {
 							dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos());
 							RuleEngineLogger.generateLogs(clazz,
@@ -250,7 +251,7 @@ public class ToothUtil {
 	}
     
 	//NOTE SURFACE DOES NOT MATTER NOW
-    public static List<String> lowerHigherOrderFillingFound51_52(TreatmentPlan tp,
+    public static List<String> lowerHigherOrderFillingFound51_52(CommonDataCheck tp,
     		Map<String,List<ToothHistoryDto>> historyMap,boolean low,Date tpDate,boolean sameSurface1, 
     		int withinMonth,int months,BufferedWriter bw) {
     	//NOTE SURFACE DOES NOT MATTER NOW	
@@ -352,7 +353,7 @@ public class ToothUtil {
 		
 	}
 
-    public static List<String> generateErrorListForRule171(TreatmentPlan tp,List<EagleSoftFeeShedule> esfeess,List<String> res
+    public static List<String> generateErrorListForRule171(CommonDataCheck tp,List<EagleSoftFeeShedule> esfeess,List<String> res
     		,BufferedWriter bw){
     	List<String> dList=new ArrayList<>();
         DecimalFormat d= new DecimalFormat("#.##");
@@ -414,7 +415,7 @@ public class ToothUtil {
     }
 
     //For rule 51 and 52
-	public static List<String> generateErrorListForRule51_52(TreatmentPlan tp, List<EagleSoftFeeShedule> esfeess,
+	public static List<String> generateErrorListForRule51_52(CommonDataCheck tp, List<EagleSoftFeeShedule> esfeess,
 			List<String> res, BufferedWriter bw) {
 		List<String> dList = new ArrayList<>();
 		for (String data : res) {

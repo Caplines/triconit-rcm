@@ -27,6 +27,24 @@ public class EagleSoftQuery {
 	
 	public final static int  treatment_plan_query_CL_COUNT=21;
 
+	public final static String  claim_query="select tp.sequence as app_id,tp.claim_id as id,"
+			+ "pat.patient_id as pat_id,pat.first_name as name, pat.last_name as last_name,pat.birth_date as dob,"
+			+ "tp.tran_date as date_of_service,tp.status as status ,tp.est_secondary as est_secondary,"
+			+ " tp.description as description, tp.tran_num as line_item,"//11
+			+ " tp.service_code as service_code,tp.description as description2,"
+			+ " tp.surface as surface,tp.tooth as tooth,tp.status as status2,tp.fee as fee,"
+			+ " pr.last_name as provider_last_name, tp.est_primary as est_insurance,"
+			+ " (tp.fee- tp.est_primary ) as patient_portion,tp.est_primary as est_primary"
+			+ " from  transactions tp left outer join transactions_detail tpi on tpi.tran_num=tp.tran_num, insurance_claim cl, "
+			+ " patient pat ,provider pr "
+			+ " where "
+			+ " tp.claim_id in ("+contstant_REP+") and cl.claim_id=tp.claim_id  "
+			+ " and tp.patient_id=pat.patient_id and  pr.provider_id=tp.provider_id";
+
+
+	
+	public final static int  claim_query_CL_COUNT=21;
+
 	public final static String  patient_query="select pat.patient_id as pat_id,pat.first_name as name,"
 			+ " pat.last_name as last_name,pat.birth_date as birth_date,"
 			+ " pat.social_security as social_security, pat.prim_member_id as prim_member_id,pat.status as status,"
@@ -76,6 +94,22 @@ public class EagleSoftQuery {
 	
 	public final static int  treatment_plan_by_pat_query_CL_COUNT=21;
 	
+	public final static String  claim_by_pat_query="select tp.sequence as app_id,tp.claim_id as id,"
+			+ "pat.patient_id as pat_id,pat.first_name as name, pat.last_name as last_name,pat.birth_date as dob,"
+			+ "tp.tran_date as date_of_service,tp.status as status ,tp.est_secondary as est_secondary,"
+			+ " tp.description as description, tp.tran_num as line_item,"//11
+			+ " tp.service_code as service_code,tp.description as description2,"
+			+ " tp.surface as surface,tp.tooth as tooth,tp.status as status2,tp.fee as fee,"
+			+ " pr.last_name as provider_last_name, tp.est_primary as est_insurance,"
+			+ " (tp.fee- tp.est_primary ) as patient_portion,tp.est_primary as est_primary"
+			+ " from  transactions tp left outer join transactions_detail tpi on tpi.tran_num=tp.tran_num,"
+			+ " patient pat ,provider pr where "
+			+ " tp.patient_id in ("+contstant_REP+") "
+			+ " and tp.patient_id=pat.patient_id and tp.provider_id=pr.provider_id";
+
+
+	
+	public final static int  claim_by_pat_query_CL_COUNT=21;
 	
 	//HERE 111 - YYYY/MM/DD
 	public final static String patient_history_by_months="select wpat.statement_num as statement_num,  wpat.patient_id as  patient_id,"

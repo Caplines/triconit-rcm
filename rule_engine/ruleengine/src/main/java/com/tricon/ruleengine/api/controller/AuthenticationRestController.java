@@ -53,11 +53,11 @@ public class AuthenticationRestController {
         // Reload password post-security so we can generate the token
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
-        
+        JwtUser user = (JwtUser) userDetails;
 
         // Return the token
         return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Sucess",
-        		new JwtAuthenticationCustomResponse(token,userDetails.getUsername(),userDetails.getAuthorities())));
+        		new JwtAuthenticationCustomResponse(token,userDetails.getUsername(),userDetails.getAuthorities(),user.getUserType()  )));
         //return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 

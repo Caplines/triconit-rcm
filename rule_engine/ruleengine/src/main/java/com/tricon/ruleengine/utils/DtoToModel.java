@@ -10,11 +10,13 @@ public class DtoToModel {
 		
 		User us =new User();
 		us.setEmail(dto.getEmail());
+		us.setUserName(dto.getUserName());
 		us.setName(dto.getFirstName());
 		us.setLastName(dto.getLastName());
 		us.setOffice(off);
 		us.setActive(1);
 		us.setCreatedBy(us);
+		us.setUserType(dto.getUserType());
 		us.setPassword(EncrytedKeyUtil.encryptKey(dto.getPassword()));
 		return us;
 		

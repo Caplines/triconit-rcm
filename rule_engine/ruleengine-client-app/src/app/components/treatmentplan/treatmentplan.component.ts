@@ -3,6 +3,8 @@ import {Office} from "../../model/model.office";
 import {TreatmentPlanModel} from "../../model/model.treatmentplan";
 import {AccountService} from "../../services/account.service";
 import {Router,ActivatedRoute} from "@angular/router";
+import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext"; 
+import Utils from '../../util/utils';
 
 @Component({
   selector: 'app-treatmentplan',
@@ -22,9 +24,25 @@ export class TreatmentPlanComponent implements OnInit {
   officeId: any;
 
   selectedIndex: any;
+  //claim and Treatment Text 
+  hd1:string="";
+  hd2:string="";
+  hd3:string="";
+
   
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
 	  this.offices =this.route.snapshot.data['offs'].data;
+	  let ut =Utils.fetchUserTypeFromLocalStorage();
+	  if (ut=='1'){
+			this.hd1=ClaimTreatmentTextModel.treatmentTXPIDs;
+			this.hd3=ClaimTreatmentTextModel.treatmentPlanId;
+			this.hd2=ClaimTreatmentTextModel.treatmentPlan;
+		}else{
+			this.hd1=ClaimTreatmentTextModel.claimIds;
+			this.hd3=ClaimTreatmentTextModel.claimId;
+			this.hd2=ClaimTreatmentTextModel.claim;
+			
+		}
   }
 
   ngOnInit() {

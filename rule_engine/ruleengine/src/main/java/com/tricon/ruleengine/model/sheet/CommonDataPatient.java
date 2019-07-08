@@ -1,13 +1,9 @@
 package com.tricon.ruleengine.model.sheet;
 
-import java.util.Date;
-
-/**
- * @author Deepak.Dogra
- *
- */
-public class TreatmentPlanPatient {
-
+public class CommonDataPatient {
+	
+	
+	
 	private String id;
 	private String name;
 	private String lastName;
@@ -37,10 +33,10 @@ public class TreatmentPlanPatient {
 		this.dob = dob;
 	}
 
-	public TreatmentPlanPatient() {
+	public CommonDataPatient() {
 	}
 
-	public TreatmentPlanPatient(String id, String name, String dob) {
+	public CommonDataPatient(String id, String name, String dob) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -55,6 +51,5 @@ public class TreatmentPlanPatient {
 		this.lastName = lastName;
 	}
 
-	
 
 }

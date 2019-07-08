@@ -16,12 +16,14 @@ export class RegisterComponent implements OnInit {
   errorMessage: string;
   offices:any;
   passwordAgain:any;
+  list: any[] = [{"name" : "Treatment","val"  : 1},
+	              {"name" : "Claim","val"  : 2}];
   constructor(public accountService: AccountService, public router: Router) {
   }
 
   ngOnInit() {
       this.accountService.getOffices((result) => {
-        console.log(result);
+        //console.log(result);
         this.offices=result;
       });
        

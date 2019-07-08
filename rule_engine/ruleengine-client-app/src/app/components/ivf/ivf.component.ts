@@ -4,6 +4,8 @@ import {UserInputModel} from "../../model/model.userinput";
 import {Office} from "../../model/model.office";
 import {AccountService} from "../../services/account.service";
 import {Router,ActivatedRoute } from "@angular/router";
+import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext"; 
+import Utils from '../../util/utils';
 
 @Component({
   selector: 'app-ivf',
@@ -26,16 +28,33 @@ export class IVFComponent implements OnInit {
   
   showIvfData: boolean = false;
   questionData:any;
-
+  ut:string="1";
+  //claim and Treatment Text 
+  hd1:string="";
+  hd2:string="";
+  //hd3:string="";
+  
+  
+  
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
 	  
 	//console.log(this.route.snapshot.data['offs'].data);
 	this.offices =this.route.snapshot.data['offs'].data;
+	
+	
 	/*  
       this.accountService.getOffices((result) => {
           this.offices=result;
         });
-    */    
+    */
+	this.ut =Utils.fetchUserTypeFromLocalStorage();
+	if (this.ut=='1'){
+		this.hd1=ClaimTreatmentTextModel.treatmentPlan;
+		this.hd2=ClaimTreatmentTextModel.treatmentPlanId;
+	}else{
+		this.hd1=ClaimTreatmentTextModel.claim;
+		this.hd2=ClaimTreatmentTextModel.claimId;
+	}
   }
 
   ngOnInit() {

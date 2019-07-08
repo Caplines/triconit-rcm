@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import Utils from '../util/utils';
 
 @Injectable()
 export class UrlLoggedInCheck implements CanActivate {
@@ -8,7 +9,9 @@ export class UrlLoggedInCheck implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     if (localStorage.getItem('currentUser')) {
-        this.router.navigate(['/ivf']);
+    	let ut =Utils.fetchUserTypeFromLocalStorage(); 
+        if (ut=='1')this.router.navigate(['/ivf']);
+        else this.router.navigate(['/ivfcl']);
       return false;
     }
 

@@ -263,7 +263,25 @@ public class Constants {
 	public static String EN_REP_COUNT_SEP=";";
 	
 	public static String DQ_PLAN_NAME_CHECK= "DQ Chip,DQ Medicaid,MCNA Chip,MCNA Medicaid,MCNA - MEDICAID," + 
-			                                 "DENTAQUEST - MEDICAID,MCNA - CHIP,DENTAQUEST - CHIP"; 
+			                                 "DENTAQUEST - MEDICAID,MCNA - CHIP,DENTAQUEST - CHIP";
+	
+	public static int userType_TR=1;//for Treatment
+	
+	public static int userType_CL=2;//for claim
+	
+	public static String TP_ID="TP.id";
+	public static String CL_ID="CL.id";
+	
+	
+	public static String invalidStr_TP="Invalid Treatment Plan";
+	
+	public static String invalidStr_Cl="Invalid Claim";
+	
+	public static String TP="Treatment Plan";
+	
+	public static String CL="Claim";
+	
+	
 			
 	 
 	

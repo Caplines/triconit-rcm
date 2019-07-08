@@ -5,5 +5,8 @@ export class User {
   firstName: string="";
   lastName: string="";
   fullName: string="";
-  officeId:string="";
+  officeId: string="";
+  userName: string="";
+  userType: string="";
+
 }

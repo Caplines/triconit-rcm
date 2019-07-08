@@ -30,7 +30,17 @@ const appRoutes: Routes = [
 		    offs: OfficeResolve
 		  },
 	  component: IVFComponent ,canActivate: [UrlPermission] },
+  { path: 'ivfcl',
+		  resolve: {
+			    offs: OfficeResolve
+			  },
+		  component: IVFComponent ,canActivate: [UrlPermission] },
   { path: 'ivfbatch',
+		  resolve: {
+			    offs: OfficeResolve
+			  },
+	  component: IVFBatchComponent ,canActivate: [UrlPermission] },
+  { path: 'ivfclbatch',
 		  resolve: {
 			    offs: OfficeResolve
 			  },
@@ -47,7 +57,17 @@ const appRoutes: Routes = [
 		    offs: OfficeResolve
 		  },
   component: ReportComponent,canActivate: [UrlPermission]  },
+  { path: 'reportcl', 
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+  component: ReportComponent,canActivate: [UrlPermission]  },
   { path: 'ivftreatmentplan',
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+  component: TreatmentPlanComponent,canActivate: [UrlPermission]  },
+  { path: 'ivfclaimid',
 	  resolve: {
 		    offs: OfficeResolve
 		  },
@@ -63,6 +83,11 @@ const appRoutes: Routes = [
 		  },
   component: DiagnosticComponent,canActivate: [UrlPermission]  },
   { path: 'enreports',
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+  component: EnReportsComponent,canActivate: [UrlPermission]  },
+  { path: 'enreportscl',
 	  resolve: {
 		    offs: OfficeResolve
 		  },

@@ -51,14 +51,23 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				criteria.createAlias("createdBy", "cr");
 				
 				*/
+			 String x="rep.treatement_plan_id as treatement_plan_id";
+			 String t="reports as rep, report_detail as rd";
+			 String z="rep.treatement_plan_id";
+			 
+			 if (dto.getmType()!=null && dto.getmType().equals("c")) {
+				 x="rep.claim_id as treatement_plan_id";
+				 t="reports_claim as rep, report_claim_detail as rd";
+				 z="rep.claim_id";
+			 }
 			 String queryString="SELECT DATE_FORMAT(rep.created_date,'%m/%d/%Y %T') as rep_create_date,rep.created_by as rep_created_by, "+
 					 " CONCAT( first_name ,' ' ,last_name ) as name "
 			 		+ ", DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as rd_created_date," + 
 			 		"us.email as email,offi.name as office_name,rep.group_run as rep_group_run,rd.group_run as rd_group_run, " + 
-			 		"rep.treatement_plan_id as treatement_plan_id,rep.patient_dob as dob,"
+			 		x+",rep.patient_dob as dob,"
 			 		+ " rep.patient_name as patient_name,rep.patient_id as patient_id,rep.ivf_form_id as ivf_form_id," + 
 			 		"rd.rule_id as rule_id,rd.error_message as error_message,rl.name as rule_name FROM " + 
-			 		" reports as rep, report_detail as rd,rules as rl " + 
+		            t+",rules as rl " + 
 			 		" ,user as us ,office as offi where rep.office_id='"+dto.getOfficeId()+"' and " + 
 			 		" rep.id=rd.report_id and rl.id=rd.rule_id " + 
 			 		" and us.uuid=rd.created_by and offi.uuid=rep.office_id ";
@@ -72,7 +81,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.PatientName.toString())) {
 				 queryString= queryString + "and  upper(rep.patient_name) like '%"+dto.getReportField1().toUpperCase()+"%'";
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.TreatmentId.toString())) {
-				 queryString= queryString + "and  rep.treatement_plan_id='"+dto.getReportField1()+"'";
+				 queryString= queryString + "and  "+z+"='"+dto.getReportField1()+"'";
 						 
 			 }
 			 		
@@ -136,20 +145,28 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 	}
 	
 	private String getTxReport(EnhancedReportDto dto) {
+		String x="reports rep, report_detail repd";
+		String t="treatement_plan_id";
+		
+		if (dto.getmType().equals("c")) {
+			 x="reports_claim rep, report_claim_detail repd";
+			 t="claim_id";
+		}
+
 		String query=" select * from (" + 
-				 "select CONCAT(fn,' ',ln) as name, treatement_plan_id as txP," + 
+				 "select CONCAT(fn,' ',ln) as name, "+t+" as txP," + 
 				" GROUP_CONCAT( concat (ct,'"+Constants.EN_REP_TYPE_SEP+"',message_type) SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as resultsum," + 
 				" GROUP_CONCAT(distinct name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as office," + 
 				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pid," + 
 				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pname," + 
 				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivfId from (" + 
-				" select count(message_type) as ct,message_type,us.first_name as fn,us.last_name as ln,treatement_plan_id,ivf_form_id ,patient_id,patient_name,off.name" + 
-				" from reports rep, report_detail repd ,office off,user as us where "+
+				" select count(message_type) as ct,message_type,us.first_name as fn,us.last_name as ln,"+t+",ivf_form_id ,patient_id,patient_name,off.name" + 
+				" from "+x+" ,office off,user as us where "+
 				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run "+
 		        " and us.uuid=rep.created_by " ;
 		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		if (dto.getpId() != null && !dto.getpId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getpId()+"' " ; 
-		if (dto.getTpId() != null && !dto.getTpId().equals("")) 	    query=query	+ "  and rep.treatement_plan_id ='"+dto.getTpId()+"' " ; 
+		if (dto.getTpId() != null && !dto.getTpId().equals("")) 	    query=query	+ "  and rep."+t+" ='"+dto.getTpId()+"' " ; 
 		if (dto.getIvfId() != null  && !dto.getIvfId().equals("")) 	query=query	+ "  and rep.ivf_form_id ='"+dto.getIvfId()+"' " ; 
 
 		if (dto.getEndDate()!=null && dto.getStartDate()!=null && !dto.getEndDate().equals("") && !dto.getStartDate().equals("")) {
@@ -162,8 +179,8 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				"" + 
 				" )" ;
 		}
-			query=query+ " group by repd.message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name  order by repd.message_type asc) a" + 
-				"  group by a.treatement_plan_id ) as b where b.resultsum is not null	"; 
+			query=query+ " group by repd.message_type,"+t+",ivf_form_id,patient_id,patient_name  order by repd.message_type asc) a" + 
+				"  group by a."+t+" ) as b where b.resultsum is not null	"; 
 		return query;
 	}
 	
@@ -172,6 +189,13 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		return query;
 	}
 	private String getBatchReport(EnhancedReportDto dto) {
+		String x="reports rep, report_detail repd";
+		String t="treatement_plan_id";
+		if (dto.getmType().equals("c")) {
+			 x="reports_claim rep, report_claim_detail repd";
+			 t="claim_id";
+		}
+		
 		String query=" select * from (" + 
 				 "select "+ 
 				" CONCAT(fn,' ',ln) as name,"+
@@ -180,8 +204,8 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				" GROUP_CONCAT(distinct patient_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pid," + 
 				" GROUP_CONCAT(distinct patient_name SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as pname," + 
 				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivfId from (" + 
-				" select count(message_type) as ct,us.first_name as fn,us.last_name as ln,message_type,treatement_plan_id,ivf_form_id,patient_id,patient_name,off.name" + 
-				" from reports rep, report_detail repd ,office off,user as us where "+
+				" select count(message_type) as ct,us.first_name as fn,us.last_name as ln,message_type,"+t+",ivf_form_id,patient_id,patient_name,off.name" + 
+				" from "+x+" ,office off,user as us where "+
 				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.BATCH.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " +
 				" and us.uuid=rep.created_by ";
 		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
@@ -213,8 +237,18 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 	}
 	
 	private String queryNumber(EnhancedReportDto dto, int reportType) {
+		
+		String x="reports rep, report_detail repd";
+		String t=" treatement_plan_id ";
+		if (dto.getmType().equals("c")) {
+			 x="reports_claim rep, report_claim_detail repd";
+			 t=" claim_id ";
+		}
+
+		
+		
 		String rep=" ivf_form_id ";
-		if (HighLevelReportTypeEnum.TXPLAN.getType()==reportType) rep=" treatement_plan_id ";
+		if (HighLevelReportTypeEnum.TXPLAN.getType()==reportType) rep=t;
 		String query=" "+
 		"select GROUP_CONCAT(distinct "+rep+" SEPARATOR ';') as ct," + 
 		"GROUP_CONCAT(distinct name SEPARATOR ';') as office," + 
@@ -223,7 +257,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		"(" + 
 		"select sum(ct) as ct,message_type,name,GROUP_CONCAT(distinct "+rep+" SEPARATOR ';') as "+rep+"   from (" + 
 		"select count(message_type) as ct,message_type," + 
-		" "+rep+" ,off.name    from reports rep, report_detail repd ,office off where  repd.report_id=rep.id and" + 
+		" "+rep+" ,off.name    from "+x+" ,office off where  repd.report_id=rep.id and" + 
 		"     repd.report_type="+reportType+" and     off.uuid=rep.office_id and rep.group_run = repd.group_run";
 		         if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		         if (dto.getEndDate()!=null && dto.getStartDate()!=null  && !dto.getEndDate().equals("") && !dto.getStartDate().equals("")) {

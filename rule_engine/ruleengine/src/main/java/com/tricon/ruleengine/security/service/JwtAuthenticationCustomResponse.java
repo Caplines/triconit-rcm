@@ -20,15 +20,20 @@ public class JwtAuthenticationCustomResponse implements Serializable {
 
 	private String userName;
 	
+	private int userType;
+	
 	Collection<? extends GrantedAuthority> authorities;
 	
 	
     public JwtAuthenticationCustomResponse(String token,
     		String userName ,
-    		Collection<? extends GrantedAuthority>  authorities) {
+    		Collection<? extends GrantedAuthority>  authorities,
+    		int userType) {
         this.token = token;
         this.userName = userName;
         this.authorities = authorities;
+        this.userType = userType;
+        
     }
 	
 	public String getToken() {
@@ -39,9 +44,14 @@ public class JwtAuthenticationCustomResponse implements Serializable {
 		return userName;
 	}
 
+	public int getUserType() {
+		return userType;
+	}
+
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
 
 
+	
 }

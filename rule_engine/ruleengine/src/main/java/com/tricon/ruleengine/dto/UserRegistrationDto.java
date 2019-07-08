@@ -5,8 +5,12 @@ public class UserRegistrationDto {
 	private String firstName;
 	private String lastName;
 	private String email;
+	private String userName;
+	
 	private String password;
 	private String officeId;
+	private int userType;
+	
 	
 	public String getOfficeId() {
 		return officeId;
@@ -37,6 +41,18 @@ public class UserRegistrationDto {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public int getUserType() {
+		return userType;
+	}
+	public void setUserType(int userType) {
+		this.userType = userType;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	
 	

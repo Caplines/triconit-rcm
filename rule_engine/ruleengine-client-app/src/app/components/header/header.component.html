@@ -11,16 +11,25 @@
 			<li class="dropdown">
 			  <a href="javascript:void(0)" class="dropdown-toggle username" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			  <span></span> {{userName?userName: 'Guest'}}<span *ngIf="userName" class="caret"></span></a>
-			  <ul class="dropdown-menu" *ngIf="userName">
+			  <ul class="dropdown-menu" *ngIf="userName" style="width:auto">
 				<li><a *ngIf="userTypeAdmin" href="javascript:void(0)" [routerLink]="['/register']">Register New User</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivftreatmentplan']">Find Tx. Plan Id</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivf']">Validate Tx. Plan</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivfbatch']">Validate Tx. Plan Batch</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/ivfbatchpre']">Validate IV Batch</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/userinput']">User Input</a></li>
+				<li><a *ngIf="userTypeRegular && (userType=='' || userType=='1')" href="javascript:void(0)" [routerLink]="['/ivftreatmentplan']">Find Tx. Plan Id</a></li>
+				<li><a *ngIf="userTypeRegular && (userType=='' || userType=='1')" href="javascript:void(0)" [routerLink]="['/ivf']">Validate Tx. Plan</a></li>
+				<li><a *ngIf="userTypeRegular && (userType=='' || userType=='1')" href="javascript:void(0)" [routerLink]="['/ivfbatch']">Validate Tx. Plan Batch</a></li>
+				<li><a *ngIf="userTypeRegular && (userType=='' || userType=='1')" href="javascript:void(0)" [routerLink]="['/ivfbatchpre']">Validate IV Batch</a></li>
+
+				<li><a *ngIf="userTypeRegular && (userType=='2')" href="javascript:void(0)" [routerLink]="['/ivfclaimid']">Find Claim Id</a></li>
+				<li><a *ngIf="userTypeRegular && (userType=='2')" href="javascript:void(0)" [routerLink]="['/ivfcl']">Validate Claim</a></li>
+				<li><a *ngIf="userTypeRegular && (userType=='2')" href="javascript:void(0)" [routerLink]="['/ivfclbatch']">Validate Claim Batch</a></li>
+				
+				<li><a *ngIf="userTypeRegular && (userType=='1' || userType=='2')" href="javascript:void(0)" [routerLink]="['/userinput']">User Input</a></li>
+
+
 				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/diagnosticcheck']">Diagnostic Check</a></li>
 				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/report']">Reports</a></li>
 				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/enreports']">Enhanced Reports</a></li>
+				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/reportcl']">Reports(Claim)</a></li>
+				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/enreportscl']">Enhanced Reports(Claim)</a></li>
 				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/scrap']">Scraping</a></li>
 				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/help']">Help</a></li>
 			

@@ -5,7 +5,8 @@ public enum HighLevelReportTypeEnum {
 	TXPLAN  (1),  //calls constructor with value 1
     BATCH(2),  //calls constructor with value 2
 	TXPLAN_NUM  (3),  //calls constructor with value 1
-    BATCH_NUM(4)  //calls constructor with value 2
+    BATCH_NUM(4),  //calls constructor with value 2
+	CLAIM (1),  //calls constructor with value 1
     ; // semicolon needed when fields / methods follow
 
 

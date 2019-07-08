@@ -24,7 +24,7 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
 	@Override
 	public User findUserByUsername(String username) {
 
-		return (User) getEntityByColumnName(User.class, "", username);
+		return (User) getEntityByColumnName(User.class, "userName", username);
 	}
 
 	@Override

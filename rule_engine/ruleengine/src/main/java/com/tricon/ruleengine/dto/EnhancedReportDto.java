@@ -10,6 +10,8 @@ public class EnhancedReportDto {
 	private String tpId;
 	private String ivfId;
 	private String officeId;
+	private String mType;
+	
 	
 	public int getReportType() {
 		return reportType;
@@ -53,6 +55,12 @@ public class EnhancedReportDto {
 	}
 	public void setOfficeId(String officeId) {
 		this.officeId = officeId;
+	}
+	public String getmType() {
+		return mType;
+	}
+	public void setmType(String mType) {
+		this.mType = mType;
 	}
 	
 	

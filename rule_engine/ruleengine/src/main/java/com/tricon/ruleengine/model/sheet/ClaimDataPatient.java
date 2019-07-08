@@ -6,7 +6,7 @@ import java.util.Date;
  * @author Deepak.Dogra
  *
  */
-public class TreatmentPlanPatient {
+public class ClaimDataPatient {
 
 	private String id;
 	private String name;
@@ -37,10 +37,10 @@ public class TreatmentPlanPatient {
 		this.dob = dob;
 	}
 
-	public TreatmentPlanPatient() {
+	public ClaimDataPatient() {
 	}
 
-	public TreatmentPlanPatient(String id, String name, String dob) {
+	public ClaimDataPatient(String id, String name, String dob) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -55,6 +55,7 @@ public class TreatmentPlanPatient {
 		this.lastName = lastName;
 	}
 
+	
 	
 
 }

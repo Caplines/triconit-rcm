@@ -19,6 +19,7 @@ import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.OneDriveApp;
 import com.tricon.ruleengine.model.db.ReportDetail;
 import com.tricon.ruleengine.model.db.Reports;
+import com.tricon.ruleengine.model.db.ReportsClaim;
 import com.tricon.ruleengine.model.db.Rules;
 
 /**
@@ -82,13 +83,13 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 	}
 	
 	@Override
-     public Reports getReportsByTPIdIVFIDAndOffice(String tpid,String ivfId,Office office) {
+     public Reports getReportsByTPIdIVFIDAndOffice(String id,String ivfId,Office office) {
 
 		Reports rep=null;
 		Session session = getSession();
 		try {
 			Criteria criteria = session.createCriteria(Reports.class);
-			criteria.add(Restrictions.eq("treatementPlanId", tpid));
+			criteria.add(Restrictions.eq("treatementPlanId", id));
 			criteria.add(Restrictions.eq("ivfFormId", ivfId));
 			criteria.createAlias("office", "off");
 			criteria.add(Restrictions.eq("off.uuid", office.getUuid()));
@@ -100,10 +101,33 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 		}
 		return rep;
 	}
+	
+	@Override
+    public ReportsClaim getReportsClaimByTPIdIVFIDAndOffice(String id,String ivfId,Office office) {
+
+		ReportsClaim rep=null;
+		Session session = getSession();
+		try {
+			Criteria criteria = null;
+				criteria=session.createCriteria(ReportsClaim.class);
+			    criteria.add(Restrictions.eq("claimId", id));
+				
+			criteria.add(Restrictions.eq("ivfFormId", ivfId));
+			criteria.createAlias("office", "off");
+			criteria.add(Restrictions.eq("off.uuid", office.getUuid()));
+			rep = (ReportsClaim) criteria.uniqueResult();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return rep;
+	}
+
 
 
 	@Override
-	public Serializable saveReports(Reports reports) {
+	public Serializable saveReports(Object reports) {
 		// TODO Auto-generated method stub
 		return saveEntiy(reports);
 	}
@@ -114,13 +138,13 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 	}
 
 	@Override
-	public Serializable saveReportDestail(ReportDetail reports) {
+	public Serializable saveReportDestail(Object reports) {
 		// TODO Auto-generated method stub
 		return saveEntiy(reports);
 	}
 
 	@Override
-	public void updateReportDate(Reports reports) {
+	public void updateReportDate(Object reports) {
 		
 		updateEntity(reports);
 		

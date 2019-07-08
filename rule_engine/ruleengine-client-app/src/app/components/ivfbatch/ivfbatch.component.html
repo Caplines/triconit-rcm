@@ -5,7 +5,7 @@
 			<div class="col-sm-6 col-sm-offset-3 form-box">
 				<div class="form-top">
 					<div class="form-top-left">
-						<h3 class="ivf-title">Enter Details for Validating Treatment Plans in Batch</h3>
+						<h3 class="ivf-title">Enter Details for Validating {{hd2}} in Batch</h3>
 					</div>
 				</div>
 
@@ -17,13 +17,13 @@
 
 						<div class="form-group"
 							[ngClass]="{ 'has-error': f.submitted && !copyId.valid }">
-							<label class="sr-only" for="treatmentPlanId">Treatment Plan Id & IV Id</label> <input type="text" 
+							<label class="sr-only" for="treatmentPlanId">{{hd1}} & IV Id</label> <input type="text" 
 								class="login-signup-form-field1 form-control"
 								name="copyId" id="copyId"
 								[(ngModel)]="ivfm.copyId" #copyId="ngModel"
-								placeholder="Treatment Plan Id & IV Id" (paste)="onPaste($event)"/>
+								placeholder="{{hd1}} & IV Id" (paste)="onPaste($event)"/>
 							<div *ngIf="f.submitted && !copyId.valid"
-								class="error-msg">Please enter Treatment Plan Id's and Treatment Id's.</div>
+								class="error-msg">Please enter {{hd1}}'s and {{hd1}}'s.</div>
 						</div>
 
 						<div class="form-group"
@@ -33,21 +33,31 @@
 								class="login-signup-form-field1 form-control"
 								name="treatmentPlanId" id="treatmentPlanId"
 								[(ngModel)]="ivfm.treatmentPlanId" #treatmentPlanId="ngModel"
-								placeholder="Treatment Plan Id : 1,2,3,4,5,6,7 " required ></textarea>
+								placeholder="{{hd1}} : 1,2,3,4,5,6,7 " required ></textarea>
 							<div *ngIf="f.submitted && !treatmentPlanId.valid"
-								class="error-msg">Please enter Treatment Plan Id.</div>
+								class="error-msg">Please enter {{hd1}}.</div>
 						</div>
 
-						<div class="form-group"
+						<div class="form-group" *ngIf="ut==1"
 							[ngClass]="{ 'has-error': f.submitted && !ivfId.valid }">
 							<label class="sr-only" for="ivfId">IVF Form Id</label> <textarea rows="150" cols="15"
 								 class="login-signup-form-field1 form-control"
 								name="ivfId" id="ivfId" [(ngModel)]="ivfm.ivfId"
-								#ivfId="ngModel" placeholder="IV Id : 5,6,7,8,9 " required ></textarea>
+								#ivfId="ngModel" placeholder="IV Id : 5,6,7,8,9 " required></textarea>
 							<div *ngIf="f.submitted && !ivfId.valid" class="error-msg">Please
 								enter IVF Id.</div>
 						</div>
 
+						<div class="form-group"  *ngIf="ut==2"
+							[ngClass]="{ 'has-error': f.submitted && !ivfId.valid }">
+							<label class="sr-only" for="ivfId">IVF Form Id</label> <textarea rows="150" cols="15"
+								 class="login-signup-form-field1 form-control"
+								name="ivfId" id="ivfId" [(ngModel)]="ivfm.ivfId"
+								#ivfId="ngModel" placeholder="IV Id : 5,6,7,8,9 (This is optional. Only enter if you have valid IVF)"  ></textarea>
+							<!-- <div *ngIf="f.submitted" class="error-msg">Please
+								enter IVF Id.</div>
+							-->
+						</div>
 						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
 							<label class="sr-only" for="officeId">Office Name</label> <select
 								name="officeId" [(ngModel)]="ivfm.officeId"
@@ -61,7 +71,7 @@
 
 
 						<p>
-							<button [disabled]="showLoading" type="submit" class="btn">Validate Treatment Plans</button>
+							<button [disabled]="showLoading" type="submit" class="btn">Validate {{hd2}}</button>
 						</p>
 
 						<div *ngIf="showLoading" class="loader"></div>

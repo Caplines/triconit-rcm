@@ -6,18 +6,18 @@ package com.tricon.ruleengine.model.sheet;
  * @author Deepak.Dogra
  *
  */
-public class TreatmentPlanDetails {
+public class ClaimDataDetails {
 
-	private String dateLastUpdated;// This is DOS but not considered-- we have use Current Date as DOS.
+	private String dateLastUpdated;// This is DOS but not considered-- we have use Current Date as DOS in TP but in Claim we will consider this .
 	private String status;
 	private String estSecondary;
 	private String description;
 	
 
-	public TreatmentPlanDetails() {
+	public ClaimDataDetails() {
 	}
 
-	public TreatmentPlanDetails(String dateLastUpdated, String status) {
+	public ClaimDataDetails(String dateLastUpdated, String status) {
 		super();
 		this.dateLastUpdated = dateLastUpdated;
 		this.status = status;

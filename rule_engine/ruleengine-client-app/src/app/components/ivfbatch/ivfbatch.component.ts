@@ -3,6 +3,9 @@ import {IVFBatchModel} from "../../model/model.ivfbatch";
 import {Office} from "../../model/model.office";
 import {AccountService} from "../../services/account.service";
 import {Router,ActivatedRoute} from "@angular/router";
+import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext"; 
+import Utils from '../../util/utils';
+
 
 @Component({
   selector: 'app-ivfbatch',
@@ -20,8 +23,23 @@ export class IVFBatchComponent implements OnInit {
   showLoading: boolean = false;
   showIvfData: boolean = false;
 
+  ut:string="1";
+  //claim and Treatment Text 
+  hd1:string="";
+  hd2:string="";
+
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
 	  this.offices =this.route.snapshot.data['offs'].data;
+	  
+	  this.ut =Utils.fetchUserTypeFromLocalStorage();
+		if (this.ut=='1'){
+			this.hd1=ClaimTreatmentTextModel.treatmentPlanId;
+			this.hd2=ClaimTreatmentTextModel.treatmentPlans;
+			}else{
+			this.hd1=ClaimTreatmentTextModel.claimId;
+			this.hd2=ClaimTreatmentTextModel.claimIds;
+		}
+		
   }
 
   ngOnInit() {

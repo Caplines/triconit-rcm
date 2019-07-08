@@ -44,8 +44,8 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
-import com.tricon.ruleengine.model.sheet.TreatmentPlan;
-
+//import com.tricon.ruleengine.model.sheet.TreatmentPlan;
+import com.tricon.ruleengine.model.sheet.CommonDataCheck;
 import edu.umd.cs.findbugs.DiscoverSourceDirectories.Progress;
 
 /**
@@ -69,16 +69,21 @@ public class RuleBook {
 	 *            (IV - Effective Date)
 	 */
 	public List<TPValidationResponseDto> Rule1(Object ivfSheet, MessageSource messageSource, Rules rule, boolean onlyIVF,
-			List<Object> tpList, BufferedWriter bw) {
+			List<Object> tpList, BufferedWriter bw, int userType) {
 		// Date tpDate = null;
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_1,
 				Constants.rule_log_debug, bw);
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		Date currentDate = new Date();
+		Date dosCL=null;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		Date ivfPlanTermDate = null;
 		boolean proceed = false;
 		boolean pass=true;
+		String inv=Constants.invalidStr_TP;
+		String str="TX";
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+		str="CL";
 		try {
 			String td = ivf.getPlanTermedDate();
 			RuleEngineLogger.generateLogs(clazz, "PlanTermedDate --" + td, Constants.rule_log_debug, bw);
@@ -92,7 +97,33 @@ public class RuleBook {
 				 */
 
 				ivfPlanTermDate = Constants.SIMPLE_DATE_FORMAT_IVF.parse(td);
+				
+				if (userType==Constants.userType_CL && tpList != null) {
+					for (Object obj : tpList) {
+						CommonDataCheck tp = (CommonDataCheck) obj;
+						if (!ivf.getPatientId().equals(tp.getPatient().getId())) {
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule1.error.message.patientId",
+											new Object[] { ivf.getPatientId(),str, tp.getPatient().getId() }, locale),
+									Constants.FAIL));
+							return dList;
 
+						}
+						dosCL= Constants.SIMPLE_DATE_FORMAT_IVF.parse(tp.getCdDetails().getDateLastUpdated());
+					}
+				}
+				
+				if (userType==Constants.userType_CL) {
+					currentDate=dosCL;
+					if (dosCL==null) {
+						dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(),
+								Constants.errorMessOPen + inv + Constants.errorMessClose,
+								Constants.FAIL));
+						return dList;	
+					}
+				}
+				 
+				
 				if (ivfPlanTermDate != null && ivfPlanTermDate.compareTo(currentDate) > 0) {
 					proceed = true;
 				} else {
@@ -147,17 +178,17 @@ public class RuleBook {
 
 					if (!onlyIVF && tpList == null) {
 						dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(),
-								Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
+								Constants.errorMessOPen + inv + Constants.errorMessClose,
 								Constants.FAIL));
 						return dList;
 					}
 					if (tpList != null) {
 						for (Object obj : tpList) {
-							TreatmentPlan tp = (TreatmentPlan) obj;
+							CommonDataCheck tp = (CommonDataCheck) obj;
 							if (!ivf.getPatientId().equals(tp.getPatient().getId())) {
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule1.error.message.patientId",
-												new Object[] { ivf.getPatientId(), tp.getPatient().getId() }, locale),
+												new Object[] { ivf.getPatientId(),str, tp.getPatient().getId() }, locale),
 										Constants.FAIL));
 								return dList;
 
@@ -168,7 +199,7 @@ public class RuleBook {
 				Date ivfDate = null;
 
 				ivfDate = Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivf.getPlanEffectiveDate());
-				RuleEngineLogger.generateLogs(clazz, "Current Date:" + currentDate + "- PlanEffective Date:" + ivfDate,
+				RuleEngineLogger.generateLogs(clazz, "Current Date (DOS):" + currentDate + "- PlanEffective Date:" + ivfDate,
 						Constants.rule_log_debug, bw);
 				if (ivfDate != null && DateUtils.compareDates(currentDate, ivfDate)) {
 					// pass --RULE_ID_1
@@ -202,22 +233,30 @@ public class RuleBook {
 	// Mode
 	public List<TPValidationResponseDto> Rule4_B(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
 			Rules rule, List<Mappings> mappings, List<EagleSoftFeeShedule> esfeess, List<EagleSoftPatient> espatients,
-			BufferedWriter bw) {
+			BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_4,
 				Constants.rule_log_debug, bw);
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		String ER_MSG=Constants.TP;
+		
+		if (userType==Constants.userType_CL) {
+			inv=Constants.invalidStr_Cl;
+			ER_MSG=Constants.CL;
+		}
+
 		try {
 			if (tpList == null) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return dList;
 			}
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			boolean pass = true;
             /*Blocked due Phase 2 change
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				if (!tp.getProviderLastName().trim().equalsIgnoreCase(ivf.getProviderName())) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_5",
@@ -240,7 +279,7 @@ public class RuleBook {
 			
 			String pcName="";
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				if (codes.contains(tp.getServiceCode())) {
 					pcName=tp.getProviderLastName();
 					break;
@@ -248,7 +287,7 @@ public class RuleBook {
 			}
 			if (!pcName.equals("")) {
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
 						pcName=tp.getProviderLastName();
 						break;
 					
@@ -257,7 +296,7 @@ public class RuleBook {
 			if (!pcName.trim().equalsIgnoreCase(ivf.getProviderName())) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 						messageSource.getMessage("rule4.error.message_5",
-								new Object[] { ivf.getProviderName(), pcName, }, locale),
+								new Object[] { ivf.getProviderName(), pcName,ER_MSG }, locale),
 						Constants.FAIL));
 
 				pass = false;
@@ -285,7 +324,7 @@ public class RuleBook {
 						&& !ivf.getPlanCoverageBook().trim().equalsIgnoreCase(pat.getCovBookHeaderName().trim())) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_1",
-									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName() }, locale),
+									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName(),ER_MSG }, locale),
 							Constants.FAIL));
 					pass = false;
 				}
@@ -298,7 +337,7 @@ public class RuleBook {
 						&& !ivf.getPlanFeeScheduleName().trim().equalsIgnoreCase(pat.getFeeScheduleName().trim())) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_3",
-									new Object[] { ivf.getPlanFeeScheduleName(), pat.getFeeScheduleName() }, locale),
+									new Object[] { ivf.getPlanFeeScheduleName(), pat.getFeeScheduleName(),ER_MSG }, locale),
 							Constants.FAIL));
 					pass = false;
 				} else {
@@ -308,13 +347,13 @@ public class RuleBook {
 					Set<String> missing_cp_EG = new HashSet<String>();
 
 					for (Object obj : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj;
+						CommonDataCheck tp = (CommonDataCheck) obj;
 						Collection<EagleSoftFeeShedule> ruleGen = Collections2.filter(esfeess,
 								name -> name.getFeesServiceCode().equals(tp.getServiceCode()));
 						if (ruleGen != null) {
 							for (EagleSoftFeeShedule fs : ruleGen) {
 								RuleEngineLogger.generateLogs(clazz,
-										" FS FEE -" + fs.getFeesFee() + " :: Treatment Plan Fee-" + tp.getFee(),
+										" FS FEE -" + fs.getFeesFee() + " :: Treatment Plan-(Claim) Fee-" + tp.getFee(),
 										Constants.rule_log_debug, bw);
 
 								if (Double.parseDouble(fs.getFeesFee())!=Double.parseDouble(tp.getFee())) {
@@ -325,7 +364,7 @@ public class RuleBook {
 							}
 						} else {
 							RuleEngineLogger.generateLogs(clazz,
-									" Treatment Plan Service code is mssing in  Fee Schedule-" + tp.getServiceCode(),
+									" Treatment Plan(Claim) Service code is mssing in  Fee Schedule-" + tp.getServiceCode(),
 									Constants.rule_log_debug, bw);
 
 							// Service Code not found..
@@ -339,7 +378,7 @@ public class RuleBook {
 						if (missing_code.size() > 0 && missing_name.size() > 0) {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 									messageSource.getMessage("rule4.error.message_2", new Object[] {
-											String.join(",", missing_code), String.join(",", missing_name) }, locale),
+											ER_MSG,	String.join(",", missing_code), String.join(",", missing_name),ER_MSG,ER_MSG }, locale),
 									Constants.FAIL));
 
 						} else {
@@ -389,6 +428,8 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_4,
 				Constants.rule_log_debug, bw);
 
+		//String inv=Constants.invalidStr_TP;
+		String ER_MSG=Constants.TP;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
@@ -416,7 +457,7 @@ public class RuleBook {
 						&& !ivf.getPlanCoverageBook().trim().equalsIgnoreCase(pat.getCovBookHeaderName().trim())) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule4.error.message_1",
-									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName() }, locale),
+									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName(),ER_MSG }, locale),
 							Constants.FAIL));
 					pass = false;
 				}
@@ -461,8 +502,9 @@ public class RuleBook {
 	}
 
 	// Remaining Deductible, Remaining Balance and Benefit Max as per IV form
+	//Not in Phase 3
 	public List<TPValidationResponseDto> Rule5(Object ivfSheet, MessageSource messageSource, Rules rule,
-			List<EagleSoftPatient> espatients, BufferedWriter bw) {
+			List<EagleSoftPatient> espatients, BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_5,
 				Constants.rule_log_debug, bw);
 
@@ -470,7 +512,10 @@ public class RuleBook {
 		String  planType= ivf.getPlanType();
 		String cMedicate="Children Medicaid";
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-		
+		String ER_MSG=Constants.TP;
+		if (userType==Constants.userType_CL) {
+			ER_MSG=Constants.CL;
+		}
 		RuleEngineLogger.generateLogs(clazz,
 				"planType-"+planType,
 				Constants.rule_log_debug, bw);
@@ -540,13 +585,13 @@ public class RuleBook {
 						pass = false;
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule5.error.message_R",
-										new Object[] { "Plan_AnnualMax", primeMaxCov, planAnnualMax }, locale),
+										new Object[] { "Plan_AnnualMax", primeMaxCov,ER_MSG, planAnnualMax }, locale),
 								Constants.FAIL));
 					}
 					if (planAnnualMaxRem != primeBenefitRem) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule5.error.message_R",
-										new Object[] { "Plan_AnnualMaxRemaining", primeBenefitRem, planAnnualMaxRem },
+										new Object[] { "Plan_AnnualMaxRemaining", primeBenefitRem,ER_MSG, planAnnualMaxRem },
 										locale),
 								Constants.FAIL));
 						pass = false;
@@ -555,7 +600,7 @@ public class RuleBook {
 					if (planIndDedRem != primeRemDed) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule5.error.message_R", new Object[] {
-										"Plan_IndividualDeductibleRemaining", primeRemDed, planIndDedRem }, locale),
+										"Plan_IndividualDeductibleRemaining", primeRemDed,ER_MSG, planIndDedRem }, locale),
 								Constants.FAIL));
 						pass = false;
 
@@ -797,7 +842,7 @@ public class RuleBook {
 
 	// Age Limits
 	public List<TPValidationResponseDto> Rule8(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, BufferedWriter bw) {
+			Rules rule, BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_8,
 				Constants.rule_log_debug, bw);
@@ -809,11 +854,14 @@ public class RuleBook {
 		String sel = ivf.getSealantsD1351AgeLimit();
 		String ortho = ivf.getOrthoAgeLimit();
 		String dob = ivf.getPatientDOB();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv  + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
 			int[] age = null;
@@ -852,7 +900,7 @@ public class RuleBook {
 			boolean rest = false;
 
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -979,7 +1027,7 @@ public class RuleBook {
 
 	// Sealants
 	public List<TPValidationResponseDto> Rule14(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, BufferedWriter bw) {
+			Rules rule, BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_14,
 				Constants.rule_log_debug, bw);
@@ -993,14 +1041,17 @@ public class RuleBook {
 		// String insName = ivf.getInsName();
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		boolean sealantPresent = false;
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		// First Check For Sealant
 		if (tpList == null) {
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+					Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 			return d;
 		}
 		for (Object obj : tpList) {
-			TreatmentPlan tp = (TreatmentPlan) obj;
+			CommonDataCheck tp = (CommonDataCheck) obj;
 			// IF Any more Sealants are there plz add in OR Conditions
 			if (tp.getServiceCode().equalsIgnoreCase("D1351")) {
 				sealantPresent = true;
@@ -1092,7 +1143,7 @@ public class RuleBook {
 				List<String> permamentMolarT = new ArrayList<>();
 				List<String> preMolarT = new ArrayList<>();
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
 					// IF Any more Sealants are there plz add in OR Conditions
 					if (tp.getServiceCode().equalsIgnoreCase("D1351")) {
 
@@ -1185,7 +1236,7 @@ public class RuleBook {
 
 	// SRP Quads Per Day
 	public List<TPValidationResponseDto> Rule15(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, BufferedWriter bw) {
+			Rules rule, BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_15,
 				Constants.rule_log_debug, bw);
@@ -1193,6 +1244,9 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String srpperday = ivf.getsRPD4341QuadsPerDay();
 		String datybetweenTr = ivf.getsRPD4341DaysBwTreatment();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		if (srpperday != null && (srpperday.trim().equalsIgnoreCase("no") || srpperday.trim().equalsIgnoreCase("")))
 			srpperday = "0";
 		if (datybetweenTr != null
@@ -1202,7 +1256,7 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
 			boolean pass = true;
@@ -1234,7 +1288,7 @@ public class RuleBook {
 			srpCodeTCList.add("D4342");
 			int size = 0;
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -1282,7 +1336,7 @@ public class RuleBook {
 
 	// Bundling - X-Rays (updated for Phase 2)
 	public List<TPValidationResponseDto> Rule16(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, BufferedWriter bw) {
+			Rules rule, BufferedWriter bw, int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_16,
 				Constants.rule_log_debug, bw);
@@ -1290,11 +1344,13 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String xray = ivf.getxRaysBundling();
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
 		try {
 			boolean pass = true;
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
 			RuleEngineLogger.generateLogs(clazz, "getxRaysBundling--" + xray, Constants.rule_log_debug, bw);
@@ -1324,7 +1380,7 @@ public class RuleBook {
 				Map<String,List<String>> map= new HashMap<>();
 
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -1426,18 +1482,20 @@ public class RuleBook {
 
 	// Bundling - Fillings -
 	public List<TPValidationResponseDto> Rule17(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
-			Rules rule, BufferedWriter bw) {
+			Rules rule, BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_17,
 				Constants.rule_log_debug, bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String fillings = ivf.getFillingsBundling();
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
 		try {
 			boolean pass = true;
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
 			RuleEngineLogger.generateLogs(clazz, "fillings-" + fillings, Constants.rule_log_debug, bw);
@@ -1603,7 +1661,7 @@ public class RuleBook {
 				Map<String, List<String>> filligToothMap = null;
 				List<String> list = null;
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -1908,7 +1966,7 @@ public class RuleBook {
 						}
 						Date TP_Date = new Date();
 						for (Object obj1 : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj1;
+							CommonDataCheck tp = (CommonDataCheck) obj1;
 						List<String> res= new ArrayList<>();
 						//LOW ORDER SAME SURFACE
 						List<String> rDLSS= ToothUtil.lowerHigherOrderFillingFound(tp, mapHistoryD, true, TP_Date, true,1,12, bw);
@@ -2010,7 +2068,7 @@ public class RuleBook {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
 		} catch (Exception x) {
-
+           x.printStackTrace();
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
 					Constants.FAIL));
@@ -2022,20 +2080,23 @@ public class RuleBook {
 
 	// Filling Codes based on Tooth No
 	public List<TPValidationResponseDto> Rule9(List<Object> tpList, MessageSource messageSource, Rules rule,
-			List<Mappings> mappings, BufferedWriter bw) {
+			List<Mappings> mappings, BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_18,
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
 			boolean pass = true;
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -2106,16 +2167,19 @@ public class RuleBook {
 
 	// Pre-Auth // Attachment Required
 	public List<TPValidationResponseDto> Rule10(List<Object> tpList,List<QuestionAnswerDto> ansL, MessageSource messageSource, Rules rule,
-			List<Mappings> mappings, BufferedWriter bw) {
+			List<Mappings> mappings, BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_10,
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
 			// int age = 0;
@@ -2134,7 +2198,7 @@ public class RuleBook {
 			List<String> combinedY = new ArrayList<>();
 
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -2244,7 +2308,7 @@ public class RuleBook {
 
 	// Waiting Period Checks
 	public List<TPValidationResponseDto> Rule11(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, List<Mappings> mappings, BufferedWriter bw) {
+			Rules rule, List<Mappings> mappings, BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_11,
 				Constants.rule_log_debug, bw);
@@ -2253,6 +2317,9 @@ public class RuleBook {
 		String eff = ivf.getPlanEffectiveDate();
 		String waitb = ivf.getBasicWaitingPeriod();
 		String waitm = ivf.getMajorWaitingPeriod();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		RuleEngineLogger.generateLogs(clazz, "getPlanEffectiveDate-" + eff, Constants.rule_log_debug, bw);
 		RuleEngineLogger.generateLogs(clazz, "getBasicWaitingPeriod-" + waitb, Constants.rule_log_debug, bw);
 		RuleEngineLogger.generateLogs(clazz, "getMajorWaitingPeriod-" + waitm, Constants.rule_log_debug, bw);
@@ -2265,7 +2332,7 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
 			boolean pass = true;
@@ -2290,7 +2357,7 @@ public class RuleBook {
 				return d;
 			}
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -2298,18 +2365,18 @@ public class RuleBook {
 					||	tp.getEstInsurance().equals("0.0")) continue;
 
 				try {
-					DateUtils.CheckForStringInDate(tp.getTreatmentPlanDetails().getDateLastUpdated());
-					dos = Constants.SIMPLE_DATE_FORMAT.parse(tp.getTreatmentPlanDetails().getDateLastUpdated());
+					DateUtils.CheckForStringInDate(tp.getCdDetails().getDateLastUpdated());
+					dos = Constants.SIMPLE_DATE_FORMAT.parse(tp.getCdDetails().getDateLastUpdated());
 				} catch (RuleEngineDateException e) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule1.error.message.date",
-									new Object[] { tp.getTreatmentPlanDetails().getDateLastUpdated() }, locale),
+									new Object[] { tp.getCdDetails().getDateLastUpdated() }, locale),
 							Constants.FAIL));
 					return d;
 				} catch (ParseException e) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule1.error.message.date",
-									new Object[] { tp.getTreatmentPlanDetails().getDateLastUpdated() }, locale),
+									new Object[] { tp.getCdDetails().getDateLastUpdated() }, locale),
 							Constants.FAIL));
 					return d;
 				}
@@ -2376,17 +2443,20 @@ public class RuleBook {
 
 	// Missing Tooth Clause
 	public List<TPValidationResponseDto> Rule18(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, List<Mappings> mappings, BufferedWriter bw) {
+			Rules rule, List<Mappings> mappings, BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_18,
 				Constants.rule_log_debug, bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
 			boolean pass = true;
@@ -2394,7 +2464,7 @@ public class RuleBook {
 					Constants.rule_log_debug, bw);
 			if (ivf.getMissingToothClause() != null && ivf.getMissingToothClause().trim().equalsIgnoreCase("yes")) {
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -2448,16 +2518,19 @@ public class RuleBook {
 
 	// Build-Ups & Crown Same Day
 	public List<TPValidationResponseDto> Rule13(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, BufferedWriter bw) {
+			Rules rule, BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_13,
 				Constants.rule_log_debug, bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String samedayCr = ivf.getBuildUpsD2950SameDayCrown();
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		if (tpList == null) {
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+					Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 			return d;
 		}
 		boolean pass = true;
@@ -2473,7 +2546,7 @@ public class RuleBook {
 			// Assumption that Only One Tooth no is present in One Row for D2950,D2740,D2750
 			// Email Dated & Phone Call: 1 August 2018
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -2520,16 +2593,18 @@ public class RuleBook {
 	// Downgrading
 	public List<TPValidationResponseDto> Rule19(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
 			Rules rule, List<Mappings> mappings, List<EagleSoftFeeShedule> esfeess, List<EagleSoftPatient> espatients,
-			BufferedWriter bw) {
+			BufferedWriter bw, int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_19,
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
 		try {
 			if (tpList == null) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return dList;
 			}
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
@@ -2568,7 +2643,7 @@ public class RuleBook {
 				if (!cont) return new ArrayList<>();
 				*/	
 					for (Object t : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) t;
+						CommonDataCheck tp = (CommonDataCheck)  t;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -2692,15 +2767,18 @@ public class RuleBook {
 	 * @return
 	 */
 	public List<TPValidationResponseDto> Rule21(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, List<Mappings> mappings, BufferedWriter bw) {
+			Rules rule, List<Mappings> mappings, BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_21,
 				Constants.rule_log_debug, bw);
 		Set<String> failedCodeSet = new HashSet<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
 			if (tpList == null) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return dList;
 			}
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
@@ -3247,10 +3325,17 @@ public class RuleBook {
 				RuleEngineLogger.generateLogs(clazz, "History is present  now proceed Further..",
 						Constants.rule_log_debug, bw);
 				TP_Date = new Date();
+				
+				
 				Map<String, List<String>> tpToothMap = null;
 				List<String> list = null;
 				for (Object t : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) t;
+					CommonDataCheck tp = (CommonDataCheck)  t;
+					if (userType==Constants.userType_CL) {
+						TP_Date= Constants.SIMPLE_DATE_FORMAT.parse(tp.getCdDetails().getDateLastUpdated());
+						
+					}
+					
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -3653,7 +3738,7 @@ public class RuleBook {
 
 	// CRA
 	public List<TPValidationResponseDto> Rule22(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, BufferedWriter bw) {
+			Rules rule, BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_22,
 				Constants.rule_log_debug, bw);
@@ -3663,10 +3748,13 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz, "CRA-"+cra, Constants.rule_log_debug, bw);
 		boolean pass = true;
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
 				return d;
 			}
 			String codeFound1 = "";
@@ -3674,7 +3762,7 @@ public class RuleBook {
 
 			if (cra != null && cra.trim().equalsIgnoreCase("yes")) {
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -3759,7 +3847,7 @@ public class RuleBook {
 					double fee = 0;
 
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -3833,7 +3921,7 @@ public class RuleBook {
      * @return
      */
 	public List<TPValidationResponseDto> Rule24(List<Object> tpList,Object ivfSheet,  MessageSource messageSource, Rules rule,
-			List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
+			List<EagleSoftFeeShedule> esfeess, BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_24,
 				Constants.rule_log_debug, bw);
 
@@ -3855,9 +3943,10 @@ public class RuleBook {
                 reqList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
                 
 				List<String> historyCheckList = Arrays.asList(Constants.SEALANT_SC.split(","));
-				
+				String dt="";
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
+					dt=tp.getCdDetails().getDateLastUpdated();
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -3924,6 +4013,7 @@ public class RuleBook {
 					    Date TP_DATE=null;	
 						if (historyPresent) {
 							TP_DATE= new Date();
+							if (userType==Constants.userType_CL) TP_DATE = Constants.SIMPLE_DATE_FORMAT.parse(dt);//phase3 change
 							boolean breakAll=false;
 							for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
 								List<ToothHistoryDto> d=entry.getValue();
@@ -4039,7 +4129,7 @@ public class RuleBook {
     * @return
     */
 	public List<TPValidationResponseDto> Rule25(List<Object> tpList,Object ivfSheet, MessageSource messageSource, Rules rule,
-			List<EagleSoftFeeShedule> esfeess, BufferedWriter bw) {
+			List<EagleSoftFeeShedule> esfeess, BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_25,
 				Constants.rule_log_debug, bw);
 
@@ -4062,9 +4152,10 @@ public class RuleBook {
                 historyCheckList.addAll(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
                 historyCheckList.addAll(Arrays.asList(Constants.FILLING_MM_SC.split(",")));
                 
-				
+				String dt="";
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
+					dt=tp.getCdDetails().getDateLastUpdated();
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -4131,6 +4222,7 @@ public class RuleBook {
 					    Date TP_DATE=null;	
 						if (historyPresent) {
 							TP_DATE= new Date();
+							if (userType==Constants.userType_CL) TP_DATE = Constants.SIMPLE_DATE_FORMAT.parse(dt);//phase3 change
 							boolean breakAll=false;
 							for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
 								List<ToothHistoryDto> d=entry.getValue();
@@ -4249,7 +4341,7 @@ public class RuleBook {
     */
 	public List<TPValidationResponseDto> Rule26(List<Object> tpList,Object ivfSheet, MessageSource messageSource, Rules rule,
 			 BufferedWriter bw) {
-			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_27,
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_26,
 					Constants.rule_log_debug, bw);
 
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
@@ -4283,7 +4375,7 @@ public class RuleBook {
 	                
 	                
 					for (Object obj : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj;
+						CommonDataCheck tp = (CommonDataCheck) obj;
 						RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 								Constants.rule_log_debug, bw);
 							
@@ -4503,7 +4595,7 @@ public class RuleBook {
 									}
 					}else {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule27.pass1.message", new Object[] {  }, locale),
+								messageSource.getMessage("rule26.pass1.message", new Object[] {  }, locale),
 								Constants.PASS));
 					}
 				} catch (Exception ex) {
@@ -4559,7 +4651,7 @@ public class RuleBook {
 	                
 	                
 					for (Object obj : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj;
+						CommonDataCheck tp = (CommonDataCheck) obj;
 						RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 								Constants.rule_log_debug, bw);
 							
@@ -4837,7 +4929,7 @@ public class RuleBook {
                 
                 
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -5093,7 +5185,7 @@ public class RuleBook {
 			int  counter=0;
 		try {	
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -5179,7 +5271,7 @@ public class RuleBook {
 			int  counter=0;
 			try {
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -5278,18 +5370,22 @@ public class RuleBook {
 	 * @return
 	 */
 	public List<TPValidationResponseDto> Rule31(List<Object> tpList,Object ivfSheet, MessageSource messageSource, Rules rule,
-			 BufferedWriter bw) {
+			 BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_31,
 				Constants.rule_log_debug, bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		String dat="";
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 			int  counter_1=0;
 			int  counter_2=0;
 			try {
 				Date TP_DATE= new Date();
+				
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				dat=tp.getCdDetails().getDateLastUpdated();
+				if (userType==Constants.userType_CL) TP_DATE = Constants.SIMPLE_DATE_FORMAT.parse(dat);//phase3 change
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -5405,7 +5501,7 @@ public class RuleBook {
 		String toothTR2[] = null;
 		try {
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -5494,7 +5590,7 @@ public class RuleBook {
         boolean pass=true;
 		try {
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -5596,7 +5692,7 @@ public class RuleBook {
 		String toothTR2[] = null;
 		try {
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -5682,7 +5778,7 @@ public class RuleBook {
 		try {
 			int counter=0;
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -5744,7 +5840,7 @@ public class RuleBook {
 		try {
 			boolean checkForHistory=false;
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
@@ -5846,7 +5942,7 @@ public class RuleBook {
 			List<String> dentureList= Arrays.asList( Constants.DENTURE_SC.split(","));
 			
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -6042,7 +6138,7 @@ public class RuleBook {
 	 */
 	public List<TPValidationResponseDto> Rule38(Object ivfSheet,List<Object> tpList,List<EagleSoftPatientWalkHistory> pHistories,
 			MessageSource messageSource, Rules rule,
-			 BufferedWriter bw) {
+			 BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_38,
 				Constants.rule_log_debug, bw);
 
@@ -6056,6 +6152,7 @@ public class RuleBook {
 		boolean pass = true;
 		Map<String, List<ToothHistoryDto>> mapHistory = new HashMap<>();
 		Date TP_DATE = new Date();
+		String dx="";
 		String codes="D0150,D0210,D0330";
 		try {
 			boolean present = false;
@@ -6066,8 +6163,8 @@ public class RuleBook {
 				List<String> reqList = new ArrayList<String>(Arrays.asList(codes.split(",")));
 				List<String> reqListNew = new ArrayList<>();
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
-					
+					CommonDataCheck tp = (CommonDataCheck) obj;
+					dx=tp.getCdDetails().getDateLastUpdated();
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
@@ -6145,8 +6242,10 @@ public class RuleBook {
 										for(ToothHistoryDto dto:d) {
 											if (dto.getHistoryDos()!="") {
 												Date dos = null;
+												if (userType==Constants.userType_CL) TP_DATE = Constants.SIMPLE_DATE_FORMAT.parse(dx);//phase3 change
 												try {
 													dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(dto.getHistoryDos());
+													
 													RuleEngineLogger.generateLogs(clazz,
 															"History DOS-" + dto.getHistoryDos(),
 															Constants.rule_log_debug, bw);
@@ -6217,7 +6316,7 @@ public class RuleBook {
             boolean needCheck=false;
             String tpCode="";
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -6317,7 +6416,7 @@ public class RuleBook {
 			String[] tooths=new String[2];
 			codes[0]=codes[1]="";
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -6420,7 +6519,7 @@ public class RuleBook {
 	}
 	
 	
-	// MVP VAP work in Progress
+	// MVP VAP 
 	//41
 	public List<TPValidationResponseDto> Rule41(List<Object> tpList,List<MVPandVAP> mvpvapList,MessageSource messageSource, Rules rule,
 			BufferedWriter bw) {
@@ -6433,7 +6532,7 @@ public class RuleBook {
 			Map<String,Set<MVPandVAP>> mvpvapMap=null;
 			
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -6473,7 +6572,7 @@ public class RuleBook {
 						String baseG="";
 						
 						for(Object obj : tpList) {
-							TreatmentPlan tp = (TreatmentPlan) obj;
+							CommonDataCheck tp = (CommonDataCheck) obj;
 							if(m.getBase()!=null && m.getBaseGroup().equalsIgnoreCase(tp.getServiceCode())) {
 								baseG=m.getBaseGroup();
 								s.add(m.getBaseGroup());
@@ -6610,7 +6709,7 @@ public class RuleBook {
 			
 			
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -6671,6 +6770,7 @@ public class RuleBook {
 
 	}
 
+	/*
 	// Bone Graft (User Input) (Not Used)
 	public List<TPValidationResponseDto> Rule43(List<Object> tpList,List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
 			BufferedWriter bw) {
@@ -6683,7 +6783,7 @@ public class RuleBook {
 			boolean bone=false;
 			boolean boneQuestionPresent=false;
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;//D4910  //D7953
+				CommonDataCheck tp = (CommonDataCheck) obj;//D4910  //D7953
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -6740,16 +6840,22 @@ public class RuleBook {
 		return dList;
 
 	}
-
+    */
 	// Signed Consent Requirements (User Input) //Forms Required // Consent Form Requirements
 	public List<TPValidationResponseDto> Rule44(List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
-			BufferedWriter bw) {
+			BufferedWriter bw,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_44,
 				Constants.rule_log_debug, bw);
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		boolean pass=true;
+		//String inv=Constants.invalidStr_TP;
+		String ER_MSG=Constants.TP;
+
 		try {
 			
+			if (userType==Constants.userType_CL) {
+				ER_MSG=Constants.CL;
+			}
 			boolean questionPresent=false;
 			
 	      
@@ -6772,7 +6878,7 @@ public class RuleBook {
           if (questionPresent==false) {
         	  pass=false;
            	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-    					messageSource.getMessage("rule44.error.message2", new Object[] {  }, locale),
+    					messageSource.getMessage("rule44.error.message2", new Object[] { ER_MSG }, locale),
     					Constants.FAIL));
           }else {
         	  if (pass==false) {
@@ -6864,7 +6970,7 @@ public class RuleBook {
 			List<String> combinedY = new ArrayList<>();
 			List<String> orthoList= Arrays.asList( Constants.ORTHO_CODE_UI.split(","));
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -6978,7 +7084,7 @@ public class RuleBook {
 				//if (age[0]>=21){//not needed for now..
 				if (true) {
 					for (Object obj : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj;
+						CommonDataCheck tp = (CommonDataCheck) obj;
 						Mappings mapP = getMappingFromListPreAuth(mappings, tp.getServiceCode());
 						if (mapP != null) {
 							RuleEngineLogger.generateLogs(clazz, "PreAuth  present" + mapP.getPreAuthNeeded(),
@@ -7062,7 +7168,7 @@ public class RuleBook {
 			
 			String pname= ivf.getProviderName();
 					for (Object obj : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj;
+						CommonDataCheck tp = (CommonDataCheck) obj;
 						RuleEngineLogger.generateLogs(clazz, " IVF provider -"+pname+" - Provider IN TP-"+tp.getProviderLastName(),
 								Constants.rule_log_debug, bw);
 						if (!pname.equalsIgnoreCase(tp.getProviderLastName())){
@@ -7140,7 +7246,7 @@ public class RuleBook {
 			if(chip.toLowerCase().contains(Constants.insurance_Chip)) {
 			
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -7189,7 +7295,7 @@ public class RuleBook {
 			Set<String> issueSet=new HashSet<>();
 			if(chip.toLowerCase().contains(Constants.insurance_Chip)) {
 			for (Object obj : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) obj;
+				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -7234,20 +7340,23 @@ public class RuleBook {
 
 	}
 	
-	
+	//DQ Fillings
 	public List<TPValidationResponseDto> Rule53(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
-			Rules rule, BufferedWriter bw) {
+			Rules rule, BufferedWriter bw,int userType) {
 		//DQ_PLAN_NAME_CHECK
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_53,
 				Constants.rule_log_debug, bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		String inv=Constants.invalidStr_TP;
+		if (userType==Constants.userType_CL) inv=Constants.invalidStr_Cl;
+
 		try {
 			boolean pass = true;
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.ALERT));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.ALERT));
 				return d;
 			}
                Set<String> issueTeeth=new HashSet<>();
@@ -7276,8 +7385,10 @@ public class RuleBook {
 		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
 
 		        List<String> tooth=new ArrayList<>();
+		        String dt1="";
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
+					dt1=tp.getCdDetails().getDateLastUpdated();
 					if (!checkList.contains(tp.getServiceCode())) continue;
 					List<String> t=Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth()));
 					for(String t1:t) {
@@ -7297,7 +7408,7 @@ public class RuleBook {
 	            //if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
 				Date TP_Date = new Date();
 				
-				
+				if (userType==Constants.userType_CL) TP_Date = Constants.SIMPLE_DATE_FORMAT.parse(dt1);//phase3 change
        	        
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
@@ -7341,7 +7452,7 @@ public class RuleBook {
 							 }
 						}
 						for (Object obj1 : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj1;
+							CommonDataCheck tp = (CommonDataCheck) obj1;
 						if (!checkList.contains(tp.getServiceCode())) continue;
 						//LOW ORDER
 						for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistoryM.entrySet()) {
@@ -7398,7 +7509,7 @@ public class RuleBook {
 
 
 	}
-	// DQ Fillings (Provider Same)
+	// DQ Fillings (Provider Same) NOT USED
 	public List<TPValidationResponseDto> Rule51(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
 			Rules rule, BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_51,
@@ -7425,7 +7536,7 @@ public class RuleBook {
 		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
 
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
 					if (!checkList.contains(tp.getServiceCode())) continue;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
@@ -7487,7 +7598,7 @@ public class RuleBook {
 								}
 						}
 						for (Object obj1 : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj1;
+							CommonDataCheck tp = (CommonDataCheck) obj1;
 						if (!checkList.contains(tp.getServiceCode())) continue;
 						//List<String> res= new ArrayList<>();
 						//LOW ORDER
@@ -7529,7 +7640,7 @@ public class RuleBook {
 
 	}
 	
-	// DQ Fillings (Provider Different)
+	// DQ Fillings (Provider Different) NOT USED
 	public List<TPValidationResponseDto> Rule52(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
 			Rules rule, BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_52,
@@ -7555,7 +7666,7 @@ public class RuleBook {
 		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
 		        checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
 				for (Object obj : tpList) {
-					TreatmentPlan tp = (TreatmentPlan) obj;
+					CommonDataCheck tp = (CommonDataCheck) obj;
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 					if (!checkList.contains(tp.getServiceCode())) continue;
@@ -7618,7 +7729,7 @@ public class RuleBook {
 								}
 						}
 						for (Object obj1 : tpList) {
-						TreatmentPlan tp = (TreatmentPlan) obj1;
+							CommonDataCheck tp = (CommonDataCheck) obj1;
 						if (!checkList.contains(tp.getServiceCode())) continue;
 						//List<String> res= new ArrayList<>();
 						//LOW ORDER

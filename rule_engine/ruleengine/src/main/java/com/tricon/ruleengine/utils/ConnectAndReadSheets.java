@@ -56,6 +56,11 @@ public class ConnectAndReadSheets {
 	private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
 
 	private static NetHttpTransport HTTP_TRANSPORT = null;
+	
+	
+	final static int Column_NO_UNIQUE = 312;
+	final static int Column_NO_PATIENT = 129;
+
 
 	static {
 		try {
@@ -95,14 +100,14 @@ public class ConnectAndReadSheets {
 	 * @throws IOException
 	 */
 	public static Map<String, List<Object>> readSheet(String spreadsheetId, String sheetName, String[] id,
-			String clientDir, String clientFolder, String officeName, boolean idsPatient) throws IOException {
+			String clientDir, String clientFolder, String officeName, boolean idsPatient,boolean breakLoop) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
 		// if (sheetType==Constants.treatmentPlanSheetID) return
 		// readTPSheetData(response, id);
 		// if (sheetType==Constants.ivTableDataSheetID)
-		return readIVFSheet(response, id, officeName, idsPatient);
+		return readIVFSheet(response, id, officeName, idsPatient, breakLoop);
 		// if (sheetType==Constants.mappingSheetID_CM) return
 		// readMappingDataCM(response);
 		// if (sheetType==Constants.mappingSheetID_FEE) return
@@ -321,7 +326,7 @@ public class ConnectAndReadSheets {
 	 * }
 	 */
 	public static Map<String, List<Object>> readIVFSheet(ValueRange range, String[] uniqueIds, String officeName,
-			boolean idsPatient) {
+			boolean idsPatient,boolean breakLoop) {
 
 		List<List<Object>> values = range.getValues();
 		Map<String, List<Object>> map = null;
@@ -333,8 +338,8 @@ public class ConnectAndReadSheets {
 		// int maxlength= values.size();
 		// int maxlengthT= values.size();
 		// System.out.println("maxlengthT30::"+maxlengthT);
-		int Column_NO_UNIQUE = 312;
-		int Column_NO_PATIENT = 129;
+		//int Column_NO_UNIQUE = 312;
+		//int Column_NO_PATIENT = 129;
 
 		while (li.hasPrevious()) {
 			ArrayList<String> obj = (ArrayList<String>) li.previous();
@@ -450,7 +455,7 @@ public class ConnectAndReadSheets {
 
 			// if (ivList ==null) ivList= new ArrayList<>();
 			// ivList.add(vif);
-			if (map != null && uniqueIds.length == map.size())
+			if (breakLoop && map != null && uniqueIds.length == map.size())
 				break;// Because
 			// }//For loop
 		} // While Loop - 1

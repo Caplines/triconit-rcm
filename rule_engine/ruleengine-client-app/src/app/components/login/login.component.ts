@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import {User} from "../../model/model.user";
 import {AuthService} from "../../services/auth.service";
-import {Router} from "@angular/router";
+import {Router} from "@angular/router"; 
+import Utils from '../../util/utils';
 
 
 @Component({
@@ -24,7 +25,9 @@ export class LoginComponent implements OnInit {
   login(){
     this.authService.logIn(this.user)
       .subscribe(data=>{
-        this.router.navigate(['/ivf']);
+    	let ut =Utils.fetchUserTypeFromLocalStorage(); 
+        if (ut=='1')this.router.navigate(['/ivf']);
+        else this.router.navigate(['/ivfcl']);
         this.authService.emitChange('login');
         },err=>{
         this.errorMessage="Error :  Username or password is incorrect";

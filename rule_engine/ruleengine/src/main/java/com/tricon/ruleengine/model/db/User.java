@@ -38,7 +38,9 @@ public class User extends BaseAudit implements Serializable {
 	@GenericGenerator(name = "uuid2",strategy = "uuid2")
 	@Column(name = "uuid", nullable = false, length = 45)
 	private String uuid;
-	@Column(name = "email",unique=true)
+	@Column(name = "username",unique=true)
+	private String userName;
+	@Column(name = "email")
 	@Email(message = "*Please provide a valid Email")
 	@NotEmpty(message = "*Please provide an email")
 	private String email;
@@ -62,6 +64,10 @@ public class User extends BaseAudit implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "office_id")
 	private Office office;
+	//User type 1=Treatment Validate, 2= Claim Validate
+	@Column(name = "user_type")
+	private int userType;
+	
 	
 
 	public String getUuid() {
@@ -136,5 +142,26 @@ public class User extends BaseAudit implements Serializable {
 		this.lastPasswordResetDate = lastPasswordResetDate;
 	}
 
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public int getUserType() {
+		return userType;
+	}
+
+	public void setUserType(int userType) {
+		this.userType = userType;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	
 
 }

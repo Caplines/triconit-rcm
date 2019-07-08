@@ -1,23 +1,18 @@
 package com.tricon.ruleengine.model.sheet;
 
-//import java.util.Date;
-
-/**
- * @author Deepak.Dogra
- *
- */
-public class TreatmentPlanDetails {
-
-	private String dateLastUpdated;// This is DOS but not considered-- we have use Current Date as DOS.
+public class CommonDataDetails {
+	
+	
+	private String dateLastUpdated;
 	private String status;
 	private String estSecondary;
 	private String description;
 	
 
-	public TreatmentPlanDetails() {
+	public CommonDataDetails() {
 	}
 
-	public TreatmentPlanDetails(String dateLastUpdated, String status) {
+	public CommonDataDetails(String dateLastUpdated, String status) {
 		super();
 		this.dateLastUpdated = dateLastUpdated;
 		this.status = status;
@@ -55,6 +50,5 @@ public class TreatmentPlanDetails {
 		this.description = description;
 	}
 
-	
-	
+
 }

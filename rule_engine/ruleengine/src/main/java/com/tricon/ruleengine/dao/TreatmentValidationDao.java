@@ -10,6 +10,7 @@ import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ReportDetail;
 import com.tricon.ruleengine.model.db.Reports;
+import com.tricon.ruleengine.model.db.ReportsClaim;
 import com.tricon.ruleengine.model.db.Rules;
 
 public interface TreatmentValidationDao {
@@ -28,15 +29,18 @@ public interface TreatmentValidationDao {
 	
 	public Reports getReportsByIVFIdAndOffice(String ivfId,Office off);
 
-	public Reports getReportsByTPIdIVFIDAndOffice(String tpid,String ivfId,Office office);
+	public Reports getReportsByTPIdIVFIDAndOffice(String id,String ivfId,Office office);
+	
+	public ReportsClaim getReportsClaimByTPIdIVFIDAndOffice(String id,String ivfId,Office office);
 
-	public Serializable saveReports(Reports reports);
 
-	public Serializable saveReportDestail(ReportDetail reports);
+	public Serializable saveReports(Object reports);
+
+	public Serializable saveReportDestail(Object reports);
 
 	public Reports getReportsByName(String name);
 	
-	public void updateReportDate(Reports reports);
+	public void updateReportDate(Object reports);
 	
 	public EagleSoftDBDetails getESDBDetailsByOffice(Office off);
 	

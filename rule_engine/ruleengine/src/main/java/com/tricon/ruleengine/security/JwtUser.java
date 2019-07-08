@@ -6,7 +6,7 @@ import java.util.Date;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Deepak.Dogra
@@ -21,25 +21,30 @@ public class JwtUser implements UserDetails {
     private final String firstname;
     private final String lastname;
     private final String password;
-    private final String email;
+    private final int userType;
+    private final String userName;
     private final Collection<? extends GrantedAuthority> authorities;
     private final int active;
     private final Date lastPasswordResetDate;
+    
 
     public JwtUser(
           String uuid,
           String firstname,
           String lastname,
-          String email,
-          String password, Collection<? extends GrantedAuthority> authorities,
+          String userName,
+          String password,
+          int userType,
+          Collection<? extends GrantedAuthority> authorities,
           int enabled,
           Date lastPasswordResetDate
     ) {
         this.uuid = uuid;
         this.firstname = firstname;
         this.lastname = lastname;
-        this.email = email;
+        this.userName = userName;
         this.password = password;
+        this.userType  = userType;
         this.authorities = authorities;
         this.active = enabled;
         this.lastPasswordResetDate = lastPasswordResetDate;
@@ -57,7 +62,7 @@ public class JwtUser implements UserDetails {
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
-		return email;
+		return userName;
 	}
 	@Override
 	public boolean isAccountNonExpired() {
@@ -89,8 +94,8 @@ public class JwtUser implements UserDetails {
 	public String getLastname() {
 		return lastname;
 	}
-	public String getEmail() {
-		return email;
+	public String getUserName() {
+		return userName;
 	}
 	public int getActive() {
 		return active;
@@ -98,6 +103,10 @@ public class JwtUser implements UserDetails {
 	public Date getLastPasswordResetDate() {
 		return lastPasswordResetDate;
 	}
+	public int getUserType() {
+		return userType;
+	}
 
+	
     
 }

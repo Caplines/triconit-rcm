@@ -5,6 +5,8 @@ import {ReportModel} from "../../model/model.report";
 import {AccountService} from "../../services/account.service";
 import {Router,ActivatedRoute} from "@angular/router";
 import { DatePipe } from '@angular/common';
+import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext"; 
+
 
 @Component({
   selector: 'app-report',
@@ -22,14 +24,26 @@ export class ReportComponent implements OnInit {
   showLoading: boolean = false;
   showReportForm: boolean = false;
   showReportData: boolean = false;
+  //claim and Treatment Text 
+  hd1:string="";
+  //hd2:string="";
+  ur:string="/report";
   dateOptions: DatepickerOptions = {
 	displayFormat: 'MM/DD/YYYY',
-	placeholder: 'Click to select a date'
+	placeholder: 'Click to select a date',
+	fieldId: 'datePicker',
   };
   showParam:any = {TreatmentId: false, IvfId: false, Date: false, PatientName: false}
   
   constructor(public accountService: AccountService, public router: Router, private datePipe: DatePipe,private route: ActivatedRoute) {
 	  this.offices =this.route.snapshot.data['offs'].data;
+	  console.log(this.route.snapshot.url[0].path);
+	  if (this.route.snapshot.url[0].path=='reportcl'){
+		  this.hd1=ClaimTreatmentTextModel.claimId;	  
+		  this.ur="/reportcl";
+	  }else{
+		  this.hd1=ClaimTreatmentTextModel.treatmentPlanId;
+	  }
   }
 
   ngOnInit() {
@@ -38,7 +52,7 @@ export class ReportComponent implements OnInit {
 
   reportParam(value) {
     this.report = new ReportModel();
-	let filter = this.showParam;
+ 	let filter = this.showParam;
 	Object.keys(filter).forEach(function(key, result) {
 	  if(key == value) {
 	  	filter[key] = true;
@@ -49,6 +63,14 @@ export class ReportComponent implements OnInit {
 	});		
 	this.showReportForm = true;
 	this.report.reportType = value;
+	/*
+	setTimeout(function(){ 
+	   if (document.getElementById("datePicker")){
+		   
+	    	document.getElementById("datePicker").readOnly=false;
+	    }
+	}, 100);
+    */
   }
   
   showCalendar(){
@@ -61,7 +83,7 @@ export class ReportComponent implements OnInit {
 			this.report.reportField1 = this.datePipe.transform(this.report.reportField1, 'MM/dd/yyyy');
 		}
 		this.showLoading = true;
-		this.accountService.validateReport(this.report,(result) => {
+		this.accountService.validateReport(this.report,this.ur,(result) => {
 			this.showLoading = false;
 			if (result.status=='OK'){
 				this.reportData = result.data;

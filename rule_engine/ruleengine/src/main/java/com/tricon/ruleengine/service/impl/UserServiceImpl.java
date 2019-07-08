@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
 	public GenericResponse registerUser(UserRegistrationDto dto) {
 		Office office = userDao.findOfficeById(dto.getOfficeId());
 		if (office != null) {
-			User user = userDao.findUserByEmail(dto.getEmail());
+			User user = userDao.findUserByUsername(dto.getUserName());
 			if (user == null) {
 				user = DtoToModel.convertRegistrationDto(dto, office);
 				user.setUuid((String) userDao.registerUser(user));

@@ -19,6 +19,7 @@ export default class Utils {
     */
    static setLocalStorage(data:any,token:string){
        localStorage.setItem('currentUser', data.userName);
+       localStorage.setItem('userType', data.userType);
        localStorage.setItem('token', token);
        localStorage.setItem('roles', Utils.getRoles(data.authorities));
 
@@ -30,8 +31,17 @@ export default class Utils {
 
    static resetLocalStorage(){
        localStorage.removeItem('currentUser');
+       localStorage.removeItem('userType');
        localStorage.removeItem('token');
        localStorage.removeItem('roles');
    }
+   
+   static fetchUserTypeFromLocalStorage():string{
+       let ut=localStorage.getItem('userType');
+       if (!ut) ut="1";
+       return ut;
+       
+   }
+
 }  
 

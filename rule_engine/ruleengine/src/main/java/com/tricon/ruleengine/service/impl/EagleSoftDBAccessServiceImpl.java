@@ -23,6 +23,9 @@ import com.tricon.ruleengine.dto.OfficeDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.sheet.ClaimData;
+import com.tricon.ruleengine.model.sheet.ClaimDataDetails;
+import com.tricon.ruleengine.model.sheet.ClaimDataPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
@@ -267,7 +270,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
 		Map<String, List<?>> returnMap = null;
 		EagleSoftFetchData d = new EagleSoftFetchData();
-		RuleEngineLogger.generateLogs(clazz, "FEE Schedule DATA- START- ", Constants.rule_log_debug, bw);
+		RuleEngineLogger.generateLogs(clazz, "Treatment Plan Data Start- ", Constants.rule_log_debug, bw);
 
 		EagleSoftQueryObject q = prepairEagleSoftQueryObject(trids, EagleSoftQuery.treatment_plan_query,
 				EagleSoftQuery.treatment_plan_query_CL_COUNT);
@@ -353,6 +356,96 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		return returnMap;
 	}
 
+	@Override
+	public Map<String, List<?>> getClaimData(String[] trids, EagleSoftDBDetails esDB, BufferedWriter bw) {
+
+		Map<String, List<?>> returnMap = null;
+		EagleSoftFetchData d = new EagleSoftFetchData();
+		RuleEngineLogger.generateLogs(clazz, "Claim Data DATA- START- ", Constants.rule_log_debug, bw);
+
+		EagleSoftQueryObject q = prepairEagleSoftQueryObject(trids, EagleSoftQuery.claim_query,
+				EagleSoftQuery.claim_query_CL_COUNT);
+		String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
+
+		if (data != null) {
+			try {
+				ObjectMapper map = new ObjectMapper();
+				// Patient patQ = map.readValue(r, Patient.class);
+				Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
+				});
+
+				RuleEngineLogger.generateLogs(clazz, "Claim Data -" + cMap.get("dataMap").toString(),
+						Constants.rule_log_debug, bw);
+				Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+				ClaimData tp = null;
+				ClaimDataPatient patient = null;
+                ClaimDataDetails details = null;
+				List<Object> list = null;
+				for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+					if (entry.getValue() != null) {
+						List<String> des = (List<String>) (entry.getValue());
+						tp = new ClaimData();
+						patient = new ClaimDataPatient();
+						details = new ClaimDataDetails();
+
+						tp.setApptId(des.get(0));
+						tp.setId(des.get(1));
+						patient.setId(des.get(2));
+						patient.setName(des.get(3));
+						patient.setLastName(des.get(4));
+						patient.setDob(des.get(5));
+						tp.setPatient(patient);
+						details.setDateLastUpdated(Constants.SIMPLE_DATE_FORMAT
+								.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse((des.get(6)))));//This date is issue ..
+						tp.setStatus(des.get(7));
+						details.setEstSecondary(des.get(8));
+						details.setDescription(des.get(9));
+						tp.setLineItem(des.get(10));
+						tp.setServiceCode(des.get(11));
+						tp.setDescription(des.get(12));
+						tp.setSurface(des.get(13));
+						tp.setTooth(des.get(14));
+						if (tp.getTooth() == null)
+							tp.setTooth("NA");
+						else if (tp.getTooth() != null && tp.getTooth().trim().equals(""))
+							tp.setTooth("NA");// NA Mean All Tooth.. like cleaning..
+						details.setStatus(des.get(15));
+						tp.setFee(des.get(16));
+						tp.setProviderLastName(des.get(17));
+						tp.setEstInsurance(des.get(18));
+						tp.setPatientPortion(des.get(19));
+						tp.setEstPrimary(des.get(20));
+
+						tp.setDetails(details);
+
+						if (returnMap == null)
+							returnMap = new HashMap<>();
+						if (returnMap.containsKey(tp.getId())) {
+							// if the key has already been used,
+							// we'll just grab the array list and add the value to it
+							list = (List<Object>) (List<?>) returnMap.get(tp.getId());
+							list.add(tp);
+						} else {
+							// if the key hasn't been used yet,
+							// we'll create a new ArrayList<String> object, add the value
+							// and put it in the array list with the new key
+							list = new ArrayList<>();
+							list.add(tp);
+							returnMap.put(tp.getId(), list);
+						}
+
+					}
+				}
+
+			} catch (Exception e) {
+				RuleEngineLogger.generateLogs(clazz, "Treatment Plan DATA- ERROR- " + e.getMessage(),
+						Constants.rule_log_debug, bw);
+
+			}
+		}
+		// TODO Auto-generated method stub
+		return returnMap;
+	}
 	//
 	@Override
 	public Map<String, List<?>> getFeeScheduleData(Map<String, List<EagleSoftPatient>> espatients,
@@ -502,6 +595,82 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 						tp.setEstPrimary(des.get(20));
 
 						tp.setTreatmentPlanDetails(treatmentPlanDetails);
+						list.add(tp);
+					}
+
+				}
+
+			} catch (Exception e) {
+				RuleEngineLogger.generateLogs(clazz, "Treatment Plan DATA- ERROR- " + e.getMessage(),
+						Constants.rule_log_debug, bw);
+
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public List<ClaimData> getClaimDataByPatient(String patientId, EagleSoftDBDetails esDB,
+			BufferedWriter bw) {
+		// TODO Auto-generated method stub
+		EagleSoftFetchData d = new EagleSoftFetchData();
+		List<ClaimData> list = null;
+		RuleEngineLogger.generateLogs(clazz, " Claim START FETCH DATA for patient-" + patientId,
+				Constants.rule_log_debug, bw);
+
+		EagleSoftQueryObject q = prepairEagleSoftQueryObject(new String[] { patientId },
+				EagleSoftQuery.claim_by_pat_query, EagleSoftQuery.claim_by_pat_query_CL_COUNT);
+		String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
+		if (data != null) {
+			try {
+				ObjectMapper map = new ObjectMapper();
+				// Patient patQ = map.readValue(r, Patient.class);
+				Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
+				});
+
+				RuleEngineLogger.generateLogs(clazz, "Claim Patient DATA-" + cMap.get("dataMap").toString(),
+						Constants.rule_log_debug, bw);
+				Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+				ClaimData tp = null;
+				ClaimDataPatient patient = null;
+                ClaimDataDetails details = null;
+				list = new ArrayList<>();
+				for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+					if (entry.getValue() != null) {
+						List<String> des = (List<String>) (entry.getValue());
+						tp = new ClaimData();
+						patient = new ClaimDataPatient();
+						details = new ClaimDataDetails();
+
+						tp.setApptId(des.get(0));
+						tp.setId(des.get(1));
+						patient.setId(des.get(2));
+						patient.setName(des.get(3));
+						patient.setLastName(des.get(4));
+						patient.setDob(des.get(5));
+						tp.setPatient(patient);
+						details.setDateLastUpdated(Constants.SIMPLE_DATE_FORMAT
+								.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse((des.get(6)))));
+						tp.setStatus(des.get(7));
+						details.setEstSecondary(des.get(8));
+						details.setDescription(des.get(9));
+						tp.setLineItem(des.get(10));
+						tp.setServiceCode(des.get(11));
+						tp.setDescription(des.get(12));
+						tp.setSurface(des.get(13));
+						tp.setTooth(des.get(14));
+						if (tp.getTooth() == null)
+							tp.setTooth("NA");
+						else if (tp.getTooth() != null && tp.getTooth().trim().equals(""))
+							tp.setTooth("NA");// NA Mean All Tooth.. like cleaning..
+						details.setStatus(des.get(15));
+						tp.setFee(des.get(16));
+						tp.setProviderLastName(des.get(17));
+						tp.setEstInsurance(des.get(18));
+						tp.setPatientPortion(des.get(19));
+						tp.setEstPrimary(des.get(20));
+
+						tp.setDetails(details);
 						list.add(tp);
 					}
 

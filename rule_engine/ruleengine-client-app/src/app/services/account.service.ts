@@ -181,10 +181,10 @@ export class AccountService {
 	 *  }
 	 */
   
-  validateReport(report:ReportModel,callback){
+  validateReport(report:ReportModel,ur:string,callback){
 		this.generateRefreshToken().pipe(switchMap(data => {
 			localStorage.setItem("token", (<any>data).token);
-			return  this.http.post(AppComponent.API_URL+'/report',report);
+			return  this.http.post(AppComponent.API_URL+ur,report);
 		})
 		).subscribe(data => {
 			// console.log(data['results']);
@@ -205,10 +205,10 @@ export class AccountService {
 		);   
 	}
      // fields, officeId,startDate,endDate,pid,tpId,reportType
-  validateEnReport(enreports:EnReportsModel,callback){
+  validateEnReport(enreports:EnReportsModel,ur:string,callback){
 		this.generateRefreshToken().pipe(switchMap(data => {
 			localStorage.setItem("token", (<any>data).token);
-			return  this.http.post(AppComponent.API_URL+'/enreport',enreports);
+			return  this.http.post(AppComponent.API_URL+ur,enreports);
 		})
 		).subscribe(data => {
 			callback((<any>data));

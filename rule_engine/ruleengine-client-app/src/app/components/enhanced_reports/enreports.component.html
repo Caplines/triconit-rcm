@@ -8,10 +8,10 @@
 						<span class="caret"></span>Enhanced Reports
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="javascript:void(0)" (click)="reportParam('TxPlan')">TX Plan Report</a></li>
-						<li><a href="javascript:void(0)" (click)="reportParam('IvBatch')">IV Batch Report</a></li>
-						<li><a href="javascript:void(0)" (click)="reportParam('IvBatchNumber')">IV Batch Report (Number Wise)</a></li>
-						<li><a href="javascript:void(0)" (click)="reportParam('TxPlanNumber')">TX Plan Report (Number Wise)</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('TxPlan')">{{hd1}} Report</a></li>
+						<li *ngIf="ut=='1'"><a href="javascript:void(0)" (click)="reportParam('IvBatch')">IV Batch Report</a></li>
+						<li *ngIf="ut=='1'"><a href="javascript:void(0)" (click)="reportParam('IvBatchNumber')">IV Batch Report (Number Wise)</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('TxPlanNumber')">{{hd1}} Report (Number Wise)</a></li>
 					</ul>
 				</div>
 				<!-- <div class="form-top">
@@ -24,9 +24,9 @@
 					<form class="login-form" name="form" (ngSubmit)="f.form.valid && runEnReport()" #f="ngForm" novalidate>
 					
 					<p *ngIf="showParam.IvBatch">IV Batch Report</p>
-					<p *ngIf="showParam.TxPlan">TX Plan Report</p>
+					<p *ngIf="showParam.TxPlan">{{hd1}} Report</p>
 					<p *ngIf="showParam.IvBatchNumber">IV Batch Report (Number Wise)</p>
-					<p *ngIf="showParam.TxPlanNumber">TX Plan Report (Number Wise)</p>
+					<p *ngIf="showParam.TxPlanNumber">{{hd1}} Report (Number Wise)</p>
 					
 						<div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>
 						<span id="reauth-email" class="reauth-email"></span>
