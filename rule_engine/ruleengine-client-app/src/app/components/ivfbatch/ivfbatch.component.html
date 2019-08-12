@@ -43,9 +43,11 @@
 							<label class="sr-only" for="ivfId">IVF Form Id</label> <textarea rows="150" cols="15"
 								 class="login-signup-form-field1 form-control"
 								name="ivfId" id="ivfId" [(ngModel)]="ivfm.ivfId"
-								#ivfId="ngModel" placeholder="IV Id : 5,6,7,8,9 " required></textarea>
+								#ivfId="ngModel" placeholder="IV Id : 5,6,7,8,9 (This is optional. Only enter if you have valid IVF)"></textarea>
+							<!-- 
 							<div *ngIf="f.submitted && !ivfId.valid" class="error-msg">Please
 								enter IVF Id.</div>
+							 -->	
 						</div>
 
 						<div class="form-group"  *ngIf="ut==2"

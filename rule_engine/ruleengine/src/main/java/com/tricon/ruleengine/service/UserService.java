@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.OfficeDto;
+import com.tricon.ruleengine.dto.PasswordResetDto;
 import com.tricon.ruleengine.dto.UserRegistrationDto;
 
 /**
@@ -21,5 +22,7 @@ public interface UserService {
 	public GenericResponse registerUser(UserRegistrationDto dto); 
 	
 	public Optional<List<OfficeDto>> getAllOffices(); 
+	
+	public GenericResponse resetUserPassword(PasswordResetDto dto);
 
 }

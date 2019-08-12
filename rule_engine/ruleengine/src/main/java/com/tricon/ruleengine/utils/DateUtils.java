@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.utils;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -7,12 +8,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.ss.usermodel.DateUtil;
+
+import com.tricon.ruleengine.model.db.GoogleSheets;
+import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 
 public class DateUtils {
 
@@ -235,32 +244,207 @@ public class DateUtils {
 		}
 		
 	}
-	public static void main(String[] a) {
-	  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
-	  String term="12/03/2019";
-	  String dos="12/02/2020";
-	  Calendar calendar = new GregorianCalendar();
-	  Calendar calendar2 = new GregorianCalendar();
-	  
-	  ////ivfPlanTermDate.compareTo(currentDate)
-	 try {
-	   calendar.setTime(sdf.parse(term));
-	   calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
-
-	   calendar2.setTime(sdf.parse(dos));
-	   calendar2.set(calendar2.get(Calendar.YEAR) , calendar2.get(Calendar.MONTH), calendar2.get(Calendar.DATE));
-
-	   Date termD= calendar.getTime();
-	   Date dosD= calendar2.getTime();
-	   System.out.println(checkforXmMore(termD, dosD, 1));
-	   System.out.println(checkforXm(termD, dosD, 1));
-		//System.out.println(sdf.parse(term).compareTo(sdf.parse(dos))>=0);
-		//System.out.println(sdf.parse(term).compareTo(dInterval)>=0);
+	
+	
+	/*
+	 * This method is used to Extract latest IVF ID from Map of IVF's
+	 */
+	public static Object[] selectOneKeyFromMapWithLatestDate(String pid,
+			GoogleSheets ivsheet,String CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER, Office off,String dateToCompare,boolean rmLogic) {
+		String []ivs=pid.split(",");
+		Map<String, List<Object>> ivfMap=null;
+		Map<String, List<Object>> orifMap=null;
 		
-	} catch (ParseException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		Date dateToCompareD=null;
+		try {
+			 dateToCompareD= Constants.SIMPLE_DATE_FORMAT.parse(dateToCompare);
+		} catch (ParseException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		try {
+			ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+					off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
+					off.getName(),true,false);
+			if (ivfMap!=null) {
+				orifMap= new HashMap<>();
+			    orifMap.putAll(ivfMap);
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Map<String,String> tempMap=new HashMap<>();
+		
+		if (ivfMap!=null) {
+			
+			//REMOVE IRRELEVANT Dates
+			if (rmLogic){
+			List<String> rm1=new ArrayList<>();
+			for (Map.Entry<String,List<Object>> entry : ivfMap.entrySet()) {  
+				String k= entry.getKey();
+				for (Object obj : entry.getValue()) {
+					IVFTableSheet i = (IVFTableSheet) obj;
+					try {
+						Date dai=Constants.SIMPLE_DATE_FORMAT_IVF.parse(i.getGeneralDateIVwasDone());
+					if (!validateClaimorTransactionDate(dateToCompareD, dai)) {
+						rm1.add(k);
+					}
+						
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			}
+			for(String r:rm1) {
+				ivfMap.remove(r);
+			}
+		    }
+			
+			pid="";
+			
+			Map<String,List<Object>> tempIvMap=null;
+			Map<String,List<Object>> tempIvMap2=null;
+			
+			List<String> rm=new ArrayList<>();
+			for (Map.Entry<String,List<Object>> entry : ivfMap.entrySet()) {  
+				String k= entry.getKey();
+				for (Object obj : entry.getValue()) {
+	            	
+	            	IVFTableSheet i = (IVFTableSheet) obj;
+	                		
+                    if (tempIvMap==null) {
+                    	tempIvMap= new HashMap<>();
+                    	List<Object> l= new ArrayList<>();
+                    	l.add(i);
+                    	tempMap.put(k, i.getPatientId());
+                    	tempIvMap.put(k, l);
+                    	tempIvMap2= new HashMap<>();
+                    	tempIvMap2.put(k, l);
+                    	
+                    }else {
+                    	for (Map.Entry<String,List<Object>> entry1 : tempIvMap.entrySet()) { 
+                    		List<Object> lo=entry1.getValue();
+                    		for(Object oo:lo) {
+                    			IVFTableSheet iv=	(IVFTableSheet)oo;
+                    			/*if (iv.getUniqueID().equals(i.getUniqueID())) {
+                    				continue;
+                    			}*/
+                        		String d=iv.getGeneralDateIVwasDone();
+                        		try {
+                        			
+                        		Date da=Constants.SIMPLE_DATE_FORMAT_IVF.parse(d);
+                        		Date dai=Constants.SIMPLE_DATE_FORMAT_IVF.parse(i.getGeneralDateIVwasDone());
+                        		//System.out.println(!da.after(dai));
+                        	   if (!iv.getUniqueID().equals(i.getUniqueID())) {
+                        	   if (!da.after(dai)) { 
+                        			rm.add(entry1.getKey());
+                        			List<Object> l= new ArrayList<>();
+                        			l.add(i);
+                        			tempMap.put(entry.getKey(), i.getPatientId());
+                        			tempIvMap2.put(entry.getKey(), l);
+                        		}else {
+                        			List<Object> l= new ArrayList<>();
+                        			l.add(i);
+                        			tempMap.put(entry.getKey(), i.getPatientId());
+                        			tempIvMap2.put(entry.getKey(), l);
+                        			
+                        		}
+                        		}else {
+                        			List<Object> l= new ArrayList<>();
+                        			l.add(i);
+                        			tempMap.put(entry.getKey(), i.getPatientId());
+                        			tempIvMap2.put(entry.getKey(), l);
+                        		}
+                        		}catch (Exception e) {
+									// TODO: handle exception
+								}
+                    		}
+                    		
+                    		
+                    	}
+                    	tempIvMap.clear();
+                    	tempIvMap.putAll(tempIvMap2);
+                    	
+                    }
+
+				}
+
+			}
+			//tempIvMap=tempIvMap2;
+			for(String r:rm) {
+				tempIvMap.remove(r);
+				tempMap.remove(r);
+			}
+			ivfMap=tempIvMap;
+			 
+			 
+		}
+		return new Object[] {orifMap,ivfMap};
 	}
-	  
+	
+	//1. If Tx. Plan Validation Date (Tx. Plan Validation) or Date of Service (Claim Validation) <= 5th of the month -> Consider IV done since 26th of last month.
+	//2. If Tx. Plan Validation Date (Tx. Plan Validation) or Date of Service (Claim Validation) > 5th of the month -> Consider IV done in that month only.
+	private static boolean validateClaimorTransactionDate(Date ctDate,Date ivDate) {
+		
+		  Calendar calendarCT = new GregorianCalendar();
+		  calendarCT.setTime(ctDate);
+		  boolean pass=false;
+		  int monthCT = calendarCT.get(Calendar.MONTH);
+		  int datCT   = calendarCT.get(Calendar.DATE);
+		  
+		  Calendar calendarIV = new GregorianCalendar();
+		  calendarIV.setTime(ivDate);
+		  int monthIV = calendarIV.get(Calendar.MONTH);
+		  //int datIV   = calendarIV.get(Calendar.DATE);
+		  
+		  if (datCT<=5) {
+			  calendarCT.set(calendarCT.get(Calendar.YEAR) , calendarCT.get(Calendar.MONTH)-1, 26);
+			  //System.out.println(calendarCT.getTime().toString());
+			  //System.out.println(ivDate.toString());
+			  
+			 if ( ivDate.after(calendarCT.getTime()) || ivDate.equals(calendarCT.getTime())) {
+				 pass=true;
+			 }
+			  
+		  }else {
+			 //calendarIV.set(calendarIV.get(Calendar.YEAR) , calendarIV.get(Calendar.MONTH), 1);
+			if (monthIV== monthCT) {
+				pass=true;
+			}
+			  
+		  }
+		  
+		  return pass;
 	}
+	
+	/*
+	public static void main(String[] a) {
+		  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
+		  String cdate="05/03/2019";
+		  String ivdate="26/02/2019";
+		  Calendar calendar = new GregorianCalendar();
+		  Calendar calendar2 = new GregorianCalendar();
+		  
+		  ////ivfPlanTermDate.compareTo(currentDate)
+		 try {
+		   calendar.setTime(sdf.parse(cdate));
+		   calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
+
+		   calendar2.setTime(sdf.parse(ivdate));
+		   calendar2.set(calendar2.get(Calendar.YEAR) , calendar2.get(Calendar.MONTH), calendar2.get(Calendar.DATE));
+
+		   System.out.println(validateClaimorTransactionDate(calendar.getTime(), calendar2.getTime()));
+			//System.out.println(sdf.parse(term).compareTo(sdf.parse(dos))>=0);
+			//System.out.println(sdf.parse(term).compareTo(dInterval)>=0);
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		  
+		}
+	*/	
 }

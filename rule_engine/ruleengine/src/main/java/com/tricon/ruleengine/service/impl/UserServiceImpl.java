@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.OfficeDto;
+import com.tricon.ruleengine.dto.PasswordResetDto;
 import com.tricon.ruleengine.dto.UserRegistrationDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.User;
@@ -21,6 +23,7 @@ import com.tricon.ruleengine.model.db.UserRole;
 import com.tricon.ruleengine.service.UserService;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.DtoToModel;
+import com.tricon.ruleengine.utils.EncrytedKeyUtil;
 
 /**
  * @author Deepak.Dogra
@@ -53,6 +56,20 @@ public class UserServiceImpl implements UserService {
 		}
 
 		return new GenericResponse(HttpStatus.BAD_REQUEST, "In correct Office name", null);
+	}
+
+	@Override
+	public GenericResponse resetUserPassword(PasswordResetDto dto) {
+			User user = userDao.findUserByUsername(dto.getUserName());
+			if (user != null) {
+				user.setPassword(EncrytedKeyUtil.encryptKey(dto.getPassword()));
+				user.setLastPasswordResetDate(new Date());
+				//userDao.
+				return new GenericResponse(HttpStatus.OK, "User password updated Successfully", null);
+			}
+			return new GenericResponse(HttpStatus.BAD_REQUEST, "User Does not Exists", null);
+
+		
 	}
 
 	@Override

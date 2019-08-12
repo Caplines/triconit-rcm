@@ -13,6 +13,7 @@ import com.tricon.ruleengine.dto.QuestionAnswerDto;
 import com.tricon.ruleengine.dto.QuestionHeaderDto;
 import com.tricon.ruleengine.dto.UserAnswerDto;
 import com.tricon.ruleengine.dto.UserInputDto;
+import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.UserInputRuleQuestionAnswer;
 import com.tricon.ruleengine.service.UserInputService;
 
@@ -60,6 +61,12 @@ public class UserInputServiceImpl implements UserInputService {
 		
 		
 		
+	}
+
+	@Override
+	public List<QuestionAnswerDto> getUserAnswers(String patId, String ivfId,String TRAN_DATE, Office office) {
+		// TODO Auto-generated method stub
+		return uiqDao.getUserAnswersByPatIvfAndOff(patId,ivfId,TRAN_DATE,office);
 	}
 	
 	

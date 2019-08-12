@@ -4,14 +4,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class EncrytedKeyUtil {
 
-	// Encryte Password with BCryptPasswordEncoder
+	// Encrypt Password with BCryptPasswordEncoder
     public static String encryptKey(String key) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(key);
     }
  
     public static void main(String[] args) {
-        String password = "123456";
+        String password = "Smilepoint01";
         String encrytedPassword = encryptKey(password);
  
         System.out.println("Encryted Password: " + encrytedPassword);

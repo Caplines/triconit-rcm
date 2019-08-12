@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.model.db;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,7 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "user_input_rule_question_answer"
@@ -58,6 +63,11 @@ public class UserInputRuleQuestionAnswer extends BaseAudit implements java.io.Se
 	@Column(name = "service_code",nullable=true)
 	private String serviceCode;
 	
+	//This will be date when Date Treatment was first Validated (Current Date used here)
+	@Column(name = "tx_plan_validation_date", nullable = true)
+	@Temporal(TemporalType.DATE)
+	private Date txPlanValidationDate;
+
 	public int getId() {
 		return id;
 	}
@@ -121,7 +131,15 @@ public class UserInputRuleQuestionAnswer extends BaseAudit implements java.io.Se
 	public void setServiceCode(String serviceCode) {
 		this.serviceCode = serviceCode;
 	}
-	
+
+	public Date getTxPlanValidationDate() {
+		return txPlanValidationDate;
+	}
+
+	public void setTxPlanValidationDate(Date txPlanValidationDate) {
+		this.txPlanValidationDate = txPlanValidationDate;
+	}
+
 	
 	
 	

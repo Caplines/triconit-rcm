@@ -21,12 +21,14 @@ import org.springframework.stereotype.Repository;
 import com.tricon.ruleengine.dao.UserInputQuestionDao;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
 import com.tricon.ruleengine.dto.QuestionHeaderDto;
+import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.UserAnswerDto;
 import com.tricon.ruleengine.dto.UserInputDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.model.db.UserInputRuleQuestionAnswer;
 import com.tricon.ruleengine.model.db.UserInputRuleQuestionHeader;
+import com.tricon.ruleengine.api.enums.ReportTypeEnum;
 import com.tricon.ruleengine.dao.OfficeDao;
 
 @Repository
@@ -185,6 +187,7 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 			a.setPatId(dto.getPatId());
 			a.setTpId(dto.getTpId());
 			a.setServiceCode(serviceCode);
+			a.setTxPlanValidationDate(new Date());
 			a.setCreatedBy(user);
 
 			a.setUserInputRuleQuestionHeader(userInputRuleQuestionHeader);
@@ -216,5 +219,50 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 		}
 
 	}
+
+	@Override
+	public List<QuestionAnswerDto> getUserAnswersByPatIvfAndOff(String patId, String ivfId,String TRAN_DATE, Office office) {
+		Session session = getSession();
+		List<QuestionAnswerDto> dtoList = null;
+		try {
+			// Transaction transaction = session.beginTransaction();
+			/*
+			Criteria criteria = session.createCriteria(UserInputRuleQuestionAnswer.class);
+			criteria.add(Restrictions.eq("ivfId", ivfId));
+			criteria.add(Restrictions.eq("patId", patId));
+			criteria.createAlias("office", "off");
+			criteria.add(Restrictions.eq("off.uuid", office.getUuid()));
+
+			ProjectionList pjList = Projections.projectionList();
+			pjList.add(Projections.property("id"), "answerId");
+			pjList.add(Projections.property("tpId"), "tpId");
+			pjList.add(Projections.property("userInputRuleQuestionHeader.id"), "questionId");
+			pjList.add(Projections.property("ivfId"), "ivfId");
+			pjList.add(Projections.property("patId"), "patId");
+			pjList.add(Projections.property("office.uuid"), "officeId");
+			pjList.add(Projections.property("answer"), "answer");
+			pjList.add(Projections.property("serviceCode"), "serviceCode");
+
+			criteria.setProjection(pjList);
+			criteria.setResultTransformer(Transformers.aliasToBean(QuestionAnswerDto.class));
+			dtoList = criteria.list();
+			*/
+			// transaction.commit();
+			 String queryString="select pat_id as patId,ivf_id as ivfId,anwser as answer,ans.office_id as officeId,"
+			 		+ " id as answerId,tp_id as tpId,question_id as questionId,service_code as serviceCode,tx_plan_validation_date as txPlanValidationDate"
+			 		+ " from user_input_rule_question_answer ans," 
+			 		+"(select max(tx_plan_validation_date) as b from user_input_rule_question_answer "  
+			 		+" where pat_id='"+patId+"' and ivf_id='"+ivfId+"' and office_id='"+office.getUuid()+"' " 
+			 		+ " and STR_TO_DATE('"+TRAN_DATE+"','%m/%d/%Y')>=tx_plan_validation_date  order by tx_plan_validation_date desc limit 1) a  where " + 
+			 		" ans.pat_id='"+patId+"' and ans.ivf_id='"+ivfId+"' and office_id='"+office.getUuid()+"' and ans.tx_plan_validation_date=a.b ";
+			 dtoList=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(QuestionAnswerDto.class)). list();
+
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return dtoList;
+}
 
 }

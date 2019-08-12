@@ -77,7 +77,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 					MCNADentaSheet sh = (MCNADentaSheet) obj;
 					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),scrappingSiteDetails.getLocationProvider(),true);
 					if (d!=null && d.getMessage().equals(ConstantsScrapping.SUBSCRIBER_NOT_FOUND)) {
-						d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),scrappingSiteDetails.getLocationProvider(),false);
+						if (!sh.getlName().equals("") || !sh.getfName().equals("") ) d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),scrappingSiteDetails.getLocationProvider(),false);
 					}
 					if (d!=null) {
 						d.setMcnaSheet(sh);

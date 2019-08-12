@@ -71,4 +71,12 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
 		 saveEntiy(role);
 	}
 
+	@Override
+	public void updateUser(User user) {
+		// TODO Auto-generated method stub
+		updateEntity(user);
+	}
+	
+	
+
 }

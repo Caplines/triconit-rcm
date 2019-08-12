@@ -26,5 +26,8 @@ public interface UserInputQuestionDao {
 	public UserInputRuleQuestionAnswer getUserAnswersByQuestionIdServiceCode(UserInputDto dto, int questionId,String serivceCode);
 
 	public void saveUserAnswers(Integer [] ids,Map<Integer,UserAnswerDto> map);
+	
+	
+	public List<QuestionAnswerDto> getUserAnswersByPatIvfAndOff(String patId,String ivfId,String TRAN_DATE,Office office);
 
 }

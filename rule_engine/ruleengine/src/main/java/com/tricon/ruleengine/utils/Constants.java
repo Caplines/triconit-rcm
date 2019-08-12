@@ -101,7 +101,10 @@ public class Constants {
 
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT= new SimpleDateFormat("MM/dd/yyyy");
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_IVF= new SimpleDateFormat("yyyy-MM-dd");
+	//public static final SimpleDateFormat SIMPLE_DATE_FORMAT_DB= new SimpleDateFormat("yyyy-MM-dd");
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_YEAR= new SimpleDateFormat("yyyy");
+	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_HEADER= new SimpleDateFormat("MMM dd,yyyy");
+	
 	
    public static final String FAIL = "FAIL";
    public static final String PASS = "PASS";

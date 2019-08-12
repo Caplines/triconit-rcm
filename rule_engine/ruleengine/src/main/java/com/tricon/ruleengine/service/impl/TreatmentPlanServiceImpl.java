@@ -20,6 +20,7 @@ import java.util.TreeSet;
 
 import javax.transaction.Transactional;
 
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,6 +83,7 @@ import com.tricon.ruleengine.service.TreatmentPlanService;
 import com.tricon.ruleengine.service.UserInputService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
+import com.tricon.ruleengine.utils.DateUtils;
 import com.tricon.ruleengine.utils.MessageUtil;
 import com.tricon.ruleengine.utils.ReadMicrosoftFile;
 import com.tricon.ruleengine.utils.RuleBook;
@@ -210,11 +212,19 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			o = logFileToAppendData(off.getName().trim());
 			fName = (String) o[0];
 			bw = (BufferedWriter) o[1];
+			GoogleSheets ivsheet = null;
+
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			Object principal = authentication.getPrincipal();
+			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+			JwtUser user = (JwtUser) userDetails;
+			int type =user.getUserType();
+            //String TRAN_DATE="";
+			
 
 			RuleEngineLogger.generateLogs(clazz, "Entering To Validate Treatment Plan (claim)", Constants.rule_log_debug, bw);
 			// RuleEngineLogger.generateLogs(clazz,
 			// "RuleEngineValidationController", Constants.rule_log_debug,bw);
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			List<TPValidationResponseDto> list2 = new ArrayList<TPValidationResponseDto>();
 			List<Rules> rules = tvd.getAllActiveRules();
 			List<Mappings> mappings = tvd.getAllMappings();
@@ -287,10 +297,6 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 			try {
 				
-				Object principal = authentication.getPrincipal();
-				final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
-				JwtUser user = (JwtUser) userDetails;
-				int type =user.getUserType();
 
 				Map<String, List<EagleSoftPatient>> espatients=null;
 				Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis=null;
@@ -411,31 +417,31 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				}else {
 					
 					//In New Approach 
-					
 					if (eagleSoftDBAccessPresent) {
-
 						if (type==Constants.userType_TR) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
 						if (type==Constants.userType_CL) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getClaimData(trids, esDB,bw);
 						//Phase 3 add new Query
 						tMap=crerateCommonDataObject(tMap,authentication);//create Common Object
-						Set<String> pid=null;
+						List<String> pid=null;
 						Map<String,String> t_cl_pid=new HashMap<>();
 						//if (tMap!=null && (type==Constants.userType_CL || && type==Constants.userType_TR) ) {
-							pid= new  LinkedHashSet<>();
-							
+							pid= new  ArrayList<>();
+							if (tMap!=null) {
 							for (Map.Entry<String,List<Object>> entry : tMap.entrySet()) {  
 								
 					            for (Object obj : entry.getValue()) {
 									CommonDataCheck tp = (CommonDataCheck) obj;
+									//TRAN_DATE =tp.getCdDetails().getDateLastUpdated();
 									pid.add(tp.getPatient().getId());
 									if (t_cl_pid.get(tp.getPatient().getId())==null)t_cl_pid.put(tp.getPatient().getId(),tp.getId());
+									break;
 								}
 			
+							}
 							}
 						//}
 						 //
 						// Read IVF Sheet From Google key is IVF id
-						GoogleSheets ivsheet = null;
 						String inv=Constants.invalidStr_TP;
 						if (type==Constants.userType_CL) inv=Constants.invalidStr_Cl;
 						if (sheets != null && sheets.size() > 0) {
@@ -461,229 +467,30 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						RuleEngineLogger.generateLogs(clazz,
 								Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
 								bw);
-						if (type==Constants.userType_TR) {
+						if (true) {//Earlier this was only for Claim now for all (Claim + Treatment)  
 							if (ivs!=null && dtod.getIvfId()!=null && dtod.getIvfId().length()>0) {
 							ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 								off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
 								off.getName(),false,true);
-							}else {
+							//if (type==Constants.userType_CL) return null;
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
+									Constants.rule_log_debug, bw);
 
-								ivs=pid.toArray(new String[pid.size()]);
-								ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
-										off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-										off.getName(),true,false);
-								Map<String,String> tempMap=new HashMap<>();
-								if (ivfMap!=null) {
-									pid.clear();
-									
-									Map<String,List<Object>> tempIvMap=null;
-									Map<String,List<Object>> tempIvMap2=null;
-									
-									List<String> rm=new ArrayList<>();
-									for (Map.Entry<String,List<Object>> entry : ivfMap.entrySet()) {  
-										String k= entry.getKey();
-										for (Object obj : entry.getValue()) {
-							            	
-							            	IVFTableSheet i = (IVFTableSheet) obj;
-                                            if (tempIvMap==null) {
-                                            	tempIvMap= new HashMap<>();
-                                            	List<Object> l= new ArrayList<>();
-                                            	l.add(i);
-                                            	pid.add(k);
-                                            	tempMap.put(k, i.getPatientId());
-                                            	tempIvMap.put(k, l);
-                                            	tempIvMap2= new HashMap<>();
-                                            	tempIvMap2.put(k, l);
-                                            	
-                                            }else {
-                                            	for (Map.Entry<String,List<Object>> entry1 : tempIvMap.entrySet()) { 
-                                            		List<Object> lo=entry1.getValue();
-                                            		for(Object oo:lo) {
-                                            			IVFTableSheet iv=	(IVFTableSheet)oo;
-                                            			/*if (iv.getUniqueID().equals(i.getUniqueID())) {
-                                            				continue;
-                                            			}*/
-                                                		String d=iv.getGeneralDateIVwasDone();
-                                                		Date da=Constants.SIMPLE_DATE_FORMAT_IVF.parse(d);
-                                                		Date dai=Constants.SIMPLE_DATE_FORMAT_IVF.parse(i.getGeneralDateIVwasDone());
-                                                	   if (!da.after(dai) && iv.getUniqueID().equals(i.getUniqueID())) { 
-                                                			rm.add(entry1.getKey());
-                                                			List<Object> l= new ArrayList<>();
-                                                			l.add(i);
-                                                			pid.add(entry.getKey());
-                                                			tempMap.put(entry.getKey(), i.getPatientId());
-                                                			tempIvMap2.put(entry.getKey(), l);
-                                                		}else {
-                                                			List<Object> l= new ArrayList<>();
-                                                			l.add(i);
-                                                			tempMap.put(entry.getKey(), i.getPatientId());
-                                                			tempIvMap2.put(entry.getKey(), l);
-                                                			
-                                                		}
-                                            		}
-                                            		
-                                            		
-                                            	}
-                                            	tempIvMap.clear();
-                                            	tempIvMap.putAll(tempIvMap2);
-                                            	
-                                            }
-
-										}
-					
-									}
-									for(String r:rm) {
-										tempIvMap.remove(r);
-										tempMap.remove(r);
-										pid.remove(r);
-									}
-									ivfMap=tempIvMap;
-									ivs=pid.toArray(new String[pid.size()]);
-									 LinkedHashSet<String> linkedHashSet = new LinkedHashSet<>( Arrays.asList(ivs) );
-									 ivs = linkedHashSet.toArray(new String[] {});
-									 
-
-									Set<String> ivs1 = new LinkedHashSet<>();
-									Set<String> trids1 = new LinkedHashSet<>();
-									
-										
-									 for (Map.Entry<String,List<Object>> entry : ivfMap.entrySet()) {
-										List<Object> lo=entry.getValue();
-                                 		for(Object oo:lo) {
-                                 			IVFTableSheet iv=(IVFTableSheet)oo;
-                                 			t_cl_pid.get(iv.getPatientId());
-                                 			ivs1.add(iv.getUniqueID().split("_")[1]);
-                                 			trids1.add(t_cl_pid.get(iv.getPatientId()));
-									   }
-									 }
-									 
-									 ivs = ivs1.toArray(new String[ivs1.size()]);
-									 trids = trids1.toArray(new String[trids1.size()]);
-									 
-								}
-							}
-								
-								
+							//
+							espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,bw);
 							
-					    }
-						if (type==Constants.userType_CL) {
-							if (ivs!=null && dtod.getIvfId()!=null && dtod.getIvfId().length()>0)
-							ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
-								off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-								off.getName(),false,true);
-							else {
-								ivs=pid.toArray(new String[pid.size()]);
-								ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
-										off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-										off.getName(),true,false);
-								
-								Map<String,String> tempMap=new HashMap<>();
-								if (ivfMap!=null) {
-									pid.clear();
-									
-									Map<String,List<Object>> tempIvMap=null;
-									Map<String,List<Object>> tempIvMap2=null;
-									
-									List<String> rm=new ArrayList<>();
-									for (Map.Entry<String,List<Object>> entry : ivfMap.entrySet()) {  
-										String k= entry.getKey();
-										for (Object obj : entry.getValue()) {
-							            	
-							            	IVFTableSheet i = (IVFTableSheet) obj;
-                                            if (tempIvMap==null) {
-                                            	tempIvMap= new HashMap<>();
-                                            	List<Object> l= new ArrayList<>();
-                                            	l.add(i);
-                                            	pid.add(k);
-                                            	tempMap.put(k, i.getPatientId());
-                                            	tempIvMap.put(k, l);
-                                            	tempIvMap2= new HashMap<>();
-                                            	tempIvMap2.put(k, l);
-                                            	
-                                            }else {
-                                            	for (Map.Entry<String,List<Object>> entry1 : tempIvMap.entrySet()) { 
-                                            		List<Object> lo=entry1.getValue();
-                                            		for(Object oo:lo) {
-                                            			IVFTableSheet iv=	(IVFTableSheet)oo;
-                                            			/*if (iv.getUniqueID().equals(i.getUniqueID())) {
-                                            				continue;
-                                            			}*/
-                                                		String d=iv.getGeneralDateIVwasDone();
-                                                		Date da=Constants.SIMPLE_DATE_FORMAT_IVF.parse(d);
-                                                		Date dai=Constants.SIMPLE_DATE_FORMAT_IVF.parse(i.getGeneralDateIVwasDone());
-                                                	   if (!da.after(dai) && iv.getUniqueID().equals(i.getUniqueID())) { 
-                                                			rm.add(entry1.getKey());
-                                                			List<Object> l= new ArrayList<>();
-                                                			l.add(i);
-                                                			pid.add(entry.getKey());
-                                                			tempMap.put(entry.getKey(), i.getPatientId());
-                                                			tempIvMap2.put(entry.getKey(), l);
-                                                		}else {
-                                                			List<Object> l= new ArrayList<>();
-                                                			l.add(i);
-                                                			tempMap.put(entry.getKey(), i.getPatientId());
-                                                			tempIvMap2.put(entry.getKey(), l);
-                                                			
-                                                		}
-                                            		}
-                                            		
-                                            		
-                                            	}
-                                            	tempIvMap.clear();
-                                            	tempIvMap.putAll(tempIvMap2);
-                                            	
-                                            }
+							espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
+									new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
+							
+							mvpVapList=tvd.getAllMVPVAP();
+							if (espatients != null && espatients.size() > 0) {
+								esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,bw);
+								esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) dbAccesService.getFeeScheduleData(espatients, esDB,bw);
+		                     }
 
-										}
-					
-									}
-									//tempIvMap=tempIvMap2;
-									for(String r:rm) {
-										tempIvMap.remove(r);
-										tempMap.remove(r);
-										pid.remove(r);
-									}
-									ivfMap=tempIvMap;
-									ivs=pid.toArray(new String[pid.size()]);
-									 LinkedHashSet<String> linkedHashSet = new LinkedHashSet<>( Arrays.asList(ivs) );
-									 ivs = linkedHashSet.toArray(new String[] {});
-									 
-
-									Set<String> ivs1 = new LinkedHashSet<>();
-									Set<String> trids1 = new LinkedHashSet<>();
-									
-										
-									 for (Map.Entry<String,List<Object>> entry : ivfMap.entrySet()) {
-										List<Object> lo=entry.getValue();
-                                 		for(Object oo:lo) {
-                                 			IVFTableSheet iv=(IVFTableSheet)oo;
-                                 			t_cl_pid.get(iv.getPatientId());
-                                 			ivs1.add(iv.getUniqueID().split("_")[1]);
-                                 			trids1.add(t_cl_pid.get(iv.getPatientId()));
-									   }
-									 }
-									 
-									 ivs = ivs1.toArray(new String[ivs1.size()]);
-									 trids = trids1.toArray(new String[trids1.size()]);
-								}
 							}
 						
 						}
-						//if (type==Constants.userType_CL) return null;
-						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
-								Constants.rule_log_debug, bw);
-
-						//
-						espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,bw);
-						
-						espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
-								new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
-						
-						mvpVapList=tvd.getAllMVPVAP();
-						if (espatients != null && espatients.size() > 0) {
-							esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,bw);
-							esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) dbAccesService.getFeeScheduleData(espatients, esDB,bw);
-	                     }
 					}		
 			
 				}
@@ -691,21 +498,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				
 				// End
 				List<TPValidationResponseDto> list = null;
-				for (int y = 0; y < ivs.length; y++) {
+				for (int y = 0; y < trids.length; y++) {
 					list = new ArrayList<TPValidationResponseDto>();
-					// IMPORTANT --SEE THIS --WHY DONE in IVF sheet need to match Officename_IVFID
-					String ivx = ivs[y];// off.getName() + "_" +
+					String TRAN_DATE="";
+					String CLAIM_DOS=""; 
 					String trx = trids[y];// off.getName() + "_" +
-					String patKey = off.getName() + "_" + ivx;
-					// String feeKey = "1";
+					String ivx = "";// off.getName() + "_" +
 					CommonDataCheck tp = null;
 					String empMasterKey = "HYPE100sq";// Some hypo value.
-					if (espatients != null && espatients.get(patKey) != null && espatients.get(patKey).get(0) != null) {
-						empMasterKey = espatients.get(patKey).get(0).getEmployerId();
-					}
-
-					// Treatment Plan Sheet
-					// Get web Url of TP sheet
+					
 					List<Object> tList = null;
 					if (tMap == null) {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
@@ -726,10 +527,90 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						tList = tMap.get(trx);
 						// Create File Name to rename latter..
 						tp = (CommonDataCheck) tList.get(0);
+						TRAN_DATE =tp.getCdDetails().getDateLastUpdated();
+						CLAIM_DOS=tp.getCdDetails().getDateLastUpdated();
 						if (y == 0)
 							tempFname = tp.getPatient().getId();
 
 					}
+					
+					if (ivs!=null && dtod.getIvfId()!=null && dtod.getIvfId().length()>0) {
+						ivx = ivs[y];// off.getName() + "_" +
+						
+					}else {
+						//ivs=dtod.getIvfId().split(",")
+						if (tp!=null) { 
+						if (type==Constants.userType_TR) {
+							TRAN_DATE= Constants.SIMPLE_DATE_FORMAT.format(new Date());
+						}
+						String pid =tp.getPatient().getId();
+						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true);
+						ivfMap = (Map<String, List<Object>>)maps[1];
+						if (ivfMap==null && (Map<String, List<Object>>)maps[0]!=null) {//This means we have no result due to date issue.
+						if 	(true) {//This means result was there but not valid date..
+							String debug = "";
+							ivfMap = (Map<String, List<Object>>)maps[0];
+							for ( String key : ivfMap.keySet() ) {
+								ivx=key;break;//only length one will be there ..
+							   }
+							
+							list.add(new TPValidationResponseDto(1, "The Latest IV Was Not Found", messageSource
+									.getMessage("rule.lastest.iv.issue.error", new Object[] { ((IVFTableSheet) ivfMap.get(ivx).get(0)).getGeneralDateIVwasDone() },
+											locale),
+									Constants.FAIL));
+							String inv=Constants.TP_ID;
+							if (type==Constants.userType_CL) inv=Constants.CL_ID;
+							if (returnMap==null ) returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+							if (type==Constants.userType_TR)
+									returnMap.put(inv+" - " + trx + " IV.id - " + ivx + " Of.Name -  " + off.getName()
+											+ " PT.id - " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
+											+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() + debug, list);
+							else returnMap.put(inv+" - " + trx + " IV.id - " + ivx + " Of.Name -  " + off.getName()
+									+ " PT.id - " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
+									+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() + "  Tx plan validation "+ TRAN_DATE + debug, list);	
+								
+								
+							
+							continue;
+
+						  }
+						//continue;
+						}
+						if (ivfMap!=null) {
+						for ( String key : ivfMap.keySet() ) {
+							ivx=key;break;//only length one will be there ..
+						   }
+						
+					    
+						}
+						
+					   if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null ) {
+                       espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,bw);
+						
+						espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
+								new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
+						
+						mvpVapList=tvd.getAllMVPVAP();
+						if (espatients != null && espatients.size() > 0) {
+							esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,bw);
+							esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) dbAccesService.getFeeScheduleData(espatients, esDB,bw);
+	                     }
+						
+						}
+					  }
+						
+					}
+					
+					// IMPORTANT --SEE THIS --WHY DONE in IVF sheet need to match Officename_IVFID
+					//String ivx = ivs[y];// off.getName() + "_" +
+					String patKey = off.getName() + "_" + ivx;
+					// String feeKey = "1";
+					if (espatients != null && espatients.get(patKey) != null && espatients.get(patKey).get(0) != null) {
+						empMasterKey = espatients.get(patKey).get(0).getEmployerId();
+					}
+
+					// Treatment Plan Sheet
+					// Get web Url of TP sheet
 
 					if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null ) {
 
@@ -739,11 +620,19 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						if (type==Constants.userType_TR)saveUserInputs(authentication, rules, tList, ivfMap.get(ivx).get(0), list, off, mappings);
 						//
 						List<QuestionAnswerDto> ansL=null;
-						if (tp!=null) {
+						String oldTp="";
+						if (tp!=null && type== Constants.userType_TR) {
 						UserInputDto userInputDto=new UserInputDto();
 						userInputDto.setOfficeId(off.getUuid());
 						userInputDto.setTreatmentPlanId(tp.getId());
 						ansL=userInputService.getUserAnswers(userInputDto);
+						}else if(tp!=null && type== Constants.userType_CL) {
+							IVFTableSheet ivf = (IVFTableSheet) ivfMap.get(ivx).get(0);
+							ansL=userInputService.getUserAnswers(ivf.getPatientId(), ivf.getUniqueID().split("_")[1],TRAN_DATE, off);
+							if (ansL!=null && ansL.size()>0 && ansL.get(0)!=null ) {
+								oldTp = ansL.get(0).getTpId();
+								TRAN_DATE=ansL.get(0).getTxPlanValidationDate().toString();
+							}
 						}
 						// RULE_ID_1 (Eligibility of the patient)
 
@@ -875,7 +764,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							dtoRL = new ArrayList<>();
 							if (espatients != null && esempmaster != null) {
 								dtoRL = rb.Rule6(ivfMap.get(ivx).get(0), messageSource, rule,
-										esempmaster.get(empMasterKey), espatients.get(patKey), bw);
+										esempmaster.get(empMasterKey), espatients.get(patKey), bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -989,6 +878,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							rule = getRulesFromList(rules, Constants.RULE_ID_8);
 							dtoRL = rb.Rule8(tList, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
 
+							
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1175,7 +1065,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_23 "Xray Bundling
 							rule = getRulesFromList(rules, Constants.RULE_ID_23);
-							dtoRL = rb.Rule23(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+							dtoRL = rb.Rule23(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1276,7 +1166,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//  Filling and Sealant Not Covered
 							rule = getRulesFromList(rules, Constants.RULE_ID_26);
-							dtoRL = rb.Rule26(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+							dtoRL = rb.Rule26(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1293,7 +1183,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Sealant Not Covered
 							rule = getRulesFromList(rules, Constants.RULE_ID_27);
-							dtoRL = rb.Rule27(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+							dtoRL = rb.Rule27(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1310,7 +1200,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//  Restoration Not Covered
 							rule = getRulesFromList(rules, Constants.RULE_ID_28);
-							dtoRL = rb.Rule28(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+							dtoRL = rb.Rule28(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1327,7 +1217,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Exams Limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_29);
-							dtoRL = rb.Rule29(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+							dtoRL = rb.Rule29(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw, type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1344,7 +1234,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//  Cleaning Limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_30);
-							dtoRL = rb.Rule30(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw);
+							dtoRL = rb.Rule30(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1378,7 +1268,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//  SRP Limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_32);
-							dtoRL = rb.Rule32(tList,messageSource, rule, bw);
+							dtoRL = rb.Rule32(tList,messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1395,7 +1285,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Root Canal Clause
 							rule = getRulesFromList(rules, Constants.RULE_ID_33);
-							dtoRL = rb.Rule33(tList,messageSource, rule, bw);
+							dtoRL = rb.Rule33(tList,messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1412,7 +1302,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  D2954 Clause
 							rule = getRulesFromList(rules, Constants.RULE_ID_34);
-							dtoRL = rb.Rule34(tList,messageSource, rule, bw);
+							dtoRL = rb.Rule34(tList,messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1429,7 +1319,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Bone Graft Rule
 							rule = getRulesFromList(rules, Constants.RULE_ID_35);
-							dtoRL = rb.Rule35(tList,messageSource, rule, bw);
+							dtoRL = rb.Rule35(tList,messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1446,7 +1336,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Immediate Denture
 							rule = getRulesFromList(rules, Constants.RULE_ID_36);
-							dtoRL = rb.Rule36(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw);
+							dtoRL = rb.Rule36(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1463,7 +1353,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Extraction Limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_37);
-							dtoRL = rb.Rule37(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw);
+							dtoRL = rb.Rule37(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1506,7 +1396,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Age Limitation Prophylaxis
 							rule = getRulesFromList(rules, Constants.RULE_ID_39);
-							dtoRL = rb.Rule39(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw);
+							dtoRL = rb.Rule39(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw,type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1523,7 +1413,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Space Maintainer-Billateral
 							rule = getRulesFromList(rules, Constants.RULE_ID_40);
-							dtoRL = rb.Rule40(tList ,messageSource, rule, bw);
+							dtoRL = rb.Rule40(tList ,messageSource, rule, bw, type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1558,7 +1448,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//Duplicate TP Codes
 							rule = getRulesFromList(rules, Constants.RULE_ID_42);
-							dtoRL = rb.Rule42(tList ,messageSource, rule, bw);
+							dtoRL = rb.Rule42(tList ,messageSource, rule, bw,type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1628,7 +1518,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
                             */
 							//Pre-Authorization (User Input)
 							rule = getRulesFromList(rules, Constants.RULE_ID_46);
-							dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw);
+							dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw,type,oldTp);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1645,7 +1535,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Provider Change (User Input)
 							rule = getRulesFromList(rules, Constants.RULE_ID_47);
-							dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw);
+							dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw,type,oldTp);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1662,7 +1552,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Exam limitation for CHIP
 							rule = getRulesFromList(rules, Constants.RULE_ID_48);
-							dtoRL = rb.Rule48(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw);
+							dtoRL = rb.Rule48(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw,type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1679,7 +1569,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Sealant limitation in CHIP
 							rule = getRulesFromList(rules, Constants.RULE_ID_49);
-							dtoRL = rb.Rule49(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw);
+							dtoRL = rb.Rule49(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw, type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1764,9 +1654,20 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								+ off.getName(), list);
 
 					} else {
+						if (type==Constants.userType_TR)
 						returnMap.put(inv+" - " + trx + " IV.id - " + ivx + " Of.Name -  " + off.getName()
 								+ " PT.id - " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
 								+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() + debug, list);
+						else {
+							String s=CLAIM_DOS;
+							try{s=Constants.SIMPLE_DATE_FORMAT_HEADER.format(Constants.SIMPLE_DATE_FORMAT.parse(CLAIM_DOS));}catch(Exception e) {}
+							String t=TRAN_DATE;
+							try{t= Constants.SIMPLE_DATE_FORMAT_HEADER.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse(TRAN_DATE));}catch(Exception e) {}
+							
+							returnMap.put("Claim ID"+": " + trx +" of " + off.getName()+ " office | "
+						+ " Pt.ID: " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " | IV.ID: " + ivx  + " | Pt.Name: "
+						+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() + " | DOS: "+ s+" | Tx plan Date: "+t + debug, list);
+					   }
 					}
 					// returnMap.put("IVF ID(" + ivx + ") Treatment Plan IDTP.id (" + trx + ")
 					// Patient ID ("
@@ -1806,7 +1707,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	public Map<String, List<TPValidationResponseDto>> saveDisplayUserInputsOnly(TreatmentPlanValidationDto dtod) {
 		dbAccesService.setUpSSLCertificates();
 		Map<String, List<TPValidationResponseDto>> returnMap = null;
-		Date currentDate = new Date();
+		//Date currentDate = new Date();
 		String fName = "";
 		BufferedWriter bw = null;
 		Object[] o = null;
@@ -1817,7 +1718,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			fName = (String) o[0];
 			bw = (BufferedWriter) o[1];
 
-			RuleEngineLogger.generateLogs(clazz, "Entering To Validate Treatment Plan", Constants.rule_log_debug, bw);
+			RuleEngineLogger.generateLogs(clazz, "Entering saveDisplayUserInputsOnly..", Constants.rule_log_debug, bw);
 			// RuleEngineLogger.generateLogs(clazz,
 			// "RuleEngineValidationController", Constants.rule_log_debug,bw);
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -1893,16 +1794,17 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			try {
 				
 				Map<String, List<Object>> tMap=null;
-				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
-				Map<String, List<EagleSoftFeeShedule>> esfeess = null;
+				//Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
+				//Map<String, List<EagleSoftFeeShedule>> esfeess = null;
 				
 				
 				String ivs[] = dtod.getIvfId().split(",");
 				String trids[] = dtod.getTreatmentPlanId().split(",");
 				// Read Treatment Plan...
 				OneDriveFile tpsheet =null;
+				GoogleSheets ivsheet = null;
 				if (eagleSoftDBAccessPresent== false) {
-					
+					/*
 					ReadMicrosoftFile rmF = new ReadMicrosoftFile();
 					// Read Fee Treatment Plan key id IVF id ..
 
@@ -1955,6 +1857,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					
 	
 					tpsheet =getOneDriveFileFromList(fileOne, Constants.microsoft_treatement_sheet_name);
+					*/
 				}else {
 					
 					//In New Approach 
@@ -1971,7 +1874,6 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						tMap=crerateCommonDataObject(tMap,authentication);//create Common Object
                          //
 						// Read IVF Sheet From Google key is IVF id
-						GoogleSheets ivsheet = null;
 						if (sheets != null && sheets.size() > 0) {
 							ivsheet = sheets.get(0);
 						} else {
@@ -1994,12 +1896,27 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						RuleEngineLogger.generateLogs(clazz,
 								Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
 								bw);
+						
+						//
+						Set<String> pid=null;
+						Map<String,String> t_cl_pid=new HashMap<>();
+						//if (tMap!=null && (type==Constants.userType_CL || && type==Constants.userType_TR) ) {
+							pid= new  LinkedHashSet<>();
+							
+							for (Map.Entry<String,List<Object>> entry : tMap.entrySet()) {  
+								
+					            for (Object obj : entry.getValue()) {
+									CommonDataCheck tp = (CommonDataCheck) obj;
+									pid.add(tp.getPatient().getId());
+									if (t_cl_pid.get(tp.getPatient().getId())==null)t_cl_pid.put(tp.getPatient().getId(),tp.getId());
+								}
+			
+						}
+						if (ivs!=null && dtod.getIvfId()!=null && dtod.getIvfId().length()>0) {
 						ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
-								off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-								off.getName(),false,true);
-
-						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
-								Constants.rule_log_debug, bw);
+							off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
+							off.getName(),false,true);
+					     }
 
 						
 					}		
@@ -2009,17 +1926,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				
 				// End
 				List<TPValidationResponseDto> list = null;
-				for (int y = 0; y < ivs.length; y++) {
+				for (int y = 0; y < trids.length; y++) {
 					list = new ArrayList<TPValidationResponseDto>();
-					// IMPORTANT --SEE THIS --WHY DONE in IVF sheet need to match Officename_IVFID
-					String ivx = ivs[y];// off.getName() + "_" +
+					String TRAN_DATE="";
 					String trx = trids[y];// off.getName() + "_" +
-					// String feeKey = "1";
+					String ivx = "";// off.getName() + "_" +
 					CommonDataCheck tp = null;
+					//String empMasterKey = "HYPE100sq";// Some hypo value.
 					
-
-					// Treatment Plan Sheet
-					// Get web Url of TP sheet
 					List<Object> tList = null;
 					if (tMap == null) {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
@@ -2032,7 +1946,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					} else if (tMap != null && tMap.get(trx) == null) {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
-								Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
+								Constants.errorMessOPen + "Invalid Treatment Plan (claim)" + Constants.errorMessClose,
 								Constants.FAIL);
 						// saveReport(authentication, rule, dtoR, trx, null,off);
 						list.add(dtoR);
@@ -2040,12 +1954,59 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						tList = tMap.get(trx);
 						// Create File Name to rename latter..
 						tp = (CommonDataCheck) tList.get(0);
+						//TRAN_DATE =tp.getCdDetails().getDateLastUpdated();
 						if (y == 0)
 							tempFname = tp.getPatient().getId();
 
 					}
+					
+					if (ivs!=null && dtod.getIvfId()!=null && dtod.getIvfId().length()>0) {
+						ivx = ivs[y];// off.getName() + "_" +
+						
+					}else {
+						//ivs=dtod.getIvfId().split(",")
+						if (tp!=null) { 
+						TRAN_DATE= Constants.SIMPLE_DATE_FORMAT.format(new Date());
+						String pid =tp.getPatient().getId();
+						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true);
+						ivfMap = (Map<String, List<Object>>)maps[1];
+						if (ivfMap==null && (Map<String, List<Object>>)maps[0]!=null) {//This means we have no result due to date issue.
+						if 	(true) {//This means result was there but not valid date..
+							List<TPValidationResponseDto> dtoRL = new ArrayList<>();
+							String debug = "";
+							ivfMap = (Map<String, List<Object>>)maps[0];
+							for ( String key : ivfMap.keySet() ) {
+								ivx=key;break;//only length one will be there ..
+							   }
+							dtoRL.add(new TPValidationResponseDto(1, "The Latest IV Was Not Found", messageSource
+									.getMessage("rule.lastest.iv.issue.error", new Object[] { ((IVFTableSheet) ivfMap.get(ivx).get(0)).getGeneralDateIVwasDone() },
+											locale),
+									Constants.FAIL));
+							String inv=Constants.TP_ID;
+							if (returnMap==null ) returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+								returnMap.put(inv+" - " + trx + " IV.id - " + ivx + " Of.Name -  " + off.getName()
+										+ " PT.id - " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
+										+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() + debug, list);
+							
+							continue;
 
-					if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null) {
+						  }
+						//continue;
+						}
+						if (ivfMap!=null) {
+						for ( String key : ivfMap.keySet() ) {
+							ivx=key;break;//only length one will be there ..
+						   }
+						
+					    }
+						}
+						
+					}
+					
+					// IMPORTANT --SEE THIS --WHY DONE in IVF sheet need to match Officename_IVFID
+					//String ivx = ivs[y];// off.getName() + "_" +
+					//String patKey = off.getName() + "_" + ivx;
+					if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null ) {
 
 						saveUserInputs(authentication, rules, tList, ivfMap.get(ivx).get(0), list, off, mappings);
 
@@ -2886,7 +2847,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							if (esempmaster != null) {
 								rule = getRulesFromList(rules, Constants.RULE_ID_6);
 								dtoRL = rb.Rule6(ivfMap.get(ivx).get(0), messageSource, rule,
-										esempmaster.get(empMasterKey), espatients.get(patKey), null);
+										esempmaster.get(empMasterKey), espatients.get(patKey), null,type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {

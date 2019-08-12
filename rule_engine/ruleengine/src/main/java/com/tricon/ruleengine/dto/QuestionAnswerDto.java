@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.dto;
 
+import java.util.Date;
+
 public class QuestionAnswerDto {
 	
 	private int answerId;
@@ -10,6 +12,7 @@ public class QuestionAnswerDto {
 	private String officeId;
 	private String answer;
 	private String serviceCode;
+	private Date txPlanValidationDate;
 	
 	public int getAnswerId() {
 		return answerId;
@@ -58,6 +61,12 @@ public class QuestionAnswerDto {
 	}
 	public void setServiceCode(String serviceCode) {
 		this.serviceCode = serviceCode;
+	}
+	public Date getTxPlanValidationDate() {
+		return txPlanValidationDate;
+	}
+	public void setTxPlanValidationDate(Date txPlanValidationDate) {
+		this.txPlanValidationDate = txPlanValidationDate;
 	}
 	
 	

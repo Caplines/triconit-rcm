@@ -495,7 +495,7 @@ public class FreqencyUtils {
 
 			RuleEngineLogger.generateLogs(clazz, "Frequency- " + freq,
 					Constants.rule_log_debug, bw);
-			if (freq.equalsIgnoreCase("") || freq.equalsIgnoreCase("NF") || freq.equalsIgnoreCase("no frequency"))
+			if (historyD.getHistoryDos().equals("") || freq.equalsIgnoreCase("") || freq.equalsIgnoreCase("NF") || freq.equalsIgnoreCase("no frequency"))
 				continue;
 			//System.out.println("DDDDDDDDDDDDDD-"+freq);
 			FreqencyDto FDTO = FreqencyUtils.parseFrequecy(freq);

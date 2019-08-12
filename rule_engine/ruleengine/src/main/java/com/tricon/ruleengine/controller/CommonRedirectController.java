@@ -129,7 +129,6 @@ public class CommonRedirectController {
 		forwardRedirect(request, response);
 	}
 
-	/*
 	@CrossOrigin
 	@RequestMapping(value={ "/ivfclaimid", "/ivfcl","/ivfclbatch","/reportcl","/enreportscl" }, method = RequestMethod.GET)
 	public void ivfClaimIdForward(HttpServletRequest request, HttpServletResponse response)
@@ -137,7 +136,7 @@ public class CommonRedirectController {
 
 		forwardRedirect(request, response);
 	}
-  */
+	/*
 	@CrossOrigin
 	@RequestMapping(value = "/ivfclaimid", method = RequestMethod.GET)
 	public void ivfClaimIdForward(HttpServletRequest request, HttpServletResponse response)
@@ -177,7 +176,7 @@ public class CommonRedirectController {
 
 		forwardRedirect(request, response);
 	}
-
+*/
 	private void forwardRedirect(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		
 		request.getRequestDispatcher("/").forward(request, response);
