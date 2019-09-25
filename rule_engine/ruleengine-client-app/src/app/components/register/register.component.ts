@@ -30,11 +30,12 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-	  console.log(this.user);
+	  //console.log(this.user);
 	  if(this.user.password==this.passwordAgain && this.user.officeId) {
 		this.accountService.createAccount(this.user,(data) => {
 		    console.log(data);
 		    if(data.message == "User Created Successfully") {
+		    	alert(data.message);
                 this.router.navigate(['/login']);
             } else {
                 this.errorMessage = data.message;

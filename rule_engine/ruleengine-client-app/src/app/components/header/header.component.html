@@ -31,7 +31,8 @@
 				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/reportcl']">Reports(Claim)</a></li>
 				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/enreportscl']">Enhanced Reports(Claim)</a></li>
 				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/scrap']">Scraping</a></li>
-				<li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/help']">Help</a></li>
+				<li><a *ngIf="userTypeAdmin" href="javascript:void(0)" [routerLink]="['/usersettings']">User Settings</a></li>
+				<li><a *ngIf="!userTypeAdmin" href="javascript:void(0)" [routerLink]="['/resetpassword']">Reset password</a></li>
 			
 				<li><a *ngIf="userName" href="javascript:void(0)" [routerLink]="['/logout']">Log Out</a></li>
 			  </ul>

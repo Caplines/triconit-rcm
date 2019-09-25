@@ -1,0 +1,39 @@
+
+<div class="inner-bg">
+	<div *ngIf="!showuserdata" class="container">
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Find User By User Name</h3>
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form" (ngSubmit)="f.form.valid && findUserByName()" #f="ngForm" novalidate>
+						
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted && !userNameM.valid }">
+							<label class="sr-only" for="userName">User Name</label>
+							<input type="text" class="login-signup-form-field form-control" name="userNameM" id="userNameM"
+								[(ngModel)]="userName" #userNameM="ngModel" placeholder="User Name..." required />
+							<div *ngIf="f.submitted && !userNameM.valid" class="error-msg">Please enter User Name.</div>
+						</div>							
+		
+						<p><button [disabled]="showLoading" type="submit" class="btn">Submit</button></p>
+						
+						<div *ngIf="showLoading" class="loader"></div>							    
+					</form>
+				</div> 
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<app-usersettingspopupup *ngIf="showuserdata" [userData]="userData" (emitToParent)="receiveChildrenEmitter($event)" 
+	 [showusersettingPopup]="showuserdata"></app-usersettingspopupup>	
+	
+</div>
+
+
+	

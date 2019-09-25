@@ -29,7 +29,9 @@ import { EnReportsComponent} from "./components/enhanced_reports/enreports.compo
 import { EnReportspopupComponent } from './components/enhanced_reportspopup/enreportspopup.component';
 import { ScrapComponent} from "./components/scrap/scrap.component";
 import { ScrapPopupComponent } from './components/scrap_popup/scrappopup.component';
-
+import {UserSettingsComponent} from "./components/usersettings/usersettings.component";
+import {UserSettingsPopupupComponent} from "./components/usersettingspopupup/usersettingspopupup.component";
+import {ResetPasswordComponent} from "./components/resetpassword/resetpassword.component";
 import { ResultTypeFilterPipe} from './filter/result_type_filter';
 import { routing} from "./app.routing";
 import { UrlPermission} from "./urlPermission/url.permission";
@@ -63,7 +65,9 @@ import { TokenInterceptor } from './auth/token.interceptor';
 	EnReportspopupComponent,
 	ScrapComponent,
 	ScrapPopupComponent,
-	
+	UserSettingsComponent,
+	UserSettingsPopupupComponent,
+	ResetPasswordComponent
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule

@@ -76,6 +76,11 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
 		// TODO Auto-generated method stub
 		updateEntity(user);
 	}
+
+	@Override
+	public User findUserByUUid(String uuid) {
+		return (User) getEntityByColumnName(User.class, "uuid", uuid);
+	}
 	
 	
 

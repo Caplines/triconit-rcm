@@ -48,14 +48,30 @@ public class UserInputServiceImpl implements UserInputService {
 			
 			Map<Integer,UserAnswerDto> map=new HashMap<>();
 			List<Integer> idsL= new ArrayList<>();
+			String patId="";
+			String treatmentPlanId="";
+			String officeId="";
+			
+			
 			for(UserAnswerDto d:userAnswerDtoList) {
+				if (d.getAnswerId()==-1000) {
+					patId=d.getAnswer().split("-%%-")[0];
+					treatmentPlanId=d.getAnswer().split("-%%-")[1];
+					officeId=d.getAnswer().split("-%%-")[2];
+					
+					continue;
+				}
 				idsL.add(d.getAnswerId());
 				map.put(d.getAnswerId(), d);
 			}
 			
 			 ids=idsL.toArray(ids);
 			 uiqDao.saveUserAnswers(ids,map);
-			
+			 //update permanent status
+			 UserInputDto dt=new UserInputDto();
+			 dt.setOfficeId(officeId);
+             dt.setTreatmentPlanId(treatmentPlanId);			 
+             uiqDao.updateUserAnswersPremanent(officeId, patId, treatmentPlanId);
 		}
 		
 		
@@ -67,6 +83,19 @@ public class UserInputServiceImpl implements UserInputService {
 	public List<QuestionAnswerDto> getUserAnswers(String patId, String ivfId,String TRAN_DATE, Office office) {
 		// TODO Auto-generated method stub
 		return uiqDao.getUserAnswersByPatIvfAndOff(patId,ivfId,TRAN_DATE,office);
+	}
+
+	@Override
+	public List<QuestionAnswerDto> getUserAnswersPermanent(UserInputDto dto) {
+		
+		 return uiqDao.getUserAnswersPermanent(dto);
+	}
+
+	@Override
+	public List<QuestionAnswerDto> getUserAnswersPermanent(String patId, String ivfId, String TRAN_DATE,
+			Office office) {
+		// TODO Auto-generated method stub
+		return uiqDao.getUserAnswersByPatIvfAndOffPermanent(patId,ivfId,TRAN_DATE,office);
 	}
 	
 	

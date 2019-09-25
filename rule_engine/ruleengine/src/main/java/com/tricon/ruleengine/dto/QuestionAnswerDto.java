@@ -13,6 +13,8 @@ public class QuestionAnswerDto {
 	private String answer;
 	private String serviceCode;
 	private Date txPlanValidationDate;
+	private String savedPermanent;
+	
 	
 	public int getAnswerId() {
 		return answerId;
@@ -67,6 +69,12 @@ public class QuestionAnswerDto {
 	}
 	public void setTxPlanValidationDate(Date txPlanValidationDate) {
 		this.txPlanValidationDate = txPlanValidationDate;
+	}
+	public String getSavedPermanent() {
+		return savedPermanent;
+	}
+	public void setSavedPermanent(String savedPermanent) {
+		this.savedPermanent = savedPermanent;
 	}
 	
 	

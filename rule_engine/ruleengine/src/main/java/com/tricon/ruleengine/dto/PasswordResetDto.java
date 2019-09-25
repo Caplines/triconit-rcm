@@ -2,16 +2,15 @@ package com.tricon.ruleengine.dto;
 
 public class PasswordResetDto {
 
-	private String userName;
+	private String uuid;
 	private String password;
 	
-
-	public String getUserName() {
-		return userName;
+	public String getUuid() {
+		return uuid;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	public String getPassword() {

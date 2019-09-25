@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -286,7 +287,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			*/
 			if (rules != null && rules.size() == 0) {
 				RuleEngineLogger.generateLogs(clazz, "Generic- No Active Rules Found", Constants.rule_log_debug, bw);
-				dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL);
+				dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL,"","","");
 				list2.add(dtoR);
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -452,7 +453,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									Constants.rule_log_debug, bw);
 							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
 									"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
-									Constants.FAIL);
+									Constants.FAIL,"","","");
 							list2.add(dtoR);
 							
 							if (returnMap == null)
@@ -508,19 +509,22 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					String empMasterKey = "HYPE100sq";// Some hypo value.
 					
 					List<Object> tList = null;
+					String inv1=Constants.invalidStr_TP;
+					if (type==Constants.userType_CL) inv1=Constants.invalidStr_Cl;
+
 					if (tMap == null) {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
-								Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
-								Constants.FAIL);
+								Constants.errorMessOPen + inv1 + Constants.errorMessClose,
+								Constants.FAIL,"","","");
 						// saveReport(authentication, rule, dtoR, trx, null,off);
 						list.add(dtoR);
 
 					} else if (tMap != null && tMap.get(trx) == null) {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
-								Constants.errorMessOPen + "Invalid Treatment Plan (claim)" + Constants.errorMessClose,
-								Constants.FAIL);
+								Constants.errorMessOPen + inv1 + Constants.errorMessClose,
+								Constants.FAIL,"","","");
 						// saveReport(authentication, rule, dtoR, trx, null,off);
 						list.add(dtoR);
 					} else {
@@ -557,7 +561,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							list.add(new TPValidationResponseDto(1, "The Latest IV Was Not Found", messageSource
 									.getMessage("rule.lastest.iv.issue.error", new Object[] { ((IVFTableSheet) ivfMap.get(ivx).get(0)).getGeneralDateIVwasDone() },
 											locale),
-									Constants.FAIL));
+									Constants.FAIL,"","",""));
 							String inv=Constants.TP_ID;
 							if (type==Constants.userType_CL) inv=Constants.CL_ID;
 							if (returnMap==null ) returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -616,8 +620,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 						//Save User input first
 						//Phase 2 User Input Work.
-						
-						if (type==Constants.userType_TR)saveUserInputs(authentication, rules, tList, ivfMap.get(ivx).get(0), list, off, mappings);
+						List<UserInputRuleQuestionHeader> qhList=userInputQuestionDao.getAllUserInputQuestionsDbModel();
+						//if (type==Constants.userType_TR && dtod.isDebugMode())saveUserInputs(authentication, rules, tList, ivfMap.get(ivx).get(0), list, off, mappings);
 						//
 						List<QuestionAnswerDto> ansL=null;
 						String oldTp="";
@@ -625,10 +629,25 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						UserInputDto userInputDto=new UserInputDto();
 						userInputDto.setOfficeId(off.getUuid());
 						userInputDto.setTreatmentPlanId(tp.getId());
-						ansL=userInputService.getUserAnswers(userInputDto);
+						ansL=userInputService.getUserAnswersPermanent(userInputDto);
+						if (ansL!=null && ansL.size()==0) {
+							//means no ansL
+							list.clear();//
+							TPValidationResponseDto d= new TPValidationResponseDto(1, "No User Input Present", 
+									messageSource.getMessage("rule.nouser.input", new Object[] {}, locale), Constants.FAIL, "", "", "");
+							list.add(d);
+							if (returnMap == null)
+								returnMap = new HashMap<String, List<TPValidationResponseDto>>();
+
+							returnMap.put(Constants.TP_ID+" - " + trx + " IV.id - " + ivx + " Of.Name -  " + off.getName()
+										+ " PT.id - " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
+										+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() , list);
+							return returnMap;
+
+						}
 						}else if(tp!=null && type== Constants.userType_CL) {
 							IVFTableSheet ivf = (IVFTableSheet) ivfMap.get(ivx).get(0);
-							ansL=userInputService.getUserAnswers(ivf.getPatientId(), ivf.getUniqueID().split("_")[1],TRAN_DATE, off);
+							ansL=userInputService.getUserAnswersPermanent(ivf.getPatientId(), ivf.getUniqueID().split("_")[1],TRAN_DATE, off);
 							if (ansL!=null && ansL.size()>0 && ansL.get(0)!=null ) {
 								oldTp = ansL.get(0).getTpId();
 								TRAN_DATE=ansL.get(0).getTxPlanValidationDate().toString();
@@ -647,7 +666,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							list.addAll(dtoRL1);
 							for (TPValidationResponseDto t : dtoRL1) {
 								dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-										t.getResultType());
+										t.getResultType(),"","","");
 								if (t.getResultType().equals(Constants.EXTI_ENGINE)) exit=true;
 							}
 						}
@@ -705,25 +724,25 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								if (esfeess == null)
 									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
-											Constants.FAIL));
+											Constants.FAIL,"","",""));
 								else if (espatients == null)
 									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 											.getMessage("rule.patient.notfound", new Object[] { "Patient ID-"
 													+ ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getPatientId() },
 													locale),
-											Constants.FAIL));
+											Constants.FAIL,"","",""));
 								else
 									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule.patient.notfound",
 													new Object[] { "Some Issue in Fee Sheet" }, locale),
-											Constants.FAIL));
+											Constants.FAIL,"","",""));
 
 							}
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -744,14 +763,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
 										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-												t.getResultType());
+												t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 										// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 									}
 								}
 							} else {
 								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule.patient.notfound", new Object[] { "" }, locale),
-										Constants.FAIL));
+										Constants.FAIL,"","",""));
 
 							}
 							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_5,
@@ -769,20 +788,20 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
 										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-												t.getResultType());
+												t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 										// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 									}
 								}
 							} else if (espatients == null) {
 								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule.patient.notfound", new Object[] { "" }, locale),
-										Constants.FAIL));
+										Constants.FAIL,"","",""));
 								list.addAll(dtoRL);
 
 							} else {
 								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 										.getMessage("rule.employer.notfound", new Object[] { empMasterKey }, locale),
-										Constants.FAIL));
+										Constants.FAIL,"","",""));
 								list.addAll(dtoRL);
 
 							}
@@ -800,7 +819,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -821,7 +840,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
 										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-												t.getResultType());
+												t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 										// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 									}
 								}
@@ -834,7 +853,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								if (esfeess == null)
 									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
-											Constants.FAIL));
+											Constants.FAIL,"","",""));
 								if (espatients == null)
 									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule.patient.notfound",
@@ -842,13 +861,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 															"Patient ID-" + ((IVFTableSheet) (ivfMap.get(ivx).get(0)))
 																	.getPatientId() } },
 													locale),
-											Constants.FAIL));
+											Constants.FAIL,"","",""));
 
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
 										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-												t.getResultType());
+												t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 										// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 									}
 								}
@@ -865,7 +884,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -883,7 +902,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -900,7 +919,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -917,7 +936,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -934,7 +953,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -951,7 +970,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -968,7 +987,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -986,7 +1005,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -997,13 +1016,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_10 "Pre Auth
 							rule = getRulesFromList(rules, Constants.RULE_ID_10);
-							dtoRL = rb.Rule10(tList,ansL, messageSource, rule, mappings, bw,type);
+							dtoRL = rb.Rule10(tList,ansL, messageSource, rule, mappings, bw,qhList,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1020,7 +1039,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1037,7 +1056,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1054,7 +1073,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1071,7 +1090,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1088,7 +1107,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1137,7 +1156,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1155,7 +1174,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1172,7 +1191,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1189,7 +1208,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1206,7 +1225,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1223,7 +1242,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1240,7 +1259,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1257,7 +1276,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1274,7 +1293,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1291,7 +1310,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1308,7 +1327,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1325,7 +1344,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1342,7 +1361,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1359,7 +1378,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1384,7 +1403,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1401,7 +1420,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1418,7 +1437,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1436,7 +1455,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1453,7 +1472,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1483,12 +1502,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							*/
 							//Signed Consent Requirements (User Input) //Forms Required
 							rule = getRulesFromList(rules, Constants.RULE_ID_44);
-							dtoRL = rb.Rule44(ansL ,messageSource, rule, bw,type);
+							dtoRL = rb.Rule44(ansL ,messageSource, rule, bw,qhList,type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1518,12 +1537,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
                             */
 							//Pre-Authorization (User Input)
 							rule = getRulesFromList(rules, Constants.RULE_ID_46);
-							dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw,type,oldTp);
+							dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1535,12 +1554,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Provider Change (User Input)
 							rule = getRulesFromList(rules, Constants.RULE_ID_47);
-							dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw,type,oldTp);
+							dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1557,7 +1576,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1574,7 +1593,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1586,12 +1605,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							// Major Service Form Requirements (User Input)
 							rule = getRulesFromList(rules, Constants.RULE_ID_50);
-							dtoRL = rb.Rule50(ansL ,messageSource, rule, bw);
+							dtoRL = rb.Rule50(tList,mappings,ansL ,messageSource, rule, bw,qhList);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -1606,7 +1625,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					} else {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
-								"<b class='error-message-api'>No Data Found in IVF Sheet.</b>", Constants.FAIL);
+								"<b class='error-message-api'>No Data Found in IVF Sheet.</b>", Constants.FAIL,"","","");
 						list.add(dtoR);
 						// saveReports(authentication, rule,dtoR, dto,(IVFTableSheet)(ivfList.get(0)));
 					}
@@ -1662,7 +1681,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							String s=CLAIM_DOS;
 							try{s=Constants.SIMPLE_DATE_FORMAT_HEADER.format(Constants.SIMPLE_DATE_FORMAT.parse(CLAIM_DOS));}catch(Exception e) {}
 							String t=TRAN_DATE;
-							try{t= Constants.SIMPLE_DATE_FORMAT_HEADER.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse(TRAN_DATE));}catch(Exception e) {}
+							try{t= Constants.SIMPLE_DATE_FORMAT_HEADER.format(Constants.SIMPLE_DATE_FORMAT.parse(TRAN_DATE));}catch(Exception e) {}
 							
 							returnMap.put("Claim ID"+": " + trx +" of " + off.getName()+ " office | "
 						+ " Pt.ID: " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " | IV.ID: " + ivx  + " | Pt.Name: "
@@ -1755,7 +1774,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
 									+ SharepointInit + "?officeId=" + dtod.getOfficeId()
 									+ "'> Register Office With App </a>",
-							Constants.FAIL);
+							Constants.FAIL,"","","");
 					list2.add(dtoR);
 					if (returnMap == null)
 						returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -1770,7 +1789,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				dtoR = new TPValidationResponseDto(0, "Generic", "Office 365 sheet not registered with Rule Engine.<br>"
 						+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
 						+ SharepointInit + "?officeId=" + dtod.getOfficeId() + "'> Register Office With App </a>",
-						Constants.FAIL);
+						Constants.FAIL,"","","");
 				list2.add(dtoR);
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -1782,7 +1801,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			
 			if (rules != null && rules.size() == 0) {
 				RuleEngineLogger.generateLogs(clazz, "Generic- No Active Rules Found", Constants.rule_log_debug, bw);
-				dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL);
+				dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL,"","","");
 				list2.add(dtoR);
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -1882,7 +1901,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									Constants.rule_log_debug, bw);
 							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
 									"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
-									Constants.FAIL);
+									Constants.FAIL,"","","");
 							list2.add(dtoR);
 							if (returnMap == null)
 								returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -1939,7 +1958,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
 								Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose,
-								Constants.FAIL);
+								Constants.FAIL,"","","");
 						// saveReport(authentication, rule, dtoR, trx, null,off);
 						list.add(dtoR);
 
@@ -1947,7 +1966,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
 								Constants.errorMessOPen + "Invalid Treatment Plan (claim)" + Constants.errorMessClose,
-								Constants.FAIL);
+								Constants.FAIL,"","","");
 						// saveReport(authentication, rule, dtoR, trx, null,off);
 						list.add(dtoR);
 					} else {
@@ -1981,7 +2000,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							dtoRL.add(new TPValidationResponseDto(1, "The Latest IV Was Not Found", messageSource
 									.getMessage("rule.lastest.iv.issue.error", new Object[] { ((IVFTableSheet) ivfMap.get(ivx).get(0)).getGeneralDateIVwasDone() },
 											locale),
-									Constants.FAIL));
+									Constants.FAIL,"","",""));
 							String inv=Constants.TP_ID;
 							if (returnMap==null ) returnMap = new HashMap<String, List<TPValidationResponseDto>>();
 								returnMap.put(inv+" - " + trx + " IV.id - " + ivx + " Of.Name -  " + off.getName()
@@ -2013,7 +2032,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					} else {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
-								"<b class='error-message-api'>No Data Found in IVF Sheet.</b>", Constants.FAIL);
+								"<b class='error-message-api'>No Data Found in IVF Sheet.</b>", Constants.FAIL,"","","");
 						list.add(dtoR);
 						// saveReports(authentication, rule,dtoR, dto,(IVFTableSheet)(ivfList.get(0)));
 					}
@@ -2304,7 +2323,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}
 					 }
 					//For Rule 10 -- END
-					//For Rule Consent Form Requirements-- START
+					//For Rule Consent Form Requirements-- START Rule44
 					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Consent_Form_Requirements)) {
 						 
 						 //Exception case handled
@@ -2349,7 +2368,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         if (mapA!=null) {
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,tp.getServiceCode());
 				         }
-					 }else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Major_Service_Form_Requirements)) {
+					 }else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Major_Service_Form_Requirements)) {//Rule50
 						 
 						 Mappings mapA = rb.getMappingFromListMajorServiceForm(mappings, tp.getServiceCode());
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
@@ -2388,7 +2407,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 					 }
 					 */
-					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Pre_Authorization) ) {
+					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Pre_Authorization) ) {//Rule 10 + 46
 						 Mappings mapP = rb.getMappingFromListPreAuth(mappings, tp.getServiceCode());
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 if (qh.getId()==Constants.Pre_Authorization_question_header_id_service_code) {
@@ -2413,7 +2432,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				        	 userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 				         }
 					 }
-					 else  if (ivf.getPlanType().trim().toLowerCase().contains(Constants.insurance_Medicaid) && qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Provider_Change)) {
+					 else  if (ivf.getPlanType().trim().toLowerCase().contains(Constants.insurance_Medicaid) && 
+							 qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Provider_Change)) {//rule 47
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer("");
 						 /*
@@ -2429,12 +2449,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							   qadto.setAnswer(ivf.getProviderName());
 							   
 						 
-						   qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+					     qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
 				         qadto.setOfficeId(off.getUuid());
 				         qadto.setPatId(ivf.getPatientId());
 				         qadto.setTpId(tp.getId());
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
-					 }else  if ( qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Comments)) {
+					 }else  if ( qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Comments)) {//no rule as such
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
 						 qadto.setAnswer(ivf.getComments());
 						 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
@@ -2569,8 +2589,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		List<TPValidationResponseDto> list = new ArrayList<TPValidationResponseDto>();
 		List<Rules> rules = tvd.getAllActiveRules();
 		// List<Mappings> mappings = tvd.getAllMappings();
-		MicroSoftGraphToken microsoft = null;
-		ReadMicrosoftFile rmF = new ReadMicrosoftFile();
+		//MicroSoftGraphToken microsoft = null;
+		//ReadMicrosoftFile rmF = new ReadMicrosoftFile();
 
 		Office off = od.getOfficeByUuid(dto.getOfficeId());
 		List<GoogleSheets> sheets = tvd.getAllGoogleSheetByOffice(off);
@@ -2582,14 +2602,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 			eagleSoftDBAccessPresent=true;
 		}
-		List<OneDriveFile> fileOne = null;
-		if (eagleSoftDBAccessPresent==false) fileOne= spd.getOneDriveFileByOfficeId(dto.getOfficeId());
+		//List<OneDriveFile> fileOne = null;
+		//if (eagleSoftDBAccessPresent==false) fileOne= spd.getOneDriveFileByOfficeId(dto.getOfficeId());
 		TPValidationResponseDto dtoR = null;
 		Map<String, List<Object>> ivfMap = null;
 
 		// List<Object> ivfList = null;
 		Rules rule = null;
-		OneDriveApp odriveApp = null;
+		//OneDriveApp odriveApp = null;
+		/*
 		if (eagleSoftDBAccessPresent==false) odriveApp = spd.getOneDriveAppDetailsByOfficeId(dto.getOfficeId());
 		if (eagleSoftDBAccessPresent ==false && (odriveApp != null && odriveApp.getRefreshToken() != null)) {
 
@@ -2604,7 +2625,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				dtoR = new TPValidationResponseDto(0, "Generic", "Office 365 sheet not registered with Rule Engine.<br>"
 						+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
 						+ SharepointInit + "?officeId=" + dto.getOfficeId() + "'> Register Office With App </a>",
-						Constants.FAIL);
+						Constants.FAIL,"","","");
 				list.add(dtoR);
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -2618,7 +2639,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					"Office 365 sheet not registered with Rule Engine.<br>"
 							+ "Please contact site Admin. or Click link <a target='_blank' " + "href='" + AppUrl
 							+ SharepointInit + "?officeId=" + dto.getOfficeId() + "'> Register Office With App </a>",
-					Constants.FAIL);
+					Constants.FAIL,"","","");
 			list.add(dtoR);
 			if (returnMap == null)
 				returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -2627,9 +2648,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			return returnMap;
 
 		}
-
+        */
 		if (rules != null && rules.size() == 0) {
-			dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL);
+			dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL,"","","");
 			list.add(dtoR);
 			if (returnMap == null)
 				returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -2645,7 +2666,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			rule = getRulesFromList(rules, Constants.RULE_ID_2);
 			dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
 					"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
-					Constants.FAIL);
+					Constants.FAIL,"","","");
 			list.add(dtoR);
 			if (returnMap == null)
 				returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -2678,9 +2699,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 			
 			if (eagleSoftDBAccessPresent==false) {
+				/*
 				ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 						off.getName() + " " + ivsheet.getAppSheetName(), ids, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-						off.getName(),isPat,true);
+						off.getName(),isPat,true);asdsad
 			espatient = getOneDriveFileFromList(fileOne, Constants.microsoft_patient);
 			// String[] treatmentPlanIds, List<String> codes, Map<String, List<Object>>
 			// ivMap,
@@ -2698,6 +2720,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								esfemp.getSheetName(), Constants.microsoft_emp_master, null, null, null, espatients);
 				// }
 			 }
+			 */
 			}else {
 			       // new Approach ....	
 				
@@ -2715,7 +2738,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								Constants.rule_log_debug, null);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
 								"<b class='error-message-api'>No IVF Sheet Found for Selected Office-.</b>" + off.getName(),
-								Constants.FAIL);
+								Constants.FAIL,"","","");
 						list.add(dtoR);
 						if (returnMap == null)
 							returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -2729,8 +2752,55 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							null);
 					ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 							off.getName() + " " + ivsheet.getAppSheetName(), ids, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
-							off.getName(),isPat,true);
+							off.getName(),isPat,false);
 
+					// Remove old IV's
+					if (isPat && ivfMap!=null) {
+						Set<IVFTableSheet> ps= new HashSet<>();
+						for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
+							if (entry.getValue() != null) {
+
+								IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
+								boolean added=true;
+								IVFTableSheet rm=null;
+								for(IVFTableSheet is:ps) {
+									if (is.getPatientId().equals(ivfSheet.getPatientId())) {
+										try { 
+										if (Constants.SIMPLE_DATE_FORMAT_IVF.parse(is.getGeneralDateIVwasDone()).before(
+												Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivfSheet.getGeneralDateIVwasDone()))) {
+											rm=is;
+										}else {
+											added=false;
+										}
+										}catch (Exception e) {
+											// TODO: handle exception
+										}
+									}
+									
+								}
+								
+								if (added) ps.add(ivfSheet);
+								if (rm!=null) ps.remove(rm);
+								
+								
+							}
+						}
+						ivfMap.clear();
+						for(IVFTableSheet isv:ps) {
+							try { 
+							if (Constants.SIMPLE_DATE_FORMAT_IVF.parse(isv.getGeneralDateIVwasDone()).before(new Date())
+								|| Constants.SIMPLE_DATE_FORMAT_IVF.parse(isv.getGeneralDateIVwasDone()).equals(new Date())) {
+							//if (true) {	
+							List<Object> s=new ArrayList<>();
+							s.add(isv);
+							ivfMap.put(isv.getUniqueID().split("_")[1],s);
+							}
+							}catch (Exception e) {
+								// TODO: handle exception
+							}
+						}
+						
+					}
 					RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
 							Constants.rule_log_debug, null);
 
@@ -2779,7 +2849,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
-								"<b class='error-message-api'>No Data Found in IVF Sheet.</b>", Constants.FAIL);
+								"<b class='error-message-api'>No Data Found in IVF Sheet.</b>", Constants.FAIL,"","","");
 						list.add(dtoR);
 						if (returnMap == null)
 							returnMap = new HashMap<String, List<TPValidationResponseDto>>();
@@ -2797,7 +2867,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						list.addAll(dtoRL1);
 						for (TPValidationResponseDto t : dtoRL1) {
 							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-									t.getResultType());
+									t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 							if (t.getResultType().equals(Constants.EXTI_ENGINE)) exit=true;
 						}
 					 }
@@ -2822,7 +2892,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -2837,7 +2907,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
 									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
@@ -2852,7 +2922,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
 										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-												t.getResultType());
+												t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
 										// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 									}
 								}

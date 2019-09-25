@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.ruleengine.api.enums.ReportTypeEnum;
 import com.tricon.ruleengine.dto.GenericResponse;
+import com.tricon.ruleengine.dto.PasswordResetDto;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
+import com.tricon.ruleengine.dto.StatusResetDto;
 import com.tricon.ruleengine.dto.UserRegistrationDto;
 import com.tricon.ruleengine.service.ReportService;
 import com.tricon.ruleengine.service.UserService;
@@ -30,8 +32,8 @@ public class AdminRestController {
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private ReportService reportService;
+//	@Autowired
+//	private ReportService reportService;
 
 	/**
 	 * in @PreAuthorize such as 'hasRole()' to determine if a user has access.
@@ -51,6 +53,29 @@ public class AdminRestController {
 	}
 
 
+	@CrossOrigin
+	@RequestMapping(value = "/resetstatus", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> resetstatus(@RequestBody StatusResetDto dto) {
+		return ResponseEntity.ok(userService.resetUserStatus(dto));
+	}
+
+	@CrossOrigin
+	@RequestMapping(value = "/resetclaimtreatment", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> resetClaimTreatmentRight(@RequestBody StatusResetDto dto) {
+		return ResponseEntity.ok(userService.resetClaimTreatmentRight(dto));
+	}
+
+	
+	@CrossOrigin
+	@RequestMapping(value = "/finduserbyusername", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> findUserByUsername(@RequestBody String username) {
+		return ResponseEntity.ok(userService.findUserByUserName(username));
+	}
+
+	/*not used
 	@CrossOrigin
 	@RequestMapping(value = "/report3", method = RequestMethod.GET)
 	public ResponseEntity<?> generateReport() {
@@ -83,5 +108,6 @@ public class AdminRestController {
 
 			}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", map));
-	}
+		
+	}*/
 }

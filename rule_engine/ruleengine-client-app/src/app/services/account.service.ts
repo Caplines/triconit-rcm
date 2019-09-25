@@ -95,18 +95,14 @@ export class AccountService {
     }
   validateIVF(ivf:IVFModel,ivfValidateName,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
-          // console.log((<any>data).token);
           localStorage.setItem("token", (<any>data).token);
-          console.log("token is set");
             return  this.http.post(AppComponent.API_URL+'/'+ivfValidateName,ivf);
           },
           )    
       ).subscribe(data => {
-              // console.log(data);
               callback((<any>data));
           },
           error => {
-              // console.log(33);
               if (error.status==401){
               this.router.navigate(['/logout']);
               }
@@ -116,7 +112,6 @@ export class AccountService {
               }
           },
           () => {
-              // console.log(111);
           }
           
           );
@@ -125,9 +120,7 @@ export class AccountService {
   
   doDiagCheck(diagm:DiagnosticModel,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
-          // console.log((<any>data).token);
           localStorage.setItem("token", (<any>data).token);
-          console.log("token is set");
             return  this.http.post(AppComponent.API_URL+'/diagnosticcheck',diagm);
           },
           )    
@@ -152,34 +145,6 @@ export class AccountService {
           );
               
   }
-  /*
-	 * validateIVFPreBatch(ivf:IVFBatchPreModel,callback){
-	 * this.generateRefreshToken().pipe(switchMap(data => { console.log((<any>data).token);
-	 * localStorage.setItem("token", (<any>data).token); console.log("token is
-	 * set"); return
-	 * this.http.post(AppComponent.API_URL+'/validateTreatmentPlanPreBatch',ivf); }, )
-	 * ).subscribe(data => { console.log(data); callback((<any>data)); }, error => {
-	 * console.log(33); if (error.status==401){
-	 * this.router.navigate(['/logout']); } if (error.status==500){ alert("Some
-	 * un-Wanted Chnages Done to Google Sheets"); callback(error); } }, () => {
-	 * console.log(111); }
-	 *  );
-	 *  }
-	 * 
-	 * 
-	 * validateIVFBatch(ivf:IVFBatchModel,callback){
-	 * this.generateRefreshToken().pipe(switchMap(data => { console.log((<any>data).token);
-	 * localStorage.setItem("token", (<any>data).token); console.log("token is
-	 * set"); return
-	 * this.http.post(AppComponent.API_URL+'/validateTreatmentPlanBatch',ivf); }, )
-	 * ).subscribe(data => { console.log(data); callback((<any>data)); }, error => {
-	 * console.log(33); if (error.status==401){
-	 * this.router.navigate(['/logout']); } if (error.status==500){ alert("Some
-	 * un-Wanted Chnages Done to Google Sheets"); callback(error); } }, () => {
-	 * console.log(111); }
-	 *  );
-	 *  }
-	 */
   
   validateReport(report:ReportModel,ur:string,callback){
 		this.generateRefreshToken().pipe(switchMap(data => {
@@ -214,7 +179,6 @@ export class AccountService {
 			callback((<any>data));
 		},
 		error => {  
-			console.log(33);
 			if (error.status==401){ 
 				this.router.navigate(['/logout']);
 			}
@@ -258,7 +222,6 @@ export class AccountService {
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          // console.log((<any>data).token);
 	          localStorage.setItem("token", (<any>data).token);
-	          console.log("token is set");
 	            return  this.http.post(AppComponent.API_URL+'/getUserInputQuestionsAns',uim);
 	          },
 	          )    
@@ -288,7 +251,6 @@ export class AccountService {
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          // console.log((<any>data).token);
 	          localStorage.setItem("token", (<any>data).token);
-	          console.log("token is set");
 	            return  this.http.post(AppComponent.API_URL+'/saveUserInput',answerData);
 	          },
 	          )    
@@ -314,8 +276,110 @@ export class AccountService {
 	              
 	  }
 	  
-  
+	  findUserByUserName(userName:string,callback){
+	      this.generateRefreshToken().pipe(switchMap(data => {
+	           localStorage.setItem("token", (<any>data).token);
+	            return  this.http.post(AppComponent.API_URL+'/admin/finduserbyusername',userName);
+	          },
+	          )    
+	      ).subscribe(data => {
+	              callback((<any>data));
+	          },
+	          error => {
+	              if (error.status==401){
+	              this.router.navigate(['/logout']);
+	              }
+	              if (error.status==500){
+	                  alert("Some un-Wanted Changes Done to Database");
+	                  callback(error);
+	              }
+	          },
+	          () => {
+	              // console.log(111);
+	          }
+	          
+	          );
+	              
+	  }
 	  
+	  updatepassword(password:string,uuid:string,callback){
+	      this.generateRefreshToken().pipe(switchMap(data => {
+	           localStorage.setItem("token", (<any>data).token);
+	            return  this.http.post(AppComponent.API_URL+'/resetpassword',{'uuid':uuid,'password':password});
+	          },
+	          )    
+	      ).subscribe(data => {
+	              callback((<any>data));
+	          },
+	          error => {
+	              if (error.status==401){
+	              this.router.navigate(['/logout']);
+	              }
+	              if (error.status==500){
+	                  alert("Some un-Wanted Changes Done to Database");
+	                  callback(error);
+	              }
+	          },
+	          () => {
+	              // console.log(111);
+	          }
+	          
+	          );
+	              
+	  }	  
+
+	  updateStatus(status:number,uuid:string,callback){
+	      this.generateRefreshToken().pipe(switchMap(data => {
+	           localStorage.setItem("token", (<any>data).token);
+	            return  this.http.post(AppComponent.API_URL+'/admin/resetstatus',{'uuid':uuid,'status':status});
+	          },
+	          )    
+	      ).subscribe(data => {
+	              callback((<any>data));
+	          },
+	          error => {
+	              if (error.status==401){
+	              this.router.navigate(['/logout']);
+	              }
+	              if (error.status==500){
+	                  alert("Some un-Wanted Changes Done to Database");
+	                  callback(error);
+	              }
+	          },
+	          () => {
+	              // console.log(111);
+	          }
+	          
+	          );
+	              
+	  }	  
+
+	  resetRight(status:number,uuid:string,callback){
+	      this.generateRefreshToken().pipe(switchMap(data => {
+	           localStorage.setItem("token", (<any>data).token);
+	            return  this.http.post(AppComponent.API_URL+'/admin/resetclaimtreatment',{'uuid':uuid,'status':status});
+	          },
+	          )    
+	      ).subscribe(data => {
+	              callback((<any>data));
+	          },
+	          error => {
+	              if (error.status==401){
+	              this.router.navigate(['/logout']);
+	              }
+	              if (error.status==500){
+	                  alert("Some un-Wanted Changes Done to Database");
+	                  callback(error);
+	              }
+	          },
+	          () => {
+	              // console.log(111);
+	          }
+	          
+	          );
+	              
+	  }	  
+
 	  scrapSite(scrap:ScrapModel,scrapsite,callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          // console.log((<any>data).token);
@@ -359,9 +423,4 @@ export class AccountService {
   generateRefreshToken(){
       return this.http.get(AppComponent.API_URL+'/refresh');
   }
-      /*
-		 * return
-		 * this.http.get(AppComponent.API_URL+'/refresh',AuthHeader.createAuthHeader())
-		 * .pipe(map(resp=>resp.json()));
-		 */ 
 }

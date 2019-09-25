@@ -1,6 +1,7 @@
 import { Routes, RouterModule } from '@angular/router';
 import {LoginComponent} from "./components/login/login.component";
 import {RegisterComponent} from "./components/register/register.component";
+import {UserSettingsComponent} from "./components/usersettings/usersettings.component";
 import {ProfileComponent} from "./components/profile/profile.component";
 import {IVFComponent} from "./components/ivf/ivf.component";
 import {IVFBatchPreComponent} from "./components/ivfbatchpre/ivfbatchpre.component";
@@ -10,6 +11,7 @@ import {HelpComponent} from "./components/help/help.component";
 import {ReportComponent} from "./components/report/report.component";
 import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
 import {UserInputComponent} from "./components/userinput/userinput.component";
+import {ResetPasswordComponent} from "./components/resetpassword/resetpassword.component";
 
 import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
 import {EnReportsComponent} from "./components/enhanced_reports/enreports.component";
@@ -52,7 +54,9 @@ const appRoutes: Routes = [
 	  component: IVFBatchPreComponent ,canActivate: [UrlPermission] },
   { path: 'login', component: LoginComponent ,canActivate: [UrlLoggedInCheck]},
   { path: 'register', component: RegisterComponent,canActivate: [UrlAdminPermission]  },
-  { path: 'report', 
+  { path: 'usersettings', component: UserSettingsComponent,canActivate: [UrlAdminPermission]  },
+  { path: 'resetpassword', component: ResetPasswordComponent,canActivate: [UrlPermission]  },
+   { path: 'report', 
 	  resolve: {
 		    offs: OfficeResolve
 		  },

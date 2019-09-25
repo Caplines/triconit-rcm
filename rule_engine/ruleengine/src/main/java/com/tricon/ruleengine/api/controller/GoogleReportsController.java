@@ -49,10 +49,10 @@ public class GoogleReportsController {
 			HttpServletResponse response) {
 		//
 		es.setUpSSLCertificates();
-		System.out.println(query);
+		//System.out.println(query);
 		// query = " select " + + query;
-		System.out.println(office);
-		System.out.println(ids);
+		//System.out.println(office);
+		//System.out.println(ids);
 		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", dataMap));
 
@@ -154,14 +154,16 @@ public class GoogleReportsController {
 		
 		System.out.println("----------------------");
 		System.out.println("---------URL-------------"+request.getRequestURL());
-		System.out.println("RRRRRRRRRRRRR---------"+request.getRemoteHost() );
+		`.out.println("RRRRRRRRRRRRR---------"+request.getRemoteHost() );
 		
 		System.out.println(new URL(request.getRequestURL().toString()).getHost());
 		*/
 		List<GoogleReportDTO> beanList = new ArrayList<>();
 		GoogleReportDTO dataBean = null;
-		//String a[] = selectcolumns.split(",");
+		String a[] = selectcolumns.split(",");
 		query = " select " + selectcolumns + " " + query;
+		boolean unicode16=false;        //patperio 
+		if (query.toLowerCase().contains("patperio ")) unicode16=true;
 		LinkedHashMap<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
 		//String finalData = "";
 		if (dataMap != null) {
@@ -173,8 +175,46 @@ public class GoogleReportsController {
 					int x = 0;
 					//finalData = finalData + comma + "{";
 					dataBean = new GoogleReportDTO();// dataBean
-					for (int y=0;y<columnCount;y++) {
+					
+					for (int y=0;y<a.length;y++) {
 						String v = des.get(x);
+						//int ss=0;
+						if(unicode16) {//handle uincode characters
+							//avoid loop here to 32 
+							if(a[y].contains("tooth_1")|| a[y].contains("tooth_2") || a[y].contains("tooth_3")
+							  || a[y].contains("tooth_4")  || a[y].contains("tooth_5") || a[y].contains("tooth_6")
+							  || a[y].contains("tooth_7")  || a[y].contains("tooth_8") || a[y].contains("tooth_9")
+							  || a[y].contains("tooth_10")  || a[y].contains("tooth_11") || a[y].contains("tooth_12")
+							  || a[y].contains("tooth_13")  || a[y].contains("tooth_14") || a[y].contains("tooth_15")
+							  || a[y].contains("tooth_16")  || a[y].contains("tooth_17") || a[y].contains("tooth_18")
+							  || a[y].contains("tooth_19")  || a[y].contains("tooth_20") || a[y].contains("tooth_21")
+							  || a[y].contains("tooth_22")  || a[y].contains("tooth_23") || a[y].contains("tooth_24")
+							  || a[y].contains("tooth_25")  || a[y].contains("tooth_26") || a[y].contains("tooth_27")
+							  || a[y].contains("tooth_28")  || a[y].contains("tooth_29") || a[y].contains("tooth_30")
+							  || a[y].contains("tooth_31")  || a[y].contains("tooth_32")
+							  
+							  ) {
+								
+									v = des.get(x);
+									v=v.replaceAll("\n", "");
+									//System.out.println(v);
+										try {
+									byte[] b=v.getBytes("UTF-8");
+									v="";	
+									for(int n=0;n<b.length;n++) {
+										if ((b[n]+"").equals("32")) continue;
+										v=v+b[n]+",";
+									}
+									v=v.replaceAll(",$", "");
+									 }catch(Exception u) {
+										 
+									 }
+								
+								}	
+						}
+						
+						
+						
 						setUPResponseData(dataBean, x, v);
 						x++;
 					}
@@ -192,6 +232,8 @@ public class GoogleReportsController {
 		
 		if (data==null)
             data="-NO-DATA-";
+		data=data.replaceAll("\\\\u000", "-");
+		
 		if (dataBean != null) {
 			if (x == 0)
 				dataBean.setC1(data);

@@ -11,6 +11,7 @@ import com.tricon.ruleengine.model.db.UserRole;
 public interface UserDao {
 
 	public User findUserByUsername(String username);
+	public User findUserByUUid(String uuid);
 	public User findUserByEmail(String email);
 	public Office findOfficeById(String officeId);
 	public String registerUser(User user);

@@ -35,6 +35,7 @@ import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.MVPandVAP;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Rules;
+import com.tricon.ruleengine.model.db.UserInputRuleQuestionHeader;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
@@ -103,7 +104,7 @@ public class RuleBook {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule1.error.message.patientId",
 											new Object[] { ivf.getPatientId(),str, tp.getPatient().getId() }, locale),
-									Constants.FAIL));
+									Constants.FAIL,"","",""));
 							return dList;
 
 						}
@@ -116,7 +117,7 @@ public class RuleBook {
 					if (dosCL==null) {
 						dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(),
 								Constants.errorMessOPen + inv + Constants.errorMessClose,
-								Constants.FAIL));
+								Constants.FAIL,"","",""));
 						return dList;	
 					}
 				}
@@ -130,7 +131,7 @@ public class RuleBook {
 					RuleEngineLogger.generateLogs(clazz, "Exit Engine ", Constants.rule_log_debug, bw);
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule1.error.message.plantermedDate", new Object[] { td }, locale),
-							Constants.EXTI_ENGINE));
+							Constants.EXTI_ENGINE,"","",""));
 					pass=false;
 					return dList;
 				}
@@ -162,7 +163,7 @@ public class RuleBook {
 			    	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule1.error.message.termPlusExtra",
 										new Object[] { td }, locale),
-								Constants.ALERT));
+								Constants.ALERT,"","",""));
 			    	  pass=false;
 			      }
 			      if (dInterval.compareTo(currentDate) < 0) {
@@ -174,8 +175,8 @@ public class RuleBook {
 			
 			
 		} catch (Exception ex) {
-			dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-					"rule1.error.message.date", new Object[] { ivf.getPlanTermedDate() }, locale), Constants.FAIL));
+ 			dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					"rule1.error.message.date", new Object[] { ivf.getPlanTermedDate() }, locale), Constants.FAIL,"","",""));
 			return dList;
 
 		}
@@ -186,7 +187,7 @@ public class RuleBook {
 					if (!onlyIVF && tpList == null) {
 						dList.add( new TPValidationResponseDto(rule.getId(), rule.getName(),
 								Constants.errorMessOPen + inv + Constants.errorMessClose,
-								Constants.FAIL));
+								Constants.FAIL,"","",""));
 						return dList;
 					}
 					if (tpList != null) {
@@ -196,7 +197,7 @@ public class RuleBook {
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule1.error.message.patientId",
 												new Object[] { ivf.getPatientId(),str, tp.getPatient().getId() }, locale),
-										Constants.FAIL));
+										Constants.FAIL,"","",""));
 								return dList;
 
 							}
@@ -220,18 +221,18 @@ public class RuleBook {
 							messageSource.getMessage("rule1.error.message", new Object[] {
 									Constants.SIMPLE_DATE_FORMAT_IVF.format(currentDate), ivf.getPlanEffectiveDate() },
 									locale),
-							Constants.FAIL));
+							Constants.FAIL,"","",""));
 					return dList;
 				}
 			}
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-					"rule1.error.message.date", new Object[] { ivf.getPlanEffectiveDate() }, locale), Constants.FAIL));
+					"rule1.error.message.date", new Object[] { ivf.getPlanEffectiveDate() }, locale), Constants.FAIL,"","",""));
 			return dList;
 
 		}
 		if (pass)dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-				messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS));
+				messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS,"","",""));
 		return dList;
 
 	}
@@ -245,6 +246,9 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_4,
 				Constants.rule_log_debug, bw);
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String inv=Constants.invalidStr_TP;
 		String ER_MSG=Constants.TP;
 		
@@ -256,7 +260,7 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return dList;
 			}
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
@@ -284,7 +288,19 @@ public class RuleBook {
 			codes.add("D0145");
 			codes.add("D0120");
 			
+			
 			String pcName="";
+			
+			for (Object obj : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				if (codes.contains(tp.getServiceCode())) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
+					
+				}
+			}
+
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
 				if (codes.contains(tp.getServiceCode())) {
@@ -304,7 +320,7 @@ public class RuleBook {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 						messageSource.getMessage("rule4.error.message_5",
 								new Object[] { ivf.getProviderName(), pcName,ER_MSG }, locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 				pass = false;
 			}
@@ -320,7 +336,7 @@ public class RuleBook {
 
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_4", new Object[] {}, locale),
-							Constants.ALERT));
+							Constants.ALERT,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					// return dList;
 				}
 				// String esp_ = ivf.getPlanFeeScheduleName();
@@ -332,7 +348,7 @@ public class RuleBook {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_1",
 									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName(),ER_MSG }, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					pass = false;
 				}
 				RuleEngineLogger.generateLogs(
@@ -345,7 +361,7 @@ public class RuleBook {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_3",
 									new Object[] { ivf.getPlanFeeScheduleName(), pat.getFeeScheduleName(),ER_MSG }, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					pass = false;
 				} else {
 					// same value
@@ -386,14 +402,14 @@ public class RuleBook {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 									messageSource.getMessage("rule4.error.message_2", new Object[] {
 											ER_MSG,	String.join(",", missing_code), String.join(",", missing_name),ER_MSG,ER_MSG }, locale),
-									Constants.FAIL));
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 						} else {
 							dList.add(
 									new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule.servicecode.notfound.esFeeSchedule",
 													new Object[] { missing_cp_EG.toString() }, locale),
-											Constants.FAIL));
+											Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 						}
 
@@ -410,18 +426,18 @@ public class RuleBook {
 						"rule.patient.notfound.espatient",
 						new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
 								+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
-						locale), Constants.FAIL));
+						locale), Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				pass = false;
 			}
 
 			if (pass)
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return dList;
@@ -455,7 +471,7 @@ public class RuleBook {
 
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_4", new Object[] {}, locale),
-							Constants.ALERT));
+							Constants.ALERT,"","",""));
 					// return dList;
 				}
 
@@ -465,7 +481,7 @@ public class RuleBook {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule4.error.message_1",
 									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName(),ER_MSG }, locale),
-							Constants.FAIL));
+							Constants.FAIL,"","",""));
 					pass = false;
 				}
 				RuleEngineLogger.generateLogs(
@@ -477,7 +493,7 @@ public class RuleBook {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule4.error.message_3",
 									new Object[] { ivf.getPlanFeeScheduleName(), pat.getFeeScheduleName() }, locale),
-							Constants.FAIL));
+							Constants.FAIL,"","",""));
 					pass = false;
 				} else {
 					// same value
@@ -490,18 +506,18 @@ public class RuleBook {
 						"rule.patient.notfound.espatient",
 						new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
 								+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
-						locale), Constants.FAIL));
+						locale), Constants.FAIL,"","",""));
 				pass = false;
 			}
 
 			if (pass)
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,"","",""));
 		} catch (Exception x) {
 
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return dList;
@@ -534,7 +550,7 @@ public class RuleBook {
 			
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule5.error.message_M", new Object[] {}, locale),
-					Constants.NotApplicable));
+					Constants.NotApplicable,"","",""));
 
 			return dList;
 		}
@@ -560,7 +576,7 @@ public class RuleBook {
 										+ ivf.getPlanAnnualMaxRemaining() + " IndividualDeductible Met-"
 										+ ivf.getPlanIndividualDeductibleRemaining() },
 								locale),
-						Constants.FAIL));
+						Constants.FAIL,"","",""));
 				return dList;
 			}
 
@@ -593,14 +609,14 @@ public class RuleBook {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule5.error.message_R",
 										new Object[] { "Plan_AnnualMax", primeMaxCov,ER_MSG, planAnnualMax }, locale),
-								Constants.FAIL));
+								Constants.FAIL,"","",""));
 					}
 					if (planAnnualMaxRem != primeBenefitRem) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule5.error.message_R",
 										new Object[] { "Plan_AnnualMaxRemaining", primeBenefitRem,ER_MSG, planAnnualMaxRem },
 										locale),
-								Constants.FAIL));
+								Constants.FAIL,"","",""));
 						pass = false;
 
 					}
@@ -608,7 +624,7 @@ public class RuleBook {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule5.error.message_R", new Object[] {
 										"Plan_IndividualDeductibleRemaining", primeRemDed,ER_MSG, planIndDedRem }, locale),
-								Constants.FAIL));
+								Constants.FAIL,"","",""));
 						pass = false;
 
 					}
@@ -616,7 +632,7 @@ public class RuleBook {
 					if (pass)
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule.message.pass", new Object[] {}, locale),
-								Constants.PASS));
+								Constants.PASS,"","",""));
 
 				} catch (Exception e) {
 					RuleEngineLogger.generateLogs(clazz,
@@ -630,7 +646,7 @@ public class RuleBook {
 											+ " PrimBenefitsRemaining-" + pat.getPrimBenefitsRemaining()
 											+ " PrimRemainingDeductible-" + pat.getPrimRemainingDeductible() },
 									locale),
-							Constants.FAIL));
+							Constants.FAIL,"","",""));
 					return dList;
 				}
 
@@ -644,14 +660,14 @@ public class RuleBook {
 						"rule5.error.message_no_data",
 						new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
 								+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
-						locale), Constants.FAIL));
+						locale), Constants.FAIL,"","",""));
 
 			}
 		} catch (Exception x) {
 
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return dList;
@@ -732,7 +748,7 @@ public class RuleBook {
 					li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule6.error.message_2",
 									new Object[] { ep.getEmployerName(), ivf.getEmployerName() }, locale),
-							Constants.FAIL));
+							Constants.FAIL,"","",""));
 					namecheck = false;
 
 				}
@@ -777,7 +793,7 @@ public class RuleBook {
 							li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule6.error.message_3",
 											new Object[] { d6.getFsName() + "-" + d6.getIvfName() }, locale),
-									Constants.FAIL));
+									Constants.FAIL,"","",""));
 						}
 
 					}
@@ -785,17 +801,17 @@ public class RuleBook {
 			}
 			if (!pass && namecheck) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-						"rule6.error.message", new Object[] { TP_CL,String.join("<br>", mess) }, locale), Constants.FAIL));
+						"rule6.error.message", new Object[] { TP_CL,String.join("<br>", mess) }, locale), Constants.FAIL,"","",""));
 			}
 			if (pass) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS,"","",""));
 			}
 		} catch (Exception x) {
 
 			li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return li;
@@ -817,34 +833,34 @@ public class RuleBook {
 
 			if (ivf.getPlanNonDuplicateClause().equalsIgnoreCase("yes")) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule7.error.message_duplicate", null, locale), Constants.ALERT));
+						messageSource.getMessage("rule7.error.message_duplicate", null, locale), Constants.ALERT,"","",""));
 			}
 			RuleEngineLogger.generateLogs(clazz, "PlanPreDMandatory - " + ivf.getPlanPreDMandatory(),
 					Constants.rule_log_debug, bw);
 			if (ivf.getPlanPreDMandatory().equalsIgnoreCase("yes")) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule7.error.message_preman", null, locale), Constants.ALERT));
+						messageSource.getMessage("rule7.error.message_preman", null, locale), Constants.ALERT,"","",""));
 			}
 			RuleEngineLogger.generateLogs(clazz, "getPlanFullTimeStudentStatus -" + ivf.getPlanFullTimeStudentStatus(),
 					Constants.rule_log_debug, bw);
 			if (ivf.getPlanFullTimeStudentStatus().equalsIgnoreCase("yes")) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule7.error.message_fulltime", null, locale), Constants.ALERT));
+						messageSource.getMessage("rule7.error.message_fulltime", null, locale), Constants.ALERT,"","",""));
 			}
 			RuleEngineLogger.generateLogs(clazz, "getPlanAssignmentofBenefits - " + ivf.getPlanAssignmentofBenefits(),
 					Constants.rule_log_debug, bw);
 			if (ivf.getPlanAssignmentofBenefits().equalsIgnoreCase("yes")) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule7.error.message_benefit", null, locale), Constants.ALERT));
+						messageSource.getMessage("rule7.error.message_benefit", null, locale), Constants.ALERT,"","",""));
 			}
 			if (li.size() == 0)
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", null, locale), Constants.PASS,"","",""));
 		} catch (Exception x) {
 
 			li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return li;
@@ -876,7 +892,7 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv  + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv  + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return d;
 			}
 			int[] age = null;
@@ -891,7 +907,7 @@ public class RuleBook {
 				RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule1.error.message.date", new Object[] { dob }, locale),
-						Constants.FAIL));
+						Constants.FAIL,"","",""));
 				return d;
 			}
 
@@ -914,6 +930,25 @@ public class RuleBook {
 			boolean d1351 = false;
 			boolean rest = false;
 
+			Set<String> fcodes=new HashSet<>();
+			Set<String> surfaces=new HashSet<>();
+			Set<String> teethC=new HashSet<>();
+			
+			
+			//String pcName="";
+			List<String> codes = new ArrayList<String>(
+					Arrays.asList("D1208","D1206","D1351","D8010","D8020","D8030","D8040","D8050","D8060","D8070","D8080","D8090"));
+			
+			for (Object obj : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				if (codes.contains(tp.getServiceCode())) { 
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
+					
+				}
+			}
+			
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
@@ -935,12 +970,12 @@ public class RuleBook {
 														new Object[] { tp.getServiceCode(), age[0] + " Years, " + age[1]
 																+ " Months & " + age[2] + " Days", f },
 														locale),
-										Constants.FAIL));
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								pass = false;
 							}
 						} catch (NumberFormatException e) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-									"rule1.error.message.numberformat", new Object[] { fl }, locale), Constants.FAIL));
+									"rule1.error.message.numberformat", new Object[] { fl }, locale), Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							pass = false;
 
 						}
@@ -959,12 +994,12 @@ public class RuleBook {
 														new Object[] { tp.getServiceCode(), age[0] + " Years, " + age[1]
 																+ " Months & " + age[2] + " Days", v },
 														locale),
-										Constants.FAIL));
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								pass = false;
 							}
 						} catch (NumberFormatException e) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-									"rule1.error.message.numberformat", new Object[] { var }, locale), Constants.FAIL));
+									"rule1.error.message.numberformat", new Object[] { var }, locale), Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							pass = false;
 
 						}
@@ -983,12 +1018,12 @@ public class RuleBook {
 														new Object[] { tp.getServiceCode(), age[0] + " Years, " + age[1]
 																+ " Months & " + age[2] + " Days", s },
 														locale),
-										Constants.FAIL));
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								pass = false;
 							}
 						} catch (NumberFormatException e) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
-									"rule1.error.message.numberformat", new Object[] { sel }, locale), Constants.FAIL));
+									"rule1.error.message.numberformat", new Object[] { sel }, locale), Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							pass = false;
 
 						}
@@ -1011,13 +1046,13 @@ public class RuleBook {
 														new Object[] { tp.getServiceCode(), age[0] + " Years, " + age[1]
 																+ " Months & " + age[2] + " Days", o },
 														locale),
-										Constants.FAIL));
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								pass = false;
 							}
 						} catch (NumberFormatException e) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 									.getMessage("rule1.error.message.numberformat", new Object[] { ortho }, locale),
-									Constants.FAIL));
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							pass = false;
 
 						}
@@ -1028,12 +1063,12 @@ public class RuleBook {
 			} // For LOOP end
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -1062,7 +1097,7 @@ public class RuleBook {
 		// First Check For Sealant
 		if (tpList == null) {
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+					Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL,"","",""));
 			return d;
 		}
 		for (Object obj : tpList) {
@@ -1074,10 +1109,30 @@ public class RuleBook {
 		}
 
 		RuleEngineLogger.generateLogs(clazz, "sealantPresent-" + sealantPresent, Constants.rule_log_debug, bw);
+		List<String> primaryMolarT = new ArrayList<>();
+		List<String> permamentMolarT = new ArrayList<>();
+		List<String> preMolarT = new ArrayList<>();
+		
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
+		
+		
+		//String pcName="";
+		
+		for (Object obj : tpList) {
+			CommonDataCheck tp = (CommonDataCheck) obj;
+			if ("D1351".equals(tp.getServiceCode()) ) {
+				surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+				teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+				fcodes.add(tp.getServiceCode());
+				
+			}
+		}
 
 		if (!sealantPresent) {
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			return d;
 		}
 		try {
@@ -1154,9 +1209,7 @@ public class RuleBook {
 				 * 
 				 * }
 				 */
-				List<String> primaryMolarT = new ArrayList<>();
-				List<String> permamentMolarT = new ArrayList<>();
-				List<String> preMolarT = new ArrayList<>();
+				
 				for (Object obj : tpList) {
 					CommonDataCheck tp = (CommonDataCheck) obj;
 					// IF Any more Sealants are there plz add in OR Conditions
@@ -1197,13 +1250,15 @@ public class RuleBook {
 						} // For loop end= Tooth
 					}
 				} // For LOOP end
+				
+				
 				if (primaryMolarT.size() > 0) {
 					// String.join(", ", primaryMolarT)
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule14.error.message1",
 									new Object[] { " Primary Molar (Tooth # " + String.join(",", primaryMolarT) + ")" },
 									locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 					pass = false;
 				}
@@ -1213,7 +1268,7 @@ public class RuleBook {
 									new Object[] {
 											" Permanent Molar (Tooth # " + String.join(",", permamentMolarT) + ")" },
 									locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					pass = false;
 				}
 				if (preMolarT.size() > 0) {
@@ -1221,7 +1276,7 @@ public class RuleBook {
 							messageSource.getMessage("rule14.error.message1",
 									new Object[] { " Pre-Molar (Tooth  # " + String.join(",", preMolarT) + ")" },
 									locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					pass = false;
 				}
 			} // if end for age limit
@@ -1237,12 +1292,12 @@ public class RuleBook {
 			 */
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -1277,7 +1332,7 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return d;
 			}
 			boolean pass = true;
@@ -1287,7 +1342,7 @@ public class RuleBook {
 			} catch (NumberFormatException e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.error.message", new Object[] { srpperday }, locale),
-						Constants.FAIL));
+						Constants.FAIL,"","",""));
 				return d;
 			}
 			try {
@@ -1295,7 +1350,7 @@ public class RuleBook {
 			} catch (NumberFormatException e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.error.message", new Object[] { datybetweenTr }, locale),
-						Constants.FAIL));
+						Constants.FAIL,"","",""));
 				return d;
 			}
 
@@ -1308,6 +1363,24 @@ public class RuleBook {
 			srpCodeTCList.add("D4341");
 			srpCodeTCList.add("D4342");
 			int size = 0;
+			
+			Set<String> fcodes=new HashSet<>();
+			Set<String> surfaces=new HashSet<>();
+			Set<String> teethC=new HashSet<>();
+			
+			
+			//String pcName="";
+			
+			for (Object obj : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				if (srpCodeTCList.contains(tp.getServiceCode())) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
+					
+				}
+			}
+			
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
@@ -1328,7 +1401,7 @@ public class RuleBook {
 			if (size > Integer.parseInt(srpperday)) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 						.getMessage("rule15.error.message3", new Object[] { srpperday, size,TP_CL, datybetweenTr }, locale),
-						Constants.ALERT));
+						Constants.ALERT,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				pass = false;
 			}
 
@@ -1343,12 +1416,12 @@ public class RuleBook {
 			 */
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -1366,6 +1439,9 @@ public class RuleBook {
 		String xray = ivf.getxRaysBundling();
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		String inv=Constants.invalidStr_TP;
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		boolean insZero=true;
 		if (userType==Constants.userType_CL) {
 			inv=Constants.invalidStr_Cl;
@@ -1375,7 +1451,7 @@ public class RuleBook {
 			boolean pass = true;
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return d;
 			}
 			RuleEngineLogger.generateLogs(clazz, "getxRaysBundling--" + xray, Constants.rule_log_debug, bw);
@@ -1402,6 +1478,23 @@ public class RuleBook {
 				List<String> dup=new ArrayList<>();
 				dup.add("D0220");
 				dup.add("D0230");
+				
+				
+				
+				
+				//String pcName="";
+				
+				for (Object obj : tpList) {
+					CommonDataCheck tp = (CommonDataCheck) obj;
+					if (xrayCodeList.contains(tp.getServiceCode()) || paxrayCodeList.contains(tp.getServiceCode())
+							|| dup.contains(tp.getServiceCode())) {
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
+						
+					}
+				}
+				
 				Map<String,List<String>> map= new HashMap<>();
 
 				for (Object obj : tpList) {
@@ -1457,14 +1550,14 @@ public class RuleBook {
 				if (finalXrayCodeList.size() > 1 && finalXrayCodeList.contains(mandatoryXrayCode)) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule16.error.message1", new Object[] {}, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					pass = false;
 				}
 				RuleEngineLogger.generateLogs(clazz, "sizePAXray-" + sizePAXray, Constants.rule_log_debug, bw);
 				if (sizePAXray > 9) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule16.error.message2", new Object[] {}, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					pass = false;
 				}
 				
@@ -1483,7 +1576,7 @@ public class RuleBook {
 					    		 pass=false;
 					    		 d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule16.error.message3", new Object[] {entry.getKey(),entry2.getKey(),String.join(",", list1)}, locale),
-											Constants.FAIL));
+											Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					    		 alreadyProcessedKey.add(entry.getKey());
 					    	 }
 					     }
@@ -1493,12 +1586,12 @@ public class RuleBook {
 
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -1517,6 +1610,9 @@ public class RuleBook {
 		String inv=Constants.invalidStr_TP;
 		boolean insZero=true;
 		String TP_CL=Constants.TP;
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		if (userType==Constants.userType_CL) {
 			inv=Constants.invalidStr_Cl;
 			insZero=false;
@@ -1526,7 +1622,7 @@ public class RuleBook {
 			boolean pass = true;
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return d;
 			}
 			RuleEngineLogger.generateLogs(clazz, "fillings-" + fillings, Constants.rule_log_debug, bw);
@@ -1689,6 +1785,21 @@ public class RuleBook {
 				// List<String> scCode=new ArrayList<>();
 				// Map<String,List<String>> toothMap=new HashMap<>();
 
+				
+				
+				//String pcName="";
+				
+				for (Object obj : tpList) {
+					CommonDataCheck tp = (CommonDataCheck) obj;
+					if (fillingCodeList.contains(tp.getServiceCode())) {
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
+						
+					}
+				}
+				
+				
 				Map<String, List<String>> filligToothMap = null;
 				List<String> list = null;
 				for (Object obj : tpList) {
@@ -1892,7 +2003,7 @@ public class RuleBook {
 						d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule17.error.message",
 										new Object[] { "[" + String.join(", ", btooths) + "]" }, locale),
-								Constants.FAIL));
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 						pass = false;
 					}
 
@@ -2007,7 +2118,8 @@ public class RuleBook {
 							List<String> dx=ToothUtil.generateErrorListForRule171(tp,esfeess,rDLSS,bw);
 							for(String p:dx) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule17.error.message1", new Object[] {(p.split("---")[2]+"-"+p.split("---")[3]),p.split("---")[4] }, locale), Constants.FAIL));
+									messageSource.getMessage("rule17.error.message1", new Object[] {(p.split("---")[2]+"-"+p.split("---")[3]),p.split("---")[4] }, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							}
 							pass= false;
 						}
@@ -2029,7 +2141,8 @@ public class RuleBook {
 							List<String> dx=ToothUtil.generateErrorListForRule171(tp,esfeess,rMLSS,bw);
 							for(String p:dx) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule17.error.message1", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale), Constants.FAIL));
+									messageSource.getMessage("rule17.error.message1", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] }, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							}
 							pass= false;
 						}
@@ -2085,7 +2198,8 @@ public class RuleBook {
 						
 						 for (String p:res) {
 							 d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule17.error.message3", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] , TP_CL }, locale), Constants.FAIL));
+										messageSource.getMessage("rule17.error.message3", new Object[] {p.split("---")[2]+"-"+p.split("---")[3] , TP_CL },
+												locale), Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 									 
 						 }
 					
@@ -2099,12 +2213,13 @@ public class RuleBook {
 			}
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,
+						String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
            x.printStackTrace();
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -2118,6 +2233,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String inv=Constants.invalidStr_TP;
 		boolean insZero=true;
 		String TP_CL=Constants.TP;
@@ -2130,7 +2248,7 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return d;
 			}
 			boolean pass = true;
@@ -2145,9 +2263,13 @@ public class RuleBook {
 				if (!tp.getTooth().equalsIgnoreCase("NA") && !tp.getTooth().equals("")) {
 					String scode = tp.getServiceCode();
 					String tooths[] = ToothUtil.getToothsFromTooth(tp.getTooth());
-					// Mappings map = getMappingFromList(mappings, scode);dd
+					// Mappings map = getMappingFromList(mappings, scode);
 					Mappings map = getMappingFromListForToothFilling(mappings, scode);
 					if (map != null) {
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
+						
 						RuleEngineLogger.generateLogs(clazz, "Filling Codes Found-" + scode, Constants.rule_log_debug,
 								bw);
 						for (String tooth : tooths) {
@@ -2175,7 +2297,7 @@ public class RuleBook {
 								pass = false;
 								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 										.getMessage("rule9.error.message", new Object[] { scode, tooth, TP_CL }, locale),
-										Constants.FAIL));
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							}
 						} // End - for loop from tooth of Treatment Plan
 					} else {
@@ -2192,12 +2314,12 @@ public class RuleBook {
 			}
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -2206,12 +2328,15 @@ public class RuleBook {
 
 	// Pre-Auth // Attachment Required
 	public List<TPValidationResponseDto> Rule10(List<Object> tpList,List<QuestionAnswerDto> ansL, MessageSource messageSource, Rules rule,
-			List<Mappings> mappings, BufferedWriter bw,int userType) {
+			List<Mappings> mappings, BufferedWriter bw,List<UserInputRuleQuestionHeader> qhList,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_10,
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String inv=Constants.invalidStr_TP;
 		boolean insZero=true;
 		if (userType==Constants.userType_CL) {
@@ -2222,7 +2347,7 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return d;
 			}
 			// int age = 0;
@@ -2239,9 +2364,10 @@ public class RuleBook {
 			List<String> combined1 = new ArrayList<>();
 			List<String> combined3 = new ArrayList<>();
 			List<String> combinedY = new ArrayList<>();
-
+            boolean answerCheck=false;
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
+				
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
 					
@@ -2252,18 +2378,25 @@ public class RuleBook {
 				Mappings mapP = getMappingFromListPreAuth(mappings, tp.getServiceCode());
 
 				if (mapA != null && !tp.getServiceCode().equalsIgnoreCase("D0120")) {//Added on Sahil Suggestion on email/chat 27 Feb
+					
 					RuleEngineLogger.generateLogs(clazz,
 							"Addtion Info Needed present" + mapA.getAdditionalInformationNeeded(),
 							Constants.rule_log_debug, bw);
 					pass = false;
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					combined1.add(tp.getServiceCode() + " - " + mapA.getAdditionalInformationNeeded() + "<br>");
 					
-				}
+				}	
 				if (mapP != null && !tp.getServiceCode().equalsIgnoreCase("D7953")) {//Added on Sahil Suggestion on Chat 27 Feb
 					RuleEngineLogger.generateLogs(clazz, "PreAuth  present" + mapP.getPreAuthNeeded(),
 							Constants.rule_log_debug, bw);
 					pass = false;
 					combined3.add(tp.getServiceCode());
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					/*
 					 * d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					 * messageSource.getMessage("rule10.error.message2", new Object[] {
@@ -2271,6 +2404,42 @@ public class RuleBook {
 					 */
 				}
 				//Phase 2
+				//User input issue
+				if (ansL!= null && ansL.size()==0 && !answerCheck) {
+					 for (UserInputRuleQuestionHeader qh:qhList) {
+						 if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Attachment_Required)) {
+								if (tp.getServiceCode().equalsIgnoreCase("D0120")) continue;//This is a exceptional Case;
+								if (qh.getId()==Constants.Attachment_Required_question_header_id_service_code) {
+									if (mapA!=null) {
+										//we need Major
+										answerCheck=true;
+										pass=false;
+										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
+												.getMessage("rule.nouser.input", new Object[] { }, locale),
+												Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+									
+									}
+								}
+					 }
+				 }
+				}
+				if (ansL!= null && ansL.size()==0 && !answerCheck) {
+					 for (UserInputRuleQuestionHeader qh:qhList) {
+						 if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Attachment_Required)) {
+								if (qh.getId()==Constants.Pre_Authorization_question_header_id_service_code) {
+									if (mapP!=null) {
+										//we pre auth
+										answerCheck=true;
+										pass=false;
+										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
+												.getMessage("rule.nouser.input", new Object[] { }, locale),
+												Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+									
+									}
+								}
+					 }
+				 }
+				}
 				if (ansL!= null) {
 					String reqmet="";
 					String narrative="";
@@ -2313,7 +2482,7 @@ public class RuleBook {
 								pass = false;
 								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 										.getMessage("rule10.error.message3", new Object[] {narrative,tooth, scode,notes }, locale),
-										Constants.FAIL));
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							}
 					}
 				}
@@ -2324,25 +2493,25 @@ public class RuleBook {
 				if (combined1.size() > 0)
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 							.getMessage("rule10.error.message1", new Object[] { String.join(" ", combined1) }, locale),
-							Constants.ALERT));
+							Constants.ALERT,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				if (combined3.size() > 0)
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 							.getMessage("rule10.error.message2", new Object[] { String.join(" ", combined3) }, locale),
-							Constants.ALERT));
+							Constants.ALERT,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				if (combinedY.size() > 0)
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 							.getMessage("rule10.error.message4", new Object[] { String.join(", ", combinedY) }, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			}
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.NotNeeded));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.NotNeeded,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 		}
 		return d;
@@ -2376,10 +2545,14 @@ public class RuleBook {
 		Date effD = null;
 		Date dos = null;
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose,
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				return d;
 			}
 			boolean pass = true;
@@ -2394,13 +2567,13 @@ public class RuleBook {
 			} catch (RuleEngineDateException e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule1.error.message.date", new Object[] { eff }, locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				return d;
 			} catch (Exception e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.error.message",
 								new Object[] { "(" + waitb + ")(" + waitm + ")(" + effD + ")" }, locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				return d;
 			}
 			for (Object obj : tpList) {
@@ -2418,13 +2591,13 @@ public class RuleBook {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule1.error.message.date",
 									new Object[] { tp.getCdDetails().getDateLastUpdated() }, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					return d;
 				} catch (ParseException e) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule1.error.message.date",
 									new Object[] { tp.getCdDetails().getDateLastUpdated() }, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					return d;
 				}
 				Mappings map = getMappingFromListWaiting(mappings, tp.getServiceCode());
@@ -2435,6 +2608,9 @@ public class RuleBook {
 						&& map.getServiceCodeCategory().getName() != null
 						&& (map.getServiceCodeCategory().getName().equalsIgnoreCase("Major")
 								|| map.getServiceCodeCategory().getName().equalsIgnoreCase("Basic"))) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "Category Name:" + map.getServiceCodeCategory().getName(),
 							Constants.rule_log_debug, bw);
 					int wt = 0;
@@ -2469,19 +2645,20 @@ public class RuleBook {
 						d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule11.error.message",
 										new Object[] { waitb, waitm, tp.getServiceCode(), eff, dos }, locale),
-								Constants.FAIL));
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					}
 
 				}
 			}
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), 
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 		}
 		return d;
@@ -2497,6 +2674,9 @@ public class RuleBook {
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String inv=Constants.invalidStr_TP;
 		boolean est_zero=true; 
 		if (userType==Constants.userType_CL) {
@@ -2507,7 +2687,8 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose,
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				return d;
 			}
 			boolean pass = true;
@@ -2529,7 +2710,7 @@ public class RuleBook {
 								Constants.rule_log_debug, bw);
 						d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 								.getMessage("rule.servicecode.notfound", new Object[] { tp.getServiceCode() }, locale),
-								Constants.FAIL));
+								Constants.FAIL,"","",""));
 						pass = false;
 						return d;
 					} else {
@@ -2540,10 +2721,16 @@ public class RuleBook {
 									Constants.rule_log_debug, bw);
 							if (m.getMissingToothClauseApplicable() != null
 									&& m.getMissingToothClauseApplicable().trim().equalsIgnoreCase("yes")) {
+								surfaces= new HashSet<String>();
+								teethC= new HashSet<String>();
+								fcodes= new HashSet<String>();
+								surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+								teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+								fcodes.add(tp.getServiceCode());
 								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule18.error.message",
 												new Object[] { tp.getServiceCode() }, locale),
-										Constants.ALERT));
+										Constants.ALERT,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								pass = false;
 							}
 						}
@@ -2555,12 +2742,12 @@ public class RuleBook {
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale),
-						Constants.NotApplicable));
+						Constants.NotApplicable,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 		}
 		return d;
@@ -2576,6 +2763,9 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String samedayCr = ivf.getBuildUpsD2950SameDayCrown();
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String inv=Constants.invalidStr_TP;
 		boolean insZero=true;
 		if (userType==Constants.userType_CL) {
@@ -2585,7 +2775,8 @@ public class RuleBook {
 
 		if (tpList == null) {
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+					Constants.errorMessOPen + inv + Constants.errorMessClose, 
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			return d;
 		}
 		boolean pass = true;
@@ -2609,17 +2800,26 @@ public class RuleBook {
 					||	tp.getEstInsurance().equals("0.0"))) continue;
 
 				if (tp.getServiceCode().equalsIgnoreCase("D2950")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "D2950 code found", Constants.rule_log_debug, bw);
 					tooth = tp.getTooth();
 					RuleEngineLogger.generateLogs(clazz, "Tooth -" + tooth, Constants.rule_log_debug, bw);
 					found = true;
 				}
 				if (tp.getServiceCode().equals("D2740")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "D2740 code found", Constants.rule_log_debug, bw);
 					toothD2740 = tp.getTooth();
 					RuleEngineLogger.generateLogs(clazz, "Tooth -" + toothD2740, Constants.rule_log_debug, bw);
 				}
 				if (tp.getServiceCode().equals("D2750")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "D2750 code found", Constants.rule_log_debug, bw);
 					toothD2750 = tp.getTooth();
 					RuleEngineLogger.generateLogs(clazz, "Tooth -" + toothD2750, Constants.rule_log_debug, bw);
@@ -2632,7 +2832,7 @@ public class RuleBook {
 					pass = false;
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule13.error.message", new Object[] { tooth }, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}
 
 			}
@@ -2640,7 +2840,8 @@ public class RuleBook {
 
 		if (pass)
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+					messageSource.getMessage("rule.message.pass", new Object[] {}, locale), 
+					Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		return d;
 
 	}
@@ -2654,6 +2855,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String inv=Constants.invalidStr_TP;
 		boolean insZero=true;
 		if (userType==Constants.userType_CL) {
@@ -2663,7 +2867,8 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose,
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				return dList;
 			}
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
@@ -2725,6 +2930,9 @@ public class RuleBook {
 					if (mL != null && mL.size() > 0) {
 
 						for (Mappings m : mL) {
+							surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+							teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							fcodes.add(tp.getServiceCode());
 
 							String toothMa[] = ToothUtil.getToothsFromTooth(m.getToothNoForDowngrading());
 							String toothTR[] = ToothUtil.getToothsFromTooth(tp.getTooth());
@@ -2767,7 +2975,7 @@ public class RuleBook {
 																	new Object[] { tp.getServiceCode(), fcal,
 																			m.getDowngrading() },
 																	locale),
-															Constants.FAIL));
+															Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 												} else {
 													// Unique case
@@ -2790,7 +2998,7 @@ public class RuleBook {
 												new TPValidationResponseDto(rule.getId(), rule.getName(),
 														messageSource.getMessage("rule19.error.message3",
 																new Object[] { m.getDowngrading() }, locale),
-														Constants.FAIL));
+														Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 									}
 								} // if END
 
@@ -2803,12 +3011,13 @@ public class RuleBook {
 
 			if (pass)
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 		}
 		return dList;
@@ -2838,10 +3047,14 @@ public class RuleBook {
 		}
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		try {
 			if (tpList == null) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL
+						,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				return dList;
 			}
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
@@ -3312,6 +3525,7 @@ public class RuleBook {
 						hdto.setHistoryTooth("NA");
 					for (Map.Entry<String, List<ServiceCodeIvfTimesFreqFieldDto>> entry : mapFlIVF.entrySet()) {
 						if (entry.getKey().equals(hdto.getHistoryCode())) {
+							
 							historPresent = true;
 							String toothTR[] = ToothUtil.getToothsFromTooth(hdto.getHistoryTooth());
 						
@@ -3468,9 +3682,15 @@ public class RuleBook {
 										// if (tpCode.equalsIgnoreCase(historyD.getHistoryCode().trim())) {
 
 										List<ServiceCodeIvfTimesFreqFieldDto> dataIVF = mapFlIVF.get(tpCode);
+										for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF) {
+											surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(scivfTFD.getSurface())));
+											teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(scivfTFD.getTooth())));
+											fcodes.add(scivfTFD.getServiceCode());
+										}
+										
 										List<TPValidationResponseDto> xL=  FreqencyUtils.ivfFrequencyLogic(dataIVF, tpCode, tooth, historyD, c2,
                                     		   bw, CurrentYear, planDate, messageSource, rule, ivf, TP_Date, locale,
-                                                mapFlIVFFinal);
+                                                mapFlIVFFinal,surfaces,teethC,fcodes);
 										if (xL.size()>0) return xL;
  
 										// }
@@ -3648,7 +3868,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 						}
 					}
 					if (D4341 != null && D4342 != null) {
@@ -3657,7 +3878,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 						}
 					}
 					if (D1110 != null && D1120 != null) {
@@ -3666,7 +3888,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale), 
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 						}
 					}
 					if (D0270 != null || D0272 != null || D0274 != null || D0273 != null) {
@@ -3676,7 +3899,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale), 
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 						}
 					}
@@ -3686,7 +3910,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale), 
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 						}
 					}
@@ -3698,7 +3923,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale), 
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 						}
 					}
@@ -3709,7 +3935,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale), 
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 						}
 					}
@@ -3719,7 +3946,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 						}
 					}
@@ -3729,7 +3957,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale), 
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 						}
 					}
@@ -3739,7 +3968,8 @@ public class RuleBook {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL));
+									messageSource.getMessage("rule21.error.message", m, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 						}
 					}
 					// if (pass) {
@@ -3771,7 +4001,7 @@ public class RuleBook {
 											new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule21.error.message",
 															new Object[] { m[5], m[1], m[2], m[4],m[6],m[7] }, locale),
-													Constants.FAIL));
+													Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								}
 							}
 						}
@@ -3787,12 +4017,13 @@ public class RuleBook {
 			}
 			if (pass)
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
 
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 		}
 		return dList;
@@ -3811,6 +4042,9 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz, "CRA-"+cra, Constants.rule_log_debug, bw);
 		//boolean pass = true;
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String inv=Constants.invalidStr_TP;
 		boolean insZero=true;
 		String TP_CL=Constants.TP;
@@ -3823,7 +4057,7 @@ public class RuleBook {
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				return d;
 			}
 			String codeFound1 = "";
@@ -3840,12 +4074,18 @@ public class RuleBook {
 
 					if (tp.getServiceCode().equalsIgnoreCase("D0120") || tp.getServiceCode().equalsIgnoreCase("D0150")
 							|| tp.getServiceCode().equalsIgnoreCase("D0145")) {
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
 						codeFound1 = tp.getServiceCode();
 						RuleEngineLogger.generateLogs(clazz, "Service Code IN TP-"+tp.getServiceCode(), Constants.rule_log_debug, bw);
 
 					}
 					if (tp.getServiceCode().equalsIgnoreCase("D0601") || tp.getServiceCode().equalsIgnoreCase("D0602")
 							|| tp.getServiceCode().equalsIgnoreCase("D0603")) {
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
 						codeFound2 = tp.getServiceCode();
 						RuleEngineLogger.generateLogs(clazz, "Service Code IN TP-"+tp.getServiceCode(), Constants.rule_log_debug, bw);
 
@@ -3854,21 +4094,25 @@ public class RuleBook {
 				if (!codeFound1.equals("") && codeFound2.equals("")) {
 					//pass = false;
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule22.error.message", new Object[] {ivf.getInsName(), TP_CL}, locale), Constants.FAIL));
+							messageSource.getMessage("rule22.error.message", new Object[] {ivf.getInsName(), TP_CL}, locale), 
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}else {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+							messageSource.getMessage("rule.message.pass", new Object[] {}, locale),
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					
 				}
 			}else if (cra != null && cra.trim().equalsIgnoreCase("no")) {
 				//pass = true;
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule22.error.messageno", new Object[] {}, locale), Constants.NotNeeded));
+						messageSource.getMessage("rule22.error.messageno", new Object[] {}, locale), 
+						Constants.NotNeeded,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				
 			}else  {
 				//pass = false;
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule22.error.messagere", new Object[] { cra }, locale), Constants.FAIL));
+						messageSource.getMessage("rule22.error.messagere", new Object[] { cra }, locale),
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				
 			}
 			/*
@@ -3881,7 +4125,7 @@ public class RuleBook {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 		}
 		return d;
@@ -3908,13 +4152,16 @@ public class RuleBook {
 		String planType = ivf.getPlanType();
 		String cMedicate = Constants.insurance_Medicaid;
 		boolean insZero=true;
-		String inv=Constants.invalidStr_TP;
+		//String inv=Constants.invalidStr_TP;
 		if (userType==Constants.userType_CL) {
 			insZero=false;
-			inv=Constants.invalidStr_Cl;
+			//inv=Constants.invalidStr_Cl;
 		}
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 
 		RuleEngineLogger.generateLogs(clazz, "planType-" + planType, Constants.rule_log_debug, bw);
         try {
@@ -3933,6 +4180,9 @@ public class RuleBook {
 				if (tp.getServiceCode().equalsIgnoreCase("D0220") || tp.getServiceCode().equalsIgnoreCase("D0230")
 						|| tp.getServiceCode().equalsIgnoreCase("D0272")
 						|| tp.getServiceCode().equalsIgnoreCase("D0274")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, " Fee for " + tp.getServiceCode() + " = " + tp.getFee(),
 							Constants.rule_log_debug, bw);
 					double fees=0;
@@ -3951,7 +4201,7 @@ public class RuleBook {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule23.error.message", new Object[] {
 								Constants.insurance_Medicaid_max_fee, Constants.insurance_Medicaid_max_fee }, locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			} else {
 				RuleEngineLogger.generateLogs(clazz, " BY pass the rule ", Constants.rule_log_debug, bw);
@@ -3960,7 +4210,7 @@ public class RuleBook {
 						new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule23.pass.message",
 										new Object[] { Constants.insurance_Medicaid_max_fee }, locale),
-								Constants.PASS));
+								Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			}
 		} else {
@@ -3971,7 +4221,7 @@ public class RuleBook {
 					new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule23.pass.message1",
 									new Object[] {  planType }, locale),
-							Constants.PASS));
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 
 		}
@@ -3979,7 +4229,7 @@ public class RuleBook {
         	x.printStackTrace();
         	dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
    
        }
     	return dList;
@@ -4006,6 +4256,9 @@ public class RuleBook {
 		String planType = ivf.getPlanType();
 		String cMedicate = Constants.insurance_Medicaid;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		boolean insZero=true;
 		//String inv=Constants.invalidStr_TP;
 		if (userType==Constants.userType_CL) {
@@ -4036,6 +4289,9 @@ public class RuleBook {
 						||	tp.getEstInsurance().equals("0.0"))) continue;
 
 					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
 						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
 								bw);
 						RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
@@ -4140,7 +4396,7 @@ public class RuleBook {
 											double diff= Double.parseDouble(fd.getFees())-Double.parseDouble(fs.getFeesFee());
 											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule24.error.message", new Object[] {hisd.getHistoryTooth(), diff  }, locale),
-													Constants.FAIL));
+													Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 										
 												}		
 											}else{
@@ -4148,7 +4404,7 @@ public class RuleBook {
 														Constants.rule_log_debug, bw);
 												dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 														messageSource.getMessage("rule.fee.notfound", new Object[] {  }, locale),
-														Constants.FAIL));
+														Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 												
 											}
 											breakAll=true; //need to  break;
@@ -4164,7 +4420,7 @@ public class RuleBook {
 						if (!breakAll) {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule24.pass1.message", new Object[] {  }, locale),
-									Constants.PASS));
+									Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			
 						}
 						
@@ -4172,13 +4428,13 @@ public class RuleBook {
 						else {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule24.pass1.message", new Object[] {  }, locale),
-									Constants.PASS));
+									Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			
 						}
 					}catch (Exception e) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
-								Constants.FAIL));
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								}
 				}
 			} else {
@@ -4186,13 +4442,13 @@ public class RuleBook {
 						Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule24.pass3.message", new Object[] {  }, locale),
-						Constants.PASS));
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			}
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 	}
@@ -4219,6 +4475,10 @@ public class RuleBook {
 		String planType = ivf.getPlanType();
 		String cMedicate = Constants.insurance_Medicaid;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
+		
 		boolean insZero=true;
 		//String inv=Constants.invalidStr_TP;
 		if (userType==Constants.userType_CL) {
@@ -4250,6 +4510,9 @@ public class RuleBook {
 						||	tp.getEstInsurance().equals("0.0"))) continue;
 
 					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
 						RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug,
 								bw);
 						RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
@@ -4354,7 +4617,7 @@ public class RuleBook {
 											double diff= Double.parseDouble(fd.getFees())-Double.parseDouble(fs.getFeesFee());
 											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule25.error.message", new Object[] { fs.getFeesServiceCode(),hisd.getHistoryTooth(), diff  }, locale),
-													Constants.FAIL));
+													Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 										
 												}		
 											}else{
@@ -4362,7 +4625,7 @@ public class RuleBook {
 														Constants.rule_log_debug, bw);
 												dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 														messageSource.getMessage("rule.fee.notfound", new Object[] {  }, locale),
-														Constants.FAIL));
+														Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 												
 											}
 											breakAll=true;
@@ -4378,7 +4641,7 @@ public class RuleBook {
 						if (!breakAll) {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule25.pass1.message", new Object[] {  }, locale),
-									Constants.PASS));
+									Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			
 						}
 						
@@ -4386,31 +4649,31 @@ public class RuleBook {
 						else {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule25.pass1.message", new Object[] {  }, locale),
-									Constants.PASS));
+									Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			
 						}
 					}catch (Exception e) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
-								Constants.FAIL));
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								}
 				}else {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule25.pass1.message", new Object[] {  }, locale),
-							Constants.PASS));
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}
 			} else {
 				RuleEngineLogger.generateLogs(clazz, " Plan type not Medicaid",
 						Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule25.pass3.message", new Object[] {  }, locale),
-						Constants.PASS));
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			}
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 	}
@@ -4433,7 +4696,9 @@ public class RuleBook {
 
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			List<TPValidationResponseDto> dList = new ArrayList<>();
-
+			Set<String> fcodes=new HashSet<>();
+			Set<String> surfaces=new HashSet<>();
+			Set<String> teethC=new HashSet<>();
 			Map<String, FeeToothDto> mapE = new HashMap<>();
 			Map<String, FeeToothDto> mapD = new HashMap<>();
 			boolean insZero=true;
@@ -4476,6 +4741,9 @@ public class RuleBook {
 
 						
 						if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+							surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+							teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							fcodes.add(tp.getServiceCode());
 							RuleEngineLogger.generateLogs(clazz, "code R=" + tp.getServiceCode(), Constants.rule_log_debug,
 									bw);
 							RuleEngineLogger.generateLogs(clazz, "Tooth R=" + tp.getTooth(), Constants.rule_log_debug,
@@ -4664,7 +4932,7 @@ public class RuleBook {
 												pass=false;
 												dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 														messageSource.getMessage("rule26.error.message", new Object[] { hisd }, locale),
-														Constants.FAIL));
+														Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 												//break;
 										}
 											//if (breakAll) break;
@@ -4676,24 +4944,24 @@ public class RuleBook {
 							if (pass) {
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule26.pass1.message", new Object[] {  }, locale),
-										Constants.PASS));
+										Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				
 							}
 							
 						}catch (Exception e) {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
-									Constants.FAIL));
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 									}
 					}else {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule26.pass1.message", new Object[] {  }, locale),
-								Constants.PASS));
+								Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					}
 				} catch (Exception ex) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			}
 			return dList;
 		}
@@ -4717,7 +4985,9 @@ public class RuleBook {
 
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			List<TPValidationResponseDto> dList = new ArrayList<>();
-
+			Set<String> fcodes=new HashSet<>();
+			Set<String> surfaces=new HashSet<>();
+			Set<String> teethC=new HashSet<>();
 			Map<String, FeeToothDto> mapE = new HashMap<>();
 			Map<String, FeeToothDto> mapD = new HashMap<>();
 			boolean pass=true;
@@ -4757,6 +5027,9 @@ public class RuleBook {
 							||	tp.getEstInsurance().equals("0.0"))) continue;
 
 						if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+							surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+							teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							fcodes.add(tp.getServiceCode());
 							RuleEngineLogger.generateLogs(clazz, "code R=" + tp.getServiceCode(), Constants.rule_log_debug,
 									bw);
 							RuleEngineLogger.generateLogs(clazz, "Tooth R=" + tp.getTooth(), Constants.rule_log_debug,
@@ -4945,7 +5218,7 @@ public class RuleBook {
 												pass=false;
 												dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 														messageSource.getMessage("rule27.error.message", new Object[] { hisd }, locale),
-														Constants.FAIL));
+														Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 												//break;
 										}
 											//if (breakAll) break;
@@ -4957,24 +5230,24 @@ public class RuleBook {
 							if (pass) {
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule27.pass1.message", new Object[] {  }, locale),
-										Constants.PASS));
+										Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				
 							}
 							
 						}catch (Exception e) {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
-									Constants.FAIL));
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 									}
 					}else {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule27.pass1.message", new Object[] {  }, locale),
-								Constants.PASS));
+								Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					}
 				} catch (Exception ex) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			}
 			return dList;
 		}
@@ -4998,7 +5271,9 @@ public class RuleBook {
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		Map<String, FeeToothDto> mapE = new HashMap<>();
 		Map<String, FeeToothDto> mapD = new HashMap<>();
 		boolean insZero=true;
@@ -5041,6 +5316,9 @@ public class RuleBook {
 						||	tp.getEstInsurance().equals("0.0"))) continue;
 
 					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
 						RuleEngineLogger.generateLogs(clazz, "code R=" + tp.getServiceCode(), Constants.rule_log_debug,
 								bw);
 						RuleEngineLogger.generateLogs(clazz, "Tooth R=" + tp.getTooth(), Constants.rule_log_debug,
@@ -5120,7 +5398,7 @@ public class RuleBook {
 										pass=false;
 										dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 												messageSource.getMessage("rule28.error.message", new Object[] { tooth }, locale),
-												Constants.FAIL));
+												Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 									}
 									
 								}
@@ -5227,7 +5505,7 @@ public class RuleBook {
 											pass=false;
 											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule28.error.message", new Object[] { hisd }, locale),
-													Constants.FAIL));
+													Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 											//break;
 									}
 										//if (breakAll) break;
@@ -5239,24 +5517,24 @@ public class RuleBook {
 						if (pass) {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule28.pass1.message", new Object[] {  }, locale),
-									Constants.PASS));
+									Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			
 						}
 						
 					}catch (Exception e) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
-								Constants.FAIL));
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								}
 				}else {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule28.pass1.message", new Object[] {  }, locale),
-							Constants.PASS));
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}
 			} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 	}
@@ -5281,6 +5559,9 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String  planType= ivf.getPlanType();
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		List<String> codes= new ArrayList<>();
 		RuleEngineLogger.generateLogs(clazz,
 				"planType-"+planType,
@@ -5303,6 +5584,9 @@ public class RuleBook {
 
 				if (tp.getServiceCode().equalsIgnoreCase("D0150") || tp.getServiceCode().equalsIgnoreCase("D0120") || 
 				    tp.getServiceCode().equalsIgnoreCase("D0145") || tp.getServiceCode().equalsIgnoreCase("D0140") ) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz,"code ="+ tp.getServiceCode(),Constants.rule_log_debug, bw);
 					counter =counter+  1;
 					codes.add(tp.getServiceCode());
@@ -5319,7 +5603,7 @@ public class RuleBook {
 						messageSource.getMessage("rule29.error.message",
 								new Object[] { String.join(",", codes) },
 								locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				
 			}else if(counter==1) {
 			RuleEngineLogger.generateLogs(clazz,
@@ -5328,7 +5612,7 @@ public class RuleBook {
 			
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule29.pass.message", new Object[] {String.join(",", codes) }, locale),
-					Constants.PASS));
+					Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			 }else {
 					RuleEngineLogger.generateLogs(clazz,
@@ -5337,13 +5621,13 @@ public class RuleBook {
 					
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule29.pass2.message", new Object[] { }, locale),
-							Constants.PASS));
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 					 }
 			} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			}	
 			return dList;
 				
@@ -5370,6 +5654,9 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String  planType= ivf.getPlanType();
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		List<String> codes= new ArrayList<>();
 		Map<String,List<String>> codesTeethMap= new HashMap<>();
 		boolean pass=true;
@@ -5399,10 +5686,16 @@ public class RuleBook {
 				    tp.getServiceCode().equalsIgnoreCase("D1120") || tp.getServiceCode().equalsIgnoreCase("D4910") || 
 					 tp.getServiceCode().equalsIgnoreCase("D4355")) {
 						RuleEngineLogger.generateLogs(clazz,"code ="+ tp.getServiceCode(),Constants.rule_log_debug, bw);
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
 					counter =counter+  1;
 					codes.add(tp.getServiceCode());
 				}
 				if (tp.getServiceCode().equalsIgnoreCase("D4341") ||tp.getServiceCode().equalsIgnoreCase("D4342")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					if (codesTeethMap.containsKey(tp.getServiceCode())) {
 						List<String> x = codesTeethMap.get(tp.getServiceCode());
 						x.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
@@ -5441,7 +5734,7 @@ public class RuleBook {
 						messageSource.getMessage("rule30.error.message",
 								new Object[] { String.join(",", codes) },
 								locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				
 			}else if (counter== 1 && pass) {
 			RuleEngineLogger.generateLogs(clazz,
@@ -5450,7 +5743,7 @@ public class RuleBook {
 			
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule30.pass.message", new Object[] {String.join(",", codes) }, locale),
-					Constants.PASS));
+					Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			 }else {
 					RuleEngineLogger.generateLogs(clazz,
@@ -5459,13 +5752,13 @@ public class RuleBook {
 					
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule30.pass2.message", new Object[] {}, locale),
-							Constants.PASS));
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 					 }
 			} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			}
 			return dList;
 				
@@ -5492,6 +5785,9 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String dat="";
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		boolean insZero=true;
 		//String inv=Constants.invalidStr_TP;
 		if (userType==Constants.userType_CL) {
@@ -5514,6 +5810,9 @@ public class RuleBook {
 
 				
 				if (tp.getServiceCode().equalsIgnoreCase("D4910")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 						RuleEngineLogger.generateLogs(clazz,"code ="+ tp.getServiceCode(),Constants.rule_log_debug, bw);
 					//Check history
 						
@@ -5577,7 +5876,7 @@ public class RuleBook {
 						messageSource.getMessage("rule31.pass.message",
 								new Object[] {},
 								locale),
-						Constants.PASS));
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				
 			}else {
 			RuleEngineLogger.generateLogs(clazz,
@@ -5586,13 +5885,13 @@ public class RuleBook {
 			
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule31.error.message", new Object[] { }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			}
 			 } catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			}
 			return dList;
 				
@@ -5617,6 +5916,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String toothTR1[] = null;
 		String toothTR2[] = null;
 		boolean insZero=true;
@@ -5635,11 +5937,17 @@ public class RuleBook {
 					||	tp.getEstInsurance().equals("0.0"))) continue;
 
 				if (tp.getServiceCode().equalsIgnoreCase("D4341")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					toothTR1 = ToothUtil.getQuadToothsFromTooth(tp.getTooth());
 
 				}
 				if (tp.getServiceCode().equalsIgnoreCase("D4342")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					toothTR2 = ToothUtil.getQuadToothsFromTooth(tp.getTooth());
 
@@ -5648,12 +5956,14 @@ public class RuleBook {
 			if (toothTR1 == null && toothTR2 == null) {
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule32.pass2.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule32.pass2.message", new Object[] {}, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			} else if (toothTR1 == null || toothTR2 == null) {
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule32.pass3.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule32.pass3.message", new Object[] {}, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			} else if (toothTR1 != null && toothTR2 != null) {
 				List<String> li = new ArrayList<>();
@@ -5677,11 +5987,12 @@ public class RuleBook {
 					// FAIL
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 							.getMessage("rule32.error.message", new Object[] { StringUtils.join(li, ',') }, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				} else {
 					// PASS
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule32.pass1.message", new Object[] {}, locale), Constants.PASS));
+							messageSource.getMessage("rule32.pass1.message", new Object[] {}, locale), 
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 				}
 
@@ -5689,7 +6000,7 @@ public class RuleBook {
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -5702,6 +6013,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
         List<String> checkList = new ArrayList<String>(Arrays.asList(Constants.FILLING_PT_SC.split(",")));
         checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_AT_SC.split(","))));
         checkList.addAll(new ArrayList<String>(Arrays.asList(Constants.FILLING_MM_SC.split(","))));
@@ -5730,6 +6044,9 @@ public class RuleBook {
 					||	tp.getEstInsurance().equals("0.0"))) continue;
 
 				if (checkList.contains(tp.getServiceCode())) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					toothFILL= new ArrayList<>();
 					toothFILL.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
@@ -5772,7 +6089,8 @@ public class RuleBook {
 								pass=false;
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule33.error.message", new Object[] {
-												entryFM.getKey(),entryEM.getKey(), t2}, locale), Constants.FAIL));
+												entryFM.getKey(),entryEM.getKey(), t2}, locale),
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								
 							}
 							
@@ -5786,19 +6104,21 @@ public class RuleBook {
 				if (pass) {
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule33.pass2.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule33.pass2.message", new Object[] {}, locale), 
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}
 			} else{
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule33.pass1.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule33.pass1.message", new Object[] {}, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			}
 			
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -5820,6 +6140,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String toothTR1[] = null;
 		String toothTR2[] = null;
 		boolean insZero=true;
@@ -5838,10 +6161,16 @@ public class RuleBook {
 					||	tp.getEstInsurance().equals("0.0"))) continue;
 
 				if (tp.getServiceCode().equalsIgnoreCase("D2954")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					toothTR1 = ToothUtil.getToothsFromTooth(tp.getTooth());
 				}
 				if (tp.getServiceCode().equalsIgnoreCase("D2950")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					toothTR2 = ToothUtil.getToothsFromTooth(tp.getTooth());
 				}
@@ -5849,12 +6178,14 @@ public class RuleBook {
 			if (toothTR1 == null && toothTR2 == null) {
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule34.pass2.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule34.pass2.message", new Object[] {}, locale), 
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			} else if (toothTR1 == null || toothTR2 == null) {
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule34.pass3.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule34.pass3.message", new Object[] {}, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			} else if (toothTR1 != null && toothTR2 != null) {
 				List<String> li = new ArrayList<>();
@@ -5878,11 +6209,12 @@ public class RuleBook {
 					// FAIL
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 							.getMessage("rule34.error.message", new Object[] { StringUtils.join(li, ',') }, locale),
-							Constants.FAIL));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				} else {
 					// PASS
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule34.pass1.message", new Object[] {}, locale), Constants.PASS));
+							messageSource.getMessage("rule34.pass1.message", new Object[] {}, locale), 
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 				}
 
@@ -5890,7 +6222,7 @@ public class RuleBook {
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -5912,6 +6244,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		List<String> teethList = new ArrayList<>();
 		boolean insZero=true;
 		//String inv=Constants.invalidStr_TP;
@@ -5932,6 +6267,9 @@ public class RuleBook {
 				if (tp.getServiceCode().equalsIgnoreCase("D7953") || tp.getServiceCode().equalsIgnoreCase("D7310") ||
 						tp.getServiceCode().equalsIgnoreCase("D7311")||tp.getServiceCode().equalsIgnoreCase("D7320") ||	
 						tp.getServiceCode().equalsIgnoreCase("D7321")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					teethList.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 					counter++;
@@ -5940,24 +6278,27 @@ public class RuleBook {
 			if (counter>1) {
 				RuleEngineLogger.generateLogs(clazz, " Fail the rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule35.error.message", new Object[] {String.join(",", teethList)}, locale), Constants.FAIL));
+						messageSource.getMessage("rule35.error.message", new Object[] {String.join(",", teethList)}, locale),
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			} else if (counter==1) {
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule35.pass1.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule35.pass1.message", new Object[] {}, locale), 
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 			} else  {
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule35.pass2.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule35.pass2.message", new Object[] {}, locale), 
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				
 			}
 
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -5979,7 +6320,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-		List<String> dcodes = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();List<String> dcodes = new ArrayList<>();
 	    boolean pass=true;
 	    boolean insZero=true;
 		//String inv=Constants.invalidStr_TP;
@@ -5999,6 +6342,9 @@ public class RuleBook {
 					||	tp.getEstInsurance().equals("0.0"))) continue;
 
 				if (tp.getServiceCode().equalsIgnoreCase("D5130") || tp.getServiceCode().equalsIgnoreCase("D5140")) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
 					checkForHistory=true;
@@ -6029,7 +6375,8 @@ public class RuleBook {
 						(hcode.equalsIgnoreCase("D5120") && dcodes.contains("D5140"))) {
 						RuleEngineLogger.generateLogs(clazz, "code HISTORY=" + hcode +"("+tooth+")", Constants.rule_log_debug, bw);
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule36.error.message", new Object[] {hcode}, locale), Constants.FAIL));
+								messageSource.getMessage("rule36.error.message", new Object[] {hcode}, locale),
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 						pass=false;
 				     }
 				 }
@@ -6041,21 +6388,23 @@ public class RuleBook {
 				if(pass) {
 					RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule36.pass2.message", new Object[] {}, locale), Constants.PASS));
+							messageSource.getMessage("rule36.pass2.message", new Object[] {}, locale)
+							, Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}
 
 
 			} else  {
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule36.pass2.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule36.pass2.message", new Object[] {}, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				
 			}
 
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -6063,6 +6412,7 @@ public class RuleBook {
 	
 	
 	// Extraction Limitation
+	
     /**
      * 
      * @param tpList
@@ -6078,6 +6428,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		//List<String> dcodes = new ArrayList<>();
 	    Map<String,List<String>> mapE = new HashMap<>();
 	    //Map<String,List<String>> mapD = new HashMap<>();
@@ -6093,7 +6446,6 @@ public class RuleBook {
 			boolean denturePresent=false;
 			boolean historyPresent=false;
 			
-			
 			List<String> extList= Arrays.asList( Constants.EXTRACTION_SC.split(","));
 			List<String> dentureList= Arrays.asList( Constants.DENTURE_SC.split(","));
 			
@@ -6108,6 +6460,9 @@ public class RuleBook {
 				if (extList.contains(tp.getServiceCode().toUpperCase())) {
 					RuleEngineLogger.generateLogs(clazz, "code =" + tp.getServiceCode(), Constants.rule_log_debug, bw);
 					RuleEngineLogger.generateLogs(clazz, "Check for History", Constants.rule_log_debug, bw);
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					checkForHistory=true;
 					if (mapE.containsKey(tp.getServiceCode())) {
 						List<String> t=mapE.get(tp.getServiceCode());
@@ -6238,12 +6593,14 @@ public class RuleBook {
 						}
 						RuleEngineLogger.generateLogs(clazz, " Fail the rule ", Constants.rule_log_debug, bw);
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule37.error.message", new Object[] {String.join(",", docodesforDisplay)}, locale), Constants.FAIL));
+								messageSource.getMessage("rule37.error.message", new Object[] {String.join(",", docodesforDisplay)}, locale),
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 					}else {
 						RuleEngineLogger.generateLogs(clazz, " No history for denture for Same tooth.", Constants.rule_log_debug, bw);
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule37.pass2.message", new Object[] {}, locale), Constants.PASS));
+								messageSource.getMessage("rule37.pass2.message", new Object[] {}, locale),
+								Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							
 					}
 					
@@ -6251,7 +6608,8 @@ public class RuleBook {
 					//No HISTORY for denture found
 					RuleEngineLogger.generateLogs(clazz, " No history for denture.", Constants.rule_log_debug, bw);
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule37.pass2.message", new Object[] {}, locale), Constants.PASS));
+							messageSource.getMessage("rule37.pass2.message", new Object[] {}, locale),
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 						
 				}
 				} catch (Exception e) {
@@ -6264,10 +6622,12 @@ public class RuleBook {
 				if (checkForHistory && !denturePresent) {
 				RuleEngineLogger.generateLogs(clazz, " Pass the Rule ", Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule37.pass1.message", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule37.pass1.message", new Object[] {}, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}else if((!checkForHistory && denturePresent) && (!checkForHistory && !denturePresent)) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule37.pass3.message", new Object[] {}, locale), Constants.PASS));
+					messageSource.getMessage("rule37.pass3.message", new Object[] {}, locale),
+					Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 						
 				}
 			}
@@ -6275,7 +6635,7 @@ public class RuleBook {
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -6300,6 +6660,9 @@ public class RuleBook {
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		String TP_CL=Constants.TP;
 		boolean insZero=true;
 		if (userType==Constants.userType_CL) {
@@ -6335,6 +6698,9 @@ public class RuleBook {
 					//present=false;
 
 					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
 						RuleEngineLogger.generateLogs(clazz, " Service Code -"+tp.getServiceCode(), Constants.rule_log_debug, bw);
 						present=true;
 						//break;
@@ -6353,7 +6719,7 @@ public class RuleBook {
 								 RuleEngineLogger.generateLogs(clazz, " Fail ", Constants.rule_log_debug, bw);
 								 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule38.error.message", new Object[] { codes,phis.getServiceCode(), TP_CL }, locale),
-											Constants.FAIL));
+											Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							 }
 						 }
 					 }
@@ -6417,7 +6783,7 @@ public class RuleBook {
 															Constants.rule_log_debug, bw);
 													 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 																messageSource.getMessage("rule38.error.message", new Object[] { codes,dto.getHistoryCode(), TP_CL}, locale),
-																Constants.FAIL));
+																Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 										           }
 												} catch (ParseException e2) {
 													// TODO Auto-generated catch block
@@ -6432,33 +6798,33 @@ public class RuleBook {
 							}catch (Exception e) {
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule.error.exception", new Object[] { e.getMessage() }, locale),
-										Constants.FAIL));
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 										}
 						 
 					 }
 					 if(pass) {
 						 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule38.pass2.message", new Object[] { codes }, locale),
-									Constants.PASS));
+									Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					 }
 					
 				}else {
 					//pass
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule38.pass3.message", new Object[] { codes,TP_CL }, locale),
-							Constants.PASS));
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}
 			}else {
 				//not medicaid
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule38.pass4.message", new Object[] { planType }, locale),
-						Constants.PASS));
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			}
 					///
 			} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 	}
@@ -6471,6 +6837,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		boolean insZero=true;
 		//String inv=Constants.invalidStr_TP;
 		if (userType==Constants.userType_CL) {
@@ -6493,6 +6862,9 @@ public class RuleBook {
 				if (tp.getServiceCode().equalsIgnoreCase("D1110") || tp.getServiceCode().equalsIgnoreCase("D1120")) {
 					needCheck=true;
 					tpCode=tp.getServiceCode();
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					RuleEngineLogger.generateLogs(clazz, "TP Code- "+tpCode,
 							Constants.rule_log_debug, bw);
 								
@@ -6524,24 +6896,24 @@ public class RuleBook {
 								//Correct Code
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule39.pass2.message", new Object[] {  }, locale),
-										Constants.PASS));
+										Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							}else {
 							    //in-correct code	
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule39.error.message", new Object[] { tpCode,rollAge }, locale),
-										Constants.FAIL));
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							 }
 							}else {
 								if (tpCode.equalsIgnoreCase("D1110")) {	
 								//correct code
 									dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule39.pass2.message", new Object[] {  }, locale),
-											Constants.PASS));
+											Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								}else {
 									//incorrect code
 									dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule39.error.message", new Object[] { tpCode,rollAge }, locale),
-											Constants.FAIL));
+											Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								}
 								
 							}
@@ -6549,7 +6921,7 @@ public class RuleBook {
 							RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule1.error.message.date", new Object[] { dob }, locale),
-									Constants.FAIL));
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							return dList;
 						}
 				
@@ -6557,13 +6929,13 @@ public class RuleBook {
 			}else {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule39.pass1.message", new Object[] {  }, locale),
-						Constants.PASS));
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			}
 
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -6576,7 +6948,9 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_40,
 				Constants.rule_log_debug, bw);
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-		
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		boolean insZero=true;
 		//String inv=Constants.invalidStr_TP;
 		if (userType==Constants.userType_CL) {
@@ -6593,6 +6967,13 @@ public class RuleBook {
 				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 						Constants.rule_log_debug, bw);
+				if ("D1515".equals(tp.getServiceCode()) || "D1510".equals(tp.getServiceCode())
+						) {
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
+					
+				}
 					
 				if (insZero && (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
 					||	tp.getEstInsurance().equals("0.0"))) continue;
@@ -6659,7 +7040,7 @@ public class RuleBook {
 				if (codes[0].equals("") && codes[1].equals("")) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule40.message1.pass", new Object[] {}, locale),
-						Constants.PASS));
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}else {
 					if (!codes[0].equals("")) x= x+ codes[0];
 					if (!codes[1].equals("")) {
@@ -6669,7 +7050,7 @@ public class RuleBook {
 						
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule40.message2.pass", new Object[] { x, String.join(",", normalteeth) }, locale),
-							Constants.PASS));
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 						
 				}
 			}else {
@@ -6681,12 +7062,12 @@ public class RuleBook {
 				}
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule40.error.message", new Object[] { x,String.join(",", issueTeeth),String.join(",",correctBiller) }, locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -6701,7 +7082,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		boolean pass=true;
-		
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		try {
 			
 			Map<String,Set<MVPandVAP>> mvpvapMap=null;
@@ -6749,6 +7132,9 @@ public class RuleBook {
 						for(Object obj : tpList) {
 							CommonDataCheck tp = (CommonDataCheck) obj;
 							if(m.getBase()!=null && m.getBaseGroup().equalsIgnoreCase(tp.getServiceCode())) {
+								surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+								teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+								fcodes.add(tp.getServiceCode());
 								baseG=m.getBaseGroup();
 								s.add(m.getBaseGroup());
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
@@ -6850,19 +7236,19 @@ public class RuleBook {
 				if (!pass)
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule41.error.message", new Object[] {String.join(",",sf)}, locale),
-								Constants.FAIL));
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			}
 
           if (pass) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule41.message.pass", new Object[] {  }, locale),
-					Constants.PASS));
+					Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
           }
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -6935,17 +7321,17 @@ public class RuleBook {
           if (pass) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule42.pass.message", new Object[] {  }, locale),
-					Constants.PASS));
+					Constants.PASS,"","",""));
 
           }else {
         	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
   					messageSource.getMessage("rule42.error.message", new Object[] {String.join(",", dupCodes)  }, locale),
-  					Constants.FAIL));
+  					Constants.FAIL,"","",""));
           }
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 		}
 		return dList;
 
@@ -7022,9 +7408,9 @@ public class RuleBook {
 
 	}
     */
-	// Signed Consent Requirements (User Input) //Forms Required // Consent Form Requirements
+	// Signed Consent Requirements (User Input) //Forms Required // Consent Form Requirements //OK
 	public List<TPValidationResponseDto> Rule44(List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
-			BufferedWriter bw,int userType) {
+			BufferedWriter bw,List<UserInputRuleQuestionHeader> qhList,int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_44,
 				Constants.rule_log_debug, bw);
 		List<TPValidationResponseDto> dList = new ArrayList<>();
@@ -7060,18 +7446,18 @@ public class RuleBook {
         	  pass=false;
            	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
     					messageSource.getMessage("rule44.error.message2", new Object[] { ER_MSG }, locale),
-    					Constants.FAIL));
+    					Constants.FAIL,"","",""));
           }else {
         	  if (pass==false) {
         		  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
       					messageSource.getMessage("rule44.error.message1", new Object[] { }, locale),
-      					Constants.FAIL));
+      					Constants.FAIL,"","",""));
         	  }
           }
           if (pass) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule44.pass.message", new Object[] {  }, locale),
-					Constants.PASS));
+					Constants.PASS,"","",""));
 
           }else {
         	 
@@ -7079,24 +7465,39 @@ public class RuleBook {
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 		}
 		return dList;
 
 	}
 	
 	// Major Service Form Requirements (User Input) //
-	public List<TPValidationResponseDto> Rule50(List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
-			BufferedWriter bw) {
+	public List<TPValidationResponseDto> Rule50(List<Object> tpList,List<Mappings> mappings,List<QuestionAnswerDto> ansL,MessageSource messageSource, Rules rule,
+			BufferedWriter bw,List<UserInputRuleQuestionHeader> qhList) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_50,
 				Constants.rule_log_debug, bw);
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		boolean pass=true;
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
+		
 		try {
 			
 			//boolean questionPresent=false;
-			
-	      
+			if (ansL!=null && ansL.size()==0) {
+			for (Object obj : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				 Mappings mapA = getMappingFromListMajorServiceForm(mappings, tp.getServiceCode());
+				 if (mapA!=null) {
+				    //we need this
+					 surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
+					 pass=false;
+				 }
+			  }
+			 }
 	    	  if (ansL!=null) {
 	    		  for(QuestionAnswerDto qDto: ansL) {
 	    			 if ( qDto.getQuestionId()==Constants.Major_Service_Form_header_id_Is_major_Available) {
@@ -7115,25 +7516,26 @@ public class RuleBook {
            if (pass==false) {
         		  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
       					messageSource.getMessage("rule50.error.message1", new Object[] { }, locale),
-      					Constants.FAIL));
+      					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
         	  }
           
           else  {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule50.pass.message", new Object[] {  }, locale),
-					Constants.PASS));
+					Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
           }
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
 	}
 	
 	// Ortho (User Input) (Not Used)
+	/*
 	public List<TPValidationResponseDto> Rule45(List<Object> tpList,List<QuestionAnswerDto> ansL, MessageSource messageSource, Rules rule,
 			 BufferedWriter bw) {
 
@@ -7223,25 +7625,28 @@ public class RuleBook {
 		return d;
 
 	}
-
+    */
 	// Pre-Authorization Requirements (User Input)
 	public List<TPValidationResponseDto> Rule46(Object ivfSheet,List<Object> tpList,List<QuestionAnswerDto> ansL, MessageSource messageSource, Rules rule,
-			List<Mappings> mappings,BufferedWriter bw,int userType,String oldTpId) {
+			List<Mappings> mappings,BufferedWriter bw,List<UserInputRuleQuestionHeader> qhList,int userType,String oldTpId) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_46,
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> d = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		try {
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return d;
 			}
 			
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			String dob = ivf.getPatientDOB();
-
+			
 			int[] age=null;
 			try {
 				age = DateUtils.calculateAgeYMD(dob, true);
@@ -7253,7 +7658,7 @@ public class RuleBook {
 				RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule1.error.message.date", new Object[] { dob }, locale),
-						Constants.FAIL));
+						Constants.FAIL,"","",""));
 				return d;
 			}
 			boolean pass = true;
@@ -7270,8 +7675,18 @@ public class RuleBook {
 						if (userType==Constants.userType_CL) tpId=oldTpId;
 						Mappings mapP = getMappingFromListPreAuth(mappings, tp.getServiceCode());
 						if (mapP != null) {
+							surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+							teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							fcodes.add(tp.getServiceCode());
 							RuleEngineLogger.generateLogs(clazz, "PreAuth  present" + mapP.getPreAuthNeeded(),
 									Constants.rule_log_debug, bw);
+							//user input issue..
+							if (ansL!=null && ansL.size()==0) {
+								pass=false;
+								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule.nouser.input", new Object[] {  }, locale),
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+							}
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tpId)) {
 								if (Constants.Pre_Authorization_question_header_id_preauth_avail==ans.getQuestionId()) {//21
@@ -7297,7 +7712,7 @@ public class RuleBook {
 										pass=false;
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 												messageSource.getMessage("rule46.error.message2", new Object[] {  }, locale),
-												Constants.FAIL));
+												Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 									}
 								 }
 								}						
@@ -7312,17 +7727,18 @@ public class RuleBook {
 			
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), 
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			else if (d.size()==0){
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule46.error.message1", new Object[] {  }, locale),
-						Constants.FAIL));
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 			}
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 		}
 		return d;
@@ -7331,7 +7747,7 @@ public class RuleBook {
 
 	// Provider Change (User Input)
 	public List<TPValidationResponseDto> Rule47(Object ivfSheet,List<Object> tpList,List<QuestionAnswerDto> ansL, MessageSource messageSource, Rules rule,
-			List<Mappings> mappings,BufferedWriter bw,int userType,String oldTpId) {
+			List<Mappings> mappings,BufferedWriter bw,List<UserInputRuleQuestionHeader> qhList,int userType,String oldTpId) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_47,
 				Constants.rule_log_debug, bw);
@@ -7348,7 +7764,7 @@ public class RuleBook {
 					Constants.rule_log_debug, bw);
 			
 			if (planType != null && planType.trim().toLowerCase().contains(cMedicate)) {
-			
+			boolean chk=false;
 			String pname= ivf.getProviderName();
 					for (Object obj : tpList) {
 						CommonDataCheck tp = (CommonDataCheck) obj;
@@ -7360,6 +7776,19 @@ public class RuleBook {
 							String tpId=tp.getId();
 							if (userType==Constants.userType_CL) tpId=oldTpId;
 
+							if (ansL!=null && ansL.size()==0 && !chk) {
+								for (UserInputRuleQuestionHeader qh:qhList) {
+									if (ivf.getPlanType().trim().toLowerCase().contains(Constants.insurance_Medicaid) && qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Provider_Change)){
+										pass=false;
+										chk=true;
+										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+												messageSource.getMessage("rule.nouser.input", new Object[] {  }, locale),
+												Constants.FAIL,"","",""));
+									}
+										
+								}
+								
+							}
 							for(QuestionAnswerDto ans:ansL) {
 								if (ans.getTpId().equalsIgnoreCase(tpId)) {
 								if (Constants.Provider_Change_question_header_id_provider_change==ans.getQuestionId()) {//15
@@ -7367,7 +7796,7 @@ public class RuleBook {
 										pass=false;
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 												messageSource.getMessage("rule47.error.message1", new Object[] {  }, locale),
-												Constants.FAIL));
+												Constants.FAIL,"","",""));
 									}
 								 }
 								}						
@@ -7382,14 +7811,14 @@ public class RuleBook {
 										pass=false;
 										d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 												messageSource.getMessage("rule47.error.message1", new Object[] {  }, locale),
-												Constants.FAIL));
+												Constants.FAIL,"","",""));
 									}
                                     if (sp.startsWith("false") && pass) {
                                     	//This means answer is not present we can say reference no missing
                                     	pass=false;
                                     	d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 												messageSource.getMessage("rule47.error.message1", new Object[] {  }, locale),
-												Constants.FAIL));
+												Constants.FAIL,"","",""));
 									}
 									
 								  }
@@ -7404,12 +7833,12 @@ public class RuleBook {
 			}//If
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,"","",""));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -7424,6 +7853,9 @@ public class RuleBook {
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		boolean pass=true;
 		boolean insZero=true;
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		//String inv=Constants.invalidStr_TP;
 		if (userType==Constants.userType_CL) {
 			insZero=false;
@@ -7447,6 +7879,9 @@ public class RuleBook {
 				if (tp.getServiceCode().equalsIgnoreCase("D0145")){
 					RuleEngineLogger.generateLogs(clazz, "Code Exam- "+tp.getServiceCode(),
 							Constants.rule_log_debug, bw);
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					pass=false;
 					break;
 				}
@@ -7455,17 +7890,17 @@ public class RuleBook {
           if (pass) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule48.pass.message", new Object[] {}, locale),
-					Constants.PASS));
+					Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
           }else {
         	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
   					messageSource.getMessage("rule48.error.message", new Object[] {chip}, locale),
-  					Constants.FAIL));
+  					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
           }
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -7484,6 +7919,9 @@ public class RuleBook {
 			insZero=false;
 			//inv=Constants.invalidStr_Cl;
 		}
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		
 		List<String> tooth= new ArrayList<>();
 		try {
@@ -7503,6 +7941,9 @@ public class RuleBook {
 				if (tp.getServiceCode().equalsIgnoreCase("D1351")){
 					RuleEngineLogger.generateLogs(clazz, "Code Sealant- "+tp.getServiceCode(),
 							Constants.rule_log_debug, bw);
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 				tooth.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 				RuleEngineLogger.generateLogs(clazz, "Sealant Tooth- "+tp.getTooth(),
 						Constants.rule_log_debug, bw);
@@ -7522,17 +7963,17 @@ public class RuleBook {
           if (pass) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule49.pass.message", new Object[] {}, locale),
-					Constants.PASS));
+					Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
           }else {
         	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
   					messageSource.getMessage("rule49.error.message", new Object[] {chip,issueSet}, locale),
-  					Constants.FAIL));
+  					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
           }
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		}
 		return dList;
 
@@ -7546,6 +7987,9 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		String inv=Constants.invalidStr_TP;
 		String TP_CL=Constants.TP;
@@ -7558,7 +8002,7 @@ public class RuleBook {
 			boolean pass = true;
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.ALERT));
+						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.ALERT,"","",""));
 				return d;
 			}
                Set<String> issueTeeth=new HashSet<>();
@@ -7593,12 +8037,15 @@ public class RuleBook {
 					dt1=tp.getCdDetails().getDateLastUpdated();
 					if (!checkList.contains(tp.getServiceCode())) continue;
 					List<String> t=Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth()));
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
 					for(String t1:t) {
 						if (tooth.contains(t1)) {
 							//throw Error
 							pass=false;
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule53.alert.message1", new Object[] {t1,TP_CL}, locale), Constants.FAIL));
+									messageSource.getMessage("rule53.alert.message1", new Object[] {t1,TP_CL}, locale), Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
  
 							break;
 						}else {
@@ -7694,17 +8141,17 @@ public class RuleBook {
                   /**/
 			if (!pass && issueTeeth.size()>0) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule53.alert.message2", new Object[] {String.join(",", issueTeeth)}, locale), Constants.ALERT));
+						messageSource.getMessage("rule53.alert.message2", new Object[] {String.join(",", issueTeeth)}, locale), Constants.ALERT,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 	
 			}
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 		} catch (Exception x) {
             x.printStackTrace();
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -7723,7 +8170,7 @@ public class RuleBook {
 			boolean pass = true;
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return d;
 			}
 
@@ -7809,7 +8256,7 @@ public class RuleBook {
 							List<String> dx=ToothUtil.generateErrorListForRule51_52(tp,esfeess,rDLSS,bw);
 							for(String p:dx) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule51.alert.message1", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2] }, locale), Constants.FAIL));
+									messageSource.getMessage("rule51.alert.message1", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2] }, locale), Constants.FAIL,"","",""));
 							}
 							pass= false;
 						}
@@ -7819,7 +8266,7 @@ public class RuleBook {
 							List<String> dx=ToothUtil.generateErrorListForRule51_52(tp,esfeess,rDLSS,bw);
 							for(String p:dx) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule51.alert.message2", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2] }, locale), Constants.FAIL));
+									messageSource.getMessage("rule51.alert.message2", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2] }, locale), Constants.FAIL,"","",""));
 							}
 							pass= false;
 						}
@@ -7830,12 +8277,12 @@ public class RuleBook {
 			
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,"","",""));
 		} catch (Exception x) {
             x.printStackTrace();
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -7854,7 +8301,7 @@ public class RuleBook {
 			boolean pass = true;
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL));
+						Constants.errorMessOPen + "Invalid Treatment Plan" + Constants.errorMessClose, Constants.FAIL,"","",""));
 				return d;
 			}
 
@@ -7940,7 +8387,7 @@ public class RuleBook {
 							List<String> dx=ToothUtil.generateErrorListForRule51_52(tp,esfeess,rDLSS,bw);
 							for(String p:dx) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule52.alert.message1", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2]}, locale), Constants.FAIL));
+									messageSource.getMessage("rule52.alert.message1", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2]}, locale), Constants.FAIL,"","",""));
 							}
 							pass= false;
 						}
@@ -7950,7 +8397,7 @@ public class RuleBook {
 							List<String> dx=ToothUtil.generateErrorListForRule51_52(tp,esfeess,rDLSS,bw);
 							for(String p:dx) {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-									messageSource.getMessage("rule52.alert.message2", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2] }, locale), Constants.FAIL));
+									messageSource.getMessage("rule52.alert.message2", new Object[] {p.split("---")[0],p.split("---")[1],p.split("---")[2] }, locale), Constants.FAIL,"","",""));
 							}
 							pass= false;
 						}
@@ -7962,12 +8409,12 @@ public class RuleBook {
 			
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS));
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,"","",""));
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
-					Constants.FAIL));
+					Constants.FAIL,"","",""));
 
 		}
 		return d;
@@ -8103,7 +8550,7 @@ public class RuleBook {
 						new Object[] { "Employer not found Patient (" + Constants.errorMessOPen + ivf.getPatientName()
 								+ "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
 						locale),
-				Constants.FAIL));
+				Constants.FAIL,"","",""));
 		return dList;
 	}
 
@@ -8112,7 +8559,7 @@ public class RuleBook {
 		dList.add(new TPValidationResponseDto(-1, "no rule", messageSource.getMessage("rule.patient.notfound.espatient",
 				new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
 						+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
-				locale), Constants.FAIL));
+				locale), Constants.FAIL,"","",""));
 		return dList;
 	}
 }

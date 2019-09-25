@@ -127,6 +127,40 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 	}
 
 	@Override
+	public List<QuestionAnswerDto> getUserAnswersPermanent(UserInputDto dto) {
+		Session session = getSession();
+		List<QuestionAnswerDto> dtoList = null;
+		try {
+			// Transaction transaction = session.beginTransaction();
+			Criteria criteria = session.createCriteria(UserInputRuleQuestionAnswer.class);
+			criteria.add(Restrictions.eq("tpId", dto.getTreatmentPlanId()));
+
+			criteria.createAlias("office", "off");
+			criteria.add(Restrictions.eq("off.uuid", dto.getOfficeId()));
+			criteria.add(Restrictions.eq("savedPermanent", "true"));
+			ProjectionList pjList = Projections.projectionList();
+			pjList.add(Projections.property("id"), "answerId");
+			pjList.add(Projections.property("savedPermanent"), "savedPermanent");
+			pjList.add(Projections.property("tpId"), "tpId");
+			pjList.add(Projections.property("userInputRuleQuestionHeader.id"), "questionId");
+			pjList.add(Projections.property("ivfId"), "ivfId");
+			pjList.add(Projections.property("patId"), "patId");
+			pjList.add(Projections.property("office.uuid"), "officeId");
+			pjList.add(Projections.property("answer"), "answer");
+			pjList.add(Projections.property("serviceCode"), "serviceCode");
+
+			criteria.setProjection(pjList);
+			criteria.setResultTransformer(Transformers.aliasToBean(QuestionAnswerDto.class));
+			dtoList = criteria.list();
+			// transaction.commit();
+		} finally {
+			closeSession(session);
+
+		}
+		return dtoList;
+	}
+
+	@Override
 	public UserInputRuleQuestionAnswer getUserAnswersByQuestionIdServiceCode(UserInputDto dto, int questionId,
 			String serviceCode) {
 		Session session = getSession();
@@ -213,6 +247,7 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 			for (UserInputRuleQuestionAnswer ans : li) {
 				UserAnswerDto data = map.get(ans.getId());
 				ans.setAnswer(data.getAnswer());
+				ans.setSavedPermanent("true");
 				updateEntity(ans);
 			}
 
@@ -264,5 +299,68 @@ public class UserInputQuestionDaoImpl extends BaseDaoImpl implements UserInputQu
 		}
 		return dtoList;
 }
+
+	@Override
+	public void updateUserAnswersPremanent(String officeId, String patId, String treatementId) {
+		// TODO Auto-generated method stub
+		
+		Session session = getSession();
+		try {
+			Transaction tx=session.beginTransaction();
+		String queryString="update user_input_rule_question_answer set saved_permanent='true'"
+		 		+ " where tp_id='"+treatementId+"' and office_id='"+officeId+"' and pat_id='"+patId+"'" ;
+			 session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(QuestionAnswerDto.class)). executeUpdate();
+			 tx.commit();
+		} finally {
+			closeSession(session);
+
+		}	 
+	}
+
+	@Override
+	public List<QuestionAnswerDto> getUserAnswersByPatIvfAndOffPermanent(String patId, String ivfId, String TRAN_DATE,
+			Office office) {
+		Session session = getSession();
+		List<QuestionAnswerDto> dtoList = null;
+		try {
+			// Transaction transaction = session.beginTransaction();
+			/*
+			Criteria criteria = session.createCriteria(UserInputRuleQuestionAnswer.class);
+			criteria.add(Restrictions.eq("ivfId", ivfId));
+			criteria.add(Restrictions.eq("patId", patId));
+			criteria.createAlias("office", "off");
+			criteria.add(Restrictions.eq("off.uuid", office.getUuid()));
+
+			ProjectionList pjList = Projections.projectionList();
+			pjList.add(Projections.property("id"), "answerId");
+			pjList.add(Projections.property("tpId"), "tpId");
+			pjList.add(Projections.property("userInputRuleQuestionHeader.id"), "questionId");
+			pjList.add(Projections.property("ivfId"), "ivfId");
+			pjList.add(Projections.property("patId"), "patId");
+			pjList.add(Projections.property("office.uuid"), "officeId");
+			pjList.add(Projections.property("answer"), "answer");
+			pjList.add(Projections.property("serviceCode"), "serviceCode");
+
+			criteria.setProjection(pjList);
+			criteria.setResultTransformer(Transformers.aliasToBean(QuestionAnswerDto.class));
+			dtoList = criteria.list();
+			*/
+			// transaction.commit();
+			 String queryString="select pat_id as patId,ivf_id as ivfId,anwser as answer,ans.office_id as officeId,"
+			 		+ " id as answerId,tp_id as tpId,question_id as questionId,service_code as serviceCode,tx_plan_validation_date as txPlanValidationDate"
+			 		+ " from user_input_rule_question_answer ans," 
+			 		+"(select max(tx_plan_validation_date) as b from user_input_rule_question_answer "  
+			 		+" where saved_permanent='true' and pat_id='"+patId+"' and ivf_id='"+ivfId+"' and office_id='"+office.getUuid()+"' " 
+			 		+ " and STR_TO_DATE('"+TRAN_DATE+"','%m/%d/%Y')>=tx_plan_validation_date  order by tx_plan_validation_date desc limit 1) a  where " + 
+			 		" ans.saved_permanent='true' and ans.pat_id='"+patId+"' and ans.ivf_id='"+ivfId+"' and office_id='"+office.getUuid()+"' and ans.tx_plan_validation_date=a.b ";
+			 dtoList=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(QuestionAnswerDto.class)). list();
+
+			
+		} finally {
+			closeSession(session);
+
+		}
+		return dtoList;
+	}
 
 }

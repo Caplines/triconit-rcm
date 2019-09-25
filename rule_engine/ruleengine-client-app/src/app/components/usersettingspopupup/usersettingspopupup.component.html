@@ -1,0 +1,66 @@
+<div *ngIf="showusersettingPopup">
+	<div class="close-btn">
+		<a href="javascript:void(0)" (click)="closePopup()"> Go Back </a>
+	</div>
+	<div class="table-container">
+
+		<div>
+			<h2 class="user-heading">USER NAME: <span>{{userData.userName}}</span></h2>
+		</div>
+		<div class="dropdown dropdown-sm pwd-dropdown">
+			<button class="btn btn-block dropdown-toggle" type="button"
+				data-toggle="dropdown">
+				<span class="caret"></span>Select Action
+			</button>
+			<ul class="dropdown-menu">
+				<li><a href="javascript:void(0)" (click)="showAction(1)">Update
+						Password</a></li>
+				<li><a href="javascript:void(0)" (click)="showAction(2)">Update
+						Status</a></li>
+				<!-- <li><a href="javascript:void(0)" (click)="showAction(3)">Update
+						Rights</a></li> -->
+			</ul>
+		</div>
+
+		<div *ngIf="actionType==1" class="reset-pwd-user">
+			<app-resetpassword [uuid]="userData.uuid"></app-resetpassword>
+
+		</div>
+		<div *ngIf="actionType==2" class="enable-user-container">
+			<h3>Enable /Disable User</h3>
+			<form class="login-form" name="form">
+				<label class="radio-inline">
+					<input class="" style="left:0px;position: inherit;" type="radio" name="mode"
+					[value]="true" [(ngModel)]="enable"> Enable User 
+				</label>
+				
+				<label class="radio-inline">
+					<input class="" style="left:0px;position: inherit;" type="radio" name="mode"
+					[value]="false" [(ngModel)]="enable"> Disable User
+				</label>
+					<div><button type="button" class="btn update-btn" (click)="updateStatus()"> Update Status</button></div>
+				<p *ngIf="p_s">Status updated Successfully.</p>
+			</form>
+		</div>
+		<!-- 
+		<div *ngIf="actionType==2">
+			<h3> Give Treatment Plan Rights OR Claim Rights</h3>
+			<form class="login-form" name="form">
+				<label>Treatment Plan Rights:</label> <label class="form-check-inline">
+					<input class="" style="left:0px;position: inherit;" type="radio" name="mode"
+					[value]="true" [(ngModel)]="right">
+				</label> <label>Claim Rights:</label> <label class="form-check-inline">
+					<input class="" style="left:0px;position: inherit;" type="radio" name="mode"
+					[value]="false" [(ngModel)]="right">
+				</label>
+				<p>
+					<button type="button" class="btn" (click)="updateStatus()"> Update Rights</button>
+				</p>
+				<p *ngIf="p_s">Rights updated Successfully.</p>
+			</form>
+		</div>
+		-->
+		
+	</div>
+</div>
+

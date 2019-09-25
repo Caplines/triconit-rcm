@@ -40,7 +40,7 @@
 						<td *ngFor="let data of questionFormData[key]">
 							<ul *ngFor="let answer of data.questionAnswers">
 								<li *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
-									<input class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+									<input id="narx_{{answer.answerId}}"  class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 								</li>
 								<li *ngIf="data.questionType == 'Y_N'">
 									<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
@@ -123,7 +123,7 @@
 						<td *ngFor="let data of questionFormData[key]">
 							<ul *ngFor="let answer of data.questionAnswers">
 								<li *ngIf="data.questionType == 'TEXT' || data.questionType == 'STRING'">
-									<input class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
+									<input id="prex_{{answer.answerId}}" class="inp-custom" type="text" [(ngModel)]="answer.answer" (change)="saveChanges(answer)" [disabled]="data.canChangeAnswer == 0" />
 								</li>
 								<li *ngIf="data.questionType == 'Y_N'">
 									<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
@@ -189,7 +189,7 @@
 						</label>
 						<ng-container *ngIf="data.question!='Provider'">{{data.question}}</ng-container>
 						<br>
-						<span style="padding-left: 36px">Reference No. <input class="inp-custom fill-blanks" type="text" [(ngModel)]="answer.answer2" (change)="mergeAnswer(answer)" [disabled]="data.canChangeAnswer == 0" />
+						<span style="padding-left: 36px" [ngClass]="{'ref_error' : myError.PC}">Reference No. <input class="inp-custom fill-blanks" type="text" [(ngModel)]="answer.answer2" (change)="mergeAnswer(answer)" [disabled]="data.canChangeAnswer == 0" />
 						</span>
 					</span>
 				</span>

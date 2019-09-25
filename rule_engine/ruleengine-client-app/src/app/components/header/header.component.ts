@@ -41,6 +41,7 @@ export class HeaderComponent implements OnInit {
 		if (!this.userType) this.userType='';
 		this.userTypeAdmin = localStorage.getItem('roles').indexOf("ROLE_ADMIN")>0;
 		this.userTypeRegular = "ROLE_USER";
+		
 	}
 	
   }

@@ -42,6 +42,12 @@ export default class Utils {
        return ut;
        
    }
+   
+   static checkAdmin(){
+	    if (localStorage.getItem('currentUser') && localStorage.getItem('roles').indexOf("ROLE_ADMIN")>0) {
+	        return true;
+	     }
+        return false;
+   }
 
-}  
-
+}

@@ -68,6 +68,9 @@ public class UserInputRuleQuestionAnswer extends BaseAudit implements java.io.Se
 	@Temporal(TemporalType.DATE)
 	private Date txPlanValidationDate;
 
+	@Column(name = "saved_permanent",nullable=true)
+	private String savedPermanent;
+
 	public int getId() {
 		return id;
 	}
@@ -138,6 +141,14 @@ public class UserInputRuleQuestionAnswer extends BaseAudit implements java.io.Se
 
 	public void setTxPlanValidationDate(Date txPlanValidationDate) {
 		this.txPlanValidationDate = txPlanValidationDate;
+	}
+
+	public String getSavedPermanent() {
+		return savedPermanent;
+	}
+
+	public void setSavedPermanent(String savedPermanent) {
+		this.savedPermanent = savedPermanent;
 	}
 
 	

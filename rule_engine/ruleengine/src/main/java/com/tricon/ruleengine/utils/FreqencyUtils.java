@@ -475,7 +475,8 @@ public class FreqencyUtils {
 	public static List<TPValidationResponseDto>  ivfFrequencyLogic(List<ServiceCodeIvfTimesFreqFieldDto> dataIVF,String tpCode
 			,String tooth,ToothHistoryDto historyD,Class<?> clazz,BufferedWriter bw,int CurrentYear,
 			Date planDate, MessageSource messageSource,Rules rule,IVFTableSheet ivf,
-			Date TP_Date,Locale locale,Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVFFinal) {
+			Date TP_Date,Locale locale,Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVFFinal,Set<String> fcodes,
+			Set<String> surfaces,Set<String> teethC) {
 		boolean present = false;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF) {
@@ -570,7 +571,7 @@ public class FreqencyUtils {
 							new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule21.error.messagepl",
 											new Object[] { ivf.getPlanEffectiveDate()}, locale),
-									Constants.FAIL));	
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
 					return dList;
 				}
 				Date nextDate = DateUtils.getNextYear(planDate);
@@ -593,7 +594,7 @@ public class FreqencyUtils {
 							new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule21.error.messagepl",
 											new Object[] { ivf.getPlanEffectiveDate()}, locale),
-									Constants.FAIL));	
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
 					return dList;
 				}
 				for (int x = 0; x <= 11;) {
@@ -674,7 +675,7 @@ public class FreqencyUtils {
 							new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule21.error.messagepl",
 											new Object[] { ivf.getPlanEffectiveDate()}, locale),
-									Constants.FAIL));	
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
 					return dList;
 				}
 				if (dos.compareTo(planDate) < 0) {
@@ -717,7 +718,7 @@ public class FreqencyUtils {
 							new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule21.error.messagepl",
 											new Object[] { ivf.getPlanEffectiveDate()}, locale),
-									Constants.FAIL));	
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
 					return dList;
 				}
 				if (dos.compareTo(planDate) < 0) {
@@ -756,7 +757,7 @@ public class FreqencyUtils {
 							new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule21.error.messagepl",
 											new Object[] { ivf.getPlanEffectiveDate()}, locale),
-									Constants.FAIL));	
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
 					return dList;
 				}
 				if (dos.compareTo(planDate) < 0) {

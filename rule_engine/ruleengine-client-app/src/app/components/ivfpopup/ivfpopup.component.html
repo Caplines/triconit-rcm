@@ -44,13 +44,20 @@
 					<span class="label label-danger" [ngClass]="{'active':activeClE}" *ngIf="ivfmData[key].countE>0" (click)="toggleResult('exit')"> EXIT: {{ivfmData[key].countE}}</span>
 					<span class="label label-info" [ngClass]="{'active':activeClA}" *ngIf="ivfmData[key].countA>0" (click)="toggleResult('alert')">ALERT: {{ivfmData[key].countA}}</span>
 					</th>
+					<th>Service&nbsp;Codes</th>
+					<th>Tooth#</th>
+					<th>Surface#</th>
 					<th>Messages</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr *ngFor="let data of ivfmData[key] | resultTypeFilter:filterType">
 					<td><span [innerHTML]="data.ruleName"></span></td>
+					<td><span [innerHTML]="data.serviceCode"></span></td>
+					<td><span [innerHTML]="data.tooth"></span></td>
+					<td><span [innerHTML]="data.surface"></span></td>
 					<td><span [innerHTML]="data.message"></span></td>
+					
 				<tr>
 			</tbody>						
 		</table>

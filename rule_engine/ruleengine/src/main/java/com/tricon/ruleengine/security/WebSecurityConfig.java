@@ -133,13 +133,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //"/fetchesdata/*/*",
                 "/ivftreatmentplan",
                 "/diagnosticcheck",
-                
+                "/finduserbyusername",
                 "/ivfclaimid",
                 "/ivfcl",
                 "/ivfclbatch",
                 "/reportcl",
                 "/enreportscl",
-                
+                "/usersettings",
                 
                 "/userinput",
                 "/",

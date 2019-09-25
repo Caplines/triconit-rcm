@@ -14,7 +14,11 @@ public interface UserInputService {
 	
 	public List<QuestionAnswerDto> getUserAnswers(UserInputDto dto);
 
+	public List<QuestionAnswerDto> getUserAnswersPermanent(UserInputDto dto);
+	
 	public void saveUserAnswers(List<UserAnswerDto> userAnswerDto);
 
 	public List<QuestionAnswerDto> getUserAnswers(String patId,String ivfId,String TRAN_DATE, Office office);
+
+	public List<QuestionAnswerDto> getUserAnswersPermanent(String patId,String ivfId,String TRAN_DATE, Office office);
 }

@@ -21,6 +21,8 @@ public interface UserInputQuestionDao {
 
 	public List<QuestionAnswerDto> getUserAnswers(UserInputDto dto);
 
+	public List<QuestionAnswerDto> getUserAnswersPermanent(UserInputDto dto);
+
 	public Serializable saveAndUpdateAnswers(QuestionAnswerDto dto,Office off,UserInputRuleQuestionHeader userInputRuleQuestionHeader,User user,String serviceCode);
 
 	public UserInputRuleQuestionAnswer getUserAnswersByQuestionIdServiceCode(UserInputDto dto, int questionId,String serivceCode);
@@ -28,6 +30,10 @@ public interface UserInputQuestionDao {
 	public void saveUserAnswers(Integer [] ids,Map<Integer,UserAnswerDto> map);
 	
 	
+	public void updateUserAnswersPremanent(String officeId,String patId,String treatementId);
+
 	public List<QuestionAnswerDto> getUserAnswersByPatIvfAndOff(String patId,String ivfId,String TRAN_DATE,Office office);
 
+	public List<QuestionAnswerDto> getUserAnswersByPatIvfAndOffPermanent(String patId,String ivfId,String TRAN_DATE,Office office);
+	
 }
