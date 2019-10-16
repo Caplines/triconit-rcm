@@ -250,7 +250,7 @@ public class DateUtils {
 	 * This method is used to Extract latest IVF ID from Map of IVF's
 	 */
 	public static Object[] selectOneKeyFromMapWithLatestDate(String pid,
-			GoogleSheets ivsheet,String CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER, Office off,String dateToCompare,boolean rmLogic) {
+			GoogleSheets ivsheet,String CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER, Office off,String dateToCompare,boolean rmLogic,int transactionType) {
 		String []ivs=pid.split(",");
 		Map<String, List<Object>> ivfMap=null;
 		Map<String, List<Object>> orifMap=null;
@@ -287,8 +287,16 @@ public class DateUtils {
 					IVFTableSheet i = (IVFTableSheet) obj;
 					try {
 						Date dai=Constants.SIMPLE_DATE_FORMAT_IVF.parse(i.getGeneralDateIVwasDone());
-					if (!validateClaimorTransactionDate(dateToCompareD, dai)) {
+					if (transactionType ==Constants.userType_TR){
+						if (!validateClaimorTransactionDate(dateToCompareD, dai)) {
 						rm1.add(k);
+					    }
+					}
+					if (transactionType ==Constants.userType_CL){
+					    //may we need to interchange parameters..
+						if (!validateClaimorTransactionDate(dateToCompareD, dai)) {
+						rm1.add(k);
+					    }
 					}
 						
 					} catch (ParseException e) {
@@ -384,7 +392,7 @@ public class DateUtils {
 		}
 		return new Object[] {orifMap,ivfMap};
 	}
-	
+	  //Changes Required in LC3 Engine (Phase 2 & Phase 3) - 7/29/2019 5:10 PM EMAIL
 	//1. If Tx. Plan Validation Date (Tx. Plan Validation) or Date of Service (Claim Validation) <= 5th of the month -> Consider IV done since 26th of last month.
 	//2. If Tx. Plan Validation Date (Tx. Plan Validation) or Date of Service (Claim Validation) > 5th of the month -> Consider IV done in that month only.
 	private static boolean validateClaimorTransactionDate(Date ctDate,Date ivDate) {

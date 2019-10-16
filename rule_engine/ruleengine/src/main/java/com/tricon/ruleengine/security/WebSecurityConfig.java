@@ -105,7 +105,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .ignoring()
             .antMatchers(
                 HttpMethod.POST,
-                authenticationPath
+                authenticationPath,
+                "/savedatatore",
+                "/queryivdatafromdb"
             )
 
             // allow anonymous resource requests
@@ -119,6 +121,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/sharePointIni",
                 "/appdebug/*.txt",
                 "/googleReport",
+                "/savedatatore",
                 "/googleReport2",
                 "/googleESReport",
                  "/ivf",
@@ -155,6 +158,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             ).antMatchers(HttpMethod.POST,
                 "/account/register",
                 "/readDriveSuc"
+                
                 )
 
             // Un-secure H2 Database (for testing purposes, H2 console shouldn't be unprotected in production)

@@ -45,17 +45,18 @@
 					<span class="label label-info" [ngClass]="{'active':activeClA}" *ngIf="ivfmData[key].countA>0" (click)="toggleResult('alert')">ALERT: {{ivfmData[key].countA}}</span>
 					</th>
 					<th>Service&nbsp;Codes</th>
-					<th>Tooth#</th>
-					<th>Surface#</th>
-					<th>Messages</th>
+					<th *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'">Tooth#</th>
+					<th *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'">Surface#</th>
+					<th *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'">Messages</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr *ngFor="let data of ivfmData[key] | resultTypeFilter:filterType">
 					<td><span [innerHTML]="data.ruleName"></span></td>
-					<td><span [innerHTML]="data.serviceCode"></span></td>
-					<td><span [innerHTML]="data.tooth"></span></td>
-					<td><span [innerHTML]="data.surface"></span></td>
+					
+					<td *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'"><span [innerHTML]="data.serviceCode"></span></td>
+					<td *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'"><span [innerHTML]="data.tooth"></span></td>
+					<td *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'"><span [innerHTML]="data.surface"></span></td>
 					<td><span [innerHTML]="data.message"></span></td>
 					
 				<tr>

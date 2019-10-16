@@ -20,7 +20,7 @@ export class QuestionformPopupComponent implements OnInit {
   constructor(public accountService: AccountService) { }
 
   ngOnInit() {
-	  console.log(this.questionData.questionAnswer);
+	  //console.log(this.questionData.questionAnswer);
 	  //at least one Question will  be there 
 	  let x=this.questionData.questionAnswer[0];
 	  
@@ -82,7 +82,7 @@ export class QuestionformPopupComponent implements OnInit {
 	  //console.log("xRayN",xRayN);
 	  if (pc.pass && xRayN.pass && perA.pass) pass=true;
 	  else {
-		  alert(pc.mess+xRayN.mess+ perA.mess);
+		  //alert(pc.mess+xRayN.mess+ perA.mess);
 	  }
 	  //Issue when no such question is there pass will be false need this
 	  return true;

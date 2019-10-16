@@ -18,7 +18,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 /* to create build of front end--- ng build --prod*/ //for local its npm start 
 //from cmd in folder \capline\rule_engine\ruleengine>   mvn initialize package
 /* CD /opt/tomcat
- * FOR PRODCTION MAKE SURE 
+ * FOR PRODUCTION MAKE SURE 
  * in application.properties u have spring.profiles.active=prod
  *  prod.properties -->application.url needs change when needed
  * dev is for Developers

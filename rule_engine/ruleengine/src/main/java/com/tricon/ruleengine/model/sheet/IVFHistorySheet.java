@@ -245,6 +245,16 @@ public class IVFHistorySheet {
 	private  String history60Surface;
 	private String  history60DOS;
 	
+	
+	
+	private  String historyCode;
+	private  String historyTooth;
+	private  String historySurface;
+	private  String historyDOS;
+
+	
+	
+	
 	public IVFHistorySheet() {
 		
 	}
@@ -2350,6 +2360,38 @@ public class IVFHistorySheet {
 
 	public void setHistory60Surface(String history60Surface) {
 		this.history60Surface = history60Surface;
+	}
+
+	public String getHistoryCode() {
+		return historyCode;
+	}
+
+	public void setHistoryCode(String historyCode) {
+		this.historyCode = historyCode;
+	}
+
+	public String getHistoryTooth() {
+		return historyTooth;
+	}
+
+	public void setHistoryTooth(String historyTooth) {
+		this.historyTooth = historyTooth;
+	}
+
+	public String getHistorySurface() {
+		return historySurface;
+	}
+
+	public void setHistorySurface(String historySurface) {
+		this.historySurface = historySurface;
+	}
+
+	public String getHistoryDOS() {
+		return historyDOS;
+	}
+
+	public void setHistoryDOS(String historyDOS) {
+		this.historyDOS = historyDOS;
 	}
 	
 	

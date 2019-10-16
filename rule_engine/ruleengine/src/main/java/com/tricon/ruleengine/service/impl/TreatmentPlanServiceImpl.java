@@ -548,7 +548,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							TRAN_DATE= Constants.SIMPLE_DATE_FORMAT.format(new Date());
 						}
 						String pid =tp.getPatient().getId();
-						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true);
+						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true,type);
 						ivfMap = (Map<String, List<Object>>)maps[1];
 						if (ivfMap==null && (Map<String, List<Object>>)maps[0]!=null) {//This means we have no result due to date issue.
 						if 	(true) {//This means result was there but not valid date..
@@ -632,6 +632,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						ansL=userInputService.getUserAnswersPermanent(userInputDto);
 						if (ansL!=null && ansL.size()==0) {
 							//means no ansL
+							/*
 							list.clear();//
 							TPValidationResponseDto d= new TPValidationResponseDto(1, "No User Input Present", 
 									messageSource.getMessage("rule.nouser.input", new Object[] {}, locale), Constants.FAIL, "", "", "");
@@ -643,6 +644,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 										+ " PT.id - " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
 										+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() , list);
 							return returnMap;
+							*/
 
 						}
 						}else if(tp!=null && type== Constants.userType_CL) {
@@ -1810,6 +1812,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				return returnMap;
 			}
 
+			Object principal = authentication.getPrincipal();
+			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+			JwtUser user = (JwtUser) userDetails;
+			int type =user.getUserType();
 			try {
 				
 				Map<String, List<Object>> tMap=null;
@@ -1882,13 +1888,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					//In New Approach 
 					
 					if (eagleSoftDBAccessPresent) {
-						Object principal = authentication.getPrincipal();
-						final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
-						JwtUser user = (JwtUser) userDetails;
-						int type =user.getUserType();
 
 
-						if (type==1)tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
+						if (type==Constants.userType_TR)tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
 						//Phase 3 add query
 						tMap=crerateCommonDataObject(tMap,authentication);//create Common Object
                          //
@@ -1987,7 +1989,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						if (tp!=null) { 
 						TRAN_DATE= Constants.SIMPLE_DATE_FORMAT.format(new Date());
 						String pid =tp.getPatient().getId();
-						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true);
+						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true,type);
 						ivfMap = (Map<String, List<Object>>)maps[1];
 						if (ivfMap==null && (Map<String, List<Object>>)maps[0]!=null) {//This means we have no result due to date issue.
 						if 	(true) {//This means result was there but not valid date..
