@@ -285,7 +285,12 @@ public class Constants {
 	public static String CL="Claim";
 	
 	
-			
-	 
+	public static String PATH_SEPERATOR_XML_IVF ="======!!!!======";
+	
+	//0 == Validate from RDBMS 1= Validdate from Google Sheet		
+	public static int VALIDATE_FROM_SHEET=0; 
+	//public static int VALIDATE_FROM_RDBMS=1;
+	
+	
 	
 }

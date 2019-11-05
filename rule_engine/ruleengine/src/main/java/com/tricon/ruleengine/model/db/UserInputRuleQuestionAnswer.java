@@ -57,7 +57,7 @@ public class UserInputRuleQuestionAnswer extends BaseAudit implements java.io.Se
 	@JoinColumn(name = "office_id",referencedColumnName="uuid")
 	private Office office;
 	
-	@Column(name = "anwser",nullable=true)
+	@Column(name = "anwser",nullable=true, columnDefinition="text")
 	private String answer;
 
 	@Column(name = "service_code",nullable=true)

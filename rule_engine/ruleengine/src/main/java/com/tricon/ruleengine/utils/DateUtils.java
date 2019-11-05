@@ -250,7 +250,8 @@ public class DateUtils {
 	 * This method is used to Extract latest IVF ID from Map of IVF's
 	 */
 	public static Object[] selectOneKeyFromMapWithLatestDate(String pid,
-			GoogleSheets ivsheet,String CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER, Office off,String dateToCompare,boolean rmLogic,int transactionType) {
+			GoogleSheets ivsheet,String CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER, Office off,String dateToCompare,boolean rmLogic,int transactionType,
+			int isSheet,Map<String, List<Object>> ivfMapPat) {
 		String []ivs=pid.split(",");
 		Map<String, List<Object>> ivfMap=null;
 		Map<String, List<Object>> orifMap=null;
@@ -263,9 +264,13 @@ public class DateUtils {
 			e2.printStackTrace();
 		}
 		try {
+			if (isSheet!=Constants.VALIDATE_FROM_SHEET) {
 			ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 					off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
 					off.getName(),true,false);
+			}else {
+				ivfMap=ivfMapPat;
+			}
 			if (ivfMap!=null) {
 				orifMap= new HashMap<>();
 			    orifMap.putAll(ivfMap);

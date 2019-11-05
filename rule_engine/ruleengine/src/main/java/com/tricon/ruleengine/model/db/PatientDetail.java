@@ -493,7 +493,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setContTxRecallNP(String contTxRecallNP) {
-		this.contTxRecallNP = contTxRecallNP;
+		this.contTxRecallNP = contTxRecallNP==null?"":contTxRecallNP;
 	}
 
 	public String getRef() {
@@ -663,7 +663,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPlanPreDMandatory(String planPreDMandatory) {
-		this.planPreDMandatory = planPreDMandatory;
+		this.planPreDMandatory = planPreDMandatory==null?"":planPreDMandatory;
 	}
 
 	public String getPlanNonDuplicateClause() {
@@ -671,7 +671,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPlanNonDuplicateClause(String planNonDuplicateClause) {
-		this.planNonDuplicateClause = planNonDuplicateClause;
+		this.planNonDuplicateClause = planNonDuplicateClause==null?"":planNonDuplicateClause;
 	}
 
 	public String getPlanFullTimeStudentStatus() {
@@ -679,7 +679,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPlanFullTimeStudentStatus(String planFullTimeStudentStatus) {
-		this.planFullTimeStudentStatus = planFullTimeStudentStatus;
+		this.planFullTimeStudentStatus = planFullTimeStudentStatus==null?"":planFullTimeStudentStatus;
 	}
 
 	public String getPlanAssignmentofBenefits() {
@@ -687,7 +687,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPlanAssignmentofBenefits(String planAssignmentofBenefits) {
-		this.planAssignmentofBenefits = planAssignmentofBenefits;
+		this.planAssignmentofBenefits = planAssignmentofBenefits==null?"":planAssignmentofBenefits;
 	}
 
 	public String getPlanCoverageBook() {
@@ -711,7 +711,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setBasicSubjectDeductible(String basicSubjectDeductible) {
-		this.basicSubjectDeductible = basicSubjectDeductible;
+		this.basicSubjectDeductible = basicSubjectDeductible==null?"":basicSubjectDeductible;
 	}
 
 	public String getMajorPercentage() {
@@ -727,7 +727,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setMajorSubjectDeductible(String majorSubjectDeductible) {
-		this.majorSubjectDeductible = majorSubjectDeductible;
+		this.majorSubjectDeductible = majorSubjectDeductible==null?"":majorSubjectDeductible;
 	}
 
 	public String getEndodonticsPercentage() {
@@ -743,7 +743,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setEndoSubjectDeductible(String endoSubjectDeductible) {
-		this.endoSubjectDeductible = endoSubjectDeductible;
+		this.endoSubjectDeductible =  endoSubjectDeductible==null?"":endoSubjectDeductible;
 	}
 
 	public String getPerioSurgeryPercentage() {
@@ -759,7 +759,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPerioSurgerySubjectDeductible(String perioSurgerySubjectDeductible) {
-		this.perioSurgerySubjectDeductible = perioSurgerySubjectDeductible;
+		this.perioSurgerySubjectDeductible = perioSurgerySubjectDeductible==null?"":perioSurgerySubjectDeductible;
 	}
 
 	public String getPreventivePercentage() {
@@ -793,7 +793,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setMissingToothClause(String missingToothClause) {
-		this.missingToothClause = missingToothClause;
+		this.missingToothClause = missingToothClause==null?"":missingToothClause;
 	}
 
 	public String getReplacementClause() {
@@ -809,7 +809,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setCrownsD2750D2740PaysPrepSeatDate(String crownsD2750D2740PaysPrepSeatDate) {
-		this.crownsD2750D2740PaysPrepSeatDate = crownsD2750D2740PaysPrepSeatDate;
+		this.crownsD2750D2740PaysPrepSeatDate = crownsD2750D2740PaysPrepSeatDate==null?"":crownsD2750D2740PaysPrepSeatDate;
 	}
 
 	public String getNightGuardsD9940FL() {
@@ -825,7 +825,8 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setBasicWaitingPeriod(String basicWaitingPeriod) {
-		this.basicWaitingPeriod = basicWaitingPeriod;
+		
+		this.basicWaitingPeriod = basicWaitingPeriod==null?"":basicWaitingPeriod;
 	}
 
 	public String getMajorWaitingPeriod() {
@@ -833,7 +834,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setMajorWaitingPeriod(String majorWaitingPeriod) {
-		this.majorWaitingPeriod = majorWaitingPeriod;
+		this.majorWaitingPeriod =  majorWaitingPeriod==null?"":majorWaitingPeriod;
 	}
 
 	public String getsSCD2930FL() {
@@ -1049,7 +1050,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setsRPD4341QuadsPerDay(String sRPD4341QuadsPerDay) {
-		this.sRPD4341QuadsPerDay = sRPD4341QuadsPerDay;
+		this.sRPD4341QuadsPerDay = sRPD4341QuadsPerDay==null?"":sRPD4341QuadsPerDay;
 	}
 
 	public String getsRPD4341DaysBwTreatment() {
@@ -1409,7 +1410,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setOrthoSubjectDeductible(String orthoSubjectDeductible) {
-		this.orthoSubjectDeductible = orthoSubjectDeductible;
+		this.orthoSubjectDeductible = orthoSubjectDeductible==null?"":orthoSubjectDeductible;
 	}
 
 	public String getFillingsBundling() {
@@ -1417,7 +1418,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setFillingsBundling(String fillingsBundling) {
-		FillingsBundling = fillingsBundling;
+		FillingsBundling = FillingsBundling==null?"":FillingsBundling;
 	}
 
 	public String getComments() {

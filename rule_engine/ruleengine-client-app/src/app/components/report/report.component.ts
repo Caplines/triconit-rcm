@@ -24,16 +24,18 @@ export class ReportComponent implements OnInit {
   showLoading: boolean = false;
   showReportForm: boolean = false;
   showReportData: boolean = false;
-  //claim and Treatment Text 
+  showDetailsData:boolean = false;
+  reportDataInd:any;
+  // claim and Treatment Text
   hd1:string="";
-  //hd2:string="";
+  // hd2:string="";
   ur:string="/report";
   dateOptions: DatepickerOptions = {
 	displayFormat: 'MM/DD/YYYY',
 	placeholder: 'Click to select a date',
 	fieldId: 'datePicker',
   };
-  showParam:any = {TreatmentId: false, IvfId: false, Date: false, PatientName: false}
+  showParam:any = {TreatmentId: false, IvfId: false, Date: false, PatientName: false,ivfRDBMS:false}
   
   constructor(public accountService: AccountService, public router: Router, private datePipe: DatePipe,private route: ActivatedRoute) {
 	  this.offices =this.route.snapshot.data['offs'].data;
@@ -64,13 +66,10 @@ export class ReportComponent implements OnInit {
 	this.showReportForm = true;
 	this.report.reportType = value;
 	/*
-	setTimeout(function(){ 
-	   if (document.getElementById("datePicker")){
-		   
-	    	document.getElementById("datePicker").readOnly=false;
-	    }
-	}, 100);
-    */
+	 * setTimeout(function(){ if (document.getElementById("datePicker")){
+	 * 
+	 * document.getElementById("datePicker").readOnly=false; } }, 100);
+	 */
   }
   
   showCalendar(){
@@ -78,7 +77,22 @@ export class ReportComponent implements OnInit {
   }
   
   runReport() {
-	if(this.report.officeId && this.report.reportField1) {
+    let rep=this.report;
+	let submit:boolean =false;
+	 submit =rep.officeId && rep.reportField1;
+	if (this.report.reportType=='ivfRDBMS'){
+       if(rep.reportField1=='' && rep.employerName=='' && rep.generalDateRun=='' && rep.patientName==''){
+    	   submit=false;
+    	   
+       }else{
+    	   submit=true;
+    	   if (!rep.officeId){
+    		   submit=false;
+    	   }
+       }		
+		
+	}
+	if(submit) {
 		if(this.showParam.Date) {
 			this.report.reportField1 = this.datePipe.transform(this.report.reportField1, 'MM/dd/yyyy');
 		}
@@ -86,8 +100,17 @@ export class ReportComponent implements OnInit {
 		this.accountService.validateReport(this.report,this.ur,(result) => {
 			this.showLoading = false;
 			if (result.status=='OK'){
+				console.log(result);
+				console.log(result.data);
 				this.reportData = result.data;
-				this.arrayOfKeys = Object.keys(this.reportData);
+				
+				if (this.report.reportType=='ivfRDBMS'){
+					this.arrayOfKeys = this.reportData;
+					console.log("v",this.arrayOfKeys);
+				}else{
+					this.arrayOfKeys = Object.keys(this.reportData);
+						
+				}
 				this.showReportData = true;
 				if (this.isEmpty(this.reportData)){
 					alert("No Data Found.");
@@ -109,5 +132,46 @@ export class ReportComponent implements OnInit {
     }
     return true;
   }
+
+  showDetailsDataF(data){
+	  let ths=this;
+	  ths.showDetailsData =true;
+	  ths.reportDataInd=data;
+	  
+  }
+  
+  downloadPDF(data){
+	  
+	  
+	  this.accountService.downloadIVFPDF({"reportField1":data.basicInfo21,"officeId":this.report.officeId,"generalDateRun":data.date},(result) => {
+			this.showLoading = false;
+			if (result.status=='200'){
+				//const filename = result.headers.get('filename');
+				console.log(result);
+				// this.downloadFile(result.body);
+				this.saveBolbData(result.body,this.report.officeId+"_"+data.basicInfo21+".pdf");
+			}
+		});
+  }
+  
+  downloadFile(data: Response) {
+	  const blob = new Blob([data], { type: 'application/pdf' });
+	  const url= window.URL.createObjectURL(blob);
+	  window.open(url);
+	}
+  
+  
+  saveBolbData(data: Response,fileName: string) {
+	    let a:any = document.createElement("a");
+	    document.body.appendChild(a);
+	    a.style = "display: none";
+        let blob = new Blob([data], {type: "application/pdf"}),
+        url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    
+	}
 
 }

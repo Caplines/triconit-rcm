@@ -1,9 +1,21 @@
 package com.tricon.ruleengine.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType (XmlAccessType.FIELD)
 public class CaplineIVFFormDto {
 
+	//password extra layer check
+	private String passwordRE;
+	
 	//id (unquie)
 	private int id;
     
@@ -451,17 +463,16 @@ public class CaplineIVFFormDto {
     
     private String benefits;
     
+    @XmlElementWrapper
+    @XmlElement(name="his") 
     private List<String> history;
     
     private String date;
+    
+    @XmlElementWrapper
+    @XmlElement(name="hisall") 
+    private List<ToothHistoryDto> hdto;
 
-	public List<String> getHistory() {
-		return history;
-	}
-
-	public void setHistory(List<String> history) {
-		this.history = history;
-	}
 
 	public String getComments() {
 		return comments;
@@ -1550,6 +1561,34 @@ public class CaplineIVFFormDto {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	
+    public List<String> getHistory() {
+		return history;
+	}
+
+	public void setHistory(List<String> history) {
+		this.history = history;
+	}
+
+	
+	public List<ToothHistoryDto> getHdto() {
+		return hdto;
+	}
+
+	public void setHdto(List<ToothHistoryDto> hdto) {
+		this.hdto = hdto;
+	}
+
+	public String getPasswordRE() {
+		return passwordRE;
+	}
+
+	public void setPasswordRE(String passwordRE) {
+		this.passwordRE = passwordRE;
+	}
+
+	
     
 	
 	

@@ -2040,10 +2040,10 @@ public class RuleBook {
        	        
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
-						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--DONE
 
 						IVFHistorySheet hisSheet = ivf.getHs();
-						
+						if (hisSheet!=null) {
 						for (int i = 1; i <= noOFhistory; i++) {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
@@ -2096,6 +2096,69 @@ public class RuleBook {
 							if (pritm!=null && pritm.size()>0) {
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
 										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistoryM.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryM.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryM.put(code, l);
+								}
+							}
+						 }
+						}					
+						for (IVFHistorySheet hisShee:ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							String hd = "getHistoryDOS";
+							String ht = "getHistoryTooth";
+							String hs = "getHistorySurface";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);	
+							String code = (String) hcm.invoke(hisShee);
+							if (code.equals("")) continue ;
+							Collection<String> pritd = Collections2.filter(dList,
+									cd -> cd.substring(0,1).equals(code.toUpperCase().substring(0, 1)) && 
+										 cd.substring(1,cd.length()).equals(code.toUpperCase().substring(1,code.length()))
+										 );
+									  
+							Collection<String> pritp = Collections2.filter(pList,
+									cd -> cd.substring(0,1).equals(code.toUpperCase().substring(0, 1)) && 
+									 cd.substring(1,cd.length()).equals(code.toUpperCase().substring(1,code.length()))
+									 );
+							Collection<String> pritm = Collections2.filter(mList,
+									cd -> cd.substring(0,1).equals(code.toUpperCase().substring(0, 1)) && 
+									 cd.substring(1,cd.length()).equals(code.toUpperCase().substring(1,code.length()))
+									 );
+			         		
+							if (pritd!=null && pritd.size()>0) {
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+										(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
+				              if (mapHistoryD.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryD.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryD.put(code, l);
+								}
+							}
+							if (pritp!=null && pritp.size()>0) {
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+										(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
+				              if (mapHistoryP.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryP.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryP.put(code, l);
+								}
+							}
+							if (pritm!=null && pritm.size()>0) {
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+										(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
 				              if (mapHistoryM.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistoryM.get(code);
 									t.add(hdto);
@@ -3472,16 +3535,14 @@ public class RuleBook {
 			boolean historPresent = false;
 			int noOFhistory = Constants.history_codes_size;
 			List<ToothHistoryDto> list1 = null;
-			// Class<?> c1 =
-			// Class.forName("com.tricon.ruleengine.model.sheet.IVFTableSheet");
-			Class<?> c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+			Class<?> c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 			// Object ot = vif;
 			IVFHistorySheet hisSheet = ivf.getHs();
 			
 			RuleEngineLogger.generateLogs(clazz,
 					"HISTORTY CODES-- Start",
 					Constants.rule_log_debug, bw);
-			
+			if (hisSheet!=null) {
 			for (int i = 1; i <= noOFhistory; i++) {
 				// String hs="getHs";
 				// Method hsm = c1.getMethod(hs);
@@ -3500,26 +3561,6 @@ public class RuleBook {
 				hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
 						(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
 
-				/*
-				 * if (i == 1) hdto = new ToothHistoryDto(ivf.getHistory1Code(),
-				 * ivf.getHistory1DOS(), ivf.getHistory1Tooth()); else if (i == 2) hdto = new
-				 * ToothHistoryDto(ivf.getHistory2Code(), ivf.getHistory2DOS(),
-				 * ivf.getHistory2Tooth()); else if (i == 3) hdto = new
-				 * ToothHistoryDto(ivf.getHistory3Code(), ivf.getHistory3DOS(),
-				 * ivf.getHistory3Tooth()); else if (i == 4) hdto = new
-				 * ToothHistoryDto(ivf.getHistory4Code(), ivf.getHistory4DOS(),
-				 * ivf.getHistory4Tooth()); else if (i == 5) hdto = new
-				 * ToothHistoryDto(ivf.getHistory5Code(), ivf.getHistory5DOS(),
-				 * ivf.getHistory5Tooth()); else if (i == 6) hdto = new
-				 * ToothHistoryDto(ivf.getHistory6Code(), ivf.getHistory6DOS(),
-				 * ivf.getHistory6Tooth()); else if (i == 7) hdto = new
-				 * ToothHistoryDto(ivf.getHistory7Code(), ivf.getHistory7DOS(),
-				 * ivf.getHistory7Tooth()); else if (i == 8) hdto = new
-				 * ToothHistoryDto(ivf.getHistory8Code(), ivf.getHistory8DOS(),
-				 * ivf.getHistory8Tooth()); else if (i == 9) hdto = new
-				 * ToothHistoryDto(ivf.getHistory9Code(), ivf.getHistory9DOS(),
-				 * ivf.getHistory9Tooth());
-				 */
 				if (hdto.getHistoryCode() != null && !hdto.getHistoryCode().equalsIgnoreCase("blank")) {
 					if (hdto.getHistoryTooth().trim().equals(""))
 						hdto.setHistoryTooth("NA");
@@ -3549,6 +3590,55 @@ public class RuleBook {
 
 				}
 
+			 } // For end
+			}
+			for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+				// String hs="getHs";
+				// Method hsm = c1.getMethod(hs);
+				// hisSheet = (IVFHistorySheet)hsm.invoke(ivf);
+				String hc = "getHistoryCode";
+				String hd = "getHistoryDOS";
+				String ht = "getHistoryTooth";
+				String hs = "getHistorySurface";
+				
+				Method hcm = c2.getMethod(hc);
+				Method hdm = c2.getMethod(hd);
+				Method htm = c2.getMethod(ht);
+				Method hss = c2.getMethod(hs);
+				
+				// System.out.println((String)hcm.invoke(hisSheet));
+				hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+						(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
+
+				if (hdto.getHistoryCode() != null && !hdto.getHistoryCode().equalsIgnoreCase("blank")) {
+					if (hdto.getHistoryTooth().trim().equals(""))
+						hdto.setHistoryTooth("NA");
+					for (Map.Entry<String, List<ServiceCodeIvfTimesFreqFieldDto>> entry : mapFlIVF.entrySet()) {
+						if (entry.getKey().equals(hdto.getHistoryCode())) {
+							
+							historPresent = true;
+							String toothTR[] = ToothUtil.getToothsFromTooth(hdto.getHistoryTooth());
+						
+							for (String tooth : toothTR) {
+								RuleEngineLogger.generateLogs(clazz,
+										"HISTORTY CODE -at " +" is -"+hdto.getHistoryCode()+" TOOTH - "+tooth,
+										Constants.rule_log_debug, bw);		if (mapHistoryTooth.containsKey(tooth)) {
+									list1 = mapHistoryTooth.get(tooth);
+									list1.add(hdto);
+								} else {
+									list1 = new ArrayList<>();
+									list1.add(hdto);
+									mapHistoryTooth.put(tooth, list1);
+
+								}
+
+							}
+						}
+
+					}
+
+				}
+
 			} // For end
 			RuleEngineLogger.generateLogs(clazz,
 					"HISTORTY CODES-- END",
@@ -3560,44 +3650,7 @@ public class RuleBook {
 
 			Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVFFinal = new HashMap<>();// Now key will be tooth
 			//Start- Phase 1 left over Alike Code Case
-			/*
-			for (Object t : tpList) {
-				TreatmentPlan tp = (TreatmentPlan) t;
-				if (tp.getServiceCode().equalsIgnoreCase("D1206") || tp.getServiceCode().equalsIgnoreCase("D1208")) {
-					List<ServiceCodeIvfTimesFreqFieldDto> dataIVF_1 = mapFlIVF.get(tp.getServiceCode());
-					for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF_1) {
-						scivfTFD.setTooth(tp.getTooth());
-					}
-				}
-				
-				
-			}//
-				if (mapFlIVF.get("D1206")!=null &&  mapFlIVF.get("D1208")!=null) {
-				List<ServiceCodeIvfTimesFreqFieldDto> dataIVF_1 = mapFlIVF.get("D1206");
-				List<ServiceCodeIvfTimesFreqFieldDto> dataIVF_2 = mapFlIVF.get("D1208");
-				String[] t1=null;
-				String[] t2=null;
-				
-				for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF_1) {
-					t1=ToothUtil.getToothsFromTooth(scivfTFD.getTooth());
-				}
-				for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF_2) {
-					t1=ToothUtil.getToothsFromTooth(scivfTFD.getTooth());
-				}
-				
-				List<String> x=ToothUtil.findCommonTooth(t1,t2);
-				if (x!=null && x.size()>0) {
-					historPresent=true;
-					for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF_1) {
-						t1=ToothUtil.getToothsFromTooth(scivfTFD.getTooth());
-						scivfTFD.setCount(scivfTFD.getCount()+1);
-					}
-				}
-				
-			 }
-			
-			//End
-            */  
+  
 			if (historPresent) {
 				RuleEngineLogger.generateLogs(clazz, "History is present  now proceed Further..",
 						Constants.rule_log_debug, bw);
@@ -4316,10 +4369,10 @@ public class RuleBook {
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
 					try {
-						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 
 						IVFHistorySheet hisSheet = ivf.getHs();
-						
+						if (hisSheet!=null) {
 						for (int i = 1; i <= noOFhistory; i++) {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
@@ -4336,6 +4389,33 @@ public class RuleBook {
 								historyPresent = true;
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
 										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistory.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistory.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistory.put(code, l);
+								}
+							}
+						}
+						}
+						for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							String hd = "getHistoryDOS";
+							String ht = "getHistoryTooth";
+							String hs = "getHistorySurface";
+							
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);
+							
+							String code = (String) hcm.invoke(hisShee);
+							if (historyCheckList.contains(code.toUpperCase())) {
+								historyPresent = true;
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+										(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
 				              if (mapHistory.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistory.get(code);
 									t.add(hdto);
@@ -4537,10 +4617,10 @@ public class RuleBook {
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
 					try {
-						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 
 						IVFHistorySheet hisSheet = ivf.getHs();
-						
+						if (hisSheet!=null) {
 						for (int i = 1; i <= noOFhistory; i++) {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
@@ -4557,6 +4637,33 @@ public class RuleBook {
 								historyPresent = true;
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
 										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistory.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistory.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistory.put(code, l);
+								}
+							}
+						}
+						}
+						for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							String hd = "getHistoryDOS";
+							String ht = "getHistoryTooth";
+							String hs = "getHistorySurface";
+							
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);
+
+							String code = (String) hcm.invoke(hisShee);
+							if (historyCheckList.contains(code.toUpperCase())) {
+								historyPresent = true;
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+										(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
 				              if (mapHistory.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistory.get(code);
 									t.add(hdto);
@@ -4788,10 +4895,10 @@ public class RuleBook {
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
 					try {
-						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--DONE
 
 						IVFHistorySheet hisSheet = ivf.getHs();
-						
+						if (hisSheet!=null) {
 						for (int i = 1; i <= noOFhistory; i++) {
 							String hc = "getHistory" + i + "Code";
 							//String hd = "getHistory" + i + "DOS";
@@ -4811,26 +4918,40 @@ public class RuleBook {
 								RuleEngineLogger.generateLogs(clazz, "Tooth H=" + tooth, Constants.rule_log_debug,
 										bw);
 								checkForMajorLogic = true;
-
-
-								//History Check
-								/*
-								FeeToothDto ft2 = mapE.get(code);
-								
-								if (ft2!=null) {
-									List<String> l = ft2.getTooth();
-									for(String x:l) {
-										if(x.equals(tooth)) {
-											pass=false;
-											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-													messageSource.getMessage("rule26.error.message", new Object[] { tooth }, locale),
-													Constants.FAIL));
-										}
-										
-									}
+								if (mapE.containsKey(code)) {
+									FeeToothDto ft = mapE.get(code);
+									List<String> l = ft.getTooth();
+									l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+								} else {
+									List<String> l = new ArrayList<>();
+									l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+									FeeToothDto ft = new FeeToothDto();
+									ft.setFees("0");
+									ft.setTooth(l);
+									mapE.put(code, ft);
 								}
-								*/
-								//Put in Map
+							}
+						}
+						}
+						for (IVFHistorySheet hisShee:ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							//String hd = "getHistory" + i + "DOS";
+							String ht = "getHistoryTooth";
+							//String hs = "getHistory" + i + "Surface";
+
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							//Method hdm = c2.getMethod(hd);
+							//Method hss = c2.getMethod(hs);
+							String code = (String) hcm.invoke(hisShee);
+							String tooth = (String) htm.invoke(hisShee);
+							//|| hs_extraList.contains(code.toUpperCase())
+							if (reqList.contains(code.toUpperCase()) ) {
+								RuleEngineLogger.generateLogs(clazz, " -code H=" + code, Constants.rule_log_debug,
+										bw);
+								RuleEngineLogger.generateLogs(clazz, "Tooth H=" + tooth, Constants.rule_log_debug,
+										bw);
+								checkForMajorLogic = true;
 								if (mapE.containsKey(code)) {
 									FeeToothDto ft = mapE.get(code);
 									List<String> l = ft.getTooth();
@@ -4856,68 +4977,6 @@ public class RuleBook {
 					//ToothHistoryDto hdto=null;
 					if (checkForMajorLogic) {
 						try {
-							//boolean breakAll=false;
-							/*
-							c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
-
-							IVFHistorySheet hisSheet = ivf.getHs();
-							
-							for (int i = 1; i <= noOFhistory; i++) {
-								String hc = "getHistory" + i + "Code";
-								String hd = "getHistory" + i + "DOS";
-								String ht = "getHistory" + i + "Tooth";
-								String hs = "getHistory" + i + "Surface";
-
-								Method hcm = c2.getMethod(hc);
-								Method htm = c2.getMethod(ht);
-								Method hdm = c2.getMethod(hd);
-								Method hss = c2.getMethod(hs);
-								String code = (String) hcm.invoke(hisSheet);
-								if (reqList.contains(code.toUpperCase())) {
-									historyPresent = true;
-									hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-											(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
-					              if (mapHistory.containsKey(code)) {
-										List<ToothHistoryDto> t = mapHistory.get(code);
-										t.add(hdto);
-									} else {
-										List<ToothHistoryDto> l = new ArrayList<>();
-										l.add(hdto);
-										mapHistory.put(code, l);
-									}
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, " History of Extraction found.- " + historyPresent,
-									Constants.rule_log_debug, bw);
-							*/
-							/*
-							if (historyPresent) {
-								for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
-									List<ToothHistoryDto> d=entry.getValue();
-									
-									for (Map.Entry<String, FeeToothDto> entry2 : mapD.entrySet()) {
-										FeeToothDto fd=entry2.getValue();
-										List<String> t=fd.getTooth();
-										for(ToothHistoryDto hisd:d) {
-											String [] a= ToothUtil.getToothsFromTooth(hisd.getHistoryTooth());
-										    String[] objects =t.toArray(new String[0]);
-								     		List<String> cm= ToothUtil.findCommonTooth( objects, a);
-								     		if (cm!=null && cm.size()>0 ) {
-								     		//if (t.contains(hisd.getHistoryTooth())) {
-												//breakAll=true;
-												dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-														messageSource.getMessage("rule28.error.message", new Object[] {hisd.getHistoryTooth()  }, locale),
-														Constants.FAIL));
-								
-												//break;
-										}
-											//if (breakAll) break;
-									}//FOR-hisd
-									//if (breakAll) break;
-								}//FOR -ft
-							 }//FOR -ft
-							}
-							*/
 								for (Map.Entry<String, FeeToothDto> entry : mapE.entrySet()) {// Extraction TP + History
 									FeeToothDto d=entry.getValue();
 									
@@ -5074,10 +5133,10 @@ public class RuleBook {
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
 					try {
-						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 
 						IVFHistorySheet hisSheet = ivf.getHs();
-						
+						if (hisSheet!=null) {
 						for (int i = 1; i <= noOFhistory; i++) {
 							String hc = "getHistory" + i + "Code";
 							//String hd = "getHistory" + i + "DOS";
@@ -5098,24 +5157,42 @@ public class RuleBook {
 										bw);
 								checkForMajorLogic = true;
 
-
-								//History Check
-								/*
-								FeeToothDto ft2 = mapE.get(code);
-								
-								if (ft2!=null) {
-									List<String> l = ft2.getTooth();
-									for(String x:l) {
-										if(x.equals(tooth)) {
-											pass=false;
-											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-													messageSource.getMessage("rule27.error.message", new Object[] { tooth }, locale),
-													Constants.FAIL));
-										}
-										
-									}
+								//Put in Map
+								if (mapE.containsKey(code)) {
+									FeeToothDto ft = mapE.get(code);
+									List<String> l = ft.getTooth();
+									l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+								} else {
+									List<String> l = new ArrayList<>();
+									l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+									FeeToothDto ft = new FeeToothDto();
+									ft.setFees("0");
+									ft.setTooth(l);
+									mapE.put(code, ft);
 								}
-								*/
+							}
+						}
+						}
+						for (IVFHistorySheet hisShee:ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							//String hd = "getHistory" + i + "DOS";
+							String ht = "getHistoryTooth";
+							//String hs = "getHistory" + i + "Surface";
+
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							//Method hdm = c2.getMethod(hd);
+							//Method hss = c2.getMethod(hs);
+							String code = (String) hcm.invoke(hisShee);
+							String tooth = (String) htm.invoke(hisShee);
+							
+							if (reqList.contains(code.toUpperCase())) {
+								RuleEngineLogger.generateLogs(clazz, "i= -code H=" + code, Constants.rule_log_debug,
+										bw);
+								RuleEngineLogger.generateLogs(clazz, "Tooth H=" + tooth, Constants.rule_log_debug,
+										bw);
+								checkForMajorLogic = true;
+
 								//Put in Map
 								if (mapE.containsKey(code)) {
 									FeeToothDto ft = mapE.get(code);
@@ -5142,68 +5219,6 @@ public class RuleBook {
 					//ToothHistoryDto hdto=null;
 					if (checkForMajorLogic) {
 						try {
-							//boolean breakAll=false;
-							/*
-							c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
-
-							IVFHistorySheet hisSheet = ivf.getHs();
-							
-							for (int i = 1; i <= noOFhistory; i++) {
-								String hc = "getHistory" + i + "Code";
-								String hd = "getHistory" + i + "DOS";
-								String ht = "getHistory" + i + "Tooth";
-								String hs = "getHistory" + i + "Surface";
-
-								Method hcm = c2.getMethod(hc);
-								Method htm = c2.getMethod(ht);
-								Method hdm = c2.getMethod(hd);
-								Method hss = c2.getMethod(hs);
-								String code = (String) hcm.invoke(hisSheet);
-								if (reqList.contains(code.toUpperCase())) {
-									historyPresent = true;
-									hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-											(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
-					              if (mapHistory.containsKey(code)) {
-										List<ToothHistoryDto> t = mapHistory.get(code);
-										t.add(hdto);
-									} else {
-										List<ToothHistoryDto> l = new ArrayList<>();
-										l.add(hdto);
-										mapHistory.put(code, l);
-									}
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, " History of Extraction found.- " + historyPresent,
-									Constants.rule_log_debug, bw);
-							*/
-							/*
-							if (historyPresent) {
-								for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
-									List<ToothHistoryDto> d=entry.getValue();
-									
-									for (Map.Entry<String, FeeToothDto> entry2 : mapD.entrySet()) {
-										FeeToothDto fd=entry2.getValue();
-										List<String> t=fd.getTooth();
-										for(ToothHistoryDto hisd:d) {
-											String [] a= ToothUtil.getToothsFromTooth(hisd.getHistoryTooth());
-										    String[] objects =t.toArray(new String[0]);
-								     		List<String> cm= ToothUtil.findCommonTooth( objects, a);
-								     		if (cm!=null && cm.size()>0 ) {
-								     		//if (t.contains(hisd.getHistoryTooth())) {
-												//breakAll=true;
-												dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-														messageSource.getMessage("rule28.error.message", new Object[] {hisd.getHistoryTooth()  }, locale),
-														Constants.FAIL));
-								
-												//break;
-										}
-											//if (breakAll) break;
-									}//FOR-hisd
-									//if (breakAll) break;
-								}//FOR -ft
-							 }//FOR -ft
-							}
-							*/
 								for (Map.Entry<String, FeeToothDto> entry : mapE.entrySet()) {// Extraction TP + History
 									FeeToothDto d=entry.getValue();
 									
@@ -5363,10 +5378,10 @@ public class RuleBook {
 				int noOFhistory = Constants.history_codes_size;
 				Class<?> c2;
 				try {
-					c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+					c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 
 					IVFHistorySheet hisSheet = ivf.getHs();
-					
+					if (hisSheet!=null) {
 					for (int i = 1; i <= noOFhistory; i++) {
 						String hc = "getHistory" + i + "Code";
 						//String hd = "getHistory" + i + "DOS";
@@ -5418,6 +5433,58 @@ public class RuleBook {
 							}
 						}
 					}
+					}
+					for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+						String hc = "getHistoryCode";
+						//String hd = "getHistory" + i + "DOS";
+						String ht = "getHistoryTooth";
+						//String hs = "getHistory" + i + "Surface";
+
+						Method hcm = c2.getMethod(hc);
+						Method htm = c2.getMethod(ht);
+						//Method hdm = c2.getMethod(hd);
+						//Method hss = c2.getMethod(hs);
+						String code = (String) hcm.invoke(hisShee);
+						String tooth = (String) htm.invoke(hisShee);
+						
+						if (reqList.contains(code.toUpperCase())) {
+							RuleEngineLogger.generateLogs(clazz, "i= -code H=" + code, Constants.rule_log_debug,
+									bw);
+							RuleEngineLogger.generateLogs(clazz, "Tooth H=" + tooth, Constants.rule_log_debug,
+									bw);
+							checkForMajorLogic = true;
+
+
+							//History Check
+							FeeToothDto ft2 = mapE.get(code);
+							
+							if (ft2!=null) {
+								List<String> l = ft2.getTooth();
+								for(String x:l) {
+									if(x.equals(tooth)) {
+										pass=false;
+										dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+												messageSource.getMessage("rule28.error.message", new Object[] { tooth }, locale),
+												Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+									}
+									
+								}
+							}
+							//Put in Map
+							if (mapE.containsKey(code)) {
+								FeeToothDto ft = mapE.get(code);
+								List<String> l = ft.getTooth();
+								l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+							} else {
+								List<String> l = new ArrayList<>();
+								l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+								FeeToothDto ft = new FeeToothDto();
+								ft.setFees("0");
+								ft.setTooth(l);
+								mapE.put(code, ft);
+							}
+						}
+					}
 				}catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -5429,68 +5496,6 @@ public class RuleBook {
 				//ToothHistoryDto hdto=null;
 				if (checkForMajorLogic) {
 					try {
-						//boolean breakAll=false;
-						/*
-						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
-
-						IVFHistorySheet hisSheet = ivf.getHs();
-						
-						for (int i = 1; i <= noOFhistory; i++) {
-							String hc = "getHistory" + i + "Code";
-							String hd = "getHistory" + i + "DOS";
-							String ht = "getHistory" + i + "Tooth";
-							String hs = "getHistory" + i + "Surface";
-
-							Method hcm = c2.getMethod(hc);
-							Method htm = c2.getMethod(ht);
-							Method hdm = c2.getMethod(hd);
-							Method hss = c2.getMethod(hs);
-							String code = (String) hcm.invoke(hisSheet);
-							if (reqList.contains(code.toUpperCase())) {
-								historyPresent = true;
-								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
-										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
-				              if (mapHistory.containsKey(code)) {
-									List<ToothHistoryDto> t = mapHistory.get(code);
-									t.add(hdto);
-								} else {
-									List<ToothHistoryDto> l = new ArrayList<>();
-									l.add(hdto);
-									mapHistory.put(code, l);
-								}
-							}
-						}
-						RuleEngineLogger.generateLogs(clazz, " History of Extraction found.- " + historyPresent,
-								Constants.rule_log_debug, bw);
-						*/
-						/*
-						if (historyPresent) {
-							for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
-								List<ToothHistoryDto> d=entry.getValue();
-								
-								for (Map.Entry<String, FeeToothDto> entry2 : mapD.entrySet()) {
-									FeeToothDto fd=entry2.getValue();
-									List<String> t=fd.getTooth();
-									for(ToothHistoryDto hisd:d) {
-										String [] a= ToothUtil.getToothsFromTooth(hisd.getHistoryTooth());
-									    String[] objects =t.toArray(new String[0]);
-							     		List<String> cm= ToothUtil.findCommonTooth( objects, a);
-							     		if (cm!=null && cm.size()>0 ) {
-							     		//if (t.contains(hisd.getHistoryTooth())) {
-											//breakAll=true;
-											dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-													messageSource.getMessage("rule28.error.message", new Object[] {hisd.getHistoryTooth()  }, locale),
-													Constants.FAIL));
-							
-											//break;
-									}
-										//if (breakAll) break;
-								}//FOR-hisd
-								//if (breakAll) break;
-							}//FOR -ft
-						 }//FOR -ft
-						}
-						*/
 							for (Map.Entry<String, FeeToothDto> entry : mapE.entrySet()) {// Extraction TP + History
 								FeeToothDto d=entry.getValue();
 								
@@ -5820,10 +5825,10 @@ public class RuleBook {
 						int noOFhistory = Constants.history_codes_size;
 						Class<?> c2;
 						try {
-							c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+							c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 						
 						IVFHistorySheet hisSheet = ivf.getHs();
-						
+						if (hisSheet!=null) {
 						for (int i = 1; i <= noOFhistory; i++) {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
@@ -5848,6 +5853,43 @@ public class RuleBook {
 						    }
 							Method hcm = c2.getMethod(hc);
 							String code=(String) hcm.invoke(hisSheet);
+							
+							if (code.equalsIgnoreCase("D4341") && fdate) {
+								
+								RuleEngineLogger.generateLogs(clazz,"History code ="+ code,Constants.rule_log_debug, bw);
+					    	    counter_1++;		
+							}else if (code.equalsIgnoreCase("D4342") && fdate) {
+						        counter_2++;	
+						        RuleEngineLogger.generateLogs(clazz,"History code ="+ code,Constants.rule_log_debug, bw);
+								}
+							
+							//
+						}
+						}
+						for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							String hd = "getHistoryDOS";
+							Method hdm = c2.getMethod(hd);
+							boolean fdate=false;
+							String dt=(String) hdm.invoke(hisShee);
+							Date dos = null;
+							if (!dt.equals("")) {
+							try {
+								dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt);
+								RuleEngineLogger.generateLogs(clazz,
+										"History DOS-" + dt,
+										Constants.rule_log_debug, bw);
+							} catch (ParseException e2) {
+								// TODO Auto-generated catch block
+								//e2.printStackTrace();
+							}
+                           //ignore Future dates
+							if (dos!=null) {
+								fdate=DateUtils.compareDates(TP_DATE,dos );
+							}
+						    }
+							Method hcm = c2.getMethod(hc);
+							String code=(String) hcm.invoke(hisShee);
 							
 							if (code.equalsIgnoreCase("D4341") && fdate) {
 								
@@ -6355,10 +6397,10 @@ public class RuleBook {
 				int noOFhistory = Constants.history_codes_size;
 				Class<?> c2;
 				try {
-					c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+					c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 				
 				IVFHistorySheet hisSheet = ivf.getHs();
-				
+				if (hisSheet!=null) {
 				for (int i = 1; i <= noOFhistory; i++) {
 					String hc = "getHistory" + i + "Code";
 					String ht = "getHistory" + i + "Tooth";
@@ -6369,6 +6411,28 @@ public class RuleBook {
 					//Method hss = c2.getMethod(hs);
 					String hcode=(String) hcm.invoke(hisSheet);
 					String tooth=(String) htm.invoke(hisSheet);
+					//D5110,D5120, D5130, D5140
+					if ((hcode.equalsIgnoreCase("D5110") && dcodes.contains("D5130")) 
+						                                  ||
+						(hcode.equalsIgnoreCase("D5120") && dcodes.contains("D5140"))) {
+						RuleEngineLogger.generateLogs(clazz, "code HISTORY=" + hcode +"("+tooth+")", Constants.rule_log_debug, bw);
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule36.error.message", new Object[] {hcode}, locale),
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+						pass=false;
+				     }
+				 }
+				}
+				for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+					String hc = "getHistoryCode";
+					String ht = "getHistoryTooth";
+					//String hs = "getHistory" + i + "Surface";
+					
+					Method hcm = c2.getMethod(hc);
+					Method htm = c2.getMethod(ht);
+					//Method hss = c2.getMethod(hs);
+					String hcode=(String) hcm.invoke(hisShee);
+					String tooth=(String) htm.invoke(hisShee);
 					//D5110,D5120, D5130, D5140
 					if ((hcode.equalsIgnoreCase("D5110") && dcodes.contains("D5130")) 
 						                                  ||
@@ -6495,13 +6559,13 @@ public class RuleBook {
 				int noOFhistory = Constants.history_codes_size;
 				Class<?> c2;
 				try {
-					c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+					c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 				
 				IVFHistorySheet hisSheet = ivf.getHs();
 				List<String> allExtractionTooth=new ArrayList<>();
 				//List<String> allDentureTooth=new ArrayList<>();
 				List<String> allDentureToothHis=new ArrayList<>();
-				
+				if (hisSheet!=null) {
 				for (int i = 1; i <= noOFhistory; i++) {
 					String hc = "getHistory" + i + "Code";
 					String ht = "getHistory" + i + "Tooth";
@@ -6509,6 +6573,30 @@ public class RuleBook {
 					Method htm = c2.getMethod(ht);
 					String code=(String) hcm.invoke(hisSheet);
 					String tooth=(String) htm.invoke(hisSheet);
+					tooth=tooth.split("-")[0];
+					
+					if (dentureList.contains(code.toUpperCase())) {
+						historyPresent=true;
+						if (mapHistory.containsKey(code)) {
+							List<String> t=mapHistory.get(code);
+							t.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+						}else {
+							List<String> l= new ArrayList<>();
+							l.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tooth)));
+							mapHistory.put(code, l);
+						/*	
+						*/
+				      }
+					}
+				}
+				}
+				for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+					String hc = "getHistoryCode";
+					String ht = "getHistoryTooth";
+					Method hcm = c2.getMethod(hc);
+					Method htm = c2.getMethod(ht);
+					String code=(String) hcm.invoke(hisShee);
+					String tooth=(String) htm.invoke(hisShee);
 					tooth=tooth.split("-")[0];
 					
 					if (dentureList.contains(code.toUpperCase())) {
@@ -6729,10 +6817,10 @@ public class RuleBook {
 						 int noOFhistory = Constants.history_codes_size;
 							Class<?> c2;
 							try {
-								c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+								c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 
 								IVFHistorySheet hisSheet = ivf.getHs();
-								
+								if (hisSheet!=null) {
 								for (int i = 1; i <= noOFhistory; i++) {
 									String hc = "getHistory" + i + "Code";
 									String hd = "getHistory" + i + "DOS";
@@ -6761,7 +6849,37 @@ public class RuleBook {
 									}
 									
 									
-							 }
+							   }
+								}
+								for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+									String hc = "getHistoryCode";
+									String hd = "getHistoryDOS";
+									String ht = "getHistoryTooth";
+									String hs = "getHistorySurface";
+									
+									Method hcm = c2.getMethod(hc);
+									Method htm = c2.getMethod(ht);
+									Method hdm = c2.getMethod(hd);
+									Method hss = c2.getMethod(hs);
+
+									String code = (String) hcm.invoke(hisShee);
+									
+									if (reqList.contains(code.toUpperCase())) {
+										RuleEngineLogger.generateLogs(clazz, " History Service Code -"+code, Constants.rule_log_debug, bw);
+										hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+												(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
+						              if (mapHistory.containsKey(code)) {
+											List<ToothHistoryDto> t = mapHistory.get(code);
+											t.add(hdto);
+										} else {
+											List<ToothHistoryDto> l = new ArrayList<>();
+											l.add(hdto);
+											mapHistory.put(code, l);
+										}
+									}
+									
+									
+							 }	
 								if (mapHistory!=null && mapHistory.size()>0) {
 									//Check for Date in 36 Months
 									for (Map.Entry<String, List<ToothHistoryDto>> entry : mapHistory.entrySet()) {
@@ -8061,10 +8179,10 @@ public class RuleBook {
        	        
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
-						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 
 						IVFHistorySheet hisSheet = ivf.getHs();
-						
+						if (hisSheet!=null) {
 						for (int i = 1; i <= noOFhistory; i++) {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
@@ -8089,6 +8207,42 @@ public class RuleBook {
 							
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
 										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+							 if (checkList.contains(code)) {
+				              if ( mapHistoryM.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryM.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryM.put(code, l);
+								}
+							 }
+						}
+						}
+						for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							String hd = "getHistoryDOS";
+							String ht = "getHistoryTooth";
+							String hs = "getHistorySurface";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);	
+							String code = (String) hcm.invoke(hisShee);
+							String dt = (String) hdm.invoke(hisShee);
+							
+							if (code.equals("")) continue ;
+							if (dt.equals("")) continue ;
+							if (!checkList.contains(code)) continue;
+							//check for future date 
+							try {
+							if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
+							}catch (Exception e) {
+								continue;
+							}
+							
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+										(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
 							 if (checkList.contains(code)) {
 				              if ( mapHistoryM.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistoryM.get(code);
@@ -8209,10 +8363,10 @@ public class RuleBook {
        	        
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
-						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 
 						IVFHistorySheet hisSheet = ivf.getHs();
-						
+						if (hisSheet!=null) {
 						for (int i = 1; i <= noOFhistory; i++) {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
@@ -8237,6 +8391,40 @@ public class RuleBook {
 							
 								hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
 										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistoryM.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryM.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryM.put(code, l);
+								}
+						}
+						}
+						for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							String hd = "getHistoryDOS";
+							String ht = "getHistoryTooth";
+							String hs = "getHistorySurface";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);	
+							String code = (String) hcm.invoke(hisShee);
+							String dt = (String) hdm.invoke(hisShee);
+							
+							if (code.equals("")) continue ;
+							if (dt.equals("")) continue ;
+							if (!checkList.contains(code)) continue;
+							//check for future date 
+							try {
+							if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
+							}catch (Exception e) {
+								continue;
+							}
+							
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+										(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
 				              if (mapHistoryM.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistoryM.get(code);
 									t.add(hdto);
@@ -8340,10 +8528,10 @@ public class RuleBook {
        	        
 					int noOFhistory = Constants.history_codes_size;
 					Class<?> c2;
-						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+						c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--Done
 
 						IVFHistorySheet hisSheet = ivf.getHs();
-						
+						if (hisSheet!=null) {
 						for (int i = 1; i <= noOFhistory; i++) {
 							String hc = "getHistory" + i + "Code";
 							String hd = "getHistory" + i + "DOS";
@@ -8368,6 +8556,40 @@ public class RuleBook {
 
 							hdto = new ToothHistoryDto((String) hcm.invoke(hisSheet), (String) hdm.invoke(hisSheet),
 										(String) htm.invoke(hisSheet),(String) hss.invoke(hisSheet));
+				              if (mapHistoryM.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryM.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryM.put(code, l);
+								}
+						}
+						}
+						for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							String hd = "getHistoryDOS";
+							String ht = "getHistoryTooth";
+							String hs = "getHistorySurface";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);	
+							String code = (String) hcm.invoke(hisShee);
+							String dt = (String) hdm.invoke(hisShee);
+							
+							if (code.equals("")) continue ;
+							if (dt.equals("")) continue ;
+							if (!checkList.contains(code)) continue;
+							//check for future date 
+							try {
+							if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
+							}catch (Exception e) {
+								continue;
+							}
+
+							hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+										(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
 				              if (mapHistoryM.containsKey(code)) {
 									List<ToothHistoryDto> t = mapHistoryM.get(code);
 									t.add(hdto);

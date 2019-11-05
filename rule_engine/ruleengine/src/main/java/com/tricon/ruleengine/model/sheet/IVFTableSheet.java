@@ -1,5 +1,10 @@
 package com.tricon.ruleengine.model.sheet;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.tricon.ruleengine.model.db.PatientHistory;
+
 public class IVFTableSheet {
 
 	private String officeName;// A
@@ -140,6 +145,7 @@ public class IVFTableSheet {
 	private String craRequired;//KY
 	private String claimFillingLimit;//KZ
 	private String uniqueID;//LA
+	private List<IVFHistorySheet> iVFHistorySheetList= new ArrayList<>();
 	
 	
 	
@@ -1125,10 +1131,14 @@ public class IVFTableSheet {
 	public void setCraRequired(String craRequired) {
 		this.craRequired = craRequired;
 	}
+	public List<IVFHistorySheet> getiVFHistorySheetList() {
+		return iVFHistorySheetList;
+	}
+	public void setiVFHistorySheetList(List<IVFHistorySheet> iVFHistorySheetList) {
+		this.iVFHistorySheetList = iVFHistorySheetList;
+	}
 	
 	
-
-
-
+	
 	
 }

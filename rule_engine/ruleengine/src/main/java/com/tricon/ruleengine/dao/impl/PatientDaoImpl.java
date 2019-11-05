@@ -107,6 +107,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			else session.update(pd);
 			for (PatientHistory ph : pat.getPatientHistory()) {
 				ph.setPatient(pat);
+				ph.setOffice(off);
 				session.save(ph);
 			}
 			// x.split("");
@@ -223,12 +224,12 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			
 			*/
 			////policy18//policy19/policy20 -- need to verify
-			String inclause=(dto!=null && !dto.getPatientIdDB().equals("")? " and p.patient_id in ('"+dto.getPatientIdDB()+"') ":" ");
+			String inclause=(dto!=null && dto.getPatientIdDB()!=null && !dto.getPatientIdDB().equals("")? " and p.patient_id in ('"+dto.getPatientIdDB()+"') ":" ");
 			if (patIds!=null) {
 				inclause= " and p.patient_id in ("+String.join(", ", patIds)+")";
 			}
 			
-			String query = "select p.id as id,policy_holder as basicInfo5,p.patient_id as basicInfo21,"
+			String query = "select pd.id as id,policy_holder as basicInfo5,p.patient_id as basicInfo21,"
 					+ " concat(coalesce(p.first_name,''),' ',coalesce(p.last_name,'')) as basicInfo2, p.dob as basicInfo6, "
 					+ " ins_name as basicInfo3 , tax_id as basicInfo4, ins_contact as basicInfo7, "
 					+ " cs_sr_name as basicInfo8, policy_holder_dob as basicInfo9 , employer_name as basicInfo10 ,"
@@ -268,13 +269,15 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " crowns_d2750_d2740_fl as posterior5,crowns_d2750_d2740_downgrade as posterior6,night_guards_d9940_percentage as posterior7,"
 					+ " d9310_percentage as posterior8,d9310_fl as posterior9,buildups_d2950_covered as posterior10,buildups_d2950_fl as posterior11,"
 					+ " buildups_d2950_same_day_crown as posterior12,orthoPercentage as ortho1,ortho_max as ortho2 ,ortho_age_limit as ortho3,"
-					+ " ortho_subject_deductible as ortho4,general_date_iv_wasdone as date "
+					+ " ortho_subject_deductible as ortho4,general_date_iv_wasdone as date,comments as comments,general_benefits_verified_by as benefits"
 					+ " from patient_detail pd , patient p where "
 					+ " pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id " 
 					//(!dto.getPatientIdDB().equals("")? " and p.patient_id in ('"+dto.getPatientIdDB()+"') ":" ")+
 					+ inclause +
-					(dto!=null && !dto.getEmployerNameDB().equals("")? " and pd.employer_name ='"+dto.getEmployerNameDB()+" ":" ")+
-					(dto!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+" ":" ")
+					(dto!=null && dto.getUniqueID()!=null && !dto.getUniqueID().equals("")? " and pd.id ="+dto.getUniqueID()+" ":" ")+
+					(dto!=null && dto.getEmployerNameDB()!=null && !dto.getEmployerNameDB().equals("")? " and pd.employer_name like '%"+dto.getEmployerNameDB()+"%' ":" ")+
+					(dto!=null && dto.getPatientName()!=null && !dto.getPatientName().equals("")? " and (concat(coalesce(first_name,''),' ',coalesce(last_name,'')) like '%"+dto.getPatientName()+"%')"+" ":" ")+
+					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+"' ":" ")
 					
 					;
           cL=session.createSQLQuery(query).setResultTransformer(Transformers.aliasToBean(CaplineIVFFormDto.class)). list();
@@ -284,6 +287,31 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		return cL;
 	}
 
+	@Override
+	public List<Object> searchPatientDetailFromIVFGivenColumns(CaplineIVFQueryFormDto dto, Office off) {
+		Session session = getSession();
+		List<Object> cL=null;
+		try {
+			String inclause=(dto!=null && dto.getPatientIdDB()!=null && !dto.getPatientIdDB().equals("")? " and p.patient_id in ('"+dto.getPatientIdDB()+"') ":" ");
+			if (dto.getPatientIdDB()!=null) {
+				inclause= " and p.patient_id ='"+dto.getPatientIdDB()+"' ";
+			}
+			
+			String query = "select '"+dto.getOfficeNameDB()+"'," +dto.getColumns()+" from patient_detail pd , patient p where "
+					+ " pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id " 
+					+ inclause +
+					(dto!=null && dto.getUniqueID()!=null && !dto.getUniqueID().equals("")? " and pd.id ="+dto.getUniqueID()+" ":" ")+
+					(dto!=null && dto.getEmployerNameDB()!=null && !dto.getEmployerNameDB().equals("")? " and pd.employer_name like '%"+dto.getEmployerNameDB()+"%' ":" ")+
+					(dto!=null && dto.getPatientName()!=null && !dto.getPatientName().equals("")? " and (concat(coalesce(first_name,''),' ',coalesce(last_name,'')) like '%"+dto.getPatientName()+"%')"+" ":" ")+
+					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+"' ":" ")
+					
+					;
+          cL=session.createSQLQuery(query).list();
+		} finally {
+			closeSession(session);
+		}
+		return cL;
+	}
 	@Override
 	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off) {
 		Session session = getSession();

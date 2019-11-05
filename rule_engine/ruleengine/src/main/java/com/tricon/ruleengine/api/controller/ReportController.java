@@ -1,9 +1,15 @@
 package com.tricon.ruleengine.api.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,16 +22,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tricon.ruleengine.api.enums.HighLevelReportTypeEnum;
+import com.tricon.ruleengine.dao.OfficeDao;
+import com.tricon.ruleengine.dto.CaplineIVFFormDto;
+import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.EnhancedReportDto;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
+import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
+import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.security.JwtUser;
+import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.service.ReportService;
 import com.tricon.ruleengine.utils.Constants;
 
@@ -36,22 +49,44 @@ import com.tricon.ruleengine.utils.Constants;
  */
 @Controller
 public class ReportController {
-	
+
+	@Autowired
+	OfficeDao od;
+
 	@Autowired
 	private ReportService reportService;
 
-    @Autowired
-    @Qualifier("jwtUserDetailsService")
-    private UserDetailsService userDetailsService;
+	@Autowired
+	@Qualifier("jwtUserDetailsService")
+	private UserDetailsService userDetailsService;
 
-    
-	
+	@Autowired
+	CaplineIVFGoogleFormService civf;
+
 	@CrossOrigin
 	@RequestMapping(value = "/report", method = RequestMethod.POST)
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	public ResponseEntity<?> generateReport(@RequestBody ReportDto dto) {
 		dto.setmType("t");
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully",prepareData(dto,"TR. ID-")));
+		Object o = null;
+		if (dto.getReportType().equals("ivfRDBMS")) {
+			// List<CaplineIVFFormDto> cap=null;
+			try {
+				CaplineIVFQueryFormDto d = new CaplineIVFQueryFormDto();
+				d.setPatientIdDB(dto.getReportField1());
+				d.setEmployerNameDB(dto.getEmployerName());
+				d.setGeneralDateIVFDoneDB(dto.getGeneralDateRun());
+				d.setPatientName(dto.getPatientName());
+
+				o = (List<CaplineIVFFormDto>) civf.searchIVFDataforApp(d);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			o = prepareData(dto, "TR. ID-");
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", o));
 	}
 
 	@CrossOrigin
@@ -59,10 +94,11 @@ public class ReportController {
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	public ResponseEntity<?> generateReportCL(@RequestBody ReportDto dto) {
 		dto.setmType("c");
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully",prepareData(dto,"CL. ID-")));
+		return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", prepareData(dto, "CL. ID-")));
 	}
-	
-	private Map<String, List<ReportResponseDto>> prepareData(ReportDto dto,String inv) {
+
+	private Map<String, List<ReportResponseDto>> prepareData(ReportDto dto, String inv) {
 		List<ReportResponseDto> li = reportService.getReports(dto);
 		Map<String, List<ReportResponseDto>> map = new LinkedHashMap<>();
 		List<ReportResponseDto> a = new ArrayList<>();
@@ -70,8 +106,8 @@ public class ReportController {
 		if (li != null)
 			for (ReportResponseDto d : li) {
 				k = d.getRd_group_run() + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
-						+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " "+inv
-						+ d.getTreatement_plan_id() +" Run By-"+d.getName();
+						+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " " + inv + d.getTreatement_plan_id()
+						+ " Run By-" + d.getName();
 				if (map.containsKey(k)) {
 					// if the key has already been used,
 					// we'll just grab the array list and add the value to it
@@ -92,7 +128,6 @@ public class ReportController {
 
 	}
 
-
 	@CrossOrigin
 	@RequestMapping(value = "/enreport", method = RequestMethod.POST)
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -101,7 +136,7 @@ public class ReportController {
 		List<?> li = reportService.getEnancedReport(dto);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", li));
 	}
-    
+
 	@CrossOrigin
 	@RequestMapping(value = "/enreportcl", method = RequestMethod.POST)
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -110,5 +145,33 @@ public class ReportController {
 		List<?> li = reportService.getEnancedReport(dto);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", li));
 	}
-	
+
+	@PostMapping
+	@RequestMapping(value = "/genereatePdf")
+	public void generatePDF(@RequestBody ReportDto rdto, HttpServletResponse response) throws IOException {
+		//
+		
+		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
+		dto.setEmployerNameDB("");
+		dto.setGeneralDateIVFDoneDB(rdto.getGeneralDateRun());
+		dto.setOfficeNameDB(rdto.getOfficeId());
+		dto.setPatientIdDB(rdto.getReportField1());
+		dto.setPatientName("");
+		
+		Office office = od.getOfficeByUuid(dto.getOfficeNameDB());
+
+		ByteArrayOutputStream o = null;
+		o = civf.generatePDF(dto, office);
+		if (o != null) {
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+ "ivf.pdf"));
+			InputStream in = new ByteArrayInputStream(o.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			o.close();
+		}
+		
+
+	}
+
 }

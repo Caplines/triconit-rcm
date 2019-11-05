@@ -6,9 +6,11 @@ public class ToothHistoryDto {
 	String historyDos;
 	String historyTooth;
 	String surfaceTooth;
+	String className;
 	
-	
-	
+	public ToothHistoryDto() {
+		super();
+	}
 	
 	public ToothHistoryDto(String historyCode, String historyDos, String historyTooth,String surfaceTooth) {
 		super();
@@ -41,6 +43,12 @@ public class ToothHistoryDto {
 	}
 	public void setSurfaceTooth(String surfaceTooth) {
 		this.surfaceTooth = surfaceTooth;
+	}
+	public String getClassName() {
+		return className;
+	}
+	public void setClassName(String className) {
+		this.className = className;
 	}
 
 	

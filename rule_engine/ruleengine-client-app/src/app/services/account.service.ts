@@ -1,5 +1,5 @@
 import { Http, Headers, RequestOptions,Response} from '@angular/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {User} from "../model/model.user";
 import {IVFModel} from "../model/model.ivf";
@@ -77,7 +77,7 @@ export class AccountService {
           },
           error => {
               callback(error);
-              //this.router.navigate(['/logout']);
+              // this.router.navigate(['/logout']);
           },
           () => {
           }
@@ -384,18 +384,13 @@ export class AccountService {
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          // console.log((<any>data).token);
 	          localStorage.setItem("token", (<any>data).token);
-	          //console.log("token is set");
+	          // console.log("token is set");
 	            return  this.http.post(AppComponent.API_URL+'/'+scrapsite,scrap)
-	            /*.
-	            pipe(
-	            	      timeout(60 * 1000 * 30),
-	            	      catchError(e => {
-	            	        // do something on a timeout
-	            	    	  alert("Data will written  in Sheet. Shortly");
-	            	        return null;
-	            	      })
-	            	    );
-	            */
+	            /*
+				 * . pipe( timeout(60 * 1000 * 30), catchError(e => { // do
+				 * something on a timeout alert("Data will written in Sheet.
+				 * Shortly"); return null; }) );
+				 */
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -419,6 +414,35 @@ export class AccountService {
 	          );
 	              
 	  }
+	  
+	  downloadIVFPDF(dataS:any, callback) {
+		  let headers = new HttpHeaders();
+		    headers = headers.append('Accept', 'application/pdf; charset=utf-8');
+			this.generateRefreshToken().pipe(switchMap(data => {
+				localStorage.setItem("token", (<any>data).token);
+				return  this.http.post(AppComponent.API_URL+'/genereatePdf',dataS,{
+					 headers: headers,
+				      observe: 'response',
+				      responseType: 'arraybuffer'
+				});
+			})
+			).subscribe(data => {
+				callback((<any>data));
+			},
+			error => {  
+				// console.log(33);
+				if (error.status==401){ 
+					this.router.navigate(['/logout']);
+				}
+	            if (error.status==500){
+					alert("Some Technical issues..");
+					callback(error);
+	            }
+	        },
+	        () => {        
+				}
+			);  
+		}
 	  
   generateRefreshToken(){
       return this.http.get(AppComponent.API_URL+'/refresh');

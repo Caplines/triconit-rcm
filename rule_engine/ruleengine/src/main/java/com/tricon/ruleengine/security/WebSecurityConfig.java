@@ -115,6 +115,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .ignoring()
             .antMatchers(
                 HttpMethod.GET,
+                "/queryivdatatopdf",
+                "/queryivdatafromdbgoogle",
                 "/open/*",
                 "/login",
                 "/readDriveSuc",

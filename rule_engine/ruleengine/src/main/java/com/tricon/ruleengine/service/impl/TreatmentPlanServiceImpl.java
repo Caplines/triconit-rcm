@@ -39,6 +39,8 @@ import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.SharePointDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.dao.UserDao;
+import com.tricon.ruleengine.dto.CaplineIVFFormDto;
+import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.MicroSoftGraphToken;
 import com.tricon.ruleengine.dto.PatientTreamentDto;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
@@ -55,6 +57,8 @@ import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.OneDriveApp;
 import com.tricon.ruleengine.model.db.OneDriveFile;
+import com.tricon.ruleengine.model.db.PatientDetail;
+import com.tricon.ruleengine.model.db.PatientHistory;
 import com.tricon.ruleengine.model.db.ReportClaimDetail;
 import com.tricon.ruleengine.model.db.ReportDetail;
 import com.tricon.ruleengine.model.db.Reports;
@@ -72,11 +76,13 @@ import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
+import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanPatient;
 import com.tricon.ruleengine.security.JwtUser;
+import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.EagleSoftDBService;
 import com.tricon.ruleengine.service.SharePointService;
@@ -85,6 +91,7 @@ import com.tricon.ruleengine.service.UserInputService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.DateUtils;
+import com.tricon.ruleengine.utils.IVFFormConversionUtil;
 import com.tricon.ruleengine.utils.MessageUtil;
 import com.tricon.ruleengine.utils.ReadMicrosoftFile;
 import com.tricon.ruleengine.utils.RuleBook;
@@ -151,7 +158,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	@Autowired
 	UserInputService userInputService;
 	
-    @Autowired
+	@Autowired
+	CaplineIVFGoogleFormService  caplineIVFGoogleFormService;
+	
+	@Autowired
     @Qualifier("jwtUserDetailsService")
     private UserDetailsService userDetailsService;
 
@@ -470,9 +480,20 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								bw);
 						if (true) {//Earlier this was only for Claim now for all (Claim + Treatment)  
 							if (ivs!=null && dtod.getIvfId()!=null && dtod.getIvfId().length()>0) {
-							ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+							if(esDB.isSheet()!=Constants.VALIDATE_FROM_SHEET) {
+								ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 								off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
 								off.getName(),false,true);
+							}
+							else {
+								///Write Query
+								CaplineIVFQueryFormDto fd= new CaplineIVFQueryFormDto();
+								fd.setUniqueID(dtod.getIvfId());
+								List<CaplineIVFFormDto> civfD=(List<CaplineIVFFormDto>) caplineIVFGoogleFormService.searchIVFData(fd, off);
+								ivfMap= IVFFormConversionUtil.copyValueToIVFSheet(civfD, off);							
+								
+								
+							}
 							//if (type==Constants.userType_CL) return null;
 							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_read_fil_end + "-" + Constants.google_ivf_sheet,
 									Constants.rule_log_debug, bw);
@@ -548,7 +569,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							TRAN_DATE= Constants.SIMPLE_DATE_FORMAT.format(new Date());
 						}
 						String pid =tp.getPatient().getId();
-						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true,type);
+						Map<String, List<Object>> ivfMapPat=null;
+						if (esDB.isSheet()==Constants.VALIDATE_FROM_SHEET ) {
+							CaplineIVFQueryFormDto fd= new CaplineIVFQueryFormDto();
+							fd.setPatientIdDB(pid);
+							List<CaplineIVFFormDto> civfD=(List<CaplineIVFFormDto>) caplineIVFGoogleFormService.searchIVFData(fd, off);
+							ivfMapPat= IVFFormConversionUtil.copyValueToIVFSheet(civfD, off);	
+						}
+						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,
+								          TRAN_DATE,true,type,esDB.isSheet(),ivfMapPat);
 						ivfMap = (Map<String, List<Object>>)maps[1];
 						if (ivfMap==null && (Map<String, List<Object>>)maps[0]!=null) {//This means we have no result due to date issue.
 						if 	(true) {//This means result was there but not valid date..
@@ -1934,9 +1963,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			
 						}
 						if (ivs!=null && dtod.getIvfId()!=null && dtod.getIvfId().length()>0) {
-						ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+						if(esDB.isSheet()!=Constants.VALIDATE_FROM_SHEET) {
+							ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 							off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
 							off.getName(),false,true);
+						}
+						}else {
+							//Write Query
 					     }
 
 						
@@ -1989,7 +2022,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						if (tp!=null) { 
 						TRAN_DATE= Constants.SIMPLE_DATE_FORMAT.format(new Date());
 						String pid =tp.getPatient().getId();
-						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true,type);
+						Map<String, List<Object>> ivfMapPat=null;
+						if (esDB.isSheet()==Constants.VALIDATE_FROM_SHEET) {
+							CaplineIVFQueryFormDto fd= new CaplineIVFQueryFormDto();
+							fd.setPatientIdDB(pid);
+							List<CaplineIVFFormDto> civfD=(List<CaplineIVFFormDto>) caplineIVFGoogleFormService.searchIVFData(fd, off);
+							ivfMapPat= IVFFormConversionUtil.copyValueToIVFSheet(civfD, off);	
+						}
+						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true,
+								type,esDB.isSheet(),ivfMapPat);
 						ivfMap = (Map<String, List<Object>>)maps[1];
 						if (ivfMap==null && (Map<String, List<Object>>)maps[0]!=null) {//This means we have no result due to date issue.
 						if 	(true) {//This means result was there but not valid date..
@@ -2752,9 +2793,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					RuleEngineLogger.generateLogs(clazz,
 							Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
 							null);
-					ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
+					if(esDB.isSheet()!=Constants.VALIDATE_FROM_SHEET) {
+						ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 							off.getName() + " " + ivsheet.getAppSheetName(), ids, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
 							off.getName(),isPat,false);
+					}else {
+						//write query
+					}
 
 					// Remove old IV's
 					if (isPat && ivfMap!=null) {
