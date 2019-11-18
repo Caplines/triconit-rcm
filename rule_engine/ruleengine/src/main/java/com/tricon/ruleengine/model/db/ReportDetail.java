@@ -28,7 +28,7 @@ public class ReportDetail extends BaseAudit implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = -9150819243860027278L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy =  GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	private int id;
 	@ManyToOne(fetch = FetchType.LAZY)

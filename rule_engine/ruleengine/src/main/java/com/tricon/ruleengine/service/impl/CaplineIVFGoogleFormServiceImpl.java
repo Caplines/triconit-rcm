@@ -267,9 +267,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	}
 
 	@Override
-	public Object searchIVFDataforApp(CaplineIVFQueryFormDto d) throws Exception {
+	public Object searchIVFDataforApp(CaplineIVFQueryFormDto d,Office off) throws Exception {
 		// TODO Auto-generated method stub
-		Office off = od.getOfficeByName(d.getOfficeNameDB());
+		//Office off = od.getOfficeByName(d.getOfficeNameDB());
 		
 		List<CaplineIVFFormDto> capD = createData(d, off, null);
 		if (capD!=null && capD.size() > 0) {
@@ -310,13 +310,15 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	 */
 
 	@Override
-	public ByteArrayOutputStream generatePDF(CaplineIVFQueryFormDto dto,Office office) {
+	public Object[] generatePDF(CaplineIVFQueryFormDto dto,Office office) {
 		ByteArrayOutputStream o = null;
+		Object[] obj=new Object[2]; 
 		try {
 			
 			List<CaplineIVFFormDto> li = (List<CaplineIVFFormDto>) searchIVFData(dto,office);
 			if (li.size() > 0) {
 				CaplineIVFFormDto form = li.get(0);
+				obj[0]=form.getBasicInfo2();
 				if (form.getHistory() != null) {
 					int ct = 0;
 					List<ToothHistoryDto> hdto = new ArrayList<>();
@@ -343,6 +345,25 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 					}
 					form.setHdto(hdto);
 					form.setHistory(null);
+					int x=0;
+					List<ToothHistoryDto> l1= new ArrayList<>();
+					List<ToothHistoryDto> l2= new ArrayList<>();
+					List<ToothHistoryDto> l3= new ArrayList<>();
+					
+					for(ToothHistoryDto h:form.getHdto()) {
+						if (x==0)   l1.add(h);
+						if (x==1)   l2.add(h);
+						if (x==2) {
+							l3.add(h);
+							x=-1;
+						}
+						x++;
+					}
+					form.setHdto1(l1);
+					form.setHdto2(l2);
+					form.setHdto3(l3);
+					form.setHdto(null);
+					
 				}
 				CaplineIVFFormDtoToXML xml = new CaplineIVFFormDtoToXML();
 				String filePath = xml.convertToXML(form, XSLT_PATH);
@@ -350,13 +371,16 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				o = xml.createPdfStream(
 
 						xml.createHtml(filePath, XSLT_FILE), "");
+				//To test html for issues
+				//o=xml.createHtmlOut(filePath, XSLT_FILE);
+				obj[1]=o;
 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return o;
+		return obj;
 	}
 
 	

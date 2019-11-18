@@ -149,7 +149,7 @@ export class ReportComponent implements OnInit {
 				//const filename = result.headers.get('filename');
 				console.log(result);
 				// this.downloadFile(result.body);
-				this.saveBolbData(result.body,this.report.officeId+"_"+data.basicInfo21+".pdf");
+				this.saveBolbData(result.body,data.basicInfo2+".pdf");
 			}
 		});
   }

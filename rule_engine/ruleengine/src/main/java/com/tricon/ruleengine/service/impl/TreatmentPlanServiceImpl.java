@@ -480,7 +480,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								bw);
 						if (true) {//Earlier this was only for Claim now for all (Claim + Treatment)  
 							if (ivs!=null && dtod.getIvfId()!=null && dtod.getIvfId().length()>0) {
-							if(esDB.isSheet()!=Constants.VALIDATE_FROM_SHEET) {
+							if(esDB.getSheet()!=Constants.VALIDATE_FROM_SHEET) {
 								ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 								off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
 								off.getName(),false,true);
@@ -570,14 +570,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}
 						String pid =tp.getPatient().getId();
 						Map<String, List<Object>> ivfMapPat=null;
-						if (esDB.isSheet()==Constants.VALIDATE_FROM_SHEET ) {
+						if (esDB.getSheet()==Constants.VALIDATE_FROM_SHEET ) {
 							CaplineIVFQueryFormDto fd= new CaplineIVFQueryFormDto();
 							fd.setPatientIdDB(pid);
 							List<CaplineIVFFormDto> civfD=(List<CaplineIVFFormDto>) caplineIVFGoogleFormService.searchIVFData(fd, off);
 							ivfMapPat= IVFFormConversionUtil.copyValueToIVFSheet(civfD, off);	
 						}
 						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,
-								          TRAN_DATE,true,type,esDB.isSheet(),ivfMapPat);
+								          TRAN_DATE,true,type,esDB.getSheet(),ivfMapPat);
 						ivfMap = (Map<String, List<Object>>)maps[1];
 						if (ivfMap==null && (Map<String, List<Object>>)maps[0]!=null) {//This means we have no result due to date issue.
 						if 	(true) {//This means result was there but not valid date..
@@ -1963,7 +1963,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			
 						}
 						if (ivs!=null && dtod.getIvfId()!=null && dtod.getIvfId().length()>0) {
-						if(esDB.isSheet()!=Constants.VALIDATE_FROM_SHEET) {
+						if(esDB.getSheet()!=Constants.VALIDATE_FROM_SHEET) {
 							ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 							off.getName() + " " + ivsheet.getAppSheetName(), ivs, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
 							off.getName(),false,true);
@@ -2023,14 +2023,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						TRAN_DATE= Constants.SIMPLE_DATE_FORMAT.format(new Date());
 						String pid =tp.getPatient().getId();
 						Map<String, List<Object>> ivfMapPat=null;
-						if (esDB.isSheet()==Constants.VALIDATE_FROM_SHEET) {
+						if (esDB.getSheet()==Constants.VALIDATE_FROM_SHEET) {
 							CaplineIVFQueryFormDto fd= new CaplineIVFQueryFormDto();
 							fd.setPatientIdDB(pid);
 							List<CaplineIVFFormDto> civfD=(List<CaplineIVFFormDto>) caplineIVFGoogleFormService.searchIVFData(fd, off);
 							ivfMapPat= IVFFormConversionUtil.copyValueToIVFSheet(civfD, off);	
 						}
 						Object[] maps= DateUtils.selectOneKeyFromMapWithLatestDate(pid,ivsheet,CLIENT_SECRET_DIR,CREDENTIALS_FOLDER,off,TRAN_DATE,true,
-								type,esDB.isSheet(),ivfMapPat);
+								type,esDB.getSheet(),ivfMapPat);
 						ivfMap = (Map<String, List<Object>>)maps[1];
 						if (ivfMap==null && (Map<String, List<Object>>)maps[0]!=null) {//This means we have no result due to date issue.
 						if 	(true) {//This means result was there but not valid date..
@@ -2793,7 +2793,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					RuleEngineLogger.generateLogs(clazz,
 							Constants.rule_log_read_fil_start + "-" + Constants.google_ivf_sheet, Constants.rule_log_debug,
 							null);
-					if(esDB.isSheet()!=Constants.VALIDATE_FROM_SHEET) {
+					if(esDB.getSheet()!=Constants.VALIDATE_FROM_SHEET) {
 						ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
 							off.getName() + " " + ivsheet.getAppSheetName(), ids, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,
 							off.getName(),isPat,false);

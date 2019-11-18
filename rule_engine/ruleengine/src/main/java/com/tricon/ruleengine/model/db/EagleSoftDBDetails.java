@@ -51,8 +51,7 @@ public class EagleSoftDBDetails extends BaseAudit implements Serializable{
 
 	@Column(name = "is_server")
 	private boolean server;
-
-	@Column(name = "is_sheet")
+    @Column(name = "is_sheet")
 	private int sheet;
 	
 	public int getId() {
@@ -103,8 +102,7 @@ public class EagleSoftDBDetails extends BaseAudit implements Serializable{
 	public void setServer(boolean server) {
 		this.server = server;
 	}
-
-
+    
 	public String getPassword() {
 		return password;
 	}
@@ -115,13 +113,13 @@ public class EagleSoftDBDetails extends BaseAudit implements Serializable{
 	}
 
 
-	public int isSheet() {
-		return sheet;
+	public void setSheet(int sheet) {
+		this.sheet = sheet;
 	}
 
 
-	public void setSheet(int sheet) {
-		this.sheet = sheet;
+	public int getSheet() {
+		return sheet;
 	}
 	
  

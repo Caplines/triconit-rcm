@@ -1,6 +1,7 @@
 package com.tricon.ruleengine.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
@@ -110,4 +112,22 @@ public class CommonRedirectController {
 		request.getRequestDispatcher("/").forward(request, response);
 	}
 	
+	@CrossOrigin
+	//@ResponseBody
+	@RequestMapping(value = "/.well-known/acme-challenge/8h0NwOQLZreL70OMOZtKMYcM5W2Fme1JUatgJFuTElA", method = RequestMethod.GET
+			)//,produces="text/plain")
+	public void sslForward(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		try {       
+			response.setContentType("text/plain");
+	        PrintWriter out = response.getWriter();
+	        out.println("8h0NwOQLZreL70OMOZtKMYcM5W2Fme1JUatgJFuTElA.Pw-9dWQdIvPVoOCxvLb3MlkzQPiQo3jjoi3DPhotZwQ");
+	        out.close();
+	    } catch (IOException ex) { 
+	        //...
+	    }
+		
+		//return "jZDbjQShlYmH4D3kq0tcgndIwf_1ioeegQEH4hbLyjg.XpbGCykpKh__XhBBrdH5ePZE_iXrGYFq_1_IdIuBlXM";
+	}
 }

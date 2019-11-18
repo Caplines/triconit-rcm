@@ -51,7 +51,19 @@ public class CaplineIVFFormDtoToXML {
 		    writer.close();
 		    return baos.toByteArray();
 		}
-	
+	public ByteArrayOutputStream createHtmlOut(String xmlPath, String xslPath)
+		    throws IOException, TransformerException {
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		    Writer writer = new OutputStreamWriter(baos);
+		    StreamSource xml = new StreamSource(new File(xmlPath));
+		    StreamSource xsl = new StreamSource(new File(xslPath));
+		    TransformerFactory factory = TransformerFactory.newInstance();
+		    Transformer transformer = factory.newTransformer(xsl);
+		    transformer.transform(xml, new StreamResult(writer));
+		    writer.flush();
+		    writer.close();
+		    return baos;
+	}
 	public void createPdf(byte[] html, String baseUri, String dest) throws IOException {
 	    ConverterProperties properties = new ConverterProperties();
 	    properties.setBaseUri(baseUri);

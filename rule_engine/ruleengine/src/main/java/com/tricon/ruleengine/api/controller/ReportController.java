@@ -73,12 +73,14 @@ public class ReportController {
 			// List<CaplineIVFFormDto> cap=null;
 			try {
 				CaplineIVFQueryFormDto d = new CaplineIVFQueryFormDto();
+				
 				d.setPatientIdDB(dto.getReportField1());
+				//d.setOfficeNameDB(officeNameDB);
 				d.setEmployerNameDB(dto.getEmployerName());
 				d.setGeneralDateIVFDoneDB(dto.getGeneralDateRun());
 				d.setPatientName(dto.getPatientName());
 
-				o = (List<CaplineIVFFormDto>) civf.searchIVFDataforApp(d);
+				o = (List<CaplineIVFFormDto>) civf.searchIVFDataforApp(d,od.getOfficeByUuid(dto.getOfficeId()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -159,12 +161,14 @@ public class ReportController {
 		dto.setPatientName("");
 		
 		Office office = od.getOfficeByUuid(dto.getOfficeNameDB());
-
-		ByteArrayOutputStream o = null;
-		o = civf.generatePDF(dto, office);
-		if (o != null) {
+        Object[] obj=null; 
+		
+		obj = civf.generatePDF(dto, office);
+		if (obj != null && obj[1]!=null) {
+			ByteArrayOutputStream o =(ByteArrayOutputStream)  obj[1];
 			response.setContentType("application/octet-stream");
-			response.setHeader("Content-Disposition", String.format("attachment; filename="+ "ivf.pdf"));
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0]+ ".pdf"));
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
 			InputStream in = new ByteArrayInputStream(o.toByteArray());
 			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
 			response.flushBuffer();

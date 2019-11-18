@@ -184,19 +184,23 @@ public class CaplineIVFGoogleFormController {
 		Office office = od.getOfficeByName(dto.getOfficeNameDB());
 
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
-		ByteArrayOutputStream os =null;
+        Object[] obj=null; 
+		
+		
 		if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
-		 os = civf.generatePDF(dto,office);
+			obj = civf.generatePDF(dto,office);
 		}
-		if (os != null) {
+		if (obj != null && obj[1]!=null) {
+			ByteArrayOutputStream ou =(ByteArrayOutputStream)  obj[1];
 			response.setContentType("application/octet-stream");
-			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", "ivf.pdf"));
-			InputStream in = new ByteArrayInputStream(os.toByteArray());
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0]+ ".pdf"));
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
+			InputStream in = new ByteArrayInputStream(ou.toByteArray());
 			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
-
+			response.flushBuffer();
+			ou.close();
 		}
-		response.flushBuffer();
-		os.close();
+		
 
 	}
 

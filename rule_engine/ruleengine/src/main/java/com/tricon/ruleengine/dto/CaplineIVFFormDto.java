@@ -473,6 +473,42 @@ public class CaplineIVFFormDto {
     @XmlElement(name="hisall") 
     private List<ToothHistoryDto> hdto;
 
+    @XmlElementWrapper
+    @XmlElement(name="hisall1") 
+    private List<ToothHistoryDto> hdto1;
+
+    @XmlElementWrapper
+    @XmlElement(name="hisall2") 
+    private List<ToothHistoryDto> hdto2;
+
+    @XmlElementWrapper
+    @XmlElement(name="hisall3") 
+    private List<ToothHistoryDto> hdto3;
+
+    
+	public List<ToothHistoryDto> getHdto1() {
+		return hdto1;
+	}
+
+	public void setHdto1(List<ToothHistoryDto> hdto1) {
+		this.hdto1 = hdto1;
+	}
+
+	public List<ToothHistoryDto> getHdto2() {
+		return hdto2;
+	}
+
+	public void setHdto2(List<ToothHistoryDto> hdto2) {
+		this.hdto2 = hdto2;
+	}
+
+	public List<ToothHistoryDto> getHdto3() {
+		return hdto3;
+	}
+
+	public void setHdto3(List<ToothHistoryDto> hdto3) {
+		this.hdto3 = hdto3;
+	}
 
 	public String getComments() {
 		return comments;

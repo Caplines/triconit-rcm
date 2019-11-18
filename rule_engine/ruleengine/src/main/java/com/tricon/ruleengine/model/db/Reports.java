@@ -26,9 +26,12 @@ public class Reports extends BaseAudit implements java.io.Serializable {
 
 	private static final long serialVersionUID = -9135032927310683833L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	private int id;
+
+	
+	
 	@Column(name = "treatement_plan_id", length = 45)
 	private String treatementPlanId;
 	@Column(name = "ivf_form_id", length = 45)
