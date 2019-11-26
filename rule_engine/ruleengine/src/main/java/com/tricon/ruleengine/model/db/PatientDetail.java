@@ -10,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -60,7 +59,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	@Column(name = "const_tx_recall_np" , length=50)
     private String contTxRecallNP;// L
 
-	@Column(name = "ref" , length=50)
+	@Column(name = "ref" , length=70)
     private String ref;// L
 	
 	@Column(name = "member_ssn" , length=50)
@@ -81,13 +80,13 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	@Column(name = "payer_id" , length=50)
 	private String payerId;// R
 	
-	@Column(name = "provider_name" , length=50)
+	@Column(name = "provider_name" , length=255)
     private String providerName;// S
 	
 	@Column(name = "ins_address" , columnDefinition="text")
 	private String insAddress;// T
 	
-	@Column(name = "plan_type" , length=30)
+	@Column(name = "plan_type" , length=50)
 	private String planType;// U
 	
 	@Column(name = "plan_termed_date" , length=15)
@@ -96,7 +95,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	@Column(name = "plan_network" , length=50)
 	private String planNetwork;// W
 	
-	@Column(name = "plan_fee_schedule_name" , length=50)
+	@Column(name = "plan_fee_schedule_name" , length=255)
 	private String planFeeScheduleName;// X Fee Schedule Name
 	
 	@Column(name = "plan_effective_date" , length=15)
@@ -171,7 +170,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	@Column(name = "missingtooth_clause" , length=50)
 	private String missingToothClause;// AV
 	
-	@Column(name = "replacementclause" , length=50)
+	@Column(name = "replacementclause" , length=100)
 	private String replacementClause;// AW
 	
 	@Column(name = "crowns_d2750D2740_pays_prep_seat_date" , length=50)
@@ -423,6 +422,28 @@ public class PatientDetail extends BaseAudit implements Serializable{
 
 	@Column(name = "unique_id" , length=80)
     private String uniqueID;//LA
+	
+	@Column(name = "d0120" , length=50)
+	private String d0120;//LB
+	
+	@Column(name = "d2391" , length=50)
+	private String d2391;//LC
+
+	public String getD0120() {
+		return d0120;
+	}
+
+	public void setD0120(String d0120) {
+		this.d0120 = d0120;
+	}
+
+	public String getD2391() {
+		return d2391;
+	}
+
+	public void setD2391(String d2391) {
+		this.d2391 = d2391;
+	}
 
 	public int getId() {
 		return id;

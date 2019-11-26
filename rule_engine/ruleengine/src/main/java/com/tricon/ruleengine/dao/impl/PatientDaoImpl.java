@@ -1,18 +1,11 @@
 package com.tricon.ruleengine.dao.impl;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
@@ -21,17 +14,20 @@ import org.springframework.stereotype.Repository;
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
-import com.tricon.ruleengine.dto.OfficeDto;
-import com.tricon.ruleengine.dto.ReportResponseDto;
+import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
 import com.tricon.ruleengine.model.db.PatientDetail;
 import com.tricon.ruleengine.model.db.PatientHistory;
 import com.tricon.ruleengine.model.db.User;
+import com.tricon.ruleengine.utils.Constants;
 
 @Repository
 public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 
+	
+	static Class<?> clazz = PatientDaoImpl.class;
+	
 	@Override
 	public Patient checkforPatientWithIdAndOffice(String patientid, Office off) {
 
@@ -65,7 +61,13 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	}
 
 	@Override
-	public Patient savePatientDataWithDetailsAndHistory(Patient pat, Office off, User user, Date date) {
+	public Patient updateOnlyPatient(Patient pat,Office off, User user)  throws Exception{
+	updateEntity(pat);
+      return pat;		
+	}
+	
+	@Override
+	public Patient savePatientDataWithDetailsAndHistory(Patient pat, Office off, User user, Date date) throws Exception{
 		Session session = getSession();
 		try {
 
@@ -95,25 +97,28 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	@Override
 	public Patient updatePatientDataWithDetailsAndHistory(Patient pat, Office off, User user,boolean detailsSave) throws Exception {
 		// TODO Auto-generated method stub
-		Session session = getSession();
+		//Session session = getSession();
 		try {
-			Transaction transaction = session.beginTransaction();
+			//Transaction transaction = session.beginTransaction();
 			// Break into 3 methods
-			session.update(pat);
+			updateEntity(pat);
+			RuleEngineLogger.generateLogs(clazz, "Entering To Save patient from DUMP.."
+					+pat.getPatientId(), Constants.rule_log_debug, null);
+			
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
 			PatientDetail pd = iter.next();
 			// String x=null;
-			if (detailsSave) session.save(pd);
-			else session.update(pd);
+			if (detailsSave) saveEntiy(pd);
+			else updateEntity(pd);
 			for (PatientHistory ph : pat.getPatientHistory()) {
 				ph.setPatient(pat);
 				ph.setOffice(off);
-				session.save(ph);
+				saveEntiy(ph);
 			}
 			// x.split("");
-			transaction.commit();
+			//transaction.commit();
 		} finally {
-			closeSession(session);
+			//closeSession(session);
 		}
 		// session.flush();
 		// save data in patient table
@@ -269,12 +274,13 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " crowns_d2750_d2740_fl as posterior5,crowns_d2750_d2740_downgrade as posterior6,night_guards_d9940_percentage as posterior7,"
 					+ " d9310_percentage as posterior8,d9310_fl as posterior9,buildups_d2950_covered as posterior10,buildups_d2950_fl as posterior11,"
 					+ " buildups_d2950_same_day_crown as posterior12,orthoPercentage as ortho1,ortho_max as ortho2 ,ortho_age_limit as ortho3,"
-					+ " ortho_subject_deductible as ortho4,general_date_iv_wasdone as date,comments as comments,general_benefits_verified_by as benefits"
+					+ " ortho_subject_deductible as ortho4,general_date_iv_wasdone as date,comments as comments,general_benefits_verified_by as benefits,d0120 as policy18,d2391 as policy19 "
 					+ " from patient_detail pd , patient p where "
 					+ " pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id " 
 					//(!dto.getPatientIdDB().equals("")? " and p.patient_id in ('"+dto.getPatientIdDB()+"') ":" ")+
 					+ inclause +
 					(dto!=null && dto.getUniqueID()!=null && !dto.getUniqueID().equals("")? " and pd.id ="+dto.getUniqueID()+" ":" ")+
+					(dto!=null && dto.getUniqueIDs()!=null && dto.getUniqueIDs().size()>0? " and pd.id in ("+String.join(", ", dto.getUniqueIDs())+") " :"  " )+
 					(dto!=null && dto.getEmployerNameDB()!=null && !dto.getEmployerNameDB().equals("")? " and pd.employer_name like '%"+dto.getEmployerNameDB()+"%' ":" ")+
 					(dto!=null && dto.getPatientName()!=null && !dto.getPatientName().equals("")? " and (concat(coalesce(first_name,''),' ',coalesce(last_name,'')) like '%"+dto.getPatientName()+"%')"+" ":" ")+
 					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+"' ":" ")

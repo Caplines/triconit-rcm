@@ -39,6 +39,8 @@ import com.google.api.services.sheets.v4.model.RowData;
 import com.google.api.services.sheets.v4.model.UpdateCellsRequest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.common.collect.Collections2;
+import com.tricon.ruleengine.dto.CaplineIVFFormDto;
+import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
 import com.tricon.ruleengine.dto.scrapping.HistoryDto;
 import com.tricon.ruleengine.dto.scrapping.RosterDetails;
@@ -107,7 +109,9 @@ public class ConnectAndReadSheets {
 		// if (sheetType==Constants.treatmentPlanSheetID) return
 		// readTPSheetData(response, id);
 		// if (sheetType==Constants.ivTableDataSheetID)
+		if (id!=null)
 		return readIVFSheet(response, id, officeName, idsPatient, breakLoop);
+		else return readIVFWholeSheet(response, officeName);
 		// if (sheetType==Constants.mappingSheetID_CM) return
 		// readMappingDataCM(response);
 		// if (sheetType==Constants.mappingSheetID_FEE) return
@@ -464,6 +468,131 @@ public class ConnectAndReadSheets {
 
 	}
 
+	public static Map<String, List<Object>> readIVFWholeSheet(ValueRange range, String officeName
+			) {
+
+		List<List<Object>> values = range.getValues();
+		Map<String, List<Object>> map = null;
+		ListIterator li = values.listIterator(values.size());
+		IVFTableSheet vif = null;
+		// IVFHistorySheet vifH = null;
+		List<Object> ivList = null;
+		// int maxlength= values.size();
+		// int maxlengthT= values.size();
+		// System.out.println("maxlengthT30::"+maxlengthT);
+		//int Column_NO_UNIQUE = 312;
+		//int Column_NO_PATIENT = 129;
+
+		while (li.hasPrevious()) {
+			ArrayList<String> obj = (ArrayList<String>) li.previous();
+			String uniqueId = "";
+			try {
+				if (obj.get(Column_NO_UNIQUE).toLowerCase().startsWith("Unique_ID".toLowerCase()))
+					continue;
+				// System.out.println("id---" + ivds.get(0));
+				// System.out.println("id---" + officeName + "_" + ivds.get(0));
+				// System.out.println("888888:;" + (obj.get(157)));
+				Collection<String> ruleGen = null;
+				int x = -1;
+					vif = new IVFTableSheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), // 20*6
+																												// +5
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), // 21*6 +5 =131
+							new IVFHistorySheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x)),
+							obj.get(++x), obj.get(++x), obj.get(++x)
+
+					       );
+				//Done because some sheets have LB an LC and some not...	
+				try {
+					vif.setD0120(obj.get(++x));	
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				try {
+					vif.setD2391(obj.get(++x));	
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+
+				
+			} catch (Exception ex) {
+				continue;
+			}
+			// System.out.println(uniqueId);
+
+			if (map == null)
+				map = new HashMap<>();
+
+			if (map.containsKey(uniqueId)) {
+				// if the key has already been used,
+				// we'll just grab the array list and add the value to it
+				ivList = map.get(uniqueId);
+				ivList.add(vif);
+			} else {
+				// if the key hasn't been used yet,
+				// we'll create a new ArrayList<String> object, add the value
+				// and put it in the array list with the new key
+				ivList = new ArrayList<>();
+				ivList.add(vif);
+				map.put(uniqueId, ivList);
+			}
+
+			
+		} // While Loop - 1
+
+		return map;
+
+	}
+
 	public static Map<String, List<Object>> readMCNADentaSheet(ValueRange range) {
 
 		List<List<Object>> values = range.getValues();
@@ -598,4 +727,56 @@ public class ConnectAndReadSheets {
 	 * 
 	 * }
 	 */
+	
+	
+	public static void updateIVFGoogleSheet(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
+			List<CaplineIVFFormDto> li) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		List<Request> requests = new ArrayList<>();
+		//rowCount=rowCount+3;
+		//100 original -- 90 now
+		//List<CellData> values = new ArrayList<>();
+		if (li != null) {
+			//int hiscMax = 200;
+			//int his = 1;
+			for(CaplineIVFFormDto rd:li) {
+				List<CellData> values = new ArrayList<>();
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBasicInfo1())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBasicInfo2())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBasicInfo3())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBasicInfo4())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBasicInfo5())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBasicInfo6())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBasicInfo7())));
+				
+				
+				for(ToothHistoryDto d:rd.getHdto()) {
+					String th=d.getHistoryTooth();
+					if (d.getSurfaceTooth()!=null && !d.getSurfaceTooth().equals("")) th=th+"-"+d.getSurfaceTooth();
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getHistoryCode())));
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getHistoryTooth())));
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getHistoryDos())));
+					//his++;
+					//if (his > hiscMax) break; 
+				}
+				//setStart(new GridCoordinate().setSheetId(0)
+				requests.add(new Request()
+						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(Integer.parseInt("2"))//)
+								 .setColumnIndex(0))
+								.setRows(Arrays.asList(new RowData().setValues(values)))
+								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+				//x++;
+				//break;
+			}
+				
+
+			
+		}
+        
+		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+	}
+
 }

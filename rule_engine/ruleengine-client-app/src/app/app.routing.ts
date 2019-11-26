@@ -16,6 +16,8 @@ import {ResetPasswordComponent} from "./components/resetpassword/resetpassword.c
 import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
 import {EnReportsComponent} from "./components/enhanced_reports/enreports.component";
 import {ScrapComponent} from "./components/scrap/scrap.component";
+import {IVFDumpComponent} from "./components/ivfdump/ivfdump.component";
+
 
 import {UrlPermission} from "./urlPermission/url.permission";
 import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
@@ -32,6 +34,11 @@ const appRoutes: Routes = [
 		    offs: OfficeResolve
 		  },
 	  component: IVFComponent ,canActivate: [UrlPermission] },
+  { path: 'dumpOldIVFData',
+		  resolve: {
+			    offs: OfficeResolve
+			  },
+		  component: IVFDumpComponent ,canActivate: [UrlPermission] },	  
   { path: 'ivfcl',
 		  resolve: {
 			    offs: OfficeResolve

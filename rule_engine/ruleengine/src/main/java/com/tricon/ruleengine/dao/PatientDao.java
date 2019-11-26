@@ -19,7 +19,8 @@ public interface PatientDao {
 	public PatientHistory getPatientHistory(String patientid, Office off);
 	public PatientDetail getPatientDetails(String patientid, Office off);
 	
-	public Patient savePatientDataWithDetailsAndHistory(Patient pat,Office off, User user,Date date);
+	public Patient savePatientDataWithDetailsAndHistory(Patient pat,Office off, User user,Date date) throws Exception;
+	public Patient updateOnlyPatient(Patient pat,Office off, User user)  throws Exception;
 	public Patient updatePatientDataWithDetailsAndHistory(Patient pat,Office off, User use,boolean detailsSave)  throws Exception;
 	
 	public List<Patient> searchPatientByPatientId(Set<String> patientIds, Office off);

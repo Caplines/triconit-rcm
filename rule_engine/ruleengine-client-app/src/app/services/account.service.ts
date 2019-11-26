@@ -3,6 +3,7 @@ import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {User} from "../model/model.user";
 import {IVFModel} from "../model/model.ivf";
+import {IVDumpModel} from "../model/model.ivdump";
 import {DiagnosticModel} from "../model/model.diagnostic";
 import {IVFBatchPreModel} from "../model/model.ivfbatchpre";
 import {IVFBatchModel} from "../model/model.ivfbatch";
@@ -443,6 +444,33 @@ export class AccountService {
 				}
 			);  
 		}
+	 
+	  
+	  dumpIVFOlDData(ivd:IVDumpModel,callback){
+	      this.generateRefreshToken().pipe(switchMap(data => {
+	          localStorage.setItem("token", (<any>data).token);
+	            return  this.http.post(AppComponent.API_URL+'/dumpOldIVFData',ivd);
+	          },
+	          )    
+	      ).subscribe(data => {
+	              callback((<any>data));
+	          },
+	          error => {
+	              if (error.status==401){
+	              this.router.navigate(['/logout']);
+	              }
+	              if (error.status==500){
+	                  alert("Some un-Wanted Changes Done to Google Sheets");
+	                  callback(error);
+	              }
+	          },
+	          () => {
+	          }
+	          
+	          );
+	              
+	  }
+
 	  
   generateRefreshToken(){
       return this.http.get(AppComponent.API_URL+'/refresh');

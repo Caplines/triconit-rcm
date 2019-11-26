@@ -2,6 +2,8 @@ package com.tricon.ruleengine.service.impl;
 
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GoogleReportsRDDTO;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
+import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
 import com.tricon.ruleengine.model.db.PatientDetail;
@@ -32,6 +35,7 @@ import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.pdf.CaplineIVFFormDtoToXML;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
+import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.IVFFormConversionUtil;
 
@@ -39,6 +43,8 @@ import com.tricon.ruleengine.utils.IVFFormConversionUtil;
 @Service
 public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormService {
 
+	static Class<?> clazz = CaplineIVFGoogleFormServiceImpl.class;
+	
 	@Value("${re.admin}")
 	private String amdinUserName;
 
@@ -47,6 +53,13 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 	@Value("${re.xslt.file}")
 	private String XSLT_FILE;
+	
+	@Value("${google.credential.folder}")
+	private String CREDENTIALS_FOLDER;
+
+	@Value("${google.client.secret}")
+	private String CLIENT_SECRET_DIR;
+
 
 	@Autowired
 	OfficeDao od;
@@ -58,7 +71,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	PatientDao patientDao;
 
 	@Override
-	public Integer saveIVFFormData(CaplineIVFFormDto d,Office office) throws Exception {
+	public Object[] saveIVFFormData(CaplineIVFFormDto d,Office office) throws Exception {
 
 		// copy value to DB Object
 		/*
@@ -72,7 +85,14 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		Date date = new Date();
 		User user = userDao.findUserByUsername(amdinUserName);
 		Patient pat = IVFFormConversionUtil.copyValueToPatient(d, office, date);
+		return saveAllData (pat,office,date,user);
+	}
+	
+	public Object[] saveAllData (Patient pat, Office office, Date date,User user) {
+		
 		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office);
+		Object[] ob= new Object[2];
+		ob[1]="Success";
 		Integer r = 0;
 		try {
 			if (patd == null) {
@@ -81,6 +101,11 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			} else {
 				patd.setUpdatedBy(user);
 				patd.setUpdatedDate(date);
+				patd.setDob(pat.getDob());
+				patd.setFirstName(pat.getFirstName());
+				patd.setLastName(pat.getLastName());
+				patd.setSalutation(pat.getSalutation());
+				patientDao.updateOnlyPatient(patd, office, user);
 				boolean detailsSave = false;
 				if (patd.getPatientDetails() != null && patd.getPatientDetails().size() > 0
 						&& pat.getPatientDetails() != null && pat.getPatientDetails().size() > 0) {
@@ -112,9 +137,21 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 						detailsSave = true;
 					}
 
+				}else {
+					detailsSave=true;
+					Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
+					PatientDetail pdN = iter.next();
+					pdN.setPatient(patd);
+					//Set<PatientDetail> l = new HashSet<>();
+					//l.add(pdN);
+			
+				    patd.setPatientDetails(pat.getPatientDetails());	
 				}
 				if (pat.getPatientHistory() != null && pat.getPatientDetails().size() > 0) {
-
+					
+					RuleEngineLogger.generateLogs(clazz, "Entering Service ..To Save patient from DUMP.."
+							+pat.getPatientId(), Constants.rule_log_debug, null);
+						
 					Set<PatientHistory> result1 = new HashSet<>();
 					Set<PatientHistory> newPH = pat.getPatientHistory();
 					Set<PatientHistory> phl = patd.getPatientHistory();
@@ -138,17 +175,25 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 						patd.setPatientHistory(result1);
 
+					}else {
+						patd.setPatientHistory(result1);
 					}
 
 				}
 				patientDao.updatePatientDataWithDetailsAndHistory(patd, office, user, detailsSave);
+				r=0;
 			}
 			r = patd.getPatientDetails().iterator().next().getId();
 		} catch (Exception c) {
+			StringWriter sw = new StringWriter();
+            c.printStackTrace(new java.io.PrintWriter(sw));
+            String exceptionAsString = sw.toString();
            c.printStackTrace();
+           ob[1]=exceptionAsString;
 		}
-
-		return r;
+		ob[0]=r;
+		return ob;
+		
 	}
 
 	@Override
@@ -180,7 +225,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 	private List<CaplineIVFFormDto> createData(CaplineIVFQueryFormDto d, Office off, Set<String> patIds) {
 
-		List<CaplineIVFFormDto> capD = patientDao.searchPatientDetailFromIVF(d, off, null);
+		List<CaplineIVFFormDto> capD = patientDao.searchPatientDetailFromIVF(d, off, patIds);
 		Set<String> patientIds = null;
 		List<CaplineIVFFormDto> cList = null;
 
@@ -236,6 +281,13 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	public Object searchIVFData(CaplineIVFQueryFormDto d,Office office) throws Exception {
 		// TODO Auto-generated method stub
 		List<CaplineIVFFormDto> capD = createData(d, office, null);
+		return capD;
+	}
+
+	@Override
+	public Object searchIVFDataPat(CaplineIVFQueryFormDto d,Office office,Set<String> patIds) throws Exception {
+		// TODO Auto-generated method stub
+		List<CaplineIVFFormDto> capD = createData(d, office, patIds);
 		return capD;
 	}
 
@@ -316,7 +368,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		try {
 			
 			List<CaplineIVFFormDto> li = (List<CaplineIVFFormDto>) searchIVFData(dto,office);
-			if (li.size() > 0) {
+			if (li!=null  && li.size() > 0) {
 				CaplineIVFFormDto form = li.get(0);
 				obj[0]=form.getBasicInfo2();
 				if (form.getHistory() != null) {
@@ -367,10 +419,12 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				}
 				CaplineIVFFormDtoToXML xml = new CaplineIVFFormDtoToXML();
 				String filePath = xml.convertToXML(form, XSLT_PATH);
-
+				File file = new File(filePath);
+				
 				o = xml.createPdfStream(
 
 						xml.createHtml(filePath, XSLT_FILE), "");
+				if (file!=null) file.delete(); 
 				//To test html for issues
 				//o=xml.createHtmlOut(filePath, XSLT_FILE);
 				obj[1]=o;
@@ -381,6 +435,56 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		}
 
 		return obj;
+	}
+
+	@Override
+	public void fillUpGoogleSheet(CaplineIVFQueryFormDto dto,Office office) {
+		Object[] obj=new Object[2]; 
+		try {
+			
+			List<CaplineIVFFormDto> li = (List<CaplineIVFFormDto>) searchIVFData(dto,office);
+			if (li!=null && li.size() > 0) {
+				
+				for(CaplineIVFFormDto form:li){
+				
+				//CaplineIVFFormDto form = li.get(0);
+				obj[0]=form.getBasicInfo2();
+				if (form.getHistory() != null) {
+					int ct = 0;
+					List<ToothHistoryDto> hdto = new ArrayList<>();
+					ToothHistoryDto hd = null;
+
+					for (String h : form.getHistory()) {
+						String sp[] = h.split(Constants.PATH_SEPERATOR_XML_IVF);
+
+						hd = new ToothHistoryDto(sp[0].equals("BLANK") ? "" : sp[0], sp[3].equals("BLANK") ? "" : sp[3],
+								sp[1].equals("BLANK") ? "" : sp[1], sp[2].equals("BLANK") ? "" : sp[2]);
+						if (ct == 0)
+							hd.setClassName("classname" + ct);
+						if (ct == 1)
+							hd.setClassName("classname" + ct);
+						if (ct == 2) {
+							hd.setClassName("classname" + ct);
+							ct = -1;
+						}
+						if (!hd.getSurfaceTooth().equals(""))
+							hd.setHistoryTooth(hd.getHistoryTooth() + "-" + hd.getSurfaceTooth());
+						hdto.add(hd);
+						ct++;
+
+					}
+					form.setHdto(hdto);
+					form.setHistory(null);
+					
+				}
+			  }
+				ConnectAndReadSheets.updateIVFGoogleSheet(dto.getSheetId(),  dto.getSheetSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,li);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//return obj;
 	}
 
 	

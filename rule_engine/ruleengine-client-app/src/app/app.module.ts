@@ -32,6 +32,7 @@ import { ScrapPopupComponent } from './components/scrap_popup/scrappopup.compone
 import {UserSettingsComponent} from "./components/usersettings/usersettings.component";
 import {UserSettingsPopupupComponent} from "./components/usersettingspopupup/usersettingspopupup.component";
 import {ResetPasswordComponent} from "./components/resetpassword/resetpassword.component";
+import {IVFDumpComponent} from "./components/ivfdump/ivfdump.component";
 import { ResultTypeFilterPipe} from './filter/result_type_filter';
 import { routing} from "./app.routing";
 import { UrlPermission} from "./urlPermission/url.permission";
@@ -67,7 +68,8 @@ import { TokenInterceptor } from './auth/token.interceptor';
 	ScrapPopupComponent,
 	UserSettingsComponent,
 	UserSettingsPopupupComponent,
-	ResetPasswordComponent
+	ResetPasswordComponent,
+	IVFDumpComponent
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule

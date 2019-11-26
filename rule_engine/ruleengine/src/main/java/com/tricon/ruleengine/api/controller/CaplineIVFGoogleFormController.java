@@ -62,6 +62,8 @@ public class CaplineIVFGoogleFormController {
 		//
 
 		Integer i = 0;
+		Object [] ob=null;
+		
 		Office office = od.getOfficeByName(dto.getBasicInfo1());
 		try {
 			
@@ -69,7 +71,8 @@ public class CaplineIVFGoogleFormController {
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
 
 			if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
-				i = civf.saveIVFFormData(dto, office);
+				 ob= civf.saveIVFFormData(dto, office);
+				
 			}else {
 				//i = civf.saveIVFFormData(dto, office);
 			}
@@ -78,10 +81,10 @@ public class CaplineIVFGoogleFormController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String mess = "Data saved successfully with IVF ID "+office.getName()+"_"+ i;
+		String mess = "Data saved successfully with IVF ID "+office.getName()+"_"+ ob[0];
 				
-		if (i == 0)
-			mess = "Data not saved successfully";
+		if ((Integer)ob[0] == 0)
+			mess = "Data not saved successfully- Reason-"+ob[1];
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", mess));
 
@@ -193,7 +196,9 @@ public class CaplineIVFGoogleFormController {
 		if (obj != null && obj[1]!=null) {
 			ByteArrayOutputStream ou =(ByteArrayOutputStream)  obj[1];
 			response.setContentType("application/octet-stream");
-			response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0]+ ".pdf"));
+			//String name="" java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")));
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+(obj[0] +".pdf").replaceAll(" ", "")));
 			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
 			InputStream in = new ByteArrayInputStream(ou.toByteArray());
 			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());

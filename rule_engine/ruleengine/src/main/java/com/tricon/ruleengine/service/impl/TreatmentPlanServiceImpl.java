@@ -486,9 +486,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								off.getName(),false,true);
 							}
 							else {
-								///Write Query
+								//Write Query
 								CaplineIVFQueryFormDto fd= new CaplineIVFQueryFormDto();
-								fd.setUniqueID(dtod.getIvfId());
+								Set<String> set = new HashSet<>(Arrays.asList(ivs));
+								fd.setUniqueIDs(set);
+								
 								List<CaplineIVFFormDto> civfD=(List<CaplineIVFFormDto>) caplineIVFGoogleFormService.searchIVFData(fd, off);
 								ivfMap= IVFFormConversionUtil.copyValueToIVFSheet(civfD, off);							
 								
@@ -2799,7 +2801,26 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							off.getName(),isPat,false);
 					}else {
 						//write query
-					}
+						CaplineIVFQueryFormDto fd= new CaplineIVFQueryFormDto();
+						Set<String> set = new HashSet<>(Arrays.asList(ids));
+						try {
+						if (isPat) {
+							
+						
+						List<CaplineIVFFormDto> civfD=(List<CaplineIVFFormDto>) caplineIVFGoogleFormService.searchIVFDataPat(fd, off,set);
+						ivfMap= IVFFormConversionUtil.copyValueToIVFSheet(civfD, off);	
+						}
+						
+						else {
+							fd.setUniqueIDs(set);
+							List<CaplineIVFFormDto> civfD=(List<CaplineIVFFormDto>) caplineIVFGoogleFormService.searchIVFData(fd, off);
+							ivfMap= IVFFormConversionUtil.copyValueToIVFSheet(civfD, off);		
+						 }
+					   }
+						catch(Exception x) {
+							
+					     }
+				  }
 
 					// Remove old IV's
 					if (isPat && ivfMap!=null) {

@@ -145,6 +145,9 @@ public class IVFTableSheet {
 	private String craRequired;//KY
 	private String claimFillingLimit;//KZ
 	private String uniqueID;//LA
+	private String d0120;//LB
+	private String d2391;//LC
+	
 	private List<IVFHistorySheet> iVFHistorySheetList= new ArrayList<>();
 	
 	
@@ -1136,6 +1139,18 @@ public class IVFTableSheet {
 	}
 	public void setiVFHistorySheetList(List<IVFHistorySheet> iVFHistorySheetList) {
 		this.iVFHistorySheetList = iVFHistorySheetList;
+	}
+	public String getD0120() {
+		return d0120;
+	}
+	public void setD0120(String d0120) {
+		this.d0120 = d0120;
+	}
+	public String getD2391() {
+		return d2391;
+	}
+	public void setD2391(String d2391) {
+		this.d2391 = d2391;
 	}
 	
 	

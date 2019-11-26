@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.dto;
 
+import java.util.Set;
+
 public class CaplineIVFQueryFormDto {
 
 	private String officeNameDB;
@@ -10,8 +12,19 @@ public class CaplineIVFQueryFormDto {
 	private String passwordRE;
 	private String uniqueID;
 	private String columns;
+	private String sheetId;
+	private String sheetSubId;
+	private Set<String> uniqueIDs;
 	
 	
+	
+	
+	public Set<String> getUniqueIDs() {
+		return uniqueIDs;
+	}
+	public void setUniqueIDs(Set<String> uniqueIDs) {
+		this.uniqueIDs = uniqueIDs;
+	}
 	public String getOfficeNameDB() {
 		return officeNameDB;
 	}
@@ -60,8 +73,18 @@ public class CaplineIVFQueryFormDto {
 	public void setColumns(String columns) {
 		this.columns = columns;
 	}
-	
-	
+	public String getSheetId() {
+		return sheetId;
+	}
+	public void setSheetId(String sheetId) {
+		this.sheetId = sheetId;
+	}
+	public String getSheetSubId() {
+		return sheetSubId;
+	}
+	public void setSheetSubId(String sheetSubId) {
+		this.sheetSubId = sheetSubId;
+	}
 	
 	
 	

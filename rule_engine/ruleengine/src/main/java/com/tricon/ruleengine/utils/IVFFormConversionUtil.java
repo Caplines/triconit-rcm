@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.utils;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,7 +21,7 @@ import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 public class IVFFormConversionUtil {
 
 	/*
-	 * if any changes done here make sure to verify same in copyValueToIVFSheet
+	 * if any changes done here make sure to verify same in copyValueToIVFSheet method defined below
 	 */
 	public static Patient copyValueToPatient(CaplineIVFFormDto d, Office off, Date date) {
 
@@ -48,6 +50,9 @@ public class IVFFormConversionUtil {
 		pd.setComments(d.getComments());
 		pd.setCompleteDenturesD5110D5120FL(d.getDentures1());
 		pd.setContTxRecallNP(d.getBasicInfo11());
+		pd.setD0120(d.getPolicy18());
+		pd.setD2391(d.getPolicy19());
+		
 		// policy18//policy19/policy20 -- need to verify
 		pd.setCraRequired(d.getPolicy17());
 		pd.setCrownLengthD4249FL(d.getOral2());
@@ -224,7 +229,7 @@ public class IVFFormConversionUtil {
 	}
 
 	/*
-	 * if any changes done here make sure to verify same in copyValueToPatient
+	 * if any changes done here make sure to verify same in copyValueToPatient method defined above
 	 */
 	public static IVFTableSheet copyValueToIVFSheet(CaplineIVFFormDto d, Office off,boolean setIVFHis) {
 
@@ -253,6 +258,8 @@ public class IVFFormConversionUtil {
 		pd.setComments(d.getComments());
 		pd.setCompleteDenturesD5110D5120FL(d.getDentures1());
 		pd.setContTxRecallNP(d.getBasicInfo11());
+		pd.setD0120(d.getPolicy18());
+		pd.setD2391(d.getPolicy19());
 		// policy18//policy19/policy20 -- need to verify
 		pd.setCraRequired(d.getPolicy17());
 		pd.setCrownLengthD4249FL(d.getOral2());
@@ -496,5 +503,223 @@ public class IVFFormConversionUtil {
 		}
 		
 	}
+	
+	
+	public static Patient copyValueToPatient(IVFTableSheet d, Office off) {
+
+		Patient p = new Patient();
+		PatientDetail pd = new PatientDetail();
+         //Could have used Beanutil but avoided for safer side;
+		// Office off =od.getOfficeByName(d.getBasicInfo1());
+		// off.getName();
+		pd.setAlveoD7310CoveredWithEXT(d.getAlveoD7310CoveredWithEXT());
+		pd.setAlveoD7310FL(d.getAlveoD7310FL());
+		pd.setAlveoD7311CoveredWithEXT(d.getAlveoD7311CoveredWithEXT());
+		pd.setAlveoD7311FL(d.getAlveoD7311FL());
+
+		pd.setAptDate(d.getAptDate());
+		pd.setBasicPercentage(d.getBasicPercentage());
+		pd.setBasicSubjectDeductible(d.getBasicSubjectDeductible());
+		pd.setBasicWaitingPeriod(d.getBasicWaitingPeriod());
+		pd.setBoneGraftsD7953CoveredWithEXT(d.getBoneGraftsD7953CoveredWithEXT());
+		pd.setBoneGraftsD7953FL(d.getBoneGraftsD7953CoveredWithEXT());
+		pd.setBuildUpsD2950Covered(d.getBoneGraftsD7953FL());
+		pd.setBuildUpsD2950FL(d.getBuildUpsD2950FL());
+		pd.setBuildUpsD2950SameDayCrown(d.getBuildUpsD2950SameDayCrown());
+		pd.setClaimFillingLimit(d.getClaimFillingLimit());
+		pd.setcOBStatus(d.getcOBStatus());
+		pd.setComments(d.getComments());
+		pd.setCompleteDenturesD5110D5120FL(d.getCompleteDenturesD5110D5120FL());
+		pd.setContTxRecallNP(d.getContTxRecallNP());
+		pd.setD0120(d.getD0120());
+		pd.setD2391(d.getD2391());
+		
+		// policy18//policy19/policy20 -- need to verify
+		pd.setCraRequired(d.getCraRequired());
+		pd.setCrownLengthD4249FL(d.getCrownLengthD4249FL());
+		pd.setCrownLengthD4249Percentage(d.getCrownLengthD4249Percentage());
+		pd.setCrownsD2750D2740Downgrade(d.getCrownsD2750D2740Downgrade());
+		pd.setCrownsD2750D2740FL(d.getCrownsD2750D2740FL());
+		pd.setCrownsD2750D2740PaysPrepSeatDate(d.getCrownsD2750D2740PaysPrepSeatDate());
+		pd.setCrownsD2750D2740Percentage(d.getCrownsD2750D2740Percentage());
+
+		pd.setcSRName(d.getcSRName());
+
+		pd.setD9310FL(d.getD9310FL());
+		pd.setD9310Percentage(d.getD9310Percentage());
+		pd.setDiagnosticPercentage(d.getDiagnosticPercentage());
+		pd.seteExamsD0145FL(d.geteExamsD0145FL());
+		pd.setEmployerName(d.getEmployerName());
+		pd.setEndodonticsPercentage(d.getEndodonticsPercentage());
+		pd.setEndoSubjectDeductible(d.getEndoSubjectDeductible());
+		pd.setExamsD0120FL(d.getExamsD0120FL());
+		pd.setExamsD0140FL(d.getExamsD0140FL());
+		pd.setExamsD0150FL(d.getExamsD0150FL());
+		pd.setExtractionsMajorPercentage(d.getExtractionsMajorPercentage());
+		pd.setExtractionsMinorPercentage(d.getExtractionsMinorPercentage());
+		pd.setFillingsBundling(d.getFillingsBundling());
+		pd.setFlourideAgeLimit(d.getFlourideAgeLimit());
+		pd.setFlourideD1208FL(d.getFlourideD1208FL());
+		pd.setfMDD4355FL(d.getfMDD4355FL());
+		pd.setFMDD4355Percentage(d.getFMDD4355Percentage());
+		pd.setGeneralBenefitsVerifiedBy(d.getGeneralBenefitsVerifiedBy());
+		/*
+		if (d.getGeneralDateIVwasDone().equals(""))
+			pd.setGeneralDateIVwasDone(getIVFDateFromatofDate(date));
+		else
+		*/
+		pd.setGeneralDateIVwasDone(d.getGeneralDateIVwasDone());//// need to vertify
+
+		pd.setGingivitisD4346FL(d.getGingivitisD4346FL());
+		pd.setGingivitisD4346Percentage(d.getGingivitisD4346Percentage());
+		pd.setGroup(d.getGroup());
+		pd.setImmediateDenturesD5130D5140FL(d.getImmediateDenturesD5130D5140FL());
+		pd.setImplantCoverageD6010Percentage(d.getImplantCoverageD6010Percentage());
+		pd.setImplantCoverageD6057Percentage(d.getImplantCoverageD6057Percentage());
+		pd.setImplantCoverageD6190Percentage(d.getImplantCoverageD6190Percentage());
+		pd.setImplantSupportedPorcCeramicD6065Percentage(d.getImplantSupportedPorcCeramicD6065Percentage());
+		pd.setInsAddress(d.getInsAddress());
+		pd.setInsContact(d.getInsContact());
+		pd.setInsName(d.getInsName());
+
+		pd.setInterimPartialDenturesD5214FL(d.getInterimPartialDenturesD5214FL());// Cross check
+
+		pd.setiVSedationD9243Percentage(d.getiVSedationD9243Percentage());
+		pd.setiVSedationD9248Percentage(d.getiVSedationD9248Percentage());
+		pd.setMajorPercentage(d.getMajorPercentage());
+		pd.setMajorSubjectDeductible(d.getMajorSubjectDeductible());
+		pd.setMajorWaitingPeriod(d.getMajorWaitingPeriod());
+		pd.setMemberId(d.getMemberId());
+		pd.setMemberSSN(d.getMemberSSN());
+		pd.setMissingToothClause(d.getMissingToothClause());
+		pd.setName1201110RollOverAgYe(d.getName1201110RollOverAgYe());
+		pd.setNightGuardsD9940FL(d.getNightGuardsD9940FL());
+		pd.setNightGuardsD9940Percentage(d.getNightGuardsD9940Percentage());
+		pd.setNitrousD9230Percentage(d.getNitrousD9230Percentage());
+		pd.setOffice(off);
+		pd.setOrthoAgeLimit(d.getOrthoAgeLimit());
+		pd.setOrthoMax(d.getOrthoMax());
+		pd.setOrthoPercentage(d.getOrthoPercentage());
+		pd.setOrthoSubjectDeductible(d.getOrthoSubjectDeductible());
+		pd.setPartialDenturesD5213D5214FL(d.getPartialDenturesD5213D5214FL());
+		pd.setPatient(p);
+		pd.setpAXRaysPercentage(d.getpAXRaysPercentage());
+		pd.setPayerId(d.getPayerId());
+		pd.setPerioMaintenanceD4910AltWProphyD0110(d.getPerioMaintenanceD4910AltWProphyD0110());
+		pd.setPerioMaintenanceD4910FL(d.getPerioMaintenanceD4910FL());
+		pd.setPerioMaintenanceD4910Percentage(d.getPerioMaintenanceD4910Percentage());
+		pd.setPerioSurgeryPercentage(d.getPerioSurgeryPercentage());
+		pd.setPerioSurgerySubjectDeductible(d.getPerioSurgerySubjectDeductible());
+		pd.setPlanAnnualMax(d.getPlanAnnualMax());
+		pd.setPlanAnnualMaxRemaining(d.getPlanAnnualMaxRemaining());
+		pd.setPlanAssignmentofBenefits(d.getPlanAssignmentofBenefits());
+		pd.setPlanCalendarFiscalYear(d.getPlanCalendarFiscalYear());
+		pd.setPlanCoverageBook(d.getPlanCoverageBook());
+		pd.setPlanDependentsCoveredtoAge(d.getPlanDependentsCoveredtoAge());
+		pd.setPlanEffectiveDate(d.getPlanEffectiveDate());
+		pd.setPlanFeeScheduleName(d.getPlanFeeScheduleName());
+		pd.setPlanFullTimeStudentStatus(d.getPlanFullTimeStudentStatus());
+		pd.setPlanIndividualDeductible(d.getPlanIndividualDeductible());
+		pd.setPlanIndividualDeductibleRemaining(d.getPlanIndividualDeductibleRemaining());
+		pd.setPlanNetwork(d.getPlanNetwork());
+		pd.setPlanNonDuplicateClause(d.getPlanNonDuplicateClause());
+		pd.setPlanPreDMandatory(d.getPlanPreDMandatory());
+		pd.setPlanTermedDate(d.getPlanTermedDate());
+		pd.setPlanType(d.getPlanType());
+		pd.setPolicyHolder(d.getPolicyHolder());
+		pd.setPolicyHolderDOB(d.getPolicyHolderDOB());
+		pd.setPostCompositesD2391FL(d.getPostCompositesD2391FL());
+		pd.setPostCompositesD2391Percentage(d.getPostCompositesD2391Percentage());
+		pd.setPosteriorCompositesD2391Downgrade(d.getPosteriorCompositesD2391Downgrade());
+		pd.setPreventivePercentage(d.getPreventivePercentage());
+		pd.setProphyD1110FL(d.getProphyD1110FL());
+		pd.setProphyD1120FL(d.getProphyD1120FL());
+		pd.setProviderName(d.getProviderName());
+		pd.setRef(d.getRef());
+		pd.setReplacementClause(d.getReplacementClause());
+
+		pd.setSealantsD1351AgeLimit(d.getSealantsD1351AgeLimit());
+		pd.setSealantsD1351FL(d.getSealantsD1351FL());
+		pd.setSealantsD1351Percentage(d.getSealantsD1351Percentage());
+		pd.setSealantsD1351PermanentMolarsCovered(d.getSealantsD1351PermanentMolarsCovered());
+		pd.setSealantsD1351PrimaryMolarsCovered(d.getSealantsD1351PrimaryMolarsCovered());
+		pd.setSealantsD1351PreMolarsCovered(d.getSealantsD1351PreMolarsCovered());
+
+		pd.setsRPD4341DaysBwTreatment(d.getsRPD4341DaysBwTreatment());
+		pd.setsRPD4341FL(d.getsRPD4341FL());
+		pd.setsRPD4341Percentage(d.getsRPD4341Percentage());
+		pd.setsRPD4341QuadsPerDay(d.getsRPD4341Percentage());
+		pd.setsSCD2930FL(d.getsSCD2930FL());
+		pd.setsSCD2931FL(d.getsSCD2931FL());
+		pd.setTaxId(d.getTaxId());
+		if (off != null)
+			pd.setUniqueID(off.getName() + "_");// -- will set latter;
+		pd.setVarnishD1206AgeLimit(d.getVarnishD1206AgeLimit());
+		pd.setVarnishD1206FL(d.getVarnishD1206FL());
+		pd.setxRaysBundling(d.getxRaysBundling());
+		pd.setxRaysBWSFL(d.getxRaysBWSFL());
+		pd.setxRaysFMXFL(d.getxRaysFMXFL());
+		pd.setxRaysPAD0220FL(d.getxRaysPAD0220FL());
+		pd.setxRaysPAD0230FL(d.getxRaysPAD0230FL());
+		///////////////////////////
+		pd.setComments(d.getComments());
+        pd.setGeneralBenefitsVerifiedBy(d.getGeneralBenefitsVerifiedBy());
+        
+		p.setDob(d.getPatientDOB());
+		String fname = d.getPatientName();
+		if (fname != null) {
+			String[] f = fname.split(" ");
+			p.setFirstName(f[0]);
+			if (f.length > 1) {
+				p.setLastName(fname.replace(f[0] + " ", ""));
+			}
+		}
+		p.setPatientId(d.getPatientId());
+		p.setSalutation("");
+		Set<PatientDetail> pl = new HashSet<>();
+		pl.add(pd);
+		p.setPatientDetails(pl);
+		p.setOffice(off);
+
+		IVFHistorySheet his = d.getHs();
+		Set<PatientHistory> phl = new HashSet<PatientHistory>();
+		PatientHistory ph = null;
+		
+		int x = 0;
+		if (his != null) {
+			try {
+			Class<?> c2;
+			c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");//--DONE
+			int noOFhistory = Constants.history_codes_size;
+			 	 for (int i = 1; i <= noOFhistory; i++) {
+					 String hc = "getHistory" + i + "Code";
+						String hd = "getHistory" + i + "DOS";
+						String ht = "getHistory" + i + "Tooth";
+						String hs = "getHistory" + i + "Surface";
+						Method hcm = c2.getMethod(hc);
+						Method htm = c2.getMethod(ht);
+						Method hdm = c2.getMethod(hd);
+						Method hss = c2.getMethod(hs);	
+						//String code = (String) hcm.invoke(his);
+						ph = new PatientHistory();
+						ph.setHistoryCode((String) hcm.invoke(his));
+						ph.setHistoryDOS((String) hdm.invoke(his));
+						ph.setHistorySurface((String) hss.invoke(his));
+						ph.setHistoryTooth((String) htm.invoke(his));
+						if (!(ph.getHistoryCode().equals("") && ph.getHistoryDOS().equals("")
+							&& ph.getHistorySurface().equals("") && ph.getHistoryTooth().equals("")	))
+						phl.add(ph);
+					}
+			 
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		}
+		p.setPatientHistory(phl);
+		// history logic.d.
+
+		return p;
+	}
+
 
 }

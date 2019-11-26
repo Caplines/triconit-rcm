@@ -1,0 +1,69 @@
+
+<div class="inner-bg">
+	<div  class="container"> 
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Enter Details for Dumping OLD IVF Data</h3>
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form"
+						(ngSubmit)="f.form.valid && dumpData()" #f="ngForm" novalidate>
+						<!-- <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div> -->
+						<span id="reauth-email" class="reauth-email"></span>
+
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f.submitted && !sheetId.valid }">
+							<label class="sr-only" for="sheetId">Sheet ID</label> <input type="text"
+								class="login-signup-form-field form-control"
+								name="sheetId" id="sheetId"
+								[(ngModel)]="ivfd.sheetId" #sheetId="ngModel"
+								placeholder="Sheet ID..." required />
+							<div *ngIf="f.submitted && !sheetId.valid"
+								class="error-msg">Please enter Sheet ID.</div>
+						</div>						
+
+						<div class="form-group" 
+							[ngClass]="{ 'has-error': f.submitted && !sheetName.valid }">
+							<label class="sr-only" for="sheetName">IVF Form Id</label> <input 
+								type="text" class="login-signup-form-field form-control"
+								name="sheetName" id="sheetName" [(ngModel)]="ivfd.sheetName" 
+								#sheetName="ngModel" placeholder="sheet Name... (E.g Crosby Database)" required/>
+								
+							   <div *ngIf="f.submitted && !sheetName.valid" class="error-msg">Please
+								enter Sheet Name.</div>
+								
+						</div>
+
+                        	<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="officeId">Office Name</label> <select
+								name="officeId" [(ngModel)]="ivfd.officeId"
+								class="login-signup-form-field form-control" id="officeId" (change)="setSheetName($event)">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+							<div *ngIf="f.submitted && ivfd.officeId==''" class="error-msg">The
+								Office Name is required</div>
+						</div>
+						
+
+						<p>
+							<button [disabled]="showLoading" type="submit" class="btn">Dump Data
+								</button>
+						</p>
+
+						<div *ngIf="showLoading" class="loader"></div>
+						<div style="max-height: 200px;overflow-x: auto;">{{messageERR}}</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+	
+</div>
