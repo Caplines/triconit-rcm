@@ -90,7 +90,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	
 	public Object[] saveAllData (Patient pat, Office office, Date date,User user) {
 		
-		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office);
+		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office,pat);
 		Object[] ob= new Object[2];
 		ob[1]="Success";
 		Integer r = 0;
@@ -149,7 +149,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				}
 				if (pat.getPatientHistory() != null && pat.getPatientDetails().size() > 0) {
 					
-					RuleEngineLogger.generateLogs(clazz, "Entering Service ..To Save patient from DUMP.."
+					RuleEngineLogger.generateLogs(clazz, "Entering Service ..To save History  patient from DUMP/IVF.."
 							+pat.getPatientId(), Constants.rule_log_debug, null);
 						
 					Set<PatientHistory> result1 = new HashSet<>();
@@ -162,6 +162,11 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 						for (PatientHistory n : newPH) {
 							added = true;
 							for (PatientHistory o : phl) {
+								//System.out.println("CODE"+o.getHistoryCode()+":"+n.getHistoryCode());
+								//System.out.println("TOOTH"+o.getHistoryTooth()+":"+n.getHistoryTooth());
+								//System.out.println("Surfce"+o.getHistorySurface()+":"+n.getHistorySurface());
+								//System.out.println("DOS"+o.getHistoryDOS()+":"+n.getHistoryDOS());
+								
 								if (o.getHistoryCode().equals(n.getHistoryCode())
 										&& o.getHistoryTooth().equals(n.getHistoryTooth())
 										&& o.getHistorySurface().equals(n.getHistorySurface())
