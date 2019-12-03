@@ -15,10 +15,27 @@ public class CaplineIVFQueryFormDto {
 	private String sheetId;
 	private String sheetSubId;
 	private Set<String> uniqueIDs;
+	private String policyHolderNameDB;
+	private String policyHolderDobDB;
+	private String patientDobDB;
 	
 	
 	
 	
+	
+	
+	public String getPolicyHolderNameDB() {
+		return policyHolderNameDB;
+	}
+	public void setPolicyHolderNameDB(String policyHolderNameDB) {
+		this.policyHolderNameDB = policyHolderNameDB;
+	}
+	public String getPolicyHolderDobDB() {
+		return policyHolderDobDB;
+	}
+	public void setPolicyHolderDobDB(String policyHolderDobDB) {
+		this.policyHolderDobDB = policyHolderDobDB;
+	}
 	public Set<String> getUniqueIDs() {
 		return uniqueIDs;
 	}
@@ -84,6 +101,12 @@ public class CaplineIVFQueryFormDto {
 	}
 	public void setSheetSubId(String sheetSubId) {
 		this.sheetSubId = sheetSubId;
+	}
+	public String getPatientDobDB() {
+		return patientDobDB;
+	}
+	public void setPatientDobDB(String patientDobDB) {
+		this.patientDobDB = patientDobDB;
 	}
 	
 	

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
@@ -29,7 +30,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	static Class<?> clazz = PatientDaoImpl.class;
 	
 	@Override
-	public Patient checkforPatientWithIdAndOffice(String patientid, Office off) {
+	public Patient checkforPatientWithIdAndOffice(String patientid, Office off,Patient patH) {
 
 		Session session = getSession();
 		Patient pat = null;
@@ -40,7 +41,15 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			criteria.createAlias("patientHistory", "patientHistory", JoinType.LEFT_OUTER_JOIN);
 			criteria.createAlias("patientDetails", "patientDetails", JoinType.LEFT_OUTER_JOIN);
 			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
-
+			
+			/*if (patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0
+					&& patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0) {
+				Iterator<PatientDetail> iter = patH.getPatientDetails().iterator();
+				PatientDetail patO = iter.next();
+			
+			criteria.add(Restrictions.eq("patientDetails", patO.getGeneralDateIVwasDone()));
+			}
+            */
 			pat = (Patient) criteria.uniqueResult();
 		} finally {
 			closeSession(session);
@@ -84,6 +93,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			for (PatientHistory phi : pat.getPatientHistory()) {
 				phi.setOffice(off);
 				phi.setPatient(pat);
+				//phi.setPd(pd);
 				session.save(phi);
 			}
 			// transaction.commit();
@@ -108,11 +118,12 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
 			PatientDetail pd = iter.next();
 			// String x=null;
-			if (detailsSave) saveEntiy(pd);
+			if (detailsSave) pd= (PatientDetail) saveEntiy(pd);
 			else updateEntity(pd);
 			for (PatientHistory ph : pat.getPatientHistory()) {
 				ph.setPatient(pat);
 				ph.setOffice(off);
+				//ph.setPd(pd);
 				saveEntiy(ph);
 			}
 			// x.split("");
@@ -234,7 +245,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 				inclause= " and p.patient_id in ("+String.join(", ", patIds)+")";
 			}
 			
-			String query = "select pd.id as id,policy_holder as basicInfo5,p.patient_id as basicInfo21,"
+			String query = "select p.id as pidDB,pd.id as id,policy_holder as basicInfo5,p.patient_id as basicInfo21,"
 					+ " concat(coalesce(p.first_name,''),' ',coalesce(p.last_name,'')) as basicInfo2, p.dob as basicInfo6, "
 					+ " ins_name as basicInfo3 , tax_id as basicInfo4, ins_contact as basicInfo7, "
 					+ " cs_sr_name as basicInfo8, policy_holder_dob as basicInfo9 , employer_name as basicInfo10 ,"
@@ -282,9 +293,12 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					(dto!=null && dto.getUniqueID()!=null && !dto.getUniqueID().equals("")? " and pd.id ="+dto.getUniqueID()+" ":" ")+
 					(dto!=null && dto.getUniqueIDs()!=null && dto.getUniqueIDs().size()>0? " and pd.id in ("+String.join(", ", dto.getUniqueIDs())+") " :"  " )+
 					(dto!=null && dto.getEmployerNameDB()!=null && !dto.getEmployerNameDB().equals("")? " and pd.employer_name like '%"+dto.getEmployerNameDB()+"%' ":" ")+
+					(dto!=null && dto.getPolicyHolderDobDB()!=null && !dto.getPolicyHolderDobDB().equals("")? " and pd.policy_holder_dob like '%"+dto.getPolicyHolderDobDB()+"%' ":" ")+
+					(dto!=null && dto.getPolicyHolderNameDB()!=null && !dto.getPolicyHolderNameDB().equals("")? " and pd.policy_holder like '%"+dto.getPolicyHolderNameDB()+"%' ":" ")+
+					(dto!=null && dto.getPatientDobDB()!=null && !dto.getPatientDobDB().equals("")? " and p.dob = '"+dto.getPatientDobDB()+"' ":" ")+
 					(dto!=null && dto.getPatientName()!=null && !dto.getPatientName().equals("")? " and (concat(coalesce(first_name,''),' ',coalesce(last_name,'')) like '%"+dto.getPatientName()+"%')"+" ":" ")+
 					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+"' ":" ")
-					
+					//patientDobDB
 					;
           cL=session.createSQLQuery(query).setResultTransformer(Transformers.aliasToBean(CaplineIVFFormDto.class)). list();
 		} finally {
@@ -319,16 +333,27 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		return cL;
 	}
 	@Override
-	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off) {
+	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off,int patDid) {
 		Session session = getSession();
 		List<PatientHistory> patH=null;
 		try {
-			
+			/*
 			Criteria criteria = session.createCriteria(PatientHistory.class);
 			criteria.createAlias("patient", "patient");
 			criteria.add(Restrictions.in("patient.patientId", patientIds));
+			//criteria.createAlias("pd", "pd");
+			//criteria.add(Restrictions.in("pd.id", patDid));
 			criteria.createAlias("office", "off");
 			patH = (List<PatientHistory>) criteria.list();
+			*/
+			String query =" select p.patient_id as pid,ph.history_code as historyCode, ph.history_tooth as historyTooth," + 
+					" ph.history_surface as historySurface, ph.history_dos as historyDOS," + 
+					" ph.id as id from Patient_history ph,office o,patient p where p.id=ph.patient_id and o.uuid=ph.office_id and"+
+					" ph.patient_id in ( "+String.join(", ", patientIds)+") and o.uuid='"+
+					off.getUuid()+"' order by  STR_TO_DATE(history_dos, '%Y-%m-%d') desc";
+			
+			patH=session.createSQLQuery(query).setResultTransformer(Transformers.aliasToBean(PatientHistory.class)). list();
+			
 			
 		} finally {
 			closeSession(session);

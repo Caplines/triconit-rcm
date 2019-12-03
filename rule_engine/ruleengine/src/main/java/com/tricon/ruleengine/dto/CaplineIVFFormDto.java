@@ -14,6 +14,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class CaplineIVFFormDto {
 
 	//password extra layer check
+	private int pidDB;
+	public int getPidDB() {
+		return pidDB;
+	}
+
+	public void setPidDB(int pidDB) {
+		this.pidDB = pidDB;
+	}
+
 	private String passwordRE;
 	
 	//id (unquie)
@@ -461,6 +470,8 @@ public class CaplineIVFFormDto {
     
     private String comments;
     
+    private int commentsRows;
+    
     private String benefits;
     
     @XmlElementWrapper
@@ -511,6 +522,10 @@ public class CaplineIVFFormDto {
 	}
 
 	public String getComments() {
+		
+		if (comments==null) comments="";
+		
+		this.setCommentsRows(comments.length());
 		return comments;
 	}
 
@@ -1624,8 +1639,15 @@ public class CaplineIVFFormDto {
 		this.passwordRE = passwordRE;
 	}
 
-	
-    
+	public int getCommentsRows() {
+		return commentsRows;
+	}
+
+	public void setCommentsRows(int commentsRows) {
+		this.commentsRows = commentsRows;
+	}
+
+   
 	
 	
 }

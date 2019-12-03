@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 
@@ -38,6 +39,11 @@ public class PatientHistory implements Serializable{
 	private Office office;
 
 	
+	/*
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "patient_detail_id")
+	private PatientDetail pd;
+	*/
 	@Column(name = "history_code")
     private  String historyCode;
 	
@@ -118,6 +124,28 @@ public class PatientHistory implements Serializable{
 		this.historySurface = historySurface;
 		this.historyDOS = historyDOS;
 	}
+
+	/*
+	public PatientDetail getPd() {
+		return pd;
+	}
+
+	public void setPd(PatientDetail pd) {
+		this.pd = pd;
+	}*/
+	
+	@Transient
+	private  String pid;
+
+	public String getPid() {
+		return pid;
+	}
+
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
+	
+	
 	
 	
 	

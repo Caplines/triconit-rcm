@@ -1,7 +1,5 @@
 package com.tricon.ruleengine.api.controller;
 
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.IVFDumpDto;
-import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.service.IVFOldDataService;
 
 /**
@@ -36,7 +33,7 @@ public class IVFOldDataController {
 	@PostMapping
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	@RequestMapping(value = "/dumpOldIVFData", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Object> validateTreatementPlan(@RequestBody IVFDumpDto dto) {
+	public ResponseEntity<Object> dumpIOLData(@RequestBody IVFDumpDto dto) {
 
 		//Map<String, List<TPValidationResponseDto>> map = null;
 		String data = iVFOldDataService.dumpOldData(dto);

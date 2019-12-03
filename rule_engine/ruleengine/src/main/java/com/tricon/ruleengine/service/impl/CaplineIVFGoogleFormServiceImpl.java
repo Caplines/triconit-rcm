@@ -232,16 +232,23 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 		List<CaplineIVFFormDto> capD = patientDao.searchPatientDetailFromIVF(d, off, patIds);
 		Set<String> patientIds = null;
+		Set<String> patientIdsDB = null;
+		
 		List<CaplineIVFFormDto> cList = null;
-
+        int pdId=-1;
+        
 		Map<String, List<CaplineIVFFormDto>> map = new HashMap<>();
 		for (CaplineIVFFormDto dto : capD) {
-
+			pdId=dto.getId();
 			dto.setBasicInfo1(off.getName());
-			if (patientIds == null)
+			
+			if (patientIds == null) {
 				patientIds = new HashSet<>();
+				patientIdsDB  = new HashSet<>();
+			}
 
 			patientIds.add(dto.getBasicInfo21());
+			patientIdsDB.add(dto.getPidDB()+"");
 			if (map.get(dto.getBasicInfo21()) == null) {
 				cList = new ArrayList<>();
 				cList.add(dto);
@@ -252,9 +259,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			}
 
 		}
-		if (patientIds != null) {
+		if (patientIdsDB != null && patientIdsDB.size()>0 && pdId !=-1) {
 			// List<Patient> pats= patientDao.searchPatientByPatientId(patientIds, off);
-			List<PatientHistory> patsH = patientDao.searchPatientHistoryForPatient(patientIds, off);
+			List<PatientHistory> patsH = patientDao.searchPatientHistoryForPatient(patientIdsDB, off,pdId);
 			/*
 			 * for(Patient p:pats) { List<CaplineIVFFormDto> c=map.get(p.getPatientId());
 			 * for(CaplineIVFFormDto form:c) { form.setBasicInfo2(p.getFirstName()+" "
@@ -262,7 +269,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			 * } }
 			 */
 			for (PatientHistory ph : patsH) {
-				List<CaplineIVFFormDto> c = map.get(ph.getPatient().getPatientId());
+				List<CaplineIVFFormDto> c = map.get(ph.getPid());
 				for (CaplineIVFFormDto form : c) {
 					List<String> his = form.getHistory();
 					String l = ((ph.getHistoryCode().equals("")) ? "BLANK" : ph.getHistoryCode()) + Constants.PATH_SEPERATOR_XML_IVF
@@ -271,7 +278,8 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 							+ Constants.PATH_SEPERATOR_XML_IVF + ((ph.getHistoryDOS().equals("")) ? "BLANK" : ph.getHistoryDOS());
 					if (his == null)
 						his = new ArrayList<>();
-					his.add(l);
+					//Remove duplicates
+					if (!his.contains(l)) his.add(l);
 					form.setHistory(his);
 				}
 

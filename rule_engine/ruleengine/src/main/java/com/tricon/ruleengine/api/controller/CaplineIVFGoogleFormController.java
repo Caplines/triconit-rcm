@@ -61,7 +61,7 @@ public class CaplineIVFGoogleFormController {
 			HttpServletRequest request) {
 		//
 
-		Integer i = 0;
+		//Integer i = 0;
 		Object [] ob=null;
 		
 		Office office = od.getOfficeByName(dto.getBasicInfo1());
