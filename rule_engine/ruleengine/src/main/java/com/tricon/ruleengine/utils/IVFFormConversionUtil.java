@@ -522,8 +522,8 @@ public class IVFFormConversionUtil {
 		pd.setBasicSubjectDeductible(d.getBasicSubjectDeductible());
 		pd.setBasicWaitingPeriod(d.getBasicWaitingPeriod());
 		pd.setBoneGraftsD7953CoveredWithEXT(d.getBoneGraftsD7953CoveredWithEXT());
-		pd.setBoneGraftsD7953FL(d.getBoneGraftsD7953CoveredWithEXT());
-		pd.setBuildUpsD2950Covered(d.getBoneGraftsD7953FL());
+		pd.setBoneGraftsD7953FL(d.getBoneGraftsD7953FL());
+		pd.setBuildUpsD2950Covered(d.getBuildUpsD2950Covered());
 		pd.setBuildUpsD2950FL(d.getBuildUpsD2950FL());
 		pd.setBuildUpsD2950SameDayCrown(d.getBuildUpsD2950SameDayCrown());
 		pd.setClaimFillingLimit(d.getClaimFillingLimit());

@@ -118,7 +118,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
 			PatientDetail pd = iter.next();
 			// String x=null;
-			if (detailsSave) pd= (PatientDetail) saveEntiy(pd);
+			if (detailsSave)  saveEntiy(pd);
 			else updateEntity(pd);
 			for (PatientHistory ph : pat.getPatientHistory()) {
 				ph.setPatient(pat);
@@ -323,7 +323,9 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					(dto!=null && dto.getUniqueID()!=null && !dto.getUniqueID().equals("")? " and pd.id ="+dto.getUniqueID()+" ":" ")+
 					(dto!=null && dto.getEmployerNameDB()!=null && !dto.getEmployerNameDB().equals("")? " and pd.employer_name like '%"+dto.getEmployerNameDB()+"%' ":" ")+
 					(dto!=null && dto.getPatientName()!=null && !dto.getPatientName().equals("")? " and (concat(coalesce(first_name,''),' ',coalesce(last_name,'')) like '%"+dto.getPatientName()+"%')"+" ":" ")+
-					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+"' ":" ")
+					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ="+dto.getGeneralDateIVFDoneDB()+" ":" ")+
+					(dto!=null && dto.getGeneralDateIVFDoneDBBet()!=null && !dto.getGeneralDateIVFDoneDBBet().equals("")? " and (pd.general_date_iv_wasdone "+dto.getGeneralDateIVFDoneDBBet()+" ) ":" ")+
+					(dto!=null && dto.getClause()!=null && !dto.getClause().equals("")? " and  "+dto.getClause()+"  ":" ")
 					
 					;
           cL=session.createSQLQuery(query).list();

@@ -55,16 +55,17 @@ public class UserInputServiceImpl implements UserInputService {
 			
 			for(UserAnswerDto d:userAnswerDtoList) {
 				if (d.getAnswerId()==-1000) {
+					if (d.getAnswer().split("-%%-").length==3) { 
 					patId=d.getAnswer().split("-%%-")[0];
 					treatmentPlanId=d.getAnswer().split("-%%-")[1];
 					officeId=d.getAnswer().split("-%%-")[2];
-					
+					}
 					continue;
 				}
 				idsL.add(d.getAnswerId());
 				map.put(d.getAnswerId(), d);
 			}
-			
+			if (!officeId.equals("")) {
 			 ids=idsL.toArray(ids);
 			 uiqDao.saveUserAnswers(ids,map);
 			 //update permanent status
@@ -72,6 +73,7 @@ public class UserInputServiceImpl implements UserInputService {
 			 dt.setOfficeId(officeId);
              dt.setTreatmentPlanId(treatmentPlanId);			 
              uiqDao.updateUserAnswersPremanent(officeId, patId, treatmentPlanId);
+			}
 		}
 		
 		
