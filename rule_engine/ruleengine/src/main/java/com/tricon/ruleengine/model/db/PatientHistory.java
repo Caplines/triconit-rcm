@@ -39,11 +39,11 @@ public class PatientHistory implements Serializable{
 	private Office office;
 
 	
-	/*
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_detail_id")
 	private PatientDetail pd;
-	*/
+	
 	@Column(name = "history_code")
     private  String historyCode;
 	
@@ -125,14 +125,14 @@ public class PatientHistory implements Serializable{
 		this.historyDOS = historyDOS;
 	}
 
-	/*
+	
 	public PatientDetail getPd() {
 		return pd;
 	}
 
 	public void setPd(PatientDetail pd) {
 		this.pd = pd;
-	}*/
+	}
 	
 	@Transient
 	private  String pid;
@@ -145,8 +145,18 @@ public class PatientHistory implements Serializable{
 		this.pid = pid;
 	}
 	
-	
-	
+	@Transient
+	private  int pdid;
+
+	public int getPdid() {
+		return pdid;
+	}
+
+	public void setPdid(int pdid) {
+		this.pdid = pdid;
+	}
+
+		
 	
 	
 }

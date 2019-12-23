@@ -18,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,6 +34,11 @@ import com.tricon.ruleengine.security.service.JwtUserDetailsService;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+	
+	@Autowired
+    private CrossDomainCsrfTokenRepository csrfTokenRepository;
+	
+	
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
@@ -72,7 +78,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.cors().and()
             // we don't need CSRF because our token is invulnerable
             .csrf().disable()
-
+		   //   .csrf().csrfTokenRepository(csrfTokenRepository).and()//added for CSRF...
+		   //   .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()//added for CSRF this worked by cookie is visible...
             .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 
             // don't create session
@@ -118,6 +125,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/queryivdatatopdf",
                 "/.well-known/acme-challenge/8h0NwOQLZreL70OMOZtKMYcM5W2Fme1JUatgJFuTElA",
                 "/queryivdatafromdbgoogle",
+                "/queryivdatahistoryfromdbgoogle",
                 "/open/*",
                 "/login",
                 "/readDriveSuc",
@@ -176,8 +184,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token","_csrf",CrossDomainCsrfTokenRepository.XSRF_HEADER_NAME));
+        configuration.setExposedHeaders(Arrays.asList("x-auth-token",CrossDomainCsrfTokenRepository.XSRF_HEADER_NAME,"_csrf"));
+       //configurationconfiguration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

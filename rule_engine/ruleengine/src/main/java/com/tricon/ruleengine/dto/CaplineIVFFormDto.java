@@ -14,7 +14,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class CaplineIVFFormDto {
 
 	//password extra layer check
+	private int patDid;
+
 	private int pidDB;
+	
+	
+	public int getPatDid() {
+		return patDid;
+	}
+
+	public void setPatDid(int patDid) {
+		this.patDid = patDid;
+	}
+
 	public int getPidDB() {
 		return pidDB;
 	}
@@ -187,6 +199,10 @@ public class CaplineIVFFormDto {
     
     //PA X-rays(%)
     private String percentages11;
+    
+    
+   //FMX(%)
+    private String percentages16;
     
     //Claims Timely Fillings
     private String percentages12;
@@ -467,6 +483,32 @@ public class CaplineIVFFormDto {
     //Subject to Deductible (Yes/no)      --Ortho_SubjectDeductible
     private String ortho4;
     
+    //NOT in Google Sheet
+    private String den5225;
+    private String denf5225;
+    private String den5226;
+    private String denf5226;
+    private String bridges1;
+    private String bridges2;
+    private String cdowngrade;
+    
+    private String implants5;
+    private String implants6;
+    private String implants7;
+    private String implants8;
+    private String ortho5;
+    private String waitingPeriod3;
+    //private String posterior16;
+    private String posterior17;
+    
+    private String percentages13;//
+    private String percentages14;//
+    private String percentages15;//
+    private String posterior18;//
+	
+    
+    
+    //END
     
     private String comments;
     
@@ -1645,6 +1687,159 @@ public class CaplineIVFFormDto {
 
 	public void setCommentsRows(int commentsRows) {
 		this.commentsRows = commentsRows;
+	}
+
+	public String getDen5225() {
+		return den5225;
+	}
+
+	public void setDen5225(String den5225) {
+		this.den5225 = den5225;
+	}
+
+	public String getDenf5225() {
+		return denf5225;
+	}
+
+	public void setDenf5225(String denf5225) {
+		this.denf5225 = denf5225;
+	}
+
+	public String getDen5226() {
+		return den5226;
+	}
+
+	public void setDen5226(String den5226) {
+		this.den5226 = den5226;
+	}
+
+	public String getDenf5226() {
+		return denf5226;
+	}
+
+	public void setDenf5226(String denf5226) {
+		this.denf5226 = denf5226;
+	}
+
+	public String getBridges1() {
+		return bridges1;
+	}
+
+	public void setBridges1(String bridges1) {
+		this.bridges1 = bridges1;
+	}
+
+	public String getBridges2() {
+		return bridges2;
+	}
+
+	public void setBridges2(String bridges2) {
+		this.bridges2 = bridges2;
+	}
+
+	public String getCdowngrade() {
+		return cdowngrade;
+	}
+
+	public void setCdowngrade(String cdowngrade) {
+		this.cdowngrade = cdowngrade;
+	}
+
+	public String getImplants5() {
+		return implants5;
+	}
+
+	public void setImplants5(String implants5) {
+		this.implants5 = implants5;
+	}
+
+	public String getImplants6() {
+		return implants6;
+	}
+
+	public void setImplants6(String implants6) {
+		this.implants6 = implants6;
+	}
+
+	public String getImplants7() {
+		return implants7;
+	}
+
+	public void setImplants7(String implants7) {
+		this.implants7 = implants7;
+	}
+
+	public String getImplants8() {
+		return implants8;
+	}
+
+	public void setImplants8(String implants8) {
+		this.implants8 = implants8;
+	}
+
+	public String getOrtho5() {
+		return ortho5;
+	}
+
+	public void setOrtho5(String ortho5) {
+		this.ortho5 = ortho5;
+	}
+
+	public String getWaitingPeriod3() {
+		return waitingPeriod3;
+	}
+
+	public void setWaitingPeriod3(String waitingPeriod3) {
+		this.waitingPeriod3 = waitingPeriod3;
+	}
+
+	
+	public String getPosterior17() {
+		return posterior17;
+	}
+
+	public void setPosterior17(String posterior17) {
+		this.posterior17 = posterior17;
+	}
+
+	public String getPercentages13() {
+		return percentages13;
+	}
+
+	public void setPercentages13(String percentages13) {
+		this.percentages13 = percentages13;
+	}
+
+	public String getPercentages14() {
+		return percentages14;
+	}
+
+	public void setPercentages14(String percentages14) {
+		this.percentages14 = percentages14;
+	}
+
+	public String getPercentages15() {
+		return percentages15;
+	}
+
+	public void setPercentages15(String percentages15) {
+		this.percentages15 = percentages15;
+	}
+
+	public String getPosterior18() {
+		return posterior18;
+	}
+
+	public void setPosterior18(String posterior18) {
+		this.posterior18 = posterior18;
+	}
+
+	public String getPercentages16() {
+		return percentages16;
+	}
+
+	public void setPercentages16(String percentages16) {
+		this.percentages16 = percentages16;
 	}
 
    

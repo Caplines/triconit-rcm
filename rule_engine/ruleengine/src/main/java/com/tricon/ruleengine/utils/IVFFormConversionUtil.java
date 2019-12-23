@@ -1,6 +1,5 @@
 package com.tricon.ruleengine.utils;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
@@ -169,6 +168,32 @@ public class IVFFormConversionUtil {
 		pd.setsSCD2930FL(d.getSsc1());
 		pd.setsSCD2931FL(d.getSsc2());
 		pd.setTaxId(d.getBasicInfo4());
+		
+		//new in IVF html form
+		pd.setPreventiveSubDed(d.getPercentages13());//percentages13
+		pd.setDiagnosticSubDed(d.getPercentages14());//percentages14
+		pd.setpAXRaysSubDed(d.getPercentages15());//percentages15
+		
+		pd.setDen5225Per(d.getDen5225());// den5225
+		pd.setDenf5225FR(d.getDenf5225());//denf5225 
+		pd.setDen5226Per(d.getDen5226());//den5226 
+		pd.setDenf5226Fr(d.getDenf5226());//denf5226 
+		pd.setBridges1(d.getBridges1());//bridges1 
+		pd.setBridges2(d.getBridges2());//bridges2 
+		pd.setWillDowngradeApplicable(d.getCdowngrade());//cdowngrade
+		pd.setImplantsFrD6010(d.getImplants5());//implants5
+		pd.setImplantsFrD6057(d.getImplants6());//implants6
+		pd.setImplantsFrD6065(d.getImplants7());//implants7
+		pd.setImplantsFrD6190(d.getImplants8());;//implants8
+		pd.setOrthoRemaining(d.getOrtho5());//ortho5
+		pd.setOrthoWaitingPeriod(d.getWaitingPeriod3());//??waitingPeriod3
+		//pd.setWillCrowngrade("");//posterior16
+		pd.setCrowngradeCode(d.getPosterior17());//posterior17	
+		pd.setNightGuardsD9945Percentage(d.getPosterior18());//posterior17
+		pd.setFmxPer(d.getPercentages16());//percentages16 
+		
+		//END		
+		
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_");// -- will set latter;
 		pd.setVarnishD1206AgeLimit(d.getFluroide4());
@@ -377,6 +402,32 @@ public class IVFFormConversionUtil {
 		pd.setsSCD2931FL(d.getSsc2());
 		pd.setTaxId(d.getBasicInfo4());
 
+		
+		//new in IVF html form
+				pd.setPreventiveSubDed(d.getPercentages13());//percentages13
+				pd.setDiagnosticSubDed(d.getPercentages14());//percentages14
+				pd.setpAXRaysSubDed(d.getPercentages15());//percentages15
+				
+				pd.setDen5225Per(d.getDen5225());// den5225
+				pd.setDenf5225FR(d.getDenf5225());//denf5225 
+				pd.setDen5226Per(d.getDen5226());//den5226 
+				pd.setDenf5226Fr(d.getDenf5226());//denf5226 
+				pd.setBridges1(d.getBridges1());//bridges1 
+				pd.setBridges2(d.getBridges2());//bridges2 
+				pd.setWillDowngradeApplicable(d.getCdowngrade());//cdowngrade
+				pd.setImplantsFrD6010(d.getImplants5());//implants5
+				pd.setImplantsFrD6057(d.getImplants6());//implants6
+				pd.setImplantsFrD6065(d.getImplants7());//implants7
+				pd.setImplantsFrD6190(d.getImplants8());;//implants8
+				pd.setOrthoRemaining(d.getOrtho5());//ortho5
+				pd.setOrthoWaitingPeriod(d.getWaitingPeriod3());//??waitingPeriod3
+				//pd.setWillCrowngrade(d.getPosterior16());//posterior16
+				pd.setCrowngradeCode(d.getPosterior17());//posterior17
+				pd.setNightGuardsD9945Percentage(d.getPosterior18());//posterior17
+				pd.setFmxPer(d.getPercentages16());//percentages16 
+				//END			
+
+		
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
 		pd.setVarnishD1206AgeLimit(d.getFluroide4());
@@ -472,7 +523,7 @@ public class IVFFormConversionUtil {
 	
 	public static void main(String []a) {
 		//qwe======!!!!======11======!!!!======11======!!!!======2019-10-08
-		List<IVFHistorySheet> phl = new ArrayList<IVFHistorySheet>();
+		//List<IVFHistorySheet> phl = new ArrayList<IVFHistorySheet>();
 		IVFHistorySheet ph = null;
 		int x = 0;
 		List<String> hl = new ArrayList<>();
@@ -652,6 +703,30 @@ public class IVFFormConversionUtil {
 		pd.setsSCD2930FL(d.getsSCD2930FL());
 		pd.setsSCD2931FL(d.getsSCD2931FL());
 		pd.setTaxId(d.getTaxId());
+		
+		//new in IVF html form
+		pd.setPreventiveSubDed(d.getPreventiveSubDed());//percentages13
+		pd.setDiagnosticSubDed(d.getDiagnosticSubDed());//percentages14
+		pd.setpAXRaysSubDed(d.getpAXRaysSubDed());;//percentages15
+		
+		pd.setDen5225Per(d.getDen5225Per());// den5225
+		pd.setDenf5225FR(d.getDenf5225FR());//denf5225 
+		pd.setDen5226Per(d.getDen5226Per());//den5226 
+		pd.setDenf5226Fr(d.getDenf5226Fr());//denf5226 
+		pd.setBridges1(d.getBridges1());//bridges1 
+		pd.setBridges2(d.getBridges2());//bridges2 
+		pd.setWillDowngradeApplicable(d.getWillDowngradeApplicable());//cdowngrade
+		pd.setImplantsFrD6010(d.getImplantsFrD6010());//implants5
+		pd.setImplantsFrD6057(d.getImplantsFrD6057());//implants6
+		pd.setImplantsFrD6065(d.getImplantsFrD6065());//implants7
+		pd.setImplantsFrD6190(d.getImplantsFrD6190());;//implants8
+		pd.setOrthoRemaining(d.getOrthoRemaining());//ortho5
+		pd.setOrthoWaitingPeriod(d.getOrthoWaitingPeriod());//??waitingPeriod3
+		//pd.setWillCrowngrade(d.getWillCrowngrade());//posterior16
+		pd.setCrowngradeCode(d.getCrowngradeCode());//posterior17
+		pd.setNightGuardsD9945Percentage(d.getNightGuardsD9945Percentage());//posterior18
+		pd.setFmxPer(d.getFmxPer());//percentages16 
+		//END		
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_");// -- will set latter;
 		pd.setVarnishD1206AgeLimit(d.getVarnishD1206AgeLimit());
@@ -685,7 +760,7 @@ public class IVFFormConversionUtil {
 		Set<PatientHistory> phl = new HashSet<PatientHistory>();
 		PatientHistory ph = null;
 		
-		int x = 0;
+		//int x = 0;
 		if (his != null) {
 			try {
 			Class<?> c2;

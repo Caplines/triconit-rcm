@@ -25,8 +25,10 @@ public interface PatientDao {
 	
 	public List<Patient> searchPatientByPatientId(Set<String> patientIds, Office off);
 	public List<CaplineIVFFormDto> searchPatientDetailFromIVF(CaplineIVFQueryFormDto dto, Office off,Set<String> patIds);
-	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off,int patDid);
+	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off,Set<String> patDids);
 	public List<Object> searchPatientDetailFromIVFGivenColumns(CaplineIVFQueryFormDto dto, Office off);
+	
+	public List<Object> searchPatientHistoryFromIVFGivenColumns(CaplineIVFQueryFormDto dto, Office off);
 
 	
 

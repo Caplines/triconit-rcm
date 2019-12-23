@@ -161,12 +161,33 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	@Column(name = "preventive_percentage" , length=50)
 	private String preventivePercentage;// AS
 	
+	//NEW NOT IN GOOGLE SHEET
+	@Column(name = "preventive_sub_ded" , length=50)
+	private String preventiveSubDed;//percentages13
+	
+	//END
+	
 	@Column(name = "diagnostic_percentage" , length=50)
 	private String diagnosticPercentage;// AT
+	
+	//NEW NOT IN GOOGLE SHEET
+	@Column(name = "diagnostic_sub_ded" , length=50)
+	private String diagnosticSubDed;//percentages14
+    //END
+		
 	
 	@Column(name = "pa_xrays_percentage" , length=50)
 	private String pAXRaysPercentage;// AU
 	
+	//NEW NOT IN GOOGLE SHEET
+	@Column(name = "pa_xrays_sub_ded" , length=50)
+	private String pAXRaysSubDed;//percentages15
+
+	@Column(name = "fmx_per" , length=15)
+	private String fmxPer;//percentages16
+
+	//END
+
 	@Column(name = "missingtooth_clause" , length=50)
 	private String missingToothClause;// AV
 	
@@ -215,9 +236,34 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	@Column(name = "x_rays_fm_xfl" , length=50)
 	private String xRaysFMXFL;// BK
 	
+	//NEW NOT IN GOOGLE SHEET
+	@Column(name = "den_5225_per" , length=20)
+	private String den5225Per;// den5225
+	
+	@Column(name = "den_f_5225_fr" , length=20)
+	private String denf5225FR;//denf5225 
+
+	@Column(name = "den_5226_per" , length=20)
+	private String den5226Per;//den5226 
+
+	@Column(name = "den_f_5226_fr" , length=20)
+	private String denf5226Fr;//denf5226 
+
+    //END	
 	@Column(name = "x_rays_bundling" , length=50)
 	private String xRaysBundling;// BL
 	
+	//NEW NOT IN GOOGLE SHEET
+	@Column(name = "bridges1" , length=20)
+	private String bridges1;//bridges1 
+
+	@Column(name = "bridges2" , length=20)
+	private String bridges2;//bridges2 
+
+	@Column(name = "will_downgrade_applicable" , length=20)
+	private String willDowngradeApplicable;//cdowngrade
+	
+	//END
 	@Column(name = "flouride_d1208_fl" , length=50)
 	private String flourideD1208FL;// BM
 	
@@ -353,6 +399,21 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	@Column(name = "implant_supported_porc_ceramic_d606_percentage" , length=50)
 	private String implantSupportedPorcCeramicD6065Percentage;//DE
 	
+	//NEW NOT IN GOOGLE SHEET
+	@Column(name = "implants_fr_d6010" , length=50)
+	private String implantsFrD6010;//implants5
+	
+	@Column(name = "implants_fr_d6057" , length=50)
+	private String implantsFrD6057;//implants6
+	
+	@Column(name = "implants_fr_d6065" , length=50)
+	private String implantsFrD6065;//implants7
+	
+	@Column(name = "implants_fr_d6190" , length=50)
+	private String implantsFrD6190;//implants8
+	
+    // END
+	
 	@Column(name = "post_composites_d2391_percentage" , length=50)
 	private String postCompositesD2391Percentage;//DF
 	
@@ -368,12 +429,23 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	@Column(name = "crowns_d2750_d2740_fl" , length=50)
 	private String crownsD2750D2740FL;//DJ
 	
+	//NEW NOT IN GOOGLE SHEET
+	
+	@Column(name = "crown_grade_code" , length=50)
+	private String crowngradeCode;//posterior17
+	//END
+	
 	@Column(name = "crowns_d2750_d2740_downgrade" , length=50)
 	private String crownsD2750D2740Downgrade;//DK
 	
 	@Column(name = "night_guards_d9940_percentage" , length=50)
-	private String nightGuardsD9940Percentage;//DL
+	private String nightGuardsD9940Percentage;//DL THIS IS NOW D9944
 	
+	//NEW NOT IN GOOGLE SHEET
+	@Column(name = "night_guards_d9945_percentage" , length=50)
+	private String nightGuardsD9945Percentage;//posterior18
+
+	//END
 	@Column(name = "d9310_percentage" , length=50)
 	private String d9310Percentage;//DM
 	
@@ -400,6 +472,16 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	
 	@Column(name = "ortho_subject_deductible" , length=50)
     private String orthoSubjectDeductible;//DU
+	
+	//NEW NOT IN GOOGLE SHEET
+	
+	@Column(name = "ortho_remaining" , length=50)
+    private String orthoRemaining;//ortho5
+	
+	@Column(name = "ortho_waiting_period" , length=50)
+    private String orthoWaitingPeriod;//waitingPeriod3
+	
+	//END
 	
 	@Column(name = "fillings_bundling" , length=50)
     private String FillingsBundling;//DV
@@ -1505,6 +1587,160 @@ public class PatientDetail extends BaseAudit implements Serializable{
 
 	public void setTaxId(String taxId) {
 		this.taxId = taxId;
+	}
+
+	public String getDen5225Per() {
+		return den5225Per;
+	}
+
+	public void setDen5225Per(String den5225Per) {
+		this.den5225Per = den5225Per;
+	}
+
+	public String getDenf5225FR() {
+		return denf5225FR;
+	}
+
+	public void setDenf5225FR(String denf5225FR) {
+		this.denf5225FR = denf5225FR;
+	}
+
+	public String getDen5226Per() {
+		return den5226Per;
+	}
+
+	public void setDen5226Per(String den5226Per) {
+		this.den5226Per = den5226Per;
+	}
+
+	public String getDenf5226Fr() {
+		return denf5226Fr;
+	}
+
+	public void setDenf5226Fr(String denf5226Fr) {
+		this.denf5226Fr = denf5226Fr;
+	}
+
+	public String getBridges1() {
+		return bridges1;
+	}
+
+	public void setBridges1(String bridges1) {
+		this.bridges1 = bridges1;
+	}
+
+	public String getBridges2() {
+		return bridges2;
+	}
+
+	public void setBridges2(String bridges2) {
+		this.bridges2 = bridges2;
+	}
+
+	public String getWillDowngradeApplicable() {
+		return willDowngradeApplicable;
+	}
+
+	public void setWillDowngradeApplicable(String willDowngradeApplicable) {
+		this.willDowngradeApplicable = willDowngradeApplicable;
+	}
+
+	public String getImplantsFrD6010() {
+		return implantsFrD6010;
+	}
+
+	public void setImplantsFrD6010(String implantsFrD6010) {
+		this.implantsFrD6010 = implantsFrD6010;
+	}
+
+	public String getImplantsFrD6057() {
+		return implantsFrD6057;
+	}
+
+	public void setImplantsFrD6057(String implantsFrD6057) {
+		this.implantsFrD6057 = implantsFrD6057;
+	}
+
+	public String getImplantsFrD6065() {
+		return implantsFrD6065;
+	}
+
+	public void setImplantsFrD6065(String implantsFrD6065) {
+		this.implantsFrD6065 = implantsFrD6065;
+	}
+
+	public String getImplantsFrD6190() {
+		return implantsFrD6190;
+	}
+
+	public void setImplantsFrD6190(String implantsFrD6190) {
+		this.implantsFrD6190 = implantsFrD6190;
+	}
+
+	public String getOrthoRemaining() {
+		return orthoRemaining;
+	}
+
+	public void setOrthoRemaining(String orthoRemaining) {
+		this.orthoRemaining = orthoRemaining;
+	}
+
+	public String getOrthoWaitingPeriod() {
+		return orthoWaitingPeriod;
+	}
+
+	public void setOrthoWaitingPeriod(String orthoWaitingPeriod) {
+		this.orthoWaitingPeriod = orthoWaitingPeriod;
+	}
+
+	public String getPreventiveSubDed() {
+		return preventiveSubDed;
+	}
+
+	public void setPreventiveSubDed(String preventiveSubDed) {
+		this.preventiveSubDed = preventiveSubDed;
+	}
+
+	public String getDiagnosticSubDed() {
+		return diagnosticSubDed;
+	}
+
+	public void setDiagnosticSubDed(String diagnosticSubDed) {
+		this.diagnosticSubDed = diagnosticSubDed;
+	}
+
+	public String getpAXRaysSubDed() {
+		return pAXRaysSubDed;
+	}
+
+	public void setpAXRaysSubDed(String pAXRaysSubDed) {
+		this.pAXRaysSubDed = pAXRaysSubDed;
+	}
+
+	
+
+	public String getCrowngradeCode() {
+		return crowngradeCode;
+	}
+
+	public void setCrowngradeCode(String crowngradeCode) {
+		this.crowngradeCode = crowngradeCode;
+	}
+
+	public String getNightGuardsD9945Percentage() {
+		return nightGuardsD9945Percentage;
+	}
+
+	public void setNightGuardsD9945Percentage(String nightGuardsD9945Percentage) {
+		this.nightGuardsD9945Percentage = nightGuardsD9945Percentage;
+	}
+
+	public String getFmxPer() {
+		return fmxPer;
+	}
+
+	public void setFmxPer(String fmxPer) {
+		this.fmxPer = fmxPer;
 	}
 
 	

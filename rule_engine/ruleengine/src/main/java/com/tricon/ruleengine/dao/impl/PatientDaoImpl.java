@@ -87,13 +87,14 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
 			PatientDetail pd = iter.next();
 			pd.setCreatedBy(user);
-			session.save(pd);
+			int id= (Integer)session.save(pd);
+			pd.setId(id);
 			// Patient Detail End
 			// History start
 			for (PatientHistory phi : pat.getPatientHistory()) {
 				phi.setOffice(off);
 				phi.setPatient(pat);
-				//phi.setPd(pd);
+				phi.setPd(pd);
 				session.save(phi);
 			}
 			// transaction.commit();
@@ -118,12 +119,15 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
 			PatientDetail pd = iter.next();
 			// String x=null;
-			if (detailsSave)  saveEntiy(pd);
+			if (detailsSave) {
+				int id= (Integer)saveEntiy(pd);
+				pd.setId(id);
+			}
 			else updateEntity(pd);
 			for (PatientHistory ph : pat.getPatientHistory()) {
 				ph.setPatient(pat);
 				ph.setOffice(off);
-				//ph.setPd(pd);
+				ph.setPd(pd);
 				saveEntiy(ph);
 			}
 			// x.split("");
@@ -285,7 +289,15 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " crowns_d2750_d2740_fl as posterior5,crowns_d2750_d2740_downgrade as posterior6,night_guards_d9940_percentage as posterior7,"
 					+ " d9310_percentage as posterior8,d9310_fl as posterior9,buildups_d2950_covered as posterior10,buildups_d2950_fl as posterior11,"
 					+ " buildups_d2950_same_day_crown as posterior12,orthoPercentage as ortho1,ortho_max as ortho2 ,ortho_age_limit as ortho3,"
-					+ " ortho_subject_deductible as ortho4,general_date_iv_wasdone as date,comments as comments,general_benefits_verified_by as benefits,d0120 as policy18,d2391 as policy19 "
+					+ " ortho_subject_deductible as ortho4,general_date_iv_wasdone as date,comments as comments,general_benefits_verified_by as benefits,d0120 as policy18,d2391 as policy19, "
+					+ " preventive_sub_ded as percentages13,diagnostic_sub_ded as percentages14,pa_xrays_sub_ded as percentages15, " //add new Columns here
+				    + " den_5225_per as den5225,den_f_5225_fr as denf5225,den_5226_per as den5226, den_f_5226_fr as denf5226, " //add new Columns here
+					+ " bridges1 as bridges1,bridges2 as bridges2,will_downgrade_applicable as cdowngrade, " //add new Columns here
+					+ " implants_fr_d6010 as implants5,implants_fr_d6057 as implants6,implants_fr_d6065 as implants7,implants_fr_d6190 as implants8, " //add new Columns here
+					+ " crown_grade_code as posterior17,fmx_per as percentages16, " //add new Columns here will_crown_grade as posterior16
+					+ " ortho_remaining as ortho5,ortho_waiting_period as waitingPeriod3, night_guards_d9945_percentage as posterior18 " //add new Columns here
+					//+ " as  " //add new Columns here
+					
 					+ " from patient_detail pd , patient p where "
 					+ " pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id " 
 					//(!dto.getPatientIdDB().equals("")? " and p.patient_id in ('"+dto.getPatientIdDB()+"') ":" ")+
@@ -334,8 +346,38 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		}
 		return cL;
 	}
+	
+	//h.history_code,history_tooth,history_surface,history_dos,p.patient_id,pd.general_date_iv_wasdone
 	@Override
-	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off,int patDid) {
+	public List<Object> searchPatientHistoryFromIVFGivenColumns(CaplineIVFQueryFormDto dto, Office off) {
+		Session session = getSession();
+		List<Object> cL=null;
+		try {
+			String inclause=(dto!=null && dto.getPatientIdDB()!=null && !dto.getPatientIdDB().equals("")? " and p.patient_id in ('"+dto.getPatientIdDB()+"') ":" ");
+			if (dto.getPatientIdDB()!=null) {
+				inclause= " and p.patient_id ='"+dto.getPatientIdDB()+"' ";
+			}
+			
+			String query = "select '"+dto.getOfficeNameDB()+"'," +dto.getColumns()+" from   patient_detail pd , patient p, Patient_history h where "
+					+ " pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id and h.patient_id=p.id and h.patient_detail_id=pd.id " 
+					+ inclause +
+					(dto!=null && dto.getUniqueID()!=null && !dto.getUniqueID().equals("")? " and pd.id ="+dto.getUniqueID()+" ":" ")+
+					(dto!=null && dto.getEmployerNameDB()!=null && !dto.getEmployerNameDB().equals("")? " and pd.employer_name like '%"+dto.getEmployerNameDB()+"%' ":" ")+
+					(dto!=null && dto.getPatientName()!=null && !dto.getPatientName().equals("")? " and (concat(coalesce(first_name,''),' ',coalesce(last_name,'')) like '%"+dto.getPatientName()+"%')"+" ":" ")+
+					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ="+dto.getGeneralDateIVFDoneDB()+" ":" ")+
+					(dto!=null && dto.getGeneralDateIVFDoneDBBet()!=null && !dto.getGeneralDateIVFDoneDBBet().equals("")? " and (pd.general_date_iv_wasdone "+dto.getGeneralDateIVFDoneDBBet()+" ) ":" ")+
+					(dto!=null && dto.getClause()!=null && !dto.getClause().equals("")? " and  "+dto.getClause()+"  ":" ")
+					
+					;
+          cL=session.createSQLQuery(query).list();
+		} finally {
+			closeSession(session);
+		}
+		return cL;
+	}
+	
+	@Override
+	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off,Set<String> patDids) {
 		Session session = getSession();
 		List<PatientHistory> patH=null;
 		try {
@@ -348,10 +390,10 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			criteria.createAlias("office", "off");
 			patH = (List<PatientHistory>) criteria.list();
 			*/
-			String query =" select p.patient_id as pid,ph.history_code as historyCode, ph.history_tooth as historyTooth," + 
+			String query =" select ph.patient_detail_id as pdid ,p.patient_id as pid,ph.history_code as historyCode, ph.history_tooth as historyTooth," + 
 					" ph.history_surface as historySurface, ph.history_dos as historyDOS," + 
 					" ph.id as id from Patient_history ph,office o,patient p where p.id=ph.patient_id and o.uuid=ph.office_id and"+
-					" ph.patient_id in ( "+String.join(", ", patientIds)+") and o.uuid='"+
+					" ph.patient_detail_id in ( "+String.join(",", patDids)+") and ph.patient_id in ( "+String.join(", ", patientIds)+") and o.uuid='"+
 					off.getUuid()+"' order by  STR_TO_DATE(history_dos, '%Y-%m-%d') desc";
 			
 			patH=session.createSQLQuery(query).setResultTransformer(Transformers.aliasToBean(PatientHistory.class)). list();

@@ -22,7 +22,12 @@ export class QuestionformPopupComponent implements OnInit {
   ngOnInit() {
 	  //console.log(this.questionData.questionAnswer);
 	  //at least one Question will  be there 
-	  let x=this.questionData.questionAnswer[0];
+	  if (this.questionData.dataHeader.length==0){
+		  this.arrayOfKeys=[];
+			this.saveFormDataAll();
+	  }
+	  else{
+	 let x=this.questionData.questionAnswer[0];
 	  
 	  this.keyString=x.patId+"-%%-"+x.tpId+"-%%-"+x.officeId;
 	   
@@ -40,7 +45,7 @@ export class QuestionformPopupComponent implements OnInit {
 	});
 	this.questionFormData = this.groupBy(this.questionData.dataHeader, 'ruleName');
 	this.arrayOfKeys = Object.keys(this.questionFormData);
-	
+	 }
 	//console.log(this.questionFormData);
   }
   
@@ -92,19 +97,26 @@ export class QuestionformPopupComponent implements OnInit {
 	//  console.log(999);
 	if (this.markMandatoryAnswer()){  
 		
-		this.showQuestionSaveLoading = true;
-		this.answerData.push({'answerId': -1000, 'answer': this.keyString,'questionId':-1000});
-		this.accountService.saveUserInput(this.answerData,  (result) => {
-			this.showQuestionSaveLoading = false;	
-			this.answerData = [];
-			//From IVF Screen Condition
-			if (this.showValidation=="1"){
-				this.emitToParent.emit({action: "showValidation", value: true});
-			}
-	
-		});	
+		this.saveFormDataAll();
 	}
   }
+  
+  saveFormDataAll() {
+		//  console.log(999);
+			
+			this.showQuestionSaveLoading = true;
+			this.answerData.push({'answerId': -1000, 'answer': this.keyString,'questionId':-1000});
+			this.accountService.saveUserInput(this.answerData,  (result) => {
+				this.showQuestionSaveLoading = false;	
+				this.answerData = [];
+				//From IVF Screen Condition
+				if (this.showValidation=="1"){
+					this.emitToParent.emit({action: "showValidation", value: true});
+				}
+		
+			});	
+	}
+	  
   
   closePopup() {
 	this.emitToParent.emit({action: "showQuestionData", value: false});

@@ -129,10 +129,12 @@ public class CaplineIVFGoogleFormController {
 			@RequestParam(value = "password", required = true) String password,
             //@RequestParam(value = "columnCount", required = true) int columnCount,
             @RequestParam(value = "gndate", required = false) String generalDateIVFDoneDB,
+            @RequestParam(value = "gndatebet", required = false) String generalDateIVFDoneDBBet,
             @RequestParam(value = "patid", required = false) String patientIdDB,
             @RequestParam(value = "patname", required = false) String patientName,
             @RequestParam(value = "ivfid", required = false) String uniqueID,
             @RequestParam(value = "empame", required = false) String employerNameDB,
+            @RequestParam(value = "clause", required = false) String clause,
             @RequestParam(value = "office", required = true) String office, HttpServletRequest request,
 			HttpServletResponse response) {
 		//Example
@@ -144,7 +146,9 @@ public class CaplineIVFGoogleFormController {
 		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
 		dto.setOfficeNameDB(office);
 		dto.setGeneralDateIVFDoneDB(generalDateIVFDoneDB);
+		dto.setGeneralDateIVFDoneDBBet(generalDateIVFDoneDBBet);
 		dto.setPasswordRE(password);
+		dto.setClause(clause);
 		dto.setPatientIdDB(patientIdDB);
 		dto.setPatientName(patientName);
 		dto.setUniqueID(uniqueID);
@@ -163,6 +167,64 @@ public class CaplineIVFGoogleFormController {
 			if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
 				
 				cap = (List<Object>) civf.searchIVFDataForGoogleSheet(dto,off);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", cap));
+
+	}
+
+	@CrossOrigin
+	@GetMapping
+	@RequestMapping(value = "/queryivdatahistoryfromdbgoogle")
+	public ResponseEntity<Object> queryHistoryDataFromDBGoogle(
+			//@RequestParam(value = "selectcolumns", required = true) String selectcolumns,
+			@RequestParam(value = "columns", required = true) String columns,
+			//@RequestParam(value = "ids", required = false) String ids,
+			@RequestParam(value = "password", required = true) String password,
+            //@RequestParam(value = "columnCount", required = true) int columnCount,
+            @RequestParam(value = "gndate", required = false) String generalDateIVFDoneDB,
+            @RequestParam(value = "gndatebet", required = false) String generalDateIVFDoneDBBet,
+            @RequestParam(value = "patid", required = false) String patientIdDB,
+            @RequestParam(value = "patname", required = false) String patientName,
+            @RequestParam(value = "ivfid", required = false) String uniqueID,
+            @RequestParam(value = "empame", required = false) String employerNameDB,
+            @RequestParam(value = "clause", required = false) String clause,
+            @RequestParam(value = "office", required = true) String office, HttpServletRequest request,
+			HttpServletResponse response) {
+		//Example
+		/*
+		 * localhost:8080/queryivdatahistoryfromdbgoogle?columns=h.history_code,history_tooth,history_surface,history_dos,p.patient_id,pd.general_date_iv_wasdone&password=134568&patid=93&office=Jasper
+		 */
+
+		List<Object> cap = null;
+		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
+		dto.setOfficeNameDB(office);
+		dto.setGeneralDateIVFDoneDB(generalDateIVFDoneDB);
+		dto.setGeneralDateIVFDoneDBBet(generalDateIVFDoneDBBet);
+		dto.setPasswordRE(password);
+		dto.setClause(clause);
+		dto.setPatientIdDB(patientIdDB);
+		dto.setPatientName(patientName);
+		dto.setUniqueID(uniqueID);
+		dto.setEmployerNameDB(employerNameDB);
+		dto.setColumns(columns);
+		
+		
+		
+		
+		try {
+			Office off = od.getOfficeByName(office);
+
+			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+			
+
+			if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
+				
+				cap = (List<Object>) civf.searchIVFHistoryDataForGoogleSheet(dto,off);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

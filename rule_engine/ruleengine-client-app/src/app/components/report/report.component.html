@@ -307,10 +307,26 @@
 					</tr>
 					<tr>
 						<td>Preventative(%): {{reportDataInd.percentages9}}</td>
-						<td>Diagnostics(%): {{reportDataInd.percentages10}}</td>
-						<td>PA X-rays(%): {{reportDataInd.percentages11}}</td>
-						<td>Claims Timely Fillings: {{reportDataInd.percentages12}}</td>
+						<td>Subject to ded: {{reportDataInd.percentages13}}</td>
+						<td></td>
+						<td></td>
 					</tr>
+					<tr>
+						<td>Diagnostics(%): {{reportDataInd.percentages10}}</td>
+						<td>Subject to ded: {{reportDataInd.percentages14}}</td>
+						<td></td>
+						<td></td>
+					</tr>
+					
+					<tr>
+						<td>PA(%): {{reportDataInd.percentages11}}</td>
+						<td>Subject to ded : {{reportDataInd.percentages15}}</td>
+						<td>FMX(%) : {{reportDataInd.percentages16}}</td>
+						
+						<td>Claims Timely Fillings: {{reportDataInd.percentages12}}</td>
+						<td></td>
+					</tr>
+					
 					<tr>
 						<td>Missing tooth clause: {{reportDataInd.prosthetics1}}</td>
 						<td>Replacement Clause: {{reportDataInd.prosthetics2}}</td>
@@ -365,9 +381,35 @@
 						<td>PA(0220): {{reportDataInd.xrays2}}</td>
 						<td>D0230: {{reportDataInd.xrays3}}</td>
 						<td>FMX(0210): {{reportDataInd.xrays4}}</td>
-						<td>Bundling: {{reportDataInd.xrays5}}</td>
+						
+						<td></td>
 					</tr>
 
+					<tr>
+						<td>Denture(%)(D5225): {{reportDataInd.den5225}}</td>
+						<td>Denture(fr)(D5225): {{reportDataInd.denf5225}}</td>
+						<td colspan="3"></td>
+					</tr>
+					<tr>
+						<td>Denture(%)(D5226): {{reportDataInd.den5226}}</td>
+						<td>Denture(fr)(D5226): {{reportDataInd.denf5226}}</td>
+						<td colspan="3"></td>
+					</tr>
+					<tr>
+						<td>Bundling: {{reportDataInd.xrays5}}</td>
+						<td colspan="4"></td>
+					</tr>
+                     <tr>
+						<td>Bridges(%)</td>
+						<td colspan="4"></td>
+					</tr>
+					<tr>
+						<td>(D6245 & D6740): {{reportDataInd.bridges1}}</td>
+						<td>Frequency: {{reportDataInd.bridges2}}</td>
+						<td>Will downgrade applicable? :{{reportDataInd.cdowngrade}}</td>
+						<td colspan="2"></td>
+					</tr>
+					
 				</table>
 				<span>
 					<p style="text-align: center">Fluroide(D1208)</p>
@@ -538,6 +580,14 @@
 						<td>Implants D6190: {{reportDataInd.implants3}}</td>
 						<td>Implants Supported Porc./Ceramic (D6065): {{reportDataInd.implants4}}</td>
 					</tr>
+					<tr>
+						<td>Implants Fr(D6010): {{reportDataInd.implants5}}</td>
+						<td>Implants Fr(D6057): {{reportDataInd.implants6}}</td>
+					</tr>
+					<tr>
+						<td>Implants Fr(D6065): {{reportDataInd.implants7}}</td>
+						<td>Implants Fr(D6190): {{reportDataInd.implants8}}</td>
+					</tr>
 				</table>
 				<span>
 				<p style="text-align: center">Posterior</p>
@@ -555,12 +605,19 @@
 						<td colspan="2">Crowns(D2740 &amp; D2750) Frequency: {{reportDataInd.posterior5}}</td>
 					</tr>
 					<tr>
-						<td colspan="3">Are Crowns Downgraded (D2791): {{reportDataInd.posterior6}}</td>
+						<td colspan="1">Will Crown Downgrade or not? (D2791): {{reportDataInd.posterior6}}</td>
+						<td colspan="2">Which code? {{reportDataInd.posterior17}}</td>
 					</tr>
 					<tr>
-						<td>Night Gaurds (D9940) %: {{reportDataInd.posterior7}}</td>
+						<td>Night Gaurds (D9944) %: {{reportDataInd.posterior7}}</td>
+						<td>Night Gaurds (D9945) %: {{reportDataInd.posterior18}}</td>
+						<td></td>
+					</tr>
+					<tr>
+						
 						<td>Consult (D9310)%: {{reportDataInd.posterior8}}</td>
 						<td>Frequency: {{reportDataInd.posterior9}}</td>
+						<td></td>
 					</tr>
 					<tr>
 						<td>Build-up (D2950) %: {{reportDataInd.posterior10}}</td>
@@ -577,6 +634,12 @@
 						<td>Ortho Max: {{reportDataInd.ortho2}}</td>
 						<td>Age Limit: {{reportDataInd.ortho3}}</td>
 						<td>Subject to Deductible: {{reportDataInd.ortho4}}</td>
+					</tr>
+					<tr>
+						<td>Ortho Remaing: {{reportDataInd.ortho5}}</td>
+						<td>Ortho Waiting Period(In Months): {{reportDataInd.waitingPeriod3}}</td>
+						<td></td>
+						<td></td>
 					</tr>
 				</table>
 				<span>

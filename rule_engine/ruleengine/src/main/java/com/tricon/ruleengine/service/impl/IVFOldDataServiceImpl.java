@@ -88,6 +88,7 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 							updateHistortList(sh.getHs());
 //null from tooth surface is needed...
 						}
+					//System.out.println("dfdddd--"+sh.getPatientId());
 						//p=sh.getPatientId()+"-"+sh.getPlanAnnualMax();
 						Object[] objR=caplineIVFGoogleFormService.saveAllData(IVFFormConversionUtil.copyValueToPatient(sh, office), office, new Date(), user);
 						if (!((String)objR[1]).equals("Success"))

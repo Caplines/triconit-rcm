@@ -18,12 +18,22 @@ public class CaplineIVFQueryFormDto {
 	private String policyHolderNameDB;
 	private String policyHolderDobDB;
 	private String patientDobDB;
+	private String generalDateIVFDoneDBBet;
+	private String clause;
 	
 	
 	
 	
 	
 	
+	
+	
+	public String getClause() {
+		return clause;
+	}
+	public void setClause(String clause) {
+		this.clause = clause;
+	}
 	public String getPolicyHolderNameDB() {
 		return policyHolderNameDB;
 	}
@@ -107,6 +117,12 @@ public class CaplineIVFQueryFormDto {
 	}
 	public void setPatientDobDB(String patientDobDB) {
 		this.patientDobDB = patientDobDB;
+	}
+	public String getGeneralDateIVFDoneDBBet() {
+		return generalDateIVFDoneDBBet;
+	}
+	public void setGeneralDateIVFDoneDBBet(String generalDateIVFDoneDBBet) {
+		this.generalDateIVFDoneDBBet = generalDateIVFDoneDBBet;
 	}
 	
 	

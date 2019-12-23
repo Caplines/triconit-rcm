@@ -3,7 +3,6 @@ package com.tricon.ruleengine.model.sheet;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tricon.ruleengine.model.db.PatientHistory;
 
 public class IVFTableSheet {
 
@@ -55,6 +54,7 @@ public class IVFTableSheet {
 	private String preventivePercentage;// AS
 	private String diagnosticPercentage;// AT
 	private String pAXRaysPercentage;// AU
+	private String fmxPer;//not in sheet
 	private String missingToothClause;// AV
 	private String replacementClause;// AW
 	private String crownsD2750D2740PaysPrepSeatDate;// AX
@@ -125,7 +125,7 @@ public class IVFTableSheet {
 	private String crownsD2750D2740Percentage;//DI
 	private String crownsD2750D2740FL;//DJ
 	private String crownsD2750D2740Downgrade;//DK
-	private String nightGuardsD9940Percentage;//DL
+	private String nightGuardsD9940Percentage;//DL THIS IS NOW D9944
 	private String d9310Percentage;//DM
 	private String d9310FL;//DN
 	private String buildUpsD2950Covered;//DO
@@ -150,7 +150,30 @@ public class IVFTableSheet {
 	
 	private List<IVFHistorySheet> iVFHistorySheetList= new ArrayList<>();
 	
+	//not in Sheet
+	private String preventiveSubDed;//percentages13
+	private String diagnosticSubDed;//percentages14
+	private String pAXRaysSubDed;//percentages15
 	
+	private String den5225Per;// den5225
+	private String denf5225FR;//denf5225 
+	private String den5226Per;//den5226 
+	private String denf5226Fr;//denf5226 
+	private String bridges1;//bridges1 
+	private String bridges2;//bridges2 
+	private String willDowngradeApplicable;//cdowngrade
+	private String implantsFrD6010;//implants5
+	private String implantsFrD6057;//implants6
+	private String implantsFrD6065;//implants7
+	private String implantsFrD6190;//implants8
+	private String orthoRemaining;//ortho5
+	private String orthoWaitingPeriod;//??waitingPeriod3
+	//private String willCrowngrade;//posterior16
+	private String crowngradeCode;//posterior17
+	private String nightGuardsD9945Percentage;//posterior18
+    //end
+	
+
 	
 	public IVFTableSheet() {
 		
@@ -1151,6 +1174,121 @@ public class IVFTableSheet {
 	}
 	public void setD2391(String d2391) {
 		this.d2391 = d2391;
+	}
+	public String getDen5225Per() {
+		return den5225Per;
+	}
+	public void setDen5225Per(String den5225Per) {
+		this.den5225Per = den5225Per;
+	}
+	public String getDenf5225FR() {
+		return denf5225FR;
+	}
+	public void setDenf5225FR(String denf5225fr) {
+		denf5225FR = denf5225fr;
+	}
+	public String getDen5226Per() {
+		return den5226Per;
+	}
+	public void setDen5226Per(String den5226Per) {
+		this.den5226Per = den5226Per;
+	}
+	public String getDenf5226Fr() {
+		return denf5226Fr;
+	}
+	public void setDenf5226Fr(String denf5226Fr) {
+		this.denf5226Fr = denf5226Fr;
+	}
+	public String getBridges1() {
+		return bridges1;
+	}
+	public void setBridges1(String bridges1) {
+		this.bridges1 = bridges1;
+	}
+	public String getBridges2() {
+		return bridges2;
+	}
+	public void setBridges2(String bridges2) {
+		this.bridges2 = bridges2;
+	}
+	public String getWillDowngradeApplicable() {
+		return willDowngradeApplicable;
+	}
+	public void setWillDowngradeApplicable(String willDowngradeApplicable) {
+		this.willDowngradeApplicable = willDowngradeApplicable;
+	}
+	public String getImplantsFrD6010() {
+		return implantsFrD6010;
+	}
+	public void setImplantsFrD6010(String implantsFrD6010) {
+		this.implantsFrD6010 = implantsFrD6010;
+	}
+	public String getImplantsFrD6057() {
+		return implantsFrD6057;
+	}
+	public void setImplantsFrD6057(String implantsFrD6057) {
+		this.implantsFrD6057 = implantsFrD6057;
+	}
+	public String getImplantsFrD6065() {
+		return implantsFrD6065;
+	}
+	public void setImplantsFrD6065(String implantsFrD6065) {
+		this.implantsFrD6065 = implantsFrD6065;
+	}
+	public String getImplantsFrD6190() {
+		return implantsFrD6190;
+	}
+	public void setImplantsFrD6190(String implantsFrD6190) {
+		this.implantsFrD6190 = implantsFrD6190;
+	}
+	public String getOrthoRemaining() {
+		return orthoRemaining;
+	}
+	public void setOrthoRemaining(String orthoRemaining) {
+		this.orthoRemaining = orthoRemaining;
+	}
+	public String getOrthoWaitingPeriod() {
+		return orthoWaitingPeriod;
+	}
+	public void setOrthoWaitingPeriod(String orthoWaitingPeriod) {
+		this.orthoWaitingPeriod = orthoWaitingPeriod;
+	}
+	public String getPreventiveSubDed() {
+		return preventiveSubDed;
+	}
+	public void setPreventiveSubDed(String preventiveSubDed) {
+		this.preventiveSubDed = preventiveSubDed;
+	}
+	public String getDiagnosticSubDed() {
+		return diagnosticSubDed;
+	}
+	public void setDiagnosticSubDed(String diagnosticSubDed) {
+		this.diagnosticSubDed = diagnosticSubDed;
+	}
+	public String getpAXRaysSubDed() {
+		return pAXRaysSubDed;
+	}
+	public void setpAXRaysSubDed(String pAXRaysSubDed) {
+		this.pAXRaysSubDed = pAXRaysSubDed;
+	}
+	
+	public String getCrowngradeCode() {
+		return crowngradeCode;
+	}
+	public void setCrowngradeCode(String crowngradeCode) {
+		this.crowngradeCode = crowngradeCode;
+	}
+	public String getNightGuardsD9945Percentage() {
+		return nightGuardsD9945Percentage;
+	}
+	public void setNightGuardsD9945Percentage(String nightGuardsD9945Percentage) {
+		this.nightGuardsD9945Percentage = nightGuardsD9945Percentage;
+	}
+	public String getFmxPer() {
+		return fmxPer;
+	}
+	public void setFmxPer(String fmxPer) {
+		this.fmxPer = fmxPer;
 	}
 	
 	
