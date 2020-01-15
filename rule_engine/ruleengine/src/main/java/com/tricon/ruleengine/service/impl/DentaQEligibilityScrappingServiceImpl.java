@@ -114,11 +114,13 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			}
 			// scrappingSiteDetails.get
 		} catch (Exception e) {
+			e.printStackTrace();
 			// TODO: handle exception
 		}
 		try {
 		driver.close();
 		}catch (Exception e) {
+			e.printStackTrace();
 			// TODO: handle exception
 		}
 		return eList;
@@ -140,7 +142,9 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		String[] dobA=dob.split("/");
 		// Select select box with any option here we have selected last one.
 		List<WebElement> wList = driver
-				.findElements(By.xpath("/html/body/table[3]/tbody/tr/td[3]/form/div[2]/select/option"));
+				
+				.findElements(By.xpath("/html/body/table[3]/tbody/tr/td[3]/div[2]/form/div[3]/b/select/option"));
+		//**/html/body/table[3]/tbody/tr/td[3]/form/div[2]/select/option */
        /*locationProvider="Geetika Rastogi";
 		
 		for (WebElement w : wList) {
@@ -211,11 +215,17 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			int interventionCount=0;
 			for(WebElement child:wListChild) {
 				if (x==0) {	x++;
+				
+				
 			if (child.getText().contains(" Intervention ")) {
 				//intervention=true;
 				interventionCount=interventionCount + 1;
 			}
 				continue;
+				}
+				//System.out.println("child.getText()"+child.getText());
+				if (child.getText().contains("Multiple potential members found")) {
+					break;
 				}
 				if (child.getText().equals("No Results Found")) {
 					break;
@@ -239,24 +249,27 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 					if (wListChildTD.size()>(4+interventionCount)) {
 						//System.out.println("Name-"+wListChildTD.get(4+interventionCount).getText());
 					}
-					if (wListChildTD.size()>(7+interventionCount)) {
-						dto.setEmployerName(wListChildTD.get(7+interventionCount).getText());
-						//System.out.println("Plan -"+wListChildTD.get(7+interventionCount).getText());
+					if (wListChildTD.size()>(6+interventionCount)) {
+						dto.setEmployerName(wListChildTD.get(6+interventionCount).getText());//Plan
+						//System.out.println("Plan -"+wListChildTD.get(6+interventionCount).getText());
 					}
-					if (wListChildTD.size()>(13+interventionCount)) {
+					if (wListChildTD.size()>(12+interventionCount)) {
 						//System.out.println("Provider Name.-"+wListChildTD.get(13+interventionCount).getText());
-						dto.setProviderName(wListChildTD.get(13+interventionCount).getText());
+						dto.setProviderName(wListChildTD.get(12+interventionCount).getText());//Dentist/Office Name
 					}
 					
-					if (wListChildTD.size()>4) {
+					if (wListChildTD.size()>3) {
 						//click on  Name:
-						wListChildTD.get(4).findElement(By.tagName("a")).click();
+						wListChildTD.get(3).findElement(By.tagName("a")).click();
 						Thread.sleep(5000);
 						//History click
-					   driver.findElement(By.xpath("/html/body/table[3]/tbody/tr/td[3]/form/div[3]/table[3]/tbody/tr/td/a[3]")).click();;
+					   driver.findElement(By.xpath("/html/body/table[3]/tbody/tr/td[3]/div[2]/form/div[4]/table[2]/tbody/tr/td/a[3]")).click();;
+					                               //html/body/table[3]/tbody/tr/td[3]/form/div[3]/table[3]/tbody/tr/td/a[3]
 					   Thread.sleep(5000);
 						//parse History
-					   List<WebElement> wListChildTDHis=driver.findElements(By.xpath("/html/body/table[3]/tbody/tr/td[3]/form/div[2]/table[4]/tbody/tr"));
+					   List<WebElement> wListChildTDHis=driver.findElements(By.xpath("/html/body/table[3]/tbody/tr/td[3]/div[2]/form/div[3]/table[3]/tbody/tr"));
+					                                                                 //html/body/table[3]/tbody/tr/td[3]/form/div[2]/table[4]/tbody/tr
+					   //if (wListChildTDHis!=null && wListChildTDHis.size()>0  ) {
 					   for(WebElement ele:wListChildTDHis) {
 						HistoryDto hd= new HistoryDto();
 						List<WebElement> eL=   ele.findElements(By.tagName("td"));
@@ -273,18 +286,27 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 					   if (eL.size()>4) {
 						   hd.setDos(eL.get(4).getText());
 					   }
-					   
+					   if (eL.size()==0) {
+						   hd.setCode("No Treatment History was found for this subscriber.");
+						   hd.setDescription("");
+						   hd.setTooth("");
+						   hd.setDos("");
+						  
+					   }
 					   dto.getHistoryList().add(hd);
 					   }
+					   
 					   driver.navigate().to("https://govservices.dentaquest.com/Router.jsp?source=MemberDetail&component=MemberDetails&breadcrumb=true");
 					   Thread.sleep(5000);
 					   //Click on view Benefit max..
-					   driver.findElement(By.xpath("/html/body/table[3]/tbody/tr/td[3]/form/div[3]/table[3]/tbody/tr/td/a[1]")).click();
+					   driver.findElement(By.xpath("/html/body/table[3]/tbody/tr/td[3]/div[2]/form/div[4]/table[2]/tbody/tr/td/a[1]")).click();
+					                              //html/body/table[3]/tbody/tr/td[3]/form/div[3]/table[3]/tbody/tr/td/a[1]
+					   
 					   Thread.sleep(5000);
 					   //copay and Remaining Benefit.
-					   if (driver.findElement(By.xpath("/html/body/table[3]/tbody/tr/td[3]/form/table[8]/tbody/tr"))!=null) {
-						   
-						   String cp[]= driver.findElement(By.xpath("/html/body/table[3]/tbody/tr/td[3]/form/table[8]/tbody/tr")).getText().
+					   if (driver.findElement(By.xpath("/html/body/table[3]/tbody/tr/td[3]/div[2]/form/table[6]/tbody/tr/td[1]"))!=null) {
+						 		   //html/body/table[3]/tbody/tr/td[3]/form/table[8]/tbody/tr
+						   String cp[]= driver.findElement(By.xpath("/html/body/table[3]/tbody/tr/td[3]/div[2]/form/table[6]/tbody/tr/td[1]")).getText().
 								   replace("\n", "").replace("\r","").split("Benefit: ");
 						  if (cp.length>1 && cp[1].contains("Co-pay")) {
 							  cp=cp[1].split(" Co-pay");
@@ -303,7 +325,8 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 						  }
 					   }
 					  
-					   wListChildTD=driver.findElements(By.xpath("/html/body/table[3]/tbody/tr/td[3]/form/table[9]/tbody/tr"));
+					   wListChildTD=driver.findElements(By.xpath("/html/body/table[3]/tbody/tr/td[3]/div[2]/form/table[7]/tbody/tr"));
+					                                             //html/body/table[3]/tbody/tr/td[3]/form/table[9]/tbody/tr
 					   for(WebElement ele:wListChildTD) {
 						   if (ele.getText().equalsIgnoreCase("No Results Found")) {
 							  // System.out.println("Remaining benefits not found....");

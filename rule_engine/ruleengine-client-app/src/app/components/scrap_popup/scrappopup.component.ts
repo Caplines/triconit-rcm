@@ -35,11 +35,11 @@ export class ScrapPopupComponent implements OnInit {
 		this.accountService.scrapSite(this.scrapm, 'scrapsite', (result) => { 
 			this.emitToParent.emit({action: "showLoading", value: false});
 			if (result.status=='OK' && result.data){
-				console.log(result.data);
+				//console.log(result.data);
 				this.scrapData = result.data;
 				// console.log(this.ivfmData);
 				// this.arrayOfKeys = Object.keys(this.ivfmData);
-				this.arrayOfKeys = Object.keys(this.scrapData);
+				if (!this.isEmpty(this.scrapData)){this.arrayOfKeys = Object.keys(this.scrapData);
 				if (this.arrayOfKeys[0]=='Office Not Set up'){
 					alert(this.arrayOfKeys[0]);
 					this.emitToParent.emit({action: "showScrapPopup", value: false});
@@ -61,17 +61,17 @@ export class ScrapPopupComponent implements OnInit {
 					this.emitToParent.emit({action: "showScrapPopup", value: false});
 					
 				}
-
-				// this.emitToParent.emit({action: "showScrapPopup", value:
+			  }
+			 	// this.emitToParent.emit({action: "showScrapPopup", value:
 				// true});
 				if (this.isEmpty(this.scrapData)){
-					alert("No Data Found.");
+					alert("No Data found in sheet.");
 					this.emitToParent.emit({action: "showScrapPopup", value: false});
 					}
 				
 			} else {
 				if (!result.data){
-					alert("No Data found.");
+					alert("No Data found in sheet.");
 				}
 			
 				this.emitToParent.emit({action: "showScrapPopup", value: false});

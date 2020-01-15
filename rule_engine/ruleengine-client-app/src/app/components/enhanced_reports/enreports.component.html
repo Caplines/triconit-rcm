@@ -50,7 +50,15 @@
 							<label class="sr-only" for="pId">Patient Id</label>
 							<div>
 								<input type="text" class="login-signup-form-field form-control" name="pId" id="pId" [(ngModel)]="enreports.pId" #pId="ngModel" placeholder="Patient Id..." />
-								<!-- <div *ngIf="f.submitted && !pId.valid" class="error-msg">Please enter Patient Id.</div> -->
+							</div>
+							
+							<div>
+							<select
+								class="login-signup-form-field form-control" name="employerName"
+								id="employerName" [(ngModel)]="enreports.employerName">
+								<option value="">User Name..</option>
+								<option *ngFor="let title of users" [value]="title.uuid">{{title.userName}}({{title.email}})</option>
+							</select>
 							</div>
 						</div>
 						

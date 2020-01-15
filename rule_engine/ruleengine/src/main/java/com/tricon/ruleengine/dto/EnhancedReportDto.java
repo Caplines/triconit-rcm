@@ -11,6 +11,10 @@ public class EnhancedReportDto {
 	private String ivfId;
 	private String officeId;
 	private String mType;
+	private String employerName;
+	//private String userId;
+	
+	
 	
 	
 	public int getReportType() {
@@ -62,6 +66,14 @@ public class EnhancedReportDto {
 	public void setmType(String mType) {
 		this.mType = mType;
 	}
+	public String getEmployerName() {
+		return employerName;
+	}
+	public void setEmployerName(String employerName) {
+		this.employerName = employerName;
+	}
+	
+	
 	
 	
 	

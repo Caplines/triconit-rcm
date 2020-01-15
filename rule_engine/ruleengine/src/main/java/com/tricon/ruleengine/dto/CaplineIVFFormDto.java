@@ -505,7 +505,10 @@ public class CaplineIVFFormDto {
     private String percentages14;//
     private String percentages15;//
     private String posterior18;//
-	
+    
+    private String posterior19;//
+    private String posterior20;//
+    
     
     
     //END
@@ -1840,6 +1843,22 @@ public class CaplineIVFFormDto {
 
 	public void setPercentages16(String percentages16) {
 		this.percentages16 = percentages16;
+	}
+
+	public String getPosterior19() {
+		return posterior19;
+	}
+
+	public void setPosterior19(String posterior19) {
+		this.posterior19 = posterior19;
+	}
+
+	public String getPosterior20() {
+		return posterior20;
+	}
+
+	public void setPosterior20(String posterior20) {
+		this.posterior20 = posterior20;
 	}
 
    

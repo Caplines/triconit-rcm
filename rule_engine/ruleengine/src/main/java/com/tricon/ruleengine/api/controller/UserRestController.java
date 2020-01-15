@@ -52,5 +52,11 @@ public class UserRestController {
 		return ResponseEntity.ok(userService.resetUserPassword(dto));
 	}
 
+	@CrossOrigin
+	@RequestMapping(value = "/getAllUsers", method = RequestMethod.GET)
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	public ResponseEntity<?> getAllUsers() {
+		return ResponseEntity.ok(userService.getAllUsers(1));
+	}
 
 }

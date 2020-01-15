@@ -90,7 +90,7 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 						}
 					//System.out.println("dfdddd--"+sh.getPatientId());
 						//p=sh.getPatientId()+"-"+sh.getPlanAnnualMax();
-						Object[] objR=caplineIVFGoogleFormService.saveAllData(IVFFormConversionUtil.copyValueToPatient(sh, office), office, new Date(), user);
+						Object[] objR=caplineIVFGoogleFormService.saveAllData(IVFFormConversionUtil.copyValueToPatient(sh, office), office, new Date(), user,false);
 						if (!((String)objR[1]).equals("Success"))
 						p=p+"patid=="+sh.getPatientId()+" GeneralDate=="+sh.getGeneralDateIVwasDone()+" -------"+(String)objR[1];
 						

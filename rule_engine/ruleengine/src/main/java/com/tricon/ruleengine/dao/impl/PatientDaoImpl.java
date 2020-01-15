@@ -295,7 +295,9 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " bridges1 as bridges1,bridges2 as bridges2,will_downgrade_applicable as cdowngrade, " //add new Columns here
 					+ " implants_fr_d6010 as implants5,implants_fr_d6057 as implants6,implants_fr_d6065 as implants7,implants_fr_d6190 as implants8, " //add new Columns here
 					+ " crown_grade_code as posterior17,fmx_per as percentages16, " //add new Columns here will_crown_grade as posterior16
-					+ " ortho_remaining as ortho5,ortho_waiting_period as waitingPeriod3, night_guards_d9945_percentage as posterior18 " //add new Columns here
+					+ " ortho_remaining as ortho5,ortho_waiting_period as waitingPeriod3, night_guards_d9945_percentage as posterior18, " //add new Columns here
+					+ " night_guards_d9944_fr as posterior19,night_guards_d9945_fr as posterior20 " //add new Columns here
+					
 					//+ " as  " //add new Columns here
 					
 					+ " from patient_detail pd , patient p where "
@@ -403,5 +405,19 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			closeSession(session);
 		}
 		return patH;
+	}
+
+	@Override
+	public void deletePatientHistoryByIds(String[] ids) {
+		Session session = getSession();
+		try {
+			String query="delete from Patient_history where id in ("+String.join(",", ids)+")";
+			session.createSQLQuery(query).executeUpdate();
+			
+		} finally {
+			closeSession(session);
+		}
+		
+		
 	}
 }

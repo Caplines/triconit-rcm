@@ -22,6 +22,7 @@ import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.OfficeDto;
 import com.tricon.ruleengine.dto.PasswordResetDto;
 import com.tricon.ruleengine.dto.StatusResetDto;
+import com.tricon.ruleengine.dto.UserEmailIdDto;
 import com.tricon.ruleengine.dto.UserRegistrationDto;
 import com.tricon.ruleengine.dto.UserSettingsDto;
 import com.tricon.ruleengine.model.db.Office;
@@ -157,5 +158,10 @@ public class UserServiceImpl implements UserService {
 		return officeDao.getAllOffices();
 	}
 
+	@Override
+	public GenericResponse getAllUsers(int active) {
+		 List<UserEmailIdDto>  li= userDao.getAllUsers(active);
+			return new GenericResponse(HttpStatus.OK, "Users list", li);
+	}
 
 }

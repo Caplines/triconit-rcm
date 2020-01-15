@@ -109,7 +109,7 @@ public class IVFFormConversionUtil {
 		pd.setMemberSSN(d.getBasicInfo13());
 		pd.setMissingToothClause(d.getProsthetics1());
 		pd.setName1201110RollOverAgYe(d.getRollage());
-		pd.setNightGuardsD9940FL(d.getProsthetics4());
+		pd.setNightGuardsD9940FL(d.getProsthetics4());//This is not here..
 		pd.setNightGuardsD9940Percentage(d.getPosterior7());
 		pd.setNitrousD9230Percentage(d.getSedations1());
 		pd.setOffice(off);
@@ -189,8 +189,11 @@ public class IVFFormConversionUtil {
 		pd.setOrthoWaitingPeriod(d.getWaitingPeriod3());//??waitingPeriod3
 		//pd.setWillCrowngrade("");//posterior16
 		pd.setCrowngradeCode(d.getPosterior17());//posterior17	
-		pd.setNightGuardsD9945Percentage(d.getPosterior18());//posterior17
+		pd.setNightGuardsD9945Percentage(d.getPosterior18());//posterior18
 		pd.setFmxPer(d.getPercentages16());//percentages16 
+		
+		pd.setNightGuardsD9944Fr(d.getPosterior19());
+		pd.setNightGuardsD9945Fr(d.getPosterior20());
 		
 		//END		
 		
@@ -423,8 +426,11 @@ public class IVFFormConversionUtil {
 				pd.setOrthoWaitingPeriod(d.getWaitingPeriod3());//??waitingPeriod3
 				//pd.setWillCrowngrade(d.getPosterior16());//posterior16
 				pd.setCrowngradeCode(d.getPosterior17());//posterior17
-				pd.setNightGuardsD9945Percentage(d.getPosterior18());//posterior17
+				pd.setNightGuardsD9945Percentage(d.getPosterior18());//posterior18
 				pd.setFmxPer(d.getPercentages16());//percentages16 
+				
+				pd.setNightGuardsD9944Fr(d.getPosterior19());
+				pd.setNightGuardsD9945Fr(d.getPosterior20());
 				//END			
 
 		
@@ -726,6 +732,10 @@ public class IVFFormConversionUtil {
 		pd.setCrowngradeCode(d.getCrowngradeCode());//posterior17
 		pd.setNightGuardsD9945Percentage(d.getNightGuardsD9945Percentage());//posterior18
 		pd.setFmxPer(d.getFmxPer());//percentages16 
+		
+		pd.setNightGuardsD9944Fr(d.getNightGuardsD9944Fr());
+		pd.setNightGuardsD9945Fr(d.getNightGuardsD9945Fr());
+		
 		//END		
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_");// -- will set latter;

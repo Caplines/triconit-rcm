@@ -31,5 +31,8 @@ public interface UserService {
 	public GenericResponse findUserByUserName(String userName);
 
 	public GenericResponse resetClaimTreatmentRight(StatusResetDto dto);
+	
+	public GenericResponse getAllUsers(int active);
+	
 
 }

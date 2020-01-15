@@ -9,7 +9,9 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from "./services/auth.service";
 import { OfficeResolve } from "./resolver/office_resolver";
 
-import { HttpModule} from "@angular/http";
+import { HttpModule , XSRFStrategy, CookieXSRFStrategy, Http} from "@angular/http";
+import { HttpClientXsrfModule} from "@angular/common/http";
+
 import { AccountService} from "./services/account.service";
 import { ProfileComponent } from './components/profile/profile.component';
 import { IVFComponent } from './components/ivf/ivf.component';
@@ -73,6 +75,11 @@ import { TokenInterceptor } from './auth/token.interceptor';
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule
+    /*
+    ,HttpClientXsrfModule.withOptions({
+        cookieName: 'XSRF-TOKEN',
+        headerName: 'X-CSRF-TOKEN'
+      })*/
   ],
   providers: [AuthService,AccountService,UrlPermission,UrlAdminPermission,UrlLoggedInCheck,
 	  OfficeResolve,
@@ -81,6 +88,13 @@ import { TokenInterceptor } from './auth/token.interceptor';
           useClass: TokenInterceptor,
           multi: true
       }
+      /*,
+      {
+          provide: XSRFStrategy,
+          useValue: new CookieXSRFStrategy('XSRF-TOKEN', 'X-XSRF-TOKEN')
+         
+      }
+      */
   ],
   bootstrap: [AppComponent]
 })

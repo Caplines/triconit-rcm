@@ -9,7 +9,10 @@ public class ReportTypeEnum {
         PatientName,
         IvfId,
         //OfficeId,
-        Date;
+        Date,
+        DateFromTo,
+        UserName,
+        DateFromToUserName;
     }
  
     /*

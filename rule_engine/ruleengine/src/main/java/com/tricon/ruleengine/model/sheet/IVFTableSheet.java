@@ -3,6 +3,8 @@ package com.tricon.ruleengine.model.sheet;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
+
 
 public class IVFTableSheet {
 
@@ -171,6 +173,10 @@ public class IVFTableSheet {
 	//private String willCrowngrade;//posterior16
 	private String crowngradeCode;//posterior17
 	private String nightGuardsD9945Percentage;//posterior18
+	
+	private String nightGuardsD9944Fr;//posterior19
+
+	private String nightGuardsD9945Fr;//posterior20
     //end
 	
 
@@ -1289,6 +1295,18 @@ public class IVFTableSheet {
 	}
 	public void setFmxPer(String fmxPer) {
 		this.fmxPer = fmxPer;
+	}
+	public String getNightGuardsD9944Fr() {
+		return nightGuardsD9944Fr;
+	}
+	public void setNightGuardsD9944Fr(String nightGuardsD9944Fr) {
+		this.nightGuardsD9944Fr = nightGuardsD9944Fr;
+	}
+	public String getNightGuardsD9945Fr() {
+		return nightGuardsD9945Fr;
+	}
+	public void setNightGuardsD9945Fr(String nightGuardsD9945Fr) {
+		this.nightGuardsD9945Fr = nightGuardsD9945Fr;
 	}
 	
 	

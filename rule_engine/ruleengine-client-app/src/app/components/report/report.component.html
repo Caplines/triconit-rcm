@@ -16,7 +16,13 @@
 						<li><a href="javascript:void(0)"
 							(click)="reportParam('Date')">Date Run</a></li>
 						<li><a href="javascript:void(0)"
+							(click)="reportParam('DateFromTo')">Date Run (From To)</a></li>
+						<li><a href="javascript:void(0)"
 							(click)="reportParam('PatientName')">Patient Name</a></li>
+						<li><a href="javascript:void(0)"
+							(click)="reportParam('UserName')">User Name</a></li>
+						<li><a href="javascript:void(0)"
+							(click)="reportParam('DateFromToUserName')">User Name (Date Range)</a></li>	
 						<li><a href="javascript:void(0)"
 							(click)="reportParam('ivfRDBMS')">IVF RDBMS</a></li>
 					</ul>
@@ -62,6 +68,55 @@
 								<div *ngIf="f.submitted && report.reportField1==''"
 									class="error-msg">Please select valid Date.</div>
 							</div>
+							<div *ngIf="showParam.UserName" class="date-dropdown">
+								<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="users">User Name</label>
+							 <select
+								class="login-signup-form-field form-control" name="employerName"
+								id="employerName" [(ngModel)]="report.employerName">
+								<option value="">User Name..</option>
+								<option *ngFor="let title of users" [value]="title.uuid">{{title.userName}}({{title.email}})</option>
+							</select>
+							<div *ngIf="f.submitted && report.employerName==''" class="error-msg">User Name is required</div>
+						
+								
+							</div>
+							</div>
+							<div *ngIf="showParam.DateFromTo" class="date-dropdown">
+								<!-- <input type="text" name="datePicker" [(ngModel)]="report.reportField1" (click)="datePicker.toggle()" />
+                                     <ng-datepicke r name="datePicker" [headless]="true" #datePicker [(ngModel)]="report.reportField1" [options]="dateOptions"></ng-datepicker>
+                                    -->
+								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id ="datepicker1"
+									 [options]="dateOptions1"></ng-datepicker>
+
+								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id ="datepicker2"
+									[options]="dateOptions2"></ng-datepicker>
+								
+								<div *ngIf="f.submitted &&  ( report.reportField1=='' || report.reportField2=='')"
+									class="error-msg">Please select valid Date To and from Date.</div>
+									
+							</div>
+							<div *ngIf="showParam.DateFromToUserName" class="date-dropdown">
+								<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+									<label class="sr-only" for="users">User Name</label>
+									 <select
+										class="login-signup-form-field form-control" name="employerName"
+										id="employerName" [(ngModel)]="report.employerName">
+										<option value="">User Name..</option>
+										<option *ngFor="let title of users" [value]="title.uuid">{{title.userName}}({{title.email}})</option>
+									</select>
+									<div *ngIf="f.submitted && report.employerName==''" class="error-msg">User Name is required</div>
+							   </div>
+								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id ="datepicker1"
+									 [options]="dateOptions1"></ng-datepicker>
+
+								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id ="datepicker2"
+									 [options]="dateOptions2"></ng-datepicker>
+								
+								<div *ngIf="f.submitted && ( report.reportField1=='' || report.reportField2==''|| report.employerName=='')"
+									class="error-msg">Please select valid Date To and from Date.</div>
+									
+							</div>
 							<div *ngIf="showParam.PatientName">
 								<input type="text" class="login-signup-form-field form-control"
 									name="reportField1" id="reportField1"
@@ -78,7 +133,7 @@
 									placeholder="Patient ID..." /> <input type="text"
 									class="login-signup-form-field form-control" name="patientName"
 									id="patientName" [(ngModel)]="report.patientName"
-									#reportField1="ngModel" placeholder="Patient Name..." /> <input
+									#patientName="ngModel" placeholder="Patient Name..." /> <input
 									type="text" class="login-signup-form-field form-control"
 									name="employerName" id="employerName"
 									[(ngModel)]="report.employerName" #employerName="ngModel"
@@ -331,8 +386,13 @@
 						<td>Missing tooth clause: {{reportDataInd.prosthetics1}}</td>
 						<td>Replacement Clause: {{reportDataInd.prosthetics2}}</td>
 						<td>Paid Prep/Seat Date: {{reportDataInd.prosthetics3}}</td>
-						<td>Night Gaurds (D9940) Frequency:
-							{{reportDataInd.prosthetics4}}</td>
+						<td>Night Gaurds (D9940) Frequency:	{{reportDataInd.prosthetics4}}</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td>Night Gaurds(D9944)FR: {{reportDataInd.posterior19}}</td>
+						<td>Night Gaurds(D9945)FR:	{{reportDataInd.posterior20}}</td>
 					</tr>
 
 				</table>

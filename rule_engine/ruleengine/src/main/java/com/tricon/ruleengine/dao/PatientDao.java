@@ -29,7 +29,9 @@ public interface PatientDao {
 	public List<Object> searchPatientDetailFromIVFGivenColumns(CaplineIVFQueryFormDto dto, Office off);
 	
 	public List<Object> searchPatientHistoryFromIVFGivenColumns(CaplineIVFQueryFormDto dto, Office off);
-
+	
+	public void deletePatientHistoryByIds(String[] ids );
+	
 	
 
 }

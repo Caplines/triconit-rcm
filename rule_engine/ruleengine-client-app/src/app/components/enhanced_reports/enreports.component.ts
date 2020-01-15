@@ -20,6 +20,7 @@ export class EnReportsComponent implements OnInit {
   enreports: EnReportsModel = new EnReportsModel();
   errorMessage: string;
   offices:any;
+  users:any;
   userName: any;
   userType: any;
   
@@ -52,6 +53,7 @@ ut:string="1";
 
   constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute, private datePipe: DatePipe) {
 	  this.offices =this.route.snapshot.data['offs'].data;
+	  this.getAllusers();
 	  this.offices.push({"name":"All OFFICES","uuid":"All"});
 	  this.ut =Utils.fetchUserTypeFromLocalStorage();
   }
@@ -136,5 +138,16 @@ ut:string="1";
 			this.showEnReportPopup = event['value'];
 		}
   } 
+  
+  getAllusers(){
+	  let ths=this;
+	  ths.accountService.getAllUserNames((result)=>{
+		  if (result.status=='OK'){
+				
+				ths.users = result.data;
+				console.log(111);
+		  }
+	  })
+  }
   
 }

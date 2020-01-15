@@ -442,6 +442,12 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	private String nightGuardsD9940Percentage;//DL THIS IS NOW D9944
 	
 	//NEW NOT IN GOOGLE SHEET
+	@Column(name = "night_guards_d9944_fr" , length=50)
+	private String nightGuardsD9944Fr;//posterior19
+
+	@Column(name = "night_guards_d9945_fr" , length=50)
+	private String nightGuardsD9945Fr;//posterior20
+
 	@Column(name = "night_guards_d9945_percentage" , length=50)
 	private String nightGuardsD9945Percentage;//posterior18
 
@@ -1741,6 +1747,22 @@ public class PatientDetail extends BaseAudit implements Serializable{
 
 	public void setFmxPer(String fmxPer) {
 		this.fmxPer = fmxPer;
+	}
+
+	public String getNightGuardsD9944Fr() {
+		return nightGuardsD9944Fr;
+	}
+
+	public void setNightGuardsD9944Fr(String nightGuardsD9944Fr) {
+		this.nightGuardsD9944Fr = nightGuardsD9944Fr;
+	}
+
+	public String getNightGuardsD9945Fr() {
+		return nightGuardsD9945Fr;
+	}
+
+	public void setNightGuardsD9945Fr(String nightGuardsD9945Fr) {
+		this.nightGuardsD9945Fr = nightGuardsD9945Fr;
 	}
 
 	

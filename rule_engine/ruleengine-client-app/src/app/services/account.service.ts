@@ -472,7 +472,32 @@ export class AccountService {
 	  }
 
 	  
-  generateRefreshToken(){
+	  getAllUserNames(callback){
+	      this.generateRefreshToken().pipe(switchMap(data => {
+	          localStorage.setItem("token", (<any>data).token);
+	            return  this.http.get(AppComponent.API_URL+'/getAllUsers');
+	          },
+	          )    
+	      ).subscribe(data => {
+	              callback((<any>data));
+	          },
+	          error => {
+	              if (error.status==401){
+	              this.router.navigate(['/logout']);
+	              }
+	              if (error.status==500){
+	                  alert("Some un-Wanted Changes Done to Google Sheets");
+	                  callback(error);
+	              }
+	          },
+	          () => {
+	          }
+	          
+	          );
+	              
+	  }
+
+	  generateRefreshToken(){
       return this.http.get(AppComponent.API_URL+'/refresh');
   }
 }

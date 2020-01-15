@@ -6,4 +6,5 @@ pId: string="";
 startDate: string="";
 endDate: string="";
 officeId:string="";
+employerName:string="";
 }

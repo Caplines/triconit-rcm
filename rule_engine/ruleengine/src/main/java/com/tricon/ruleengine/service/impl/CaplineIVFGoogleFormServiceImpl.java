@@ -39,6 +39,8 @@ import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.IVFFormConversionUtil;
 
+import io.jsonwebtoken.lang.Arrays;
+
 @Transactional(rollbackOn = Exception.class)
 @Service
 public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormService {
@@ -71,7 +73,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	PatientDao patientDao;
 
 	@Override
-	public Object[] saveIVFFormData(CaplineIVFFormDto d,Office office) throws Exception {
+	public Object[] saveIVFFormData(CaplineIVFFormDto d,Office office,boolean ivf) throws Exception {
 
 		// copy value to DB Object
 		/*
@@ -85,14 +87,15 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		Date date = new Date();
 		User user = userDao.findUserByUsername(amdinUserName);
 		Patient pat = IVFFormConversionUtil.copyValueToPatient(d, office, date);
-		return saveAllData (pat,office,date,user);
+		return saveAllData (pat,office,date,user,ivf);
 	}
 	
-	public Object[] saveAllData (Patient pat, Office office, Date date,User user) {
+	public Object[] saveAllData (Patient pat, Office office, Date date,User user,boolean ivf) {
 		
 		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office,pat);
 		Object[] ob= new Object[2];
 		ob[1]="Success";
+		
 		Integer r = 0;
 		String generalDate="";
 		if (pat.getPatientDetails()!=null && pat.getPatientDetails().size()>0) {
@@ -105,6 +108,33 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 				patd = patientDao.savePatientDataWithDetailsAndHistory(pat, office, user, date);
 			} else {
+				//delete old history logic
+				if (ivf) {
+				int oldPdid=-1;
+				Set<PatientHistory> pholdset= patd.getPatientHistory();
+				for (PatientDetail pd : patd.getPatientDetails()) {
+					if (pd.getGeneralDateIVwasDone().equals(generalDate)) {
+						oldPdid=pd.getId();	
+					}
+					
+				}
+				if (pholdset!=null && pholdset.size()>0) {
+					List<String> l= new ArrayList<>();
+					boolean fd=false;
+					for(PatientHistory phold:pholdset) {
+						if (phold.getPd()!=null && oldPdid ==phold.getPd().getId()) {
+						l.add(phold.getId()+"");
+						fd=true;
+						}
+				  }
+					if(fd) {
+						patientDao.deletePatientHistoryByIds(l.stream().toArray(String[]::new));	
+						patd.setPatientHistory(new HashSet<>());
+					}
+					
+			    }
+				
+				}//End
 				patd.setUpdatedBy(user);
 				patd.setUpdatedDate(date);
 				patd.setDob(pat.getDob());
