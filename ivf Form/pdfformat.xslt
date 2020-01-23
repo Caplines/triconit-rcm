@@ -362,7 +362,7 @@
             
 			
 			
-            <table style="width: 90%" id="rules">
+            <table style="width: 90%" id="rules" cellpadding="0">
                 <colgroup>
                     <col width="12.5%"/>
                     <col width="12.5%"/>
@@ -401,6 +401,36 @@
                         <td><span class="sub-heading1"><xsl:value-of select="dentures1"/></span></td>
                     </tr>
 					<tr>
+                        <td colspan="4" class="main-heading-11 withds"><span class="colourgr"></span>
+						<span class="sub-heading1">
+						</span>
+						</td>
+                        <td colspan="2" class="main-heading-11 colourgr"></td>
+                        <td colspan="2"></td>
+                        <td colspan="2"><span class="main-heading-11 colourgr">Denture(fr)(D5225):</span>
+						<span class="sub-heading1"><xsl:value-of select="denf5225"/></span></td>
+                    </tr>
+					<tr>
+                        <td colspan="4" class="main-heading-11 withds"><span class="colourgr"></span>
+						<span class="sub-heading1"></span>
+						</td>
+						<td colspan="2" class=""></td>
+						
+                        <td colspan="2" class="main-heading-11 colourgr"></td>
+                        <td colspan="2"><span class="main-heading-11 colourgr">Denture(fr)(D5226):</span>
+						<span class="sub-heading1"><xsl:value-of select="denf5226"/></span></td>
+                        
+                    </tr>
+					
+                    <tr>
+                        <td colspan="1" class="main-heading-11 withds"><span class="colourgr">Will downgrade applicable?:</span>
+						</td>
+                        <td class="sub-heading1 colourgr"><xsl:value-of select="cdowngrade"/></td>
+                        <td></td>
+                        <td colspan="7" class="main-heading-11 colourgr">
+						  </td>
+                    </tr>
+					<tr>
                         <td class="main-heading-11 colourgr withds"><span class="colourgr">PA(D0220):</span><xsl:value-of select="xrays2"/><br/>
 						<span class="colourgr">D0230:</span>
 						</td>
@@ -408,7 +438,7 @@
                         <td class="main-heading-11 colourb">Age Limit:</td>
                         <td><span class="sub-heading1"><xsl:value-of select="sealants2"/></span></td>
                         <td class="main-heading-11 colourp">Frequency:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="perio1"/></span></td>
+                        <td><span class="sub-heading1"><xsl:value-of select="perio2"/></span></td>
                         <td class="main-heading-11 colourp withds">Alt. with Prophy (D1110):</td>
 						<td><span class="sub-heading1"><xsl:value-of select="perioMnt3"/></span></td>
 						<td class="main-heading-11 colourgr">Immediate (D5130/D5140):</td>
@@ -538,14 +568,14 @@
 						  <span class="colourp"></span>
 						</td>
                         <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 colourbr">Crowns (D2740/D2750)Frequency:</td>
+                        <td class="main-heading-11 colourbr">Crowns<span class="sub-heading1">(D2740/D2750)Freq</span>:</td>
                         <td><span class="sub-heading1"><xsl:value-of select="posterior5"/></span></td>
                     </tr>
 					<tr>
                         <td class="main-heading-11 withds"><span class="colourb">D0150:</span>
 						</td>
                         <td><span class="sub-heading1"><xsl:value-of select="exams4"/></span></td>
-                        <td class="main-heading-11 colourgr">Post Comp(D2391):</td>
+                        <td class="main-heading-11 colourgr">Posterior Composites (D2391)%:</td>
                         <td><span class="sub-heading1"><xsl:value-of select="posterior1"/></span></td>
                         <td class="main-heading-11" colspan="3"><span class="colourp">1-3 Teeth/Qd (D7311): Covered w. Ext:</span>
                           <span class="sub-heading1"><xsl:value-of select="oral3"/></span>	
@@ -567,8 +597,8 @@
 						  <span class="colourp">Frequency:</span>
 						</td>
                         <td><span class="sub-heading1"><xsl:value-of select="oral6"/></span></td>
-                        <td class="main-heading-11 colourbr">Night Guards (D9940) Frequency:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="prosthetics4"/></span></td>
+                        <td class="main-heading-11 colourbr"></td>
+                        <td><span class="sub-heading1"></span></td>
                     </tr>
 					<tr>
                         <td class="main-heading-11 withds"><span class="colourrr">Basic:</span>
@@ -600,6 +630,19 @@
                         <td><span class="sub-heading1"><xsl:value-of select="posterior12"/></span></td>
                     </tr>
 					<tr>
+                        <td class="main-heading-11 withds"><span class="colourrr">Ortho:</span>
+						
+						</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="waitingPeriod3"/></span></td>
+                        <td class="main-heading-11 colourrr"></td>
+                        <td><span class="sub-heading1"></span></td>
+                        <td class="main-heading-11" colspan="4">
+                         </td>
+                        <td class="main-heading-11"><span class="colourbr"></span>
+						</td>
+                        <td><span class="sub-heading1"></span></td>
+                    </tr>
+					<tr>
 					<td colspan="10"><span class="p3 ft1 main-heading-1">Items Handled by Eaglesoft Automatically</span>
 					</td>
 					</tr>
@@ -620,6 +663,14 @@
                         <td><span class="sub-heading1"></span></td>
                     </tr>
 					<tr>
+                        <td class="main-heading-11 withds"><span class="colourrr">Subject to ded:</span>
+						
+						</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="percentages13"/></span></td>
+                        
+                        <td colspan="8"><span class="sub-heading1"></span></td>
+                    </tr>
+					<tr>
                         <td class="main-heading-11 withds"><span class="colourb">Diagnostic %:</span>
 						
 						</td>
@@ -629,12 +680,19 @@
                         <td class="main-heading-11" colspan="3"><span class="colourgr">Ortho Max:</span>
                          </td>
                         <td><span class="sub-heading1"><xsl:value-of select="ortho2"/></span></td>
-                        <td class="main-heading-11"><span class="colourbr"></span>
+                        <td class="main-heading-11"><span class="colourgr">Ortho Remaining:</span>
 						</td>
-                        <td><span class="sub-heading1"></span></td>
+                        <td><span class="sub-heading1"><xsl:value-of select="ortho5"/></span></td>
                     </tr>
 					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">PA X-rays (%):</span>
+                        <td class="main-heading-11 withds"><span class="colourb">Subject to ded:</span>
+						
+						</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="percentages14"/></span></td>
+                        <td colspan="8"><span class="sub-heading1"></span></td>
+                    </tr>
+					<tr>
+                        <td class="main-heading-11 withds"><span class="colourb">PA(%):</span>
 						
 						</td>
                         <td><span class="sub-heading1"><xsl:value-of select="percentages11"/></span></td>
@@ -647,6 +705,54 @@
 						</td>
                         <td><span class="sub-heading1"></span></td>
                     </tr>
+					<tr>
+                        <td class="main-heading-11 withds"><span class="colourb">Subject to ded:</span>
+						
+						</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="percentages15"/></span></td>
+                        
+                        
+						<td class="main-heading-11"><span class="colourb">FMX(%)</span>
+						
+						</td>
+						<td><span class="sub-heading1"><xsl:value-of select="percentages16"/></span></td>
+						<td colspan="6"><span class="sub-heading1"></span></td>
+                    </tr>
+					<tr>
+                        <td colspan="4" class="main-heading-11 withds"><span class="colourgr">Denture(%)(D5225):</span>
+						<span class="sub-heading1">
+						<xsl:value-of select="den5225"/></span>
+						</td>
+                        <td colspan="2" class="main-heading-11 colourgr"></td>
+                        <td colspan="2"></td>
+                        <td colspan="2"><span class="main-heading-11 colourgr"></span>
+						<span class="sub-heading1"></span></td>
+                    </tr>
+					<tr>
+                        <td colspan="4" class="main-heading-11 withds"><span class="colourgr">Denture(%)(D5226):</span>
+						<span class="sub-heading1"><xsl:value-of select="den5226"/></span>
+						</td>
+						<td colspan="2" class=""></td>
+						
+                        <td colspan="2" class="main-heading-11 colourgr"></td>
+                        <td colspan="2"><span class="main-heading-11 colourgr"></span>
+						<span class="sub-heading1"></span></td>
+                        
+                    </tr>
+					<tr>
+                        <td colspan="10" class="main-heading-11 withds"><span class="colourgr">Bridges(%)</span>
+						</td>
+                    </tr>
+					<tr>
+                        <td colspan="3" class="main-heading-11 withds"><span class="colourgr">(D6245 / D6740):</span>
+						<span class="sub-heading1"><xsl:value-of select="bridges1"/></span>
+						</td>
+                        <td colspan="1" class="main-heading-11 colourgr">Frequency:</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="bridges2"/></span></td>
+                        <td colspan="6" class="main-heading-11 colourgr">
+						  </td>
+                    </tr>
+					
 					<tr>
                         <td class="main-heading-11 withds"><span class="colourb"></span>
 						
@@ -709,9 +815,9 @@
                         <td><span class="sub-heading1"><xsl:value-of select="percentages4"/></span></td>
                         <td class="main-heading-11 colourp">Implants Coverage (%)</td>
                         <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourpos">Posterior Composites (D2391)%:</span>
+                        <td class="main-heading-11" colspan="3"><span class="colourpos"></span>
                          </td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior1"/></span></td>
+                        <td><span class="sub-heading1"></span></td>
                         <td class="main-heading-11"><span class="colourbr"></span>
 						</td>
                         <td><span class="sub-heading1"></span></td>
@@ -751,6 +857,29 @@
 						</td>
                         <td><span class="sub-heading1"></span></td>
                     </tr>
+					
+					<tr>
+                        <td class="main-heading-11 withds"><span class="colourp">Implants Fr(D6010):</span> 
+						
+						</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="implants5"/></span></td>
+                        <td class="main-heading-11 colourp">Implants Fr(D6057):
+						</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="implants6"/></span></td>
+                        <td colspan="4"></td>
+						
+                    </tr>
+					<tr>
+                        <td class="main-heading-11 withds"><span class="colourp">Implants Fr(D6065):</span> 
+						
+						</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="implants7"/></span></td>
+                        <td class="main-heading-11 colourp">Implants Fr(D6190):
+						</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="implants8"/></span></td>
+                        <td colspan="4"></td>
+						
+                    </tr>
 					<tr>
                         <td class="main-heading-11 withds"><span class="colourgr">Perio Surgery(%):</span> 
 						
@@ -759,12 +888,12 @@
                         <td class="main-heading-11 colourp">
 						</td>
                         <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourpos">Are Crowns Downgraded (D2791):</span>
+                        <td class="main-heading-11" colspan="3"><span class="colourpos">Will Crown Downgrade or not?:</span>
                          </td>
                         <td><span class="sub-heading1"><xsl:value-of select="posterior6"/></span></td>
-                        <td class="main-heading-11"><span class="colourbr"></span>
+                        <td class="main-heading-11"><span class="colourbr">Which code?</span>
 						</td>
-                        <td><span class="sub-heading1"></span></td>
+                        <td><span class="sub-heading1"><xsl:value-of select="posterior17"/></span></td>
                     </tr>
 					<tr>
                         <td class="main-heading-11 withds"><span class="colourgr">Subject to Ded:</span> 
@@ -778,11 +907,11 @@
                          </td>
 						 <td class="sub-heading1" colspan="1"><xsl:value-of select="posterior9"/>
                          </td>
-                        <td><span class="main-heading-11 colourpos">Night Guards (D9940) %:</span></td>
-                        <td class="main-heading-11"><span class="colourbr"><xsl:value-of select="posterior7"/></span>
+                        <td><span class="main-heading-11 colourpos">Night Guards (D9944) %:</span></td>
+                        <td class="sub-heading1"><span class="colourbr"><xsl:value-of select="posterior7"/></span>
 						</td>
-                        <td><span class="sub-heading1"></span></td>
-						<td><span class="sub-heading1"></span></td>
+                        <td><span class="main-heading-11 colourpos">Night Gaurds (D9945) %:</span></td>
+						<td><span class="sub-heading1"><xsl:value-of select="posterior18"/></span></td>
                     </tr>
                     
                     <tr>
@@ -790,18 +919,19 @@
 						
 						</td>
                         <td><span class="sub-heading1"><xsl:value-of select="policy18"/></span></td>
-                        <td class="main-heading-11 colourb">
+                        <td class="colourb">
 						</td>
-                        <td><span class="sub-heading1"></span></td>
+                        
                         <td class="main-heading-11" colspan="1"><span class="">D2391:</span>
                          </td>
 						 <td class="sub-heading1" colspan="1"><xsl:value-of select="policy19"/>
                          </td>
-                        <td><span class="main-heading-11"></span></td>
-                        <td class="main-heading-11">
+                        <td><span class="main-heading-11 colourpos">Night Gaurds(D9944)FR:</span></td>
+                        <td class="sub-heading1"><xsl:value-of select="posterior19"/>
 						</td>
-                        <td><span class="sub-heading1"></span></td>
 						<td><span class="sub-heading1"></span></td>
+                        <td><span class="main-heading-11 colourpos">Night Gaurds(D9945)FR:</span></td>
+						<td><span class="sub-heading1"><xsl:value-of select="posterior20"/></span></td>
                     </tr>
 
                     

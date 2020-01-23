@@ -1,0 +1,2654 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <title>Smilepoint - Insurance Verification Form</title>
+    <meta name="generator" content="BCL easyConverter SDK 5.0.08">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?!= include('Stylesheet'); ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <script>
+     //TRICON START
+	 var RE_IP="https://www.ruleengine.ga";
+	 var RE_PASS="134568";
+	 
+   function copyOFFiceName(){
+	 var first = document.getElementById('basicInfo1');
+     var options = first.innerHTML;
+    var second = document.getElementById('officeNameDB'); 
+     
+     second.innerHTML = options;
+	 }
+	 function showPat(d){
+	 var st=selectdkD[d];
+	 $('#closePOP').click();
+	 loadDatatoForm(st);	 
+	 }
+	 
+	 function downloadPDF(data){
+	  $("#pdf-data-rdbms-t").html("");
+	  if (data.indexOf("Data saved successfully with IVF ID ")>-1){
+	    var u=data.split("Data saved successfully with IVF ID ")[1].split("_");
+	    url = RE_IP+"/queryivdatatopdf?o="+u[0]+"&p="+RE_PASS+"&id="+u[1];
+       $("#pdf-data-rdbms-t").html("<div>"+data+"</div><div><a href='"+url+"' target='_blank'>Download PDF</a></div>");
+	  }
+	  else{
+	  $("#pdf-data-rdbms-t").html("<div>"+data+"</div>");
+	  }
+	  $("#pdf-data-rdbms").modal({
+				  escapeClose: false,
+				  clickClose: false,
+				  showClose: true
+			}); 
+	 }
+	 
+     var selectdkD="";
+	 function openPopforMultipleR(datas){
+            selectdkD=datas;
+            var t = document.getElementById("p-data-rdbms-t");
+	        $("#p-data-rdbms-t").empty(); 
+            var r=t.insertRow(0);
+			r.id="p-data-rdbms-r";
+			r.innerHTML = '<td class="" style="width:20%">'
+                            +'  Name'
+                            +'</td>'
+                            +'<td class="" style="width:20%">'
+                            +'  Patient Id  '
+                            +'</td>'
+                            +'<td class="" style="width:20%">'
+                            +'  DOB '
+                            +'</td>'
+							+'<td class="" style="width:20%">'
+                            +'  Employer Name '
+                            +'</td>'
+							+'<td class="" style="width:20%">'
+                            +'  General IVF Done Date'
+                            +'</td>';
+			for(k in datas){
+			 r=t.insertRow(Number(k)+1);
+			 r.id="p-data-rdbms-r";
+			 //var st=JSON.stringify(datas[k]);
+			 //console.log(st);
+			// st=st.replace(/'/g,'\'');
+			 //st=st.replace(/'/g,'&quot;');
+			 str ="<a href='#' onclick='showPat("+k+")'>"+datas[k].basicInfo2+"</a>";
+			 r.innerHTML = '<td class="" >'+str
+                            +'</td>'
+                            +'<td class="">'
+                            +datas[k].basicInfo21
+                            +'</td>'
+                            +'<td class="">'
+                            +datas[k].basicInfo6
+                            +'</td>'
+							+'<td class="">'
+                            +datas[k].basicInfo10
+                            +'</td>'
+							+'<td class="">'
+                            +datas[k].date
+                            +'</td>';
+            }			
+							
+			$("#p-data-rdbms").modal({
+				  escapeClose: false,
+				  clickClose: false,
+				  showClose: false
+			});        
+            
+	 }
+	 function addHis(){
+                var t = document.getElementById("history");
+                var r = t.getElementsByTagName("TR").length;
+                var txt,rows;
+                //if(r < 20){
+                    rows = t.insertRow(r);
+                    rows.innerHTML = '<td class="tr5 td37">'
+                            +'    <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td38">'
+                            +'    <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td39">'
+                            +'    <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td39">'
+                            +'    <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td40">'
+                            +'    <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td41">'
+                            +'    <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td40">'
+                            +'    <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td42">'
+                            +'    <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td42">'
+                            +'    <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>';
+                        //} else{
+                         //   alert("Maximum Row reached : "+r);
+                        //}
+                     }
+
+	 function selectFromMutipleDatas(temps){
+	 
+	 openPopforMultipleR(temps);
+	 }
+	
+    function loadDatatoForm(temp){
+     $('input[name ="history"]').val('');//empty history
+     $( "form#myIVForm input:radio").each(function( index ) {//unselect all radio button..
+       $(this).prop('checked', false);
+       })
+     for (var key in temp) {
+           //console.log(' name=' + key + ' value=' + temp[key]);
+           var x=document.getElementsByName(key);
+          if (key=='history') {
+               var he=document.getElementsByName(key);
+              
+               var hc=0;
+               $.each(temp[key], function( index, value ) {
+                var dh=value.split("======!!!!======");
+                if (document.getElementsByName(key).length<(hc+1)) addHis();
+                he[hc++].value=(dh[0]=="BLANK")?"":dh[0];
+                if (document.getElementsByName(key).length<(hc+1)) addHis();
+                he[hc++].value=(dh[1]=="BLANK")?"":dh[1]+(dh[2]=="BLANK")?"":("-"+dh[2]);
+                if (document.getElementsByName(key).length<(hc+1)) addHis();
+                he[hc++].value=(dh[3]=="BLANK")?"":dh[3];
+                if (!he[0]) addHis();
+              });
+              
+          }else if (x.length==1) x[0].value=temp[key];
+          else if (x.length>1){
+          //console.log(x);
+               $.each(x, function( index, value ) {
+                if (value.value==temp[key]) value.checked=true;
+              });
+             }
+         
+       }
+     }
+    
+	function searchFromRDBMS(event){
+	 if (!$('#officeNameDB').val()){
+	    alert('Please select Office  name');
+		return;
+	}
+     var json = {};	
+	 json['officeNameDB'] = $('#officeNameDB').val();
+	 json['patientIdDB'] = $('#patientIdDB').val();
+	 json['employerNameDB'] = $('#employerNameDB').val();
+	 json['generalDateIVFDoneDB'] = $('#generalDateIVFDoneDB').val();
+	 json['patientName'] = $('#patientNameDB').val();
+	 
+	 json['passwordRE'] = RE_PASS;
+     
+	 $.ajax(RE_IP+'/queryivdatafromdb', {
+			method: 'POST',
+		  data: JSON.stringify(json),
+		  contentType: "application/json; charset=utf-8",
+		  dataType: "json",
+		}).then(function(res){
+		     //console.log(res);
+			if (res.data.length==1){
+		   loadDatatoForm(res.data[0]);
+		   }
+		   if (res.data.length>1){
+		      selectFromMutipleDatas(res.data);
+		   }
+			 if (res.data.length==0){
+			 alert('No Data Found...');
+			 }
+		     }, function(){
+			 });	 
+	 
+	 event.preventDefault();
+	}
+	function openSection(s){
+	   if (document.getElementById(s).style.display =='none')
+	      document.getElementById(s).style.display='';
+	   else document.getElementById(s).style.display='none';
+	 }
+	
+	function success(res, status, jqXHR){
+  	//console.log(res);
+	downloadPDF(res.data);
+	/*if (res.data=='Data saved successfully'){
+          alert("");	
+    }else{
+	}*/
+	
+	}
+/*
+function ConvertFormToJSON(form){
+    var array = $(form).serializeArray();
+}
+*/
+function ConvertFormToJSON(form){
+    var array = $(form).serializeArray();
+    var json = {};
+    var historyArray=[];    
+    jQuery.each(array, function() {
+	 if (this.name=='history'){
+	   var p="";
+	    if (this.value!='') p=this.value;
+	    historyArray.push(p);
+		
+	 }else{
+        json[this.name] = this.value || '';
+	}
+    });
+    json['history'] = historyArray;
+	json['passwordRE'] = RE_PASS;
+    return json;
+}
+function error(errMsg) {
+//https://www.developerdrive.com/turning-a-form-element-into-json-and-submiting-it-via-jquery/
+  //console.log(errMsg);
+}
+function postDataToRuleEngine(event){
+	    var x= $.confirm({
+				title: 'Are you sure you want to submit the form!',
+				content: 'Data will be saved to Rule engine!',
+				buttons: {
+					confirm: function () {
+					$.ajax(RE_IP+'/savedatatore', {
+				    method: 'POST',
+				    data: JSON.stringify(ConvertFormToJSON('form#myIVForm')),
+				    contentType: "application/json; charset=utf-8",
+				    dataType: "json",
+				   }).then(success, error);
+			      },
+				  Cancel : function(){
+				  
+				  }
+		     }
+		});
+			event.preventDefault();
+}
+//TRICON END			
+</script>
+        <script>
+            //Load some fixed dropdowns
+            google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown("Frequency Types", "H", 4, "frequency");
+            google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown("Office List", "A", 3, "basicInfo1");
+             google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown("Office List", "A", 3, "officeNameDB");
+            google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown("Service codes", "A", 3, "ada");
+            google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown2).getDropdown("Waiting Period", "A", 3, "waitingPeriod");
+            
+            //Success handler function of above asynchrous calls to load dropdown values in "Datalists"
+            function dropdown(dropdown) {
+                var datalist = document.getElementById(dropdown[0]);
+                var len = dropdown.length;
+                var options = "";
+                for (i = 1; i < len; i++) {
+                    options = options + "<option value='" + dropdown[i] + "'>" + dropdown[i] + "</option>";
+                }
+                datalist.innerHTML = options;
+            }
+            
+            //Success handler function of above asynchrous calls to load dropdown values in "Select"
+            function dropdown2(dropdown) {
+                var datalist = document.getElementsByClassName(dropdown[0]);
+                var len = dropdown.length;
+                var options = "";
+                for (i = 1; i < len; i++) {
+                    options = options + "<option value='" + dropdown[i] + "'>" + dropdown[i] + "</option>";
+                }
+                for (n in datalist) {
+                    datalist[n].innerHTML = options;
+                }
+            }
+            
+            //Success handler function of asynchrous call in function getDrop(element) to set Tax ID
+            function setValue1(value) {
+                if(value == "Not Found"){
+                  document.getElementById("errors").innerHTML += "No TaxId Found";
+                }
+                var element = document.getElementById(value[0]);
+                element.value = value[1];
+            }
+            
+            //Error handler functions for all asynchronous calls
+            function failed(e) {
+                document.getElementById("loading").innerHTML = "";
+                document.getElementById("errors").innerHTML += "Asynchronous call function error : "+e+"----";
+            }
+            
+            // function which is called when any reset button is clicked to clear all data
+            function inputReset(id) {
+                var table = document.getElementById(id);
+                var inputs = table.getElementsByTagName("input");
+                var selects = table.getElementsByTagName("select");
+
+                for (n in inputs) {
+                    if (inputs[n].type == "radio") {
+                        inputs[n].checked = false;
+                    }
+                    else {
+                        inputs[n].value = "";
+                    }
+                }
+                for (n in selects) {
+                    selects[n].selectedIndex = 0;
+                }
+            }
+            
+            // function to validate SSN value in XXX-XX-XXXX format
+            function validate() {
+                var ssn = document.getElementById("basicInfo13");
+                var value = ssn.value + "";
+                var array = "";
+                for (var i = 0; i <= value.length; i++) {
+                    array = array + value.charAt(i);
+                    if (i == 2 || i == 4) {
+                        array = array + "-";
+                    }
+                }
+                ssn.value = array;
+            }
+            
+            //function to evaluate which radio button to be selected
+            function evaluateRadio(id, value) {
+                var element = document.getElementsByClassName(id);
+                for (n in element) {
+                    if (element[n].value == value) {
+                        element[n].checked = true;
+                    }
+                }
+            }
+
+            //function to evaluate which the value of date or option selected in select element
+            function evaluate(id, value) {
+                var element = document.getElementById(id);
+                if (element.type == "date") {
+                    element.value = value;
+                }
+                else {
+                    var options = element.options;
+                    for (n in options) {
+                        if (options[n].value == value) {
+                            element.selectedIndex = n;
+                        }
+                    }
+                }
+            }
+            
+            //Function called when "Fill By Employer" Button Is clicked by user to
+            function fill() {
+                var sheet;
+                var selectedForm = <?= selectedForm ?>;
+                var basicInfo1 = document.getElementById("basicInfo1");
+                var officeName = basicInfo1.options[basicInfo1.selectedIndex].value;
+                var empName = document.getElementById("basicInfo10").value;
+                if(selectedForm == "medicaidForm" || selectedForm == "medicaid"){
+                 sheet = "Medicaid";
+                
+                } else{
+                    sheet = officeName;
+                }
+                
+                document.getElementById("loading").innerHTML = '<p class="buttonload" style="text-align: left;font-size:30px;color:black"><i class="fa fa-spinner fa-spin"></i>Loading</p>';
+                google.script.run.withFailureHandler(failed).withSuccessHandler(setByEmp).getValuesByEmpName(sheet, empName);
+            }
+            
+            //Success Handler function for the asynchronous call made in fill() function to set the values by employer
+            function setByEmp(values) {
+                if (values == "Not Found") {
+                    document.getElementById("loading").innerHTML = "";
+                    document.getElementById("errors").innerHTML += "No Values Found in Method : setByEmp----";
+                } else if(values[117] === "Fill By Employee"){
+                    document.getElementById("basicInfo20").value = values[111]; //Insurance Address
+                    document.getElementById("basicInfo18").value = values[112]; //PayerID
+                    document.getElementById("basicInfo7").value = values[113]; //Contact number
+                    document.getElementById("basicInfo3").value = values[114]; //Insurance Name
+                    document.getElementById("basicInfo14").value = values[115]; //Group#
+                    evaluateRadio("policy17",values[116]); // CRA
+                    
+                }
+                
+                //Commented lines are not text values they are either date , select or radio button values
+                
+                document.getElementById("policy1").value = values[0];
+                document.getElementById("policy2").value = values[1];
+                //document.getElementById("policy3").value = values[2];
+                document.getElementById("policy4").value = values[3];
+                document.getElementById("policy5").value = values[4];
+                //document.getElementById("policy6").value = values[5];
+                document.getElementById("policy7").value = values[6];
+                document.getElementById("policy8").value = values[7];
+                document.getElementById("policy9").value = values[8];
+                document.getElementById("policy10").value = values[9];
+                document.getElementById("policy11").value = values[10];
+                /*document.getElementById("policy12").value = values[11];
+                document.getElementById("policy13").value = values[12];
+                document.getElementById("policy14").value = values[13];
+                document.getElementById("policy15").value = values[14];*/
+                document.getElementById("policy16").value = values[15];
+
+                document.getElementById("percentages1").value = values[16];
+                //document.getElementById("percentages2").value = values[17];
+                document.getElementById("percentages3").value = values[18];
+                //document.getElementById("percentages4").value = values[19];
+                document.getElementById("percentages5").value = values[20];
+                //document.getElementById("percentages6").value = values[21];
+                document.getElementById("percentages7").value = values[22];
+                //document.getElementById("percentages8").value = values[23];
+                document.getElementById("percentages9").value = values[24];
+                document.getElementById("percentages10").value = values[25];
+                document.getElementById("percentages11").value = values[26];
+
+                /*document.getElementById("percentages11").value = values[27];
+                document.getElementById("percentages11").value = values[28];
+                document.getElementById("percentages11").value = values[29];*/
+                document.getElementById("prosthetics4").value = values[30];
+
+                /*document.getElementById("waitingPeriod1").value = values[31];
+                document.getElementById("waitingPeriod2").value = values[32];*/
+
+                document.getElementById("ssc1").value = values[33];
+                document.getElementById("ssc2").value = values[34];
+
+                document.getElementById("exams1").value = values[35];
+                document.getElementById("exams2").value = values[36];
+                document.getElementById("exams3").value = values[37];
+                document.getElementById("exams4").value = values[38];
+
+                document.getElementById("xrays1").value = values[39];
+                document.getElementById("xrays2").value = values[40];
+                document.getElementById("xrays3").value = values[41];
+                document.getElementById("xrays4").value = values[42];
+                //document.getElementById("xrays5").value = values[43];
+
+                document.getElementById("fluroide1").value = values[44];
+                document.getElementById("fluroide2").value = values[45];
+                document.getElementById("fluroide3").value = values[46];
+                document.getElementById("fluroide4").value = values[47];
+
+                document.getElementById("sealantsD").value = values[48];
+
+                document.getElementById("sealants1").value = values[49];
+                document.getElementById("sealants2").value = values[50];
+                document.getElementById("sealants3").value = values[51];
+                document.getElementById("sealants4").value = values[52];
+                document.getElementById("sealants5").value = values[53];
+
+                document.getElementById("prophy1").value = values[54];
+                document.getElementById("prophy2").value = values[55];
+
+                document.getElementById("rollage").value = values[56];
+
+                document.getElementById("perio1").value = values[57];
+                document.getElementById("perio2").value = values[58];
+                //document.getElementById("perio3").value = values[59];
+                document.getElementById("perio4").value = values[60];
+
+                document.getElementById("perioMnt1").value = values[61];
+                document.getElementById("perioMnt2").value = values[62];
+                document.getElementById("perioMnt3").value = values[63];
+                document.getElementById("perioMnt4").value = values[64];
+                document.getElementById("perioMnt5").value = values[65];
+                document.getElementById("perioMnt6").value = values[66];
+                document.getElementById("perioMnt7").value = values[67];
+
+                document.getElementById("sedations1").value = values[68];
+                document.getElementById("sedations2").value = values[69];
+                document.getElementById("sedations3").value = values[70];
+
+                document.getElementById("extractions1").value = values[71];
+                document.getElementById("extractions2").value = values[72];
+
+                document.getElementById("oral1").value = values[73];
+                document.getElementById("oral2").value = values[74];
+                //document.getElementById("oral3").value = values[75];
+                document.getElementById("oral4").value = values[76];
+                //document.getElementById("oral5").value = values[77];
+                document.getElementById("oral6").value = values[78];
+
+                document.getElementById("dentures1").value = values[79];
+                document.getElementById("dentures2").value = values[80];
+                document.getElementById("dentures3").value = values[81];
+                document.getElementById("dentures4").value = values[82];
+                //document.getElementById("dentures5").value = values[83];
+                document.getElementById("dentures6").value = values[84];
+
+                document.getElementById("implants1").value = values[85];
+                document.getElementById("implants2").value = values[86];
+                document.getElementById("implants3").value = values[87];
+                document.getElementById("implants4").value = values[88];
+
+                document.getElementById("posterior1").value = values[89];
+                document.getElementById("posterior2").value = values[90];
+                //document.getElementById("posterior3").value = values[91];
+                document.getElementById("posterior4").value = values[92];
+                document.getElementById("posterior5").value = values[93];
+                //document.getElementById("posterior6").value = values[94];
+                document.getElementById("posterior7").value = values[95];
+                document.getElementById("posterior8").value = values[96];
+                document.getElementById("posterior9").value = values[97];
+                document.getElementById("posterior10").value = values[98];
+                document.getElementById("posterior11").value = values[99];
+                //document.getElementById("posterior12").value = values[100];
+
+                document.getElementById("ortho1").value = values[101];
+                document.getElementById("ortho2").value = values[102];
+                document.getElementById("ortho3").value = values[103];
+                //document.getElementById("ortho4").value = values[104];
+
+                //document.getElementById("fillings").value = values[105];
+                
+                document.getElementById("comments").value = values[106];
+
+                document.getElementById("benefits").value = values[107];
+
+                document.getElementById("date").value = values[108];
+
+                document.getElementById("basicInfo21").value = values[109];
+                document.getElementById("percentages12").value = values[110];
+
+               document.getElementById("percentages13").value = values[111]; // Ankit
+                 document.getElementById("percentages14").value = values[112];
+                 document.getElementById("percentages15").value = values[113];
+                 document.getElementById("bridges1").value = values[114];
+                 document.getElementById("bridges2").value = values[115];
+                 document.getElementById("cdowngrade").value = values[116];
+                 document.getElementById("den5225").value = values[117];
+                 document.getElementById("denf5225").value = values[118];
+                 document.getElementById("den5226").value = values[119];
+                 document.getElementById("denf5226").value = values[120];
+                 document.getElementById("posterior18").value = values[121];
+                 document.getElementById("ortho5").value = values[122];
+                 document.getElementById("waitingPeriod3").value = values[123];
+                 document.getElementById("implants5").value = values[124];
+                 document.getElementById("implants6").value = values[125];
+                 document.getElementById("implants7").value = values[126];
+                 document.getElementById("implants8").value = values[127];
+                 document.getElementById("posterior16").value = values[128];
+                 document.getElementById("posterior17").value = values[129];
+                 document.getElementById("percentages16").value = values[130];//
+                 document.getElementById("posterior18").value = values[131];
+                 document.getElementById("posterior19").value = values[132];
+                 document.getElementById("fill1").value = values[133];
+                 document.getElementById("extr1").value = values[134];                                                              
+                 
+                
+
+                // Radio Arrays
+                var radioVariables = ["policy12", "policy13", "policy14", "policy15", "percentages2", "percentages4", "percentages6"
+                    , "percentages8", "prosthetics1", "prosthetics2", "prosthetics3", "xrays5", "perio3", "fillings", "oral3", "oral5", "dentures5"
+                    , "posterior3", "posterior6", "posterior12", "ortho4"];
+
+                var radioValues = [values[11], values[12], values[13], values[14], values[17], values[19], values[21],
+                values[23], values[27], values[28], values[29], values[43], values[59], values[105], values[75], values[77], values[83],
+                values[91], values[94], values[100], values[104]];
+
+                //Radio Call
+                for (n in radioVariables) {
+                    evaluateRadio(radioVariables[n], radioValues[n]);
+                }
+
+                //Select(Dropdown) Arrays
+                var selectVariables = ["policy3", "policy6", "waitingPeriod1", "waitingPeriod2"];
+                var selectValues = [values[2], values[5], values[31], values[32]];
+
+                //Select(Dropdown) Call
+                for (n in selectVariables) {
+                    evaluate(selectVariables[n], selectValues[n]);
+                }
+
+                //Date Arrays
+                var dateVariables = ["policy2", "policy5"];
+                var dateValues = [values[1], values[4]];
+
+                //Date Call
+                for (n in dateVariables) {
+                    evaluate(dateVariables[n], dateValues[n]);
+                }
+                document.getElementById("loading").innerHTML = "";
+            }
+            
+            //function called when page loads to determine weather it is a blank ppo, blank medicaid, recall by patient , recall by policy holder, recall by employer name Form or A pending IV request is started
+            function load() {
+                var officeName = <?= officeNameAll ?>;
+                var patientName = <?= patientName ?>;
+                var patientDob = <?= patientDob ?>;
+                var policyHolder = <?= policyHolder ?>;
+                var policyDob = <?= policyDob ?>;
+                var empName = <?= empName ?>;
+                var sName = <?= sName ?>;
+                var sPolicyHolderName = <?= sPolicyHolderName ?>;
+                var sInsName = <?= sInsName ?>;
+                var sAppointmentDate = <?= sAppointmentDate ?>;
+                var sIvType = <?= sIvType ?>;
+                var sReqDate = <?= sReqDate ?>;
+                var sAssignedTo = <?= sAssignedTo ?>;
+                var selectedForm = <?= selectedForm ?>;
+                var planSelectedNew = <?= planSelectedNew ?>;//added tricon
+                var officeNameSelectedNew = <?= officeNameSelectedNew ?>;//added tricon
+                   
+                //Recall by Patient
+                if (patientName != "empty") {
+                    document.getElementById("loading").innerHTML = '<p class="buttonload" style="text-align: left;font-size:30px;color:black"><i class="fa fa-spinner fa-spin"></i>Loading</p>';
+                    google.script.run.withFailureHandler(failed).withSuccessHandler(setData).getValuesByPatient(officeName, patientName, patientDob);
+                }
+                //Recall by Policy Holder
+                else if (policyHolder != "empty") {
+                    document.getElementById("loading").innerHTML = '<p class="buttonload" style="text-align: left;font-size:30px;color:black"><i class="fa fa-spinner fa-spin"></i>Loading</p>';
+                    google.script.run.withFailureHandler(failed).withSuccessHandler(setData).getValuesByPolicy(officeName, policyHolder, policyDob);
+                }
+                //Recall by Employer
+                else if (empName != "empty") {
+                    document.getElementById("loading").innerHTML = '<p class="buttonload" style="text-align: left;font-size:30px;color:black"><i class="fa fa-spinner fa-spin"></i>Loading</p>';
+                    google.script.run.withFailureHandler(failed).withSuccessHandler(setData).getValuesByEmployer(officeName, empName);
+                }
+                //A pending IV request is started
+                else if (sName != "empty") {
+                    document.getElementById("loading").innerHTML = '<p class="buttonload" style="text-align: left;font-size:30px;color:black"><i class="fa fa-spinner fa-spin"></i>Loading</p>';
+                    google.script.run.withFailureHandler(failed).withSuccessHandler(setStartIV).getByStartIV(planSelectedNew,sName, sPolicyHolderName, sInsName, sAppointmentDate, sIvType, sReqDate, sAssignedTo,officeNameSelectedNew);
+                }
+                //For Blank Medicaid form
+                if(selectedForm == "medicaidForm" || selectedForm == "medicaid"){
+                    var sheet = "Medicaid Drop Downs";
+                    google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown(sheet, "A", 2, "fee");
+                    google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown(sheet, "B", 2, "emp");
+                    google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown(sheet, "C", 2, "insNames");
+                    google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown(sheet, "D", 2, "coverage");
+                }
+                sDate();
+            }
+            
+            //Success hander function called when asynchronous call in "A pending IV request is started" block of load() function is completed to set found values
+            function setStartIV(values) {
+                if (values == "Not Found") {
+                    document.getElementById("loading").innerHTML = "";
+                    document.getElementById("errors").innerHTML += "No Values Found in Method : setStartIV ";
+                }
+
+                document.getElementById("basicInfo1").value = values[0];
+                getDrop(document.getElementById("basicInfo1")); // Calling function to get list of Insurances and Employer Name according to office when office is selected
+
+                document.getElementById("basicInfo2").value = values[1];
+                document.getElementById("basicInfo3").value = values[2];
+                document.getElementById("basicInfo5").value = values[3];
+                document.getElementById("basicInfo6").value = values[4];
+                document.getElementById("basicInfo7").value = values[5];
+                document.getElementById("basicInfo9").value = values[6];
+                evaluateRadio("basicInfo11", values[7]);  //document.getElementById("basicInfo11").value = values[10];
+                document.getElementById("basicInfo14").value = values[8];
+                document.getElementById("basicInfo16").value = values[9];
+                document.getElementById("basicInfo17").value = values[10];
+                document.getElementById("basicInfo18").value = values[11];
+                document.getElementById("basicInfo19").value = values[12];
+                document.getElementById("benefits").value = values[13];
+                document.getElementById("basicInfo21").value = values[14];
+                document.getElementById("loading").innerHTML = "";
+            }
+            
+            //Success handler function when any asynchronous call is made by load() function in recall blocks
+            function setData(values) {
+                if (values == "Not Found") {
+                    document.getElementById("loading").innerHTML = "";
+                    document.getElementById("errors").innerHTML += "No Values Found in Method : setData ";
+                }
+
+                document.getElementById("basicInfo1").value = values[0];
+                getDrop(document.getElementById("basicInfo1")); // Calling function to get list of Insurances and Employer Name according to office when office is selected
+                
+                document.getElementById("basicInfo2").value = values[1];
+                document.getElementById("basicInfo3").value = values[2];
+                document.getElementById("basicInfo4").value = values[3];
+                document.getElementById("basicInfo5").value = values[4];
+                document.getElementById("basicInfo6").value = values[5];
+                document.getElementById("basicInfo7").value = values[6];
+                document.getElementById("basicInfo8").value = values[7];
+                document.getElementById("basicInfo9").value = values[8];
+                document.getElementById("basicInfo10").value = values[9];
+                evaluateRadio("basicInfo11", values[10]);  //document.getElementById("basicInfo11").value = values[10];
+                document.getElementById("basicInfo12").value = values[11];
+                document.getElementById("basicInfo13").value = values[12];
+                document.getElementById("basicInfo14").value = values[13];
+                document.getElementById("basicInfo15").value = values[14];
+                document.getElementById("basicInfo16").value = values[15];
+                document.getElementById("basicInfo17").value = values[16];
+                document.getElementById("basicInfo18").value = values[17];
+                document.getElementById("basicInfo19").value = values[18];
+                document.getElementById("basicInfo20").value = values[19];
+                
+                //Dertmining from which index values are to be passed
+                var array = [];
+                var count = 20;
+                for (i = 0; i <= 109; i++) {
+                    array[i] = values[count];
+                    count++;
+                }
+                setByEmp(array);
+                
+                //Now Setting History
+                count = 130;
+                for (var i=0;i<=179;i++) {
+                    array[i] = values[count];
+                    count++;
+                }
+                historyFetched(array);
+
+                evaluateRadio("policy17",values[310]);//document.getElementById("policy117").value = values[312];
+                document.getElementById("percentages12").value = values[311];
+                
+
+                document.getElementById("loading").innerHTML = "";
+            }
+            
+            //Function that is called when fetch button is clicked by user
+            function getHistory() {
+                document.getElementById("loadHistory").innerHTML = '<p class="buttonload" style="text-align: left;font-size:15px;color:black"><i class="fa fa-spinner fa-spin"></i>Loading</p>';
+                var officeName = document.getElementById("basicInfo1").options[document.getElementById("basicInfo1").selectedIndex].value;
+                var selected = document.getElementsByName("historySelect")[0].options[
+                    document.getElementsByName("historySelect")[0].selectedIndex].value;
+                    google.script.run.withFailureHandler(failed).withSuccessHandler(historyFetched).getHistory(selected,officeName);
+            }
+            
+            //Success handler function for asynchronous call made in getHistory() function to set dynamic values fetched for history
+            function historyFetched(values) {
+                document.getElementById("loadHistory").innerHTML = '<button onclick="getHistory()" type="button" style="float: right;">Fetch History</button>';
+                if (values === "empty") {
+                    return alert("Selected Wrong Plan Type");
+                }
+                var table = document.getElementById("history");
+                var count = 0;
+                var row = 0;
+                var txt = "<th>ADA Code</th><th>Tooth No.</th><th>DOS</th>"
+                    + "<th>ADA Code</th><th>Tooth No.</th><th>DOS</th>"
+                    + "<th>ADA Code</th><th>Tooth No.</th><th>DOS</th>"
+                    + "<tr>";
+                for (n in values) {
+                    switch (count) {
+                        case 0:
+                            txt = txt + "<td><input list='ada' class='history' name='history' style='width:100%;margin-right: 0%' value='" + values[n] + "'></td>";
+                            row++;
+                            count++;
+                            break;
+                        case 1:
+                            txt = txt + "<td><input type='text' class='history' name='history' style='width:100%;margin-right: 0%' value='" + values[n] + "'></td>";
+                            row++;
+                            count++;
+                            break;
+                        case 2:
+                            txt = txt + "<td><input type='date' class='history' name='history' style='width:100%;margin-right: 0%' value='" + values[n] + "'></td>";
+                            row++;
+                            count = 0;
+                            break;
+                    }
+                    if (row % 9 == 0) {
+                        txt = txt + "</tr><tr>";
+                    }
+                }
+                txt = txt + "</tr>";
+                table.innerHTML = txt;
+            }
+            
+            //Function to get dropdown values depending on which form and and office is selected in the form.
+            //This function will work on for PPO forms else will set value of taxID and return null
+            //This function will be called once when page load() function is executed and onchange event of office field
+            function getDrop(element) {
+                var selectedForm = <?= selectedForm ?>; // Determining PPO form or Medicaid Form
+                var options = element.options;
+                var officeName = options[element.selectedIndex].value;
+                var frame = document.getElementById("frame");
+                var col;
+                
+                google.script.run.withFailureHandler(failed).withSuccessHandler(setValue1).searchValue("Tax ID",officeName, "B", 2, "basicInfo4");
+                
+                switch (officeName) {
+                    case "Jasper":
+                        col = "A";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1s-livS4wwNymvofKaUFnO6lLNLXwCQFdaRNUtG8MPtM/edit#gid=1162760822";
+                        break;
+                    case "Crosby":
+                        col = "B";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1ui0CwDiIBuZ7qV3IHhcTl1Y7dKbTzNbGG45yJzZ8EEM/edit#gid=1162760822";
+                        break;
+                    case "Rockdale":
+                        col = "C";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1l6--wG7yqXgee92MUo3puzFKbp908R9J2lzMLd7OfSI/edit#gid=1162760822";
+                        break;
+                    case "Beaumont":
+                        col = "D";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1Q4HOGJxOjUdb-nWr82NjZA_OzJRJYfEsJtB2eRAG-_A/edit#gid=1162760822";
+                        break;
+                    case "Liberty":
+                        col = "E";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1iJ-hKrGB2OdvYiUH4wSR6BWRtawrP-qpnWJrj-SiQTc/edit#gid=1162760822";
+                        break;
+                    case "Lavaca":
+                        col = "F";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1eP_kwnhUHfOV3vHrfdR5s3vyRadL1Vo-GVIXkRACmjI/edit#gid=1162760822";
+                        break;
+                    case "Riverwalk":
+                        col = "G";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1POttOqe4UAiaWouBeHpkICrnrea1se5dENWDHmWSbBI/edit#gid=1162760822";
+                        break;
+                    case "Sinton":
+                        col = "H";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1DnA0hqJdjpIhCvMtEei1rkXdRdMTJmZgMPZRx1izvaQ/edit#gid=1162760822";
+                        break;                    
+                    case "Splendora":
+                        col = "I";
+                        frame.src = "https://docs.google.com/spreadsheets/d/17qpRbiQjWCbs6iITnPmYKIY78WQJHkKnkOid7N-PRF4/edit#gid=1162760822";
+                        break;
+                    case "Victoria":
+                        col = "J";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1jm94juWQYS5xE06_3UHhCTBMmbRv_sK_Gb7Vlt-E5wQ/edit#gid=1162760822";
+                        break;
+                    case "Lytle":
+                        col = "K";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1XSl4ySEC8M9nxHeu87rbhH_j45Adhyw9i3-LTvRJUH4/edit#gid=1162760822";
+                        break;
+                    case "Calallen":
+                        col = "L";
+                        frame.src = "https://docs.google.com/spreadsheets/d/13RwSVHnpOgtumeBk0dn2dMZguw2NiIR3zipkuTUsl20/edit#gid=1162760822";
+                        break;
+                    case "Westgreen":
+                        col = "M";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1JPBopiWqHc2mLzR8rJCWYk4eyCXRGf7vAGRGlxptYZw/edit#gid=1162760822";
+                        break;
+                    case "Elgin":
+                        col = "M";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1ML-3xrdQNEySBLXfw3gysnjxwGOpG8NePsfUU5FNGUI/edit#gid=1162760822";
+                        break;       
+                    case "Mathis":
+                        col = "M";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1JszWgnMqTtKmUMSio1c7Q7Yb48l9rNcs7TVKWMbYQ4Q/edit#gid=0";
+                        break;  
+                    case "Devine":
+                        col = "M";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1yTo3A1gcTuARD7_Z5V_2XPF-faaTljjs5hUQuyntjQE/edit#gid=0";
+                        break; 
+                    case "Huffman":
+                        col = "M";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1UYgSNnnnIZ_saLvG_21kMzPUTyzmrrPnD51lwU1sniY/edit#gid=0";
+                        break;
+                        
+                    case "Potranco":
+                        col = "M";
+                        frame.src = "https://docs.google.com/spreadsheets/d/1vD1JgFPjSKttBY0FByWM4ZZ_KnWv2SJKVzSH6LjmQks/edit#gid=1162760822";
+                        break; 
+                     
+                }
+                
+                if(selectedForm == "medicaidForm" || selectedForm == "medicaid"){ return null; }
+                
+                google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown("Employer Master", col, 2, "emp");
+                google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown("Insurance Master", col, 2, "insNames");
+                google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown("FS Master", col, 2, "fee");
+                google.script.run.withFailureHandler(failed).withSuccessHandler(dropdown).getDropdown("Coverage Book ", col, 2, "coverage")
+            }
+            
+            function setCRA(id,val){
+                var elements = document.getElementsByClassName(id);
+                val = val.toLowerCase();
+                if(val==="children medicaid" || val==="adult medicaid" || val==="chip"){
+                    elements[0].checked = true;
+                }
+                else{
+                    elements[1].checked = true;
+                }
+            }
+            
+            function add(){
+                var t = document.getElementById("history");
+                var r = t.getElementsByTagName("TR").length;
+                var txt,rows;
+                if(r < 20){
+                    rows = t.insertRow(r);
+                    rows.innerHTML = '<td class="tr5 td37">'
+                            +'    <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td38">'
+                            +'    <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td39">'
+                            +'    <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td39">'
+                            +'    <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td40">'
+                            +'    <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td41">'
+                            +'    <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td40">'
+                            +'    <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td42">'
+                            +'    <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>'
+                            +'<td class="tr5 td42">'
+                            +'    <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">'
+                            +'</td>';
+                        } else{
+                            alert("Maximum Row reached : "+r);
+                        }
+                     }
+                     
+                     function sDate(){
+                         var d = new Date();
+                         var year = d.getFullYear();
+                         var month = d.getMonth()+1;
+                         var day = d.getDay();
+                         var date;
+                         if(month < 10){
+	                         month= "0"+month;
+                         }  
+                         if(day < 31){
+                             day = "0"+day;
+                         }
+                         date = year+"-"+month+"-"+day;
+                         document.getElementById("date").value = date;
+                     }
+                     
+                     /*
+                     The function making an asynchronous call to fetchFS(officeName, policy18, policy19) in file "getter.gs"
+                       Functionality:
+                         1. Compares the given codes to the sheet.
+                         2. Function requires both policy parameters.
+                     */
+                     function fetchFS(){
+                      var officeName = document.getElementById("basicInfo1").options[document.getElementById("basicInfo1").selectedIndex].value;
+      var a= document.getElementById('policy18').value;
+      var b=  document.getElementById('policy19').value;
+       if(a!="" && b!=""){
+         google.script.run.withFailureHandler(failed).withSuccessHandler(displayFs).fetchFS(officeName, a, b);
+       }
+       else{
+         document.getElementById("policy20").value="Enter both Code 1 & Code 2";
+       } 
+    }
+    function displayFs(strng){
+     document.getElementById("policy20").value=strng;
+    } 
+        </script>
+</head>
+
+<body onload="load()">
+
+    <!--  <form action="https://script.google.com/macros/s/AKfycbznTLyuOBFuJLLpZraUYAF_BXb_lJzRz5liyP4O4oairgPl_GDL/exec" method="POST" 
+        target="_top" onsubmit="return confirm('Are you sure you want to submit the form')"> 
+ -->
+     <form  id="myIVForm"
+        target="_top" onsubmit="postDataToRuleEngine(event)">    <input type="hidden" name="form" value="record"> 
+        <input type="hidden" name="form" value="record"> 
+        <datalist id="frequency">
+
+        </datalist>
+        <datalist id="insNames">
+
+        </datalist>
+        <datalist id="fee">
+
+        </datalist>
+        <datalist id="coverage">
+
+        </datalist>
+        <datalist id="ada">
+
+        </datalist>
+        <datalist id="emp">
+
+        </datalist>
+		<!-- TRICON START -->
+        <div id="p-data-rdbms" class="modal" style="max-height: 330px;overflow: auto;"> 			
+			<a href="#" rel="modal:close" style="text-align:right" id="closePOP">X</a>
+			<table class="t0" id="p-data-rdbms-t">
+			<tbody>
+			  <tr id="p-data-rdbms-r"><td>Name</td><td>Patient Id</td><td>DOB</td><td>Employer Name</td></tr>
+			  
+			  </tbody>
+			</table>
+		</div>
+		<div id="pdf-data-rdbms" class="modal"> 			
+			<a href="#" rel="modal:close" style="text-align:right" id="closePOPPDF"></a>
+			<div class="t0" id="pdf-data-rdbms-t">
+			  
+			</div>
+		</div>
+		<!-- TRICON END -->
+
+        <div id="page_1">
+            		   <span> 
+		    <!-- TRICON START -->
+		    <p  style="text-align: Left;cursor: pointer;" onclick="openSection('searchSectionDB')">Search From RDBMS</p>
+			<!-- TRICON END -->
+            <p class="p1 ft1" style="text-align: center">Smilepoint - Insurance Verification Form1</p>
+            </span>
+           <!-- TRICON START-->
+			<table class="t0" style="display:none" id="searchSectionDB">
+			<tbody>
+                    <tr>
+                        <td class="tr1 td0">
+                                <p class="ft2">Office Name:
+								
+                                <select  id="officeNameDB" name="officeNameDB" onchange="getDrop(this)" >
+								
+                                </select>
+                                <!--______________-->
+                            </p>
+                            
+                        </td>
+                    
+					    <td class="tr1 td1">
+                            <p class="ft2">Patient Id
+                                <input id="patientIdDB" type="text" name="patientIdDB" type='date'>
+                                
+                            </p>
+                        </td>
+						<td class="tr1 td3">
+                            <p class="ft2">Patient Name
+							<input id="patientNameDB" name="patientNameDB" >
+                             
+                                <!--___________-->
+                            </p>
+                        </td>
+                        <td class="tr1 td2">
+                            <p class="ft2">Employer Name
+                                <input id="employerNameDB" type="text" name="employerNameDB">
+                                <!--__________________-->
+                            </p>
+                        </td>
+                        <td class="tr1 td3">
+                            <p class="ft2">General Date IVF - Done
+							<input id="generalDateIVFDoneDB" name="generalDateIVFDoneDB" type="date">
+                             
+                                <!--___________-->
+                            </p>
+                        </td>
+                        
+                        </tr>
+						<tr> <td colspan="5"> <button name="" onclick="searchFromRDBMS(event)">Search From RDBMS </td>
+						</tr>
+				</tbody>
+			</table>
+			 <!-- TRICON END-->
+
+            <table class="t0" id="basic">
+                <tbody>
+                    <tr>
+                        <td class="tr1 td0">
+                            <p class="ft2">Office Name:
+                                <select onchange="getDrop(this)" id="basicInfo1" name="basicInfo1" style="width: 54%;float: right">
+                               
+                                </select>
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr1 td3">
+                            <p class="ft2">Patient Name:
+                                <input id="basicInfo2" type="text" name="basicInfo2">
+                                <!--__________________-->
+                            </p>
+                        </td>
+                        <td class="tr1 td0">
+                            <p class="ft2">Insurance Name:
+                                <input id="basicInfo3" list="insNames" name="basicInfo3">
+                                <!--___________-->
+                            </p>
+                        </td>
+                        <td class="tr1 td2">
+                            <p class="ft2">Tax ID:
+                                <input id="basicInfo4" type="text" name="basicInfo4">
+                                <!--______________-->
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tr2 td0">
+                            <p class="ft2">Policy Holder:
+                                <input id="basicInfo5" type="text" name="basicInfo5">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr2 td3">
+                            <p class="ft2">Patient DOB:
+                                <input id="basicInfo6" type="date" name="basicInfo6">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr2 td0">
+                            <p class="ft2">Insurance Contact:
+                                <input id="basicInfo7" type="text" name="basicInfo7">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr2 td2">
+                            <p class="ft2">CSR Name:
+                                <input id="basicInfo8" type="text" name="basicInfo8">
+                                <!--______________-->
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tr3 td0">
+                            <p class="ft2">Policy Holder DOB:
+                                <input id="basicInfo9" type="date" name="basicInfo9">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr3 td3">
+                            <p class="ft2">Employer Name:
+                                <input id="basicInfo10" list="emp" name="basicInfo10" required >
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr3 td0">
+                            <p class="ft2">Continued/Recall/NP:
+                                <span style="float: right">
+                                    <input class="basicInfo11" type="radio" name="basicInfo11" value="Continuing Treatment" style="float: none">Cont.
+                                    Tx
+                                    <input class="basicInfo11" type="radio" name="basicInfo11" value="New Patient" style="float: none">NP
+                                    <input class="basicInfo11" type="radio" name="basicInfo11" value="Recall" style="float: none">RC</span>
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr3 td2">
+                            <p class="ft2">REF #:
+                                <input id="basicInfo12" type="text" name="basicInfo12">
+                                <!--______________-->
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tr2 td0">
+                            <p class="ft2">Member SSN:
+                                <input id="basicInfo13" type="text" name="basicInfo13" onchange="validate()" maxlength="9">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr2 td3">
+                            <p class="ft2">Group #:
+                                <input id="basicInfo14" type="text" name="basicInfo14">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr2 td4">
+                            <p class="ft2">COB Status:
+                                <input id="basicInfo15" type="text" name="basicInfo15">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr2 td4">
+                            <p class="ft2">Patient ID:
+                                <input id="basicInfo21" type="number" min=1 name="basicInfo21" required >
+                                <!--Added Later-->
+                                <!--______________-->
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tr3 td0">
+                            <p class="ft2">Member ID:
+                                <input id="basicInfo16" type="text" name="basicInfo16">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr3 td3">
+                            <p class="ft2">Appointment:
+                                <input id="basicInfo17" type="date" name="basicInfo17">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr3 td0">
+                            <p class="ft2">Payer ID:
+                                <input id="basicInfo18" type="text" name="basicInfo18">
+                                <!--______________-->
+                            </p>
+                        </td>
+                        <td class="tr3 td2">
+                            <p class="ft2">Provider Last Name:
+                                <input id="basicInfo19" type="text" name="basicInfo19" required >
+                                <!--______________-->
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="tr2 td1">
+                            <p class="ft2">Insurance Address:
+                                <input id="basicInfo20" type="text" name="basicInfo20" style="width: 88.2%;">
+                                <!--______________-->
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tr2 td1" colspan=2>&nbsp;</td>
+                        <td class="tr2 td1" id="loading">
+
+                        </td>
+             
+                        <td class="tr2 td1">
+                            <button onclick="fill()" type="button" style="float: left;">Fill By Employer Name</button>
+                            <button onclick="inputReset('basic')" type="button" style="float: right;">Reset Basic Info</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p id="errors" style="color:red;font-weight:200;"></p>
+            <p class="p3 ft1">Policy/Plan Information</p>
+            <table cellpadding="5" cellspacing="2" class="t1" id="policy">
+                <tbody>
+                    <tr>
+                        <td colspan=2>
+                            <p class="p2 ft4"><b>Plan Type :</b>
+                            <datalist id ="plan">
+                            <option value="PPO">
+                            <option value="Children Medicaid">
+                            <option value="Adult Medicaid">
+                            <option value="CHIP">
+                            </datalist>
+                                <input id="policy1" list="plan" name="policy1" style="width:50%;" onchange="setCRA('policy17',this.value)" value="PPO">
+                            </p>
+                        </td>
+                          <td>
+                            <p class="p0 ft5">
+                                D0120:
+                                <input id="policy18" type="text" name="policy18" style="width: 45%">
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft5">
+                                D2391:
+                                <input id="policy19" type="text" name="policy19" style="width: 45%">
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft5">
+                                Find FS:
+                                <input id="policy20" type="text" name="policy20" style="width: 80%">
+                                <!--______-->
+                            </p>
+                        </td>
+                         <button  onclick="fetchFS()" type="button" style="float:right; transform:translateY(15px);">Fetch FS</button>        
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="p2 ft4"><b>CRA Req.:</b>
+                            <input class="policy17" type="radio" name="policy17" value="Yes" style="float:none;width:10%;">Yes &nbsp;
+                            <input class="policy17" type="radio" name="policy17" value="No" style="float:none;width:10%;" checked>No &nbsp;
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft4">
+                                Termed Date:
+                                <input id="policy2" type="date" name="policy2" style="width: 56%">
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft4">
+                                Network:
+                                <select id="policy3" name="policy3" style="width: 55%">
+                                    <option value="IN">IN</option>
+                                    <option value="OUT">OUT</option>
+                                    <option value="NO">NO</option>
+                                </select>
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft5">Fee Schedule:
+                                <input id="policy4" list="fee" name="policy4" style="width:50%" required >
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p4 ft5">Effective Date:
+                                <input id="policy5" type="date" name="policy5" style="width:60%" required >
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft5">Cal.Yr/Fiscal Yr/Plan Yr. :
+                                <select id="policy6" name="policy6" style="width:25%">
+                                    <option value="CY">CY</option>
+                                    <option value="FY">FY</option>
+                                    <option value="PY">PY</option>
+                                </select>
+                                <!--______-->
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="p0 ft4">Annual Max:
+                                <input id="policy7" type="number" step=0.01 name="policy7" style="width: 52%">
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft4">Ann. Max Rem:
+                                <input id="policy8" type="number" step=0.01 name="policy8" style="width: 28%" required >
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft5">Ind. Ded:
+                                <input id="policy9" type="number" step=0.01 name="policy9" style="width: 55%" required >
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft5">Ind. Ded Rem:
+                                <input id="policy10" type="number" step=0.01 name="policy10" style="width: 50%" required >
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p2 ft4">Dependents Covered to age:
+                                <input id="policy11" type="text" name="policy11" style="width:25%">
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft4">Pre-D Mandatory:
+                                <br>
+                                <input class="policy12" type="radio" name="policy12" value="Yes" style="width: 10%"> Yes
+                                <input class="policy12" type="radio" name="policy12" value="No" style="width: 10%"> No
+                                <!--______-->
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="p2 ft4">Non-Duplicate clause?
+                                <input class="policy13" type="radio" name="policy13" value="Yes" style="width: 25%"> Yes
+                                <input class="policy13" type="radio" name="policy13" value="No" style="width: 25%"> No
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td colspan="2">
+                            <p class="p0 ft4">Full Time Student Status Required?
+                                <input class="policy14" type="radio" name="policy14" value="Yes" style="width: 10%"> Yes
+                                <input class="policy14" type="radio" name="policy14" value="No" style="width: 10%"> No
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td colspan="2">
+                            <p class="p0 ft5">Assignment of Benefits Accepted?
+                                <input class="policy15" type="radio" name="policy15" value="Yes" style="width: 10%"> Yes
+                                <input class="policy15" type="radio" name="policy15" value="No" style="width: 10%"> No
+                                <!--______-->
+                            </p>
+                        </td>
+                        <td>
+                            <p class="p0 ft5">
+                                Coverage Book:
+                                <input id="policy16" list="coverage" name="policy16" style="width: 45%">
+                                <!--______-->
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="inputReset('policy')" type="button" style="float: right;">Reset Policy Data</button>
+            <br>
+
+            <table style="width: 100%" id="rules">
+                <colgroup>
+                    <col width="12.5%">
+                    <col width="12.5%">
+                    <col width="12.5%">
+                    <col width="8.5%">
+                    <col width="10.5%">
+                    <col width="18.5%">
+                    <col width="12.5%">
+                    <col width="12.5%">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="ft17">Percentages Covered</p>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="ft38">Basic(%)</p>
+                        </td>
+                        <td>
+                            <input id="percentages1" type="text" name="percentages1">
+                        </td>
+                        <td>
+                            <p class="ft38">Subject to ded</p>
+                        </td>
+                        <td>
+                            <p class="ft38">
+                                <input class="percentages2" type="radio" name="percentages2" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="percentages2" type="radio" name="percentages2" value="No" style="float: none">No
+                            </p>
+                        </td>
+                        <td>
+                            <p class="ft13">Major(%)</p>
+                        </td>
+                        <td>
+                            <input id="percentages3" type="text" name="percentages3">
+                        </td>
+                        <td>
+                            <p class="ft13">Subject to ded</p>
+                        </td>
+                        <td>
+                            <p class="ft13">
+                                <input class="percentages4" type="radio" name="percentages4" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="percentages4" type="radio" name="percentages4" value="No" style="float: none">No
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="ft9">Endo(%)</p>
+                        </td>
+                        <td>
+                            <input id="percentages5" type="text" name="percentages5">
+                        </td>
+                        <td>
+                            <p class="ft9">Subject to ded</p>
+                        </td>
+                        <td>
+                            <p class="ft9">
+                                <input class="percentages6" type="radio" name="percentages6" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="percentages6" type="radio" name="percentages6" value="No" style="float: none">No
+                            </p>
+                        </td>
+                        <td>
+                            <p class="ft38">Perio Surgery(%)</p>
+                        </td>
+                        <td>
+                            <input id="percentages7" type="text" name="percentages7">
+                        </td>
+                        <td>
+                            <p class="ft38">Subject to ded</p>
+                        </td>
+                        <td>
+                            <p class="ft38">
+                                <input class="percentages8" type="radio" name="percentages8" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="percentages8" type="radio" name="percentages8" value="No" style="float: none">No
+                            </p>
+                        </td>
+                    </tr>
+                     <tr>
+                        <td>
+                            <p class="ft18">Preventative(%)</p>
+                        </td>
+                        <td>
+                            <input id="percentages9" type="text" name="percentages9">
+                        </td>
+                        <td>
+                         <p class="ft18">Subject to ded</p>
+                        </td>
+                        <td>
+                            <p class="ft18">
+                                <input class="percentages13" type="radio" name="percentages13" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="percentages13" type="radio" name="percentages13" value="No" style="float: none">No
+                            </p>
+                          </td>
+                          </tr>
+                    <tr>
+                         <td>
+                            <p class="ft9">Diagnostics(%)</p>
+                        </td>
+                        <td>
+                            <input id="percentages10" type="text" name="percentages10">
+                        </td>
+                       <td>
+                         <p class="ft9">Subject to ded</p>
+                        </td>
+                       <td>
+                            <p class="ft9">
+                                <input class="percentages14" type="radio" name="percentages14" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="percentages14" type="radio" name="percentages14" value="No" style="float: none">No
+                            </p>
+                          </td>
+                        
+                       </tr>
+                        <tr>
+                        <tr>
+                        <td>
+                            <p class="ft31">PA(%)</p>
+                        </td>
+                        <td>
+                            <input id="percentages11" type="text" name="percentages11">
+                        </td>
+                    <td>
+                         <p class="ft31">Subject to ded</p>
+                        </td>
+                        <td>
+                            <p class="ft31">
+                                <input class="percentages15" type="radio" name="percentages15" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="percentages15" type="radio" name="percentages15" value="No" style="float: none">No
+                            </p>
+                          </td>
+                         <td>
+                            <p class="ft18">FMX(%)</p>
+                        </td>
+                        <td>
+                            <input id="percentages16" type="text" name="percentages16">
+                        </td>
+                        <td>
+                            <p class="ft18">Claims Timely Fillings</p>
+                        </td>
+                        <td>
+                            <input id="percentages12" type="text" name="percentages12">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="ft27">Prosthetics</p>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="ft22">Missing tooth clause</p>
+                        </td>
+                        <td>
+                            <p class="ft22">
+                                <input class="prosthetics1" type="radio" name="prosthetics1" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="prosthetics1" type="radio" name="prosthetics1" value="No" style="float: none">No
+                            </p>
+                        </td>
+                        <td>
+                            <p class="ft22">Replacement Clause</p>
+                        </td>
+                        <td>
+                            <p class="ft22">
+                                <input class="prosthetics2" type="radio" name="prosthetics2" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="prosthetics2" type="radio" name="prosthetics2" value="No" style="float: none">No
+                            </p>
+                        </td>
+                        <td>
+                            <p class="ft22">Paid Prep/Seat Date</p>
+                        </td>
+                        <td>
+                            <p class="ft22">
+                                <input class="prosthetics3" type="radio" name="prosthetics3" value="Prep" style="float: none">Prep
+                                <input class="prosthetics3" type="radio" name="prosthetics3" value="Seat" style="float: none">Seat
+                                <input class="prosthetics3" type="radio" name="prosthetics3" value="Either Or" style="float: none">Either
+                                Or
+                            </p>
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="ft30">Waiting Periods (In Months)</p>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>
+                            <p class="ft6">SSC</p>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="ft31">Basic</p>
+                        </td>
+                        <td>
+                            <select id="waitingPeriod1" class="waitingPeriod" name="waitingPeriod1">
+                            </select>
+                        </td>
+                        <td>
+                            <p class="ft31">Major</p>
+                        </td>
+                        <td>
+                            <select id="waitingPeriod2" class="waitingPeriod" name="waitingPeriod2">
+                            </select>
+                        </td>
+                        <td>
+                            <p class="ft7">D2930:</p>
+                        </td>
+                        <td>
+                            <input id="ssc1" list="frequency" name="ssc1">
+                        </td>
+                        <td>
+                            <p class="ft7">D2931:</p>
+                        </td>
+                        <td>
+                            <input id="ssc2" list="frequency" name="ssc2">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <p class="ft30">
+
+         Exams(Frequency):
+                            </p>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <!--Exams-->
+                        <td>
+                            <p class="ft31">D0120</p>
+                        </td>
+                        <td>
+                            <input id="exams1" list="frequency" name="exams1">
+                        </td>
+                        <td>
+                            <p class="ft31">D0140</p>
+                        </td>
+                        <td>
+                            <input id="exams2" list="frequency" name="exams2">
+                        </td>
+                        <td>
+                            <p class="ft31">D0145</p>
+                        </td>
+                        <td>
+                            <input id="exams3" list="frequency" name="exams3">
+                        </td>
+                        <td>
+                            <p class="ft31">D0150</p>
+                        </td>
+                        <td>
+                            <input id="exams4" list="frequency" name="exams4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="ft6">
+                                X-Rays(Frequency)
+                            </p>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <!--X-Rays-->
+                        <td>
+                            <p class="ft7">BWX(0274)</p>
+                        </td>
+                        <td>
+                            <input id="xrays1" list="frequency" name="xrays1">
+                        </td>
+                        <td>
+                            <p class="ft7">PA(0220)</p>
+                        </td>
+                        <td>
+                            <input id="xrays2" list="frequency" name="xrays2">
+                        </td>
+                        <td>
+                            <p class="ft7">D0230</p>
+                        </td>
+                        <td>
+                            <input id="xrays3" list="frequency" name="xrays3">
+                        </td>
+                        <td class="ft7">FMX(0210)</td>
+                        <td class="ft7">
+                            <input id="xrays4" list="frequency" name="xrays4">
+                        </td>
+                    </tr>
+                  
+                 
+                  
+                  
+                    <tr>
+                        <td class="ft7">Bundling</td>
+                        <td>
+                            <p class="ft7">
+                                <input class="xrays5" type="radio" name="xrays5" value="Yes" style="float: none">Yes &nbsp;&nbsp;&nbsp;
+                                <input class="xrays5" type="radio" name="xrays5" value="No" style="float: none">No &nbsp;&nbsp;
+                                <input class="xrays5" type="radio" name="xrays5" value="NA" style="float: none">N/A
+                            </p>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                  
+                 
+                    <tr>
+                        <td class="ft17">
+                            Fluroide(D1208)
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td class="ft17">
+                            Varnish(D1206)
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <!--Fluroide(D1208)-->
+                        <td class="ft18">
+                            Frequency
+                        </td>
+                        <td>
+                            <input id="fluroide1" list="frequency" name="fluroide1">
+                        </td>
+                        <td class="ft18">
+                            Age Limit
+                        </td>
+                        <td>
+                            <input id="fluroide2" type="text" name="fluroide2">
+                        </td>
+                        <!--Varnish(D1206)-->
+                        <td class="ft18">
+                            Frequency
+                        </td>
+                        <td>
+                            <input id="fluroide3" list="frequency" name="fluroide3">
+                        </td>
+                        <td class="ft18">
+                            Age Limit
+                        </td>
+                        <td>
+                            <input id="fluroide4" type="text" name="fluroide4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ft8">
+                            Sealants(D1351)
+                        </td>
+                        <td>
+                            <input id="sealantsD" type="text" name="sealantsD">
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td class="ft8">
+                            Coverage:
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <!--Sealants(D1351)-->
+                        <td class="ft15">
+                            Frequency
+                        </td>
+                        <td>
+                            <input id="sealants1" list="frequency" name="sealants1">
+                        </td>
+                        <td class="ft15">
+                            Age Limit
+                        </td>
+                        <td>
+                            <input id="sealants2" type="text" name="sealants2">
+                        </td>
+                        <!--Coverage-->
+                        <td class="ft15">
+                            Primary Molars
+                        </td>
+                        <td>
+                            <input id="sealants3" type="text" name="sealants3">
+                        </td>
+                        <td class="ft15">
+                            Pre-Molars
+                        </td>
+                        <td>
+                            <input id="sealants4" type="text" name="sealants4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ft15">
+                            Perm-Molars
+                        </td>
+                        <td>
+                            <input id="sealants5" type="text" name="sealants5">
+                        </td>
+                        <td class="ft22">
+                            Prophy (Frequency):
+                        </td>
+                        <td>
+                            <input id="prophy1" list="frequency" name="prophy1">
+                        </td>
+                        <td class="ft22">
+                            D1120:
+                        </td>
+                        <td>
+                            <input id="prophy2" list="frequency" name="prophy2">
+                        </td>
+                        <td class="ft22">
+                            1120/1110 Roll age
+                        </td>
+                        <td>
+                            <input id="rollage" type="text" name="rollage">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="ft11">Perio</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <!--Perio-->
+                        <td class="ft13">
+                            SRP(D4341)%
+                        </td>
+                        <td>
+                            <input id="perio1" type="text" name="perio1">
+                        </td>
+                        <td class="ft13">
+                            Frequency
+                        </td>
+                        <td>
+                            <input id="perio2" list="frequency" name="perio2">
+                        </td>
+                        <td class="ft13">
+                            Quads Per Day
+                        </td>
+                        <td>
+                            <p class="ft13">
+                                <input class="perio3" type="radio" name="perio3" value="2" style="float: none">2 &nbsp;&nbsp;&nbsp;
+                                <input class="perio3" type="radio" name="perio3" value="4" style="float: none">4
+                            </p>
+                        </td>
+                        <td class="ft13">
+                            Days b/w Quad
+                        </td>
+                        <td>
+                            <input id="perio4" type="number" name="perio4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p8 ft11">Perio Mnt.</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <!--PerioMNT-->
+                        <td class="ft13">
+                            (D4910) %:
+                        </td>
+                        <td>
+                            <input id="perioMnt1" type="text" name="perioMnt1">
+                        </td>
+                        <td class="ft13">
+                            Frequency
+                        </td>
+                        <td>
+                            <input id="perioMnt2" list="frequency" name="perioMnt2">
+                        </td>
+                        <td class="ft13">
+                            Alt. with Prophy(D1110)
+                        </td>
+                        <td>
+                            <input id="perioMnt3" type="text" name="perioMnt3">
+                        </td>
+                        <td class="ft23">
+                            Fillings(Bundle)
+                        </td>
+                        <td>
+                            <p class="ft23">
+                                <input class="fillings" type="radio" name="fillings" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="fillings" type="radio" name="fillings" value="No" style="float: none">No &nbsp;&nbsp;&nbsp;
+                                <input class="fillings" type="radio" name="fillings" value="NA" style="float: none">N/A
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ft13">
+                            FMD(D4355)%
+                        </td>
+                        <td>
+                            <input id="perioMnt4" type="text" name="perioMnt4">
+                        </td>
+                        <td class="ft13">
+                            Frequency
+                        </td>
+                        <td>
+                            <input id="perioMnt5" list="frequency" name="perioMnt5">
+                        </td>
+                        <td class="ft13">
+                            Gingivitis(D4346)%
+                        </td>
+                        <td>
+                            <input id="perioMnt6" type="text" name="perioMnt6">
+                        </td>
+                        <td class="ft13">
+                            Frequency
+                        </td>
+                        <td>
+                            <input id="perioMnt7" list="frequency" name="perioMnt7">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="ft39">Sedations</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td class="ft40">Nitrous (D9230)</td>
+                        <td>
+                            <input id="sedations1" type="text" name="sedations1">
+                        </td>
+                        <td class="ft40">IV Sedation (D9243)</td>
+                        <td>
+                            <input id="sedations2" type="text" name="sedations2">
+                        </td>
+                        <td class="ft40">IV Sedation (D9248)</td>
+                        <td>
+                            <input id="sedations3" type="text" name="sedations3">
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td class="ft35">Extractions(%)</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td class="ft37">Minor(D7111,D7140)</td>
+                        <td>
+                            <input id="extractions1" type="text" name="extractions1">
+                        </td>
+                        <td class="ft37">Major (D7210,D7220, D7230,D7240)</td>
+                        <td>
+                            <input id="extractions2" type="text" name="extractions2">
+                        </td>
+                        
+                    </tr>
+
+                    <tr>
+                        <td class="ft26">Oral Surgery</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td class="ft25">Crown Lengthening(D4249)%</td>
+                        <td>
+                            <input id="oral1" type="text" name="oral1">
+                        </td>
+                        <td class="ft25" style="text-align: center">Frequency</td>
+                        <td>
+                            <input id="oral2" list="frequency" name="oral2">
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                        <td class="ft26">Alveolplasty</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                        <td class="ft25">1-3 Teeth/Qd(D7311): Covered w. Ext</td>
+                        <td>
+                            <p class="ft25">
+                                <input class="oral3" type="radio" name="oral3" value="Yes" style="float: none">Yes &nbsp;&nbsp;&nbsp;
+                                <input class="oral3" type="radio" name="oral3" value="No" style="float: none">No
+                            </p>
+                        </td>
+                        <td class="ft25" style="text-align: center">Frequency</td>
+                        <td>
+                            <input id="oral4" list="frequency" name="oral4">
+                        </td>
+                        <td class="ft25">4 Teeth/Qd (D7310): Covered w. Ext</td>
+                        <td>
+                            <p class="ft25">
+                                <input class="oral5" type="radio" name="oral5" value="Yes" style="float: none">Yes &nbsp;&nbsp;&nbsp;
+                                <input class="oral5" type="radio" name="oral5" value="No" style="float: none">No
+                            </p>
+                        </td>
+                        <td class="ft25" style="text-align: center">Frequency</td>
+                        <td>
+                            <input id="oral6" list="frequency" name="oral6">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="ft6">Dentures (Frequency)</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                        <td class="ft7">Complete (D5110/D5120)</td>
+                        <td>
+                            <input id="dentures1" list="frequency" name="dentures1">
+                        </td>
+                        <td class="ft7">Immediate (D5130/D5140</td>
+                        <td>
+                            <input id="dentures2" list="frequency" name="dentures2">
+                        </td>
+                        <td class="ft7">Partial (D5211/D5212/D5213/D5214)</td>
+                        <td>
+                            <input id="dentures3" list="frequency" name="dentures3">
+                        </td>
+                        <td class="ft7">Interim Partial (D5820)</td>
+                        <td>
+                            <input id="dentures4" list="frequency" name="dentures4">
+                        </td>
+                    </tr>
+                     <tr></tr>
+                    <tr>
+                        <td class="ft7">Bone Graft (D7953) Covered w. Ext</td>
+                        <td>
+                            <p class="ft7">
+                                <input class="dentures5" type="radio" name="dentures5" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="dentures5" type="radio" name="dentures5" value="No" style="float: none">No
+                            </p>
+                        </td>
+                        <td class="ft7" style="text-align: center">Frequency</td>
+                        <td>
+                            <input id="dentures6" list="frequency" name="dentures6">
+                        </td>
+                        <td class="ft7" style="text-align: center">&nbsp;</td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                             
+                  <tr>
+                    <td>
+                            <p class="ft7">Denture(%)(D5225)</p>
+                        </td> 
+                    <td>
+                            <input id="den5225" type="text" name="den5225">
+                        </td>
+                    <td>
+                            <p class="ft7">Denture(fr)(D5225)</p>
+                        </td> 
+                    <td>
+                            <input id="denf5225" list="frequency" name="denf5225">
+                        </td>
+                    
+                    <td>
+                            <p class="ft7">Denture(%)(D5226)</p>
+                        </td> 
+                    <td>
+                            <input id="den5226" type="text" name="den5226">
+                        </td>
+                    <td>
+                            <p class="ft7">Denture(fr)(D5226)</p>
+                        </td> 
+                    <td>
+                            <input id="denf5226" list="frequency" name="denf5226">
+                        </td>
+                    
+                  </tr>
+                  
+                    <tr>
+                        <td class="ft42">Implants Coverage(%)</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        
+                    </tr>
+
+                    <tr>
+                        <td class="ft42">Implants D6010</td>
+                        <td>
+                            <input id="implants1" type="text" name="implants1">
+                        </td>
+                        <td class="ft13">Implants D6057</td>
+                        <td>
+                            <input id="implants2" type="text" name="implants2">
+                        </td>
+                        <td class="ft13">Implants D6190</td>
+                        <td>
+                            <input id="implants3" type="text" name="implants3">
+                        </td>
+                      <td class="ft13">Implants Fr(D6065)</td>
+                        <td>
+                            <input id="implants7" list="frequency" name="implants7">
+                        </td>
+                       
+                       
+                    </tr>
+<tr>
+                    <td class="ft13">Implants Fr(D6010)</td>
+                        <td>
+                            <input id="implants5" list="frequency" name="implants5">
+                        </td>
+                    <td class="ft13">Implants Fr(D6057)</td>
+                        <td>
+                            <input id="implants6" list="frequency" name="implants6">
+                        </td>
+                 <td class="ft13">Implants Fr(D6190)</td>
+                        <td>
+                            <input id="implants8" list="frequency" name="implants8">
+                        </td>   
+                   
+                <td class="ft13">Implants Supported Porc./Ceramic (D6065)</td>
+                        <td>
+                            <input id="implants4" type="text" name="implants4">
+                        </td>
+                   
+                  </tr>
+                  
+                   <tr>
+                    <td class="ft17">
+                            Bridges(%)
+                        </td>
+                  </tr>
+                  <tr>
+                    <td class="ft18">
+                            (D6245 & D6740)
+                        </td>
+                        <td>
+                            <input id="bridges1" type="text" name="bridges1">
+                        </td>
+                    <td class="ft18">
+                            Frequency
+                        </td>
+                        <td>
+                            <input id="bridges2" list="frequency" name="bridges2">
+                        </td>
+                    <td class="ft18">
+                            Will downgrade applicable?
+                        </td>
+                      <td>
+                            <p class="ft7">
+                                <input class="cdowngrade" type="radio" name="cdowngrade" value="Yes" style="float: none">Yes &nbsp;&nbsp;
+                                <input class="cdowngrade" type="radio" name="cdowngrade" value="No" style="float: none">No &nbsp;&nbsp;
+                                <input class="cdowngrade" type="radio" name="cdowngrade" value="NA" style="float: none">N/A
+                            </p>
+                        </td>
+                  </tr>
+                  
+                    <tr>
+                        <td class="ft43" style="font-size: 10pt;font-weight: bold;text-decoration: underline">Posterior</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                        <td class="ft43">Composites (D2391) %</td>
+                        <td>
+                            <input id="posterior1" type="text" name="posterior1">
+                        </td>
+                        <td class="ft43">Frequency</td>
+                        <td>
+                            <input id="posterior2" list="frequency" name="posterior2">
+                        </td>
+                        <td class="ft43" colspan="2">Downgraded to Amalgam (D2140)
+                        </td>
+                        <td colspan="2">
+                            <p class="f43" style="font-size: 12px">
+                                <input class="posterior3" type="radio" name="posterior3" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="posterior3" type="radio" name="posterior3" value="No" style="float: none">No
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="posterior3" type="radio" name="posterior3" value="Pre-D" style="float: none">Pre-D
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ft43">Crowns (D2740 &amp; D2750)%</td>
+                        <td>
+                            <input id="posterior4" type="text" name="posterior4">
+                        </td>
+                        <td class="ft43">Crowns(D2740 &amp; D2750) Frequency</td>
+                        <td>
+                            <input id="posterior5" list="frequency" name="posterior5">
+                        </td>
+                        <td class="ft43" >Will Crown Downgrade or not?
+                        </td>
+                        <td >
+                            <p class="f43" style="font-size: 12px">
+                                <input class="posterior6" type="radio" name="posterior6" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="posterior6" type="radio" name="posterior6" value="No" style="float: none">No
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="posterior6" type="radio" name="posterior6" value="Pre-D" style="float: none">Pre-D
+                            </p>
+                        </td>
+                      <td class="ft43">Which code?</td>
+                      <p class="f43" style="font-size: 12px">
+                       <td> <input id ="posterior17" type = "text" name = "posterior17"></td>
+                      </p>
+                    </tr>
+                
+                    <tr>
+                        <td class="ft43">Night Gaurds (D9944) %</td>
+                        <td>
+                            <input id="posterior7" type="text" name="posterior7">
+                        </td>
+                      <td class="ft43">Night Gaurds (D9945) %</td>
+                        <td>
+                            <input id="posterior18" type="text" name="posterior18">
+                        </td>
+                      
+                      <td class="ft43">Night Gaurds (D9944)Fr</td>
+                        <td>
+                            <input id="posterior19" list="frequency" name="posterior19">
+                        </td>
+                      <td class="ft43">Night Gaurds (D9945)Fr</td>
+                        <td>
+                            <input id="posterior20" list="frequency" name="posterior20">
+                        </td>
+                        
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+    
+                    <tr>
+                        <td class="ft22">Build-up (D2950) %</td>
+                        <td>
+                            <input id="posterior10" type="text" name="posterior10">
+                        </td>
+                        <td class="ft22">Frequency</td>
+                        <td>
+                            <input id="posterior11" list="frequency" name="posterior11">
+                        </td>
+                        <td class="ft22">Same day as Crown</td>
+                        <td>
+                            <p class="ft22">
+                                <input class="posterior12" type="radio" name="posterior12" value="Yes" style="float: none">Yes
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="posterior12" type="radio" name="posterior12" value="No" style="float: none">No
+                            </p>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                        <td class="ft14">Ortho(%)</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                        <td class="ft7">D8080, D8090, D8070</td>
+                        <td>
+                            <input id="ortho1" type="text" name="ortho1">
+                        </td>
+                        <td class="ft7">Ortho Max</td>
+                        <td>
+                            <input id="ortho2" type="text" name="ortho2">
+                        </td>
+                        <td class="ft7">Age Limit</td>
+                        <td>
+                            <input id="ortho3" type="text" name="ortho3">
+                        </td>
+                        <td class="ft7">Subject to Deductible</td>
+                        <td>
+                            <p class="ft7">
+                                <input class="ortho4" type="radio" name="ortho4" value="Yes" style="float: none">Yes &nbsp;&nbsp;&nbsp;
+                                <input class="ortho4" type="radio" name="ortho4" value="No" style="float: none">No
+                            </p>
+                        </td>
+                    </tr>
+                  <br>
+                  <tr>
+                     <td>
+                            <p class="ft7">
+                                Ortho Remaing:
+                                <input id="ortho5" type="text" name="ortho5" style="width: 45%">
+                                <!--______-->
+                            </p>
+                        </td>
+                     <td>
+                            <p class="ft7">
+                                Ortho Waiting Period(In Months):
+                            </p>
+                        </td>
+                    <td>
+                            <select id="waitingPeriod3" class="waitingPeriod" name="waitingPeriod3">
+                            </select>
+                        </td>
+                    
+                    <td class="ft31">Consult (D9310)%</td>
+                        <td>
+                            <input id="posterior8" type="text" name="posterior8">
+                        </td>
+                        <td class="ft31" style="text-align: center">Frequency</td>
+                        <td>
+                            <input id="posterior9" list="frequency" name="posterior9">
+                        </td>
+                    
+                   
+                  </tr>
+                  <tr>
+                     <td>
+                            <p class="ft13">
+                                 How many fillings can be done in a year?
+                                <input id="fill1" type="text" name="fill1" style="width: 45%">
+                                <!--______-->
+                            </p>
+                        </td>
+                    
+                    <td>
+                            <p class="ft13">
+                                 How many Extractions can be done in a year?
+
+                                <input id="extr1" type="text" name="extr1" style="width: 45%">
+                                <!--______-->
+                            </p>
+                        </td>
+                  </tr>
+                  
+                </tbody>
+            </table>
+                               
+            <button onclick="inputReset('rules')" type="button" style="float: right;">Reset Patient Info</button>
+            <br>
+
+            <p class="p3 ft34">Complete 5 Year History</p>
+            <table class="t4" id="history">
+                    <th class="tr4 td29">
+                        ADA Code
+                    </th>
+                    <th class="tr4 td30">
+                        Tooth No.
+                    </th>
+                    <th class="tr4 td31">
+                        DOS
+                    </th>
+                    <th class="tr4 td32">
+                        ADA Code
+                    </th>
+                    <th class="tr4 td33">
+                        Tooth No.
+                    </th>
+                    <th class="tr4 td34">
+                        DOS
+                    </th>
+                    <th class="tr4 td35">
+                        ADA Code
+                    </th>
+                    <th class="tr4 td36">
+                        Tooth No.
+                    </th>
+                    <th class="tr4 td36">
+                        DOS
+                    </th>
+                    <tr>
+                        <td class="tr5 td37">
+                            <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td38">
+                            <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td39">
+                            <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td39">
+                            <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td40">
+                            <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td41">
+                            <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td40">
+                            <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td42">
+                            <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td42">
+                            <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tr10 td37">
+                            <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr10 td38">
+                            <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr10 td39">
+                            <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr10 td39">
+                            <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr10 td40">
+                            <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr10 td41">
+                            <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr10 td40">
+                            <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr10 td42">
+                            <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr10 td42">
+                            <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tr5 td37">
+                            <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td38">
+                            <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td39">
+                            <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td39">
+                            <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td40">
+                            <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td41">
+                            <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td40">
+                            <input list="ada" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td42">
+                            <input type="text" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                        <td class="tr5 td42">
+                            <input type="date" class="history" name="history" style="width:100%;margin-right: 0%">
+                        </td>
+                    </tr>
+            </table>
+            <table style="width:100%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <tr>
+                    <td><button onclick="add()" type="button" style="float: left;">Add Row</button></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td><select name="historySelect">
+                            <option value="PPO">PPO</option>
+                            <option value="Denta Quest">Denta Quest</option>
+                            <option value="MCNA">MCNA</option>
+                            <option value="TMHP">TMHP</option>
+                        </select></td>
+                    <td>&nbsp;</td>
+                    <td id="loadHistory">
+                        <button onclick="getHistory()" type="button" style="float: right;">Fetch History</button>
+                    </td>
+                    <td>&nbsp;</td>
+                    <td colspan="3">
+                        <button onclick="inputReset('history')" type="button" style="float: right;">Reset Patient History</button>
+                    </td>
+                </tr>
+            </table>
+
+            <p class="p3 ft46">Comments:
+                <textarea id="comments" name="comments" rows="2" cols="184"></textarea>
+            </p>
+            <table cellpadding="0" cellspacing="0" class="t5" style="width:100%">
+                <tbody>
+                    <tr>
+                        <td class="tr5 td43">
+                            <p class="ft46">Benefits Verified by:
+                                <input id="benefits" type="text" name="benefits" style="width: 20%">
+                            </p>
+                        </td>
+                        <td class="tr5 td44">
+                            <p class="ft46">Date:
+                                <input id="date" type="date" name="date" style="width: 100%">
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="tr5 td43">
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%">
+                            <input type="submit" value="Submit">
+                        </td>
+                    </tr>
+                </tbody>
+            </table><br><br>
+            <iframe id="frame" style="width:100%;height:400px" src="https://docs.google.com/spreadsheets/d/1pjhq321m4XDu_lO5fSqRmbTR3N7nTOgd-zlcLgrWkow/edit#gid=0"></iframe>
+        </div>
+    </form>
+
+
+</body>
+
+</html>
