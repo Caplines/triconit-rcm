@@ -14,13 +14,13 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "patient_detail")
-public class PatientDetail extends BaseAudit implements Serializable{
+public class PatientDetail extends BaseAudit implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6920430864299568436L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
@@ -29,494 +29,503 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "office_id")
 	private Office office;
 
-	@Column(name = "ins_name" , length=100)
-    private String insName;// C
+	@Column(name = "ins_name", length = 100)
+	private String insName;// C
 
-	@Column(name = "tax_id" , length=100)
-    private String taxId;// D
+	@Column(name = "tax_id", length = 100)
+	private String taxId;// D
 
-	@Column(name = "policy_holder" , length=255)
+	@Column(name = "policy_holder", length = 255)
 	private String policyHolder;// E
 
-	@Column(name = "ins_contact" , length=255)
-    private String InsContact;// G
+	@Column(name = "ins_contact", length = 255)
+	private String InsContact;// G
 
+	@Column(name = "cs_sr_name", length = 255)
+	private String cSRName;// H
 
-	@Column(name = "cs_sr_name" , length=255)
-    private String cSRName;// H
-	
-	@Column(name = "policy_holder_dob" , length=15)
+	@Column(name = "policy_holder_dob", length = 15)
 	private String policyHolderDOB;// I
-	
-	@Column(name = "employer_name" , length=255)
+
+	@Column(name = "employer_name", length = 255)
 	private String employerName;// J
-	
-	@Column(name = "const_tx_recall_np" , length=50)
-    private String contTxRecallNP;// L
 
-	@Column(name = "ref" , length=70)
-    private String ref;// L
-	
-	@Column(name = "member_ssn" , length=50)
+	@Column(name = "const_tx_recall_np", length = 50)
+	private String contTxRecallNP;// L
+
+	@Column(name = "ref", length = 70)
+	private String ref;// L
+
+	@Column(name = "member_ssn", length = 50)
 	private String memberSSN;// M
-	
-	@Column(name = "group_p" , length=50)
-    private String group;// N
-	
-	@Column(name = "cob_status" , length=50)
+
+	@Column(name = "group_p", length = 50)
+	private String group;// N
+
+	@Column(name = "cob_status", length = 50)
 	private String cOBStatus;// O
-	
-	@Column(name = "memberId" , length=50)
+
+	@Column(name = "memberId", length = 50)
 	private String memberId;// P
-	
-	@Column(name = "apt_date" , length=50)
+
+	@Column(name = "apt_date", length = 50)
 	private String aptDate;// Q
-	
-	@Column(name = "payer_id" , length=50)
+
+	@Column(name = "payer_id", length = 50)
 	private String payerId;// R
-	
-	@Column(name = "provider_name" , length=255)
-    private String providerName;// S
-	
-	@Column(name = "ins_address" , columnDefinition="text")
+
+	@Column(name = "provider_name", length = 255)
+	private String providerName;// S
+
+	@Column(name = "ins_address", columnDefinition = "text")
 	private String insAddress;// T
-	
-	@Column(name = "plan_type" , length=50)
+
+	@Column(name = "plan_type", length = 50)
 	private String planType;// U
-	
-	@Column(name = "plan_termed_date" , length=15)
+
+	@Column(name = "plan_termed_date", length = 15)
 	private String planTermedDate;// V
-	
-	@Column(name = "plan_network" , length=50)
+
+	@Column(name = "plan_network", length = 50)
 	private String planNetwork;// W
-	
-	@Column(name = "plan_fee_schedule_name" , length=255)
+
+	@Column(name = "plan_fee_schedule_name", length = 255)
 	private String planFeeScheduleName;// X Fee Schedule Name
-	
-	@Column(name = "plan_effective_date" , length=15)
+
+	@Column(name = "plan_effective_date", length = 15)
 	private String planEffectiveDate;// Y 26-1 Effective Date RULE ONE (Plan_EffectiveDate)
-	
-	@Column(name = "plan_calendar_fiscal_year" , length=5)
-    private String planCalendarFiscalYear;// Z
-	
-	@Column(name = "plan_annual_max" , length=10)
+
+	@Column(name = "plan_calendar_fiscal_year", length = 5)
+	private String planCalendarFiscalYear;// Z
+
+	@Column(name = "plan_annual_max", length = 10)
 	private String planAnnualMax;// AA
-	
-	@Column(name = "plan_annual_max_remaining" , length=10)
+
+	@Column(name = "plan_annual_max_remaining", length = 10)
 	private String planAnnualMaxRemaining;// AB
-	
-	@Column(name = "plan_individual_dedudtible" , length=10)
+
+	@Column(name = "plan_individual_dedudtible", length = 10)
 	private String planIndividualDeductible;// AC
-	
-	@Column(name = "plan_individual_deductible_remaining" , length=10)
+
+	@Column(name = "plan_individual_deductible_remaining", length = 10)
 	private String planIndividualDeductibleRemaining;// AD
-	
-	@Column(name = "plan_dependents_covered_to_age" , length=50)
+
+	@Column(name = "plan_dependents_covered_to_age", length = 50)
 	private String planDependentsCoveredtoAge;// AE
-	
-	@Column(name = "plan_pre_d_mandatory" , length=50)
+
+	@Column(name = "plan_pre_d_mandatory", length = 50)
 	private String planPreDMandatory;// AF
-	
-	@Column(name = "plan_non_duplicate_clause" , length=50)
+
+	@Column(name = "plan_non_duplicate_clause", length = 50)
 	private String planNonDuplicateClause;// AG
-	
-	@Column(name = "plan_full_time_student_status" , length=50)
+
+	@Column(name = "plan_full_time_student_status", length = 50)
 	private String planFullTimeStudentStatus;// AH
-	
-	@Column(name = "plan_assignment_of_benefits" , length=50)
+
+	@Column(name = "plan_assignment_of_benefits", length = 50)
 	private String planAssignmentofBenefits;// AI
-	
-	@Column(name = "plan_coverage_book" , length=50)
+
+	@Column(name = "plan_coverage_book", length = 50)
 	private String planCoverageBook;// AJ
-	
-	@Column(name = "basic_percentage" , length=50)
+
+	@Column(name = "basic_percentage", length = 50)
 	private String basicPercentage;// AK
-	
-	@Column(name = "basic_subject_deductible" , length=50)
+
+	@Column(name = "basic_subject_deductible", length = 50)
 	private String basicSubjectDeductible;// AL
-	
-	@Column(name = "major_percentage" , length=50)
+
+	@Column(name = "major_percentage", length = 50)
 	private String majorPercentage;// AM
-	
-	@Column(name = "major_subject_deductible" , length=50)
+
+	@Column(name = "major_subject_deductible", length = 50)
 	private String majorSubjectDeductible;// AN
-	
-	@Column(name = "endo_dontics_percentage" , length=50)
+
+	@Column(name = "endo_dontics_percentage", length = 50)
 	private String endodonticsPercentage;// AO
-	
-	@Column(name = "endo_subjectdeductible" , length=50)
+
+	@Column(name = "endo_subjectdeductible", length = 50)
 	private String endoSubjectDeductible;// AP
-	
-	@Column(name = "perio_surgrey_percentage" , length=50)
+
+	@Column(name = "perio_surgrey_percentage", length = 50)
 	private String perioSurgeryPercentage;// AQ
-	
-	@Column(name = "perio_surgery_subject_deductible" , length=50)
-    private String perioSurgerySubjectDeductible;// AR
-	
-	@Column(name = "preventive_percentage" , length=50)
+
+	@Column(name = "perio_surgery_subject_deductible", length = 50)
+	private String perioSurgerySubjectDeductible;// AR
+
+	@Column(name = "preventive_percentage", length = 50)
 	private String preventivePercentage;// AS
-	
-	//NEW NOT IN GOOGLE SHEET
-	@Column(name = "preventive_sub_ded" , length=50)
-	private String preventiveSubDed;//percentages13
-	
-	//END
-	
-	@Column(name = "diagnostic_percentage" , length=50)
+
+	// NEW NOT IN GOOGLE SHEET
+	@Column(name = "preventive_sub_ded", length = 50)
+	private String preventiveSubDed;// percentages13
+
+	// END
+
+	@Column(name = "diagnostic_percentage", length = 50)
 	private String diagnosticPercentage;// AT
-	
-	//NEW NOT IN GOOGLE SHEET
-	@Column(name = "diagnostic_sub_ded" , length=50)
-	private String diagnosticSubDed;//percentages14
-    //END
-		
-	
-	@Column(name = "pa_xrays_percentage" , length=50)
+
+	// NEW NOT IN GOOGLE SHEET
+	@Column(name = "diagnostic_sub_ded", length = 50)
+	private String diagnosticSubDed;// percentages14
+	// END
+
+	@Column(name = "pa_xrays_percentage", length = 50)
 	private String pAXRaysPercentage;// AU
-	
-	//NEW NOT IN GOOGLE SHEET
-	@Column(name = "pa_xrays_sub_ded" , length=50)
-	private String pAXRaysSubDed;//percentages15
 
-	@Column(name = "fmx_per" , length=15)
-	private String fmxPer;//percentages16
+	// NEW NOT IN GOOGLE SHEET
+	@Column(name = "pa_xrays_sub_ded", length = 50)
+	private String pAXRaysSubDed;// percentages15
 
-	//END
+	@Column(name = "fmx_per", length = 15)
+	private String fmxPer;// percentages16
 
-	@Column(name = "missingtooth_clause" , length=50)
+	// END
+
+	@Column(name = "missingtooth_clause", length = 50)
 	private String missingToothClause;// AV
-	
-	@Column(name = "replacementclause" , length=100)
+
+	@Column(name = "replacementclause", length = 100)
 	private String replacementClause;// AW
-	
-	@Column(name = "crowns_d2750D2740_pays_prep_seat_date" , length=50)
+
+	@Column(name = "crowns_d2750D2740_pays_prep_seat_date", length = 50)
 	private String crownsD2750D2740PaysPrepSeatDate;// AX
-	
-	@Column(name = "night_guards_d9940fl" , length=50)
+
+	@Column(name = "night_guards_d9940fl", length = 50)
 	private String nightGuardsD9940FL;// AY
-	
-	@Column(name = "basic_waiting_period" , length=50)
+
+	@Column(name = "basic_waiting_period", length = 50)
 	private String basicWaitingPeriod;// AZ
 
-	@Column(name = "major_waiting_period" , length=50)
+	@Column(name = "major_waiting_period", length = 50)
 	private String majorWaitingPeriod;// BA
-	
-	@Column(name = "sscd2930fl" , length=50)
+
+	@Column(name = "sscd2930fl", length = 50)
 	private String sSCD2930FL;// BB
-	
-	@Column(name = "sscd2931fl" , length=50)
+
+	@Column(name = "sscd2931fl", length = 50)
 	private String sSCD2931FL;// BC
-	
-	@Column(name = "exam_d0120_fl" , length=50)
+
+	@Column(name = "exam_d0120_fl", length = 50)
 	private String examsD0120FL;// BD
-	
-	@Column(name = "exams_d0140_fl" , length=50)
+
+	@Column(name = "exams_d0140_fl", length = 50)
 	private String examsD0140FL;// BE
-	
-	@Column(name = "eexams_d0145_fl" , length=50)
+
+	@Column(name = "eexams_d0145_fl", length = 50)
 	private String eExamsD0145FL;// BF
-	
-	@Column(name = "exams_d0150_fl" , length=50)
+
+	@Column(name = "exams_d0150_fl", length = 50)
 	private String examsD0150FL;// BG
-	
-	@Column(name = "x_rays_bw_sfl" , length=50)
+
+	@Column(name = "x_rays_bw_sfl", length = 50)
 	private String xRaysBWSFL;// BH
-	
-	@Column(name = "x_rays_pad0220_fl" , length=50)
+
+	@Column(name = "x_rays_pad0220_fl", length = 50)
 	private String xRaysPAD0220FL;// BI
-	
-	@Column(name = "x_rays_pad0230_fl" , length=50)
+
+	@Column(name = "x_rays_pad0230_fl", length = 50)
 	private String xRaysPAD0230FL;// BJ
-	
-	@Column(name = "x_rays_fm_xfl" , length=50)
+
+	@Column(name = "x_rays_fm_xfl", length = 50)
 	private String xRaysFMXFL;// BK
-	
-	//NEW NOT IN GOOGLE SHEET
-	@Column(name = "den_5225_per" , length=20)
+
+	// NEW NOT IN GOOGLE SHEET
+	@Column(name = "den_5225_per", length = 20)
 	private String den5225Per;// den5225
-	
-	@Column(name = "den_f_5225_fr" , length=20)
-	private String denf5225FR;//denf5225 
 
-	@Column(name = "den_5226_per" , length=20)
-	private String den5226Per;//den5226 
+	@Column(name = "den_f_5225_fr", length = 20)
+	private String denf5225FR;// denf5225
 
-	@Column(name = "den_f_5226_fr" , length=20)
-	private String denf5226Fr;//denf5226 
+	@Column(name = "den_5226_per", length = 20)
+	private String den5226Per;// den5226
 
-    //END	
-	@Column(name = "x_rays_bundling" , length=50)
+	@Column(name = "den_f_5226_fr", length = 20)
+	private String denf5226Fr;// denf5226
+
+	// END
+	@Column(name = "x_rays_bundling", length = 50)
 	private String xRaysBundling;// BL
-	
-	//NEW NOT IN GOOGLE SHEET
-	@Column(name = "bridges1" , length=20)
-	private String bridges1;//bridges1 
 
-	@Column(name = "bridges2" , length=20)
-	private String bridges2;//bridges2 
+	// NEW NOT IN GOOGLE SHEET
+	@Column(name = "bridges1", length = 20)
+	private String bridges1;// bridges1
 
-	@Column(name = "will_downgrade_applicable" , length=20)
-	private String willDowngradeApplicable;//cdowngrade
-	
-	//END
-	@Column(name = "flouride_d1208_fl" , length=50)
+	@Column(name = "bridges2", length = 20)
+	private String bridges2;// bridges2
+
+	@Column(name = "will_downgrade_applicable", length = 20)
+	private String willDowngradeApplicable;// cdowngrade
+
+	// END
+	@Column(name = "flouride_d1208_fl", length = 50)
 	private String flourideD1208FL;// BM
-	
-	@Column(name = "flouride_age_limit" , length=50)
+
+	@Column(name = "flouride_age_limit", length = 50)
 	private String flourideAgeLimit;// BN
-	
-	@Column(name = "varnish_d1206_fl" , length=50)
+
+	@Column(name = "varnish_d1206_fl", length = 50)
 	private String varnishD1206FL;// BO
-	
-	@Column(name = "varnish_d1206age_limit" , length=50)
+
+	@Column(name = "varnish_d1206age_limit", length = 50)
 	private String varnishD1206AgeLimit;// BP
-	
-	@Column(name = "sealants_d1351_percentage" , length=50)
+
+	@Column(name = "sealants_d1351_percentage", length = 50)
 	private String sealantsD1351Percentage;// BQ
-	
-	@Column(name = "sealants_d1351_fl" , length=50)
+
+	@Column(name = "sealants_d1351_fl", length = 50)
 	private String sealantsD1351FL;// BR
-	
-	@Column(name = "sealants_d1351_age_limit" , length=50)
+
+	@Column(name = "sealants_d1351_age_limit", length = 50)
 	private String sealantsD1351AgeLimit;// BS
-	
-	@Column(name = "sealants_d1351_primary_molars_covered" , length=50)
+
+	@Column(name = "sealants_d1351_primary_molars_covered", length = 50)
 	private String sealantsD1351PrimaryMolarsCovered;// BT
-	
-	@Column(name = "sealants_d1351_pre_molars_covered" , length=50)
+
+	@Column(name = "sealants_d1351_pre_molars_covered", length = 50)
 	private String sealantsD1351PreMolarsCovered;// BU
-	
-	@Column(name = "sealants_d1351_permanent_molars_covered" , length=50)
+
+	@Column(name = "sealants_d1351_permanent_molars_covered", length = 50)
 	private String sealantsD1351PermanentMolarsCovered;// BV
-	
-	@Column(name = "prophy_d1110_fl" , length=50)
+
+	@Column(name = "prophy_d1110_fl", length = 50)
 	private String prophyD1110FL;// BW
-	
-	@Column(name = "prophy_d1120_fl" , length=50)
+
+	@Column(name = "prophy_d1120_fl", length = 50)
 	private String prophyD1120FL;// BX
-	
-	@Column(name = "name1201110_roll_over_age" , length=50)
+
+	@Column(name = "name1201110_roll_over_age", length = 50)
 	private String name1201110RollOverAgYe;// BY
-	
-	@Column(name = "s_rpd4341_percentage" , length=50)
+
+	@Column(name = "s_rpd4341_percentage", length = 50)
 	private String sRPD4341Percentage;// BZ
-	
-	@Column(name = "s_rpd4341_fl" , length=50)
+
+	@Column(name = "s_rpd4341_fl", length = 50)
 	private String sRPD4341FL;// CA
-	
-	@Column(name = "s_rpd4341_quads_per_day" , length=50)
+
+	@Column(name = "s_rpd4341_quads_per_day", length = 50)
 	private String sRPD4341QuadsPerDay;// CB
-	
-	@Column(name = "s_rpd4341_days_bw_treatment" , length=50)
+
+	@Column(name = "s_rpd4341_days_bw_treatment", length = 50)
 	private String sRPD4341DaysBwTreatment;// CC
-	
-	@Column(name = "perio_maintenance_d4910_percentage" , length=50)
+
+	@Column(name = "perio_maintenance_d4910_percentage", length = 50)
 	private String perioMaintenanceD4910Percentage;// CD
-	
-	@Column(name = "perio_maintenance_d4910_fl" , length=50)
+
+	@Column(name = "perio_maintenance_d4910_fl", length = 50)
 	private String perioMaintenanceD4910FL;// CE
-	
-	@Column(name = "perio_maintenance_d4910_altw_prophy_d0110" , length=50)
+
+	@Column(name = "perio_maintenance_d4910_altw_prophy_d0110", length = 50)
 	private String perioMaintenanceD4910AltWProphyD0110;// CF
-	
-	@Column(name = "fmdd4355_percentage" , length=50)
+
+	@Column(name = "fmdd4355_percentage", length = 50)
 	private String FMDD4355Percentage;// CG
 
-	@Column(name = "fmdd4355_fl" , length=50)
-    private String fMDD4355FL;// CH
-	
-	@Column(name = "gingivitis_d4346_percentage" , length=50)
-    private String gingivitisD4346Percentage;// CI
-	
-	@Column(name = "gingivitis_d4346_fl" , length=50)
-    private String gingivitisD4346FL;// CJ
-	
-	@Column(name = "nitrous_d9230_percentage" , length=50)
-    private String NitrousD9230Percentage;// CK
+	@Column(name = "fmdd4355_fl", length = 50)
+	private String fMDD4355FL;// CH
 
-	@Column(name = "iv_sedation_d9243_percentage" , length=50)
+	@Column(name = "gingivitis_d4346_percentage", length = 50)
+	private String gingivitisD4346Percentage;// CI
+
+	@Column(name = "gingivitis_d4346_fl", length = 50)
+	private String gingivitisD4346FL;// CJ
+
+	@Column(name = "nitrous_d9230_percentage", length = 50)
+	private String NitrousD9230Percentage;// CK
+
+	@Column(name = "iv_sedation_d9243_percentage", length = 50)
 	private String iVSedationD9243Percentage;// CL
-	
-	@Column(name = "iv_sededation_d9248_percentage" , length=50)
+
+	@Column(name = "iv_sededation_d9248_percentage", length = 50)
 	private String iVSedationD9248Percentage;// CM
-	
-	@Column(name = "extractions_minor_percentage" , length=50)
+
+	@Column(name = "extractions_minor_percentage", length = 50)
 	private String extractionsMinorPercentage;// CN
-	
-	@Column(name = "extractions_major_percentage" , length=50)
+
+	@Column(name = "extractions_major_percentage", length = 50)
 	private String extractionsMajorPercentage;// CO
-	
-	@Column(name = "crown_length_d4249_percentage" , length=50)
+
+	@Column(name = "crown_length_d4249_percentage", length = 50)
 	private String crownLengthD4249Percentage;// CP
-	
-	@Column(name = "crown_length_d4249_fl" , length=50)
+
+	@Column(name = "crown_length_d4249_fl", length = 50)
 	private String crownLengthD4249FL;// CQ
 
-	@Column(name = "alveo_d7311_covered_with_ext" , length=50)
+	@Column(name = "alveo_d7311_covered_with_ext", length = 50)
 	private String alveoD7311CoveredWithEXT;// CR
 
-	@Column(name = "alveo_d7311_fl" , length=50)
+	@Column(name = "alveo_d7311_fl", length = 50)
 	private String alveoD7311FL;// CS
-	
-	@Column(name = "alveoD7310Covered_with_ext" , length=50)
+
+	@Column(name = "alveoD7310Covered_with_ext", length = 50)
 	private String alveoD7310CoveredWithEXT;// CT
-	
-	@Column(name = "alveo_d7310fl" , length=50)
+
+	@Column(name = "alveo_d7310fl", length = 50)
 	private String alveoD7310FL;// CU
-	
-	@Column(name = "complete_dentures_d5110_d5120_fl" , length=50)
+
+	@Column(name = "complete_dentures_d5110_d5120_fl", length = 50)
 	private String completeDenturesD5110D5120FL;// CV
-	
-	@Column(name = "immediate_dentures_d5130_d5140_fl" , length=50)
+
+	@Column(name = "immediate_dentures_d5130_d5140_fl", length = 50)
 	private String immediateDenturesD5130D5140FL;// CW
-	
-	@Column(name = "partial_dentures_d5213_d5214_fl" , length=50)
+
+	@Column(name = "partial_dentures_d5213_d5214_fl", length = 50)
 	private String partialDenturesD5213D5214FL;// CX
-	
-	@Column(name = "interim_partial_dentures_d5214_fl" , length=50)
+
+	@Column(name = "interim_partial_dentures_d5214_fl", length = 50)
 	private String interimPartialDenturesD5214FL;// CY
+
+	@Column(name = "bone_grafts_d7953_covered_with_ext", length = 50)
+	private String boneGraftsD7953CoveredWithEXT;// CZ
+
+	@Column(name = "bone_grafts_d7953_fl", length = 50)
+	private String boneGraftsD7953FL;// DA
+
+	@Column(name = "implant_coverage_d6010_percentage", length = 50)
+	private String implantCoverageD6010Percentage;// DB
+
+	@Column(name = "implant_coverage_d6057_percentage", length = 50)
+	private String implantCoverageD6057Percentage;// DC
+
+	@Column(name = "implant_coverage_d6190_percentage", length = 50)
+	private String implantCoverageD6190Percentage;// DD
+
+	@Column(name = "implant_supported_porc_ceramic_d606_percentage", length = 50)
+	private String implantSupportedPorcCeramicD6065Percentage;// DE
+
+	// NEW NOT IN GOOGLE SHEET
+	@Column(name = "implants_fr_d6010", length = 50)
+	private String implantsFrD6010;// implants5
+
+	@Column(name = "implants_fr_d6057", length = 50)
+	private String implantsFrD6057;// implants6
+
+	@Column(name = "implants_fr_d6065", length = 50)
+	private String implantsFrD6065;// implants7
+
+	@Column(name = "implants_fr_d6190", length = 50)
+	private String implantsFrD6190;// implants8
+
+	// END
+
+	@Column(name = "post_composites_d2391_percentage", length = 50)
+	private String postCompositesD2391Percentage;// DF
+
+	@Column(name = "post_composites_d2391_fl", length = 50)
+	private String postCompositesD2391FL;// DG
+
+	@Column(name = "posterior_composites_d2391_downgrade", length = 50)
+	private String posteriorCompositesD2391Downgrade;// DH
+
+	@Column(name = "crowns_d2750_d2740_percentage", length = 50)
+	private String crownsD2750D2740Percentage;// DI
+
+	@Column(name = "crowns_d2750_d2740_fl", length = 50)
+	private String crownsD2750D2740FL;// DJ
+
+	// NEW NOT IN GOOGLE SHEET
+
+	@Column(name = "crown_grade_code", length = 50)
+	private String crowngradeCode;// posterior17
+	// END
+
+	@Column(name = "crowns_d2750_d2740_downgrade", length = 50)
+	private String crownsD2750D2740Downgrade;// DK
+
+	@Column(name = "night_guards_d9940_percentage", length = 50)
+	private String nightGuardsD9940Percentage;// DL THIS IS NOW D9944
+
+	// NEW NOT IN GOOGLE SHEET
+	@Column(name = "night_guards_d9944_fr", length = 50)
+	private String nightGuardsD9944Fr;// posterior19
+
+	@Column(name = "night_guards_d9945_fr", length = 50)
+	private String nightGuardsD9945Fr;// posterior20
+
+	@Column(name = "night_guards_d9945_percentage", length = 50)
+	private String nightGuardsD9945Percentage;// posterior18
+
+	// END
+	@Column(name = "d9310_percentage", length = 50)
+	private String d9310Percentage;// DM
+
+	@Column(name = "d9310_fl", length = 50)
+	private String d9310FL;// DN
+
+	@Column(name = "buildups_d2950_covered", length = 50)
+	private String buildUpsD2950Covered;// DO
+
+	@Column(name = "buildups_d2950_fl", length = 50)
+	private String buildUpsD2950FL;// DP
+
+	@Column(name = "buildups_d2950_same_day_crown", length = 50)
+	private String buildUpsD2950SameDayCrown;// DQ
+
+	@Column(name = "orthoPercentage", length = 50)
+	private String orthoPercentage;// DR
+
+	@Column(name = "ortho_max", length = 50)
+	private String orthoMax;// DS
+
+	@Column(name = "ortho_age_limit", length = 50)
+	private String orthoAgeLimit;// DT
+
+	@Column(name = "ortho_subject_deductible", length = 50)
+	private String orthoSubjectDeductible;// DU
+
+	// NEW NOT IN GOOGLE SHEET
+
+	@Column(name = "ortho_remaining", length = 50)
+	private String orthoRemaining;// ortho5
+
+	@Column(name = "ortho_waiting_period", length = 50)
+	private String orthoWaitingPeriod;// waitingPeriod3
+
+	// END
+
+	@Column(name = "fillings_bundling", length = 50)
+	private String FillingsBundling;// DV
+
+	@Column(name = "comments", columnDefinition = "text")
+	private String comments;// DW
+
+	@Column(name = "general_benefits_verified_by", length = 255)
+	private String generalBenefitsVerifiedBy;// DW
+
+	@Column(name = "general_date_iv_wasdone", length = 15)
+	private String generalDateIVwasDone;// DY
+	// private String patientId;//DZ
+
+	@Column(name = "cra_required", length = 50)
+	private String craRequired;// KY
+
+	@Column(name = "claim_filling_limit", length = 50)
+	private String claimFillingLimit;// KZ
+
+	@Column(name = "unique_id", length = 80)
+	private String uniqueID;// LA
+
+	@Column(name = "d0120", length = 50)
+	private String d0120;// LB
+
+	@Column(name = "d2391", length = 50)
+	private String d2391;// LC
+
+	// NEW NOT IN GOOGLE SHEET
+	@Column(name = "fillings_in_year", length = 20)
+	private String fillingsInYear;// fill1
+
+	@Column(name = "extractions_in_year", length = 20)
+	private String extractionsInYear;// extr1
+
+	@Column(name = "crowns_in_year", length = 20)
+	private String crownsInYear;// crn1
 	
-	@Column(name = "bone_grafts_d7953_covered_with_ext" , length=50)
-	private String boneGraftsD7953CoveredWithEXT;//CZ
-	
-	@Column(name = "bone_grafts_d7953_fl" , length=50)
-	private String boneGraftsD7953FL;//DA
-	
-	@Column(name = "implant_coverage_d6010_percentage" , length=50)
-	private String implantCoverageD6010Percentage;//DB
-	
-	@Column(name = "implant_coverage_d6057_percentage" , length=50)
-	private String implantCoverageD6057Percentage;//DC
-	
-	@Column(name = "implant_coverage_d6190_percentage" , length=50)
-	private String implantCoverageD6190Percentage;//DD
-	
-	@Column(name = "implant_supported_porc_ceramic_d606_percentage" , length=50)
-	private String implantSupportedPorcCeramicD6065Percentage;//DE
-	
-	//NEW NOT IN GOOGLE SHEET
-	@Column(name = "implants_fr_d6010" , length=50)
-	private String implantsFrD6010;//implants5
-	
-	@Column(name = "implants_fr_d6057" , length=50)
-	private String implantsFrD6057;//implants6
-	
-	@Column(name = "implants_fr_d6065" , length=50)
-	private String implantsFrD6065;//implants7
-	
-	@Column(name = "implants_fr_d6190" , length=50)
-	private String implantsFrD6190;//implants8
-	
-    // END
-	
-	@Column(name = "post_composites_d2391_percentage" , length=50)
-	private String postCompositesD2391Percentage;//DF
-	
-	@Column(name = "post_composites_d2391_fl" , length=50)
-	private String postCompositesD2391FL;//DG
-	
-	@Column(name = "posterior_composites_d2391_downgrade" , length=50)
-	private String posteriorCompositesD2391Downgrade;//DH
-	
-	@Column(name = "crowns_d2750_d2740_percentage" , length=50)
-	private String crownsD2750D2740Percentage;//DI
-	
-	@Column(name = "crowns_d2750_d2740_fl" , length=50)
-	private String crownsD2750D2740FL;//DJ
-	
-	//NEW NOT IN GOOGLE SHEET
-	
-	@Column(name = "crown_grade_code" , length=50)
-	private String crowngradeCode;//posterior17
 	//END
-	
-	@Column(name = "crowns_d2750_d2740_downgrade" , length=50)
-	private String crownsD2750D2740Downgrade;//DK
-	
-	@Column(name = "night_guards_d9940_percentage" , length=50)
-	private String nightGuardsD9940Percentage;//DL THIS IS NOW D9944
-	
-	//NEW NOT IN GOOGLE SHEET
-	@Column(name = "night_guards_d9944_fr" , length=50)
-	private String nightGuardsD9944Fr;//posterior19
-
-	@Column(name = "night_guards_d9945_fr" , length=50)
-	private String nightGuardsD9945Fr;//posterior20
-
-	@Column(name = "night_guards_d9945_percentage" , length=50)
-	private String nightGuardsD9945Percentage;//posterior18
-
-	//END
-	@Column(name = "d9310_percentage" , length=50)
-	private String d9310Percentage;//DM
-	
-	@Column(name = "d9310_fl" , length=50)
-	private String d9310FL;//DN
-	
-	@Column(name = "buildups_d2950_covered" , length=50)
-	private String buildUpsD2950Covered;//DO
-	
-	@Column(name = "buildups_d2950_fl" , length=50)
-	private String buildUpsD2950FL;//DP
-
-	@Column(name = "buildups_d2950_same_day_crown" , length=50)
-    private String buildUpsD2950SameDayCrown;//DQ
-	
-	@Column(name = "orthoPercentage" , length=50)
-    private String orthoPercentage;//DR
-	
-	@Column(name = "ortho_max" , length=50)
-    private String orthoMax;//DS
-	
-	@Column(name = "ortho_age_limit" , length=50)
-    private String orthoAgeLimit;//DT
-	
-	@Column(name = "ortho_subject_deductible" , length=50)
-    private String orthoSubjectDeductible;//DU
-	
-	//NEW NOT IN GOOGLE SHEET
-	
-	@Column(name = "ortho_remaining" , length=50)
-    private String orthoRemaining;//ortho5
-	
-	@Column(name = "ortho_waiting_period" , length=50)
-    private String orthoWaitingPeriod;//waitingPeriod3
-	
-	//END
-	
-	@Column(name = "fillings_bundling" , length=50)
-    private String FillingsBundling;//DV
-	
-	@Column(name = "comments" , columnDefinition="text")
-    private String comments;//DW
-	
-	@Column(name = "general_benefits_verified_by" , length=255)
-	private String generalBenefitsVerifiedBy;//DW
-
-	@Column(name = "general_date_iv_wasdone" , length=15)
-	private String generalDateIVwasDone;//DY
-	//private String patientId;//DZ
-
-	@Column(name = "cra_required" , length=50)
-	private String craRequired;//KY
-
-	@Column(name = "claim_filling_limit" , length=50)
-	private String claimFillingLimit;//KZ
-
-	@Column(name = "unique_id" , length=80)
-    private String uniqueID;//LA
-	
-	@Column(name = "d0120" , length=50)
-	private String d0120;//LB
-	
-	@Column(name = "d2391" , length=50)
-	private String d2391;//LC
-
 	public String getD0120() {
 		return d0120;
 	}
@@ -602,7 +611,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setContTxRecallNP(String contTxRecallNP) {
-		this.contTxRecallNP = contTxRecallNP==null?"":contTxRecallNP;
+		this.contTxRecallNP = contTxRecallNP == null ? "" : contTxRecallNP;
 	}
 
 	public String getRef() {
@@ -620,8 +629,6 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	public void setMemberSSN(String memberSSN) {
 		this.memberSSN = memberSSN;
 	}
-
-	
 
 	public String getGroup() {
 		return group;
@@ -772,7 +779,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPlanPreDMandatory(String planPreDMandatory) {
-		this.planPreDMandatory = planPreDMandatory==null?"":planPreDMandatory;
+		this.planPreDMandatory = planPreDMandatory == null ? "" : planPreDMandatory;
 	}
 
 	public String getPlanNonDuplicateClause() {
@@ -780,7 +787,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPlanNonDuplicateClause(String planNonDuplicateClause) {
-		this.planNonDuplicateClause = planNonDuplicateClause==null?"":planNonDuplicateClause;
+		this.planNonDuplicateClause = planNonDuplicateClause == null ? "" : planNonDuplicateClause;
 	}
 
 	public String getPlanFullTimeStudentStatus() {
@@ -788,7 +795,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPlanFullTimeStudentStatus(String planFullTimeStudentStatus) {
-		this.planFullTimeStudentStatus = planFullTimeStudentStatus==null?"":planFullTimeStudentStatus;
+		this.planFullTimeStudentStatus = planFullTimeStudentStatus == null ? "" : planFullTimeStudentStatus;
 	}
 
 	public String getPlanAssignmentofBenefits() {
@@ -796,7 +803,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPlanAssignmentofBenefits(String planAssignmentofBenefits) {
-		this.planAssignmentofBenefits = planAssignmentofBenefits==null?"":planAssignmentofBenefits;
+		this.planAssignmentofBenefits = planAssignmentofBenefits == null ? "" : planAssignmentofBenefits;
 	}
 
 	public String getPlanCoverageBook() {
@@ -820,7 +827,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setBasicSubjectDeductible(String basicSubjectDeductible) {
-		this.basicSubjectDeductible = basicSubjectDeductible==null?"":basicSubjectDeductible;
+		this.basicSubjectDeductible = basicSubjectDeductible == null ? "" : basicSubjectDeductible;
 	}
 
 	public String getMajorPercentage() {
@@ -836,7 +843,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setMajorSubjectDeductible(String majorSubjectDeductible) {
-		this.majorSubjectDeductible = majorSubjectDeductible==null?"":majorSubjectDeductible;
+		this.majorSubjectDeductible = majorSubjectDeductible == null ? "" : majorSubjectDeductible;
 	}
 
 	public String getEndodonticsPercentage() {
@@ -852,7 +859,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setEndoSubjectDeductible(String endoSubjectDeductible) {
-		this.endoSubjectDeductible =  endoSubjectDeductible==null?"":endoSubjectDeductible;
+		this.endoSubjectDeductible = endoSubjectDeductible == null ? "" : endoSubjectDeductible;
 	}
 
 	public String getPerioSurgeryPercentage() {
@@ -868,7 +875,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setPerioSurgerySubjectDeductible(String perioSurgerySubjectDeductible) {
-		this.perioSurgerySubjectDeductible = perioSurgerySubjectDeductible==null?"":perioSurgerySubjectDeductible;
+		this.perioSurgerySubjectDeductible = perioSurgerySubjectDeductible == null ? "" : perioSurgerySubjectDeductible;
 	}
 
 	public String getPreventivePercentage() {
@@ -895,14 +902,12 @@ public class PatientDetail extends BaseAudit implements Serializable{
 		this.pAXRaysPercentage = pAXRaysPercentage;
 	}
 
-	
-
 	public String getMissingToothClause() {
 		return missingToothClause;
 	}
 
 	public void setMissingToothClause(String missingToothClause) {
-		this.missingToothClause = missingToothClause==null?"":missingToothClause;
+		this.missingToothClause = missingToothClause == null ? "" : missingToothClause;
 	}
 
 	public String getReplacementClause() {
@@ -918,7 +923,8 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setCrownsD2750D2740PaysPrepSeatDate(String crownsD2750D2740PaysPrepSeatDate) {
-		this.crownsD2750D2740PaysPrepSeatDate = crownsD2750D2740PaysPrepSeatDate==null?"":crownsD2750D2740PaysPrepSeatDate;
+		this.crownsD2750D2740PaysPrepSeatDate = crownsD2750D2740PaysPrepSeatDate == null ? ""
+				: crownsD2750D2740PaysPrepSeatDate;
 	}
 
 	public String getNightGuardsD9940FL() {
@@ -934,8 +940,8 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setBasicWaitingPeriod(String basicWaitingPeriod) {
-		
-		this.basicWaitingPeriod = basicWaitingPeriod==null?"":basicWaitingPeriod;
+
+		this.basicWaitingPeriod = basicWaitingPeriod == null ? "" : basicWaitingPeriod;
 	}
 
 	public String getMajorWaitingPeriod() {
@@ -943,7 +949,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setMajorWaitingPeriod(String majorWaitingPeriod) {
-		this.majorWaitingPeriod =  majorWaitingPeriod==null?"":majorWaitingPeriod;
+		this.majorWaitingPeriod = majorWaitingPeriod == null ? "" : majorWaitingPeriod;
 	}
 
 	public String getsSCD2930FL() {
@@ -1159,7 +1165,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setsRPD4341QuadsPerDay(String sRPD4341QuadsPerDay) {
-		this.sRPD4341QuadsPerDay = sRPD4341QuadsPerDay==null?"":sRPD4341QuadsPerDay;
+		this.sRPD4341QuadsPerDay = sRPD4341QuadsPerDay == null ? "" : sRPD4341QuadsPerDay;
 	}
 
 	public String getsRPD4341DaysBwTreatment() {
@@ -1519,7 +1525,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setOrthoSubjectDeductible(String orthoSubjectDeductible) {
-		this.orthoSubjectDeductible = orthoSubjectDeductible==null?"":orthoSubjectDeductible;
+		this.orthoSubjectDeductible = orthoSubjectDeductible == null ? "" : orthoSubjectDeductible;
 	}
 
 	public String getFillingsBundling() {
@@ -1527,7 +1533,7 @@ public class PatientDetail extends BaseAudit implements Serializable{
 	}
 
 	public void setFillingsBundling(String fillingsBundling) {
-		FillingsBundling = FillingsBundling==null?"":FillingsBundling;
+		FillingsBundling = FillingsBundling == null ? "" : FillingsBundling;
 	}
 
 	public String getComments() {
@@ -1578,7 +1584,6 @@ public class PatientDetail extends BaseAudit implements Serializable{
 		this.uniqueID = uniqueID;
 	}
 
-	
 	public String getInsName() {
 		return insName;
 	}
@@ -1723,8 +1728,6 @@ public class PatientDetail extends BaseAudit implements Serializable{
 		this.pAXRaysSubDed = pAXRaysSubDed;
 	}
 
-	
-
 	public String getCrowngradeCode() {
 		return crowngradeCode;
 	}
@@ -1765,8 +1768,30 @@ public class PatientDetail extends BaseAudit implements Serializable{
 		this.nightGuardsD9945Fr = nightGuardsD9945Fr;
 	}
 
-	
-	
-	
+	public String getFillingsInYear() {
+		return fillingsInYear;
+	}
 
+	public void setFillingsInYear(String fillingsInYear) {
+		this.fillingsInYear = fillingsInYear;
+	}
+
+	public String getExtractionsInYear() {
+		return extractionsInYear;
+	}
+
+	public void setExtractionsInYear(String extractionsInYear) {
+		this.extractionsInYear = extractionsInYear;
+	}
+
+	public String getCrownsInYear() {
+		return crownsInYear;
+	}
+
+	public void setCrownsInYear(String crownsInYear) {
+		this.crownsInYear = crownsInYear;
+	}
+
+	
+	
 }

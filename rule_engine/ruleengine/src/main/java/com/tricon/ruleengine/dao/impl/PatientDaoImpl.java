@@ -296,7 +296,8 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " implants_fr_d6010 as implants5,implants_fr_d6057 as implants6,implants_fr_d6065 as implants7,implants_fr_d6190 as implants8, " //add new Columns here
 					+ " crown_grade_code as posterior17,fmx_per as percentages16, " //add new Columns here will_crown_grade as posterior16
 					+ " ortho_remaining as ortho5,ortho_waiting_period as waitingPeriod3, night_guards_d9945_percentage as posterior18, " //add new Columns here
-					+ " night_guards_d9944_fr as posterior19,night_guards_d9945_fr as posterior20 " //add new Columns here
+					+ " night_guards_d9944_fr as posterior19,night_guards_d9945_fr as posterior20,fillings_in_year as fill1," //add new Columns here
+					+ " extractions_in_year as extr1, crowns_in_year as crn1 " ////add new Columns here
 					
 					//+ " as  " //add new Columns here
 					

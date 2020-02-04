@@ -10,6 +10,7 @@ public class IVFTableSheet {
 
 	private String officeName;// A
 	private String patientName;// B
+	//private String insuranceType;// to identify insurance type for now Primary of Secondary
 	private String insName; // C
 	private String taxId;// D
 	private String policyHolder;// E
@@ -178,6 +179,29 @@ public class IVFTableSheet {
 
 	private String nightGuardsD9945Fr;//posterior20
     //end
+	
+	private String fillingsInYear;// fill1
+	public String getFillingsInYear() {
+		return fillingsInYear;
+	}
+	public void setFillingsInYear(String fillingsInYear) {
+		this.fillingsInYear = fillingsInYear;
+	}
+	public String getExtractionsInYear() {
+		return extractionsInYear;
+	}
+	public void setExtractionsInYear(String extractionsInYear) {
+		this.extractionsInYear = extractionsInYear;
+	}
+	public String getCrownsInYear() {
+		return crownsInYear;
+	}
+	public void setCrownsInYear(String crownsInYear) {
+		this.crownsInYear = crownsInYear;
+	}
+	private String extractionsInYear;// extr1
+	private String crownsInYear;// crn1
+
 	
 
 	
@@ -1308,6 +1332,7 @@ public class IVFTableSheet {
 	public void setNightGuardsD9945Fr(String nightGuardsD9945Fr) {
 		this.nightGuardsD9945Fr = nightGuardsD9945Fr;
 	}
+	
 	
 	
 	

@@ -291,6 +291,10 @@ public class Constants {
 	public static int VALIDATE_FROM_SHEET=0; 
 	//public static int VALIDATE_FROM_RDBMS=1;
 	
+	//public static String INSURANCE_TPYE_IVF_PRIMARY="primary";
+	//public static String INSURANCE_TPYE_IVF_SECONDARY="secondary";
+	
+	
 	
 	
 }

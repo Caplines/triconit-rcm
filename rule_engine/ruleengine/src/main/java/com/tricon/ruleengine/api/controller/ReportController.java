@@ -157,7 +157,8 @@ public class ReportController {
 		dto.setEmployerNameDB("");
 		dto.setGeneralDateIVFDoneDB(rdto.getGeneralDateRun());
 		dto.setOfficeNameDB(rdto.getOfficeId());
-		dto.setPatientIdDB(rdto.getReportField1());
+		//dto.setPatientIdDB(rdto.getReportField1());
+		dto.setUniqueID(rdto.getReportField1()); 
 		dto.setPatientName("");
 		
 		Office office = od.getOfficeByUuid(dto.getOfficeNameDB());

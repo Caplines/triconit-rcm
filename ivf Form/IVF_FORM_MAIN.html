@@ -17,6 +17,8 @@
     <script>
      //TRICON START
 	 var RE_IP="https://www.ruleengine.ga";
+	 //RE_IP="http://localhost:8080";
+	 
 	 var RE_PASS="134568";
 	 
    function copyOFFiceName(){
@@ -69,6 +71,9 @@
                             +'  Employer Name '
                             +'</td>'
 							+'<td class="" style="width:20%">'
+                            +'  Insurance Name'
+                            +'</td>'
+							+'<td class="" style="width:20%">'
                             +'  General IVF Done Date'
                             +'</td>';
 			for(k in datas){
@@ -89,6 +94,9 @@
                             +'</td>'
 							+'<td class="">'
                             +datas[k].basicInfo10
+                            +'</td>'
+							+'<td class="">'
+                            +datas[k].basicInfo3
                             +'</td>'
 							+'<td class="">'
                             +datas[k].date
@@ -151,7 +159,7 @@
        $(this).prop('checked', false);
        })
      for (var key in temp) {
-           //console.log(' name=' + key + ' value=' + temp[key]);
+          //console.log(' name=' + key + ' value=' + temp[key]);
            var x=document.getElementsByName(key);
           if (key=='history') {
                var he=document.getElementsByName(key);
@@ -162,7 +170,7 @@
                 if (document.getElementsByName(key).length<(hc+1)) addHis();
                 he[hc++].value=(dh[0]=="BLANK")?"":dh[0];
                 if (document.getElementsByName(key).length<(hc+1)) addHis();
-                he[hc++].value=(dh[1]=="BLANK")?"":dh[1]+(dh[2]=="BLANK")?"":("-"+dh[2]);
+                he[hc++].value=(dh[1]=="BLANK")?"":dh[1]+((dh[2]=="BLANK")?"":("-"+dh[2]));
                 if (document.getElementsByName(key).length<(hc+1)) addHis();
                 he[hc++].value=(dh[3]=="BLANK")?"":dh[3];
                 if (!he[0]) addHis();

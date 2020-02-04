@@ -84,6 +84,8 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 						sh.setGeneralDateIVwasDone(correctDateformat(sh.getGeneralDateIVwasDone()));
 						sh.setAptDate(correctDateformat(sh.getAptDate()));
 										//sh.getHs()
+						//Default make if Primary
+						//sh.setInsuranceType(Constants.INSURANCE_TPYE_IVF_PRIMARY);
 						if (sh.getHs() != null) {
 							updateHistortList(sh.getHs());
 //null from tooth surface is needed...

@@ -934,6 +934,25 @@
 						<td><span class="sub-heading1"><xsl:value-of select="posterior20"/></span></td>
                     </tr>
 
+					<tr>
+                        <td class="main-heading-11 withds colourpos"><span class="">How many fillings can be done in a year? :</span> 
+						
+						</td>
+                        <td><span class="sub-heading1"><xsl:value-of select="fill1"/></span></td>
+                        <td class="colourb">
+						</td>
+                        
+                        <td class="main-heading-11" colspan="1"><span class="colourpos">How many Extractions can be done in a year?:</span>
+                         </td>
+						 <td class="sub-heading1" colspan="1"><xsl:value-of select="extr1"/>
+                         </td>
+                        <td><span class="main-heading-11 colourpos">How many crowns can be done in a year?:</span></td>
+                        <td class="sub-heading1"><xsl:value-of select="crn1"/>
+						</td>
+						<td><span class="sub-heading1"></span></td>
+                        <td><span class="main-heading-11"></span></td>
+						<td><span class="sub-heading1"></span></td>
+                    </tr>
                     
                 </tbody>
             </table>

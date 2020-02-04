@@ -3218,6 +3218,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						cdc.setPatientPortion(a.getPatientPortion());
 						cdc.setProviderLastName(a.getProviderLastName());
 						cdc.setServiceCode(a.getServiceCode());
+						if (a.getServiceCode()==null) cdc.setServiceCode("");
 						cdc.setStatus(a.getStatus());
 						cdc.setSurface(a.getSurface());
 						cdc.setTooth(a.getTooth());
@@ -3254,6 +3255,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						cdc.setPatientPortion(a.getPatientPortion());
 						cdc.setProviderLastName(a.getProviderLastName());
 						cdc.setServiceCode(a.getServiceCode());
+						if (a.getServiceCode()==null) cdc.setServiceCode("");
 						cdc.setStatus(a.getStatus());
 						cdc.setSurface(a.getSurface());
 						cdc.setTooth(a.getTooth());

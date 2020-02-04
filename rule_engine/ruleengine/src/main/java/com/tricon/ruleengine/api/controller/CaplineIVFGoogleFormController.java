@@ -4,15 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,11 +26,8 @@ import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GenericResponse;
-import com.tricon.ruleengine.dto.UserRegistrationDto;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.Office;
-import com.tricon.ruleengine.model.db.Patient;
-import com.tricon.ruleengine.pdf.CaplineIVFFormDtoToXML;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 
 @CrossOrigin

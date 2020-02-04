@@ -1,6 +1,5 @@
 package com.tricon.ruleengine.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,6 +16,8 @@ public class CaplineIVFFormDto {
 	private int patDid;
 
 	private int pidDB;
+	
+	//private String insuranceType;
 	
 	
 	public int getPatDid() {
@@ -509,11 +510,38 @@ public class CaplineIVFFormDto {
     private String posterior19;//
     private String posterior20;//
     
+    private String fill1;//
+    private String extr1;//
+    private String crn1;//
     
     
     //END
     
-    private String comments;
+    public String getFill1() {
+		return fill1;
+	}
+
+	public void setFill1(String fill1) {
+		this.fill1 = fill1;
+	}
+
+	public String getExtr1() {
+		return extr1;
+	}
+
+	public void setExtr1(String extr1) {
+		this.extr1 = extr1;
+	}
+
+	public String getCrn1() {
+		return crn1;
+	}
+
+	public void setCrn1(String crn1) {
+		this.crn1 = crn1;
+	}
+
+	private String comments;
     
     private int commentsRows;
     
@@ -1860,6 +1888,8 @@ public class CaplineIVFFormDto {
 	public void setPosterior20(String posterior20) {
 		this.posterior20 = posterior20;
 	}
+
+	
 
    
 	

@@ -183,7 +183,7 @@ export class ReportComponent implements OnInit {
 	downloadPDF(data) {
 
 
-		this.accountService.downloadIVFPDF({ "reportField1": data.basicInfo21, "officeId": this.report.officeId, "generalDateRun": data.date }, (result) => {
+		this.accountService.downloadIVFPDF({ "reportField1": data.patDid, "officeId": this.report.officeId }, (result) => {
 			this.showLoading = false;
 			if (result.status == '200') {
 				//const filename = result.headers.get('filename');

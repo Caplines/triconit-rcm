@@ -698,7 +698,13 @@
 					<tr>
 						<td>Ortho Remaing: {{reportDataInd.ortho5}}</td>
 						<td>Ortho Waiting Period(In Months): {{reportDataInd.waitingPeriod3}}</td>
-						<td></td>
+						<td>Consult (D9310)% :{{reportDataInd.posterior8}}</td>
+						<td>Frequency :{{reportDataInd.posterior9}}</td>
+					</tr>
+					<tr>
+						<td>How many fillings can be done in a year?: {{reportDataInd.fill1}}</td>
+						<td>How many Extractions can be done in a year?: {{reportDataInd.extr1}}</td>
+						<td>How many crowns can be done in a year? :{{reportDataInd.crn1}}</td>
 						<td></td>
 					</tr>
 				</table>
@@ -713,7 +719,7 @@
 					</tr>
 					<tr *ngFor="let c of reportDataInd.hdto">
 						<td>{{c.historyCode}}</td>
-						<td>{{c.historyTooth}} {{surfaceTooth}}</td>
+						<td>{{c.historyTooth}} {{c.surfaceTooth}}</td>
 						<td>{{c.historyDos}}</td>
 					</tr>
 				</table>

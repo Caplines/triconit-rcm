@@ -39,7 +39,7 @@ import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.IVFFormConversionUtil;
 
-import io.jsonwebtoken.lang.Arrays;
+//import io.jsonwebtoken.lang.Arrays;
 
 @Transactional(rollbackOn = Exception.class)
 @Service
@@ -98,10 +98,15 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		
 		Integer r = 0;
 		String generalDate="";
+		String insuranceName="";
+		String employerName="";
+		
 		if (pat.getPatientDetails()!=null && pat.getPatientDetails().size()>0) {
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
 			PatientDetail x = iter.next();
 			generalDate =x.getGeneralDateIVwasDone();
+			insuranceName = x.getInsName();
+			employerName = x.getEmployerName(); 
 		}
 		try {
 			if (patd == null) {
@@ -113,7 +118,10 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				int oldPdid=-1;
 				Set<PatientHistory> pholdset= patd.getPatientHistory();
 				for (PatientDetail pd : patd.getPatientDetails()) {
-					if (pd.getGeneralDateIVwasDone().equals(generalDate)) {
+					if (pd.getGeneralDateIVwasDone().equals(generalDate) 
+							&& pd.getEmployerName().toLowerCase().trim().equals(employerName.toLowerCase().trim())
+							&& pd.getInsName().toLowerCase().trim().equals(insuranceName.toLowerCase().trim())
+							) {
 						oldPdid=pd.getId();	
 					}
 					
@@ -149,7 +157,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 					PatientDetail pdN = iter.next();
 					boolean oldDetailMatched = false;
 					for (PatientDetail pd : patd.getPatientDetails()) {
-						if (pd.getGeneralDateIVwasDone().equals(pdN.getGeneralDateIVwasDone())) {
+						if (pd.getGeneralDateIVwasDone().equals(pdN.getGeneralDateIVwasDone())
+							&& 	pd.getEmployerName().toLowerCase().trim().equals(pdN.getEmployerName().toLowerCase().trim())
+							&& 	pd.getInsName().toLowerCase().trim().equals(pdN.getInsName().toLowerCase().trim())) { 
 							pdN.setId(pd.getId());
 							pdN.setCreatedBy(pd.getCreatedBy());
 							pdN.setCreatedDate(pd.getCreatedDate());
