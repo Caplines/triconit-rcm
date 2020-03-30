@@ -1,4 +1,6 @@
-export class IVFModel {
+import {StatusList} from '../util/status.list.component';
+                                     
+export class IVFModel extends StatusList{
   //id : string;
   treatmentPlanId: string="";
   ivfId: string="";
@@ -6,5 +8,6 @@ export class IVFModel {
   debugMode:boolean=false;
   inputModeD:boolean=false;
   inputMode:boolean=false;
+
 
 }

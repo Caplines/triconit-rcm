@@ -48,7 +48,13 @@
 							<div *ngIf="f.submitted && ivfd.officeId==''" class="error-msg">The
 								Office Name is required</div>
 						</div>
-						
+						<div class="form-group">
+							 <input
+								type="checkbox" class=""
+								name="newColumn" id="newColumns" [(ngModel)]="ivfd.newColumns"
+								#debugMode="ngModel"  />
+							<label class="sr-checkbox" for="newColumns">With New Columns</label>
+                        </div>
 
 						<p>
 							<button [disabled]="showLoading" type="submit" class="btn">Dump Data

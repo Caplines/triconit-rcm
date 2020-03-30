@@ -471,6 +471,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			if (li!=null  && li.size() > 0) {
 				CaplineIVFFormDto form = li.get(0);
 				obj[0]=form.getBasicInfo2();
+				
+				//remove $ sign
+				
 				if (form.getHistory() != null) {
 					int ct = 0;
 					List<ToothHistoryDto> hdto = new ArrayList<>();
@@ -515,7 +518,19 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 					form.setHdto2(l2);
 					form.setHdto3(l3);
 					form.setHdto(null);
-					
+				//Remove $ sign	
+				if (form.getSealantsD()!=null)	form.setSealantsD(form.getSealantsD().replaceAll("\\$", ""));
+				if (form.getPerioMnt1()!=null)	form.setPerioMnt1(form.getPerioMnt1().replaceAll("\\$", ""));
+				if (form.getPerioMnt4()!=null)	form.setPerioMnt4(form.getPerioMnt4().replaceAll("\\$", ""));
+				if (form.getPerio1()!=null)	form.setPerio1(form.getPerio1().replaceAll("\\$", ""));
+				if (form.getPerioMnt6()!=null)	form.setPerioMnt6(form.getPerioMnt6().replaceAll("\\$", ""));
+				if (form.getSedations1()!=null)	form.setSedations1(form.getSedations1().replaceAll("\\$", ""));
+				if (form.getSedations2()!=null)	form.setSedations2(form.getSedations2().replaceAll("\\$", ""));
+				if (form.getExtractions1()!=null)	form.setExtractions1(form.getExtractions1().replaceAll("\\$", ""));
+				if (form.getExtractions2()!=null)	form.setExtractions2(form.getExtractions2().replaceAll("\\$", ""));
+				if (form.getOral1()!=null)	form.setOral1(form.getOral1().replaceAll("\\$", ""));
+				if (form.getImplants4()!=null)	form.setImplants4(form.getImplants4().replaceAll("\\$", ""));
+				
 				}
 				CaplineIVFFormDtoToXML xml = new CaplineIVFFormDtoToXML();
 				String filePath = xml.convertToXML(form, XSLT_PATH);

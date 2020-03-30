@@ -714,7 +714,7 @@ public class IVFFormConversionUtil {
 		pd.setsRPD4341DaysBwTreatment(d.getsRPD4341DaysBwTreatment());
 		pd.setsRPD4341FL(d.getsRPD4341FL());
 		pd.setsRPD4341Percentage(d.getsRPD4341Percentage());
-		pd.setsRPD4341QuadsPerDay(d.getsRPD4341Percentage());
+		pd.setsRPD4341QuadsPerDay(d.getsRPD4341QuadsPerDay());
 		pd.setsSCD2930FL(d.getsSCD2930FL());
 		pd.setsSCD2931FL(d.getsSCD2931FL());
 		pd.setTaxId(d.getTaxId());
@@ -722,7 +722,7 @@ public class IVFFormConversionUtil {
 		//new in IVF html form
 		pd.setPreventiveSubDed(d.getPreventiveSubDed());//percentages13
 		pd.setDiagnosticSubDed(d.getDiagnosticSubDed());//percentages14
-		pd.setpAXRaysSubDed(d.getpAXRaysSubDed());;//percentages15
+		pd.setpAXRaysSubDed(d.getpAXRaysSubDed());//percentages15
 		
 		pd.setDen5225Per(d.getDen5225Per());// den5225
 		pd.setDenf5225FR(d.getDenf5225FR());//denf5225 

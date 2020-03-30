@@ -66,7 +66,7 @@ public class RuleBook {
 	 *            (IV - Effective Date)
 	 */
 	public List<TPValidationResponseDto> Rule1(Object ivfSheet, MessageSource messageSource, Rules rule, boolean onlyIVF,
-			List<Object> tpList, BufferedWriter bw, int userType) {
+			List<Object> tpList,List<Object> tpListAll, BufferedWriter bw, int userType,String status) {
 		// Date tpDate = null;
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_1,
 				Constants.rule_log_debug, bw);
@@ -84,6 +84,17 @@ public class RuleBook {
 		    str="CL";
 		}
 		try {
+			
+			if (!onlyIVF &&  (tpList==null || tpList.size()==0)) {
+				
+				RuleEngineLogger.generateLogs(clazz, "Exit Engine ", Constants.rule_log_debug, bw);
+				dList.add(new TPValidationResponseDto(1, "Status Rule",
+						messageSource.getMessage("rules.error.message.status.miss", new Object[] { status }, locale),
+						Constants.EXTI_ENGINE,"","",""));
+				pass=false;
+				return dList;
+		
+			}
 			String td = ivf.getPlanTermedDate();
 			RuleEngineLogger.generateLogs(clazz, "PlanTermedDate --" + td, Constants.rule_log_debug, bw);
 			if (td != null && (!td.trim().equals("") && !td.trim().equalsIgnoreCase("NA"))) {
@@ -122,8 +133,9 @@ public class RuleBook {
 					}
 				}
 				 
-				
-				if (ivfPlanTermDate != null && ivfPlanTermDate.compareTo(currentDate) > 0) {
+				//Added on email date - > 4 Feb,2020
+				//userType==Constants.userType_CL &&
+				if ( ivfPlanTermDate != null && ivfPlanTermDate.compareTo(currentDate) > 0) {
 					proceed = true;
 				} else {
 

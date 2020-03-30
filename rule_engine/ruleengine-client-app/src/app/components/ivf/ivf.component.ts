@@ -25,7 +25,6 @@ export class IVFComponent implements OnInit {
   showPopup: boolean = false;
   showLoading: boolean = false;
   showPopupInput: boolean = false;
-  
   showIvfData: boolean = false;
   questionData:any;
   ut:string="1";
@@ -40,7 +39,6 @@ export class IVFComponent implements OnInit {
 	  
 	//console.log(this.route.snapshot.data['offs'].data);
 	this.offices =this.route.snapshot.data['offs'].data;
-	
 	
 	/*  
       this.accountService.getOffices((result) => {
@@ -75,7 +73,7 @@ export class IVFComponent implements OnInit {
 		    this.uim.ivfId=this.ivfm.ivfId;
 		    this.uim.inputMode=this.ivfm.inputModeD;
 			//this.showLoading = true;
-
+		    this.uim.status=this.ivfm.status;
 		    //this.accountService.validateIVF(this.ivfm, this.ivfValidateName, (result) => {
 		    this.accountService.validateIVF(this.uim, 'validateTreatmentPlan', (result) => {		
 				if (result.status=='OK'){

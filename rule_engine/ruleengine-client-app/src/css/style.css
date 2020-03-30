@@ -216,6 +216,13 @@ button.btn:active:focus, button.btn.active:focus {
     
     }
     
+  .status-form-field {
+  width: 50% !important;
+  display: inline !important;
+  float: right;
+  
+}
+    
 @media (max-width: 768px) {
 	
 	.inner-bg .col-sm-offset-3 {
@@ -231,6 +238,8 @@ button.btn:active:focus, button.btn.active:focus {
 .ivf-form-validation .login-signup-form-field {
     width: 100%;
 }
+
+
 .ivf-form-validation p {
     float: inherit;
 }
@@ -763,3 +772,7 @@ text-decoration: underline;
   color:red!important;
   border-color:red!important;
  }   
+ 
+ .ngx-start-date .ngx-datepicker-calendar-container{
+   z-index:9999;
+  }

@@ -87,7 +87,7 @@
                                      <ng-datepicke r name="datePicker" [headless]="true" #datePicker [(ngModel)]="report.reportField1" [options]="dateOptions"></ng-datepicker>
                                     -->
 								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id ="datepicker1"
-									 [options]="dateOptions1"></ng-datepicker>
+									 [options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
 
 								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id ="datepicker2"
 									[options]="dateOptions2"></ng-datepicker>
@@ -108,7 +108,7 @@
 									<div *ngIf="f.submitted && report.employerName==''" class="error-msg">User Name is required</div>
 							   </div>
 								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id ="datepicker1"
-									 [options]="dateOptions1"></ng-datepicker>
+									 [options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
 
 								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id ="datepicker2"
 									 [options]="dateOptions2"></ng-datepicker>

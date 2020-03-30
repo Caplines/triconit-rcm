@@ -78,6 +78,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.cors().and()
             // we don't need CSRF because our token is invulnerable
             .csrf().disable()
+		//
+		//https://stackoverflow.com/questions/36261781/x-csrf-token-is-not-generated-by-spring-booot
 		   //   .csrf().csrfTokenRepository(csrfTokenRepository).and()//added for CSRF...
 		   //   .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()//added for CSRF this worked by cookie is visible...
             .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
@@ -123,7 +125,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                 HttpMethod.GET,
                 "/queryivdatatopdf",
-                "/.well-known/acme-challenge/8h0NwOQLZreL70OMOZtKMYcM5W2Fme1JUatgJFuTElA",
+				"/.well-known/acme-challenge/8h0NwOQLZreL70OMOZtKMYcM5W2Fme1JUatgJFuTElA",
+                "/.well-known/acme-challenge/AoJiyMAei-mA1StzpKpf22vgqefQLxk8GgBsa3yplpA",
                 "/queryivdatafromdbgoogle",
                 "/queryivdatahistoryfromdbgoogle",
                 "/open/*",

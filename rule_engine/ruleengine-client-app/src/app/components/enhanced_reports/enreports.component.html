@@ -63,7 +63,7 @@
 						</div>
 						
 						<div class="form-group date-dropdown" [ngClass]="{ 'has-error': f.submitted }">
-							<ng-datepicker [(ngModel)]="enreports.startDate" name="datePicker1" [options]="dateOptionsS"></ng-datepicker>
+							<ng-datepicker [(ngModel)]="enreports.startDate" name="datePicker1" [options]="dateOptionsS" class="ngx-start-date"></ng-datepicker>
 							<div *ngIf="f.submitted && enreports.endDate!='' && enreports.startDate==''" class="error-msg">Please select valid Date.</div>
 						</div>
 						

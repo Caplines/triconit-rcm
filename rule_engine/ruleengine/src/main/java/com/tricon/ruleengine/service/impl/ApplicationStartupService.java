@@ -29,7 +29,7 @@ public class ApplicationStartupService {
 	@EventListener
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		RuleEngineLogger.generateLogs(clazz, "Application Started .. ", Constants.rule_log_debug, null);
-		RuleEngineLogger.generateLogs(clazz, " Update ruuning Status of Scrapping.....", Constants.rule_log_debug, null);
+		RuleEngineLogger.generateLogs(clazz, " Update running Status of Scrapping.....", Constants.rule_log_debug, null);
 		String[] p=env.getActiveProfiles();
 		if (p[0].equalsIgnoreCase("prod"))
 		sDao.updateScrappingSiteRunningStatusAll();//in case we need uncomment this latter...

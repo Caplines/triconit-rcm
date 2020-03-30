@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
+import org.springframework.beans.BeanUtils;
 //import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.ruleengine.dto.FlexBean;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.GoogleReportDTO;
+import com.tricon.ruleengine.dto.sheetresponse.*;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.GoogleReportService;
 
@@ -138,7 +140,7 @@ public class GoogleReportsController {
 			@RequestParam(value = "columnCount", required = true) int columnCount,
 			@RequestParam(value = "password", required = true) String password,
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
-			HttpServletResponse response) throws JSONException, MalformedURLException {
+			HttpServletResponse response) throws JSONException, MalformedURLException, ClassNotFoundException {
 		//
 		es.setUpSSLCertificates();
 		/*
@@ -224,7 +226,23 @@ public class GoogleReportsController {
 
 			}
 		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", beanList));
+          /*
+          * http://localhost:8080/googleESReport?query=
+            FROM dbo.syscolumns b,sysobjects a where a.id=b.id and a.name LIKE 'treatment_plans'
+            &selectcolumns=b.name&columnCount=1&office=Jasper&password=134568 
+          */
+		    //Add name and age
+		
+		
+		//Class<?> c2 = Class.forName("com.tricon.ruleengine.dto.sheetresponse.Response"+columnCount);//--Done
+		List<Object> l = new ArrayList<>();	
+		if (beanList!=null) {
+		
+		for (GoogleReportDTO d:beanList) {
+		    l.add(setUPResponseDataRequired(d,columnCount,null));
+		}
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", l));
 
 	}
 
@@ -440,4 +458,111 @@ public class GoogleReportsController {
 		return dataBean;
 	}
 
+	
+	private Object setUPResponseDataRequired(GoogleReportDTO dataBean, int x, Object  obj) {
+		
+		Object newObject = null;
+		if (x==1)newObject = new Response1(); 
+		else if (x==2)newObject = new Response2(); 
+		else if (x==3)newObject = new Response3(); 
+		else if (x==4)newObject = new Response4(); 
+		else if (x==5)newObject = new Response5(); 
+		else if (x==6)newObject = new Response6(); 
+		else if (x==7)newObject = new Response7(); 
+		else if (x==8)newObject = new Response8(); 
+		else if (x==9)newObject = new Response9(); 
+		else if (x==10)newObject = new Response10(); 
+		else if (x==11)newObject = new Response11(); 
+		else if (x==12)newObject = new Response12(); 
+		else if (x==13)newObject = new Response13(); 
+		else if (x==14)newObject = new Response14(); 
+		else if (x==15)newObject = new Response15(); 
+		else if (x==16)newObject = new Response16(); 
+		else if (x==17)newObject = new Response17(); 
+		else if (x==18)newObject = new Response18(); 
+		else if (x==19)newObject = new Response19(); 
+		else if (x==20)newObject = new Response20(); 
+		else if (x==21)newObject = new Response21(); 
+		else if (x==22)newObject = new Response22(); 
+		else if (x==23)newObject = new Response23(); 
+		else if (x==24)newObject = new Response24(); 
+		else if (x==25)newObject = new Response25(); 
+		else if (x==26)newObject = new Response26(); 
+		else if (x==27)newObject = new Response27(); 
+		else if (x==28)newObject = new Response28(); 
+		else if (x==29)newObject = new Response29();
+		else if (x==30)newObject = new Response30();
+		else if (x==31)newObject = new Response31();
+		else if (x==32)newObject = new Response32();
+		else if (x==33)newObject = new Response33();
+		else if (x==34)newObject = new Response34();
+		else if (x==35)newObject = new Response35();
+		else if (x==36)newObject = new Response36();
+		else if (x==37)newObject = new Response37();
+		else if (x==38)newObject = new Response38();
+		else if (x==39)newObject = new Response39();
+		else if (x==40)newObject = new Response40();
+		else if (x==41)newObject = new Response41();
+		else if (x==42)newObject = new Response42();
+		else if (x==43)newObject = new Response43();
+		else if (x==44)newObject = new Response44();
+		else if (x==45)newObject = new Response45();
+		else if (x==46)newObject = new Response46();
+		else if (x==47)newObject = new Response47();
+		else if (x==48)newObject = new Response48();
+		else if (x==49)newObject = new Response49();
+		else if (x==50)newObject = new Response50();
+		else if (x==51)newObject = new Response51();
+		else if (x==52)newObject = new Response52();
+		else if (x==53)newObject = new Response53();
+		else if (x==54)newObject = new Response54();
+		else if (x==55)newObject = new Response55();
+		else if (x==56)newObject = new Response56();
+		else if (x==57)newObject = new Response57();
+		else if (x==58)newObject = new Response58();
+		else if (x==59)newObject = new Response59();
+		else if (x==60)newObject = new Response60();
+		else if (x==61)newObject = new Response61();
+		else if (x==62)newObject = new Response62();
+		else if (x==63)newObject = new Response63();
+		else if (x==64)newObject = new Response64();
+		else if (x==65)newObject = new Response65();
+		else if (x==66)newObject = new Response66();
+		else if (x==67)newObject = new Response67();
+		else if (x==68)newObject = new Response68();
+		else if (x==69)newObject = new Response69();
+		else if (x==70)newObject = new Response70();
+		else if (x==71)newObject = new Response71();
+		else if (x==72)newObject = new Response72();
+		else if (x==73)newObject = new Response73();
+		else if (x==74)newObject = new Response74();
+		else if (x==75)newObject = new Response75();
+		else if (x==76)newObject = new Response76();
+		else if (x==77)newObject = new Response77();
+		else if (x==78)newObject = new Response78();
+		else if (x==79)newObject = new Response79();
+		else if (x==80)newObject = new Response80();
+		else if (x==81)newObject = new Response81();
+		else if (x==82)newObject = new Response82();
+		else if (x==83)newObject = new Response83();
+		else if (x==84)newObject = new Response84();
+		else if (x==85)newObject = new Response85();
+		else if (x==86)newObject = new Response86();
+		else if (x==87)newObject = new Response87();
+		else if (x==88)newObject = new Response88();
+		else if (x==89)newObject = new Response89();
+		else if (x==90)newObject = new Response90();
+		else if (x==91)newObject = new Response91();
+		else if (x==92)newObject = new Response92();
+		else if (x==93)newObject = new Response93();
+		else if (x==94)newObject = new Response94();
+		else if (x==95)newObject = new Response95();
+		else if (x==96)newObject = new Response96();
+		else if (x==97)newObject = new Response97();
+		else if (x==98)newObject = new Response98();
+		else if (x==99)newObject = new Response99();
+		else if (x==100)newObject = new Response100();
+		BeanUtils.copyProperties(dataBean,newObject);
+		return newObject;
+	}
 }

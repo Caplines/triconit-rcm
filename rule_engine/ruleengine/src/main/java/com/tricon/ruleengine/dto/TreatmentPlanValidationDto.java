@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.dto;
 
+import java.util.List;
+
 public class TreatmentPlanValidationDto {
 
 	private String treatmentPlanId;
@@ -7,6 +9,9 @@ public class TreatmentPlanValidationDto {
 	private String officeId;
 	private boolean debugMode;
 	private boolean inputMode;
+	private String status;
+	//private List<String> statses;
+	
 	
 	
 	public String getTreatmentPlanId() {
@@ -40,7 +45,18 @@ public class TreatmentPlanValidationDto {
 		this.inputMode = inputMode;
 	}
 	
-	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	/*(public List<String> getStatses() {
+		return statses;
+	}
+	public void setStatses(List<String> statses) {
+		this.statses = statses;
+	}*/
 
 
 

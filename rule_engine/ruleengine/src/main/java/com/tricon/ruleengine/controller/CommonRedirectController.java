@@ -130,4 +130,21 @@ public class CommonRedirectController {
 		
 		//return "jZDbjQShlYmH4D3kq0tcgndIwf_1ioeegQEH4hbLyjg.XpbGCykpKh__XhBBrdH5ePZE_iXrGYFq_1_IdIuBlXM";
 	}
+	
+	@CrossOrigin
+	//@ResponseBody
+	@RequestMapping(value = "/.well-known/acme-challenge/AoJiyMAei-mA1StzpKpf22vgqefQLxk8GgBsa3yplpA", method = RequestMethod.GET
+			)//,produces="text/plain")
+	public void sslForward10Feb(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		try {       
+			response.setContentType("text/plain");
+	        PrintWriter out = response.getWriter();
+	        out.println("AoJiyMAei-mA1StzpKpf22vgqefQLxk8GgBsa3yplpA.Ssu42B3Er7gW5g7uRU0z-vIAHu-Pwu9Q5XCROJiNChY");
+	        out.close();
+	    } catch (IOException ex) { 
+	        //...
+	    }
+	}
 }

@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Collections2;
 import com.tricon.ruleengine.api.enums.HighLevelReportTypeEnum;
+import com.tricon.ruleengine.api.enums.StatusTypeEnum;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.SharePointDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
@@ -313,6 +314,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis=null;
 				List<MVPandVAP> mvpVapList=null;
 				Map<String, List<Object>> tMap=null;
+				Map<String, List<Object>> tMapReduced=null;
+				
+				
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				Map<String, List<EagleSoftFeeShedule>> esfeess = null;
 				
@@ -432,7 +436,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						if (type==Constants.userType_TR) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
 						if (type==Constants.userType_CL) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getClaimData(trids, esDB,bw);
 						//Phase 3 add new Query
-						tMap=crerateCommonDataObject(tMap,authentication);//create Common Object
+						tMapReduced=tMap;
+						tMap=createCommonDataObject(tMap,authentication,false,null);//create Common Object
+						tMapReduced=createCommonDataObject(tMapReduced,authentication,true,dtod.getStatus());//create Common Object
+						
 						List<String> pid=null;
 						Map<String,String> t_cl_pid=new HashMap<>();
 						//if (tMap!=null && (type==Constants.userType_CL || && type==Constants.userType_TR) ) {
@@ -532,6 +539,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					String empMasterKey = "HYPE100sq";// Some hypo value.
 					
 					List<Object> tList = null;
+					List<Object> tListReduced = null;
 					String inv1=Constants.invalidStr_TP;
 					if (type==Constants.userType_CL) inv1=Constants.invalidStr_Cl;
 
@@ -552,8 +560,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						list.add(dtoR);
 					} else {
 						tList = tMap.get(trx);
+						tListReduced = tMapReduced.get(trx);
+						
 						// Create File Name to rename latter..
 						tp = (CommonDataCheck) tList.get(0);
+						
 						TRAN_DATE =tp.getCdDetails().getDateLastUpdated();
 						CLAIM_DOS=tp.getCdDetails().getDateLastUpdated();
 						if (y == 0)
@@ -691,7 +702,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rule = getRulesFromList(rules, Constants.RULE_ID_1);
 						RuleBook rb = new RuleBook();
 						List<TPValidationResponseDto> dtoRL1 = new ArrayList<>();
-						dtoRL1 = rb.Rule1(ivfMap.get(ivx).get(0), messageSource, rule, false, tList, bw,type);
+						dtoRL1 = rb.Rule1(ivfMap.get(ivx).get(0), messageSource, rule, false,tListReduced ,tList, bw,type,dtod.getStatus());
 						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_1,
 								Constants.rule_log_debug, bw);
 						boolean exit=false;
@@ -751,7 +762,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									&& espatients.get(patKey).size() > 0)
 								feeKey = ((EagleSoftPatient) espatients.get(patKey).get(0)).getFeeScheduleId();
 							if (esfeess != null && espatients != null && espatients.get(patKey).size() > 0) {
-								dtoRL = rb.Rule4_B(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
+								dtoRL = rb.Rule4_B(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
 										esfeess.get(feeKey), espatients.get(patKey), bw,type);
 							} else {
 								if (esfeess == null)
@@ -866,7 +877,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							rule = getRulesFromList(rules, Constants.RULE_ID_19);
 							dtoRL = new ArrayList<>();
 							if (esfeess != null && espatients != null) {
-								dtoRL = rb.Rule19(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
+								dtoRL = rb.Rule19(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
 										esfeess.get(feeKey), espatients.get(patKey), bw,type);
 
 								if (dtoRL != null) {
@@ -911,7 +922,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_21 "// Frequency Limitations
 							rule = getRulesFromList(rules, Constants.RULE_ID_21);
-							dtoRL = rb.Rule21(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
+							dtoRL = rb.Rule21(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -928,7 +939,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_8 "Age Limits
 							rule = getRulesFromList(rules, Constants.RULE_ID_8);
-							dtoRL = rb.Rule8(tList, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+							dtoRL = rb.Rule8(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
 
 							
 							if (dtoRL != null) {
@@ -946,7 +957,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_18 "Missing Tooth Clause
 							rule = getRulesFromList(rules, Constants.RULE_ID_18);
-							dtoRL = rb.Rule18(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
+							dtoRL = rb.Rule18(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -963,7 +974,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_17 " Bundling - Fillings
 							rule = getRulesFromList(rules, Constants.RULE_ID_17);
-							dtoRL = rb.Rule17(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
+							dtoRL = rb.Rule17(tListReduced, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -980,7 +991,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_16 " Bundling - X-Rays
 							rule = getRulesFromList(rules, Constants.RULE_ID_16);
-							dtoRL = rb.Rule16(tList, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+							dtoRL = rb.Rule16(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -997,7 +1008,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_15 " SRP Quads Per Day
 							rule = getRulesFromList(rules, Constants.RULE_ID_15);
-							dtoRL = rb.Rule15(tList, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+							dtoRL = rb.Rule15(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1014,7 +1025,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_14 "Sealants
 							rule = getRulesFromList(rules, Constants.RULE_ID_14);
-							dtoRL = rb.Rule14(tList, ivfMap.get(ivx).get(0), messageSource, rule, bw, type);
+							dtoRL = rb.Rule14(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw, type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1032,7 +1043,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// RULE_ID_9 "Filling Codes based on Tooth No.
 
 							rule = getRulesFromList(rules, Constants.RULE_ID_9);
-							dtoRL = rb.Rule9(tList, messageSource, rule, mappings, bw,type);
+							dtoRL = rb.Rule9(tListReduced, messageSource, rule, mappings, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1049,7 +1060,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_10 "Pre Auth
 							rule = getRulesFromList(rules, Constants.RULE_ID_10);
-							dtoRL = rb.Rule10(tList,ansL, messageSource, rule, mappings, bw,qhList,type);
+							dtoRL = rb.Rule10(tListReduced,ansL, messageSource, rule, mappings, bw,qhList,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1066,7 +1077,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_11 "Waiting Period.
 							rule = getRulesFromList(rules, Constants.RULE_ID_11);
-							dtoRL = rb.Rule11(tList, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
+							dtoRL = rb.Rule11(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1083,7 +1094,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_13 "Build-Ups & Crown Same Day
 							rule = getRulesFromList(rules, Constants.RULE_ID_13);
-							dtoRL = rb.Rule13(tList, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+							dtoRL = rb.Rule13(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1100,7 +1111,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_22 "CRA
 							rule = getRulesFromList(rules, Constants.RULE_ID_22);
-							dtoRL = rb.Rule22(tList, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+							dtoRL = rb.Rule22(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1117,7 +1128,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_23 "Xray Bundling
 							rule = getRulesFromList(rules, Constants.RULE_ID_23);
-							dtoRL = rb.Rule23(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+							dtoRL = rb.Rule23(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1134,7 +1145,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Filling Bundling 
 							rule = getRulesFromList(rules, Constants.RULE_ID_24);
-							dtoRL = rb.Rule24(tList, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
+							dtoRL = rb.Rule24(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1184,7 +1195,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
                             */
 							// DQ Fillings
 							rule = getRulesFromList(rules, Constants.RULE_ID_53);
-							dtoRL = rb.Rule53(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
+							dtoRL = rb.Rule53(tListReduced, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1201,7 +1212,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
                              //
 							//  Crown Bundling with Fillings 
 							rule = getRulesFromList(rules, Constants.RULE_ID_25);
-							dtoRL = rb.Rule25(tList, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
+							dtoRL = rb.Rule25(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1218,7 +1229,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//  Filling and Sealant Not Covered
 							rule = getRulesFromList(rules, Constants.RULE_ID_26);
-							dtoRL = rb.Rule26(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+							dtoRL = rb.Rule26(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1235,7 +1246,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Sealant Not Covered
 							rule = getRulesFromList(rules, Constants.RULE_ID_27);
-							dtoRL = rb.Rule27(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+							dtoRL = rb.Rule27(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1252,7 +1263,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//  Restoration Not Covered
 							rule = getRulesFromList(rules, Constants.RULE_ID_28);
-							dtoRL = rb.Rule28(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+							dtoRL = rb.Rule28(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1269,7 +1280,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Exams Limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_29);
-							dtoRL = rb.Rule29(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw, type);
+							dtoRL = rb.Rule29(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw, type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1286,7 +1297,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//  Cleaning Limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_30);
-							dtoRL = rb.Rule30(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+							dtoRL = rb.Rule30(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1303,7 +1314,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Perio Maintainance Clause
 							rule = getRulesFromList(rules, Constants.RULE_ID_31);
-							dtoRL = rb.Rule31(tList, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+							dtoRL = rb.Rule31(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1320,7 +1331,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//  SRP Limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_32);
-							dtoRL = rb.Rule32(tList,messageSource, rule, bw,type);
+							dtoRL = rb.Rule32(tListReduced,messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1337,7 +1348,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Root Canal Clause
 							rule = getRulesFromList(rules, Constants.RULE_ID_33);
-							dtoRL = rb.Rule33(tList,messageSource, rule, bw,type);
+							dtoRL = rb.Rule33(tListReduced,messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1354,7 +1365,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  D2954 Clause
 							rule = getRulesFromList(rules, Constants.RULE_ID_34);
-							dtoRL = rb.Rule34(tList,messageSource, rule, bw,type);
+							dtoRL = rb.Rule34(tListReduced,messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1371,7 +1382,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Bone Graft Rule
 							rule = getRulesFromList(rules, Constants.RULE_ID_35);
-							dtoRL = rb.Rule35(tList,messageSource, rule, bw,type);
+							dtoRL = rb.Rule35(tListReduced,messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1388,7 +1399,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Immediate Denture
 							rule = getRulesFromList(rules, Constants.RULE_ID_36);
-							dtoRL = rb.Rule36(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+							dtoRL = rb.Rule36(tListReduced,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1405,7 +1416,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Extraction Limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_37);
-							dtoRL = rb.Rule37(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+							dtoRL = rb.Rule37(tListReduced,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1424,12 +1435,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							rule = getRulesFromList(rules, Constants.RULE_ID_38);
 							if (espatientsHis != null && espatientsHis.get(patKey) != null
 									&& espatientsHis.get(patKey).size() > 0) {
-								dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tList ,espatientsHis.get(patKey),messageSource, rule, bw,type);
+								dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tListReduced ,espatientsHis.get(patKey),messageSource, rule, bw,type);
 
 								
 							   	
 							}else {
-								dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tList ,null,messageSource, rule, bw,type);
+								dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tListReduced ,null,messageSource, rule, bw,type);
 								
 							}
 							if (dtoRL != null) {
@@ -1448,7 +1459,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Age Limitation Prophylaxis
 							rule = getRulesFromList(rules, Constants.RULE_ID_39);
-							dtoRL = rb.Rule39(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw,type);
+							dtoRL = rb.Rule39(ivfMap.get(ivx).get(0),tListReduced ,messageSource, rule, bw,type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1465,7 +1476,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Space Maintainer-Billateral
 							rule = getRulesFromList(rules, Constants.RULE_ID_40);
-							dtoRL = rb.Rule40(tList ,messageSource, rule, bw, type);
+							dtoRL = rb.Rule40(tListReduced ,messageSource, rule, bw, type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1483,7 +1494,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							//MVP VAP
 							if (type==Constants.userType_TR){
 							rule = getRulesFromList(rules, Constants.RULE_ID_41);
-							dtoRL = rb.Rule41(tList,mvpVapList ,messageSource, rule, bw);
+							dtoRL = rb.Rule41(tListReduced,mvpVapList ,messageSource, rule, bw);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1500,7 +1511,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//Duplicate TP Codes
 							rule = getRulesFromList(rules, Constants.RULE_ID_42);
-							dtoRL = rb.Rule42(tList ,messageSource, rule, bw,type);
+							dtoRL = rb.Rule42(tListReduced ,messageSource, rule, bw,type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1570,7 +1581,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
                             */
 							//Pre-Authorization (User Input)
 							rule = getRulesFromList(rules, Constants.RULE_ID_46);
-							dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
+							dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tListReduced,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1587,7 +1598,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Provider Change (User Input)
 							rule = getRulesFromList(rules, Constants.RULE_ID_47);
-							dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tList,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
+							dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tListReduced,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1604,7 +1615,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							//Exam limitation for CHIP
 							rule = getRulesFromList(rules, Constants.RULE_ID_48);
-							dtoRL = rb.Rule48(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw,type);
+							dtoRL = rb.Rule48(ivfMap.get(ivx).get(0),tListReduced ,messageSource, rule, bw,type);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1662,7 +1673,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						list.add(dtoR);
 						// saveReports(authentication, rule,dtoR, dto,(IVFTableSheet)(ivfList.get(0)));
 					}
-					if (ivfMap != null && ivfMap.get(ivx) != null && tList != null)
+					if (ivfMap != null && ivfMap.get(ivx) != null && tListReduced != null)
 						saveReportsList(authentication, rules, tp, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list, off,type);
 					// else
 					// saveReportsList(authentication, rules, trx, null, list,off);
@@ -1706,10 +1717,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								+ off.getName(), list);
 
 					} else {
+						
+						
 						if (type==Constants.userType_TR)
 						returnMap.put(inv+" - " + trx + " IV.id - " + ivx + " Of.Name -  " + off.getName()
 								+ " PT.id - " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
-								+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() + debug, list);
+								+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName()+" Status - "+StatusTypeEnum.getNameByType(dtod.getStatus())+" " + debug, list);
 						else {
 							String s=CLAIM_DOS;
 							try{s=Constants.SIMPLE_DATE_FORMAT_HEADER.format(Constants.SIMPLE_DATE_FORMAT.parse(CLAIM_DOS));}catch(Exception e) {}
@@ -1850,6 +1863,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			try {
 				
 				Map<String, List<Object>> tMap=null;
+				//Map<String, List<Object>> tMapReduced=null;
 				//Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				//Map<String, List<EagleSoftFeeShedule>> esfeess = null;
 				
@@ -1923,7 +1937,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 						if (type==Constants.userType_TR)tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
 						//Phase 3 add query
-						tMap=crerateCommonDataObject(tMap,authentication);//create Common Object
+						//tMapReduced=tMap;
+						tMap=createCommonDataObject(tMap,authentication,false,null);//create Common Object
+						//tMapReduced=createCommonDataObject(tMapReduced,authentication,true,dtod.getStatus());//create Common Object
                          //
 						// Read IVF Sheet From Google key is IVF id
 						if (sheets != null && sheets.size() > 0) {
@@ -2930,7 +2946,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					List<TPValidationResponseDto> dtoRL1 = new ArrayList<>();
 					boolean exit=false;
 					if (type==Constants.userType_TR) {
-					dtoRL1 = rb.Rule1(ivfMap.get(ivx).get(0), messageSource, rule, true, null, null,type);
+					dtoRL1 = rb.Rule1(ivfMap.get(ivx).get(0), messageSource, rule, true, null,null, null,type,"");
 					if (dtoRL1 != null) {
 						list.addAll(dtoRL1);
 						for (TPValidationResponseDto t : dtoRL1) {
@@ -3170,8 +3186,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 	}
 	
-	
-	private Map<String, List<Object>> crerateCommonDataObject(Map<String, List<Object>> tMap,Authentication authentication) {
+	private Map<String, List<Object>> createCommonDataObject(Map<String, List<Object>> tMap,Authentication authentication,boolean reduced,String status) {
 		if (tMap!=null) {
 			// using for-each loop for iteration over Map.entrySet() 
 			Map<String, List<Object>> tMap1= new HashMap<>();
@@ -3223,7 +3238,32 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						cdc.setSurface(a.getSurface());
 						cdc.setTooth(a.getTooth());
 						cdc.setUserType(type);
-						x.add(cdc);
+						if (!reduced)x.add(cdc);
+						else {
+							//System.out.println("STATUS ---------------->>"+cdc.getStatus()+"----"+status);
+							System.out.println("STATUS ---------------->>"+cdd.getStatus()+"----"+status);
+						  if (status!=null) {	
+						  if ("ALL".trim().toLowerCase().equals(status.trim().toLowerCase()) ||
+							     "".equals(status.trim())) {
+							  x.add(cdc);
+						  }else if (cdd.getStatus().trim().toLowerCase().equals(status.trim().toLowerCase()) && 
+								  StatusTypeEnum.post_to_walkout.getType().trim().toLowerCase().equals(status.trim().toLowerCase())) {
+							  x.add(cdc);
+						  }else if ("Others".trim().toLowerCase().equals(status.trim().toLowerCase()) &&
+								  (
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.complete.getType().trim().trim().toLowerCase()) ||
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.accepted.getType().trim().toLowerCase())  ||
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.proposed.getType().trim().toLowerCase())  ||
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.rejected.getType().trim().toLowerCase())  ||
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.referred.getType().trim().toLowerCase())
+								   ) ) {
+							  
+							  x.add(cdc);
+						   }
+						  }else {
+							  x.add(cdc);
+						  }
+						 }						
 						}
 	            	if (type==2) {
 						ClaimData a=(ClaimData)oL;
@@ -3260,7 +3300,31 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						cdc.setSurface(a.getSurface());
 						cdc.setTooth(a.getTooth());
 						cdc.setUserType(type);
-						x.add(cdc);
+						if (!reduced)x.add(cdc);
+						else {
+						  if (status!=null) {	
+						  if ("ALL".trim().toLowerCase().equals(status.trim().toLowerCase()) ||
+							     "".equals(status.trim())) {
+							  x.add(cdc);
+						  }else if (cdd.getStatus().trim().toLowerCase().equals(status.trim().toLowerCase()) && 
+								  StatusTypeEnum.post_to_walkout.getType().trim().toLowerCase().equals(status.trim().toLowerCase())) {
+							  x.add(cdc);
+						  }else if ("Others".trim().toLowerCase().equals(status.trim().toLowerCase()) &&
+								  (
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.complete.getType().trim().trim().toLowerCase()) ||
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.accepted.getType().trim().toLowerCase())  ||
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.proposed.getType().trim().toLowerCase())  ||
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.rejected.getType().trim().toLowerCase())  ||
+									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.referred.getType().trim().toLowerCase())
+								 ) ) {
+							  
+							  x.add(cdc);
+						   }
+						  }else {
+							  x.add(cdc);
+						  }
+						 						
+						}
 						
 						}
 	            }

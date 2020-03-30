@@ -57,7 +57,7 @@ public class IVFTableSheet {
 	private String preventivePercentage;// AS
 	private String diagnosticPercentage;// AT
 	private String pAXRaysPercentage;// AU
-	private String fmxPer;//not in sheet
+	private String fmxPer;//not in sheet  LV FMX(%) percentages16 T19
 	private String missingToothClause;// AV
 	private String replacementClause;// AW
 	private String crownsD2750D2740PaysPrepSeatDate;// AX
@@ -154,33 +154,35 @@ public class IVFTableSheet {
 	private List<IVFHistorySheet> iVFHistorySheetList= new ArrayList<>();
 	
 	//not in Sheet
-	private String preventiveSubDed;//percentages13
-	private String diagnosticSubDed;//percentages14
-	private String pAXRaysSubDed;//percentages15
+	private String preventiveSubDed;//percentages13    T17 LT
+	private String diagnosticSubDed;//percentages14    T8 LK
+	private String pAXRaysSubDed;//percentages15       T16 LS
 	
-	private String den5225Per;// den5225
-	private String denf5225FR;//denf5225 
-	private String den5226Per;//den5226 
-	private String denf5226Fr;//denf5226 
-	private String bridges1;//bridges1 
-	private String bridges2;//bridges2 
-	private String willDowngradeApplicable;//cdowngrade
-	private String implantsFrD6010;//implants5
-	private String implantsFrD6057;//implants6
-	private String implantsFrD6065;//implants7
-	private String implantsFrD6190;//implants8
-	private String orthoRemaining;//ortho5
-	private String orthoWaitingPeriod;//??waitingPeriod3
+	private String den5225Per;// den5225               T4 LG
+	private String denf5225FR;//denf5225               T6 LI
+	private String den5226Per;//den5226                T5 LH
+	private String denf5226Fr;//denf5226               T7 LJ
+	private String bridges1;//bridges1                  T1 LD
+	private String bridges2;//bridges2                  T2 LE
+	private String willDowngradeApplicable;//cdowngrade T18 LU   LU Will downgrade applicable?
+	private String implantsFrD6010;//implants5         T9 LL
+	private String implantsFrD6057;//implants6         T10 LM
+	private String implantsFrD6065;//implants7         T11 LN
+	private String implantsFrD6190;//implants8         T12 LO
+	private String orthoRemaining;//ortho5             T14 LQ
+	private String orthoWaitingPeriod;//??waitingPeriod3 T15 LR
 	//private String willCrowngrade;//posterior16
-	private String crowngradeCode;//posterior17
-	private String nightGuardsD9945Percentage;//posterior18
+	private String crowngradeCode;//posterior17        T3 LF
+	private String nightGuardsD9945Percentage;//posterior18  T13 LP
 	
-	private String nightGuardsD9944Fr;//posterior19
+	private String nightGuardsD9944Fr;//posterior19 T20 LW
 
-	private String nightGuardsD9945Fr;//posterior20
+	private String nightGuardsD9945Fr;//posterior20 T21 LX
+	private String extractionsInYear;// extr1 //LZ T23
+	private String crownsInYear;// crn1   //LY T22
     //end
 	
-	private String fillingsInYear;// fill1
+	private String fillingsInYear;// fill1 //MA T24
 	public String getFillingsInYear() {
 		return fillingsInYear;
 	}
@@ -199,8 +201,7 @@ public class IVFTableSheet {
 	public void setCrownsInYear(String crownsInYear) {
 		this.crownsInYear = crownsInYear;
 	}
-	private String extractionsInYear;// extr1
-	private String crownsInYear;// crn1
+	
 
 	
 

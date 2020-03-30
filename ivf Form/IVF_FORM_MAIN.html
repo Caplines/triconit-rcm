@@ -264,6 +264,15 @@ function error(errMsg) {
 //https://www.developerdrive.com/turning-a-form-element-into-json-and-submiting-it-via-jquery/
   //console.log(errMsg);
 }
+
+$(document).on("keypress", 'form', function (e) {
+console.log(e);
+    var code = e.keyCode || e.which;
+    if (code == 13) {
+        e.preventDefault();
+        return false;
+    }
+});
 function postDataToRuleEngine(event){
 	    var x= $.confirm({
 				title: 'Are you sure you want to submit the form!',
@@ -1084,7 +1093,7 @@ function postDataToRuleEngine(event){
                         </td>
                         
                         </tr>
-						<tr> <td colspan="5"> <button name="" onclick="searchFromRDBMS(event)">Search From RDBMS </td>
+						<tr> <td colspan="5"> <input type="button" onclick="searchFromRDBMS(event)" value="Search From RDBMS"/> </td>
 						</tr>
 				</tbody>
 			</table>

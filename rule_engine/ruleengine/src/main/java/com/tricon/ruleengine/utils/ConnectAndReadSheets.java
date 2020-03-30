@@ -127,6 +127,14 @@ public class ConnectAndReadSheets {
 		// return null;
 	}
 
+	public static Map<String, List<Object>> readSheetNew(String spreadsheetId, String sheetName, String[] id,
+			String clientDir, String clientFolder, String officeName, boolean idsPatient,boolean breakLoop) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		return readIVFWholeSheetWithNew(response, officeName);
+	}
+
 	public static void updateSheetRoster(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
 			List<RosterDetails> rList, int rowCount,int initRow,String status) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
@@ -592,7 +600,259 @@ public class ConnectAndReadSheets {
 		return map;
 
 	}
+   /**
+    * For new IVF sheet with new Columns added..
+    * @param range
+    * @param officeName
+    * @return
+    */
+	public static Map<String, List<Object>> readIVFWholeSheetWithNew(ValueRange range, String officeName
+			) {
 
+		List<List<Object>> values = range.getValues();
+		Map<String, List<Object>> map = null;
+		ListIterator li = values.listIterator(values.size());
+		IVFTableSheet vif = null;
+		// IVFHistorySheet vifH = null;
+		List<Object> ivList = null;
+		// int maxlength= values.size();
+		// int maxlengthT= values.size();
+		// System.out.println("maxlengthT30::"+maxlengthT);
+		//int Column_NO_UNIQUE = 312;
+		//int Column_NO_PATIENT = 129;
+
+		while (li.hasPrevious()) {
+			ArrayList<String> obj = (ArrayList<String>) li.previous();
+			String uniqueId = "";
+			try {
+				if (obj.get(Column_NO_UNIQUE).toLowerCase().startsWith("Unique_ID".toLowerCase()))
+					continue;
+				// System.out.println("id---" + ivds.get(0));
+				// System.out.println("id---" + officeName + "_" + ivds.get(0));
+				// System.out.println("888888:;" + (obj.get(157)));
+				Collection<String> ruleGen = null;
+				int x = -1;
+					vif = new IVFTableSheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), // 20*6
+																												// +5
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), // 21*6 +5 =131
+							new IVFHistorySheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+									obj.get(++x)),
+							obj.get(++x), obj.get(++x), obj.get(++x)
+
+					       );
+					try {
+						vif.setD0120(obj.get(++x));	
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setD2391(obj.get(++x));	
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setBridges1(obj.get(++x)); //LD
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setBridges2(obj.get(++x)); //LE
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setCrowngradeCode(obj.get(++x));//LF 
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setDen5225Per(obj.get(++x));//LG
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setDen5226Per(obj.get(++x));//LH
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setDenf5225FR(obj.get(++x));//LI
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setDenf5226Fr(obj.get(++x));//LJ
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+				
+					try {
+						vif.setDiagnosticSubDed(obj.get(++x));//LK
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setImplantsFrD6010(obj.get(++x));//LL
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setImplantsFrD6057(obj.get(++x));//LM
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setImplantsFrD6065(obj.get(++x));//LN
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setImplantsFrD6190(obj.get(++x));//LO
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setNightGuardsD9945Percentage(obj.get(++x));//LP
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setOrthoRemaining(obj.get(++x));//LQ
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setOrthoWaitingPeriod(obj.get(++x));//LR
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setpAXRaysSubDed(obj.get(++x));//LS
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setPreventiveSubDed(obj.get(++x));//LT
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setWillDowngradeApplicable(obj.get(++x));//LU 
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setFmxPer(obj.get(++x)); //LV --
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setNightGuardsD9944Fr(obj.get(++x));//LW
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setNightGuardsD9945Fr(obj.get(++x));//LX T21
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setCrownsInYear(obj.get(++x));//LY T22
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setExtractionsInYear(obj.get(++x));//LZ T23
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+					try {
+						vif.setFillingsInYear(obj.get(++x));//MA T24
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+				 //For new Added Columns
+				
+				
+
+				
+			} catch (Exception ex) {
+				continue;
+			}
+			// System.out.println(uniqueId);
+
+			if (map == null)
+				map = new HashMap<>();
+
+			if (map.containsKey(uniqueId)) {
+				// if the key has already been used,
+				// we'll just grab the array list and add the value to it
+				ivList = map.get(uniqueId);
+				ivList.add(vif);
+			} else {
+				// if the key hasn't been used yet,
+				// we'll create a new ArrayList<String> object, add the value
+				// and put it in the array list with the new key
+				ivList = new ArrayList<>();
+				ivList.add(vif);
+				map.put(uniqueId, ivList);
+			}
+
+			
+		} // While Loop - 1
+
+		return map;
+
+	}
 	public static Map<String, List<Object>> readMCNADentaSheet(ValueRange range) {
 
 		List<List<Object>> values = range.getValues();

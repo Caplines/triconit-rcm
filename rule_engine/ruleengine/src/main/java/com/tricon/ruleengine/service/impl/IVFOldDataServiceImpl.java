@@ -64,7 +64,10 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 
 				Map<String, List<Object>> ivfMap = null;
 		try {
+			if (!dto.isNewColumns())
 			ivfMap = ConnectAndReadSheets.readSheet(dto.getSheetId(), office.getName() + " " + dto.getSheetName(), null,
+					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);
+			else ivfMap = ConnectAndReadSheets.readSheetNew(dto.getSheetId(), office.getName() + " " + dto.getSheetName(), null,
 					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);
 			IVFTableSheet sh = null;
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

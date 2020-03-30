@@ -69,6 +69,13 @@
 								#debugMode="ngModel"  />
 							<label class="sr-checkbox" for="inputModeD">Input Mode </label>
                          </ng-container>
+                         <select
+								name="status" [(ngModel)]="ivfm.status"
+								class="status-form-field form-control" id="status">
+								<option value="">Status...</option>
+								<option *ngFor="let sta of ivfm.statses" [value]="sta.key">{{sta.value}}</option>
+								
+							</select>
 						</div>
 
 						<p>
