@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
 import {IVDumpModel} from "../../model/model.ivdump";
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute } from "@angular/router";
 import Utils from '../../util/utils';
 
@@ -21,7 +21,7 @@ export class IVFDumpComponent implements OnInit {
   messageERR:string ="";
   
   
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute) {
 	  
 	this.offices =this.route.snapshot.data['offs'].data;
 	
@@ -43,7 +43,7 @@ export class IVFDumpComponent implements OnInit {
 		
 		
 		this.showLoading = true;
-		this.accountService.dumpIVFOlDData(this.ivfd, (result) => {		
+		this.applicationService.dumpIVFOlDData(this.ivfd, (result) => {		
 				if (result.status=='OK'){
 					//alert(result.data);
 					this.messageERR=result.data;

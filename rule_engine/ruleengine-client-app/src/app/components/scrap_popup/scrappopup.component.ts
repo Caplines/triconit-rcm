@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 import {ScrapModel}  from "../../model/model.scrap";
 
@@ -22,7 +22,7 @@ export class ScrapPopupComponent implements OnInit {
 	arrayOfKeys:any;
 	linkData:string="";
 	
-	constructor(public accountService: AccountService) { }
+	constructor(public applicationService: ApplicationService) { }
 
 	ngOnInit() {
 		this.scrapDataSite();
@@ -32,7 +32,7 @@ export class ScrapPopupComponent implements OnInit {
 	    let ths=this;	
 		this.scrapData=[];
 		this.arrayOfKeys=[];
-		this.accountService.scrapSite(this.scrapm, 'scrapsite', (result) => { 
+		this.applicationService.scrapSite(this.scrapm, 'scrapsite', (result) => { 
 			this.emitToParent.emit({action: "showLoading", value: false});
 			if (result.status=='OK' && result.data){
 				//console.log(result.data);

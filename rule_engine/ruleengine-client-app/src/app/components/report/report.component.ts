@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { DatepickerOptions } from 'ng2-datepicker';
 import { ReportModel } from '../../model/model.report';
-import { AccountService } from '../../services/account.service';
+import { ApplicationService } from '../../services/application.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ClaimTreatmentTextModel } from '../../model/model.claimtreatmenttext';
@@ -16,6 +16,7 @@ import { ClaimTreatmentTextModel } from '../../model/model.claimtreatmenttext';
 export class ReportComponent implements OnInit {
 	report: ReportModel = new ReportModel();
 	errorMessage: string;
+    mainReportName:string;
 	offices: any;
 	users: any;
 	reportData: any;
@@ -46,10 +47,11 @@ export class ReportComponent implements OnInit {
 	};
 	showParam: any = {
 		TreatmentId: false, IvfId: false, Date: false, PatientName: false,
-		ivfRDBMS: false, DateFromTo: false, UserName: false, DateFromToUserName: false
+		ivfRDBMS: false, DateFromTo: false, UserName: false, DateFromToUserName: false,
+		ivfRDBMSWebsiteParse:false
 	}
 
-	constructor(public accountService: AccountService, public router: Router, private datePipe: DatePipe, private route: ActivatedRoute) {
+	constructor(public applicationService: ApplicationService, public router: Router, private datePipe: DatePipe, private route: ActivatedRoute) {
 		this.offices = this.route.snapshot.data['offs'].data;
 		this.getAllusers();
 		if (this.route.snapshot.url[0].path == 'reportcl') {
@@ -66,7 +68,9 @@ export class ReportComponent implements OnInit {
 		this.dateOptions2.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
 	}
 
-	reportParam(value) {
+	reportParam(value,e) {
+		console.log(e);
+		this.mainReportName=e.target.text;
 		this.report = new ReportModel();
 		let filter = this.showParam;
 		Object.keys(filter).forEach(function (key, result) {
@@ -96,6 +100,18 @@ export class ReportComponent implements OnInit {
 		submit = rep.officeId && rep.reportField1;
 		if (this.report.reportType == 'ivfRDBMS') {
 			if (rep.reportField1 == '' && rep.employerName == '' && rep.generalDateRun == '' && rep.patientName == '' && rep.officeId == '') {
+				submit = false;
+
+			} else {
+				submit = true;
+				if (!rep.officeId) {
+					submit = false;
+				}
+			}
+
+		}
+		if (this.report.reportType == 'ivfRDBMSWebsiteParse') {
+			if (rep.reportField1 == '' && rep.employerName == '' && rep.patientName == '' && rep.officeId == '') {
 				submit = false;
 
 			} else {
@@ -139,12 +155,11 @@ export class ReportComponent implements OnInit {
 				this.report.reportField1 = this.datePipe.transform(this.report.reportField1, 'MM/dd/yyyy');
 			}
 			this.showLoading = true;
-			this.accountService.validateReport(this.report, this.ur, (result) => {
+			this.applicationService.validateReport(this.report, this.ur, (result) => {
 				this.showLoading = false;
 				if (result.status === 'OK') {
 					this.reportData = result.data;
-
-					if (this.report.reportType === 'ivfRDBMS') {
+                   if (this.report.reportType === 'ivfRDBMS' || this.report.reportType === 'ivfRDBMSWebsiteParse') {
 						this.arrayOfKeys = this.reportData;
 						//console.log("v",this.arrayOfKeys);
 					} else {
@@ -173,17 +188,42 @@ export class ReportComponent implements OnInit {
 		return true;
 	}
 
+	fixMessage(){
+		let tabs:any= document.getElementsByClassName("table");
+	    for(var tab of tabs){
+		//let tab:any = document.getElementById(name);
+		let ro =tab.rows;
+		for(var r of ro){
+			var cells=r.cells;
+			for(var cell of cells){
+				console.log(cell.innerHTML);
+				if (cell.innerHTML.indexOf("MAND.DAT.MISS")>-1  || 
+						cell.innerHTML.indexOf("NOTFOUND")>-1  || 
+						cell.innerHTML.indexOf("ISS.FETCH")>-1  ||
+						cell.innerHTML.indexOf("CODE_ISSUE")>-1  ||
+						cell.innerHTML.indexOf("MAIN_CON_MET")>-1  
+						
+						)
+					cell.classList.add("colorred");
+			}
+		}
+	}
+	}
+	
 	showDetailsDataF(data) {
 		let ths = this;
 		ths.showDetailsData = true;
 		ths.reportDataInd = data;
+		setTimeout(() => {
+			ths.fixMessage();
+		}, 2000);
 
 	}
 
 	downloadPDF(data) {
 
 
-		this.accountService.downloadIVFPDF({ "reportField1": data.patDid, "officeId": this.report.officeId }, (result) => {
+		this.applicationService.downloadIVFPDF({ "reportField1": data.patDid, "officeId": this.report.officeId }, (result) => {
 			this.showLoading = false;
 			if (result.status == '200') {
 				//const filename = result.headers.get('filename');
@@ -217,7 +257,7 @@ export class ReportComponent implements OnInit {
 
 	getAllusers() {
 		let ths = this;
-		ths.accountService.getAllUserNames((result) => {
+		ths.applicationService.getAllUserNames((result) => {
 			if (result.status == 'OK') {
 
 				ths.users = result.data

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
@@ -19,7 +20,10 @@ import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
 import com.tricon.ruleengine.model.db.PatientDetail;
+import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistory;
+import com.tricon.ruleengine.model.db.PatientHistoryTemp;
+import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.utils.Constants;
 
@@ -223,7 +227,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	}
 	
 	@Override
-	public List<CaplineIVFFormDto> searchPatientDetailFromIVF(CaplineIVFQueryFormDto dto, Office off,Set<String> patIds) {
+	public List<CaplineIVFFormDto> searchPatientDetailFromIVF(CaplineIVFQueryFormDto dto, Office off,Set<String> patIds,boolean temp) {
 		Session session = getSession();
 		List<CaplineIVFFormDto> cL=null;
 		try {
@@ -243,13 +247,25 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			patL = (List<Patient>) criteria.list();
 			
 			*/
+			String tableName="";
+			String extraInClause=" ";
+			String status=" ";
+			String fromClause=" from patient_detail"+tableName+" pd , patient"+tableName+" p where " + 
+					          "	 pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id " ;
+			if (!temp) {
+				tableName="_temp";
+				extraInClause=(dto!=null && dto.getWebsiteNameDB()!=null && !dto.getWebsiteNameDB().equals("")? " and p.website_name = '"+dto.getWebsiteNameDB()+"' ":" ");
+				status=", p.status as status ";
+				fromClause=" from patient_detail"+tableName+" pd right join  patient"+tableName+" p on pd.patient_id=p.id where " + 
+				          "	 p.office_id='"+off.getUuid()+"' " ;
+			}
 			////policy18//policy19/policy20 -- need to verify
 			String inclause=(dto!=null && dto.getPatientIdDB()!=null && !dto.getPatientIdDB().equals("")? " and p.patient_id in ('"+dto.getPatientIdDB()+"') ":" ");
 			if (patIds!=null) {
 				inclause= " and p.patient_id in ("+String.join(", ", patIds)+")";
 			}
 			
-			String query = "select p.id as pidDB,pd.id as id,policy_holder as basicInfo5,p.patient_id as basicInfo21,"
+			String query = "select p.id as pidDB "+status+",COALESCE(pd.id, 0) as id,policy_holder as basicInfo5,p.patient_id as basicInfo21,"
 					+ " concat(coalesce(p.first_name,''),' ',coalesce(p.last_name,'')) as basicInfo2, p.dob as basicInfo6, "
 					+ " ins_name as basicInfo3 , tax_id as basicInfo4, ins_contact as basicInfo7, "
 					+ " cs_sr_name as basicInfo8, policy_holder_dob as basicInfo9 , employer_name as basicInfo10 ,"
@@ -297,14 +313,14 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " crown_grade_code as posterior17,fmx_per as percentages16, " //add new Columns here will_crown_grade as posterior16
 					+ " ortho_remaining as ortho5,ortho_waiting_period as waitingPeriod3, night_guards_d9945_percentage as posterior18, " //add new Columns here
 					+ " night_guards_d9944_fr as posterior19,night_guards_d9945_fr as posterior20,fillings_in_year as fill1," //add new Columns here
-					+ " extractions_in_year as extr1, crowns_in_year as crn1 " ////add new Columns here
+					+ " extractions_in_year as extr1, crowns_in_year as crn1, DATE_FORMAT(p.created_date, '%d/%m/%y %T') as createdDate " ////add new Columns here
 					
 					//+ " as  " //add new Columns here
 					
-					+ " from patient_detail pd , patient p where "
-					+ " pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id " 
+					+ fromClause
 					//(!dto.getPatientIdDB().equals("")? " and p.patient_id in ('"+dto.getPatientIdDB()+"') ":" ")+
 					+ inclause +
+					 extraInClause+
 					(dto!=null && dto.getUniqueID()!=null && !dto.getUniqueID().equals("")? " and pd.id ="+dto.getUniqueID()+" ":" ")+
 					(dto!=null && dto.getUniqueIDs()!=null && dto.getUniqueIDs().size()>0? " and pd.id in ("+String.join(", ", dto.getUniqueIDs())+") " :"  " )+
 					(dto!=null && dto.getEmployerNameDB()!=null && !dto.getEmployerNameDB().equals("")? " and pd.employer_name like '%"+dto.getEmployerNameDB()+"%' ":" ")+
@@ -313,6 +329,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					(dto!=null && dto.getPatientDobDB()!=null && !dto.getPatientDobDB().equals("")? " and p.dob = '"+dto.getPatientDobDB()+"' ":" ")+
 					(dto!=null && dto.getPatientName()!=null && !dto.getPatientName().equals("")? " and (concat(coalesce(first_name,''),' ',coalesce(last_name,'')) like '%"+dto.getPatientName()+"%')"+" ":" ")+
 					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+"' ":" ")
+					+ " order by p.created_date desc ";
 					//patientDobDB
 					;
           cL=session.createSQLQuery(query).setResultTransformer(Transformers.aliasToBean(CaplineIVFFormDto.class)). list();
@@ -380,7 +397,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	}
 	
 	@Override
-	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off,Set<String> patDids) {
+	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off,Set<String> patDids,boolean temp) {
 		Session session = getSession();
 		List<PatientHistory> patH=null;
 		try {
@@ -393,9 +410,11 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			criteria.createAlias("office", "off");
 			patH = (List<PatientHistory>) criteria.list();
 			*/
+			String tableName="";
+			if (!temp) tableName="_temp";
 			String query =" select ph.patient_detail_id as pdid ,p.patient_id as pid,ph.history_code as historyCode, ph.history_tooth as historyTooth," + 
 					" ph.history_surface as historySurface, ph.history_dos as historyDOS," + 
-					" ph.id as id from Patient_history ph,office o,patient p where p.id=ph.patient_id and o.uuid=ph.office_id and"+
+					" ph.id as id from Patient_history"+tableName+" ph,office o,patient"+tableName+" p where p.id=ph.patient_id and o.uuid=ph.office_id and"+
 					" ph.patient_detail_id in ( "+String.join(",", patDids)+") and ph.patient_id in ( "+String.join(", ", patientIds)+") and o.uuid='"+
 					off.getUuid()+"' order by  STR_TO_DATE(history_dos, '%Y-%m-%d') desc";
 			
@@ -420,5 +439,81 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		}
 		
 		
+	}
+	
+	@Override
+	public PatientTemp checkforPatientWithIdAndOfficeTemp(String patientid, Office off) {
+
+		Session session = getSession();
+		PatientTemp pat = null;
+		try {
+			Criteria criteria = session.createCriteria(PatientTemp.class);
+			criteria.add(Restrictions.eq("patientId", patientid));
+			criteria.createAlias("office", "off");
+			criteria.createAlias("patientHistory", "patientHistory", JoinType.LEFT_OUTER_JOIN);
+			criteria.createAlias("patientDetails", "patientDetails", JoinType.LEFT_OUTER_JOIN);
+			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
+			
+			/*if (patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0
+					&& patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0) {
+				Iterator<PatientDetail> iter = patH.getPatientDetails().iterator();
+				PatientDetail patO = iter.next();
+			
+			criteria.add(Restrictions.eq("patientDetails", patO.getGeneralDateIVwasDone()));
+			}
+            */
+			pat = (PatientTemp) criteria.uniqueResult();
+		} finally {
+			closeSession(session);
+		}
+		return pat;
+	}
+
+	@Override
+	public void savePatientTempDataWithDetailsAndHistory(PatientTemp pat, Office off, User user) throws Exception{
+		Session session = getSession();
+		try {
+
+			// Transaction transaction = session.beginTransaction();
+			pat.setCreatedBy(user);
+			pat.setId(((Integer) session.save(pat)));
+			// Patient Detail Start
+			if (pat.getPatientDetails()!=null && pat.getPatientDetails().size()>0) {
+			Iterator<PatientDetailTemp> iter = pat.getPatientDetails().iterator();
+			PatientDetailTemp pd = iter.next();
+			pd.setCreatedBy(user);
+			int id= (Integer)session.save(pd);
+			pd.setId(id);
+			// Patient Detail End
+			// History start
+			for (PatientHistoryTemp phi : pat.getPatientHistory()) {
+				phi.setOffice(off);
+				phi.setPatient(pat);
+				phi.setPd(pd);
+				session.save(phi);
+			}
+		   }
+			// transaction.commit();
+		} finally {
+			closeSession(session);
+
+		}
+		//return pat;
+	}
+
+	@Override
+	public void updatePatientTempDataOnly(PatientTemp pat) throws Exception{
+		Session session = getSession();
+		try {
+
+			Transaction transaction = session.beginTransaction();
+			session.update(pat);
+			transaction.commit();
+			
+		    } finally {
+			closeSession(session);
+          
+		}
+		//return pat;
 	}
 }

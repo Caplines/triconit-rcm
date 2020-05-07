@@ -2195,6 +2195,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	private void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType) {
 		//String[] p=env.getActiveProfiles();
+		//int xx=0;
+		//if (xx==0) return ;
 		//if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
 		try {
 			if (ivfSheet == null || tp == null)
@@ -3249,7 +3251,22 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						  }else if (cdd.getStatus().trim().toLowerCase().equals(status.trim().toLowerCase()) && 
 								  StatusTypeEnum.post_to_walkout.getType().trim().toLowerCase().equals(status.trim().toLowerCase())) {
 							  x.add(cdc);
-						  }else if ("Others".trim().toLowerCase().equals(status.trim().toLowerCase()) &&
+						  }else if (cdd.getStatus().trim().toLowerCase().equals(status.trim().toLowerCase()) && 
+								  StatusTypeEnum.accepted.getType().trim().toLowerCase().equals(status.trim().toLowerCase())) {
+							  x.add(cdc);
+						  }else if (cdd.getStatus().trim().toLowerCase().equals(status.trim().toLowerCase()) && 
+								  StatusTypeEnum.complete.getType().trim().toLowerCase().equals(status.trim().toLowerCase())) {
+							  x.add(cdc);
+						  }else if (cdd.getStatus().trim().toLowerCase().equals(status.trim().toLowerCase()) && 
+								  StatusTypeEnum.proposed.getType().trim().toLowerCase().equals(status.trim().toLowerCase())) {
+							  x.add(cdc);
+						  }else if (cdd.getStatus().trim().toLowerCase().equals(status.trim().toLowerCase()) && 
+								  StatusTypeEnum.rejected.getType().trim().toLowerCase().equals(status.trim().toLowerCase())) {
+							  x.add(cdc);
+						  }else if (cdd.getStatus().trim().toLowerCase().equals(status.trim().toLowerCase()) && 
+								  StatusTypeEnum.referred.getType().trim().toLowerCase().equals(status.trim().toLowerCase())) {
+							  x.add(cdc);
+						  }/*else if ("Others".trim().toLowerCase().equals(status.trim().toLowerCase()) &&
 								  (
 									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.complete.getType().trim().trim().toLowerCase()) ||
 									cdd.getStatus().trim().toLowerCase().equals(StatusTypeEnum.accepted.getType().trim().toLowerCase())  ||
@@ -3259,7 +3276,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								   ) ) {
 							  
 							  x.add(cdc);
-						   }
+						   }*/
 						  }else {
 							  x.add(cdc);
 						  }

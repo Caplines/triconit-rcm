@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 import {ScrapModel}  from "../../model/model.scrap";
 import {ScrapUserDataModel} from "../../model/model.scrapuserdata";
@@ -39,7 +39,7 @@ dateOptions: DatepickerOptions = {
   typeMap: any = { 'Roster': "2", 'MCNADENTAL': "1", 'MCNADENTALUI': "1", 'Dentaq': "3", 'DentaqUI': "3" };
   typeMapD: any = { 'Roster': "a", 'MCNADENTAL': "a", 'MCNADENTALUI': "b", 'Dentaq': "a", 'DentaqUI': "b" };
 
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute, private datePipe: DatePipe) {
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute, private datePipe: DatePipe) {
 	  this.offices =this.route.snapshot.data['offs'].data;
 	  //this.offices.push({"name":"All OFFICES","uuid":"All"});
 	  this.scrap.start="A";
@@ -102,7 +102,7 @@ dateOptions: DatepickerOptions = {
   
   getSdetails(value) {
 	this.scrap.username=this.scrap.password="";
-	  this.accountService.getSdDetails(
+	  this.applicationService.getSdDetails(
 			  (result)=>{
 				  if (result.status=='OK' && result.data){
 						if (result.data.data){
@@ -114,7 +114,7 @@ dateOptions: DatepickerOptions = {
 							if (result.data.data.sid==3) this.lp=true;
 						}
 				  }else{
-					  alert("Oiffce not set up..");
+					  alert("Office not set up..");
 				  }
 				  
 			  }

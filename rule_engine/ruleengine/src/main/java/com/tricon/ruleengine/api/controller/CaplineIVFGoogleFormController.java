@@ -63,7 +63,7 @@ public class CaplineIVFGoogleFormController {
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
 
 			if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
-				 ob= civf.saveIVFFormData(dto, office,true);
+				ob = civf.saveIVFFormData(dto, office,true);
 				
 			}else {
 				//i = civf.saveIVFFormData(dto, office);
@@ -101,6 +101,35 @@ public class CaplineIVFGoogleFormController {
 					}
 				}*/
 				cap = (List<CaplineIVFFormDto>) civf.searchIVFData(dto,office);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", cap));
+
+	}
+
+	@CrossOrigin
+	@PostMapping
+	@RequestMapping(value = "/queryivdatafromdbTemp")
+	public ResponseEntity<Object> queryDataFromDBTemp(@RequestBody CaplineIVFQueryFormDto dto, HttpServletRequest request) {
+		//
+
+		List<CaplineIVFFormDto> cap = null;
+		try {
+			Office office = od.getOfficeByName(dto.getOfficeNameDB());
+
+			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
+
+			if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
+				/*if(dto.getGeneralDateIVFDoneDB()!=null ) {
+					if(!dto.getGeneralDateIVFDoneDB().equals("")) {
+						
+					}
+				}*/
+				cap = (List<CaplineIVFFormDto>) civf.searchIVFDataTemp(dto,office);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

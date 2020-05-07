@@ -2,7 +2,7 @@ import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
 import {IVFModel} from "../../model/model.ivf";
 import {UserInputModel} from "../../model/model.userinput";
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute } from "@angular/router";
 import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext"; 
 import Utils from '../../util/utils';
@@ -35,13 +35,13 @@ export class IVFComponent implements OnInit {
   
   
   
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute) {
 	  
 	//console.log(this.route.snapshot.data['offs'].data);
 	this.offices =this.route.snapshot.data['offs'].data;
 	
 	/*  
-      this.accountService.getOffices((result) => {
+      this.applicationService.getOffices((result) => {
           this.offices=result;
         });
     */
@@ -74,8 +74,8 @@ export class IVFComponent implements OnInit {
 		    this.uim.inputMode=this.ivfm.inputModeD;
 			//this.showLoading = true;
 		    this.uim.status=this.ivfm.status;
-		    //this.accountService.validateIVF(this.ivfm, this.ivfValidateName, (result) => {
-		    this.accountService.validateIVF(this.uim, 'validateTreatmentPlan', (result) => {		
+		    //this.applicationService.validateIVF(this.ivfm, this.ivfValidateName, (result) => {
+		    this.applicationService.validateIVF(this.uim, 'validateTreatmentPlan', (result) => {		
 				if (result.status=='OK'){
 				    this.showPopupInput = true;
 					this.questionData = result.data;

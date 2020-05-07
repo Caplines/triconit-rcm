@@ -433,6 +433,14 @@ public class DateUtils {
 		  return pass;
 	}
 	
+	public static String createPatientIdByDate(String patientId) {
+	
+	   if (patientId!=null && !patientId.trim().equals("")) return patientId.trim();
+	   return "9999"+new Date().getTime();
+		
+	}
+	
+	
 	/*
 	public static void main(String[] a) {
 		  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");

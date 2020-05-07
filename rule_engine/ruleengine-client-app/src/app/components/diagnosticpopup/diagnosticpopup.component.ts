@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 
 @Component({
   selector: 'app-diagnosticpopup',
@@ -20,7 +20,7 @@ export class DiagnosticPopupComponent implements OnInit {
 	countE:number =0;
 	
 	
-	constructor(public accountService: AccountService) { }
+	constructor(public applicationService: ApplicationService) { }
 
 	ngOnInit() {
 		this.doDiagCheck();
@@ -29,7 +29,7 @@ export class DiagnosticPopupComponent implements OnInit {
 	doDiagCheck() {
 	    let ths=this;	
 		this.diagData="";
-		this.accountService.doDiagCheck(this.diagm, (result) => { 
+		this.applicationService.doDiagCheck(this.diagm, (result) => { 
 			this.emitToParent.emit({action: "showLoading", value: false});
 			console.log(result);
 			if (result.status=='OK' && result.data){

@@ -14,7 +14,13 @@ export  class StatusList {//{extends StatusModel{
     	
     	this.statses.push(new StatusModel("All","All"));
     	this.statses.push(new StatusModel("W","Post to Walkout"));
-    	this.statses.push(new StatusModel("Others","Others"));
+    	//this.statses.push(new StatusModel("Others","Others"));
+    	this.statses.push(new StatusModel("P","Proposed"));
+    	this.statses.push(new StatusModel("C","Complete"));
+    	this.statses.push(new StatusModel("A","Accepted"));
+    	this.statses.push(new StatusModel("R","Rejected"));
+    	this.statses.push(new StatusModel("F","Referred"));
+    	
     }
 
 /*

@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 
 @Component({
@@ -22,7 +22,7 @@ export class UserSettingsPopupupComponent implements OnInit {
   right:boolean=false;
   p_s:boolean=false;
   
-  constructor(public accountService: AccountService) {}
+  constructor(public applicationService: ApplicationService) {}
   
   ngOnInit() {
 	  this.showusersettingPopup=true;
@@ -56,7 +56,7 @@ export class UserSettingsPopupupComponent implements OnInit {
   updateStatus(){
 		  let x=2;
 		  if (this.right) x=1;
-			this.accountService.updateStatus(x,this.userData.uuid,(data) => {
+			this.applicationService.updateStatus(x,this.userData.uuid,(data) => {
 			    console.log(data);
 			    if(data.message == "User status updated Successfully.") {
 			    	this.p_s=true;
@@ -69,7 +69,7 @@ export class UserSettingsPopupupComponent implements OnInit {
   resetRight(){
 	  let x=0;
 	  if (this.right) x=1;
-		this.accountService.resetRight(x,this.userData.uuid,(data) => {
+		this.applicationService.resetRight(x,this.userData.uuid,(data) => {
 		    console.log(data);
 		    if(data.message == "User status updated Successfully") {
 		    	this.p_s=true;

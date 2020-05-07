@@ -3,6 +3,7 @@ package com.tricon.ruleengine.utils;
 import java.io.BufferedWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -801,6 +802,91 @@ public class FreqencyUtils {
 			}
 		}
 		return dList;
+	}
+	
+	
+	public static String checkForteehIntext(String siteName,String text,String teeth) {
+		
+		text=text.trim().toLowerCase().replaceAll("01","1")
+				.replaceAll("02","2").replaceAll("03","3")
+				.replaceAll("04","4").replaceAll("05","5")
+				.replaceAll("06","6").replaceAll("07","7")
+				.replaceAll("08","8").replaceAll("09","9")
+				.replaceAll(" ", ",");
+		
+		String [] textA =text.split(",");
+		String [] teethA =teeth.toLowerCase().split(",");
+		List<String> textAList = new ArrayList<String>(Arrays.asList(textA));
+		List<String> teethAList = new ArrayList<String>(Arrays.asList(teethA));
+		textAList.retainAll(teethAList);
+		
+		
+        		
+		return (textAList.size()==0)?"No":"Yes";
+
+	}
+	
+	public static String convertFrequecyString(String siteName,String text) {
+		
+		text=text.trim().toLowerCase();
+        String convert=text.replace(" consisting of codes:", "");
+		convert=convert.replace("per quadrant", "");
+		convert=convert.replace("once", "1");
+		convert=convert.replace("twice", "2");
+		convert=convert.replace("thrice", "3");
+		convert=convert.replace("times", "");
+		
+		
+		convert=convert.replace("months", "MO");
+		//convert=convert.replace(" years ", "CY");
+		
+		convert=convert.replace(" per tooth per ", "x");
+		convert=convert.replace(" per benefit period ", "x");
+		convert = convert.replace("per benefit period", "x1CY");
+		convert = convert.replace("lifetime", "LT");
+		
+		convert = convert.replace(" per ", "x");
+		convert = convert.replace(" ", "");
+		
+		if (text.equals("")) convert="no frequency";
+		if (text.equalsIgnoreCase("not coverded")) convert="NF";
+		
+		return convert;
+		//1 : Once per tooth per 60 months consisting of codes:
+		//2  :Twice per benefit period consisting of codes:
+		//3  :6 times per benefit period consisting of codes
+	/*
+	 	System.out.println(convertFrequecyString("","Once per tooth per 60 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per 36 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Twice per benefit period consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per tooth per lifetime consisting of codes:"));
+		System.out.println(convertFrequecyString("","4 times per benefit period consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per 12 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per benefit period consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per tooth per lifetime consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per 60 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per tooth per 12 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per 36 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per quadrant per 24 months consisting of codes:"));
+		
+		
+	 */
+	}
+	
+	public static void main(String [] a) {
+	 System.out.println(checkForteehIntext("", "1 2 3 4 ", "A,B,I,J,K,L,S,T"));	
+	 System.out.println(convertFrequecyString("","Once per tooth per 60 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per 36 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Twice per benefit period consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per tooth per lifetime consisting of codes:"));
+		System.out.println(convertFrequecyString("","4 times per benefit period consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per 12 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per benefit period consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per tooth per lifetime consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per 60 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per tooth per 12 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per 36 months consisting of codes:"));
+		System.out.println(convertFrequecyString("","Once per quadrant per 24 months consisting of codes:"));
 	}
 
 	

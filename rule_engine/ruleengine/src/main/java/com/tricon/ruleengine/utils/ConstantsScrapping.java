@@ -21,6 +21,9 @@ public class ConstantsScrapping {
 	
 	public static final String NAME_Separator="-_-_-";
 	
+	public static final String NO_WRITE="NO WRITE";
+	
+	
 	
 	
 }

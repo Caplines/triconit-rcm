@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {User} from "../../model/model.user";
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router} from "@angular/router";
 
 @Component({
@@ -18,11 +18,11 @@ export class RegisterComponent implements OnInit {
   passwordAgain:any;
   list: any[] = [{"name" : "Treatment","val"  : 1},
 	              {"name" : "Claim","val"  : 2}];
-  constructor(public accountService: AccountService, public router: Router) {
+  constructor(public applicationService: ApplicationService, public router: Router) {
   }
 
   ngOnInit() {
-      this.accountService.getOffices((result) => {
+      this.applicationService.getOffices((result) => {
         //console.log(result);
         this.offices=result;
       });
@@ -32,7 +32,7 @@ export class RegisterComponent implements OnInit {
   register() {
 	  //console.log(this.user);
 	  if(this.user.password==this.passwordAgain && this.user.officeId) {
-		this.accountService.createAccount(this.user,(data) => {
+		this.applicationService.createAccount(this.user,(data) => {
 		    console.log(data);
 		    if(data.message == "User Created Successfully") {
 		    	alert(data.message);

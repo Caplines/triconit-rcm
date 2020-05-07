@@ -10,6 +10,7 @@ import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
 import com.tricon.ruleengine.model.db.PatientDetail;
 import com.tricon.ruleengine.model.db.PatientHistory;
+import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.db.User;
 
 public interface PatientDao {
@@ -24,14 +25,24 @@ public interface PatientDao {
 	public Patient updatePatientDataWithDetailsAndHistory(Patient pat,Office off, User use,boolean detailsSave)  throws Exception;
 	
 	public List<Patient> searchPatientByPatientId(Set<String> patientIds, Office off);
-	public List<CaplineIVFFormDto> searchPatientDetailFromIVF(CaplineIVFQueryFormDto dto, Office off,Set<String> patIds);
-	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off,Set<String> patDids);
+	public List<CaplineIVFFormDto> searchPatientDetailFromIVF(CaplineIVFQueryFormDto dto, Office off,Set<String> patIds,boolean temp);
+	public List<PatientHistory> searchPatientHistoryForPatient(Set<String> patientIds, Office off,Set<String> patDids,boolean temp);
 	public List<Object> searchPatientDetailFromIVFGivenColumns(CaplineIVFQueryFormDto dto, Office off);
 	
 	public List<Object> searchPatientHistoryFromIVFGivenColumns(CaplineIVFQueryFormDto dto, Office off);
 	
 	public void deletePatientHistoryByIds(String[] ids );
 	
+	/**
+	 * Fot temp tables only
+	 * @param patientid
+	 * @param off
+	 * @return
+	 */
+	public PatientTemp checkforPatientWithIdAndOfficeTemp(String patientid, Office off);
 	
+	public void savePatientTempDataWithDetailsAndHistory(PatientTemp pat, Office off, User user) throws Exception;
+	
+	public void updatePatientTempDataOnly(PatientTemp pat) throws Exception;
 
 }

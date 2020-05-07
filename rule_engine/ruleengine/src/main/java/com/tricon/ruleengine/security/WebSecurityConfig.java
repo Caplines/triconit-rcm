@@ -116,7 +116,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 HttpMethod.POST,
                 authenticationPath,
                 "/savedatatore",
-                "/queryivdatafromdb"
+                "/queryivdatafromdb",
+                "/queryivdatafromdbTemp"
             )
 
             // allow anonymous resource requests

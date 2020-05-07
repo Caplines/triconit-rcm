@@ -1,0 +1,194 @@
+
+<div class="inner-bg">
+	<div *ngIf="!showScrapMain" class="container"> 
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Scrap Full Site Data</h3>
+						<div *ngIf="showLoading" class="loader"></div>
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form"
+						(ngSubmit)="f.form.valid && fetchDetails()" #f="ngForm" novalidate>
+						
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="siteId">Site Name</label>
+							 <select  (change)="setSite($event.target.value)"
+								name="siteId" [(ngModel)]="siteIn" 
+								class="login-signup-form-field form-control" id="siteId">
+								<option value="">Site Name..</option>
+								<option *ngFor="let s of sites" [value]="s.id">{{s.name}} ({{s.url}})</option>
+							</select>
+							<div *ngIf="f.submitted && siteIn==''" class="error-msg">
+								Site Name is required</div>
+						</div>
+
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="officeId">Office Name</label> <select
+								name="officeId" [(ngModel)]="offid"
+								class="login-signup-form-field form-control" id="officeId">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+							<div *ngIf="f.submitted && offid==''" class="error-msg">The
+								Office Name is required</div>
+						</div>
+
+						<p>
+							<button [disabled]="showLoading" type="submit" class="btn">Fetch Site Details
+								</button>
+						</p>
+						<div *ngIf="showLoadingD" class="loader"></div>
+
+						
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+	<div *ngIf="showScrapMain" class="container"> 
+		<div class="row">
+			<div class="col-sm-12 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Parse Site </h3> <a href="javascript:void(0)" (click)="goBack()">Go Back</a>
+						
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form2"
+						(ngSubmit)="f2.form.valid && parseSite()" #f2="ngForm" novalidate>
+						<div class="form-horizontal">
+                        <div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !siteName.valid }">
+							<label class="col-sm-3 control-label" for="sietName">Site Name</label>
+							<div class="col-sm-9" > <input type="text"
+								class="login-signup-form-field form-control" 
+								name="siteName" id="siteName"
+								[(ngModel)]="site.full" #siteName="ngModel"
+								placeholder="Site Name.." required readonly/>
+						</div>		
+						</div>	
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !userName.valid }">
+							<label class="col-sm-3 control-label" for="userName">Site Login User Name</label>
+							<div class="col-sm-9" >
+							 <input type="text"
+								class="login-signup-form-field form-control" 
+								name="userName" id="userName"
+								[(ngModel)]="scrap.userName" #userName="ngModel"
+								required placeholder="Site Login User Name..."/>
+							</div>	
+							<div *ngIf="f2.submitted && !userName.valid" class="error-msg">
+								Site Login User Name is required</div>
+						</div>
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !password.valid }">
+							<label class="col-sm-3 control-label" for="password">Site Password</label>
+							<div class="col-sm-9" >
+							 <input type="text"
+								class="login-signup-form-field form-control" 
+								name="password" id="password"
+								[(ngModel)]="scrap.password" #password="ngModel"
+								 required placeholder="Site Password..."/>
+						    </div>		 
+								 <div *ngIf="f2.submitted && !password.valid" class="error-msg">
+								Site Password User Name is required</div>
+							<input type="hidden" [(ngModel)]="scrap.siteDetailId" name="siteDetailId"/>
+							<input type="hidden" [(ngModel)]="scrap.siteId" name="siteId"/>
+							<input type="hidden" [(ngModel)]="scrap.officeId" name="officeId"/>
+						</div>
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group">
+						    <div class="col-sm-12" id="data-scroll">
+						    
+						    <table id="data-scroll-t">
+						    <tr id="data-scroll-tr1"></tr>
+						    <tr *ngFor="let q of scrap.dto; let ind = index">
+						      <ng-container *ngIf="scrap.patientId">
+						      <td class="data-scroll-thd">
+						        <input type="text" class="login-signup-form-field form-control" 
+								name="pati{{ind}}" id="pati{{ind}}" [(ngModel)]="q.patientId"	/>
+								</td>
+						       </ng-container>	
+							      <ng-container *ngIf="scrap.firstName">
+							  <td class="data-scroll-thd">
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patf{{ind}}" id="patf{{ind}}" [(ngModel)]="q.firstName"	/>
+							   </td>
+								   </ng-container>	
+							      <ng-container *ngIf="scrap.lastName">
+							   <td class="data-scroll-thd">
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patl{{ind}}" id="patl{{ind}}" [(ngModel)]="q.lastName"	/>
+							   </td>
+								   </ng-container>	
+							      <ng-container *ngIf="scrap.dob">
+							   <td class="data-scroll-thd">
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patd{{ind}}" id="patd{{ind}}" [(ngModel)]="q.dob"	/>
+							   </td>
+								   </ng-container>	
+						      <ng-container *ngIf="scrap.enrolleeId">
+							   <td class="data-scroll-thd">
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="paten{{ind}}" id="paten{{ind}}" [(ngModel)]="q.enrolleeId"	/>
+							   </td>
+							   </ng-container>	
+						      <ng-container *ngIf="scrap.ssnNumber">
+							   <td class="data-scroll-thd">
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patss{{ind}}" id="patss{{ind}}" [(ngModel)]="q.ssnNumber"	/>
+							   </td>
+							   </ng-container>	
+						      <ng-container *ngIf="scrap.locationProvider">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patloc{{ind}}" id="patloc{{ind}}" [(ngModel)]="q.locationProvider"	/>
+							   </td>
+							   </ng-container>
+							   <ng-container *ngIf="scrap.memberId">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patmem{{ind}}" id="patmem{{ind}}" [(ngModel)]="q.memberId"	/>
+							   </td>
+							   </ng-container>		
+						    </tr>
+						    </table>
+						    <a href="javascript:void(0)" (click)="createBlankRow(1)" class="btn">Add Patient
+							</a>	
+							</div>	
+						</div> 
+						</div>	
+						<p>
+							<button [disabled]="showLoadingP" type="submit" class="btn">Parse Site 
+							</button>
+						</p>
+						<div *ngIf="showLoadingPA" class="loader"></div>
+						<div *ngIf="showLoadingPAA" > Parsing started.. Please Check the search feature after some-time 
+						to see the Parsed data in the Report Section ( IVF RDBMS - WebSite Parsed Data ).
+						</div>
+						
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+	
+	
+</div>

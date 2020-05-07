@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {DiagnosticModel} from "../../model/model.diagnostic";
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 
 @Component({
@@ -20,7 +20,7 @@ export class DiagnosticComponent implements OnInit {
   showLoading: boolean = false;
   showDiagData: boolean = false;
 
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute) {
 	  this.offices =this.route.snapshot.data['offs'].data;
 	  this.offices.push({"name":"All OFFICES","uuid":"All offices"});
   }

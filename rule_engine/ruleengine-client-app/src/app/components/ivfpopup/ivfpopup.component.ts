@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 
 @Component({
   selector: 'app-ivfpopup',
@@ -27,7 +27,7 @@ export class IVFPopupComponent implements OnInit {
 	filterType:string='All';
 	
 	
-	constructor(public accountService: AccountService) { }
+	constructor(public applicationService: ApplicationService) { }
 
 	ngOnInit() {
 		this.validateIVF();
@@ -41,7 +41,7 @@ export class IVFPopupComponent implements OnInit {
 		ths.countE=0;
 		this.ivfmData=[];
 		this.arrayOfKeys=[];
-		this.accountService.validateIVF(this.ivfm, this.ivfValidateName, (result) => { 
+		this.applicationService.validateIVF(this.ivfm, this.ivfValidateName, (result) => { 
 			this.emitToParent.emit({action: "showLoading", value: false});
 			if (result.status=='OK' && result.data){
 				this.ivfmData = result.data;
@@ -78,6 +78,7 @@ export class IVFPopupComponent implements OnInit {
 				    		ths.ivfmData[key].countE=ths.countE;
 				    	}
 				    	});
+				    ths.toggleResult("fail");
 				    
 				});
 				this.emitToParent.emit({action: "showIvfData", value: true});

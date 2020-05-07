@@ -10,6 +10,8 @@ public class ReportDto {
 	private String patientName;
 	private String employerName;
 	private String generalDateRun;
+	private String dob;
+	
 	
 	
 	
@@ -60,6 +62,12 @@ public class ReportDto {
 	}
 	public void setGeneralDateRun(String generalDateRun) {
 		this.generalDateRun = generalDateRun;
+	}
+	public String getDob() {
+		return dob;
+	}
+	public void setDob(String dob) {
+		this.dob = dob;
 	}
 	
 	

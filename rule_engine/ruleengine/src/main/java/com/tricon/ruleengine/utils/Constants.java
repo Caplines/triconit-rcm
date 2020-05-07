@@ -294,6 +294,17 @@ public class Constants {
 	//public static String INSURANCE_TPYE_IVF_PRIMARY="primary";
 	//public static String INSURANCE_TPYE_IVF_SECONDARY="secondary";
 	
+	public static String SCRAPPING_MANDATORY_WARNING="MAND.DAT.MISS";
+	public static String SCRAPPING_NOT_FOUND="NOTFOUND";
+	public static String SCRAPPING_ISSUE_FETCHING="ISS.FETCH";
+	public static String SCRAPPING_ISSUE_FETCHING_CODE="CODE_ISSUE";
+	public static String SCRAPPING_MAIN_CONDTION_MET="MAIN_CON_MET";
+	
+	
+	
+	
+	
+	
 	
 	
 	

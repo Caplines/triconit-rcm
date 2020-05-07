@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 
 @Component({
@@ -18,7 +18,7 @@ export class ResetPasswordComponent implements OnInit {
   passwordAgain:string="";
   p_s:boolean=false;
   
-  constructor(public accountService: AccountService) {}
+  constructor(public applicationService: ApplicationService) {}
   
   ngOnInit() {
   }
@@ -37,7 +37,7 @@ export class ResetPasswordComponent implements OnInit {
   
   updatePassword(){
 	  if(this.password==this.passwordAgain) {
-			this.accountService.updatepassword(this.password,this.uuid,(data) => {
+			this.applicationService.updatepassword(this.password,this.uuid,(data) => {
 			    if(data.message == "User password updated Successfully") {
 			    	this.p_s=true;
 	            } else {

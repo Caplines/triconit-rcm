@@ -266,7 +266,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		Office off = od.getOfficeByName(officeName);
 
 		
-		List<CaplineIVFFormDto> capD = createData(null, off, patIds);
+		List<CaplineIVFFormDto> capD = createData(null, off, patIds,true);
 		Map<String, List<IVFTableSheet>> map = new HashMap<>();
 		IVFTableSheet sheet = null;
 		for (CaplineIVFFormDto cap : capD) {
@@ -287,9 +287,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		return map;
 	}
 
-	private List<CaplineIVFFormDto> createData(CaplineIVFQueryFormDto d, Office off, Set<String> patIds) {
+	private List<CaplineIVFFormDto> createData(CaplineIVFQueryFormDto d, Office off, Set<String> patIds,boolean temp) {
 
-		List<CaplineIVFFormDto> capD = patientDao.searchPatientDetailFromIVF(d, off, patIds);
+		List<CaplineIVFFormDto> capD = patientDao.searchPatientDetailFromIVF(d, off, patIds,temp);
 		Set<String> patientIds = null;
 		Set<String> patientIdsDB = null;
 		
@@ -299,9 +299,12 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		Map<String, List<CaplineIVFFormDto>> map = new HashMap<>();
 		for (CaplineIVFFormDto dto : capD) {
 			pdId.add(dto.getId()+"");
-			dto.setPatDid(dto.getId());
+			dto.setPatDid(dto.getId().intValue());
 			dto.setBasicInfo1(off.getName());
-			
+			if (!temp) {
+				String[] s=dto.getBasicInfo6().trim().split("/");
+				 dto.setBasicInfo6(s[2]+"-"+(s[0].length()==2?s[0]:"0"+s[0])+"-"+(s[1].length()==2?s[1]:"0"+s[1]));
+			}
 			if (patientIds == null) {
 				patientIds = new HashSet<>();
 				patientIdsDB  = new HashSet<>();
@@ -321,7 +324,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		}
 		if (patientIdsDB != null && patientIdsDB.size()>0 && pdId.size()> 0) {
 			// List<Patient> pats= patientDao.searchPatientByPatientId(patientIds, off);
-			List<PatientHistory> patsH = patientDao.searchPatientHistoryForPatient(patientIdsDB, off,pdId);
+			List<PatientHistory> patsH = patientDao.searchPatientHistoryForPatient(patientIdsDB, off,pdId,temp);
 			/*
 			 * for(Patient p:pats) { List<CaplineIVFFormDto> c=map.get(p.getPatientId());
 			 * for(CaplineIVFFormDto form:c) { form.setBasicInfo2(p.getFirstName()+" "
@@ -353,14 +356,21 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	@Override
 	public Object searchIVFData(CaplineIVFQueryFormDto d,Office office) throws Exception {
 		// TODO Auto-generated method stub
-		List<CaplineIVFFormDto> capD = createData(d, office, null);
+		List<CaplineIVFFormDto> capD = createData(d, office, null,true);
+		return capD;
+	}
+
+	@Override
+	public Object searchIVFDataTemp(CaplineIVFQueryFormDto d,Office office) throws Exception {
+		// TODO Auto-generated method stub
+		List<CaplineIVFFormDto> capD = createData(d, office, null,false);
 		return capD;
 	}
 
 	@Override
 	public Object searchIVFDataPat(CaplineIVFQueryFormDto d,Office office,Set<String> patIds) throws Exception {
 		// TODO Auto-generated method stub
-		List<CaplineIVFFormDto> capD = createData(d, office, patIds);
+		List<CaplineIVFFormDto> capD = createData(d, office, patIds,true);
 		return capD;
 	}
 
@@ -423,7 +433,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		// TODO Auto-generated method stub
 		//Office off = od.getOfficeByName(d.getOfficeNameDB());
 		
-		List<CaplineIVFFormDto> capD = createData(d, off, null);
+		List<CaplineIVFFormDto> capD = createData(d, off, null,true);
 		if (capD!=null && capD.size() > 0) {
 			for(CaplineIVFFormDto form :capD) {
 			if (form.getHistory() != null) {
@@ -603,6 +613,46 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	}
 
 	
+	@Override
+	public Object searchIVFDataforAppScrap(CaplineIVFQueryFormDto d,Office off) throws Exception {
+		// TODO Auto-generated method stub
+		//Office off = od.getOfficeByName(d.getOfficeNameDB());
+		
+		List<CaplineIVFFormDto> capD = createData(d, off, null,false);
+		if (capD!=null && capD.size() > 0) {
+			for(CaplineIVFFormDto form :capD) {
+			if (form.getHistory() != null) {
+				int ct = 0;
+				List<ToothHistoryDto> hdto = new ArrayList<>();
+				ToothHistoryDto hd = null;
+
+				for (String h : form.getHistory()) {
+					String sp[] = h.split(Constants.PATH_SEPERATOR_XML_IVF);
+
+					hd = new ToothHistoryDto(sp[0].equals("BLANK") ? "" : sp[0], sp[3].equals("BLANK") ? "" : sp[3],
+							sp[1].equals("BLANK") ? "" : sp[1], sp[2].equals("BLANK") ? "" : sp[2]);
+					if (ct == 0)
+						hd.setClassName("classname" + ct);
+					if (ct == 1)
+						hd.setClassName("classname" + ct);
+					if (ct == 2) {
+						hd.setClassName("classname" + ct);
+						ct = -1;
+					}
+					if (!hd.getSurfaceTooth().equals(""))
+						hd.setHistoryTooth(hd.getHistoryTooth() + "-" + hd.getSurfaceTooth());
+					hdto.add(hd);
+					ct++;
+
+				}
+				form.setHdto(hdto);
+				form.setHistory(null);
+			 }
+			}
+		 }
+		return capD;
+	}
+
 	private GoogleReportsRDDTO setUPResponseData(GoogleReportsRDDTO dataBean, int x, Object d) throws ClassNotFoundException {
 		if (d==null || ((d!=null && d.equals("null")))) d="-NO-DATA-";
 		else d=d+"";

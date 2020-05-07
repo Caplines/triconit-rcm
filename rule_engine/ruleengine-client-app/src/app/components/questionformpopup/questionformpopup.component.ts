@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 
 @Component({
   selector: 'app-questionformpopup',
@@ -17,7 +17,7 @@ export class QuestionformPopupComponent implements OnInit {
   showQuestionSaveLoading: boolean = false;
   myError= {'PC':false};
   keyString="";
-  constructor(public accountService: AccountService) { }
+  constructor(public applicationService: ApplicationService) { }
 
   ngOnInit() {
 	  //console.log(this.questionData.questionAnswer);
@@ -106,7 +106,7 @@ export class QuestionformPopupComponent implements OnInit {
 			
 			this.showQuestionSaveLoading = true;
 			this.answerData.push({'answerId': -1000, 'answer': this.keyString,'questionId':-1000});
-			this.accountService.saveUserInput(this.answerData,  (result) => {
+			this.applicationService.saveUserInput(this.answerData,  (result) => {
 				this.showQuestionSaveLoading = false;	
 				this.answerData = [];
 				//From IVF Screen Condition

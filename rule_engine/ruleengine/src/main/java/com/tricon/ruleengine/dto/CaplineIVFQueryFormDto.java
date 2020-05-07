@@ -20,6 +20,7 @@ public class CaplineIVFQueryFormDto {
 	private String patientDobDB;
 	private String generalDateIVFDoneDBBet;
 	private String clause;
+	private String websiteNameDB;
 	
 	
 	
@@ -123,6 +124,12 @@ public class CaplineIVFQueryFormDto {
 	}
 	public void setGeneralDateIVFDoneDBBet(String generalDateIVFDoneDBBet) {
 		this.generalDateIVFDoneDBBet = generalDateIVFDoneDBBet;
+	}
+	public String getWebsiteNameDB() {
+		return websiteNameDB;
+	}
+	public void setWebsiteNameDB(String websiteNameDB) {
+		this.websiteNameDB = websiteNameDB;
 	}
 	
 	

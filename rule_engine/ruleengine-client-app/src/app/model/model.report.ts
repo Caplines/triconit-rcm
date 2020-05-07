@@ -6,6 +6,7 @@ export class ReportModel {
   generalDateRun:string="";
   employerName:string="";
   patientName:string="";
+  dob:string="";
 
 
 }

@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 import {EnReportsModel} from "../../model/model.enreports";
 import Utils from '../../util/utils';
@@ -20,13 +20,13 @@ export class UserSettingsComponent {
 	 userData: any;
      isAdmin:boolean=false;
 
-	 constructor(public accountService: AccountService) {
+	 constructor(public applicationService: ApplicationService) {
 		 this.isAdmin = Utils.checkAdmin();
 	  }
 
       findUserByName(){
 		  this.showLoading = true;
-	      this.accountService.findUserByUserName(this.userName,(result) =>{
+	      this.applicationService.findUserByUserName(this.userName,(result) =>{
 		  if (result.status=='OK'){
 			  this.showLoading = false;
 				this.userData = result.data;

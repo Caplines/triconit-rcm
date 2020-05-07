@@ -12,7 +12,7 @@ import { OfficeResolve } from "./resolver/office_resolver";
 import { HttpModule , XSRFStrategy, CookieXSRFStrategy, Http} from "@angular/http";
 import { HttpClientXsrfModule} from "@angular/common/http";
 
-import { AccountService} from "./services/account.service";
+import { ApplicationService} from "./services/application.service";
 import { ProfileComponent } from './components/profile/profile.component';
 import { IVFComponent } from './components/ivf/ivf.component';
 import { IVFBatchPreComponent } from './components/ivfbatchpre/ivfbatchpre.component';
@@ -30,6 +30,7 @@ import { QuestionformPopupComponent } from './components/questionformpopup/quest
 import { EnReportsComponent} from "./components/enhanced_reports/enreports.component";
 import { EnReportspopupComponent } from './components/enhanced_reportspopup/enreportspopup.component';
 import { ScrapComponent} from "./components/scrap/scrap.component";
+import { ScrapFullDataComponent} from "./components/scrapfulldata/scrapfulldata.component";
 import { ScrapPopupComponent } from './components/scrap_popup/scrappopup.component';
 import {UserSettingsComponent} from "./components/usersettings/usersettings.component";
 import {UserSettingsPopupupComponent} from "./components/usersettingspopupup/usersettingspopupup.component";
@@ -67,6 +68,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
 	EnReportsComponent,
 	EnReportspopupComponent,
 	ScrapComponent,
+	ScrapFullDataComponent,
 	ScrapPopupComponent,
 	UserSettingsComponent,
 	UserSettingsPopupupComponent,
@@ -81,7 +83,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
         headerName: 'X-CSRF-TOKEN'
       })*/
   ],
-  providers: [AuthService,AccountService,UrlPermission,UrlAdminPermission,UrlLoggedInCheck,
+  providers: [AuthService,ApplicationService,UrlPermission,UrlAdminPermission,UrlLoggedInCheck,
 	  OfficeResolve,
        {
           provide: HTTP_INTERCEPTORS,

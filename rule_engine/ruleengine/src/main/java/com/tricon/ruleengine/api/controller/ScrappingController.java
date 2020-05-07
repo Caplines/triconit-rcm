@@ -19,10 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.ruleengine.dto.GenericResponse;
+import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingInputDto;
 import com.tricon.ruleengine.dto.ScrappingSiteDetailsDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
-import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
+import com.tricon.ruleengine.service.ScrappingFullDataService;
 import com.tricon.ruleengine.service.ScrappingService;
 import com.tricon.ruleengine.utils.Constants;
 
@@ -33,6 +34,8 @@ public class ScrappingController {
 	//static class ScrappingInputDtoList extends ArrayList<ScrappingInputDto> { };
 	
 	@Autowired ScrappingService sService;
+	@Autowired ScrappingFullDataService  fullService;
+	
 	
 	
 	@CrossOrigin
@@ -77,5 +80,59 @@ public class ScrappingController {
 
 	}
 
+
+	@CrossOrigin
+	@GetMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/getsitenametoparsefulldata", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> getSiteNametoParseFulldata()  {
+		List<?> list=null;
+		try {
+			list = fullService.getSiteNames();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", list));
+
+	}
+
+	@CrossOrigin
+	@PostMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/getsitedetailstoparsefulldata", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> getSiteDetailstoParseFulldata(@RequestBody ScrappingFullDataDetailDto dto)  {
+		ScrappingFullDataDetailDto data=null;
+		try {
+			data = fullService.getScrappingDetails(dto.getSiteId(),dto.getOfficeId());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", data));
+
+	}
+
+	@CrossOrigin
+	@PostMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/parsefulldata", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> parseFullData(@RequestBody ScrappingFullDataDetailDto dto)  {
+		 String data=null;
+		try {
+			data = fullService.parseFullDataAndSaveDetails(dto);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", data));
+
+	}
 
 }

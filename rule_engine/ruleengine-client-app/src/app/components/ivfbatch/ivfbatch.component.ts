@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {IVFBatchModel} from "../../model/model.ivfbatch";
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext"; 
 import Utils from '../../util/utils';
@@ -28,7 +28,7 @@ export class IVFBatchComponent implements OnInit {
   hd1:string="";
   hd2:string="";
 
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute) {
 	  this.offices =this.route.snapshot.data['offs'].data;
 	  
 	  this.ut =Utils.fetchUserTypeFromLocalStorage();

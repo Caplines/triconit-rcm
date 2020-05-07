@@ -7,7 +7,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 
+import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
+import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
+import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 
 //@Service 
 public class BaseScrappingServiceImpl {
@@ -57,5 +60,23 @@ public class BaseScrappingServiceImpl {
 	}
 
 
+	/**
+	 * FULL WEBSITE SCRAP..
+	 * @param scrappingSiteDetails
+	 * @param driver
+	 * @throws InterruptedException
+	 */
+	/*
+	 * Link:  https://www.deltadentalins.com/
+Username:  Crosbyfamilydental
+Password:  Crosby000
+There are some fields that are blank in the sheet, I am working on it but I think it has enough data to start the work
+ok
+Share me Share me some Sample Patient
+Patient's Name:  Heather Griffith
+Member ID:  632307605
+DOB: 03/20/1992
+Although, you will be able to find patient with just name
+	 */
 	
 }

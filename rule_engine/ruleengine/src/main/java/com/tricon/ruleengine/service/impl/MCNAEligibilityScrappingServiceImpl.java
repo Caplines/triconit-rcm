@@ -146,12 +146,13 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 
 	private EligibilityDto parsePage(WebDriver driver,String dob,String subscriberId,
 			String verifyLastName,String verifyFirstName,String zip,boolean byName) throws Exception{
+		String id="7";//6 old 
 		
 		if (dob.equals("") ) return null;
 		if (subscriberId.equals("") &&  verifyLastName.equals("")) return null;
 		EligibilityDto dto= new EligibilityDto();
 		String[] dobA=dob.split("/");
-		WebElement element4 =driver.findElement(By.xpath("/html/body/div[6]/div[1]/div[2]"));
+		WebElement element4 =driver.findElement(By.xpath("/html/body/div["+id+"]/div[1]/div[2]"));
 		//WebDriverWait wait= new WebDriverWait(driver, 5);
 		//wait.until(ExpectedConditions.visibilityOf(element4));
 		element4 =driver.findElement(By.id("verifyDob"));
@@ -202,7 +203,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 	   }
 	   driver.navigate().to("https://portal.mcna.net/provider/eligible/"+insured+"/"+subscriberId+"/"+dobA[2]+"-"+dobA[0]+"-"+dobA[1]+"/"+facilityId+"/0/1");
 		Thread.sleep(5000);
-		element4 =driver.findElement(By.xpath("/html/body/div[6]/div[1]/div[2]"));		
+		element4 =driver.findElement(By.xpath("/html/body/div["+id+"]/div[1]/div[2]"));		
 		if (element4.getText().startsWith("Subscriber is Eligible")) {
 			//System.out.println("Subscriber is Eligible");
 			dto.setEligible(ConstantsScrapping.SUBSCRIBER_Eligible);
@@ -243,7 +244,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 			}
 			break;
 		}
-	wList= driver.findElements(By.xpath("/html/body/div[6]/div[1]/div[3]/table[2]/tbody/tr"));
+	wList= driver.findElements(By.xpath("/html/body/div["+id+"]/div[1]/div[3]/table[2]/tbody/tr"));
 	String dos="";
 	//dto.getHistoryList()
 		for(WebElement w:wList) {

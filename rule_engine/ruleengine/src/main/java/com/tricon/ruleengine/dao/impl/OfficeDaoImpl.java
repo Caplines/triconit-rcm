@@ -31,7 +31,7 @@ public class OfficeDaoImpl extends BaseDaoImpl implements OfficeDao{
 		Session session = getSession();
 		List<OfficeDto> offices  = null;
 		try {
-			Transaction transaction = session.beginTransaction();
+			//Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(Office.class);
 			//criteria.createAlias("offices", "offices");
 			ProjectionList pjList = Projections.projectionList();
@@ -40,7 +40,7 @@ public class OfficeDaoImpl extends BaseDaoImpl implements OfficeDao{
 			criteria.setProjection(pjList);
 			criteria.setResultTransformer(Transformers.aliasToBean(OfficeDto.class));
 			offices = criteria.list();
-			transaction.commit();
+			//transaction.commit();
 		} finally {
 			closeSession(session);
 

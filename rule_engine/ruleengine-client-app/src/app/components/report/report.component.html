@@ -10,21 +10,23 @@
 					</button>
 					<ul class="dropdown-menu">
 						<li><a href="javascript:void(0)"
-							(click)="reportParam('TreatmentId')">{{hd1}}</a></li>
+							(click)="reportParam('TreatmentId',$event)">{{hd1}}</a></li>
 						<li><a href="javascript:void(0)"
-							(click)="reportParam('IvfId')">IV Form Id</a></li>
+							(click)="reportParam('IvfId',$event)">IV Form Id</a></li>
 						<li><a href="javascript:void(0)"
-							(click)="reportParam('Date')">Date Run</a></li>
+							(click)="reportParam('Date',$event)">Date Run</a></li>
 						<li><a href="javascript:void(0)"
-							(click)="reportParam('DateFromTo')">Date Run (From To)</a></li>
+							(click)="reportParam('DateFromTo',$event)">Date Run (From To)</a></li>
 						<li><a href="javascript:void(0)"
-							(click)="reportParam('PatientName')">Patient Name</a></li>
+							(click)="reportParam('PatientName',$event)">Patient Name</a></li>
 						<li><a href="javascript:void(0)"
-							(click)="reportParam('UserName')">User Name</a></li>
+							(click)="reportParam('UserName',$event)">User Name</a></li>
 						<li><a href="javascript:void(0)"
-							(click)="reportParam('DateFromToUserName')">User Name (Date Range)</a></li>	
+							(click)="reportParam('DateFromToUserName',$event)">User Name (Date Range)</a></li>	
 						<li><a href="javascript:void(0)"
-							(click)="reportParam('ivfRDBMS')">IVF RDBMS</a></li>
+							(click)="reportParam('ivfRDBMS',$event)">IVF RDBMS</a></li>
+						<li><a href="javascript:void(0)"
+							(click)="reportParam('ivfRDBMSWebsiteParse',$event)">IVF RDBMS (Website Parsed Data) </a></li> 
 					</ul>
 				</div>
 				<!-- <div class="form-top">
@@ -35,6 +37,7 @@
 					</div> -->
 
 				<div *ngIf="showReportForm" class="form-bottom">
+				 <div> Report Name - {{mainReportName}}</div>
 					<form class="login-form" name="form"
 						(ngSubmit)="f.form.valid && runReport()" #f="ngForm" novalidate>
 						<!--  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>  -->
@@ -150,6 +153,27 @@
 
 						</div>
 
+								<div *ngIf="showParam.ivfRDBMSWebsiteParse">
+
+								<input type="text" class="login-signup-form-field form-control"
+									name="reportField1" id="reportField1"
+									[(ngModel)]="report.reportField1" #reportField1="ngModel"
+									placeholder="Patient ID..." /> <input type="text"
+									class="login-signup-form-field form-control" name="patientName"
+									id="patientName" [(ngModel)]="report.patientName"
+									#patientName="ngModel" placeholder="Patient Name..." />
+									<input type="text"
+									class="login-signup-form-field form-control" name="patientDob"
+									id="patienDob" [(ngModel)]="report.dob"
+									#patienDob="ngModel" placeholder="Patient DOB..." />
+									<div
+									*ngIf="f.submitted && (reportField1.value=='' && patienDob.value=='' && patientName.value=='')"
+									class="error-msg">Please enter at-least one of the above
+									Fields.</div>
+							</div>
+
+						
+
 						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
 							<label class="sr-only" for="officeId">Office Name</label> <select
 								class="login-signup-form-field form-control" name="officeId"
@@ -183,7 +207,7 @@
 				<a href="javascript:void(0)" (click)="showReportData=false;"> Go
 					Back </a>
 			</div>
-			<ng-container *ngIf="report.reportType!='ivfRDBMS'">
+			<ng-container *ngIf="report.reportType!='ivfRDBMS' && report.reportType!='ivfRDBMSWebsiteParse'">
 			<div *ngFor="let key of arrayOfKeys" class="table-container">
 				<h3>{{key}}</h3>
 				<table class="table table-bordered table-striped">
@@ -204,7 +228,7 @@
 				</table>
 			</div>
 			</ng-container>
-			<ng-container *ngIf="report.reportType=='ivfRDBMS'">
+			<ng-container *ngIf="report.reportType=='ivfRDBMS' || report.reportType=='ivfRDBMSWebsiteParse'">
 			<div class="table-container">
 				<h3>IVF DATA</h3>
 				<div style="max-height: 330px;overflow: auto;">
@@ -215,9 +239,18 @@
 							<th class="date-width">Patient Name</th>
 							<th>Patient DOB</th>
 							<th>Employer Name</th>
-							<th>General Date IVF Done</th>
+							<th><ng-container *ngIf="report.reportType=='ivfRDBMS'">
+							    General Date IVF Done</ng-container>
+							    <ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
+							    Parse Date Time</ng-container>
+							 </th>
 							<th>Details</th>
-							<th>DownLoad PDF</th>
+							<th>
+							<ng-container *ngIf="report.reportType=='ivfRDBMS'">
+							    Download PDF</ng-container>
+							    <ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
+							    Status</ng-container>
+							</th>
 
 						</tr>
 						<tr *ngFor="let data of reportData">
@@ -226,11 +259,22 @@
 							<td><span [innerHTML]="data.basicInfo2"></span></td>
 							<td><span [innerHTML]="data.basicInfo6"></span></td>
 							<td><span [innerHTML]="data.basicInfo10"></span></td>
-							<td><span [innerHTML]="data.date"></span></td>
+							<td>
+							  <ng-container *ngIf="report.reportType=='ivfRDBMS'">
+							    <span [innerHTML]="data.date"></span></ng-container>
+							    <ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
+							     <span [innerHTML]="data.createdDate"></span></ng-container>
+						       </td>
 							<td><a href="javascript:void(0)"
 								(click)="showDetailsDataF(data)"> Details </a></td>
-							<td><a href="javascript:void(0)"
-								(click)="downloadPDF(data)"> PDF</a></td>
+							<td>
+							<ng-container *ngIf="report.reportType=='ivfRDBMS'">
+							    <a href="javascript:void(0)"
+								(click)="downloadPDF(data)"> PDF</a></ng-container>
+							    <ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
+							    <span [innerHTML]="data.status"></span></ng-container>
+							
+							</td>
 						<tr>
 					</thead>
 

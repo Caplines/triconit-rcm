@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {Office} from "../../model/model.office";
 import {TreatmentPlanModel} from "../../model/model.treatmentplan";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext"; 
 import Utils from '../../util/utils';
@@ -30,7 +30,7 @@ export class TreatmentPlanComponent implements OnInit {
   hd3:string="";
 
   
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute) {
 	  this.offices =this.route.snapshot.data['offs'].data;
 	  let ut =Utils.fetchUserTypeFromLocalStorage();
 	  if (ut=='1'){
@@ -53,7 +53,7 @@ export class TreatmentPlanComponent implements OnInit {
   generateTreatmentPlanId() {
 	if(this.treatmentplan.officeId) {
 		this.showLoading = true;
-		this.accountService.generateTreatmentPlanId(this.treatmentplan,(result) => {
+		this.applicationService.generateTreatmentPlanId(this.treatmentplan,(result) => {
 			this.showLoading = false;
 			
 			if (result.status=='OK' && result.data){

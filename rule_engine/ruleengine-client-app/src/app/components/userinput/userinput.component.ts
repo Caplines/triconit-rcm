@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
 import {UserInputModel} from "../../model/model.userinput";
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute } from "@angular/router";
 
 @Component({
@@ -19,7 +19,7 @@ export class UserInputComponent implements OnInit {
   showQuestionData: boolean = false;
   questionData:any;
 
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute) {
 	  
 	this.offices =this.route.snapshot.data['offs'].data;
   }
@@ -31,7 +31,7 @@ export class UserInputComponent implements OnInit {
 
   getuserQuestions(){
 	this.showLoading = true;
-	  this.accountService.getUserInputs(this.uim,(result) => {		
+	  this.applicationService.getUserInputs(this.uim,(result) => {		
 		this.showLoading = false;
 		if (result.status=='OK'){
 			this.showQuestionData = true;

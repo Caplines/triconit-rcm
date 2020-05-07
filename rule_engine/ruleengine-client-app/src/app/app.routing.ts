@@ -16,6 +16,7 @@ import {ResetPasswordComponent} from "./components/resetpassword/resetpassword.c
 import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
 import {EnReportsComponent} from "./components/enhanced_reports/enreports.component";
 import {ScrapComponent} from "./components/scrap/scrap.component";
+import {ScrapFullDataComponent} from "./components/scrapfulldata/scrapfulldata.component";
 import {IVFDumpComponent} from "./components/ivfdump/ivfdump.component";
 
 
@@ -108,6 +109,11 @@ const appRoutes: Routes = [
 		    offs: OfficeResolve
 		  },
   component: ScrapComponent,canActivate: [UrlPermission]  },
+  { path: 'scrapfulldata',
+	  resolve: {
+		    offs: OfficeResolve
+		  },
+  component: ScrapFullDataComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
   { path: 'help', component: HelpComponent  },
   // otherwise redirect to profile

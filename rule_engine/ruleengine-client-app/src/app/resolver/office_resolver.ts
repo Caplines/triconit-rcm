@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
-import { AccountService } from '../services/account.service';
+import { ApplicationService } from '../services/application.service';
 @Injectable()
 export class OfficeResolve implements Resolve<any> {
 
-  constructor(private accountService: AccountService) {}
+  constructor(private accountService: ApplicationService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
     return  this.accountService.getOfficesPrior();

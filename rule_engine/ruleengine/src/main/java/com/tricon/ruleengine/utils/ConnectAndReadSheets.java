@@ -31,7 +31,6 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.CellData;
-import com.google.api.services.sheets.v4.model.DeleteNamedRangeRequest;
 import com.google.api.services.sheets.v4.model.ExtendedValue;
 import com.google.api.services.sheets.v4.model.GridCoordinate;
 import com.google.api.services.sheets.v4.model.Request;
@@ -42,8 +41,11 @@ import com.google.common.collect.Collections2;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
+import com.tricon.ruleengine.dto.scrapping.FullWebsiteScrapDto;
 import com.tricon.ruleengine.dto.scrapping.HistoryDto;
 import com.tricon.ruleengine.dto.scrapping.RosterDetails;
+import com.tricon.ruleengine.model.db.PatientTemp;
+import com.tricon.ruleengine.model.sheet.FullWebsiteDataParsingSheet;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
@@ -286,29 +288,62 @@ public class ConnectAndReadSheets {
 		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
 	}
 
-	//WORK IN PROGRESS ..AFTER CALL...
+	public static void updateFullScrapSheet(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
+			List<PatientTemp> rList,String status) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		List<Request> requests = new ArrayList<>();
+		//rowCount=rowCount+3;
+		if (rList != null) {
+			for(PatientTemp rd:rList) {
+				List<CellData> values = new ArrayList<>();
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getStatus())));
+				//setStart(new GridCoordinate().setSheetId(0)
+				requests.add(new Request()
+						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(Integer.parseInt(rd.getRowNumber()))//)
+								 .setColumnIndex(10))
+								.setRows(Arrays.asList(new RowData().setValues(values)))
+								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+				//x++;
+				//break;
+			}
+				
+
+			if (!status.equals(ConstantsScrapping.NO_WRITE)) {
+			List<CellData> values = new ArrayList<>();
+			values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(status)));
+			requests.add(new Request()
+					.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(ConstantsScrapping.ELE_ROW_INDEX_STATUS)//)
+							 .setColumnIndex(ConstantsScrapping.ELE_COLUMN_INDEX_STATUS))
+							.setRows(Arrays.asList(new RowData().setValues(values)))
+							.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+			}
+    	
+	        
+		}
+        
+		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 99")));
+		//values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("Hello World! update 22")));
+		
+		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+	}
+
 	public static Map<String, List<Object>> readSheetMcnaDenta(String spreadsheetId, String sheetName,
 			String clientDir, String clientFolder) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
-		// if (sheetType==Constants.treatmentPlanSheetID) return
-		// readTPSheetData(response, id);
-		// if (sheetType==Constants.ivTableDataSheetID)
 		return readMCNADentaSheet(response);
-		// if (sheetType==Constants.mappingSheetID_CM) return
-		// readMappingDataCM(response);
-		// if (sheetType==Constants.mappingSheetID_FEE) return
-		// readMappingDataFEE(response);
-		// if (sheetType==Constants.eagleSoftFSANDFEESheetID) return
-		// readEagleSoftFSFee(response);
-		// if (sheetType==Constants.eagleSoftCoverageSheetID) return
-		// readEagleSoftESCoverage(response);
-		// if (sheetType==Constants.eagleSoftFSNAMESheetID) return
-		// readEagleSoftFSName(response);
-		// if (sheetType==Constants.eagleSoftRemDedBalSheetID) return
-		// readEagleSoftRemDedMax(response);
-		// return null;
+	}
+
+	public static Map<String, List<Object>> readSheeFullWebsiteParsing(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		return readFullWebsiteParsingSheet(response);
 	}
 
 	
@@ -912,6 +947,47 @@ public class ConnectAndReadSheets {
 			// }//For loop
 		} // While Loop - 1
 
+		return map;
+
+	}
+
+	private static Map<String, List<Object>> readFullWebsiteParsingSheet(ValueRange range) {
+
+		List<List<Object>> values = range.getValues();
+		Map<String, List<Object>> map = null;
+		ListIterator li = values.listIterator();
+		FullWebsiteDataParsingSheet sheet = null;
+		List<Object> dataList = null;
+		int heading_rows = 2;
+		int subscriberIdCT = 0;
+        int ct=-1;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			//String uni = "";
+			try {
+				ct++;
+				if (ct<=heading_rows)
+				continue;
+				int x = 1;
+				//uni = obj.get(8);
+				sheet = new FullWebsiteDataParsingSheet(obj.get(++x),obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),obj.get(++x),
+						obj.get(++x),ct+"");
+					
+				
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				continue;
+			}
+		
+			if (map == null)
+				map = new HashMap<>();
+
+			dataList = new ArrayList<>();
+			dataList.add(sheet);
+			map.put(subscriberIdCT+"", dataList);
+			subscriberIdCT++;	
+			}
+			
 		return map;
 
 	}

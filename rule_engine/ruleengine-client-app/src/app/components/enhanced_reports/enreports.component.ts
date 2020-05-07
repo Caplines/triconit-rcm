@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 import {EnReportsModel} from "../../model/model.enreports";
 import {DatepickerOptions} from 'ng2-datepicker';
@@ -51,7 +51,7 @@ ut:string="1";
     };
 
 
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute, private datePipe: DatePipe) {
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute, private datePipe: DatePipe) {
 	  this.offices =this.route.snapshot.data['offs'].data;
 	  this.getAllusers();
 	  this.offices.push({"name":"All OFFICES","uuid":"All"});
@@ -107,7 +107,7 @@ ut:string="1";
 			  {this.enreports.startDate = this.datePipe.transform(this.enreports.startDate, 'MM/dd/yyyy');
 		  this.enreports.endDate = this.datePipe.transform(this.enreports.endDate, 'MM/dd/yyyy');}
 		  this.showLoading = true;
-		  this.accountService.validateEnReport(this.enreports,this.ur,(result) =>{
+		  this.applicationService.validateEnReport(this.enreports,this.ur,(result) =>{
 			  this.showLoading = false;
 				if (result.status=='OK'){
 					this.enreportData = result.data;
@@ -141,7 +141,7 @@ ut:string="1";
   
   getAllusers(){
 	  let ths=this;
-	  ths.accountService.getAllUserNames((result)=>{
+	  ths.applicationService.getAllUserNames((result)=>{
 		  if (result.status=='OK'){
 				
 				ths.users = result.data;

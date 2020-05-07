@@ -1,7 +1,5 @@
 package com.tricon.ruleengine.utils;
 
-import org.springframework.security.core.userdetails.User;
-
 import com.tricon.ruleengine.api.enums.HighLevelReportMessageStatusEnum;
 
 /**
@@ -21,4 +19,33 @@ public class MessageUtil {
 
 		
 	}
+
+	public static String getTEXTNAORYES(String text) {
+		if (text.contains(Constants.SCRAPPING_MANDATORY_WARNING)
+			|| text.contains(Constants.SCRAPPING_NOT_FOUND)
+			||text.contains(Constants.SCRAPPING_ISSUE_FETCHING)
+				) return text;
+		if (text.equalsIgnoreCase("N/A")) return "No";
+		else return "Yes";
+	}
+	
+	public static String getTEXTSatisfied(String text) {
+		if (text.contains(Constants.SCRAPPING_MANDATORY_WARNING)
+			|| text.contains(Constants.SCRAPPING_NOT_FOUND)
+			||text.contains(Constants.SCRAPPING_ISSUE_FETCHING)
+				) return text;
+		if (text.equalsIgnoreCase("Satisfied")) return "No";
+		else return "Yes";
+	}
+
+	public static String removeUptoAge(String siteName, String text) {
+		return text.replace("Up to Age ", "").replace(":", "");
+	}
+
+	public static String removeLimitedToteeth(String siteName, String text) {
+		return text.replace("Limited to teeth ", "").replace(":", "");
+	}
+
 }
+
+

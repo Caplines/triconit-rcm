@@ -215,7 +215,7 @@
 		<dependency>
 			<groupId>org.openqa.selenium</groupId>
 			<artifactId>html-unit</artifactId>
-			<version>2.23.3</version>
+			<version>2.39.0</version>
 		</dependency>
 
 	</dependencies>
@@ -245,9 +245,11 @@
 						<configuration>
 							<groupId>org.openqa.selenium</groupId>
 							<artifactId>html-unit</artifactId>
-							<version>2.23.3</version>
+							<version>2.39.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/lib/htmlunit-driver-2.33.3-jar-with-dependencies.jar</file>
+							<!-- <file>${basedir}/lib/htmlunit-driver-2.33.3-jar-with-dependencies.jar</file> -->
+							<file>${basedir}/lib/htmlunit-driver-2.39.0-jar-with-dependencies.jar</file>
+							
 						</configuration>
 					</execution>
 				</executions>

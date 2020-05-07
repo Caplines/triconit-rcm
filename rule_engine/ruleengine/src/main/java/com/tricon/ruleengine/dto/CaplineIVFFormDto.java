@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.dto;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -11,6 +12,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType (XmlAccessType.FIELD)
 public class CaplineIVFFormDto {
+
+	private String createdDate;
+	private String status;
+	
+	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
 
 	//password extra layer check
 	private int patDid;
@@ -39,7 +60,7 @@ public class CaplineIVFFormDto {
 	private String passwordRE;
 	
 	//id (unquie)
-	private int id;
+	private BigInteger id;
     
 	//office Name
 	private String basicInfo1;
@@ -1678,11 +1699,11 @@ public class CaplineIVFFormDto {
 		this.date = date;
 	}
 
-	public int getId() {
+	public BigInteger getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(BigInteger id) {
 		this.id = id;
 	}
 

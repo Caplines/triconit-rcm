@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {IVFBatchPreModel} from "../../model/model.ivfbatchpre";
 import {Office} from "../../model/model.office";
-import {AccountService} from "../../services/account.service";
+import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 
 @Component({
@@ -19,7 +19,7 @@ export class IVFBatchPreComponent implements OnInit {
   showIvfData: boolean = false;
   past:any;
 
-  constructor(public accountService: AccountService, public router: Router,private route: ActivatedRoute) {
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute) {
 	  this.offices =this.route.snapshot.data['offs'].data;
   }
 
