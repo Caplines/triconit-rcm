@@ -16,8 +16,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     <script>
      //TRICON START
-	 var RE_IP="https://www.ruleengine.ga";
-	 //RE_IP="http://localhost:8080";
+	 //var RE_IP="https://www.ruleengine.ga";
+	 var RE_IP="https://www.caplineruleengine.com";
 	 
 	 var RE_PASS="134568";
 	 
@@ -266,9 +266,9 @@ function error(errMsg) {
 }
 
 $(document).on("keypress", 'form', function (e) {
-console.log(e);
+//console.log(e);
     var code = e.keyCode || e.which;
-    if (code == 13) {
+    if (code == 13 && e.target.id!='comments') {
         e.preventDefault();
         return false;
     }
