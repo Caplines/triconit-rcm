@@ -23,6 +23,15 @@ import com.tricon.ruleengine.service.IVFOldDataService;
 
 @RestController
 public class IVFOldDataController {
+	
+	/*
+	 * in google sheet add Function 
+	 * function gfk() {
+        return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getSheetId();
+}
+
+
+	*/
 
 	static Class<?> clazz = IVFOldDataController.class;
 
@@ -31,7 +40,7 @@ public class IVFOldDataController {
 
 	@CrossOrigin
 	@PostMapping
-	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN','DUMP')")
 	@RequestMapping(value = "/dumpOldIVFData", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Object> dumpIOLData(@RequestBody IVFDumpDto dto) {
 

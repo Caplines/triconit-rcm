@@ -64,20 +64,27 @@ public class CaplineIVFFormDtoToXML {
 		    writer.close();
 		    return baos;
 	}
+	/*
 	public void createPdf(byte[] html, String baseUri, String dest) throws IOException {
 	    ConverterProperties properties = new ConverterProperties();
 	    properties.setBaseUri(baseUri);
 	    HtmlConverter.convertToPdf(
 	        new ByteArrayInputStream(html), new FileOutputStream(dest), properties);
 	}
-
+*/
 	public ByteArrayOutputStream createPdfStream(byte[] html, String baseUri) throws IOException {
 		ByteArrayOutputStream st= new ByteArrayOutputStream();
 		
 	    ConverterProperties properties = new ConverterProperties();
+	    ByteArrayInputStream bh=null;
+	    try {
 	    properties.setBaseUri(baseUri);
+	    bh= new ByteArrayInputStream(html);
 	    HtmlConverter.convertToPdf(
-	        new ByteArrayInputStream(html),st, properties);
+	    		bh,st, properties);
+	    }finally {
+	    	if (bh!=null) bh.close();
+	    }
 	    return st;
 	}
 }

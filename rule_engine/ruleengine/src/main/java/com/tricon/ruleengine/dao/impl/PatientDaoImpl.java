@@ -1,6 +1,7 @@
 package com.tricon.ruleengine.dao.impl;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -110,14 +111,33 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	}
 
 	@Override
-	public Patient updatePatientDataWithDetailsAndHistory(Patient pat, Office off, User user,boolean detailsSave) throws Exception {
+	public void updatePatientDataWithDetailsAndHistory1(Patient pat) throws Exception {
 		// TODO Auto-generated method stub
 		//Session session = getSession();
 		try {
 			//Transaction transaction = session.beginTransaction();
 			// Break into 3 methods
 			updateEntity(pat);
-			RuleEngineLogger.generateLogs(clazz, "Entering To Save patient from DUMP.."
+			RuleEngineLogger.generateLogs(clazz, "Entering To Save patient from DUMP 1.."
+					+pat.getPatientId(), Constants.rule_log_debug, null);
+			// x.split("");
+			//transaction.commit();
+		} finally {
+			//closeSession(session);
+		}
+
+		//return pat;
+	}
+
+	@Override
+	public Patient updatePatientDataWithDetailsAndHistory2(Patient pat,boolean detailsSave,boolean onlySave) throws Exception {
+		// TODO Auto-generated method stub
+		//Session session = getSession();
+		Patient p=pat;
+		try {
+			//Transaction transaction = session.beginTransaction();
+			// Break into 3 methods
+			RuleEngineLogger.generateLogs(clazz, "Entering To Save patient from DUMP 2.."
 					+pat.getPatientId(), Constants.rule_log_debug, null);
 			
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
@@ -126,8 +146,40 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			if (detailsSave) {
 				int id= (Integer)saveEntiy(pd);
 				pd.setId(id);
+				Set<PatientDetail> s=new HashSet<>();
+				s.add(pd);
+				pat.setPatientDetails(s);
+				p=pat;
+				
 			}
-			else updateEntity(pd);
+			else if (!onlySave) {
+				updateEntity(pd);
+				Set<PatientDetail> s=new HashSet<>();
+				s.add(pd);
+				pat.setPatientDetails(s);
+				p=pat;
+				//p=pd;
+				
+			}
+			
+			// x.split("");
+			//transaction.commit();
+		} finally {
+			//closeSession(session);
+		}
+         return p;
+		
+	}
+
+	@Override
+	public void updatePatientDataWithDetailsAndHistory3(Patient pat, Office off) throws Exception {
+		// TODO Auto-generated method stub
+		//Session session = getSession();
+		RuleEngineLogger.generateLogs(clazz, "Entering To Save patient from DUMP 3.."
+				+pat.getPatientId(), Constants.rule_log_debug, null);
+		try {
+			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
+			PatientDetail pd = iter.next();
 			for (PatientHistory ph : pat.getPatientHistory()) {
 				ph.setPatient(pat);
 				ph.setOffice(off);
@@ -139,73 +191,8 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		} finally {
 			//closeSession(session);
 		}
-		// session.flush();
-		// save data in patient table
 
-		// update or save data in Patient Details table
-
-		// update history data
-		// pat.setId(0);
-		/*
-		 * Session session = getSession(); Set<PatientHistory>
-		 * newPH=pat.getPatientHistory(); Set<PatientDetail> newPD=
-		 * pat.getPatientDetails(); try {
-		 * 
-		 * Transaction transaction = session.beginTransaction(); Criteria criteria =
-		 * session.createCriteria(Patient.class);
-		 * criteria.add(Restrictions.eq("patientId", pat.getPatientId()));
-		 * criteria.createAlias("office", "off"); criteria.createAlias("patientHistory",
-		 * "patientHistory",JoinType.LEFT_OUTER_JOIN);
-		 * criteria.createAlias("patientDetails",
-		 * "patientDetails",JoinType.LEFT_OUTER_JOIN);
-		 * criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
-		 * 
-		 * Object obj=criteria.uniqueResult(); if (obj!=null) { //update record pat
-		 * =(Patient) obj; pat.setUpdatedBy(user); pat.setUpdatedDate(date);
-		 * session.update(pat); update=true; session.flush(); if
-		 * (pat.getPatientDetails()!=null && pat.getPatientDetails().size()>0) {
-		 * Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
-		 * PatientDetail pd = iter.next(); session.evict(pd); } }else {
-		 * 
-		 * //save data.. pat.setCreatedBy(user);
-		 * pat.setId(((Integer)session.save(pat))); } //Patient Detail Start if (update)
-		 * { Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
-		 * PatientDetail pd = iter.next(); Iterator<PatientDetail> iterD =
-		 * newPD.iterator(); PatientDetail pdN = iterD.next(); if
-		 * (!pd.getGeneralDateIVwasDone().equals(pd.getGeneralDateIVwasDone())) { //save
-		 * pdN.setPatient(pat); session.save(pdN); }else { //update pdN.setPatient(pat);
-		 * pdN.setId(pd.getId()); pdN.setUpdatedBy(user); pdN.setUpdatedDate(date);
-		 * session.update(pdN); session.flush(); } }else { Iterator<PatientDetail> iter
-		 * = newPD.iterator(); PatientDetail pd = iter.next(); pd.setPatient(pat);
-		 * session.save(pd);
-		 * 
-		 * }
-		 * 
-		 * //Patient Detail End
-		 * 
-		 * //History start Set<PatientHistory> phl =pat.getPatientHistory(); if
-		 * (newPH!=null && newPH.size()>0) { if (phl==null) phl= new HashSet<>();
-		 * //means history already there so now only insert new record if available
-		 * Set<PatientHistory> result1=new HashSet<>(); boolean added=false;
-		 * for(PatientHistory n:newPH) { added=true; for(PatientHistory o:phl) { if (
-		 * o.getHistoryCode().equals(n.getHistoryCode()) &&
-		 * o.getHistoryTooth().equals(n.getHistoryTooth()) &&
-		 * o.getHistorySurface().equals(n.getHistorySurface()) &&
-		 * o.getHistoryDOS().equals(n.getHistoryDOS()) ){ added=false; } } if(added)
-		 * result1.add(n); }//for for(PatientHistory phi:result1) { phi.setOffice(off);
-		 * phi.setPatient(pat); session.save(phi); } }else { //insert all data
-		 * for(PatientHistory phi:pat.getPatientHistory()) { phi.setOffice(off);
-		 * phi.setPatient(pat); session.save(phi); session.flush();
-		 * 
-		 * }
-		 * 
-		 * } //History end transaction.commit(); } finally { closeSession(session);
-		 * 
-		 * }
-		 */
-		// return Optional.ofNullable((List<OfficeDto>) offices);
-
-		return pat;
+		//return pat;
 	}
 
 	

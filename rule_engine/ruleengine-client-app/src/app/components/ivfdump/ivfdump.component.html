@@ -5,7 +5,7 @@
 			<div class="col-sm-6 col-sm-offset-3 form-box">
 				<div class="form-top">
 					<div class="form-top-left">
-						<h3 class="ivf-title">Enter Details for Dumping OLD IVF Data</h3>
+						<h3 class="ivf-title">Enter Details for Dumping NEW IVF Data TO RDBMS</h3>
 					</div>
 				</div>
 
@@ -21,7 +21,7 @@
 								class="login-signup-form-field form-control"
 								name="sheetId" id="sheetId"
 								[(ngModel)]="ivfd.sheetId" #sheetId="ngModel"
-								placeholder="Sheet ID..." required />
+								placeholder="Sheet ID..." required  readonly />
 							<div *ngIf="f.submitted && !sheetId.valid"
 								class="error-msg">Please enter Sheet ID.</div>
 						</div>						
@@ -30,7 +30,7 @@
 							[ngClass]="{ 'has-error': f.submitted && !sheetName.valid }">
 							<label class="sr-only" for="sheetName">IVF Form Id</label> <input 
 								type="text" class="login-signup-form-field form-control"
-								name="sheetName" id="sheetName" [(ngModel)]="ivfd.sheetName" 
+								name="sheetName" id="sheetName" [(ngModel)]="ivfd.sheetName" readonly
 								#sheetName="ngModel" placeholder="sheet Name... (E.g Crosby Database)" required/>
 								
 							   <div *ngIf="f.submitted && !sheetName.valid" class="error-msg">Please
@@ -48,13 +48,7 @@
 							<div *ngIf="f.submitted && ivfd.officeId==''" class="error-msg">The
 								Office Name is required</div>
 						</div>
-						<div class="form-group">
-							 <input
-								type="checkbox" class=""
-								name="newColumn" id="newColumns" [(ngModel)]="ivfd.newColumns"
-								#debugMode="ngModel"  />
-							<label class="sr-checkbox" for="newColumns">With New Columns</label>
-                        </div>
+						
 
 						<p>
 							<button [disabled]="showLoading" type="submit" class="btn">Dump Data
@@ -62,7 +56,7 @@
 						</p>
 
 						<div *ngIf="showLoading" class="loader"></div>
-						<div style="max-height: 200px;overflow-x: auto;">{{messageERR}}</div>
+						<div style="max-height: 200px;overflow-x: auto;" [innerHTML]="messageERR"></div>
 
 					</form>
 				</div>

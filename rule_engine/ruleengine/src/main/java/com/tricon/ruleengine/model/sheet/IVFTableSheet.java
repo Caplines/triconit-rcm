@@ -183,6 +183,18 @@ public class IVFTableSheet {
     //end
 	
 	private String fillingsInYear;// fill1 //MA T24
+	
+	private int rowCounter;// Used for Dump sheets only  
+	private String sheetSubId; //  Used for Dump sheets only   fetch sheet subid in google script create function 
+	//function gfk() {
+	//  return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getSheetId();
+   //}
+
+
+	
+	private String statusDump;// Used for Dump sheets only MC
+	
+	
 	public String getFillingsInYear() {
 		return fillingsInYear;
 	}
@@ -1332,6 +1344,24 @@ public class IVFTableSheet {
 	}
 	public void setNightGuardsD9945Fr(String nightGuardsD9945Fr) {
 		this.nightGuardsD9945Fr = nightGuardsD9945Fr;
+	}
+	public int getRowCounter() {
+		return rowCounter;
+	}
+	public void setRowCounter(int rowCounter) {
+		this.rowCounter = rowCounter;
+	}
+	public String getStatusDump() {
+		return statusDump;
+	}
+	public void setStatusDump(String statusDump) {
+		this.statusDump = statusDump;
+	}
+	public String getSheetSubId() {
+		return sheetSubId;
+	}
+	public void setSheetSubId(String sheetSubId) {
+		this.sheetSubId = sheetSubId;
 	}
 	
 	

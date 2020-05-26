@@ -24,8 +24,8 @@ import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.service.ScrappingFullDataService;
-import com.tricon.ruleengine.service.scrapfull.BCBSDnoaconnect;
-import com.tricon.ruleengine.service.scrapfull.DeltaDentalServiceImpl;
+import com.tricon.ruleengine.service.scrapfull.impl.BCBSDnoaconnectImpl;
+import com.tricon.ruleengine.service.scrapfull.impl.DeltaDentalServiceImpl;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.ConstantsScrapping;
 
@@ -68,13 +68,21 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 	}
 
 	@Override
-	public String parseFullDataAndSaveDetails(ScrappingFullDataDetailDto dto) {
+	public String findRunningStatus(ScrappingFullDataDetailDto dto) {
+		String run= dataDoa.findAnyRunnigfullScrapBSiteName(dto.getSiteName());
+		return run;
+	}
+	
+	@Override
+	public String parseFullDataAndSaveDetails(ScrappingFullDataDetailDto dto,String userName) {
 		
 		Map<String, List<?>> map = new HashMap<>();
 		// TODO Auto-generated method stub
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User user = userDao.findUserByUsername(authentication.getName());
+		User user = userDao.findUserByUsername(userName);
 		boolean continueParsing=false;
+		String run= findRunningStatus(dto);
+		String exMess="One Scrap Procedure Already Running for "+dto.getSiteName()+".\n Please wait till it finishes.";
+		if (run.equals("")) {
 		ScrappingSiteDetailsFull full = dataDoa.findScrappingDetailsById(dto.getSiteDetailId());
 		Office off=officeDao.getOfficeByUuid(dto.getOfficeId());
 		if (full==null) {
@@ -112,7 +120,7 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		}
 		
 		//start the parsing....
-		String exMess=continueParsing?"Started":"Scrap Procedure Already Running.\n Please wait till it finishes.";
+		exMess=continueParsing?"Started":"Scrap Procedure Already Running.\n Please wait till it finishes.";
 		try {
 			//update Status in Google Sheet about running a status
 			/*ConnectAndReadSheets.updateSheetMCNADentaRunStatus(dto.getSheetId(), dto.getSheetSubId(),
@@ -125,17 +133,20 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 			*/
 			//DeltaDentalServiceImpl i= new DeltaDentalServiceImpl(null,null,null,null,null,true);
 			if (continueParsing){
-				ExecutorService service = Executors.newCachedThreadPool();
 				if (dto.getDto() != null) {
 					
-				 //Add All Sites Here....	
+				 //Add All Sites Here....
+				ExecutorService service = Executors.newCachedThreadPool();	
 				 if (dto.getSiteName().equals("Delta Dental")) {
-					 //service.submit(new DeltaDentalServiceImpl(patDao,full,dto,user,off));
+							// service.submit(new DeltaDentalServiceImpl(patDao,full,dto,user,off));
 					 /*map.put(ConstantsScrapping.SCRAPPING_INIT + dto.getSheetId() + ConstantsScrapping.NAME_Separator
 								+ dto.getSheetSubId(), null);*/
+					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off));
 				  } else if (dto.getSiteName().equals("BCBS")) {
-					 service.submit(new BCBSDnoaconnect(patDao,dataDoa ,full,dto,user,off));
+					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off));
+					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
 				  }
+				// exMess="Done"; 
 				}
 		}
 			
@@ -151,6 +162,7 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 				
 			}*/
 			
+		}
 		}
 		return exMess;
 	}

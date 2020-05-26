@@ -27,4 +27,6 @@ public interface ScrapingFullDataDoa {
 	public int findMaxProxyPort(int siteDetailId);
 	
 	public void updateScrappingSiteRunningStatusAll();
+	
+	public String findAnyRunnigfullScrapBSiteName(String name);
 }

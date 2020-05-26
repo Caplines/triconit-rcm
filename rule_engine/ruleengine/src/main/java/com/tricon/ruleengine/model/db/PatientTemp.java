@@ -65,7 +65,7 @@ public class PatientTemp extends BaseAudit implements Serializable{
 	@Column(name = "status", columnDefinition = "text")
 	private String status;
 	
-	@Column(name = "row_number")
+	@Column(name = "row_number1")
 	private String rowNumber;
 	
 	

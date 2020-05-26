@@ -210,7 +210,7 @@ public class ReportController {
 		if (obj != null && obj[1]!=null) {
 			ByteArrayOutputStream o =(ByteArrayOutputStream)  obj[1];
 			response.setContentType("application/octet-stream");
-			response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0]+ ".pdf"));
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0].toString().replaceAll(",", "")+ ".pdf"));
 			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
 			InputStream in = new ByteArrayInputStream(o.toByteArray());
 			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());

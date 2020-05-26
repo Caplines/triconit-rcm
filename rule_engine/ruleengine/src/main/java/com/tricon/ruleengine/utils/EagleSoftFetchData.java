@@ -5,10 +5,12 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.Security;
 import java.util.Properties;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.json.JSONObject;
@@ -21,11 +23,17 @@ public class EagleSoftFetchData {
 	
 	static Class<?> clazz = EagleSoftFetchData.class;
 	
+	private static  SocketFactory socketFactory=  SSLSocketFactory.getDefault();
+	
+	
 	public String getDataUsingSockets(EagleSoftDBDetails esDB,EagleSoftQueryObject q,
 			 String p1,String p2,String p3,BufferedWriter bw) {
 		
 	    Socket socket = null;
 	    String data="";
+	    OutputStreamWriter writer =null;
+	    BufferedReader reader =null;
+	    InputStreamReader in=null;
 		try {
 			/* not done from here use this from service Layer ..dbAccesService.setUpSSLCertificates();
 			 Properties systemProps = System.getProperties();
@@ -35,9 +43,12 @@ public class EagleSoftFetchData {
 			    System.setProperties(systemProps);
 			    Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 			*/
-			socket =getConnectionToES(esDB);
-			OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(),"UTF-8");
-				BufferedReader reader=new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+			socket =getConnectionToES(esDB,bw);
+			
+			if (socket!=null) {
+			 writer = new OutputStreamWriter(socket.getOutputStream(),"UTF-8");
+			in= new InputStreamReader(socket.getInputStream(), "UTF-8");
+		    reader=new BufferedReader(in);
 		    JSONObject jsonObject=new JSONObject();
 				jsonObject.put("ids",q.getIds());
 			    jsonObject.put("query",q.getQuery() );
@@ -48,28 +59,53 @@ public class EagleSoftFetchData {
 		    writer.write(jsonObject.toString()+"\n");
 		    writer.flush();
 		    data= reader.readLine();
-		
+		    
+			}else {
+				RuleEngineLogger.generateLogs(clazz,
+						"No route to host .."+esDB.getIpAddress(),Constants.rule_log_debug, bw);
+				data=null;	
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			
 			RuleEngineLogger.generateLogs(clazz,
 					e.getMessage(),Constants.rule_log_debug, bw);
+		}finally {
+			
+				try{
+					if (in!=null) in.close();
+					if (reader!=null) reader.close();
+					if (writer!=null) writer.close();
+				    
+				}catch (Exception e2) {
+					e2.printStackTrace();
+					// TODO: handle exception
+				}
+			closeConnectionToES(socket);
 		}
 		
 		return data;	
 
 	}
 	
-	public Socket getConnectionToES(EagleSoftDBDetails esDB) {
-		
+	public Socket getConnectionToES(EagleSoftDBDetails esDB,BufferedWriter bw) {
+		Socket socket=null;
 		try {
-			return ((SSLSocketFactory) SSLSocketFactory.getDefault()).createSocket(esDB.getIpAddress(), esDB.geteSport());
+			
+			socket =socketFactory.createSocket();
+			socket.connect(new InetSocketAddress(esDB.getIpAddress(), esDB.geteSport()), 5000);
+			
+			//return ((SSLSocketFactory) SSLSocketFactory.getDefault()).createSocket(esDB.getIpAddress(), esDB.geteSport());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			if (bw!=null)RuleEngineLogger.generateLogs(clazz,
+					"No route to host .."+esDB.getIpAddress(),Constants.rule_log_debug, bw);
+			
 			return null;
 		}
+		return socket;
 			
 	}
 

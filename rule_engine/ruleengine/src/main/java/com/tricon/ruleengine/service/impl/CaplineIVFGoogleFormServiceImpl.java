@@ -3,6 +3,7 @@ package com.tricon.ruleengine.service.impl;
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +26,7 @@ import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GoogleReportsRDDTO;
+import com.tricon.ruleengine.dto.PatientTreamentDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
@@ -87,10 +89,10 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		Date date = new Date();
 		User user = userDao.findUserByUsername(amdinUserName);
 		Patient pat = IVFFormConversionUtil.copyValueToPatient(d, office, date);
-		return saveAllData (pat,office,date,user,ivf);
+		return saveAllData (pat,office,date,user,ivf,false);
 	}
 	
-	public Object[] saveAllData (Patient pat, Office office, Date date,User user,boolean ivf) {
+	public Object[] saveAllData (Patient pat, Office office, Date date,User user,boolean ivf,boolean onlyInsert) {
 		
 		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office,pat);
 		Object[] ob= new Object[2];
@@ -100,7 +102,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		String generalDate="";
 		String insuranceName="";
 		String employerName="";
-		
+		boolean dumpCheck=false;
 		if (pat.getPatientDetails()!=null && pat.getPatientDetails().size()>0) {
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
 			PatientDetail x = iter.next();
@@ -114,7 +116,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				patd = patientDao.savePatientDataWithDetailsAndHistory(pat, office, user, date);
 			} else {
 				//delete old history logic
-				if (ivf) {
+				if (ivf) {//this is false for DUMP
 				int oldPdid=-1;
 				Set<PatientHistory> pholdset= patd.getPatientHistory();
 				for (PatientDetail pd : patd.getPatientDetails()) {
@@ -149,7 +151,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				patd.setFirstName(pat.getFirstName());
 				patd.setLastName(pat.getLastName());
 				patd.setSalutation(pat.getSalutation());
-				patientDao.updateOnlyPatient(patd, office, user);
+				if (ivf) patientDao.updateOnlyPatient(patd, office, user);
 				boolean detailsSave = false;
 				if (patd.getPatientDetails() != null && patd.getPatientDetails().size() > 0
 						&& pat.getPatientDetails() != null && pat.getPatientDetails().size() > 0) {
@@ -157,9 +159,12 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 					PatientDetail pdN = iter.next();
 					boolean oldDetailMatched = false;
 					for (PatientDetail pd : patd.getPatientDetails()) {
-						if (pd.getGeneralDateIVwasDone().equals(pdN.getGeneralDateIVwasDone())
-							&& 	pd.getEmployerName().toLowerCase().trim().equals(pdN.getEmployerName().toLowerCase().trim())
-							&& 	pd.getInsName().toLowerCase().trim().equals(pdN.getInsName().toLowerCase().trim())) { 
+						boolean CheckCondition=pd.getGeneralDateIVwasDone().equals(pdN.getGeneralDateIVwasDone())
+								&& 	pd.getEmployerName().toLowerCase().trim().equals(pdN.getEmployerName().toLowerCase().trim())
+								&& 	pd.getInsName().toLowerCase().trim().equals(pdN.getInsName().toLowerCase().trim());
+						/*if (!ivf) CheckCondition=pd.getGeneralDateIVwasDone().equals(pdN.getGeneralDateIVwasDone())
+								  && 	pd.getInsName().toLowerCase().trim().equals(pdN.getInsName().toLowerCase().trim());*/
+						if (CheckCondition) { 
 							pdN.setId(pd.getId());
 							pdN.setCreatedBy(pd.getCreatedBy());
 							pdN.setCreatedDate(pd.getCreatedDate());
@@ -170,6 +175,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 							l.add(pdN);
 							patd.setPatientDetails(l);
 							oldDetailMatched = true;
+							dumpCheck=true;
 							break;
 						}
 					}
@@ -244,7 +250,36 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 					}
 
 				}
-				patientDao.updatePatientDataWithDetailsAndHistory(patd, office, user, detailsSave);
+				//patientDao.updatePatientDataWithDetailsAndHistory(patd, office, user, detailsSave);
+				if (ivf) {
+				patientDao.updatePatientDataWithDetailsAndHistory1(patd);//Only updates Patient table
+				Patient pp=patientDao.updatePatientDataWithDetailsAndHistory2(patd,detailsSave,onlyInsert);//Only save in Details  never Update in case of DUMP
+				Iterator<PatientDetail> iter = pp.getPatientDetails().iterator();
+				PatientDetail ppd = iter.next();
+			
+				Set<PatientDetail> s=new HashSet<>();
+				s.add(ppd);
+				patd.setPatientDetails(s);
+				
+				patientDao.updatePatientDataWithDetailsAndHistory3(patd, office);
+				}else {//FOR DUMP
+					 if (dumpCheck) {
+						 ob[1]="DUPLICATE";
+					 }else {
+						    patientDao.updatePatientDataWithDetailsAndHistory1(patd);//Only updates Patient table
+							Patient pp=patientDao.updatePatientDataWithDetailsAndHistory2(patd,detailsSave,onlyInsert);//Only save in Details  never Update
+							Iterator<PatientDetail> iter = pp.getPatientDetails().iterator();
+							PatientDetail ppd = iter.next();
+						
+							Set<PatientDetail> s=new HashSet<>();
+							s.add(ppd);
+							patd.setPatientDetails(s);
+							
+							patientDao.updatePatientDataWithDetailsAndHistory3(patd, office);
+					 }
+					
+				}
+				
 				r=0;
 			}
 			r = patd.getPatientDetails().iterator().next().getId();
@@ -557,6 +592,13 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}finally {
+			try {
+				o.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		return obj;

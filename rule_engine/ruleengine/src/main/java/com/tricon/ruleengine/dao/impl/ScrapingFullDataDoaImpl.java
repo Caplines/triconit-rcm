@@ -1,6 +1,7 @@
 package com.tricon.ruleengine.dao.impl;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -112,9 +113,17 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 	@Override
 	public int findMaxProxyPort(int siteDetailId) {
 		
-		Session session = getSession();
+		Session session =null;
+		Object v=null;
+		try{
+			session =getSession();
+		
 		String query="select max(proxy_port) from scrapping_site_details_full";
-		Object v=session.createSQLQuery(query).uniqueResult();
+		v=session.createSQLQuery(query).uniqueResult();
+		
+		}finally {
+			closeSession(session);
+		}
 		if (v==null ) return 0;
 		else 
 		return ((Integer)v).intValue();
@@ -135,4 +144,24 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 				}
 	}
 
+
+	@Override
+	public String findAnyRunnigfullScrapBSiteName(String name) {
+				Session session = null;
+				String s="";
+				try {
+					session = getSession();
+					SQLQuery query = session.createSQLQuery("select o.name from scrapping_full_data f , scrapping_site_details_full fu,office o where fu.scrapping_site_id=f.id"
+							+ " and o.uuid= fu.office_id  and  is_running =true and site_name='"+name+"'");
+			          Object v=  query.uniqueResult();
+			              if (v==null ) s= "";
+			      		else 
+			      		s= ((String)v);
+
+				} finally {
+					closeSession(session);
+
+				}
+				return s;
+	}
 }

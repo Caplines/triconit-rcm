@@ -281,7 +281,7 @@ public class CaplineIVFGoogleFormController {
 			response.setContentType("application/octet-stream");
 			//String name="" java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")
 			//response.setHeader("Content-Disposition", String.format("attachment; filename="+java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")));
-			response.setHeader("Content-Disposition", String.format("attachment; filename="+(obj[0] +".pdf").replaceAll(" ", "")));
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+(obj[0].toString().replaceAll(",", "") +".pdf")));
 			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
 			InputStream in = new ByteArrayInputStream(ou.toByteArray());
 			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());

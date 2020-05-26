@@ -40,6 +40,8 @@ import { ResultTypeFilterPipe} from './filter/result_type_filter';
 import { routing} from "./app.routing";
 import { UrlPermission} from "./urlPermission/url.permission";
 import { UrlAdminPermission} from "./urlPermission/url.adminpermission";
+import { UrlDumpPermission} from "./urlPermission/url.dumppermission";
+
 import { UrlLoggedInCheck} from "./urlPermission/url.checkloginstate";
 import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './auth/token.interceptor';
@@ -83,7 +85,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
         headerName: 'X-CSRF-TOKEN'
       })*/
   ],
-  providers: [AuthService,ApplicationService,UrlPermission,UrlAdminPermission,UrlLoggedInCheck,
+  providers: [AuthService,ApplicationService,UrlPermission,UrlAdminPermission,UrlLoggedInCheck,UrlDumpPermission,
 	  OfficeResolve,
        {
           provide: HTTP_INTERCEPTORS,

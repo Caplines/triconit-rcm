@@ -13,6 +13,8 @@ export class HeaderComponent implements OnInit {
   userTypeAdmin: any;
   userTypeRegular: any;
   userType: any;
+  userTypeDump: any;
+
 
 
   constructor(public authService :AuthService, public router: Router) {
@@ -25,6 +27,7 @@ export class HeaderComponent implements OnInit {
 				this.userType = '';
 				this.userTypeAdmin = '';
 				this.userTypeRegular = '';
+				this.userTypeDump='';
 			}
         });
   }
@@ -39,9 +42,9 @@ export class HeaderComponent implements OnInit {
 		this.userName = localStorage.getItem('currentUser');
 		this.userType = localStorage.getItem('userType');
 		if (!this.userType) this.userType='';
-		this.userTypeAdmin = localStorage.getItem('roles').indexOf("ROLE_ADMIN")>0;
+		this.userTypeAdmin = localStorage.getItem('roles').indexOf("ROLE_ADMIN")>=0;
 		this.userTypeRegular = "ROLE_USER";
-		
+		this.userTypeDump= localStorage.getItem('roles').indexOf("ROLE_DUMP")>=0;
 	}
 	
   }

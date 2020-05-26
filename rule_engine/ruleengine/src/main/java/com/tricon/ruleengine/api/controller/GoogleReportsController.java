@@ -27,13 +27,20 @@ import com.tricon.ruleengine.dto.FlexBean;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.GoogleReportDTO;
 import com.tricon.ruleengine.dto.sheetresponse.*;
+import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.GoogleReportService;
+import com.tricon.ruleengine.service.impl.EagleSoftDBAccessServiceImpl;
+import com.tricon.ruleengine.utils.Constants;
 
 @CrossOrigin
 @RestController
 public class GoogleReportsController {
 
+	public static boolean alreadyRunning=false;
+	
+	static Class<?> clazz = GoogleReportsController.class;
+	
 	@Autowired
 	GoogleReportService gs;
 
@@ -129,6 +136,137 @@ public class GoogleReportsController {
 
 	}
 
+	private List<Object> fetchData(String selectcolumns,String query,String ids,int columnCount,String password,
+			              String office, HttpServletRequest request,
+			HttpServletResponse response) {
+		List<Object> l = new ArrayList<>();	
+		try {
+			alreadyRunning=true;
+			es.setUpSSLCertificates();
+			
+			/*
+		    System.out.println("DPPPPPPPPPP--"+request.getRequestURI());
+			System.out.println("DPPPPPPPPPP--"+request.getHeaderNames());
+			for (Enumeration<?> e = request.getHeaderNames(); e.hasMoreElements();) {
+			    String nextHeaderName = (String) e.nextElement();
+			    String headerValue = request.getHeader(nextHeaderName);
+			    System.out.println("DPPPPPPPPPP--"+nextHeaderName);
+			    System.out.println("DPPPPPPPPPP--"+headerValue);
+			    
+				}
+			
+			System.out.println("----------------------");
+			System.out.println("---------URL-------------"+request.getRequestURL());
+			`.out.println("RRRRRRRRRRRRR---------"+request.getRemoteHost() );
+			
+			System.out.println(new URL(request.getRequestURL().toString()).getHost());
+			*/
+			List<GoogleReportDTO> beanList = new ArrayList<>();
+			GoogleReportDTO dataBean = null;
+			String a[] = selectcolumns.split(",");
+			query = " select " + selectcolumns + " " + query;
+			boolean unicode16=false;        //patperio 
+			if (query.toLowerCase().contains("patperio ")) unicode16=true;
+			LinkedHashMap<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
+			//String finalData = "";
+			if (dataMap != null) {
+				//List<String> li = Arrays.asList(a);
+				//String comma = "";
+				for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+					if (entry.getValue() != null) {
+						List<String> des = (List<String>) (entry.getValue());
+						int x = 0;
+						//finalData = finalData + comma + "{";
+						dataBean = new GoogleReportDTO();// dataBean
+						
+						for (int y=0;y<a.length;y++) {
+							String v = des.get(x);
+							//int ss=0;
+							if(unicode16) {//handle uincode characters
+								//avoid loop here to 32 
+								if(a[y].contains("tooth_1")|| a[y].contains("tooth_2") || a[y].contains("tooth_3")
+								  || a[y].contains("tooth_4")  || a[y].contains("tooth_5") || a[y].contains("tooth_6")
+								  || a[y].contains("tooth_7")  || a[y].contains("tooth_8") || a[y].contains("tooth_9")
+								  || a[y].contains("tooth_10")  || a[y].contains("tooth_11") || a[y].contains("tooth_12")
+								  || a[y].contains("tooth_13")  || a[y].contains("tooth_14") || a[y].contains("tooth_15")
+								  || a[y].contains("tooth_16")  || a[y].contains("tooth_17") || a[y].contains("tooth_18")
+								  || a[y].contains("tooth_19")  || a[y].contains("tooth_20") || a[y].contains("tooth_21")
+								  || a[y].contains("tooth_22")  || a[y].contains("tooth_23") || a[y].contains("tooth_24")
+								  || a[y].contains("tooth_25")  || a[y].contains("tooth_26") || a[y].contains("tooth_27")
+								  || a[y].contains("tooth_28")  || a[y].contains("tooth_29") || a[y].contains("tooth_30")
+								  || a[y].contains("tooth_31")  || a[y].contains("tooth_32")
+								  
+								  ) {
+									
+										v = des.get(x);
+										v=v.replaceAll("\n", "");
+										//System.out.println(v);
+											try {
+										byte[] b=v.getBytes("UTF-8");
+										v="";	
+										for(int n=0;n<b.length;n++) {
+											if ((b[n]+"").equals("32")) continue;
+											v=v+b[n]+",";
+										}
+										v=v.replaceAll(",$", "");
+										 }catch(Exception u) {
+											 
+										 }
+									
+									}	
+							}
+							
+							
+							
+							setUPResponseData(dataBean, x, v);
+							x++;
+						}
+						beanList.add(dataBean);
+
+					}
+
+				}
+			}
+	          /*
+	          * http://localhost:8080/googleESReport?query=
+	            FROM dbo.syscolumns b,sysobjects a where a.id=b.id and a.name LIKE 'treatment_plans'
+	            &selectcolumns=b.name&columnCount=1&office=Jasper&password=134568 
+	          */
+			    //Add name and age
+			
+			
+			//Class<?> c2 = Class.forName("com.tricon.ruleengine.dto.sheetresponse.Response"+columnCount);//--Done
+			
+			if (beanList!=null) {
+			
+			for (GoogleReportDTO d:beanList) {
+			    l.add(setUPResponseDataRequired(d,columnCount,null));
+			}
+			}
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+		}finally {
+			alreadyRunning=false;
+		}
+		return l;
+	}
+	
+	private boolean checktimer(int max) throws InterruptedException {
+		
+		RuleEngineLogger.generateLogs(clazz, "checktimer "+alreadyRunning+"--"+max, Constants.rule_log_debug, null);
+		if (alreadyRunning) {
+			RuleEngineLogger.generateLogs(clazz, "checktimer "+alreadyRunning, Constants.rule_log_debug, null);
+			max++;
+			if (max>7) return false;
+			Thread.sleep(2000);
+			checktimer(max);
+		}
+		RuleEngineLogger.generateLogs(clazz, "checktimer "+alreadyRunning+"--"+max, Constants.rule_log_debug, null);
+		
+		return false;
+	}
+	
 	@CrossOrigin
 	@GetMapping
 	@RequestMapping(value = "/googleESReport")
@@ -140,108 +278,16 @@ public class GoogleReportsController {
 			@RequestParam(value = "columnCount", required = true) int columnCount,
 			@RequestParam(value = "password", required = true) String password,
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
-			HttpServletResponse response) throws JSONException, MalformedURLException, ClassNotFoundException {
+			HttpServletResponse response) throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
 		//
-		es.setUpSSLCertificates();
-		/*
-	    System.out.println("DPPPPPPPPPP--"+request.getRequestURI());
-		System.out.println("DPPPPPPPPPP--"+request.getHeaderNames());
-		for (Enumeration<?> e = request.getHeaderNames(); e.hasMoreElements();) {
-		    String nextHeaderName = (String) e.nextElement();
-		    String headerValue = request.getHeader(nextHeaderName);
-		    System.out.println("DPPPPPPPPPP--"+nextHeaderName);
-		    System.out.println("DPPPPPPPPPP--"+headerValue);
-		    
-			}
 		
-		System.out.println("----------------------");
-		System.out.println("---------URL-------------"+request.getRequestURL());
-		`.out.println("RRRRRRRRRRRRR---------"+request.getRemoteHost() );
-		
-		System.out.println(new URL(request.getRequestURL().toString()).getHost());
-		*/
-		List<GoogleReportDTO> beanList = new ArrayList<>();
-		GoogleReportDTO dataBean = null;
-		String a[] = selectcolumns.split(",");
-		query = " select " + selectcolumns + " " + query;
-		boolean unicode16=false;        //patperio 
-		if (query.toLowerCase().contains("patperio ")) unicode16=true;
-		LinkedHashMap<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
-		//String finalData = "";
-		if (dataMap != null) {
-			//List<String> li = Arrays.asList(a);
-			//String comma = "";
-			for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
-				if (entry.getValue() != null) {
-					List<String> des = (List<String>) (entry.getValue());
-					int x = 0;
-					//finalData = finalData + comma + "{";
-					dataBean = new GoogleReportDTO();// dataBean
-					
-					for (int y=0;y<a.length;y++) {
-						String v = des.get(x);
-						//int ss=0;
-						if(unicode16) {//handle uincode characters
-							//avoid loop here to 32 
-							if(a[y].contains("tooth_1")|| a[y].contains("tooth_2") || a[y].contains("tooth_3")
-							  || a[y].contains("tooth_4")  || a[y].contains("tooth_5") || a[y].contains("tooth_6")
-							  || a[y].contains("tooth_7")  || a[y].contains("tooth_8") || a[y].contains("tooth_9")
-							  || a[y].contains("tooth_10")  || a[y].contains("tooth_11") || a[y].contains("tooth_12")
-							  || a[y].contains("tooth_13")  || a[y].contains("tooth_14") || a[y].contains("tooth_15")
-							  || a[y].contains("tooth_16")  || a[y].contains("tooth_17") || a[y].contains("tooth_18")
-							  || a[y].contains("tooth_19")  || a[y].contains("tooth_20") || a[y].contains("tooth_21")
-							  || a[y].contains("tooth_22")  || a[y].contains("tooth_23") || a[y].contains("tooth_24")
-							  || a[y].contains("tooth_25")  || a[y].contains("tooth_26") || a[y].contains("tooth_27")
-							  || a[y].contains("tooth_28")  || a[y].contains("tooth_29") || a[y].contains("tooth_30")
-							  || a[y].contains("tooth_31")  || a[y].contains("tooth_32")
-							  
-							  ) {
-								
-									v = des.get(x);
-									v=v.replaceAll("\n", "");
-									//System.out.println(v);
-										try {
-									byte[] b=v.getBytes("UTF-8");
-									v="";	
-									for(int n=0;n<b.length;n++) {
-										if ((b[n]+"").equals("32")) continue;
-										v=v+b[n]+",";
-									}
-									v=v.replaceAll(",$", "");
-									 }catch(Exception u) {
-										 
-									 }
-								
-								}	
-						}
-						
-						
-						
-						setUPResponseData(dataBean, x, v);
-						x++;
-					}
-					beanList.add(dataBean);
-
-				}
-
-			}
+		List<Object> l = null;	
+		if (alreadyRunning) {
+			
+			checktimer(1);
 		}
-          /*
-          * http://localhost:8080/googleESReport?query=
-            FROM dbo.syscolumns b,sysobjects a where a.id=b.id and a.name LIKE 'treatment_plans'
-            &selectcolumns=b.name&columnCount=1&office=Jasper&password=134568 
-          */
-		    //Add name and age
 		
-		
-		//Class<?> c2 = Class.forName("com.tricon.ruleengine.dto.sheetresponse.Response"+columnCount);//--Done
-		List<Object> l = new ArrayList<>();	
-		if (beanList!=null) {
-		
-		for (GoogleReportDTO d:beanList) {
-		    l.add(setUPResponseDataRequired(d,columnCount,null));
-		}
-		}
+		l= fetchData(selectcolumns, query, ids, columnCount, password, office, request, response);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", l));
 
 	}

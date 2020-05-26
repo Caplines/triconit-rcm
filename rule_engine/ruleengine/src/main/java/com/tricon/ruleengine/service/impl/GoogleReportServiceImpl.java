@@ -27,12 +27,16 @@ public class GoogleReportServiceImpl implements GoogleReportService{
 	EagleSoftDBAccessService es;
 	
 	@Override
-    public LinkedHashMap<String, List<String>> getESDataFromServer(String query, String ids,int columnCount, String officeName,
+	public LinkedHashMap<String, List<String>> getESDataFromServer(String query, String ids,int columnCount, String officeName,
     		String password) {
 		// TODO Auto-generated method stub
 		
 		Office office= od.getOfficeByName(officeName);
 		LinkedHashMap<String, List<String>> data=null;
+		if (office==null) {
+			System.out.println("office is null for "+officeName+"-");
+			return data;
+		}
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
 		
 		if (esDB!=null && esDB.getPassword().equals(password)) {

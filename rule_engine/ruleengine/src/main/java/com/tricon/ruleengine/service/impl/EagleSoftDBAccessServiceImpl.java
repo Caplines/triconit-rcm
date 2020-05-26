@@ -695,6 +695,14 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 			q = prepairEagleSoftQueryObject(ids.split(","), query, columnCount);
 		else
 			q = prepairEagleSoftQueryObject(null, query, columnCount);
+		try {
+        RuleEngineLogger.generateLogs(clazz, "Google Report Query-" +esDB.getOffice().getName(),
+					Constants.rule_log_debug, bw);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+        RuleEngineLogger.generateLogs(clazz, "Google Report Query-" +query+"--"+ids,
+				Constants.rule_log_debug, bw);
 		String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
 		if (data != null) {
 			try {
@@ -702,8 +710,8 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 				// Patient patQ = map.readValue(r, Patient.class);
 				Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
 				});
-
-				RuleEngineLogger.generateLogs(clazz, "Google Report Query-" + cMap.get("dataMap").toString(),
+ 
+	          RuleEngineLogger.generateLogs(clazz, "Google Report Query-" + cMap.get("dataMap").toString(),
 						Constants.rule_log_debug, bw);
 				dataMap = (LinkedHashMap<String, List<String>>) cMap.get("dataMap");
 				/*
@@ -910,7 +918,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 			ret[1] = esDB.getIpAddress();
 
 			EagleSoftFetchData d = new EagleSoftFetchData();
-			Socket socket = d.getConnectionToES(esDB);
+			Socket socket = d.getConnectionToES(esDB,null);
 			if (socket != null) {
 				d.closeConnectionToES(socket);
 				ret[0] = Constants.socketworkingFine;
@@ -943,7 +951,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 					ret[1] = esDB.getIpAddress();
 
 					EagleSoftFetchData d = new EagleSoftFetchData();
-					Socket socket = d.getConnectionToES(esDB);
+					Socket socket = d.getConnectionToES(esDB,null);
 					if (socket != null) {
 						d.closeConnectionToES(socket);
 						ret[0] = Constants.socketworkingFine;

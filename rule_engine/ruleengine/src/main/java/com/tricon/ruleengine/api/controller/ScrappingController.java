@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -124,7 +126,15 @@ public class ScrappingController {
 	public ResponseEntity<Object> parseFullData(@RequestBody ScrappingFullDataDetailDto dto)  {
 		 String data=null;
 		try {
-			data = fullService.parseFullDataAndSaveDetails(dto);
+			
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String res =fullService.findRunningStatus(dto);
+			if (res.equals("")) {
+				data=fullService.parseFullDataAndSaveDetails(dto, authentication.getName());
+				//data="Started";
+			}else  data= "One Scrap Procedure Already Running for "+dto.getSiteName()+".\n Please wait till it finishes.";;
+				
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

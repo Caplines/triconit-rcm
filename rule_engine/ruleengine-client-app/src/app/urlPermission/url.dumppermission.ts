@@ -3,16 +3,20 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import Utils from '../util/utils';
 
 @Injectable()
-export class UrlAdminPermission implements CanActivate {
+export class UrlDumpPermission implements CanActivate {
 
   constructor(private router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 	  
-	if (localStorage.getItem('currentUser') && localStorage.getItem('roles').indexOf("ROLE_ADMIN")>=0) {
-      // logged with admin  so return true
+	if (localStorage.getItem('currentUser') && localStorage.getItem('roles').indexOf("ROLE_DUMP")>=0) {
+      // logged with dump role so return true
       return true;
     }
+	if (localStorage.getItem('currentUser') && localStorage.getItem('roles').indexOf("ROLE_ADMIN")>=0) {
+	      // logged with dump role so return true
+	      return true;
+	    }
 
     if (localStorage.getItem('currentUser')) {
         //this.router.navigate(['/ivf'], { queryParams: { returnUrl: state.url }});

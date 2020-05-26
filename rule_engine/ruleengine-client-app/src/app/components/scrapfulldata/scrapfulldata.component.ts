@@ -1,18 +1,47 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation, HostListener} from '@angular/core';
 import {Office} from "../../model/model.office";
 import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 //import {ScrapModel}  from "../../model/model.scrap";
 import {ScrapFullDataModel} from "../../model/model.scrapfulldata";
 import {ScrapFullPatientDataModel}  from "../../model/model.scrapfull.patientdata";
+import { DatePipe } from '@angular/common';
+import { DatepickerOptions } from 'ng2-datepicker';
+
+
 
 @Component({
   selector: 'app-scrapfulldata',
   templateUrl: './scrapfulldata.component.html',
   styleUrls: ['./scrapfulldata.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [DatePipe]
 })
 export class ScrapFullDataComponent implements OnInit {
+
+	@HostListener('document:click', ['$event'])
+	  clickout(event) {
+		console.log(event.target);
+		console.log(event.target.className);
+		console.log(typeof event.target.className);
+		
+		if (document.getElementById("data-scroll")){
+			if (event.target &&  event.target.className && (typeof event.target.className==='string')) {
+			if (event.target.className.indexOf("ngx-datepicker-input")>-1 || event.target.className.indexOf("topbar-title")>-1 ||
+				event.target.className.indexOf("year-unit")>-1	|| event.target.className.indexOf("slimscroll-bar")>-1	 ||
+				event.target.className.indexOf("slimscroll-wrapper")>-1 || event.target.className.indexOf("topbar-container")>-1 ||
+				event.target.className.indexOf("day-unit")>-1
+		     ){
+			  document.getElementById("data-scroll").style.overflow="visible";
+		     }else  document.getElementById("data-scroll").style.overflow="auto";
+	      }else if (document.getElementById("data-scroll") && event.target && event.target.className && (typeof event.target.className==='object')  ){
+			document.getElementById("data-scroll").style.overflow="visible";
+	       }else document.getElementById("data-scroll").style.overflow="auto";
+	  
+     }
+		
+	}
+	
   scrap: ScrapFullDataModel = new ScrapFullDataModel();//
  
   errorMessage: string;
@@ -29,7 +58,20 @@ export class ScrapFullDataComponent implements OnInit {
   showLoadingPAA:boolean =false;
   linkData:string="";
   rowCounter:number=1;
-  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute) {
+  dateOptions: DatepickerOptions = {
+		minYear: 1850,
+		maxYear: 2030,  
+		displayFormat: 'MM/DD/YYYY',
+		placeholder: 'MM/DD/YYYY',
+		maxDate: new Date(Date.now()),
+		addClass: 'login-signup-form-field form-control heightdef',
+		useEmptyBarTitle: false
+		
+	};
+
+
+  constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute,
+		  private datePipe: DatePipe) {
 	  this.offices =this.route.snapshot.data['offs'].data;
 	  this.showLoading=true;
   }
@@ -50,6 +92,7 @@ export class ScrapFullDataComponent implements OnInit {
 		   if (val.id==site) {
 			   this.site=val;
 			   this.site.full=val.name+"("+val.url+")";
+			   this.site.name=val.name;
 		   }
 		   
 		 }
@@ -125,6 +168,9 @@ export class ScrapFullDataComponent implements OnInit {
 	   this.showLoadingPAA=false;
 	   this.scrap.siteName=this.site.name;
 	   this.scrap.siteUrl=this.site.url;
+	   console.log(this.scrap.dto);
+	   if(this.validateData()){
+	   this.showLoadingPAA=true;
 	   this.applicationService.postData(this.scrap,"/parsefulldata",
 				(result)=>{
 					  if (result.status == 'OK') {
@@ -144,13 +190,86 @@ export class ScrapFullDataComponent implements OnInit {
 					}
 				 }
 				);
+	      }else{
+	    	   this.showLoadingPA=false;
+	   	       this.showLoadingPAA=false;
 	      }
+        }
    
-
-  receiveChildrenEmitter(event) {
-		if(event['action'] == "showLoading" ) {
-		}else if(event['action'] == "showScrapPopup") {
-		}
-
+  validateData(){
+	  let ret =true;
+	  let ths=this;
+	  let dtoo=this.scrap.dto;
+	  let ax:any=[];
+	  let x=0;
+	   for (let dt of dtoo){
+		   console.log(dt);
+		   dt.firstName= dt.firstName.trim();
+		   dt.lastName=dt.lastName.trim();
+		   dt.patientId=dt.patientId.trim();
+		   dt.dob=dt.dob.trim?dt.dob.trim():dt.dob;
+		   if (!dt.dob.trim) dt.dob = ths.datePipe.transform(dt.dob, 'MM/dd/yyyy');
+		   dt.locationProvider= dt.locationProvider.trim();
+		   dt.memberId= dt.memberId.trim();
+		   dt.patientId=dt.patientId.trim(); 
+		   dt.ssnNumber=dt.ssnNumber.trim();
+		   dt.enrolleeId=dt.enrolleeId.trim();
+		    if (document.getElementById("pati"+x))document.getElementById("pati"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("patf"+x))document.getElementById("patf"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("patl"+x))document.getElementById("patl"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("patd"+x))document.getElementById("patd"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("paten"+x))document.getElementById("paten"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("patss"+x))document.getElementById("patss"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("patloc"+x))document.getElementById("patloc"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("patmem"+x))document.getElementById("patmem"+x).setAttribute("style", "border-color: ;");
+		    
+		    
+		 if(!(dt.firstName=="" && dt.lastName=="" &&
+		   dt.patientId=="" && dt.dob=="" &&
+		   dt.locationProvider=="" && dt.memberId=="" &&
+		   dt.patientId==""  &&  dt.ssnNumber=="" &&
+		   dt.enrolleeId=="")){
+			 ax.push(dt);
+			 console.log(this.site.name);
+			 if (this.site.name=='BCBS'){
+				 
+				 if(dt.dob==""){
+					 document.getElementById("patd"+x).setAttribute("style", "border-color: red;");
+					 ret =false;
+				 }
+				 if(dt.memberId=="" && dt.ssnNumber==""){
+					 document.getElementById("patss"+x).setAttribute("style", "border-color: red;");
+					 document.getElementById("patmem"+x).setAttribute("style", "border-color: red;");
+					 
+					 ret =false;
+				 }
+			 } 
+			 
+		 }
+		 
+		 x++;
+		 
+	   }//for
+	   if (ax.length==0){
+		   if (this.site.name=='BCBS'){
+		    if (document.getElementById("patd"+0))document.getElementById("patd"+0).setAttribute("style", "border-color: red;");
+		    if (document.getElementById("patss"+0))document.getElementById("patss"+0).setAttribute("style", "border-color: red;");
+		    if (document.getElementById("patmem"+0))document.getElementById("patmem"+0).setAttribute("style", "border-color: red;");
+		    ret =false;
+		   }
+	   }	   
+	   if (ret)this.scrap.dto=ax;
+	   console.log(ret);
+	   return ret;
   }
+  
+  removeText(i){
+	   let a:any= document.getElementById("datepicker-"+i);
+       a.value="";
+	   a=document.getElementById("patd"+i);a.value="";
+	   let dtoo=this.scrap.dto;
+		dtoo[i].dob="";  
+	  
+  }
+  
 }

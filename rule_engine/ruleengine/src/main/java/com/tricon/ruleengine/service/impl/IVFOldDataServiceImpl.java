@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,16 +65,21 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 
 				Map<String, List<Object>> ivfMap = null;
 		try {
-			if (!dto.isNewColumns())
+			//no concept of old sheet now
+			//if (!dto.isNewColumns())
+			//https://docs.google.com/spreadsheets/d/1POWJC8as3b3MvhN8EtLacUwLu3ABpI88JUECMQ2Ts10/edit#gid=898165103
+			dto.setSheetId("1POWJC8as3b3MvhN8EtLacUwLu3ABpI88JUECMQ2Ts10");//do this hard code 
+			String sheetSubid="";
 			ivfMap = ConnectAndReadSheets.readSheet(dto.getSheetId(), office.getName() + " " + dto.getSheetName(), null,
 					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);
-			else ivfMap = ConnectAndReadSheets.readSheetNew(dto.getSheetId(), office.getName() + " " + dto.getSheetName(), null,
-					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);
+			// ivfMap = ConnectAndReadSheets.readSheetNewDump(dto.getSheetId(), "TEST", null,
+			//		CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);
 			IVFTableSheet sh = null;
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			Object principal = authentication.getPrincipal();
 			User user = userDao.findUserByUsername(((UserDetails)principal).getUsername());
 			if (ivfMap != null) {
+				int ss=0;
 				//Correct the Date formats
 				for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
 
@@ -81,6 +87,8 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 					List<Object> obL = entry.getValue();
 					for (Object obj : obL) {
 						sh = (IVFTableSheet) obj;
+						if (ss==0)sheetSubid=sh.getSheetSubId();
+						ss=1;
 						sh.setPatientDOB(correctDateformat(sh.getPatientDOB()));
 						sh.setPolicyHolderDOB(correctDateformat(sh.getPolicyHolderDOB()));
 						sh.setPlanEffectiveDate(correctDateformat(sh.getPlanEffectiveDate()));
@@ -95,14 +103,18 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 						}
 					//System.out.println("dfdddd--"+sh.getPatientId());
 						//p=sh.getPatientId()+"-"+sh.getPlanAnnualMax();
-						Object[] objR=caplineIVFGoogleFormService.saveAllData(IVFFormConversionUtil.copyValueToPatient(sh, office), office, new Date(), user,false);
-						if (!((String)objR[1]).equals("Success"))
-						p=p+"patid=="+sh.getPatientId()+" GeneralDate=="+sh.getGeneralDateIVwasDone()+" -------"+(String)objR[1];
+						Object[] objR=caplineIVFGoogleFormService.saveAllData(IVFFormConversionUtil.copyValueToPatient(sh, office), office, new Date(), user,false,true);
+						if (!((String)objR[1]).equals("Success")) {
+						p=p+"PatId: "+sh.getPatientId()+" GeneralDate: "+sh.getGeneralDateIVwasDone()+"  Reason: - <div class='error'>"+(String)objR[1]+"</div><br>";
+						sh.setStatusDump("This IV Already Exists in the RDBMS.");
+						}else {
+							sh.setStatusDump("DONE");
+						}
 						
 					}
 					
 				}
-				
+				ConnectAndReadSheets.updateDumpSheet(dto.getSheetId(), sheetSubid,	CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, ivfMap);
 				
 			}
 		} catch (Exception c) {

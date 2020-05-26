@@ -21,6 +21,8 @@ import {IVFDumpComponent} from "./components/ivfdump/ivfdump.component";
 
 
 import {UrlPermission} from "./urlPermission/url.permission";
+import {UrlDumpPermission} from "./urlPermission/url.dumppermission";
+
 import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
 import {UrlLoggedInCheck} from "./urlPermission/url.checkloginstate";
 import { OfficeResolve } from "./resolver/office_resolver";
@@ -39,7 +41,7 @@ const appRoutes: Routes = [
 		  resolve: {
 			    offs: OfficeResolve
 			  },
-		  component: IVFDumpComponent ,canActivate: [UrlPermission] },	  
+		  component: IVFDumpComponent ,canActivate: [UrlDumpPermission] },	  
   { path: 'ivfcl',
 		  resolve: {
 			    offs: OfficeResolve

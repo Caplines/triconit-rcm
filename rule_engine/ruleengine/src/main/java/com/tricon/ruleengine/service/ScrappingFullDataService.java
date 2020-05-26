@@ -13,7 +13,9 @@ public interface ScrappingFullDataService {
 	
 	public ScrappingFullDataDetailDto getScrappingDetails(int siteId, String  offId);
 	
-	public String parseFullDataAndSaveDetails(ScrappingFullDataDetailDto dto);
+	public String parseFullDataAndSaveDetails(ScrappingFullDataDetailDto dto,String userName);
+	
+	public String findRunningStatus(ScrappingFullDataDetailDto dto);
 	
 	
 	

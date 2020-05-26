@@ -22,7 +22,9 @@ public interface PatientDao {
 	
 	public Patient savePatientDataWithDetailsAndHistory(Patient pat,Office off, User user,Date date) throws Exception;
 	public Patient updateOnlyPatient(Patient pat,Office off, User user)  throws Exception;
-	public Patient updatePatientDataWithDetailsAndHistory(Patient pat,Office off, User use,boolean detailsSave)  throws Exception;
+	public void updatePatientDataWithDetailsAndHistory1(Patient pat)  throws Exception;
+	public Patient updatePatientDataWithDetailsAndHistory2(Patient pat,boolean detailsSave,boolean onlySave)  throws Exception;
+	public void updatePatientDataWithDetailsAndHistory3(Patient pat,Office off)  throws Exception;
 	
 	public List<Patient> searchPatientByPatientId(Set<String> patientIds, Office off);
 	public List<CaplineIVFFormDto> searchPatientDetailFromIVF(CaplineIVFQueryFormDto dto, Office off,Set<String> patIds,boolean temp);
@@ -34,7 +36,7 @@ public interface PatientDao {
 	public void deletePatientHistoryByIds(String[] ids );
 	
 	/**
-	 * Fot temp tables only
+	 * For temp tables only
 	 * @param patientid
 	 * @param off
 	 * @return

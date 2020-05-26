@@ -6,7 +6,7 @@
 				<div class="form-top">
 					<div class="form-top-left">
 						<h3 class="ivf-title">Scrap Full Site Data</h3>
-						<div *ngIf="showLoading" class="loader"></div>
+						<div *ngIf="showLoading" class="loader" style="margin-left: 221px;"></div>
 					</div>
 				</div>
 
@@ -136,10 +136,18 @@
 							   </td>
 								   </ng-container>	
 							      <ng-container *ngIf="scrap.dob">
-							   <td class="data-scroll-thd">
-							        <input type="text" class="login-signup-form-field form-control" 
-									name="patd{{ind}}" id="patd{{ind}}" [(ngModel)]="q.dob"	/>
-							   </td>
+							   
+									   
+							   <td class="data-scroll-thd dobpp">
+							   <ng-datepicker [(ngModel)]="q.dob"
+									name="patd{{ind}}" id="patd{{ind}}" class="login-signup-form-field form-control" 
+									[options]="dateOptions"></ng-datepicker>
+									
+							    <div class="deletebut">
+							    <a href="javascript:void(0)" (click)="removeText(ind)"><span class="glyphicon glyphicon-remove"></span></a>
+							     </div>		
+																
+						       </td>
 								   </ng-container>	
 						      <ng-container *ngIf="scrap.enrolleeId">
 							   <td class="data-scroll-thd">
@@ -178,7 +186,8 @@
 						</p>
 						<div *ngIf="showLoadingPA" class="loader"></div>
 						<div *ngIf="showLoadingPAA" > Parsing started.. Please Check the search feature after some-time 
-						to see the Parsed data in the Report Section ( IVF RDBMS - WebSite Parsed Data ).
+						to see the Parsed data in the Report Section ( IVF RDBMS - WebSite Parsed Data ).<br>
+						OR Stay here For Confirmation.
 						</div>
 						
 

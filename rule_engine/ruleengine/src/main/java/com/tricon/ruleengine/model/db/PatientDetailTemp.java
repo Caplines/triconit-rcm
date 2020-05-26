@@ -49,7 +49,7 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	@Column(name = "cs_sr_name", length = 255)
 	private String cSRName;// H
 
-	@Column(name = "policy_holder_dob", length = 15)
+	@Column(name = "policy_holder_dob", length = 20)
 	private String policyHolderDOB;// I
 
 	@Column(name = "employer_name", length = 255)
@@ -88,7 +88,7 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	@Column(name = "plan_type", length = 50)
 	private String planType;// U
 
-	@Column(name = "plan_termed_date", length = 15)
+	@Column(name = "plan_termed_date", length = 20)
 	private String planTermedDate;// V
 
 	@Column(name = "plan_network", length = 50)
@@ -100,19 +100,19 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	@Column(name = "plan_effective_date", length = 15)
 	private String planEffectiveDate;// Y 26-1 Effective Date RULE ONE (Plan_EffectiveDate)
 
-	@Column(name = "plan_calendar_fiscal_year", length = 5)
+	@Column(name = "plan_calendar_fiscal_year", length = 20)
 	private String planCalendarFiscalYear;// Z
 
-	@Column(name = "plan_annual_max", length = 10)
+	@Column(name = "plan_annual_max", length = 20)
 	private String planAnnualMax;// AA
 
-	@Column(name = "plan_annual_max_remaining", length = 10)
+	@Column(name = "plan_annual_max_remaining", length = 20)
 	private String planAnnualMaxRemaining;// AB
 
-	@Column(name = "plan_individual_dedudtible", length = 10)
+	@Column(name = "plan_individual_dedudtible", length = 20)
 	private String planIndividualDeductible;// AC
 
-	@Column(name = "plan_individual_deductible_remaining", length = 10)
+	@Column(name = "plan_individual_deductible_remaining", length = 20)
 	private String planIndividualDeductibleRemaining;// AD
 
 	@Column(name = "plan_dependents_covered_to_age", length = 50)
@@ -181,7 +181,7 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	@Column(name = "pa_xrays_sub_ded", length = 50)
 	private String pAXRaysSubDed;// percentages15
 
-	@Column(name = "fmx_per", length = 15)
+	@Column(name = "fmx_per", length = 20)
 	private String fmxPer;// percentages16
 
 	// END
@@ -496,7 +496,7 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	@Column(name = "general_benefits_verified_by", length = 255)
 	private String generalBenefitsVerifiedBy;// DW
 
-	@Column(name = "general_date_iv_wasdone", length = 15)
+	@Column(name = "general_date_iv_wasdone", length = 20)
 	private String generalDateIVwasDone;// DY
 	// private String patientId;//DZ
 

@@ -129,12 +129,13 @@ public class ConnectAndReadSheets {
 		// return null;
 	}
 
-	public static Map<String, List<Object>> readSheetNew(String spreadsheetId, String sheetName, String[] id,
+	//ONly for Dumping Data
+	public static Map<String, List<Object>> readSheetNewDump(String spreadsheetId, String sheetName, String[] id,
 			String clientDir, String clientFolder, String officeName, boolean idsPatient,boolean breakLoop) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
-		return readIVFWholeSheetWithNew(response, officeName);
+		return readIVFWholeSheetWithNewDump(response, officeName);
 	}
 
 	public static void updateSheetRoster(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
@@ -177,6 +178,41 @@ public class ConnectAndReadSheets {
         
 		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
 		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+	}
+
+	public static void updateDumpSheet(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
+			Map<String, List<Object>> ivfMap) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		List<Request> requests = new ArrayList<>();
+		IVFTableSheet sh = null;
+		try {
+		if (ivfMap!=null) {
+		for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
+
+			//String key = entry.getKey();
+			List<Object> obL = entry.getValue();
+			for (Object obj : obL) {
+				sh = (IVFTableSheet) obj;
+				List<CellData> values = new ArrayList<>();
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(sh.getStatusDump())));
+				requests.add(new Request()
+						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(sh.getRowCounter()+1)
+								.setColumnIndex(340))
+								.setRows(Arrays.asList(new RowData().setValues(values)))
+								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+			}
+		}	
+		
+		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+		}
+		}catch (Exception e) {
+			System.out.println("Issue in updating sheet...");
+			e.printStackTrace();
+			// TODO: handle exception
+		}
 	}
 
 	public static void updateSheetMCNADentaRunStatus(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
@@ -641,13 +677,15 @@ public class ConnectAndReadSheets {
     * @param officeName
     * @return
     */
-	public static Map<String, List<Object>> readIVFWholeSheetWithNew(ValueRange range, String officeName
+	public static Map<String, List<Object>> readIVFWholeSheetWithNewDump(ValueRange range, String officeName
 			) {
 
 		List<List<Object>> values = range.getValues();
 		Map<String, List<Object>> map = null;
-		ListIterator li = values.listIterator(values.size());
+		ListIterator li = values.listIterator();
 		IVFTableSheet vif = null;
+		
+		
 		// IVFHistorySheet vifH = null;
 		List<Object> ivList = null;
 		// int maxlength= values.size();
@@ -655,9 +693,9 @@ public class ConnectAndReadSheets {
 		// System.out.println("maxlengthT30::"+maxlengthT);
 		//int Column_NO_UNIQUE = 312;
 		//int Column_NO_PATIENT = 129;
-
-		while (li.hasPrevious()) {
-			ArrayList<String> obj = (ArrayList<String>) li.previous();
+        int rowCounter=-1;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
 			String uniqueId = "";
 			try {
 				if (obj.get(Column_NO_UNIQUE).toLowerCase().startsWith("Unique_ID".toLowerCase()))
@@ -665,7 +703,7 @@ public class ConnectAndReadSheets {
 				// System.out.println("id---" + ivds.get(0));
 				// System.out.println("id---" + officeName + "_" + ivds.get(0));
 				// System.out.println("888888:;" + (obj.get(157)));
-				Collection<String> ruleGen = null;
+				//Collection<String> ruleGen = null;
 				int x = -1;
 					vif = new IVFTableSheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
@@ -855,6 +893,14 @@ public class ConnectAndReadSheets {
 					}catch (Exception e) {
 						// TODO: handle exception
 					}
+					try {
+						vif.setSheetSubId(obj.get(++x));//MB sheetsubid
+					}catch (Exception e) {
+						continue;
+					}
+					vif.setRowCounter(++rowCounter);
+					vif.setStatusDump("OK");
+					
 				 //For new Added Columns
 				
 				
