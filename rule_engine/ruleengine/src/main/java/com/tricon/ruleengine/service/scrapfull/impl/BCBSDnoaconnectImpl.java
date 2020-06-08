@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -69,6 +70,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 	private static String benefitWaitingPeriod="Waiting Period";
 	private static String benefitMaximumLifeTime="Maximum Life Time ";
 	private static String benefitMaximumLifeTimeRem="Maximum Life Time  Rem";
+	private static String referenceId;
+	private static String procedureData;
 	
 	
 	@Autowired
@@ -283,19 +286,20 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			}
 			else z=z.replace("}]", "  }");// }]}]
 			//System.out.println(z);
-			String referenceId = "";
+			//String referenceId = "";
 			try {
 				JSONObject jsonObj = new JSONObject(z);
 				if (arrayC) {
 					JSONArray ja =jsonObj.getJSONArray("policies");
 					jsonObj = new JSONObject(ja.getJSONObject(0).toString());
 					String x =jsonObj.get("policyType").toString();
+					referenceId=jsonObj.get("referenceId").toString();
 					if (!x.equals("Medical")) {
-						url = "https://www.dnoaconnect.com/#!/benefits/" + jsonObj.get("referenceId").toString() + "?subscriberId=" + id + "&dateOfBirth="
+						url = "https://www.dnoaconnect.com/#!/benefits/" + referenceId + "?subscriberId=" + id + "&dateOfBirth="
 								+ dobA[2] + "-" + dobA[0] + "-" + dobA[1];
 					}else {
 						jsonObj = new JSONObject(ja.getJSONObject(1).toString());
-						url = "https://www.dnoaconnect.com/#!/benefits/" + jsonObj.get("referenceId").toString() + "?subscriberId=" + id + "&dateOfBirth="
+						url = "https://www.dnoaconnect.com/#!/benefits/" + referenceId + "?subscriberId=" + id + "&dateOfBirth="
 								+ dobA[2] + "-" + dobA[0] + "-" + dobA[1];
 						
 					}
@@ -347,7 +351,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		} catch (Exception e) {
 			return false;
 		}
-		Thread.sleep(5000);
+		Thread.sleep(4000);
 		WebElement pTag = driver
 				.findElement(By.xpath("/html/body/ui-view/div/div/ui-view/div/form/div/div[1]/div/div/div[2]/p[3]"));
 		if (pTag != null) {
@@ -489,7 +493,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 	}
 
 	private void fetchPatDetails(WebDriver driver, PatientTemp temp) throws InterruptedException {
-        Thread.sleep(15000);
+        Thread.sleep(5000);
 		PatientDetailTemp dtemp = temp.getPatientDetails().iterator().next();
 		Set<PatientHistoryTemp> hisSet = temp.getPatientHistory();
 		openSideBarFirst(driver,"Procedure History");
@@ -540,6 +544,42 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			}
 
 		}
+		
+		
+		
+		openSideBarFirst(driver,"Benefit Information");
+		dtemp.setEndodonticsPercentage(fetchBenefitInformation("Endodontics",driver,benefitInNetwork,true,true));//9
+		dtemp.setEndoSubjectDeductible(MessageUtil.getTEXTNAORYES(fetchBenefitInformation("Endodontics",driver,benefitInDeductible,true,true)));//10
+		dtemp.setPerioSurgeryPercentage(fetchBenefitInformation("Periodontal Surgery",driver,benefitInNetwork,true,true));//11
+		dtemp.setPerioSurgerySubjectDeductible(MessageUtil.getTEXTNAORYES(fetchBenefitInformation("Periodontal Surgery",driver,benefitInDeductible,true,true)));//12
+		
+		dtemp.setBasicWaitingPeriod(MessageUtil.getTEXTSatisfied(fetchBenefitInformation("Composite Fillings",driver,benefitWaitingPeriod,true,true)));//20 in DOC
+		dtemp.setMajorWaitingPeriod(MessageUtil.getTEXTSatisfied(fetchBenefitInformation("Crowns",driver,benefitWaitingPeriod,true,true)));//21 in DOC
+		 
+		dtemp.setOrthoMax(fetchBenefitInformation("Orthodontics",driver,benefitMaximumLifeTime,false,true));//91
+		dtemp.setOrthoRemaining(fetchBenefitInformation("Orthodontics",driver,benefitMaximumLifeTimeRem,false,false));//115
+		dtemp.setOrthoWaitingPeriod(MessageUtil.getTEXTSatisfied(fetchBenefitInformation("Orthodontics",driver,benefitWaitingPeriod,true,false)));//116
+	    
+		
+		dtemp.setDiagnosticSubDed(MessageUtil.getTEXTNAORYES(fetchBenefitInformation("Oral Exams",driver,benefitInDeductible,true,true)));//109
+		
+		dtemp.setPreventiveSubDed(MessageUtil.getTEXTNAORYES(fetchBenefitInformation("Amalgam Fillings",driver,benefitInDeductible,true,true)));//118
+
+       /*	//open tab	
+		List<WebElement> e1 = driver.findElements(By.tagName("a"));
+		for(WebElement e2:e1) {
+		 String s=	e2.getAttribute("target");
+		 if (e2.isDisplayed() && s!=null &&  s.equals("_blank")){
+			e2.click();
+			break;
+		 }
+		}
+		//e1.sendKeys(Keys.CONTROL +"t");0
+		ArrayList<String> tabs = new ArrayList<String> (driver.getWindowHandles());
+		System.out.println("TAB SIZE--"+tabs.size());
+		
+	    driver.switchTo().window(tabs.get(1)); //switches to new tab
+        */
 		String basicper6=fetchValueByCode("D4346",driver,inNetworkCoinsurance,true,false,true);
 		if (basicper6.equals(""))basicper6="0";
 		String basicper1=fetchValueByCode("D4341",driver,inNetworkCoinsurance,true,false,true);
@@ -693,7 +733,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 	    //64
 	    dtemp.setAlveoD7311FL(fetchValueByCode("D7311",driver,lastrowunder2ndcolumn,false,false,true));//65
 	    //66
-	    dtemp.setAlveoD7311FL(fetchValueByCode("D7310",driver,lastrowunder2ndcolumn,false,false,true));//67
+	    dtemp.setAlveoD7310FL(fetchValueByCode("D7310",driver,lastrowunder2ndcolumn,false,false,true));//67
 	    
 	    dtemp.setCompleteDenturesD5110D5120FL(fetchValueByCode("D5110",driver,lastrowunder2ndcolumn,false,false,true));//68
 	    dtemp.setImmediateDenturesD5130D5140FL(fetchValueByCode("D5130",driver,lastrowunder2ndcolumn,false,false,true));//69
@@ -740,24 +780,12 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 	    
 	    dtemp.setNightGuardsD9945Percentage(fetchValueByCode("D9945",driver,inNetworkCoinsurance ,true,false,true));//114
 	    dtemp.setNightGuardsD9945Fr(fetchValueByCode("D9945",driver,lastrowunder2ndcolumn ,false,true,true));//122
-	    
-		openSideBarFirst(driver,"Benefit Information");
-		dtemp.setEndodonticsPercentage(fetchBenefitInformation("Endodontics",driver,benefitInNetwork,true,true));//9
-		dtemp.setEndoSubjectDeductible(MessageUtil.getTEXTNAORYES(fetchBenefitInformation("Endodontics",driver,benefitInDeductible,true,true)));//10
-		dtemp.setPerioSurgeryPercentage(fetchBenefitInformation("Periodontal Surgery",driver,benefitInNetwork,true,true));//11
-		dtemp.setPerioSurgerySubjectDeductible(MessageUtil.getTEXTNAORYES(fetchBenefitInformation("Periodontal Surgery",driver,benefitInDeductible,true,true)));//12
-		
-		dtemp.setBasicWaitingPeriod(MessageUtil.getTEXTSatisfied(fetchBenefitInformation("Composite Fillings",driver,benefitWaitingPeriod,true,true)));//20 in DOC
-		dtemp.setMajorWaitingPeriod(MessageUtil.getTEXTSatisfied(fetchBenefitInformation("Crowns",driver,benefitWaitingPeriod,true,true)));//21 in DOC
-		 
-		dtemp.setOrthoMax(fetchBenefitInformation("Orthodontics",driver,benefitMaximumLifeTime,false,true));//91
-		dtemp.setOrthoRemaining(fetchBenefitInformation("Orthodontics",driver,benefitMaximumLifeTimeRem,false,false));//115
-		dtemp.setOrthoWaitingPeriod(MessageUtil.getTEXTSatisfied(fetchBenefitInformation("Orthodontics",driver,benefitWaitingPeriod,true,false)));//116
-	    
-		
-		dtemp.setDiagnosticSubDed(MessageUtil.getTEXTNAORYES(fetchBenefitInformation("Oral Exams",driver,benefitInDeductible,true,true)));//109
-		
-		dtemp.setPreventiveSubDed(MessageUtil.getTEXTNAORYES(fetchBenefitInformation("Amalgam Fillings",driver,benefitInDeductible,true,true)));//118
+	    //driver.close();
+	    //ArrayList<String> tabs1 = new ArrayList<String> (driver.getWindowHandles());
+		//System.out.println("TAB SIZE--"+tabs1.size());
+		//Thread.sleep(2000);
+		//driver.switchTo().window(tabs.get(0)); // switch back to main screen 
+	    //Thread.sleep(20000);
 		//119
 		//123 //124 //125 //126
 	    
@@ -797,7 +825,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 	 Thread.sleep(2000);
 	 System.out.println("33");
 	 System.out.println(rows);
-	 System.out.println(rows.size());
+	 //System.out.println(rows.size());
 	 
 	 for(WebElement row:rows) {
 		 try {
@@ -828,7 +856,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		 }
 	 }
 	 
-    System.out.println("retttt");
+    //System.out.println("retttt");
     
 	}	
 	private String fetchBenefitInformation(String name, WebDriver driver,String type,boolean mandatory,boolean subsectionOPen) throws InterruptedException{
@@ -911,6 +939,27 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		return value;
 	}
 	
+	private String callBenefitCodeUrl(String code, WebDriver driver) {
+		System.out.println("CALLED--URL...");
+		String data="";
+	    try {
+	    String url="https://www.dnoaconnect.com/members/"+referenceId+"/procedureBenefits/"+code.substring(1);
+		navigatetoUrl(driver,url , 2000);
+		data = driver.getPageSource();
+		JSONObject jsonObj = new JSONObject(data);
+		if (jsonObj.get("procedureStatus").toString().equals("active")){
+			
+		}else {
+			data="";
+		}
+	    }catch (Exception e) {
+	    	e.printStackTrace();
+	    	data="";
+			// TODO: handle exception
+		}
+       return data;
+		
+	}
 	/**
 	 * 
 	 * @param code
@@ -922,73 +971,126 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 	 * @throws InterruptedException
 	 */
 	private String fetchValueByCode(String code, WebDriver driver,String type,boolean mandatory,boolean directValues,boolean close) throws InterruptedException {
-		System.out.println("fetchValueByCode"+ code);
+		System.out.println("fetchValueByCode"+ code +" "+type);
 		String value=Constants.SCRAPPING_NOT_FOUND;
 		if (mandatory) value=value+ ". "+ Constants.SCRAPPING_MANDATORY_WARNING;
 		if (!directValues) {
-			Thread.sleep(8000);
-			try {
-			WebElement pcode= driver.findElement(By.id("procedureCode"));
-			pcode.sendKeys("");
-			pcode.sendKeys(code);
-			WebElement but=driver.findElement(By.xpath("//*[@id=\"procedure-lookup\"]/div/div[2]/form/div[3]/div/div/button"));
-			but.click();
-			}catch (Exception e) {
-				return value+" "+Constants.SCRAPPING_ISSUE_FETCHING;
-				// TODO: handle exception
-			}
+			procedureData= callBenefitCodeUrl(code, driver);
 			//check for code existence
-			try {
-				if (driver.findElement(By.xpath("//*[@id=\"procedure-lookup\"]/div/div[2]/form/div[2]")).getText().equals("Please enter a valid procedure code"))
-					return Constants.SCRAPPING_ISSUE_FETCHING_CODE;
-				
-			}catch (Exception e) {
-				// TODO: handle exception
-			}
-			System.out.println("HHHHHHHHHHHHHHH"+ code);
-			Thread.sleep(5000);
 		}
 		value=Constants.SCRAPPING_MAIN_CONDTION_MET;
 		try {
 		if (type.equals(inNetworkCoinsurance)){
+			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
+			//jsonObj = ja.get("coinsuranceInNetwork").toString();
+			value =ja.get("coinsuranceInNetwork").toString().replace("%","");	
+			
+		/*	
 		WebElement div = driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[3]/div[1]/div[2]/dl/div"));
 		value =div.findElements(By.tagName("dd")).get(0).getText().replace("%","");
-		
+		*/
 		}else if (type.equals(inNetworkDeductible)) {
+			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
+			//jsonObj = ja.get("coinsuranceInNetwork").toString();
+			Object t=ja.get("deductibleMetInNetwork");
+			if (t==null) value="N/A";
+			else value =t.toString().replace("null","N/A");
+			/*
 			WebElement div =driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[3]/div[1]/div[2]/dl/div"));
 			value =div.findElements(By.tagName("dd")).get(1).getText();
+			*/
 			
 		}else if (type.equals(lastrowunder2ndcolumn)) {
-			WebElement div =driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[2]"));
+			
+			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
+			JSONObject limit =(JSONObject) ja.get("limitations");
+			value =ja.get("coinsuranceInNetwork").toString().replace("%","");	
+			if (!value.equals("0")) {
+				value=limit.get("occurrences").toString()+"X"+limit.get("length").toString()+limit.get("unit").toString();
+			     if (value.equals("nullXnullnull")) value="";
+			}else {
+				value="N/A";
+			}
+			value =FreqencyUtils.convertFrequecyString(siteName,value);
+			/*WebElement div =driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[2]"));
 			try {
 			value =FreqencyUtils.convertFrequecyString(siteName,div.findElements(By.tagName("dt")).get(0).getText());
 			}catch (Exception e) {
 				value="";
-			}
+			}*/
 			
 		}else if (type.equals(lastrowunder2ndcolumnNext)) {
+			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
+			JSONObject limit =(JSONObject) ja.get("limitations");
+			JSONArray proc =(JSONArray) limit.get("procedures");
+			if(proc!=null && proc.length()>0){
+				value="";
+				String comma="";
+                for (int i = 0; i < proc.length(); i++) {
+                	JSONObject childObject=proc.optJSONObject(i);
+                	JSONArray ar=(JSONArray)childObject.get("codes");
+                    if(ar!=null && ar.length()>0){
+                    	for (int j = 0; j < ar.length(); j++) {
+                       // System.out.println(ar.get(j));
+                        value=value+comma+ar.get(j);
+                    	comma=",";
+                        	
+                        }
+                    }
+                }
+            }
+			
+			
+			/*
 			WebElement div =driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[2]"));
 			try {
 			value =div.findElements(By.tagName("dd")).get(0).getText();
 			}catch (Exception e) {
 				value="";
 			}
-			
+			*/
 		}else if (type.equals(uptoAge)) {
+			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
+			JSONObject limit =(JSONObject) ja.get("limitations");
+			value =((Integer)limit.get("ageMaximum")).toString();
+			/*
 			WebElement div =driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[1]/dl"));
 			value =MessageUtil.removeUptoAge(siteName,div.findElements(By.tagName("dt")).get(0).getText());
-			
+			 */
 		}else if (type.equals(otherLimitations)) {
+			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
+			JSONObject limit =(JSONObject) ja.get("limitations");
+			JSONArray proc =(JSONArray) limit.get("limitedToTeeth");
+			if(proc!=null && proc.length()>0){
+				value="";
+				String comma="";
+                for (int i = 0; i < proc.length(); i++) {
+                	//System.out.println(proc.optString(i));
+                	value=value+comma+proc.optString(i);
+                	comma=",";
+                }
+			}
+			
+			/*
 			WebElement dd =driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[1]/dl/span[3]/dd"));
 			if (dd.getText().startsWith("Limited to teeth"))
 			value =MessageUtil.removeLimitedToteeth(siteName,dd.getText());
 			else value =Constants.SCRAPPING_ISSUE_FETCHING;
+			*/
 			
 		}
 	   }catch(Exception x) {
+		   x.printStackTrace();
 		   return value+" "+Constants.SCRAPPING_ISSUE_FETCHING;
 	   }
 		//Close Button
+		/*
 		if (close) {
 			try {
 				driver.findElement(By.xpath("/html/body/div[1]/div/div/div[4]/div/div/div/button")).click();
@@ -997,6 +1099,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 				// TODO: handle exception
 			}
 		}
+		*/
+		System.out.println("VALUE:"+value);
 		return value; 
 		
 	}
@@ -1015,7 +1119,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		if (!navigate)
 			return navigate;
 		driver.get("https://www.dnoaconnect.com/#!/lookup");
-		Thread.sleep(5000);
+		Thread.sleep(4000);
 		return true;
 	}
 
@@ -1084,6 +1188,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
 		dto.setPassword("Smile123");
 		dto.setUserName("crosbyfd07");
+		dto.setSiteName("BCBS");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
@@ -1097,7 +1202,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		// dto.setPassword("Smile123");
 		dto.setDto(l);
 		dto.setSiteUrl("https://www.dnoaconnect.com/#!/");
-		BCBSDnoaconnectImpl i = new BCBSDnoaconnectImpl(null,null,null,null,null,null);
+		BCBSDnoaconnectImpl i = new BCBSDnoaconnectImpl(null,null,null,dto,null,null);
 		i.setProps("9500");
 		//i.scrappingSiteDetails = f;
 		// dto.setUserName("crosbyfd07");
