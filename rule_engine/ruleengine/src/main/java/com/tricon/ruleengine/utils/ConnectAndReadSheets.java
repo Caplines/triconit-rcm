@@ -900,7 +900,7 @@ public class ConnectAndReadSheets {
 					}
 					vif.setRowCounter(++rowCounter);
 					vif.setStatusDump("OK");
-					
+					if (vif.getPatientId().trim().equals(""))continue;
 				 //For new Added Columns
 				
 				

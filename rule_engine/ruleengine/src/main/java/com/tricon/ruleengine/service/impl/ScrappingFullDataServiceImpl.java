@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,8 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 	@Value("${google.client.secret}")
 	private String CLIENT_SECRET_DIR;
 
+	@Autowired
+	private Environment env;
 	
 	@Autowired
 	ScrapingFullDataDoa dataDoa;
@@ -137,11 +140,14 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 					
 				 //Add All Sites Here....
 				ExecutorService service = Executors.newCachedThreadPool();	
+				
+				System.out.println("8888888888--"+dto.getSiteName());
 				 if (dto.getSiteName().equals("Delta Dental")) {
 							// service.submit(new DeltaDentalServiceImpl(patDao,full,dto,user,off));
 					 /*map.put(ConstantsScrapping.SCRAPPING_INIT + dto.getSheetId() + ConstantsScrapping.NAME_Separator
 								+ dto.getSheetSubId(), null);*/
-					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off));
+					 System.out.println("';"+env.getProperty("google.chorme.driver"));
+					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off,env.getProperty("google.chorme.driver")));
 				  } else if (dto.getSiteName().equals("BCBS")) {
 					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off));
 					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));

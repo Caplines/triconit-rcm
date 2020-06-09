@@ -35,7 +35,7 @@
 				<li><a *ngIf="userTypeAdmin" href="javascript:void(0)" [routerLink]="['/usersettings']">User Settings</a></li>
 				<li><a *ngIf="!userTypeAdmin" href="javascript:void(0)" [routerLink]="['/resetpassword']">Reset password</a></li>
 			    <li><a *ngIf="userTypeRegular" href="javascript:void(0)" [routerLink]="['/report']">Reports</a></li>
-				<li><a *ngIf="userTypeDump || userTypeAdmin" href="javascript:void(0)" [routerLink]="['/dumpOldIVFData']">Dump Old IV data</a></li>
+				<li><a *ngIf="userTypeDump || userTypeAdmin" href="javascript:void(0)" [routerLink]="['/dumpOldIVFData']">Dump data</a></li>
 			    <li><a *ngIf="userName" href="javascript:void(0)" [routerLink]="['/logout']">Log Out</a></li>
 			  </ul>
 			</li>

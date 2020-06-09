@@ -127,7 +127,7 @@ export class ScrapFullDataComponent implements OnInit {
    
    createBlankRow(n){
 	 let i=this.rowCounter;
-	 if (i>5) {
+	 if (i>10) {
 		 alert('Cannot add more Patients..');
 		 return ;
 	 }

@@ -7,11 +7,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.context.MessageSource;
 
@@ -825,10 +826,12 @@ public class FreqencyUtils {
 		return (textAList.size()==0)?"No":"Yes";
 
 	}
-	
+
+	//Use for BCBS ONLY
 	public static String convertFrequecyString(String siteName,String text) {
 		
 		text=text.trim().toLowerCase();
+		System.out.println("CCCCC----"+text);
         String convert=text.replace(" consisting of codes:", "");
 		convert=convert.replace("per quadrant", "");
 		convert=convert.replace("once", "1");
@@ -850,7 +853,9 @@ public class FreqencyUtils {
 		
 		if (text.equals("")) convert="no frequency";
 		if (text.equalsIgnoreCase("not coverded")) convert="NF";
-		
+		convert = convert.replace("benefitperiod", "CY");
+		convert = convert.replace("1LT", "LT");
+		System.out.println("CCCCC----"+convert);
 		return convert;
 		//1 : Once per tooth per 60 months consisting of codes:
 		//2  :Twice per benefit period consisting of codes:
@@ -873,9 +878,126 @@ public class FreqencyUtils {
 	 */
 	}
 	
-	public static void main(String [] a) {
-	 System.out.println(checkForteehIntext("", "1 2 3 4 ", "A,B,I,J,K,L,S,T"));	
-	 System.out.println(convertFrequecyString("","Once per tooth per 60 months consisting of codes:"));
+	public static String convertFrequecyDentaString(String siteName,String text) {
+		
+		text=text.trim().toLowerCase();
+		String convert="";
+		String convert1="";
+		String convert2="";
+		//Benefit is limited to either
+		if (text.startsWith("benefit is limited to one")) {
+			convert1="1"+"x";
+		}else if (text.contains("benefit is limited to once")) {
+			convert1="1"+"x";
+		}else if (text.contains("benefit is limited to either")) {
+			convert1="1"+"x";
+		}else if (text.contains("benefit is limited to two")) {
+			convert1="2"+"x";
+		}else if (text.contains("benefit is limited to three")) {
+			convert1="3"+"x";
+		}else if (text.contains("benefit is limited to four")) {
+			convert1="4"+"x";
+		}else if (text.contains("benefit is limited to five")) {
+			convert1="5"+"x";
+		}else if (text.contains("benefit is limited to six")) {
+			convert1="6"+"x";
+		}else if (text.contains("benefit is limited to seven")) {
+			convert1="7"+"x";
+		}else if (text.contains("benefit is limited to eight")) {
+			convert1="8"+"x";
+		}else if (text.contains("benefit is limited to nine")) {
+			convert1="9"+"x";
+		}else if (text.contains("benefit is limited to ten")) {
+			convert1="10"+"x";
+		}else if(text.contains("this procedure is not a benefit")) {
+			convert1="0";
+		}
+		
+		if (text.contains("benefit is based on professional determination")) {
+			convert="Pre-D";
+		}else if (text.contains("calendar year")) {
+			String regex = "(.*?)within(.*?)calendar year(.*?)";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(text);
+			if(matcher.matches() && matcher.groupCount()>=3) {
+			  //  System.out.println(matcher.group(2));
+			    String gp=matcher.group(2);
+			    gp = gp.trim().replaceAll("[a-z]","").trim();
+			    if (gp.equals(""))convert="1CY";
+			    else  convert=gp+"CY";
+			}else {
+				convert=matcher.group(0).trim();
+			}
+			
+		}else if (text.contains("contract period")) {
+			String regex = "(.*?)within(.*?)contract period(.*?)";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(text);
+			if(matcher.matches() && matcher.groupCount()>=3) {
+			  //  System.out.println(matcher.group(2));
+			    String gp=matcher.group(2);
+			    gp = gp.trim().replaceAll("[a-z]","").trim();
+			    if (gp.equals(""))convert="1CY";
+			    else  convert=gp+"CY";
+			}else {
+				convert=matcher.group(0).trim();
+			}
+			
+		}else if (text.contains("year period")) {
+			String regex = "(.*?)within(.*?)year period(.*?)";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(text);
+			if(matcher.matches() && matcher.groupCount()>=3) {
+			  //  System.out.println(matcher.group(2));
+			    String gp=matcher.group(2);
+			    gp = gp.trim().replaceAll("[a-z]","").trim();
+			    if (gp.equals(""))convert="1CY";
+			    else  convert=gp+"CY";
+			}else {
+				convert=matcher.group(0).trim();
+			}
+			
+		}else if (text.contains("month period")) {
+			String regex = "(.*?)within(.*?)month period(.*?)";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(text);
+			if(matcher.matches() && matcher.groupCount()>=3) {
+			//    System.out.println(matcher.group(2));
+			    String gp=matcher.group(2);
+			    //System.out.println("888888--"+gp);
+			    gp = gp.trim().replaceAll("[a-z]","");
+			    convert=gp.trim()+"Mo";
+			}else {
+				convert=matcher.group(0).trim();
+			}
+			
+		}else if (text.contains("per lifetime")) {
+			convert="LT";
+		}else if (text.contains("no frequency limitation")) {
+			convert="No Frequency";
+		}else if (text.contains("this procedure is not a benefit of ")) {
+			//convert="No";
+		}
+		
+		if(text.contains("limited to once per provider")) {
+			convert2=",once per provider ";
+			
+		}
+		if (text.equals("")) {
+			convert="No Frequency";
+			text="BLANK";
+		}
+		
+		//System.out.println("CCCCC----"+convert1+convert+convert2);
+		
+		String fi=convert1+convert+convert2+"----"+text;
+		if (fi.length()>23) fi=fi.substring(0,23);
+		return fi;
+		//1 : Once per tooth per 60 months consisting of codes:
+		//2  :Twice per benefit period consisting of codes:
+		//3  :6 times per benefit period consisting of codes
+	/*
+	 	System.out.println(convertFrequecyString("","Once per tooth per 60 months consisting of codes:"));
 		System.out.println(convertFrequecyString("","Once per 36 months consisting of codes:"));
 		System.out.println(convertFrequecyString("","Twice per benefit period consisting of codes:"));
 		System.out.println(convertFrequecyString("","Once per tooth per lifetime consisting of codes:"));
@@ -887,6 +1009,52 @@ public class FreqencyUtils {
 		System.out.println(convertFrequecyString("","Once per tooth per 12 months consisting of codes:"));
 		System.out.println(convertFrequecyString("","Once per 36 months consisting of codes:"));
 		System.out.println(convertFrequecyString("","Once per quadrant per 24 months consisting of codes:"));
+		
+		
+	 */
+	}
+
+	public static void main(String [] a) {
+	 
+		System.out.println(convertFrequecyDentaString("","Benefit is limited to two of any oral evaluation procedure within a calendar year"));
+		System.out.println(convertFrequecyDentaString("","Benefit is based on professional determination"));
+		System.out.println(convertFrequecyDentaString("","Benefit is limited to two of any oral evaluation procedure within a calendar year. Comprehensive evaluations are limited to once per provider."));
+		System.out.println(convertFrequecyDentaString("","Benefit is limited to one crown procedure per tooth within a 24 month period"));
+		System.out.println(convertFrequecyDentaString("","Benefit is limited to two of any bitewing x-ray procedure within a calendar year"));
+		System.out.println(convertFrequecyDentaString("","For this program, this procedure has no frequency limitation"));
+		System.out.println(convertFrequecyDentaString("", "Benefit is limited to either one (D0210) intraoral complete series, or (D0330) panoramic radiographic image within a 3 year period"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to two fluoride procedures within a calendar year"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per tooth within 3 calendar years for teeth without caries"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to two of any prophylaxis procedures within a calendar year for codes"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to two of any prophylaxis procedures within a calendar year for codes D1110, D1120, and D4346."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per quadrant within a 24 month period. Radiographic images and a copy of the treatment record are required if more than two quadrants of scaling and root planing are performed on the same date of service."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per quadrant within a 24 month period."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per lifetime. Following active periodontal therapy, allow completion of a 30 day post-operative period before performing this procedure."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per lifetime. "));
+	    System.out.println(convertFrequecyDentaString("", "This procedure is not a benefit of most Delta Dental plans. The fee is the patient's responsibility."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per tooth per lifetime"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per tooth within a 3 year period"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per quadrant per lifetime"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per arch within a 5 year period"));
+	    System.out.println(convertFrequecyDentaString("", "An interim partial denture is covered only to replace extracted anterior permanent teeth during the healing period. If provided for other circumstances, the patient is responsible for the cost. Delta Dental considers the fee for an interim partial denture to include the fee for all teeth and clasps. Benefit is limited to once per arch within a 5 year period."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once within a 5 year period"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per tooth within a 5 year period"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to one implant service per tooth within a 5 year period"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to one crown procedure per tooth within a 5 year period."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per tooth within a 5 year period. An allowance may be made for core buildup when extensive loss of tooth structure is supported by radiographic images or narrative report, or when following root canal treatment."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per surface, per tooth within a 24 month period"));
+	    System.out.println(convertFrequecyDentaString("", "This procedure code is not recognized."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to two problem focused evaluations within a group contract period"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to either one (D0210) intraoral complete series, or (D0330) panoramic radiographic image within a 5 year period"));
+	    System.out.println(convertFrequecyDentaString("", ""));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to four of either D4910 or D4346 within a group contract period. Prophylaxis procedures are a benefit following active periodontal therapy once a 30 day post-operative period has completed."));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per quadrant per lifetime"));
+	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per surface, per tooth within a 12 month period"));
+	    System.out.println(convertFrequecyDentaString("", ""));
+	    System.out.println(convertFrequecyDentaString("", "1234567891011121314as ddadas sssdsd").split("----")[1]);
+	    
+	    
+	    
 	}
 
 	

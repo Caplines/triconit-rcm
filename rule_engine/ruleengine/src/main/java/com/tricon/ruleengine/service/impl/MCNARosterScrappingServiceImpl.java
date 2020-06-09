@@ -156,9 +156,11 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 	
 	private void clickOnNameLink( String name, List<RosterDetails> rList,boolean page,int  pagging,int initial)  {
 		boolean cont=false;
+		
 		try {
 		if (page) {
 		try {
+		Thread.sleep(7000);
 		WebElement element = driver.findElement(By.xpath("//*[@id=\"" + name + "\"]"));
 		if (element != null) {
 			element.click();
@@ -185,12 +187,13 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			
 		}
 			int ct = initial;//2;
+			int newCt=7;//6 old
 			if (cont) {
 			boolean breakonExp=false;	
 			for (;;) {
 				try {
 				List<WebElement> elements = driver
-						.findElements(By.xpath("/html/body/div[6]/div[2]/div[2]/div[2]/table/tbody/tr[" + ct + "]/td"));
+						.findElements(By.xpath("/html/body/div["+newCt+"]/div[2]/div[2]/div[2]/table/tbody/tr[" + ct + "]/td"));
 				if (elements != null && elements.size() > 0) {
 					RosterDetails rd = new RosterDetails();
 					for (int x = 1; x <= elements.size(); x++) {
@@ -201,7 +204,7 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 						WebElement element2 =null;
 						try {
 						element2 = driver.findElement(By.xpath(
-								"/html/body/div[6]/div[2]/div[2]/div[2]/table/tbody/tr[" + ct + "]/td[" + x + "]"));
+								"/html/body/div["+newCt+"]/div[2]/div[2]/div[2]/table/tbody/tr[" + ct + "]/td[" + x + "]"));
 						if (x == 1)
 							rd.setPatFName(element2.getText());
 						if (x == 2)
