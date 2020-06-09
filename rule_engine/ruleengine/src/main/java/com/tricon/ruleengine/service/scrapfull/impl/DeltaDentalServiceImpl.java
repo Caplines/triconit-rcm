@@ -358,18 +358,20 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		dtemp.setPlanIndividualDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 3
 		dtemp.setPlanIndividualDeductibleRemaining(Constants.SCRAPPING_MANDATORY_WARNING);// 4
 		dtemp.setBasicPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 5
-		dtemp.setBasicSubjectDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 6
+		//dtemp.setBasicSubjectDeductible();// 6
 		dtemp.setMajorPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 7
-		dtemp.setMajorSubjectDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 8
+		//dtemp.setMajorSubjectDeductible();// 8
 		dtemp.setEndodonticsPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 9
-		dtemp.setEndoSubjectDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 10
+		//dtemp.setEndoSubjectDeductible();// 10
 
 		dtemp.setPerioSurgeryPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 11
-		dtemp.setPerioSurgerySubjectDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 12
+		//dtemp.setPerioSurgerySubjectDeductible();// 12
 
 		dtemp.setPreventivePercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 13
 		dtemp.setDiagnosticPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 14
 		dtemp.setpAXRaysPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 15
+		dtemp.setMissingToothClause(Constants.SCRAPPING_MANDATORY_WARNING);// 16
+		//17 18
 		dtemp.setNightGuardsD9944Fr(Constants.SCRAPPING_MANDATORY_WARNING);// 19 //Cross Check
 
 		dtemp.setBasicWaitingPeriod(Constants.SCRAPPING_MANDATORY_WARNING);// 20 in DOC
@@ -390,7 +392,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		// dtemp.setFlourideAgeLimit("");//34 not mandatory
 		// dtemp.setVarnishD1206FL("");//35 not mandatory
 		// dtemp.setVarnishD1206AgeLimit("");//36 not mandatory
-		dtemp.setSealantsD1351Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 37
+		//dtemp.setSealantsD1351Percentage();// 37
 		// dtemp.setSealantsD1351FL("");//38
 		// dtemp.setSealantsD1351AgeLimit("")//39
 		dtemp.setSealantsD1351PrimaryMolarsCovered(Constants.SCRAPPING_MANDATORY_WARNING);// 40
@@ -843,10 +845,14 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		values = fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType);// call for Fifth 10
 		benefitInfoMap = new HashMap<>();
 
-		dtemp.setBasicPercentage(values.get("D2391_benefitContract"));// 5
+		dtemp.setBasicPercentage(getBenefitProcedureValue("D2391", benefitContract, values, true));// 5
 		// 6
-		dtemp.setMajorPercentage(values.get("D2740_benefitContract"));// 7
+		dtemp.setMajorPercentage(getBenefitProcedureValue("D2740", benefitContract, values, true));// 7
+		
 		// 8
+		
+		
+		
 		/*
 		String[] limitation = values.get("D9944_benefitLimitation").split("----");
 		if (limitation[1].contains("D4910 or D4346")) {
@@ -867,6 +873,8 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		}
         */
 		// CHECK FOR FREQENCY CORRECT LOGIC....
+		
+		
 		openSideBarFirst(driver, "Benefit details", true,
 				new String[] { "Endodontics", "Periodontics", "Preventive", "Diagnostic" });
 		dtemp.setEndodonticsPercentage(fetchBenefitDetails("D3346", driver, "", "Endodontics", "Endodontic Retreatment",
@@ -947,6 +955,23 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 	}
 
+	private String getBenefitProcedureValue(String key,String type,HashMap<String, String> values,boolean mandatory) {
+		
+		String val= values.get(key+"_"+type);
+		String ret="";
+		if (mandatory) ret=Constants.SCRAPPING_MANDATORY_WARNING;
+		
+		if (val!=null) {
+			if (type.equals(benefitAgeLimit))ret =val;
+			else if (type.equals(benefitAlveoloplasty))ret =val;
+			else if (type.equals(benefitContract))ret =val;
+			else if (type.equals(benefitLimitation)) {
+				ret= val.split("----")[0];
+			}
+		}
+		
+		return ret;
+	}
 	private void openSideBarFirst(WebDriver driver, String sideBarName, boolean child, String[] chidNames)
 			throws InterruptedException {
 		Thread.sleep(5000);
@@ -1200,7 +1225,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 			System.out.println("fetchBenefitSearchProcedure" + names);
 			Thread.sleep(5000);
 			driver.findElement(By.id("template1:r1:1:r1:1:r1:0:r1:1:cb11")).click();// Search Button
-			Thread.sleep(7000);
+			Thread.sleep(6000);
 
 			//
 			JavascriptExecutor js = (JavascriptExecutor) driver;
