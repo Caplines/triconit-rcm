@@ -20,6 +20,7 @@ import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
@@ -83,7 +84,7 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		// TODO Auto-generated method stub
 		User user = userDao.findUserByUsername(userName);
 		boolean continueParsing=false;
-		String run= findRunningStatus(dto);
+		String run= "";//findRunningStatus(dto);
 		String exMess="One Scrap Procedure Already Running for "+dto.getSiteName()+".\n Please wait till it finishes.";
 		if (run.equals("")) {
 		ScrappingSiteDetailsFull full = dataDoa.findScrappingDetailsById(dto.getSiteDetailId());
@@ -123,7 +124,17 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		}
 		
 		//start the parsing....
-		exMess=continueParsing?"Started":"Scrap Procedure Already Running.\n Please wait till it finishes.";
+		ScrappingFullDataManagment manage =dataDoa.getScrappingFullDataManagmentData();
+		continueParsing=false;
+		if (manage.getMaxCount()==-1) {
+			continueParsing=true;
+		}else if (manage.getMaxCount()>manage.getProcessCount()) {
+			continueParsing=true;
+		}
+		//increase the count
+		manage.setProcessCount(manage.getProcessCount()+dto.getDto().size());
+		dataDoa.increasecrapCount(manage);
+		exMess=continueParsing?"Started":manage.getProcessCount()+" Scrap Procedures Already Running.\n Please wait till it finishes.";
 		try {
 			//update Status in Google Sheet about running a status
 			/*ConnectAndReadSheets.updateSheetMCNADentaRunStatus(dto.getSheetId(), dto.getSheetSubId(),
@@ -135,7 +146,7 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 					off.getName()+" Database", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
 			*/
 			//DeltaDentalServiceImpl i= new DeltaDentalServiceImpl(null,null,null,null,null,true);
-			if (continueParsing){
+			if (true){//continueParsing for testing done true if ant issue change to  continueParsing also correct line no 126 exMess
 				if (dto.getDto() != null) {
 					
 				 //Add All Sites Here....
@@ -149,7 +160,7 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 					 System.out.println("';"+env.getProperty("google.chorme.driver"));
 					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off,env.getProperty("google.chorme.driver")));
 				  } else if (dto.getSiteName().equals("BCBS")) {
-					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off));
+					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off,env.getProperty("google.chorme.driver")));
 					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
 				  }
 				// exMess="Done"; 

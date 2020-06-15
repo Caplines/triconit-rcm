@@ -17,6 +17,7 @@ import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 
@@ -164,4 +165,34 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 				}
 				return s;
 	}
+	
+	@Override
+	public ScrappingFullDataManagment getScrappingFullDataManagmentData() {
+		
+		return (ScrappingFullDataManagment) getWholeEntity(ScrappingFullDataManagment.class).get(0);
+	}
+	
+	@Override
+	public void increasecrapCount(ScrappingFullDataManagment manage) {
+		
+		updateEntity(manage);
+		
+	}
+	
+	@Override
+	public void updateScrappingSiteManagement() {
+	
+		Session session = null;
+		try {
+			session = getSession();
+			SQLQuery query = session.createSQLQuery("update scrapping_full_data_manage set process_count=0");
+			query.executeUpdate();
+
+		} finally {
+			closeSession(session);
+
+		}
+
+	}
+	
 }

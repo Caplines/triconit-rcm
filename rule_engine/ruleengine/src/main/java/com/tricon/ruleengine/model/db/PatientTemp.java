@@ -2,8 +2,10 @@ package com.tricon.ruleengine.model.db;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -16,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 /**
@@ -75,6 +78,16 @@ public class PatientTemp extends BaseAudit implements Serializable{
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
 	private Set<PatientHistoryTemp> patientHistory = new HashSet<PatientHistoryTemp>(0);
+	
+	
+	@Transient
+	private String referenceId;
+	
+	@Transient
+	private String procedureData;
+
+	@Transient
+	private  Map<String, String> counterElementMap = new HashMap<>();
 
 	public int getId() {
 		return id;
@@ -170,6 +183,30 @@ public class PatientTemp extends BaseAudit implements Serializable{
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getReferenceId() {
+		return referenceId;
+	}
+
+	public void setReferenceId(String referenceId) {
+		this.referenceId = referenceId;
+	}
+
+	public String getProcedureData() {
+		return procedureData;
+	}
+
+	public void setProcedureData(String procedureData) {
+		this.procedureData = procedureData;
+	}
+
+	public  Map<String, String> getCounterElementMap() {
+		return counterElementMap;
+	}
+
+	public void setCounterElementMap(Map<String, String> counterElementMap) {
+		this.counterElementMap = counterElementMap;
 	}
 
 

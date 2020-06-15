@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,10 +15,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +32,7 @@ import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
 import com.tricon.ruleengine.model.db.PatientTemp;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 import com.tricon.ruleengine.model.db.User;
@@ -70,8 +73,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 	private static String benefitWaitingPeriod="Waiting Period";
 	private static String benefitMaximumLifeTime="Maximum Life Time ";
 	private static String benefitMaximumLifeTimeRem="Maximum Life Time  Rem";
-	private static String referenceId;
-	private static String procedureData;
+	//private static String referenceId;
+	//private static String procedureData;
 	
 	
 	@Autowired
@@ -88,13 +91,14 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 	private ScrappingFullDataDetailDto dto;
 	private Office office;
 	private User user;
-	
+	private String driverLocation;
+
 	
 	
 	private static String siteName="";
     
 	public BCBSDnoaconnectImpl(PatientDao patDao,ScrapingFullDataDoa dataDoa,ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto,
-			User user,Office office) {
+			User user,Office office,String driverLocation) {
 		
 		this.patDao=patDao;
 		this.dataDoa=dataDoa;
@@ -107,28 +111,101 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		this.office = office;
 		siteName=dto.getSiteName();
 		this.user=user;
+		this.driverLocation = driverLocation;
 	       // store parameter for later user
 	   }
+	private WebDriver getBrowserDriver() {
+		// System.setProperty("webdriver.gecko.driver",
+		// "D:/Project/Tricon/linkedinapp/linkedin/lib/geckodriver.exe");
+		// for chrome
+		// webClient = new WebClient();
+		ChromeOptions options = new ChromeOptions();
+		try {
+			// https://chromedriver.chromium.org/downloads
+			System.out.println("getBrowserDriver" + driverLocation);
+			System.setProperty("webdriver.chrome.driver", driverLocation);
+			// ChromeOptions options = new ChromeOptions();
+			//System.out.println("555");
+			options.addArguments("-disable-infobars");
+			options.addArguments("--headless");
+			options.addArguments("--no-sandbox");
+			options.addArguments("--disable-dev-shm-usage");
+			options.setExperimentalOption("useAutomationExtension", false);
+			//System.out.println("8888");
+			options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+			//System.out.println("1118888");
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+		//System.out.println("getBrowserDriver:" + 88888);
+		ChromeDriverService chromeDriverService = ChromeDriverService.createDefaultService();
+		int port = chromeDriverService.getUrl().getPort();
+		System.out.println("PORT---" + port);
+		try {
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return new ChromeDriver(chromeDriverService, options);
+
+	}
+
 	
 	public String scrapSite(ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto,
 			User user,Office office) {
-		WebDriver driver = null;
+		//WebDriver driver = null;
 		setProps(scrappingSiteDetails.getProxyPort());
+		System.out.println("MEM 1-"+(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+		
 		try {
-			driver = new HtmlUnitDriver(true);
-			boolean navigate = loginToSiteBCBS(dto, driver);
+			//driver = new HtmlUnitDriver(true);
+			//driver = getBrowserDriver();// new HtmlUnitDriver(true);// getBrowserDriver();
+			
+			//System.out.println("MEM 2-"+(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+			
+			//boolean navigate = loginToSiteBCBS(dto, driver);
+			System.out.println("MEM 3-"+(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+			
             try {
 			for (PatientScrapSearchDto data : dto.getDto()) {
+				Thread thread = new Thread(){
+				    public void run(){
+				      System.out.println("Thread Running");
+				WebDriver driver = getBrowserDriver();// new HtmlUnitDriver(true);// getBrowserDriver();
+				try{
+				System.out.println("MEM 2-"+(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+				
+				boolean navigate = loginToSiteBCBS(dto, driver);
+				
 				boolean issueNo = navigatetoMainSite(driver, navigate);
 				System.out.println("888888888888- STARTED...");
 				PatientTemp d = parsePage(driver, data, siteName, issueNo,office);
-				System.out.println("888888888888 -END "+d);
+				System.out.println("888888888888 -END "+d.getPatientId());
 				if (d != null) {
 					// Update the Data in Database
 					updateDatainDB(d,office,user);
 				}
+				
                 Thread.sleep(2000);
+				    }catch(Exception dri) {
+				    	
+				    }finally {
+				    	driver.close();
+						driver.quit();
+						scrappingSiteDetails.setRunning(false);
+						ScrappingFullDataManagment manage =dataDoa.getScrappingFullDataManagmentData();
+						if (manage.getProcessCount()>0) {manage.setProcessCount(manage.getProcessCount()-1);
+						dataDoa.increasecrapCount(manage);
+						}
+						dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
+				    }
+				  }
+				    };
+				    
+				thread.start(); 
+				Thread.sleep(10000);
 			}
+			
             }catch (Exception e) {
 				// TODO: handle exception
             	e.printStackTrace();
@@ -138,9 +215,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			e.printStackTrace();
 		} finally {
 			try {
-				scrappingSiteDetails.setRunning(false);
-				dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
-				driver.close();
+				
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				// TODO: handle exception
@@ -241,6 +317,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 				// TODO: handle exception
 			}
 			List<WebElement> eles = driver.findElements(By.className("form-control-static"));
+			try {
 			String[] name = eles.get(1).getText().split(" ");
 			String lname = "";
 			for (int x = 0; x < name.length; x++) {
@@ -251,17 +328,22 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 
 			}
 			temp.setLastName(lname);
+			}catch(Exception p) {
+				temp.setFirstName("");
+				temp.setLastName("");
+			}
+			
             
 		    boolean carryOn=true;
 		    if (!sh.getFirstName().trim().equals("") && !sh.getFirstName().trim().toLowerCase().equals(temp.getFirstName().trim().toLowerCase())) {
 		    	carryOn=false;
 		    	temp.setFirstName(sh.getFirstName());
-		    	temp.setStatus(temp.getStatus()+" First name mismatch issue "+sh.getFirstName()+"-- "+temp.getFirstName());
+		    	temp.setStatus(temp.getStatus()+" First name mismatch issue "+sh.getFirstName()+"-- "+temp.getFirstName() +"or (ssn/member id) "+id +"issue");
 		    }
 		    if (!sh.getLastName().trim().equals("") && !sh.getLastName().trim().toLowerCase().equals(temp.getLastName().trim().toLowerCase())) {
 		    	temp.setLastName(sh.getLastName());
 		    	carryOn=false;
-		    	temp.setStatus(temp.getStatus()+" Last name mismatch issue "+sh.getLastName()+" -- "+temp.getLastName());
+		    	temp.setStatus(temp.getStatus()+" Last name mismatch issue "+sh.getLastName()+" -- "+temp.getLastName()+"or (ssn/member id) "+id +"issue");
 		    }
             
 		    String url ="";
@@ -286,6 +368,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			}
 			else z=z.replace("}]", "  }");// }]}]
 			//System.out.println(z);
+			z=z.replace("</pre></body></html>", "");
+			z="{\"subscriber\":"+z.split("\"subscriberId\":")[1];
+			System.out.println(z);
+			
 			//String referenceId = "";
 			try {
 				JSONObject jsonObj = new JSONObject(z);
@@ -293,13 +379,13 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 					JSONArray ja =jsonObj.getJSONArray("policies");
 					jsonObj = new JSONObject(ja.getJSONObject(0).toString());
 					String x =jsonObj.get("policyType").toString();
-					referenceId=jsonObj.get("referenceId").toString();
+					temp.setReferenceId(jsonObj.get("referenceId").toString());
 					if (!x.equals("Medical")) {
-						url = "https://www.dnoaconnect.com/#!/benefits/" + referenceId + "?subscriberId=" + id + "&dateOfBirth="
+						url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId=" + id + "&dateOfBirth="
 								+ dobA[2] + "-" + dobA[0] + "-" + dobA[1];
 					}else {
 						jsonObj = new JSONObject(ja.getJSONObject(1).toString());
-						url = "https://www.dnoaconnect.com/#!/benefits/" + referenceId + "?subscriberId=" + id + "&dateOfBirth="
+						url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId=" + id + "&dateOfBirth="
 								+ dobA[2] + "-" + dobA[0] + "-" + dobA[1];
 						
 					}
@@ -307,8 +393,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 					JSONObject jsonChildObject = (JSONObject) jsonObj.get("policies");
 					//System.out.println(jsonChildObject.toString());
 					jsonObj = new JSONObject(jsonChildObject.toString());
-					referenceId = jsonObj.get("referenceId").toString();
-					url = "https://www.dnoaconnect.com/#!/benefits/" + referenceId + "?subscriberId=" + id + "&dateOfBirth="
+					temp.setReferenceId(jsonObj.get("referenceId").toString());
+					url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId=" + id + "&dateOfBirth="
 							+ dobA[2] + "-" + dobA[0] + "-" + dobA[1];
 					
 						
@@ -580,13 +666,13 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		
 	    driver.switchTo().window(tabs.get(1)); //switches to new tab
         */
-		String basicper6=fetchValueByCode("D4346",driver,inNetworkCoinsurance,true,false,true);
+		String basicper6=fetchValueByCode("D4346",temp,driver,inNetworkCoinsurance,true,false,true);
 		if (basicper6.equals(""))basicper6="0";
-		String basicper1=fetchValueByCode("D4341",driver,inNetworkCoinsurance,true,false,true);
+		String basicper1=fetchValueByCode("D4341",temp,driver,inNetworkCoinsurance,true,false,true);
 		if (basicper1.equals(""))basicper1="0";
 		try {
 			String v=new Float(basicper6).floatValue() >= new Float(basicper1).floatValue()?"D4341":"D4346";
-			dtemp.setBasicSubjectDeductible(MessageUtil.getTEXTNAORYES(fetchValueByCode(v,driver,inNetworkDeductible,true,false,true)));
+			dtemp.setBasicSubjectDeductible(MessageUtil.getTEXTNAORYES(fetchValueByCode(v,temp,driver,inNetworkDeductible,true,false,true)));
 			dtemp.setBasicPercentage(new Float(basicper6).floatValue() >= new Float(basicper1).floatValue()?basicper1:basicper6);
 			
 		}catch(Exception p){
@@ -594,103 +680,103 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			dtemp.setBasicSubjectDeductible(Constants.SCRAPPING_ISSUE_FETCHING);
 		}
 
-        dtemp.setMajorPercentage(fetchValueByCode("D2740",driver,inNetworkCoinsurance,true,false,true));//7
+        dtemp.setMajorPercentage(fetchValueByCode("D2740",temp,driver,inNetworkCoinsurance,true,false,true));//7
 		
-        dtemp.setMajorSubjectDeductible(MessageUtil.getTEXTNAORYES(fetchValueByCode("D2750",driver,inNetworkDeductible,true,false,true)));//8
-		dtemp.setCrownsD2750D2740Percentage(fetchValueByCode("D2750",driver,inNetworkCoinsurance ,true,true,false));//81
-	    dtemp.setCrownsD2750D2740FL(fetchValueByCode("D2750",driver,lastrowunder2ndcolumn,false,true,true));//82
+        dtemp.setMajorSubjectDeductible(MessageUtil.getTEXTNAORYES(fetchValueByCode("D2750",temp,driver,inNetworkDeductible,true,false,true)));//8
+		dtemp.setCrownsD2750D2740Percentage(fetchValueByCode("D2750",temp,driver,inNetworkCoinsurance ,true,true,false));//81
+	    dtemp.setCrownsD2750D2740FL(fetchValueByCode("D2750",temp,driver,lastrowunder2ndcolumn,false,true,true));//82
 	    
 	    
-		dtemp.setPreventivePercentage(fetchValueByCode("D1110",driver,inNetworkCoinsurance,true,false,true));//13
-		dtemp.setProphyD1110FL(fetchValueByCode("D1110",driver,lastrowunder2ndcolumn,false,true,true));//43
+		dtemp.setPreventivePercentage(fetchValueByCode("D1110",temp,driver,inNetworkCoinsurance,true,false,true));//13
+		dtemp.setProphyD1110FL(fetchValueByCode("D1110",temp,driver,lastrowunder2ndcolumn,false,true,true));//43
 		
-		String v =fetchValueByCode("D0150",driver,inNetworkCoinsurance,true,false,false);
+		String v =fetchValueByCode("D0150",temp,driver,inNetworkCoinsurance,true,false,false);
 		dtemp.setDiagnosticPercentage(v);//14
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setExamsD0150FL(fetchValueByCode("D0150",driver,lastrowunder2ndcolumn,false,true,true));//27
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setExamsD0150FL(fetchValueByCode("D0150",temp,driver,lastrowunder2ndcolumn,false,true,true));//27
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 	
 		
-		v =fetchValueByCode("D0220",driver,inNetworkCoinsurance,true,false,false);
+		v =fetchValueByCode("D0220",temp,driver,inNetworkCoinsurance,true,false,false);
 		dtemp.setpAXRaysPercentage(v);//15
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setxRaysPAD0220FL(fetchValueByCode("D0220",driver,lastrowunder2ndcolumn,false,true,true));//29
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setxRaysPAD0220FL(fetchValueByCode("D0220",temp,driver,lastrowunder2ndcolumn,false,true,true));//29
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 	
 		
 		
-		dtemp.setNightGuardsD9944Fr(fetchValueByCode("D9944",driver,inNetworkCoinsurance,true,false,false));//19 //Cross Check
-		dtemp.setNightGuardsD9944Fr(fetchValueByCode("D9944",driver,lastrowunder2ndcolumn ,false,true,true));//121
+		dtemp.setNightGuardsD9944Fr(fetchValueByCode("D9944",temp,driver,inNetworkCoinsurance,true,false,false));//19 //Cross Check
+		dtemp.setNightGuardsD9944Fr(fetchValueByCode("D9944",temp,driver,lastrowunder2ndcolumn ,false,true,true));//121
 		
-		v =fetchValueByCode("D2930",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D2930",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setsSCD2930FL(fetchValueByCode("D2930",driver,lastrowunder2ndcolumn,false,true,true));//22
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setsSCD2930FL(fetchValueByCode("D2930",temp,driver,lastrowunder2ndcolumn,false,true,true));//22
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		
-		v =fetchValueByCode("D2931",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D2931",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setsSCD2931FL(fetchValueByCode("D2931",driver,lastrowunder2ndcolumn,false,true,true));//23
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setsSCD2931FL(fetchValueByCode("D2931",temp,driver,lastrowunder2ndcolumn,false,true,true));//23
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		
-		v =fetchValueByCode("D0120",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D0120",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setExamsD0120FL(fetchValueByCode("D0120",driver,lastrowunder2ndcolumn,false,true,true));//24
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setExamsD0120FL(fetchValueByCode("D0120",temp,driver,lastrowunder2ndcolumn,false,true,true));//24
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		
-		v =fetchValueByCode("D0140",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D0140",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setExamsD0140FL(fetchValueByCode("D0140",driver,lastrowunder2ndcolumn,false,true,true));//25
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setExamsD0140FL(fetchValueByCode("D0140",temp,driver,lastrowunder2ndcolumn,false,true,true));//25
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		
-		v =fetchValueByCode("D0145",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D0145",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.seteExamsD0145FL(fetchValueByCode("D0145",driver,lastrowunder2ndcolumn,false,true,true));//26
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.seteExamsD0145FL(fetchValueByCode("D0145",temp,driver,lastrowunder2ndcolumn,false,true,true));//26
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		
 			
-		v =fetchValueByCode("D0272",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D0272",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setxRaysBWSFL(fetchValueByCode("D0272",driver,lastrowunder2ndcolumn,false,true,true));//28
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setxRaysBWSFL(fetchValueByCode("D0272",temp,driver,lastrowunder2ndcolumn,false,true,true));//28
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		
 			
-		v =fetchValueByCode("D0230",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D0230",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setxRaysPAD0230FL(fetchValueByCode("D0230",driver,lastrowunder2ndcolumn,false,true,true));//30
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setxRaysPAD0230FL(fetchValueByCode("D0230",temp,driver,lastrowunder2ndcolumn,false,true,true));//30
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		
-		v =fetchValueByCode("D0210",driver,inNetworkCoinsurance,true,false,false);
+		v =fetchValueByCode("D0210",temp,driver,inNetworkCoinsurance,true,false,false);
 		dtemp.setFmxPer(v);//120
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setxRaysFMXFL(fetchValueByCode("D0210",driver,lastrowunder2ndcolumn,false,true,true));//31
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setxRaysFMXFL(fetchValueByCode("D0210",temp,driver,lastrowunder2ndcolumn,false,true,true));//31
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		//32 missing
 		
 		
-		v =fetchValueByCode("D01208",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D01208",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setFlourideD1208FL(fetchValueByCode("D01208",driver,lastrowunder2ndcolumn,false,true,false));//33
+		if (!v.equals("0"))dtemp.setFlourideD1208FL(fetchValueByCode("D01208",temp,driver,lastrowunder2ndcolumn,false,true,false));//33
 		
-		v =fetchValueByCode("D1208",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D1208",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setFlourideAgeLimit(fetchValueByCode("D1208",driver,uptoAge,false,true,true));//34
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setFlourideAgeLimit(fetchValueByCode("D1208",temp,driver,uptoAge,false,true,true));//34
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		
-		v =fetchValueByCode("D1206",driver,inNetworkCoinsurance,false,false,false);
+		v =fetchValueByCode("D1206",temp,driver,inNetworkCoinsurance,false,false,false);
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setVarnishD1206FL(fetchValueByCode("D1206",driver,lastrowunder2ndcolumn,false,true,false));//35
+		if (!v.equals("0"))dtemp.setVarnishD1206FL(fetchValueByCode("D1206",temp,driver,lastrowunder2ndcolumn,false,true,false));//35
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setVarnishD1206AgeLimit(fetchValueByCode("D1206",driver,uptoAge,false,true,true));//36
-		else fetchValueByCode("",driver,"",false,true,true);
+		if (!v.equals("0"))dtemp.setVarnishD1206AgeLimit(fetchValueByCode("D1206",temp,driver,uptoAge,false,true,true));//36
+		else fetchValueByCode("",temp,driver,"",false,true,true);
 		
-		v=fetchValueByCode("D1351",driver,inNetworkCoinsurance,true,false,false);
+		v=fetchValueByCode("D1351",temp,driver,inNetworkCoinsurance,true,false,false);
 		dtemp.setSealantsD1351Percentage(v);//37
-		if (!v.equals("0"))dtemp.setSealantsD1351FL(fetchValueByCode("D1351",driver,lastrowunder2ndcolumn,false,true,false));//38
+		if (!v.equals("0"))dtemp.setSealantsD1351FL(fetchValueByCode("D1351",temp,driver,lastrowunder2ndcolumn,false,true,false));//38
 
-		if (!v.equals("0"))dtemp.setSealantsD1351AgeLimit(fetchValueByCode("D1351",driver,uptoAge,false,true,false));//39
+		if (!v.equals("0"))dtemp.setSealantsD1351AgeLimit(fetchValueByCode("D1351",temp,driver,uptoAge,false,true,false));//39
 		
 		
-		String th =fetchValueByCode("D1351",driver,otherLimitations,false,true,false);
+		String th =fetchValueByCode("D1351",temp,driver,otherLimitations,false,true,false);
 		
 		if (!th.contains(Constants.SCRAPPING_ISSUE_FETCHING)) {
 			dtemp.setSealantsD1351PrimaryMolarsCovered(FreqencyUtils.checkForteehIntext(siteName, th, "A,B,I,J,K,L,S,T"));//40
@@ -700,86 +786,86 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			
 		}
 		
-		dtemp.setpAXRaysSubDed(fetchValueByCode("D1351",driver,inNetworkDeductible,true,true,true));//117
+		dtemp.setpAXRaysSubDed(fetchValueByCode("D1351",temp,driver,inNetworkDeductible,true,true,true));//117
 
 		//4 May
 		
-		dtemp.setProphyD1120FL(fetchValueByCode("D1120",driver,lastrowunder2ndcolumn,false,false,true));//44
+		dtemp.setProphyD1120FL(fetchValueByCode("D1120",temp,driver,lastrowunder2ndcolumn,false,false,true));//44
 		//45 missing
-		dtemp.setsRPD4341Percentage(fetchValueByCode("D4341",driver,inNetworkCoinsurance,true,false,false));//46
-		dtemp.setsRPD4341FL(fetchValueByCode("D4341",driver,lastrowunder2ndcolumn,false,true,true));//47
+		dtemp.setsRPD4341Percentage(fetchValueByCode("D4341",temp,driver,inNetworkCoinsurance,true,false,false));//46
+		dtemp.setsRPD4341FL(fetchValueByCode("D4341",temp,driver,lastrowunder2ndcolumn,false,true,true));//47
 		//48
 		//49
-		dtemp.setPerioMaintenanceD4910Percentage(fetchValueByCode("D4910",driver,inNetworkCoinsurance,true,false,false));//50
-		dtemp.setPerioMaintenanceD4910FL(fetchValueByCode("D4910",driver,lastrowunder2ndcolumn,false,true,false));//51
-		v = fetchValueByCode("D4910",driver,lastrowunder2ndcolumnNext,true,true,true);
+		dtemp.setPerioMaintenanceD4910Percentage(fetchValueByCode("D4910",temp,driver,inNetworkCoinsurance,true,false,false));//50
+		dtemp.setPerioMaintenanceD4910FL(fetchValueByCode("D4910",temp,driver,lastrowunder2ndcolumn,false,true,false));//51
+		v = fetchValueByCode("D4910",temp,driver,lastrowunder2ndcolumnNext,true,true,true);
 		dtemp.setPerioMaintenanceD4910AltWProphyD0110(FreqencyUtils.checkForteehIntext(siteName, v, "D1110,D1120"));//52
 		
-		v =fetchValueByCode("D4355",driver,inNetworkCoinsurance,true,false,false);
+		v =fetchValueByCode("D4355",temp,driver,inNetworkCoinsurance,true,false,false);
 		dtemp.setFMDD4355Percentage(v);//53
 		//It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))dtemp.setfMDD4355FL(fetchValueByCode("D4355",driver,lastrowunder2ndcolumn,false,true,false));//54
+		if (!v.equals("0"))dtemp.setfMDD4355FL(fetchValueByCode("D4355",temp,driver,lastrowunder2ndcolumn,false,true,false));//54
 			
-		dtemp.setGingivitisD4346Percentage(fetchValueByCode("D4355",driver,inNetworkCoinsurance,true,true,false));//55
-		dtemp.setGingivitisD4346FL(fetchValueByCode("D4355",driver,lastrowunder2ndcolumn,false,true,true));//56
+		dtemp.setGingivitisD4346Percentage(fetchValueByCode("D4355",temp,driver,inNetworkCoinsurance,true,true,false));//55
+		dtemp.setGingivitisD4346FL(fetchValueByCode("D4355",temp,driver,lastrowunder2ndcolumn,false,true,true));//56
 		
-		dtemp.setNitrousD9230Percentage(fetchValueByCode("D9230",driver,inNetworkCoinsurance,true,false,true));//57
-	    dtemp.setiVSedationD9243Percentage(fetchValueByCode("D9243",driver,inNetworkCoinsurance,true,false,true));//58
-	    dtemp.setiVSedationD9248Percentage(fetchValueByCode("D9248",driver,inNetworkCoinsurance,true,false,true));//59
-	    dtemp.setExtractionsMinorPercentage(fetchValueByCode("D7140",driver,inNetworkCoinsurance,true,false,true));//60
-	    dtemp.setExtractionsMajorPercentage(fetchValueByCode("D7210",driver,inNetworkCoinsurance,true,false,true));//61
-	    dtemp.setCrownLengthD4249Percentage(fetchValueByCode("D4249",driver,inNetworkCoinsurance,true,false,false));//62
-	    dtemp.setCrownLengthD4249FL(fetchValueByCode("D4249",driver,lastrowunder2ndcolumn,false,true,true));//63
+		dtemp.setNitrousD9230Percentage(fetchValueByCode("D9230",temp,driver,inNetworkCoinsurance,true,false,true));//57
+	    dtemp.setiVSedationD9243Percentage(fetchValueByCode("D9243",temp,driver,inNetworkCoinsurance,true,false,true));//58
+	    dtemp.setiVSedationD9248Percentage(fetchValueByCode("D9248",temp,driver,inNetworkCoinsurance,true,false,true));//59
+	    dtemp.setExtractionsMinorPercentage(fetchValueByCode("D7140",temp,driver,inNetworkCoinsurance,true,false,true));//60
+	    dtemp.setExtractionsMajorPercentage(fetchValueByCode("D7210",temp,driver,inNetworkCoinsurance,true,false,true));//61
+	    dtemp.setCrownLengthD4249Percentage(fetchValueByCode("D4249",temp,driver,inNetworkCoinsurance,true,false,false));//62
+	    dtemp.setCrownLengthD4249FL(fetchValueByCode("D4249",temp,driver,lastrowunder2ndcolumn,false,true,true));//63
 	    //64
-	    dtemp.setAlveoD7311FL(fetchValueByCode("D7311",driver,lastrowunder2ndcolumn,false,false,true));//65
+	    dtemp.setAlveoD7311FL(fetchValueByCode("D7311",temp,driver,lastrowunder2ndcolumn,false,false,true));//65
 	    //66
-	    dtemp.setAlveoD7310FL(fetchValueByCode("D7310",driver,lastrowunder2ndcolumn,false,false,true));//67
+	    dtemp.setAlveoD7310FL(fetchValueByCode("D7310",temp,driver,lastrowunder2ndcolumn,false,false,true));//67
 	    
-	    dtemp.setCompleteDenturesD5110D5120FL(fetchValueByCode("D5110",driver,lastrowunder2ndcolumn,false,false,true));//68
-	    dtemp.setImmediateDenturesD5130D5140FL(fetchValueByCode("D5130",driver,lastrowunder2ndcolumn,false,false,true));//69
-	    dtemp.setPartialDenturesD5213D5214FL(fetchValueByCode("D5213",driver,lastrowunder2ndcolumn,false,false,true));//70
-	    dtemp.setInterimPartialDenturesD5214FL(fetchValueByCode("D5214",driver,lastrowunder2ndcolumn,false,false,true));//71
+	    dtemp.setCompleteDenturesD5110D5120FL(fetchValueByCode("D5110",temp,driver,lastrowunder2ndcolumn,false,false,true));//68
+	    dtemp.setImmediateDenturesD5130D5140FL(fetchValueByCode("D5130",temp,driver,lastrowunder2ndcolumn,false,false,true));//69
+	    dtemp.setPartialDenturesD5213D5214FL(fetchValueByCode("D5213",temp,driver,lastrowunder2ndcolumn,false,false,true));//70
+	    dtemp.setInterimPartialDenturesD5214FL(fetchValueByCode("D5214",temp,driver,lastrowunder2ndcolumn,false,false,true));//71
 	    //72
-	    dtemp.setBoneGraftsD7953FL(fetchValueByCode("D7953",driver,lastrowunder2ndcolumn,false,false,true));//73 
+	    dtemp.setBoneGraftsD7953FL(fetchValueByCode("D7953",temp,driver,lastrowunder2ndcolumn,false,false,true));//73 
 		
-	    dtemp.setImplantCoverageD6010Percentage(fetchValueByCode("D6010",driver,inNetworkCoinsurance ,true,false,true));//74
-	    dtemp.setImplantsFrD6010(fetchValueByCode("D6010",driver,lastrowunder2ndcolumn ,false,true,true));//110
+	    dtemp.setImplantCoverageD6010Percentage(fetchValueByCode("D6010",temp,driver,inNetworkCoinsurance ,true,false,true));//74
+	    dtemp.setImplantsFrD6010(fetchValueByCode("D6010",temp,driver,lastrowunder2ndcolumn ,false,true,true));//110
 	    
-	    dtemp.setImplantCoverageD6057Percentage(fetchValueByCode("D6057",driver,inNetworkCoinsurance ,true,false,true));//75
-	    dtemp.setImplantsFrD6057(fetchValueByCode("D6057",driver,lastrowunder2ndcolumn ,false,true,true));//111
+	    dtemp.setImplantCoverageD6057Percentage(fetchValueByCode("D6057",temp,driver,inNetworkCoinsurance ,true,false,true));//75
+	    dtemp.setImplantsFrD6057(fetchValueByCode("D6057",temp,driver,lastrowunder2ndcolumn ,false,true,true));//111
 	    
-	    dtemp.setImplantCoverageD6190Percentage(fetchValueByCode("D6190",driver,inNetworkCoinsurance ,true,false,true));//76
-	    dtemp.setImplantsFrD6190(fetchValueByCode("D6190",driver,lastrowunder2ndcolumn ,false,true,true));//113
+	    dtemp.setImplantCoverageD6190Percentage(fetchValueByCode("D6190",temp,driver,inNetworkCoinsurance ,true,false,true));//76
+	    dtemp.setImplantsFrD6190(fetchValueByCode("D6190",temp,driver,lastrowunder2ndcolumn ,false,true,true));//113
 		   
-	    dtemp.setImplantSupportedPorcCeramicD6065Percentage(fetchValueByCode("D6065",driver,inNetworkCoinsurance ,true,false,true));//77
-	    dtemp.setImplantsFrD6065(fetchValueByCode("D6065",driver,lastrowunder2ndcolumn ,false,true,true));//112
+	    dtemp.setImplantSupportedPorcCeramicD6065Percentage(fetchValueByCode("D6065",temp,driver,inNetworkCoinsurance ,true,false,true));//77
+	    dtemp.setImplantsFrD6065(fetchValueByCode("D6065",temp,driver,lastrowunder2ndcolumn ,false,true,true));//112
 	   
-	    dtemp.setPostCompositesD2391Percentage(fetchValueByCode("D2391",driver,inNetworkCoinsurance ,true,false,false));//78
-	    dtemp.setPostCompositesD2391FL(fetchValueByCode("D2391",driver,lastrowunder2ndcolumn,false,true,true));//79
+	    dtemp.setPostCompositesD2391Percentage(fetchValueByCode("D2391",temp,driver,inNetworkCoinsurance ,true,false,false));//78
+	    dtemp.setPostCompositesD2391FL(fetchValueByCode("D2391",temp,driver,lastrowunder2ndcolumn,false,true,true));//79
 	    //80
 	    //83
 	    //84
-	    dtemp.setD9310Percentage(fetchValueByCode("D9310",driver,inNetworkCoinsurance ,true,false,false));//85
-	    dtemp.setD9310FL(fetchValueByCode("D9310",driver,lastrowunder2ndcolumn,false,true,true));//86
+	    dtemp.setD9310Percentage(fetchValueByCode("D9310",temp,driver,inNetworkCoinsurance ,true,false,false));//85
+	    dtemp.setD9310FL(fetchValueByCode("D9310",temp,driver,lastrowunder2ndcolumn,false,true,true));//86
 				
-	    dtemp.setBuildUpsD2950Covered(fetchValueByCode("D2950",driver,inNetworkCoinsurance ,true,false,false));//87
-	    dtemp.setBuildUpsD2950FL(fetchValueByCode("D2950",driver,lastrowunder2ndcolumn,false,true,true));//88
+	    dtemp.setBuildUpsD2950Covered(fetchValueByCode("D2950",temp,driver,inNetworkCoinsurance ,true,false,false));//87
+	    dtemp.setBuildUpsD2950FL(fetchValueByCode("D2950",temp,driver,lastrowunder2ndcolumn,false,true,true));//88
         //89
-	    dtemp.setOrthoPercentage(fetchValueByCode("D8090",driver,inNetworkCoinsurance ,true,false,false));//90
-	    dtemp.setOrthoAgeLimit(fetchValueByCode("D8090",driver,uptoAge ,false,true,true));//92
+	    dtemp.setOrthoPercentage(fetchValueByCode("D8090",temp,driver,inNetworkCoinsurance ,true,false,false));//90
+	    dtemp.setOrthoAgeLimit(fetchValueByCode("D8090",temp,driver,uptoAge ,false,true,true));//92
         // 93 //94 //95 //96 //97 //99 //100 //101
 	    
-	    dtemp.setBridges1(fetchValueByCode("D6245",driver,inNetworkCoinsurance ,true,false,false));//102
-	    dtemp.setBridges2(fetchValueByCode("D6245",driver,lastrowunder2ndcolumn,false,true,true));//103
+	    dtemp.setBridges1(fetchValueByCode("D6245",temp,driver,inNetworkCoinsurance ,true,false,false));//102
+	    dtemp.setBridges2(fetchValueByCode("D6245",temp,driver,lastrowunder2ndcolumn,false,true,true));//103
         //104
-	    dtemp.setDen5225Per(fetchValueByCode("D5225",driver,inNetworkCoinsurance ,true,false,false));//105
-	    dtemp.setDenf5225FR(fetchValueByCode("D5225",driver,lastrowunder2ndcolumn ,false,true,true));//107
+	    dtemp.setDen5225Per(fetchValueByCode("D5225",temp,driver,inNetworkCoinsurance ,true,false,false));//105
+	    dtemp.setDenf5225FR(fetchValueByCode("D5225",temp,driver,lastrowunder2ndcolumn ,false,true,true));//107
 	    
-	    dtemp.setDen5226Per(fetchValueByCode("D5226",driver,inNetworkCoinsurance ,true,false,false));//106
-	    dtemp.setDenf5226Fr(fetchValueByCode("D5226",driver,lastrowunder2ndcolumn ,false,true,true));//108
+	    dtemp.setDen5226Per(fetchValueByCode("D5226",temp,driver,inNetworkCoinsurance ,true,false,false));//106
+	    dtemp.setDenf5226Fr(fetchValueByCode("D5226",temp,driver,lastrowunder2ndcolumn ,false,true,true));//108
 	    
-	    dtemp.setNightGuardsD9945Percentage(fetchValueByCode("D9945",driver,inNetworkCoinsurance ,true,false,true));//114
-	    dtemp.setNightGuardsD9945Fr(fetchValueByCode("D9945",driver,lastrowunder2ndcolumn ,false,true,true));//122
+	    dtemp.setNightGuardsD9945Percentage(fetchValueByCode("D9945",temp,driver,inNetworkCoinsurance ,true,false,true));//114
+	    dtemp.setNightGuardsD9945Fr(fetchValueByCode("D9945",temp,driver,lastrowunder2ndcolumn ,false,true,true));//122
 	    //driver.close();
 	    //ArrayList<String> tabs1 = new ArrayList<String> (driver.getWindowHandles());
 		//System.out.println("TAB SIZE--"+tabs1.size());
@@ -939,13 +1025,17 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		return value;
 	}
 	
-	private String callBenefitCodeUrl(String code, WebDriver driver) {
+	private String callBenefitCodeUrl(String code, WebDriver driver,PatientTemp temp) {
 		System.out.println("CALLED--URL...");
 		String data="";
 	    try {
-	    String url="https://www.dnoaconnect.com/members/"+referenceId+"/procedureBenefits/"+code.substring(1);
+	    String url="https://www.dnoaconnect.com/members/"+temp.getReferenceId()+"/procedureBenefits/"+code.substring(1);
 		navigatetoUrl(driver,url , 2000);
 		data = driver.getPageSource();
+		//System.out.println("data");
+		//System.out.println(data);
+		data=data.replace("</pre></body></html>", "");
+		data="{\"subscriber\":"+data.split("\"subscriberId\":")[1];
 		JSONObject jsonObj = new JSONObject(data);
 		if (jsonObj.get("procedureStatus").toString().equals("active")){
 			
@@ -970,18 +1060,18 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 	 * @return
 	 * @throws InterruptedException
 	 */
-	private String fetchValueByCode(String code, WebDriver driver,String type,boolean mandatory,boolean directValues,boolean close) throws InterruptedException {
+	private String fetchValueByCode(String code,PatientTemp temp, WebDriver driver,String type,boolean mandatory,boolean directValues,boolean close) throws InterruptedException {
 		System.out.println("fetchValueByCode"+ code +" "+type);
 		String value=Constants.SCRAPPING_NOT_FOUND;
 		if (mandatory) value=value+ ". "+ Constants.SCRAPPING_MANDATORY_WARNING;
 		if (!directValues) {
-			procedureData= callBenefitCodeUrl(code, driver);
+			temp.setProcedureData(callBenefitCodeUrl(code, driver,temp));
 			//check for code existence
 		}
 		value=Constants.SCRAPPING_MAIN_CONDTION_MET;
 		try {
 		if (type.equals(inNetworkCoinsurance)){
-			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
 			//jsonObj = ja.get("coinsuranceInNetwork").toString();
 			value =ja.get("coinsuranceInNetwork").toString().replace("%","");	
@@ -991,7 +1081,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		value =div.findElements(By.tagName("dd")).get(0).getText().replace("%","");
 		*/
 		}else if (type.equals(inNetworkDeductible)) {
-			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
 			//jsonObj = ja.get("coinsuranceInNetwork").toString();
 			Object t=ja.get("deductibleMetInNetwork");
@@ -1004,7 +1094,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			
 		}else if (type.equals(lastrowunder2ndcolumn)) {
 			
-			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
 			JSONObject limit =(JSONObject) ja.get("limitations");
 			value =ja.get("coinsuranceInNetwork").toString().replace("%","");	
@@ -1023,7 +1113,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			}*/
 			
 		}else if (type.equals(lastrowunder2ndcolumnNext)) {
-			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
 			JSONObject limit =(JSONObject) ja.get("limitations");
 			JSONArray proc =(JSONArray) limit.get("procedures");
@@ -1054,7 +1144,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			}
 			*/
 		}else if (type.equals(uptoAge)) {
-			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
 			JSONObject limit =(JSONObject) ja.get("limitations");
 			value =((Integer)limit.get("ageMaximum")).toString();
@@ -1063,7 +1153,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 			value =MessageUtil.removeUptoAge(siteName,div.findElements(By.tagName("dt")).get(0).getText());
 			 */
 		}else if (type.equals(otherLimitations)) {
-			JSONObject jsonObj = new JSONObject(procedureData);
+			JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 			JSONObject ja =(JSONObject) jsonObj.get("benefit");//getJSONArray
 			JSONObject limit =(JSONObject) ja.get("limitations");
 			JSONArray proc =(JSONArray) limit.get("limitedToTeeth");
@@ -1201,8 +1291,18 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements  Ca
 		l.add(psc);
 		// dto.setPassword("Smile123");
 		dto.setDto(l);
+		psc = new PatientScrapSearchDto();
+		psc.setDob("11/20/1973");
+		psc.setFirstName("Vivian");
+		psc.setLastName("Courtney");
+		psc.setMemberId("825711808");
+		psc.setSsnNumber("");
+		l.add(psc);
+		
+		dto.setDto(l);
+		
 		dto.setSiteUrl("https://www.dnoaconnect.com/#!/");
-		BCBSDnoaconnectImpl i = new BCBSDnoaconnectImpl(null,null,null,dto,null,null);
+		BCBSDnoaconnectImpl i = new BCBSDnoaconnectImpl(null,null,null,dto,null,null,"D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
 		i.setProps("9500");
 		//i.scrappingSiteDetails = f;
 		// dto.setUserName("crosbyfd07");

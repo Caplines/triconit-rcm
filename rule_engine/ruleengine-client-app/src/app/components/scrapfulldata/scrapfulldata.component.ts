@@ -164,6 +164,7 @@ export class ScrapFullDataComponent implements OnInit {
   
    parseSite(){
 	   this.linkData="";
+	   this.showLoadingP=true;
 	   this.showLoadingPA=true;
 	   this.showLoadingPAA=false;
 	   this.scrap.siteName=this.site.name;
@@ -175,6 +176,7 @@ export class ScrapFullDataComponent implements OnInit {
 				(result)=>{
 					  if (result.status == 'OK') {
 						  //this.showLoadingPAA=false;
+						  this.showLoadingP=false;
 						  this.showLoadingPAA=true;
 						  this.showLoadingPA=false;
 						  console.log(result.data);

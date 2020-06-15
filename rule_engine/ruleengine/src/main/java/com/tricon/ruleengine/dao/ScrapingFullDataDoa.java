@@ -6,6 +6,7 @@ import java.util.List;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 
@@ -29,4 +30,10 @@ public interface ScrapingFullDataDoa {
 	public void updateScrappingSiteRunningStatusAll();
 	
 	public String findAnyRunnigfullScrapBSiteName(String name);
+
+	public ScrappingFullDataManagment getScrappingFullDataManagmentData();
+	
+	public void increasecrapCount(ScrappingFullDataManagment manage);
+	
+	public void updateScrappingSiteManagement();
 }

@@ -128,7 +128,7 @@ public class ScrappingController {
 		try {
 			
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			String res =fullService.findRunningStatus(dto);
+			String res ="";//fullService.findRunningStatus(dto);//no need for now uncomment if server has issue
 			if (res.equals("")) {
 				data=fullService.parseFullDataAndSaveDetails(dto, authentication.getName());
 				//data="Started";

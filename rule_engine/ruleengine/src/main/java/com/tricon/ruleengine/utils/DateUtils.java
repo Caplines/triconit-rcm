@@ -441,31 +441,31 @@ public class DateUtils {
 	}
 	
 	
-	/*
+	public static String getDiffBetweenMonths(String s,String e) {
+		
+		try {
+		Date startDate=Constants.SIMPLE_DATE_FORMAT.parse(s);
+		Date endDate=Constants.SIMPLE_DATE_FORMAT.parse(e);
+		
+		Calendar startCalendar = new GregorianCalendar();
+		startCalendar.setTime(startDate);
+		Calendar endCalendar = new GregorianCalendar();
+		endCalendar.setTime(endDate);
+
+		int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+		return (diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH))+"";
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			return "issue";
+		}
+		//return "0";
+		
+	}
+	
 	public static void main(String[] a) {
 		  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
-		  String cdate="05/03/2019";
-		  String ivdate="26/02/2019";
-		  Calendar calendar = new GregorianCalendar();
-		  Calendar calendar2 = new GregorianCalendar();
-		  
-		  ////ivfPlanTermDate.compareTo(currentDate)
-		 try {
-		   calendar.setTime(sdf.parse(cdate));
-		   calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
-
-		   calendar2.setTime(sdf.parse(ivdate));
-		   calendar2.set(calendar2.get(Calendar.YEAR) , calendar2.get(Calendar.MONTH), calendar2.get(Calendar.DATE));
-
-		   System.out.println(validateClaimorTransactionDate(calendar.getTime(), calendar2.getTime()));
-			//System.out.println(sdf.parse(term).compareTo(sdf.parse(dos))>=0);
-			//System.out.println(sdf.parse(term).compareTo(dInterval)>=0);
-			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		  System.out.println(getDiffBetweenMonths( "09/15/2016","09/20/2017"));
 		  
 		}
-	*/	
+	
 }
