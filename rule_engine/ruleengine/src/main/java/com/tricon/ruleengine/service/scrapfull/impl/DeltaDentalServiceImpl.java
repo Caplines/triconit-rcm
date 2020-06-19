@@ -126,7 +126,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 			// ChromeOptions options = new ChromeOptions();
 			// System.out.println("555");
 			options.addArguments("-disable-infobars");
-			//options.addArguments("--headless");
+			options.addArguments("--headless");
 			options.addArguments("--no-sandbox");
 			options.addArguments("--disable-dev-shm-usage");
 			options.setExperimentalOption("useAutomationExtension", false);
@@ -751,6 +751,26 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 							} else {
 								dtemp.setDiagnosticSubDed("No");// 109
 							}
+							if (tr.getText().contains("Restorative")) {
+								dtemp.setBasicSubjectDeductible("Yes");// 6
+							} else {
+								dtemp.setBasicSubjectDeductible("No");// 6
+							}
+							if (tr.getText().contains("Prosthodontics")) {
+								dtemp.setMajorSubjectDeductible("Yes");// 8
+							} else {
+								dtemp.setMajorSubjectDeductible("No");// 8
+							}
+							if (tr.getText().contains("Endodontics")) {
+								dtemp.setEndoSubjectDeductible("Yes");// 10
+							} else {
+								dtemp.setEndoSubjectDeductible("No");// 10
+							}
+							if (tr.getText().contains("Endodontics")) {
+								dtemp.setPerioSurgerySubjectDeductible("Yes");// 12
+							} else {
+								dtemp.setPerioSurgerySubjectDeductible("No");// 12
+							}
                             } catch (Exception e) {
                             	e.printStackTrace();
 							}
@@ -861,17 +881,22 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		}
 		String planType = dtemp.getPlanType();
 		openSideBarFirst(driver, "Benefit details", true,
-				new String[] { "Endodontics", "Periodontics", "Preventive", "Diagnostic" }, true, temp);
-		dtemp.setEndodonticsPercentage(fetchBenefitDetails("D3346", temp, driver, "", "Endodontics",
-				"Endodontic Retreatment", planType, false, true));// 9
+				new String[] { "Endodontics", "Periodontics", "Preventive", "Diagnostic","Prosthodontics; Removable" }, true, temp);
+		
+		dtemp.setEndodonticsPercentage(fetchBenefitDetails("", temp, driver, "", "Prosthodontics; Removable",
+				"", planType, false, true));// 7
+		
+		
+		dtemp.setEndodonticsPercentage(fetchBenefitDetails("", temp, driver, "", "Endodontics",
+				"", planType, false, true));// 9
 		// 10
-		dtemp.setPerioSurgeryPercentage(fetchBenefitDetails("D4210", temp, driver, "", "Periodontics",
+		dtemp.setPerioSurgeryPercentage(fetchBenefitDetails("", temp, driver, "", "Periodontics",
 				"Surgical Services", planType, false, true));// 11
 		// 12
-		dtemp.setPreventivePercentage(fetchBenefitDetails("D1208", temp, driver, "", "Preventive", "Fluoride Treatment",
+		dtemp.setPreventivePercentage(fetchBenefitDetails("", temp, driver, "", "Preventive", "",
 				planType, false, true));// 13
-		dtemp.setDiagnosticPercentage(fetchBenefitDetails("D0120", temp, driver, "", "Diagnostic",
-				"Clinical Oral Evaluations", planType, false, true));// 14
+		dtemp.setDiagnosticPercentage(fetchBenefitDetails("", temp, driver, "", "Diagnostic",
+				"", planType, false, true));// 14
 		dtemp.setpAXRaysPercentage(fetchBenefitDetails("D0220", temp, driver, "", "Diagnostic",
 				"Radiographs/Diagnostic Imaging", planType, true, true));// 15
 
@@ -1198,7 +1223,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		benefitInfoMap = new HashMap<>();
 
 		dtemp.setBasicPercentage(getBenefitProcedureValueFromMap("D2391", benefitContract, values, true));// 5
-		// 6
+		
 		dtemp.setMajorPercentage(getBenefitProcedureValueFromMap("D2740", benefitContract, values, true));// 7
 
 		// 8
@@ -1547,9 +1572,10 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 	}
 
+	/*
 	private String fetchBenefitDetails(String name, PatientTemp temp, WebDriver driver, String type, String firstA,
 			String secondA, String planType, boolean mainOpen, boolean mandatory) throws InterruptedException {
-		// System.out.println("fetchBenefitDetails" + name);
+		System.out.println("fetchBenefitDetails -" + name);
 		System.out.println("IN-" + name + "-" + new Date());
 		String value = Constants.SCRAPPING_NOT_FOUND;
 		if (mandatory)
@@ -1655,10 +1681,169 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 			e.printStackTrace();
 			return value + " " + Constants.SCRAPPING_ISSUE_FETCHING;
 		}
-		// if (togggle != null)
+		// if (toggle != null)
 		// togggle.click();
 		// System.out.println("value--" + value);
 		System.out.println("OUT-" + new Date());
+		return value;
+	}
+   */
+	private String fetchBenefitDetails(String name, PatientTemp temp, WebDriver driver, String type, String firstA,
+			String secondA, String planType, boolean mainOpen, boolean mandatory) throws InterruptedException {
+		System.out.println("fetchBenefitDetails TEST -" + name+" -ss"+secondA);
+		//System.out.println("IN-" + name + "-" + new Date());
+		String value = Constants.SCRAPPING_NOT_FOUND;
+		if (mandatory)
+			value = value + ". " + Constants.SCRAPPING_MANDATORY_WARNING;
+		else
+			value = "";
+		Thread.sleep(1000);
+		String showHide="Show all +";
+		try {
+			if (!mainOpen) {
+				// System.out.println(firstA);
+				// System.out.println(counterElementMap.get(firstA));
+
+				driver.findElement(By.id(temp.getCounterElementMap().get(firstA))).click();
+				Thread.sleep(9000);
+			}else {
+				showHide="Hide all -";
+			}
+			
+			//SHOW ALL LINK..
+			List<String> linkNamesinUi= new ArrayList<>();
+			List<WebElement> aas=driver.findElements(By.tagName("a"));
+			for (WebElement aa : aas) {
+				if (aa.getText()!=null && aa.getText().equals(showHide)) {
+					List<WebElement> trs =aa.findElement(By.xpath("..")).findElement(By.xpath("..")).
+							findElement(By.xpath("..")).findElement(By.xpath("..")).findElement(By.xpath(".."))
+					.findElement(By.xpath("..")).findElement(By.xpath("..")).findElements(By.tagName("tr"));
+					for(WebElement tr:trs) {
+						//System.out.println(tr.getText());
+						if (tr.getText().contains(showHide)) {
+							continue;
+						}
+						//System.out.println(tr.getText());
+						if (tr.getText()!=null)linkNamesinUi.add(tr.getText());
+					}
+					if (!mainOpen) {
+						aa.click();
+						Thread.sleep(9000);
+					}
+					
+					break;
+				}
+			}
+			
+		List<WebElement>divsMains=driver.findElements(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/div[1]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td/div/div[1]/div/div/div/table/tbody/tr/td[2]/div/div[15]/div/div"));
+			
+		//String linkNames="";
+		
+		
+		int countertrack=-1;
+		boolean br=false;
+		boolean found=false;
+		
+		for(String linkName:linkNamesinUi) {
+			boolean moveForward=false;
+			for(WebElement divsMain :divsMains) {
+				if (countertrack==2) {
+                    //if secondA is blank then find any first percentage
+					//if linkName.equals(secondA) is then Go to the specific link
+					//also name can be blank in that look for first percentage
+				if (linkName.equals(secondA) || secondA.equals("")) {
+					moveForward=true;
+				}
+				if (moveForward){
+				WebElement table=	divsMain.findElement(By.tagName("table"));
+					List<WebElement> ths = table.findElements(By.tagName("th"));
+                    	//WebElement acTable=null;
+                    	int counter = 0;
+        				for (WebElement th : ths) {
+        					try {
+        						if (th.getText() != null && th.getText().contains(" " + planType)) {
+        							// found = true;
+        							try {
+        								counter = counter + Integer.parseInt(th.getAttribute("colspan"));
+        								//acTable=th.findElement(By.xpath("..")).findElement(By.xpath(".."));
+        							} catch (Exception x) {
+        								counter = counter + 1;
+        							}
+        							break;
+
+        						}
+        						try {
+        							counter = counter + Integer.parseInt(th.getAttribute("colspan"));
+        						} catch (Exception x) {
+        							counter = counter + 1;
+        						}
+        					} catch (Exception e) {
+        						// TODO: handle exception
+
+        					}
+        					// if (th.getText().contains(planType)) break;
+
+        				}
+        				
+        				List<WebElement> trs = table.findElements(By.tagName("tr"));
+        				int x = 0;
+        				for (WebElement tr : trs) {
+        					//System.err.println(tr.getText());
+        					if (x == 0 || x == 1) {
+        						x++;
+        						continue;
+        					}
+        					if (tr.getText().contains("Delta Dental"))continue;
+        					if (tr.getText().contains("Contract Benefit Level Age limit"))continue;
+        					// System.out.println("&&&--" + x);
+        					List<WebElement> tds = tr.findElements(By.tagName("td"));
+        					// System.out.println("99999--" + counter);
+        					if (tds != null && tds.size() > 0) {
+        						//System.err.println(tds.get(0).getText());
+        						if (tds.get(0).getText().equals(name)) {
+        							// System.err.println(tds.get(0).getText());
+        							value = tds.get(counter - 1 - 1).getText().replace("%", "").split(" ")[0];
+                                    System.out.println("ccc-"+value);
+                                    found=true;
+        							break;
+        						}else if (name.equals("")) {
+        							value = tds.get(counter - 1 - 1).getText().replace("%", "").split(" ")[0];
+                                    System.out.println("ccc999-"+value);
+                                    found=true;
+                                    if (!value.equals("")) break;
+        						}
+
+        					}
+        				}
+        				
+        			//}
+						if (linkName.equals(secondA)) { 
+							br=true;
+							break;
+						}
+						if (secondA.equals("") && found) {
+							br=true;
+							break;
+						}
+                    
+				}//Counter track if
+				
+			}
+			
+				if (divsMain.getText()!=null && divsMain.getText().equals(linkName))//Check for second header then re-initialize  countertrack and br ==false;
+				{	
+					br=false;
+					countertrack=0;
+						
+			    }
+				countertrack++;
+			}//DIV MAIN
+			if (br) break;
+		}
+		
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 		return value;
 	}
 

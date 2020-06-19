@@ -1,4 +1,6 @@
 package com.tricon.ruleengine;
+import java.util.logging.Level;
+
 //https://o7planning.org/en/11543/create-a-login-application-with-spring-boot-spring-security-spring-jdbc
 //for reference we can use
 import org.springframework.boot.SpringApplication;
@@ -14,14 +16,16 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  *	
  */
 //https://graph.microsoft.com/v1.0/me/drive/root/children from graph explorer to get ID of sheet..
-/* 
+/* https://github.com/SeleniumHQ/htmlunit-driver/releases
 /* to create build of front end--- ng build --prod*/ //for local its npm start 
 //from cmd in folder \capline\rule_engine\ruleengine>   mvn initialize package
-/* CD /opt/tomcat
+/* CD /opt/tomcat Delete root Folder in webapps
  * FOR PRODUCTION MAKE SURE 
  * in application.properties u have spring.profiles.active=prod
  *  prod.properties -->application.url needs change when needed
+ *  CapDent$1 Pukumar@321
  * dev is for Developers
+ * test_test_cl --> 12345678
  * in Front end 
  * app.component.ts static API_URL="http://ip"; 
  * angular.json line no 17 "index": "src/index.jsp",
