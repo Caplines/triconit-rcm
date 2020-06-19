@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.ruleengine.dto.GenericResponse;
+import com.tricon.ruleengine.dto.OnlyId;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingInputDto;
 import com.tricon.ruleengine.dto.ScrappingSiteDetailsDto;
@@ -142,6 +143,16 @@ public class ScrappingController {
 		
 		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
 			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", data));
+
+	}
+
+	@CrossOrigin
+	@PostMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/parsefulldataProcessInfo", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> parsefulldataProcessInfo(@RequestBody OnlyId onlyId)  {
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", fullService.getScrappingFullDataManagmentProcessCount(onlyId.getId())+""));
 
 	}
 

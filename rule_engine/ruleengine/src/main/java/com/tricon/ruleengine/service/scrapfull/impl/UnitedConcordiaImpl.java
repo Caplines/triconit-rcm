@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -35,7 +33,6 @@ import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
 import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
-import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 import com.tricon.ruleengine.model.db.User;
@@ -45,7 +42,7 @@ import com.tricon.ruleengine.utils.DateUtils;
 import com.tricon.ruleengine.utils.FreqencyUtils;
 import com.tricon.ruleengine.utils.MessageUtil;
 
-public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Callable<Boolean> {
+public class UnitedConcordiaImpl extends BaseScrappingServiceImpl implements Callable<Boolean> {
 
 	// document :
 	// https://docs.google.com/spreadsheets/d/1-3PVTrzgSl0n3OEY7Qt0JZ_WDK7twIQWU3Hk7UjSdBM/edit#gid=1557872290
@@ -90,14 +87,12 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 	private Office office;
 	private User user;
 	private String driverLocation;
-	private int processId;
-	private String taxId;
 
 	private static String siteName = "";
 
-	public BCBSDnoaconnectImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
+	public UnitedConcordiaImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
 			ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user, Office office,
-			int processId,String taxId, String driverLocation) {
+			String driverLocation) {
 
 		this.patDao = patDao;
 		this.dataDoa = dataDoa;
@@ -111,8 +106,6 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		siteName = dto.getSiteName();
 		this.user = user;
 		this.driverLocation = driverLocation;
-		this.processId = processId;
-		this.taxId=taxId;
 		// store parameter for later user
 	}
 
@@ -129,7 +122,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			// ChromeOptions options = new ChromeOptions();
 			// System.out.println("555");
 			options.addArguments("-disable-infobars");
-			options.addArguments("--headless");
+			// options.addArguments("--headless");
 			options.addArguments("--no-sandbox");
 			options.addArguments("--disable-dev-shm-usage");
 			options.setExperimentalOption("useAutomationExtension", false);
@@ -176,10 +169,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 							System.out.println("Thread Running");
 							WebDriver driver = getBrowserDriver();// new HtmlUnitDriver(true);// getBrowserDriver();
 							try {
-								System.out.println("MEM 2-"
+								System.out.println("MEM 9-"
 										+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 
-								boolean navigate = loginToSiteBCBS(dto, driver);
+								boolean navigate = loginToSiteUnitedCon(dto, driver);
 
 								boolean issueNo = navigatetoMainSite(driver, navigate);
 								System.out.println("888888888888- STARTED...");
@@ -193,23 +186,15 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 								Thread.sleep(2000);
 							} catch (Exception dri) {
 								dri.printStackTrace();
-
 							} finally {
 								driver.close();
 								driver.quit();
 								scrappingSiteDetails.setRunning(false);
 								ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
-								ScrappingFullDataManagmentProcess manageP = dataDoa
-										.getScrappingFullDataManagmentDataProcess(processId);
-								manageP.setCount(manageP.getCount() - 1);
-								manageP.setUpdatedBy(user);
-								manageP.setUpdatedDate(new Date());
-								dataDoa.updateScrappingFullDataManagmentProcess(manageP);
 								if (manage.getProcessCount() > 0) {
 									manage.setProcessCount(manage.getProcessCount() - 1);
 									dataDoa.increasecrapCount(manage);
 								}
-
 								dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
 							}
 						}
@@ -279,7 +264,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		}
 		temp.setStatus("Patient found..");
 		populateMandatoryData(temp);
-		createPatientDetailsurl(driver, temp, sh);
+		createPatientDetailSetup(driver, temp, sh);
 		// Logic to fetch data from Site...
 
 		return temp;
@@ -302,36 +287,15 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		}
 	}
 
-	private void createPatientDetailsurl(WebDriver driver, PatientTemp temp, PatientScrapSearchDto sh)
+	private void createPatientDetailSetup(WebDriver driver, PatientTemp temp, PatientScrapSearchDto sh)
 			throws InterruptedException {
-
-		boolean dentalFound = false;
+       Thread.sleep(3000);
 		try {
 			String id = sh.getMemberId().trim().equals("") ? sh.getSsnNumber().trim() : sh.getMemberId().trim();
-
-			// Check for select box
-			Select select = null;
+			// Check For name...
+			WebElement eles = driver.findElement(By.id("memberName"));
 			try {
-				select = new Select(driver.findElement(By.tagName("select")));
-
-				List<WebElement> ops = select.getOptions();
-				for (WebElement op : ops) {
-
-					if (op.getText().contains(" - Dental")) {
-						select.selectByValue(op.getAttribute("value"));
-						dentalFound = true;
-						Thread.sleep(1000);
-						break;
-					}
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO: handle exception
-			}
-			List<WebElement> eles = driver.findElements(By.className("form-control-static"));
-			try {
-				String[] name = eles.get(1).getText().split(" ");
+				String[] name = eles.getText().split(" ");
 				String lname = "";
 				for (int x = 0; x < name.length; x++) {
 					if (x == 0)
@@ -362,72 +326,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 						+ temp.getLastName() + "or (ssn/member id) " + id + "issue");
 			}
 
-			String url = "";
-			String[] dobA = null;
-			id=id.replaceAll("[a-zA-Z]", "");
-			try {
-				dobA = sh.getDob().split("/");// mm/dd/yyyy
-				url = "https://www.dnoaconnect.com/members?dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1]
-						+ "&subscriberId=" + id;
-			} catch (Exception e) {
-				temp.setStatus("DOB ISSUE -" + sh.getDob());
-				carryOn = false;
-			}
-			if (carryOn) {
-				navigatetoUrl(driver, url, 3000);
-				String z = driver.getPageSource();
-				//System.out.println(z);
-				boolean arrayC = false;
-				z = z.replaceFirst("\\[\\{", "{");
-				if (z.contains("}]}]")) {
-					z = z.replace("}]}]", "}]}");// }]}]
-					arrayC = true;
-				} else
-					z = z.replace("}]", "  }");// }]}]
-				 System.out.println(z);
-				z = z.replace("</pre></body></html>", "");
-				z = "{\"subscriber\":" + z.split("\"subscriberId\":")[1];
-				//System.out.println(z);
-
-				// String referenceId = "";
-				try {
-					JSONObject jsonObj = new JSONObject(z);
-					if (arrayC) {
-						JSONArray ja = jsonObj.getJSONArray("policies");
-						jsonObj = new JSONObject(ja.getJSONObject(0).toString());
-						String x = jsonObj.get("policyType").toString();
-						temp.setReferenceId(jsonObj.get("referenceId").toString());
-						if (!x.equals("Medical")) {
-							url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId="
-									+ id + "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
-						} else {
-							jsonObj = new JSONObject(ja.getJSONObject(1).toString());
-							temp.setReferenceId(jsonObj.get("referenceId").toString());
-							url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId="
-									+ id + "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
-
-						}
-					} else {
-						JSONObject jsonChildObject = (JSONObject) jsonObj.get("policies");
-						// System.out.println(jsonChildObject.toString());
-						jsonObj = new JSONObject(jsonChildObject.toString());
-						temp.setReferenceId(jsonObj.get("referenceId").toString());
-						url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId=" + id
-								+ "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
-
-					}
-
-					navigatetoUrl(driver, url, 5000);
-
-					fetchPatDetails(driver, temp);
-
-					System.out.println("d");
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					temp.setStatus("Patient Url creation issue");
-				}
-			}
+			fetchPatDetails(driver, temp);
 			// https://www.dnoaconnect.com/members?dateOfBirth=1985-12-02&subscriberId=830794722
 			// String url=dobA[2]+"%2F"+dobA[0]+"%2F"+dobA[1];
 		} catch (Exception e) {
@@ -443,10 +342,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		String id = memberid.trim().equals("") ? ssn.trim() : memberid.trim();
 		if (id.equals("") || dob.equals(""))
 			return false;
-		WebElement sub = driver.findElement(By.id("subscriberId"));
-		WebElement db = driver.findElement(By.id("dateOfBirth"));
+		WebElement sub = driver.findElement(By.id("search:search1"));
+		WebElement db = driver.findElement(By.id("search:search2"));
 		WebElement validate = driver.findElement(
-				By.xpath("/html/body/ui-view/div/div/ui-view/div/form/div/div[1]/div/div/div[6]/div/button"));
+				By.xpath("/html/body/div/div[2]/div/div/div/div/nav/div/form/div/div[3]/table/tbody/tr/td/input[1]"));
 		sub.sendKeys(id);
 		db.sendKeys(dob);
 		try {
@@ -455,12 +354,15 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			return false;
 		}
 		Thread.sleep(4000);
-		WebElement pTag = driver
-				.findElement(By.xpath("/html/body/ui-view/div/div/ui-view/div/form/div/div[1]/div/div/div[2]/p[3]"));
-		if (pTag != null) {
-			if (pTag.getText().startsWith("We're sorry! We were unable to locate you")) {
-				return false;
+		try {
+			WebElement pTag = driver.findElement(By.id("searchNoResults"));
+			if (pTag != null) {
+				if (pTag.getText().contains("We're sorry but no results are found")) {
+					return false;
+				}
 			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 		return true;
 
@@ -486,7 +388,6 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setPreventivePercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 13
 		dtemp.setDiagnosticPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 14
 		dtemp.setpAXRaysPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 15
-		dtemp.setNightGuardsD9940Percentage(Constants.SCRAPPING_MANDATORY_WARNING);
 		dtemp.setNightGuardsD9944Fr(Constants.SCRAPPING_MANDATORY_WARNING);// 19 //Cross Check
 
 		dtemp.setBasicWaitingPeriod(Constants.SCRAPPING_MANDATORY_WARNING);// 20 in DOC
@@ -597,158 +498,14 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 	private void fetchPatDetails(WebDriver driver, PatientTemp temp) throws InterruptedException {
 		Thread.sleep(5000);
 		PatientDetailTemp dtemp = temp.getPatientDetails().iterator().next();
-		
-		dtemp.setInsName("BCBS of Tx");
-		dtemp.setInsContact("8005212227");
-		dtemp.setcSRName("Scraping Tool");
-		dtemp.setTaxId(taxId);
-		
-		List<WebElement> cards = driver.findElements(By.className("card-content"));
-		int x1=0;
-		int ct=0;
-		String playTermedDate="";
-		System.out.println(cards.size());
-		for(WebElement card : cards) {
-			List<WebElement> divs =card.findElements(By.tagName("div"));
-		
-		for (WebElement div : divs) {
-			x1++;
-			//System.out.println("xxxx--"+x1+"--CT--"+ct);
-			if (div.getText() != null && div.getText().startsWith("Group Name:")) {
-				try {
-				dtemp.setEmployerName(div.getText().split("Group Name:")[1]);//140
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
-				ct++;
-			}
-			if (div.getText() != null && div.getText().startsWith("Group Number:")) {
-				try {
-				dtemp.setGroup(div.getText().split("Group Number:")[1]);//141
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
-				ct++;
-			}
-			if (div.getText() != null && div.getText().startsWith("Claims Address:")) {
-				try {
-				dtemp.setInsAddress(div.getText().split("Claims Address:")[1]);//142
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
-				ct++;
-			}
-			if (div.getText() != null && div.getText().startsWith("Payer ID:")) {
-				try {
-				dtemp.setPayerId(div.getText().split("Payer ID:")[1]);//143
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
-				ct++;
-			}
-			if (div.getText() != null && div.getText().startsWith("Subscriber Name:")) {
-				try {
-				dtemp.setPolicyHolder(div.getText().split("Subscriber Name:")[1]);//144
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
-				ct++;
-			}
-			if (div.getText() != null && div.getText().startsWith("Eligibility:")) {
-				try {
-					String[] s = div.findElement(By.tagName("div")).getText().trim().split("–")[0].trim().split("/");
+		Set<PatientHistoryTemp> hisSet = temp.getPatientHistory();
+		// openSideBarFirst(driver,"Procedure History");
+		fetchHistoryformation(driver, hisSet);
 
-					// t.setHistoryDOS((s[0].length()==2?s[0]:"0"+s[0])+"/"+(s[1].length()==2?s[1]:"0"+s[1])+"/"+(s[2]));
-					try {
-						dtemp.setPlanEffectiveDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
-								+ (s[1].length() == 2 ? s[1] : "0" + s[1]));//146
-
-					} catch (Exception e) {
-						// TODO: handle exception
-						dtemp.setPlanEffectiveDate("");
-					}
-				} catch (Exception e) {
-					// TODO: handle exception
-					dtemp.setPlanEffectiveDate("issue");
-				}
-				try {
-					String cs = div.findElement(By.tagName("div")).getText().trim().split("–")[1];
-					if (cs.trim().equalsIgnoreCase("current")) {
-						dtemp.setPlanTermedDate("");//145
-					} else {
-						String[] s = cs.trim().split("/");
-						try {
-							dtemp.setPlanTermedDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
-									+ (s[1].length() == 2 ? s[1] : "0" + s[1]));
-
-						} catch (Exception e) {
-							// TODO: handle exception
-							dtemp.setPlanTermedDate("issue");
-						}
-
-					}
-				} catch (Exception e) {
-
-				}
-				ct++;
-			}
-			if (div.getText() != null && div.getText().startsWith("Benefit Period:")) {
-				try {
-					String cs = div.findElement(By.tagName("div")).getText().trim().split("–")[1];
-					if (cs.trim().equalsIgnoreCase("current")) {
-						playTermedDate="";//145
-					} else {
-						String[] s = cs.trim().split("/");
-						try {//let's pick the date from section "Eligibility" but if there is mentioned "Current" or is blank then we have to consider the date in field "Benefit Period"
-							playTermedDate=s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
-									+ (s[1].length() == 2 ? s[1] : "0" + s[1]);
-
-						} catch (Exception e) {
-							// TODO: handle exception
-							playTermedDate="";
-						}
-
-					}
-				} catch (Exception e) {
-
-				}
-				ct++;
-			}
-			if (div.getText() != null && div.getText().startsWith("Subscriber ID:")) {
-				try {
-				dtemp.setMemberId(div.getText().split("Subscriber ID:")[1]);//144
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
-				ct++;
-			}
-			if (div.getText() != null && div.getText().startsWith("Date of Birth:")) {
-				try {
-				String cs = div.findElement(By.tagName("div")).getText().trim();
-				String[] s = cs.trim().split("/");
-				dtemp.setPolicyHolderDOB(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
-						+ (s[1].length() == 2 ? s[1] : "0" + s[1]));
-				
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
-				ct++;
-			}
-
-			//System.out.println("ct---"+ct);
-			if (ct==9 || x1>100) break;
-			//System.out.println("432142");
-		}
-		}
-		if (dtemp.getPlanTermedDate().equals("") || dtemp.getPlanTermedDate().equals("issue") && !playTermedDate.equals("issue")){
-			dtemp.setPlanTermedDate(playTermedDate);
-		}
-		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));
 		WebElement eleBody = driver.findElement(
 				By.xpath("/html/body/ui-view/ui-view/div/div[3]/div[2]/div/div[2]/plan-info/div/div[2]/table/tbody"));
 		List<WebElement> eleTR = eleBody.findElements(By.tagName("tr"));
 		Thread.sleep(500);
-
 		for (WebElement el : eleTR) {
 			List<WebElement> tds = el.findElements(By.tagName("td"));
 			for (WebElement td : tds) {
@@ -773,7 +530,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				} else if (td.getText().equals("Deductible - Benefit Period")) {
 					try {
 						dtemp.setPlanIndividualDeductible(el.findElements(By.tagName("td")).get(1).getText()
-								.replace("$", "").replace(",", "").replace("N/A", ""));// 3
+								.replace("$", "").replace(",", "").replace("N/A", ""));
 					} catch (Exception e) {
 						// e.printStackTrace();
 						dtemp.setPlanIndividualDeductible(Constants.SCRAPPING_ISSUE_FETCHING);
@@ -829,9 +586,6 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		 * 
 		 * driver.switchTo().window(tabs.get(1)); //switches to new tab
 		 */
-		Set<PatientHistoryTemp> hisSet = temp.getPatientHistory();
-		//openSideBarFirst(driver, "Procedure History");
-		fetchHistoryformation(driver, hisSet,temp.getReferenceId());
 		String basicper6 = fetchValueByCode("D4346", temp, driver, inNetworkCoinsurance, true, false, true);
 		if (basicper6.equals(""))
 			basicper6 = "0";
@@ -877,9 +631,9 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		else
 			fetchValueByCode("", temp, driver, "", false, true, true);
 
-		// setNightGuardsD9944Fr ///
-		dtemp.setNightGuardsD9940Percentage(
-				fetchValueByCode("D9944", temp, driver, inNetworkCoinsurance, true, false, false));// 19 //Cross Check
+		dtemp.setNightGuardsD9944Fr(fetchValueByCode("D9944", temp, driver, inNetworkCoinsurance, true, false, false));// 19
+																														// //Cross
+																														// Check
 		dtemp.setNightGuardsD9944Fr(fetchValueByCode("D9944", temp, driver, lastrowunder2ndcolumn, false, true, true));// 121
 
 		v = fetchValueByCode("D2930", temp, driver, inNetworkCoinsurance, false, false, false);
@@ -982,14 +736,9 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			dtemp.setSealantsD1351PermanentMolarsCovered(
 					FreqencyUtils.checkForteehIntext(siteName, th, "2,3,14,15,18,19,30,31"));// 42
 
-		} else {
-			dtemp.setSealantsD1351PrimaryMolarsCovered("No");// 40
-			dtemp.setSealantsD1351PrimaryMolarsCovered("No");// 41
-			dtemp.setSealantsD1351PermanentMolarsCovered("No");// 42
 		}
 
-		dtemp.setpAXRaysSubDed(MessageUtil
-				.getTEXTNAORYES(fetchValueByCode("D0220", temp, driver, inNetworkDeductible, true, true, true)));// 117
+		dtemp.setpAXRaysSubDed(fetchValueByCode("D1351", temp, driver, inNetworkDeductible, true, true, true));// 117
 
 		// 4 May
 
@@ -1013,8 +762,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			dtemp.setfMDD4355FL(fetchValueByCode("D4355", temp, driver, lastrowunder2ndcolumn, false, true, false));// 54
 
 		dtemp.setGingivitisD4346Percentage(
-				fetchValueByCode("D4346", temp, driver, inNetworkCoinsurance, true, false, false));// 55
-		dtemp.setGingivitisD4346FL(fetchValueByCode("D4346", temp, driver, lastrowunder2ndcolumn, false, true, true));// 56
+				fetchValueByCode("D4355", temp, driver, inNetworkCoinsurance, true, true, false));// 55
+		dtemp.setGingivitisD4346FL(fetchValueByCode("D4355", temp, driver, lastrowunder2ndcolumn, false, true, true));// 56
 
 		dtemp.setNitrousD9230Percentage(
 				fetchValueByCode("D9230", temp, driver, inNetworkCoinsurance, true, false, true));// 57
@@ -1041,7 +790,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setPartialDenturesD5213D5214FL(
 				fetchValueByCode("D5213", temp, driver, lastrowunder2ndcolumn, false, false, true));// 70
 		dtemp.setInterimPartialDenturesD5214FL(
-				fetchValueByCode("D5820", temp, driver, lastrowunder2ndcolumn, false, false, true));// 71
+				fetchValueByCode("D5214", temp, driver, lastrowunder2ndcolumn, false, false, true));// 71
 		// 72
 		dtemp.setBoneGraftsD7953FL(fetchValueByCode("D7953", temp, driver, lastrowunder2ndcolumn, false, false, true));// 73
 
@@ -1121,85 +870,25 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		}
 	}
 
-	private void fetchHistoryformation(WebDriver driver, Set<PatientHistoryTemp> setHis,String refId) throws InterruptedException {
+	private void fetchHistoryformation(WebDriver driver, Set<PatientHistoryTemp> setHis) throws InterruptedException {
 		Thread.sleep(2000);
-		String url="https://www.dnoaconnect.com/members/"+refId+"/procedureHistory";
 		try {
-		navigatetoUrl(driver, url, 3000);
-		String data = driver.getPageSource();
-		// System.out.println("data");
-		// System.out.println(data);
-		data = data.replace("</pre></body></html>", "");
-		data = "[{\"code\":" + data.split("\\[\\{\"code\":")[1];
-		//System.out.println(data);
-		JSONArray jsonObj = new JSONArray(data);
-		for(int i = 0; i < jsonObj.length(); i++)
-		{
-			PatientHistoryTemp t = new PatientHistoryTemp();
-		      JSONObject objects = jsonObj.getJSONObject(i);
-		      t.setHistoryCode("D"+objects.get("code").toString());
-		      t.setHistoryDOS(objects.get("serviceDate").toString());
-		      t.setHistoryTooth("");
-			  t.setHistorySurface("");
-		      setHis.add(t);
-		      //Iterate through the elements of the array i.
-		      //Get thier value.
-		      //Get the value for the first element and the value for the last element.
-		}
-		}catch (Exception e) {
-			e.printStackTrace();
-			// TODO: handle exception
-		}
-		/*
-		WebElement ph = driver.findElement(By.id("procedure-history"));
-		Thread.sleep(5000);
-		System.out.println("111");
-		WebElement canvas = ph.findElement(By.className("ui-grid-canvas"));
-		Thread.sleep(5000);
-		System.out.println("222");
-		List<WebElement> rows = canvas.findElements(By.className("ui-grid-row"));
-		Thread.sleep(2000);
-		System.out.println("33");
-		System.out.println(rows);
-		//
-	    System.out.println(rows.size());
-
-		for (WebElement row : rows) {
-			try {
-				PatientHistoryTemp t = new PatientHistoryTemp();
-				List<WebElement> vals = row.findElements(By.className("ui-grid-cell-contents"));
-				System.out.println("99999");
-				if (vals.size() >= 1) {
-					t.setHistoryCode(vals.get(0).getText());
-				}
-				// if (vals.size()>=2)
-				// t.setHistoryDOS(historyDOS);HistoryCode(vals.get(1).getText());
-				if (vals.size() >= 3) {
-					String[] s = vals.get(2).getText().trim().split("/");
-
-					// t.setHistoryDOS((s[0].length()==2?s[0]:"0"+s[0])+"/"+(s[1].length()==2?s[1]:"0"+s[1])+"/"+(s[2]));
-					try {
-						t.setHistoryDOS(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
-								+ (s[1].length() == 2 ? s[1] : "0" + s[1]));
-
-					} catch (Exception e) {
-						// TODO: handle exception
-						t.setHistoryDOS(vals.get(2).getText());
-					}
-				}
-				t.setHistoryTooth("");
-				t.setHistorySurface("");
-
-				if (vals.size() >= 1)
-					setHis.add(t);
-
-			} catch (Exception e) {
-				e.printStackTrace();
+			WebElement tableB = driver.findElement(By.id("serviceHistoryPanelList:tbody_element"));
+			List<WebElement> trs = tableB.findElements(By.tagName("tr"));
+			PatientHistoryTemp t = null;
+			for (WebElement tr : trs) {
+				List<WebElement> tds = tr.findElements(By.tagName("td"));
+				t = new PatientHistoryTemp();
+				t.setHistoryDOS(tds.get(1).getText());
+				t.setHistoryCode(tds.get(2).getText());
+				t.setHistoryTooth(tds.get(3).getText());
+				t.setHistorySurface(tds.get(4).getText());
+				setHis.add(t);
 			}
+		} catch (Exception ex) {
+          ex.printStackTrace();
 		}
-        */
-		// System.out.println("retttt");
-
+        System.out.println("RRR");
 	}
 
 	private String fetchBenefitInformation(String name, WebDriver driver, String type, boolean mandatory,
@@ -1223,7 +912,6 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 						value = span.findElements(By.className("text-center")).get(6).getText().replace("%", "");
 						break;
 					} else if (type.equals(benefitInDeductible)) {
-						
 						value = span.findElements(By.className("text-center")).get(7).getText().replace("%", "");
 						break;
 					} else if (type.equals(benefitWaitingPeriod)) {
@@ -1289,7 +977,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 	}
 
 	private String callBenefitCodeUrl(String code, WebDriver driver, PatientTemp temp) {
-		//System.out.println("CALLED--URL...");
+		System.out.println("CALLED--URL...");
 		String data = "";
 		try {
 			String url = "https://www.dnoaconnect.com/members/" + temp.getReferenceId() + "/procedureBenefits/"
@@ -1376,7 +1064,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 					if (value.equals("nullXnullnull"))
 						value = "";
 				} else {
-					value = "0";// Constants.NO_FREQUENCY;
+					value = "N/A";
 				}
 				value = FreqencyUtils.convertFrequecyString(siteName, value);
 				/*
@@ -1400,7 +1088,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 						if (ar != null && ar.length() > 0) {
 							for (int j = 0; j < ar.length(); j++) {
 								// System.out.println(ar.get(j));
-								value = value + comma + "D" + ar.get(j);
+								value = value + comma + ar.get(j);
 								comma = ",";
 
 							}
@@ -1418,10 +1106,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
 				JSONObject limit = (JSONObject) ja.get("limitations");
-				int x=((Integer) limit.get("ageMaximum"));
-				if (x>=999) x=99;
-				value = x+"";
-				//if (value<=999) value=99;
+				value = ((Integer) limit.get("ageMaximum")).toString();
 				/*
 				 * WebElement div =driver.findElement(By.xpath(
 				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[1]/dl")); value
@@ -1480,35 +1165,41 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 
 		if (!navigate)
 			return navigate;
-		driver.get("https://www.dnoaconnect.com/#!/lookup");
+		driver.get("https://www.unitedconcordia.com/tuctpi/subscriber.xhtml");
 		Thread.sleep(4000);
+
 		return true;
 	}
 
-	public boolean loginToSiteBCBS(ScrappingFullDataDetailDto dto, WebDriver driver)
+	public boolean loginToSiteUnitedCon(ScrappingFullDataDetailDto dto, WebDriver driver)
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
 
 		boolean navigate = true;
 		driver.get(dto.getSiteUrl());
 		Thread.sleep(4000);// Need to keep this number high for Linux issue.
-		WebElement userNameElement = driver.findElement(By.id("username"));
+		try {
+			driver.findElement(By.id("onetrust-accept-btn-handler")).click();
+			Thread.sleep(1000);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		WebElement userNameElement = driver.findElement(By.id("signinForm:username"));
 		userNameElement.sendKeys(dto.getUserName());
-		WebElement passwordElement = driver.findElement(By.id("password"));
+		WebElement passwordElement = driver.findElement(By.id("signinForm:password"));
 
 		passwordElement.sendKeys(dto.getPassword());
-		WebElement loginButonElement = driver.findElement(
-				By.xpath("/html/body/ui-view/div/div/ui-view/div[2]/div/div[2]/div[1]/form/div[4]/button"));
+		WebElement loginButonElement = driver
+				.findElement(By.xpath("/html/body/div[2]/div[1]/div/div[2]/div[1]/form/div[3]/a"));
 
 		loginButonElement.click();
-		Thread.sleep(1000);// Need to keep this number high for Linux issue.
+		Thread.sleep(2000);// Need to keep this number high for Linux issue.
 		try {
-			WebElement p = driver
-					.findElement(By.xpath("/html/body/ui-view/div/div/ui-view/div[2]/div/div[2]/div[1]/p[3]"));
-			if (p.getText().startsWith("You have entered an invalid User ID")) {
+			WebElement p = driver.findElement(By.id("signinFormError:username"));
+			if (p != null) {
 				navigate = false;
 			}
 		} catch (Exception p) {
-
+			/// navigate = false;
 		}
 
 		// System.out.println(p.getText());
@@ -1516,8 +1207,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 	}
 
 	/**
-	 * Link: https://www.dnoaconnect.com/#!/ Username: crosbyfd07 Password: Smile123
-	 * Member ID: 830794722 DOB: 12/02/1985 Name: Michael Perkins 115296917101
+	 * Link: https://www.unitedconcordia.com/dental-insurance/dentist/ Member ID:
+	 * 01144286800 DOB: 05/17/2010 Name: STARLYN D. BIAS
 	 * 
 	 * @param main
 	 * @throws InterruptedException
@@ -1547,33 +1238,31 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smile123");
-		dto.setUserName("crosbyfd07");
-		dto.setSiteName("BCBS");
+		dto.setPassword("Capline@12345");
+		dto.setUserName("crosby_ucci");
+		dto.setSiteName("United Concordia");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("07/26/2007");
-		psc.setFirstName("Lynette");
-		psc.setLastName("IBARRA JR");
-		psc.setMemberId("829094350");
+		psc.setDob("05/17/2010");
+		psc.setFirstName("STARLYN");
+		psc.setLastName("D. BIAS");
+		psc.setMemberId("01144286800");
 		psc.setSsnNumber("");
 
 		l.add(psc);
 		// dto.setPassword("Smile123");
 		dto.setDto(l);
-		psc = new PatientScrapSearchDto();
-		psc.setDob("11/20/1973");
-		psc.setFirstName("Vivian");
-		psc.setLastName("Courtney");
-		psc.setMemberId("825711808");
-		psc.setSsnNumber("");
-		// l.add(psc);
+		/*
+		 * psc = new PatientScrapSearchDto(); psc.setDob("11/20/1973");
+		 * psc.setFirstName("Vivian"); psc.setLastName("Courtney");
+		 * psc.setMemberId("825711808"); psc.setSsnNumber(""); l.add(psc);
+		 * 
+		 * dto.setDto(l);
+		 */
 
-		dto.setDto(l);
-
-		dto.setSiteUrl("https://www.dnoaconnect.com/#!/");
-		BCBSDnoaconnectImpl i = new BCBSDnoaconnectImpl(null, null, null, dto, null, null, 1,"",
+		dto.setSiteUrl("https://www.unitedconcordia.com/dental-insurance/dentist/");
+		UnitedConcordiaImpl i = new UnitedConcordiaImpl(null, null, null, dto, null, null,
 				"D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
 		i.setProps("9500");
 		// i.scrappingSiteDetails = f;

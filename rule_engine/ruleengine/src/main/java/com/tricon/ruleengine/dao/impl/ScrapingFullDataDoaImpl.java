@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -18,8 +19,10 @@ import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
+import com.tricon.ruleengine.model.db.TaxMapping;
 
 @Repository
 public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFullDataDoa {
@@ -194,5 +197,48 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 		}
 
 	}
+
+	@Override
+	public Serializable createScrappingSiteManagementProcess(ScrappingFullDataManagmentProcess manageP) {
+
+	return	saveEntiy(manageP);
+		
+	}
+
+	@Override
+	public ScrappingFullDataManagmentProcess getScrappingFullDataManagmentDataProcess(int id) {
+		// TODO Auto-generated method stub
+		return (ScrappingFullDataManagmentProcess)getEntityById(ScrappingFullDataManagmentProcess.class, id);
+	}
+	
+	@Override
+    public void updateScrappingFullDataManagmentProcess(ScrappingFullDataManagmentProcess manage) {
+		
+		updateEntity(manage);
+		
+	}
+
+	@Override
+	public String getTaxmapping(Office office, String type) {
+		Session session = getSession();
+		Object object = null;
+		try {
+			Criteria criteria = session.createCriteria(TaxMapping.class);
+			criteria.add(Restrictions.eq("scType", type));
+			criteria.createAlias("office", "office");
+			criteria.add(Restrictions.eq("office.uuid", office.getUuid()));
+			ProjectionList pjList = Projections.projectionList();
+			pjList.add(Projections.property("taxId"), "taxId");
+			criteria.setProjection(pjList);
+			object =  criteria.uniqueResult();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		if (object==null) object="NOT SET(tax Mapping table)";
+		return (String)object;
+	}
+	
 	
 }

@@ -536,7 +536,7 @@ export class ApplicationService {
 	              this.router.navigate(['/logout']);
 	              }
 	              if (error.status==500){
-	                  alert("Some un-Wanted Changes Done to Google Sheets");
+	                  alert("Some un-Wanted ..");
 	                  callback(error);
 	              }
 	          },

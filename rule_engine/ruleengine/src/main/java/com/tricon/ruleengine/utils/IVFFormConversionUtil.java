@@ -98,7 +98,7 @@ public class IVFFormConversionUtil {
 		pd.setInsContact(d.getBasicInfo7());
 		pd.setInsName(d.getBasicInfo3());
 
-		pd.setInterimPartialDenturesD5214FL(d.getDentures4());// Cross check
+		pd.setInterimPartialDenturesD5214FL(d.getDentures4());// Cross check D5820
 
 		pd.setiVSedationD9243Percentage(d.getSedations2());
 		pd.setiVSedationD9248Percentage(d.getSedations3());
@@ -336,7 +336,7 @@ public class IVFFormConversionUtil {
 		pd.setInsContact(d.getBasicInfo7());
 		pd.setInsName(d.getBasicInfo3());
 
-		pd.setInterimPartialDenturesD5214FL(d.getDentures4());// Cross check
+		pd.setInterimPartialDenturesD5214FL(d.getDentures4());// Cross check D5820
 
 		pd.setiVSedationD9243Percentage(d.getSedations2());
 		pd.setiVSedationD9248Percentage(d.getSedations3());

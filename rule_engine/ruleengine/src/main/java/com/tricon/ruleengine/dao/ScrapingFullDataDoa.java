@@ -7,6 +7,7 @@ import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 
@@ -36,4 +37,14 @@ public interface ScrapingFullDataDoa {
 	public void increasecrapCount(ScrappingFullDataManagment manage);
 	
 	public void updateScrappingSiteManagement();
+	
+	public Serializable createScrappingSiteManagementProcess(ScrappingFullDataManagmentProcess manageP);
+	
+	public ScrappingFullDataManagmentProcess getScrappingFullDataManagmentDataProcess(int id);
+	
+	public void updateScrappingFullDataManagmentProcess(ScrappingFullDataManagmentProcess manage);
+	
+	public String  getTaxmapping(Office office,String type);
+	
+	
 }

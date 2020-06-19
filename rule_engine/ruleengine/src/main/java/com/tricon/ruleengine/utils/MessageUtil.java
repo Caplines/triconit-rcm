@@ -25,6 +25,7 @@ public class MessageUtil {
 			|| text.contains(Constants.SCRAPPING_NOT_FOUND)
 			||text.contains(Constants.SCRAPPING_ISSUE_FETCHING)
 				) return text;
+		System.out.println("getTEXTNAORYES-"+text);
 		if (text.equalsIgnoreCase("N/A")) return "No";
 		else return "Yes";
 	}

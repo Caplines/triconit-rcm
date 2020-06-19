@@ -831,7 +831,7 @@ public class FreqencyUtils {
 	public static String convertFrequecyString(String siteName,String text) {
 		
 		text=text.trim().toLowerCase();
-		System.out.println("CCCCC----"+text);
+		System.out.println("CCCCC----"+text+"--");
         String convert=text.replace(" consisting of codes:", "");
 		convert=convert.replace("per quadrant", "");
 		convert=convert.replace("once", "1");
@@ -851,10 +851,13 @@ public class FreqencyUtils {
 		convert = convert.replace(" per ", "x");
 		convert = convert.replace(" ", "");
 		
-		if (text.equals("")) convert="no frequency";
-		if (text.equalsIgnoreCase("not coverded")) convert="NF";
+		if (text.equals("")) convert=Constants.NO_FREQUENCY;
+		
+		
+		if (text.equalsIgnoreCase("not coverded")) convert=Constants.NO_FREQUENCY;
 		convert = convert.replace("benefitperiod", "CY");
 		convert = convert.replace("1LT", "LT");
+		if (convert.equals("nofrequency")) convert=Constants.NO_FREQUENCY;
 		System.out.println("CCCCC----"+convert);
 		return convert;
 		//1 : Once per tooth per 60 months consisting of codes:
@@ -1015,7 +1018,10 @@ public class FreqencyUtils {
 	}
 
 	public static void main(String [] a) {
-	 
+		System.out.println(convertFrequecyString("","0"));
+		
+		System.out.println(convertFrequecyString("","no frequency"));
+		 
 		System.out.println(convertFrequecyDentaString("","Benefit is limited to two of any oral evaluation procedure within a calendar year"));
 		System.out.println(convertFrequecyDentaString("","Benefit is based on professional determination"));
 		System.out.println(convertFrequecyDentaString("","Benefit is limited to two of any oral evaluation procedure within a calendar year. Comprehensive evaluations are limited to once per provider."));

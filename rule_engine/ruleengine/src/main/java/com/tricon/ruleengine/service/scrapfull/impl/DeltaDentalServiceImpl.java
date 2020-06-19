@@ -25,7 +25,6 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 //import org.openqa.selenium.chrome.ChromeDriver;
 //import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.interactions.Actions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
@@ -39,6 +38,7 @@ import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
 import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 import com.tricon.ruleengine.model.db.User;
@@ -87,12 +87,14 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 	private Office office;
 	private User user;
 	private String driverLocation;
+	private int processId;
+	private String taxId;
 
 	private static String siteName = "";
 
 	public DeltaDentalServiceImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
 			ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user, Office office,
-			String driverLocation) {
+			int processId,String taxId,String driverLocation) {
 
 		this.patDao = patDao;
 		this.dataDoa = dataDoa;
@@ -106,6 +108,8 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		siteName = dto.getSiteName();
 		this.user = user;
 		this.driverLocation = driverLocation;
+		this.processId=processId;
+		this.taxId=taxId;
 		// store parameter for later user
 	}
 
@@ -122,7 +126,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 			// ChromeOptions options = new ChromeOptions();
 			// System.out.println("555");
 			options.addArguments("-disable-infobars");
-			options.addArguments("--headless");
+			//options.addArguments("--headless");
 			options.addArguments("--no-sandbox");
 			options.addArguments("--disable-dev-shm-usage");
 			options.setExperimentalOption("useAutomationExtension", false);
@@ -152,9 +156,9 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 			Office office) {
 		setProps(scrappingSiteDetails.getProxyPort());
 		try {
-			
+
 			System.out.println("MEM 3-" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-			//int one = 0;
+			// int one = 0;
 			try {
 				for (PatientScrapSearchDto data : dto.getDto()) {
 					Thread thread = new Thread() {
@@ -182,10 +186,17 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 								driver.quit();
 								scrappingSiteDetails.setRunning(false);
 								ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
+								ScrappingFullDataManagmentProcess manageP = dataDoa
+										.getScrappingFullDataManagmentDataProcess(processId);
+								manageP.setCount(manageP.getCount() - 1);
+								manageP.setUpdatedBy(user);
+								manageP.setUpdatedDate(new Date());
+								dataDoa.updateScrappingFullDataManagmentProcess(manageP);
 								if (manage.getProcessCount() > 0) {
 									manage.setProcessCount(manage.getProcessCount() - 1);
 									dataDoa.increasecrapCount(manage);
 								}
+
 								dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
 							}
 						}
@@ -251,7 +262,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 			temp.setStatus("Patient found..");
 			temp.setFirstName(sh.getFirstName());
 			temp.setLastName(sh.getLastName());
-			// populateMandatoryData(temp);
+			populateMandatoryData(temp);
 			createPatientDetailSetup(driver, temp, sh);
 			// Click on MyPatient Link so that Next Patient can Start to be Searched
 			List<WebElement> myPats = driver.findElements(By.tagName("a"));
@@ -365,8 +376,9 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dtemp.setPlanAnnualMax(Constants.SCRAPPING_MANDATORY_WARNING); // 1
 		dtemp.setPlanAnnualMaxRemaining(Constants.SCRAPPING_MANDATORY_WARNING);// 2
-		dtemp.setPlanIndividualDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 3
-		dtemp.setPlanIndividualDeductibleRemaining(Constants.SCRAPPING_MANDATORY_WARNING);// 4
+		// dtemp.setPlanIndividualDeductible();// 3
+		// dtemp.setPlanIndividualDeductibleRemaining(Constants.SCRAPPING_MANDATORY_WARNING);//
+		// 4
 		dtemp.setBasicPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 5
 		// dtemp.setBasicSubjectDeductible();// 6
 		dtemp.setMajorPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 7
@@ -379,13 +391,13 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dtemp.setPreventivePercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 13
 		dtemp.setDiagnosticPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 14
-		dtemp.setpAXRaysPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 15
+		// dtemp.setpAXRaysPercentage();// 15
 		dtemp.setMissingToothClause(Constants.SCRAPPING_MANDATORY_WARNING);// 16
 		// 17 18
-		dtemp.setNightGuardsD9944Fr(Constants.SCRAPPING_MANDATORY_WARNING);// 19 //Cross Check
+		// dtemp.setNightGuardsD9944Fr();// 19 //Cross Check
 
-		dtemp.setBasicWaitingPeriod(Constants.SCRAPPING_MANDATORY_WARNING);// 20 in DOC
-		dtemp.setMajorWaitingPeriod(Constants.SCRAPPING_MANDATORY_WARNING);// 21 in DOC
+		// dtemp.setBasicWaitingPeriod();// 20 in DOC
+		// dtemp.setMajorWaitingPeriod();// 21 in DOC
 
 		// dtemp.setsSCD2930FL();//22 not mandatory
 		// dtemp.setsSCD2931FL();//23 not mandatory
@@ -405,33 +417,35 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		// dtemp.setSealantsD1351Percentage();// 37
 		// dtemp.setSealantsD1351FL("");//38
 		// dtemp.setSealantsD1351AgeLimit("")//39
-		dtemp.setSealantsD1351PrimaryMolarsCovered(Constants.SCRAPPING_MANDATORY_WARNING);// 40
-		dtemp.setSealantsD1351PrimaryMolarsCovered(Constants.SCRAPPING_MANDATORY_WARNING);// 41
-		dtemp.setSealantsD1351PermanentMolarsCovered(Constants.SCRAPPING_MANDATORY_WARNING);// 42
+		// dtemp.setSealantsD1351PrimaryMolarsCovered();// 40
+		// dtemp.setSealantsD1351PreMolarsCovered(Constants.SCRAPPING_MANDATORY_WARNING);//
+		// 41
+		// dtemp.setSealantsD1351PermanentMolarsCovered(Constants.SCRAPPING_MANDATORY_WARNING);//
+		// 42
 		// dtemp.setProphyD1110FL("");//43
 		// dtemp.setProphyD1120FL("");//44
 		// 45 missing
-		dtemp.setsRPD4341Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 46
+		// dtemp.setsRPD4341Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 46
 		// dtemp.setsRPD4341FL("");//47
 		// 48
 		// 49
-		dtemp.setPerioMaintenanceD4910Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 50
+		// dtemp.setPerioMaintenanceD4910Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 50
 		// dtemp.setPerioMaintenanceD4910FL("");//51
-		dtemp.setPerioMaintenanceD4910AltWProphyD0110(Constants.SCRAPPING_MANDATORY_WARNING);// 52
-		dtemp.setFMDD4355Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 53
+		// dtemp.setPerioMaintenanceD4910AltWProphyD0110(Constants.SCRAPPING_MANDATORY_WARNING);// 52
+		// dtemp.setFMDD4355Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 53
 		// dtemp.setfMDD4355FL("");//54
-		dtemp.setGingivitisD4346Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 55
+		// dtemp.setGingivitisD4346Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 55
 		// dtemp.setGingivitisD4346FL("");//56
-		dtemp.setNitrousD9230Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 57
-		dtemp.setiVSedationD9243Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 58
-		dtemp.setiVSedationD9248Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 59
-		dtemp.setExtractionsMinorPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 60
-		dtemp.setExtractionsMajorPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 61
-		dtemp.setCrownLengthD4249Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 62
+		// dtemp.setNitrousD9230Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 57
+		// dtemp.setiVSedationD9243Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 58
+		// dtemp.setiVSedationD9248Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 59
+		// dtemp.setExtractionsMinorPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 60
+		// dtemp.setExtractionsMajorPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 61
+		// dtemp.setCrownLengthD4249Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 62
 		// dtemp.setCrownLengthD4249FL("");//63
-		// 64
+		//dtemp.setAlveoD7310CoveredWithEXT("");//64
 		// dtemp.setAlveoD7311FL("");//65
-		// 66
+		//dtemp.setAlveoD7311CoveredWithEXT("");//66
 		// dtemp.setAlveoD7310FL("");//67
 		// dtemp.setCompleteDenturesD5110D5120FL("");//68
 		// dtemp.setImmediateDenturesD5130D5140FL("");//69
@@ -439,53 +453,75 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		// dtemp.setInterimPartialDenturesD5214FL("");//71
 		// 72
 		// dtemp.setBoneGraftsD7953FL("");//73
-		dtemp.setImplantCoverageD6010Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 74
-		dtemp.setImplantCoverageD6057Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 75
-		dtemp.setImplantCoverageD6190Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 76
-		dtemp.setImplantSupportedPorcCeramicD6065Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 77
-		dtemp.setPostCompositesD2391Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 78
+		// dtemp.setImplantCoverageD6010Percentage(Constants.SCRAPPING_MANDATORY_WARNING);//
+		// 74
+		// dtemp.setImplantCoverageD6057Percentage(Constants.SCRAPPING_MANDATORY_WARNING);//
+		// 75
+		// dtemp.setImplantCoverageD6190Percentage(Constants.SCRAPPING_MANDATORY_WARNING);//
+		// 76
+		// dtemp.setImplantSupportedPorcCeramicD6065Percentage(Constants.SCRAPPING_MANDATORY_WARNING);//
+		// 77
+		// dtemp.setPostCompositesD2391Percentage(Constants.SCRAPPING_MANDATORY_WARNING);//
+		// 78
 		// dtemp.setPostCompositesD2391FL("");//79
 		// 80
-		dtemp.setCrownsD2750D2740Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 81
+		// dtemp.setCrownsD2750D2740Percentage(Constants.SCRAPPING_MANDATORY_WARNING);//
+		// 81
 		// dtemp.setCrownsD2750D2740FL("");//82
 		// 83
-		// 84
-		dtemp.setD9310Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 85
+		//dtemp.setNightGuardsD9940Percentage("");// 84
+		// dtemp.setD9310Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 85
 		// dtemp.setD9310FL("");//86
 
-		dtemp.setBuildUpsD2950Covered(Constants.SCRAPPING_MANDATORY_WARNING);// 87
+		// dtemp.setBuildUpsD2950Covered(Constants.SCRAPPING_MANDATORY_WARNING);// 87
 		// dtemp.setBuildUpsD2950FL("");//88
 		// 89
-		dtemp.setOrthoPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 90
-		// dtemp.setOrthoMax();//91
-		// dtemp.setOrthoAgeLimit("");//92 benefit
-		// 93 //94 //95 //96 //97 //99 //100 //101
-		dtemp.setBridges1(Constants.SCRAPPING_MANDATORY_WARNING);// 102
+		// dtemp.setOrthoPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 90
+		dtemp.setOrthoMax(Constants.SCRAPPING_MANDATORY_WARNING);// 91
+		dtemp.setOrthoAgeLimit(Constants.SCRAPPING_MANDATORY_WARNING);// 92 benefit
+		//dtemp.setOrthoSubjectDeductible("");//93
+		//dtemp.setFillingsBundling("");//94
+		//95 //96 //97 //99 //100 //101
+		// dtemp.setBridges1(Constants.SCRAPPING_MANDATORY_WARNING);// 102
 		// dtemp.setBridges2("");//103
 		// 104
-		dtemp.setDen5225Per(Constants.SCRAPPING_MANDATORY_WARNING);// 105
+		// dtemp.setDen5225Per(Constants.SCRAPPING_MANDATORY_WARNING);// 105
 		// dtemp.setDenf5225FR("");//107
 
-		dtemp.setDen5226Per(Constants.SCRAPPING_MANDATORY_WARNING);// 106
+		// dtemp.setDen5226Per();// 106
 		// dtemp.setDenf5226Fr("");//108
-		dtemp.setDiagnosticSubDed(Constants.SCRAPPING_MANDATORY_WARNING);// 109
+		// dtemp.setDiagnosticSubDed();// 109
 
 		// dtemp.setImplantsFrD6010("");//110
 		// dtemp.setImplantsFrD6057("");//111
 		// dtemp.setImplantsFrD6065("");//112
 		// dtemp.setImplantsFrD6190("");//113
-		dtemp.setNightGuardsD9945Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 114
-		// dtemp.setOrthoRemaining("");//115
+		// dtemp.setNightGuardsD9945Percentage();// 114
+		dtemp.setOrthoRemaining(Constants.SCRAPPING_MANDATORY_WARNING);// 115 --
 		// dtemp.setOrthoWaitingPeriod("");//116
-		dtemp.setpAXRaysSubDed(Constants.SCRAPPING_MANDATORY_WARNING);// 117
-		dtemp.setPreventiveSubDed(Constants.SCRAPPING_MANDATORY_WARNING);// 118
+		// dtemp.setpAXRaysSubDed();// 117
+		// dtemp.setPreventiveSubDed();// 118
 		// 119
-		dtemp.setFmxPer(Constants.SCRAPPING_MANDATORY_WARNING);// 120
+		// dtemp.setFmxPer();// 120
 		// dtemp.setNightGuardsD9944Fr("");//121
 		// dtemp.setNightGuardsD9945Fr("");//122
 
 		// 123 //124 //125 //126
-
+		// dtemp.setPlanDependentsCoveredtoAge();// 127
+		// 128 129 130
+		// dtemp.setPlanAssignmentofBenefits();// 131
+		// 132 133 134 135
+		dtemp.setEmployerName(Constants.SCRAPPING_MANDATORY_WARNING);//138
+		dtemp.setGroup(Constants.SCRAPPING_MANDATORY_WARNING);//139
+		dtemp.setInsAddress(Constants.SCRAPPING_MANDATORY_WARNING);//140
+		dtemp.setPayerId(Constants.SCRAPPING_MANDATORY_WARNING);//141
+		dtemp.setPolicyHolderDOB(Constants.SCRAPPING_MANDATORY_WARNING);//142
+		dtemp.setPlanTermedDate(Constants.SCRAPPING_MANDATORY_WARNING);//143
+		dtemp.setPlanEffectiveDate(Constants.SCRAPPING_MANDATORY_WARNING);//144
+		dtemp.setGeneralDateIVwasDone(Constants.SCRAPPING_MANDATORY_WARNING);//145
+		dtemp.setPolicyHolderDOB(Constants.SCRAPPING_MANDATORY_WARNING);//146
+		
+		
 		// Debug
 	}
 
@@ -503,6 +539,13 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+
+		String ageLimtId = "";
+		dtemp.setInsName("Denta Dental of Tx");
+		dtemp.setInsContact("8005212227");
+		dtemp.setcSRName("Scraping Tool");
+		dtemp.setTaxId(taxId);
+		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));
 		for (WebElement divOffMax : divOfMaximum) {
 
 			try {
@@ -510,7 +553,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 				if (divOffMax.getAttribute("summary").equals("Benefits and Covered Services")) {
 					dtemp.setBasicWaitingPeriod("NA");// 20
 					dtemp.setMajorWaitingPeriod("NA");// 21
-					dtemp.setOrthoWaitingPeriod("NA");// 107
+					dtemp.setOrthoWaitingPeriod("NA");// 116
 
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
@@ -521,7 +564,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 								String de = tds.get(2).getText();// need Logic
 								dtemp.setBasicWaitingPeriod(DateUtils.getDiffBetweenMonths(dt, de));// 20
 							} catch (Exception e) {
-								// TODO: handle exception
+								e.printStackTrace();
 							}
 						}
 						if (tr.getText().startsWith("Prosthodontics; Removable")) {
@@ -531,7 +574,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 								String de = tds.get(2).getText();
 								dtemp.setMajorWaitingPeriod(DateUtils.getDiffBetweenMonths(dt, de));// 21
 							} catch (Exception e) {
-								// TODO: handle exception
+								e.printStackTrace();
 							}
 						}
 						if (tr.getText().startsWith("Orthodontics")) {
@@ -539,10 +582,10 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 								List<WebElement> tds = tr.findElements(By.className("x26c"));
 								String dt = tds.get(1).getText();
 								String de = tds.get(2).getText();
-								dtemp.setOrthoWaitingPeriod(DateUtils.getDiffBetweenMonths(dt, de));// 107
+								dtemp.setOrthoWaitingPeriod(DateUtils.getDiffBetweenMonths(dt, de));// 116
 
 							} catch (Exception e) {
-								// TODO: handle exception
+								e.printStackTrace();
 							}
 						}
 					}
@@ -551,13 +594,106 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 				if (divOffMax.getAttribute("summary").equals("Elligibility and Benefits Summary")) {
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
+						try {
+							if (tr.getText().startsWith("Program type:")) {
 
-						if (tr.getText().startsWith("Program type:")) {
+								List<WebElement> tds = tr.findElements(By.className("x26b"));
+								dtemp.setPlanType(tds.get(0).getText());
 
-							List<WebElement> tds = tr.findElements(By.className("x26b"));
-							dtemp.setPlanType(tds.get(0).getText());
-
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
+						try {
+							if (tr.getText().startsWith("Plan name:")) {
+
+								List<WebElement> tds = tr.findElements(By.className("x26a"));//138
+								dtemp.setEmployerName(tds.get(0).getText());
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							if (tr.getText().startsWith("Plan number:")) {
+
+								List<WebElement> tds = tr.findElements(By.className("x26b"));//139
+								dtemp.setGroup(tds.get(0).getText());
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
+						try {
+							if (tr.getText().startsWith("Enrollee name:")) {
+
+								List<WebElement> tds = tr.findElements(By.className("x26a"));//142
+								dtemp.setPolicyHolder(tds.get(0).getText());
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							if (tr.getText().startsWith("Date of birth:")) {
+
+								List<WebElement> tds = tr.findElements(By.className("x26b"));//142
+								dtemp.setPolicyHolderDOB(tds.get(0).getText());
+								String[] s = tds.get(0).getText().split("/");
+								try {
+									dtemp.setPolicyHolderDOB(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
+											+ (s[1].length() == 2 ? s[1] : "0" + s[1]));//146
+
+								} catch (Exception e) {
+									// TODO: handle exception
+									//dtemp.setPlanEffectiveDate("");
+								}
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							if (tr.getText().startsWith("Effective date:")) {
+
+								List<WebElement> tds = tr.findElements(By.className("x26a"));
+								dtemp.setPlanEffectiveDate(tds.get(0).getText());//144
+								String[] s = tds.get(0).getText().split("/");
+								try {
+									dtemp.setPlanEffectiveDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
+											+ (s[1].length() == 2 ? s[1] : "0" + s[1]));//144
+
+								} catch (Exception e) {
+									// TODO: handle exception
+									//dtemp.setPlanEffectiveDate("");
+								}
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							if (tr.getText().startsWith("End date:")) {
+
+								List<WebElement> tds = tr.findElements(By.className("x26a"));
+								dtemp.setPlanTermedDate(tds.get(0).getText());//143
+								String[] s = tds.get(0).getText().split("/");
+								try {
+									dtemp.setPlanTermedDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
+											+ (s[1].length() == 2 ? s[1] : "0" + s[1]));//143
+
+								} catch (Exception e) {
+									// TODO: handle exception
+									//dtemp.setPlanTermedDate("");
+								}
+								
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 					}
 					//
 				}
@@ -565,16 +701,32 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
 						if (tr.getText().startsWith("Contract Individual Maximum")) {
-
+                            try { 
 							List<WebElement> tds = tr.findElements(By.className("x264"));
 							dtemp.setPlanAnnualMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 1
 							dtemp.setPlanAnnualMaxRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 2
+                            }catch (Exception e) {
+                            	e.printStackTrace();
+							}
 						}
 						if (tr.getText().startsWith("Lifetime Individual Maximum")
 								&& tr.getText().contains("Orthodontics")) {
-
+                            try {
 							List<WebElement> tds = tr.findElements(By.className("x264"));
-							dtemp.setOrthoRemaining(tds.get(0).getText().replace("$", "").replace(",", ""));// 106
+							dtemp.setOrthoRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 115
+                            } catch (Exception e) {
+                            	e.printStackTrace();
+							}
+
+						}
+						if (tr.getText().startsWith("Lifetime Individual Maximum")
+								&& tr.getText().contains("Orthodontics")) {
+                            try {
+							List<WebElement> tds = tr.findElements(By.className("x264"));
+							dtemp.setOrthoMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 91
+                            } catch (Exception e) {
+                            	e.printStackTrace();
+							}
 
 						}
 					}
@@ -584,12 +736,27 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
 						if (tr.getText().startsWith("Contract Individual Deductible")) {
-
+                            try {
 							List<WebElement> tds = tr.findElements(By.className("x264"));
 							dtemp.setPlanIndividualDeductible(tds.get(0).getText().replace("$", "").replace(",", ""));// 3
 							dtemp.setPlanIndividualDeductibleRemaining(
 									tds.get(1).getText().replace("$", "").replace(",", ""));// 4
+							if (tr.getText().contains("Preventive")) {
+								dtemp.setPreventiveSubDed("Yes");// 118
+							} else {
+								dtemp.setPreventiveSubDed("No");// 118
+							}
+							if (tr.getText().contains("Preventive")) {
+								dtemp.setDiagnosticSubDed("Yes");// 109
+							} else {
+								dtemp.setDiagnosticSubDed("No");// 109
+							}
+                            } catch (Exception e) {
+                            	e.printStackTrace();
+							}
+
 						}
+
 					}
 					//
 				}
@@ -597,11 +764,42 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
 						if (tr.getText().startsWith("Missing Tooth Coverage")) {
-
+                            try {
 							List<WebElement> tds = tr.findElements(By.className("x264"));
 							dtemp.setMissingToothClause(tds.get(0).getText().replace("$", "").replace(",", ""));// 16
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						if (tr.getText().startsWith("Orthodontic Age Limit")) {
+							try {
+							// keep id
+							ageLimtId = tr.getAttribute("id");// 92
 							// 17
 							// 18
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						if (tr.getText().startsWith("Child Covered to Age")) {
+							try {
+							
+							List<WebElement> tds = tr.findElements(By.className("x264"));
+							dtemp.setPlanDependentsCoveredtoAge(tds.get(0).getText());// 127
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						if (tr.getText().startsWith("Assignment of Benefits")) {
+						    try {
+							List<WebElement> tds = tr.findElements(By.className("x264"));
+							if (tds.get(0)!=null && tds.get(0).getText()!=null && tds.get(0).getText().toLowerCase().contains("group accepts assignment of benefits"))
+								dtemp.setPlanAssignmentofBenefits("Yes");// 131
+							else
+								dtemp.setPlanAssignmentofBenefits("No");// 131
+						    } catch (Exception e) {
+						    	e.printStackTrace();
+							}
 						}
 					}
 					//
@@ -611,41 +809,56 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 			}
 
 		}
-		/*
-		 * WebElement eleBody = driver.findElement( By.xpath(
-		 * "/html/body/ui-view/ui-view/div/div[3]/div[2]/div/div[2]/plan-info/div/div[2]/table/tbody"
-		 * )); List<WebElement> eleTR = eleBody.findElements(By.tagName("tr"));
-		 * Thread.sleep(500); for (WebElement el : eleTR) { List<WebElement> tds =
-		 * el.findElements(By.tagName("td")); for (WebElement td : tds) {
-		 * 
-		 * if (td.getText().equals("Maximums - Benefit Period")) { try {
-		 * dtemp.setPlanAnnualMax(el.findElements(By.tagName("td")).get(1).getText().
-		 * replace("$", "") .replace(",", "").replace("N/A", "")); } catch (Exception e)
-		 * { // e.printStackTrace();
-		 * dtemp.setPlanAnnualMax(Constants.SCRAPPING_ISSUE_FETCHING); // TODO: handle
-		 * exception } } else if
-		 * (td.getText().equals("Maximums - Benefit Period Remaining")) { try {
-		 * dtemp.setPlanAnnualMaxRemaining(el.findElements(By.tagName("td")).get(1).
-		 * getText() .replace("$", "").replace(",", "").replace("N/A", "")); } catch
-		 * (Exception e) { // e.printStackTrace();
-		 * dtemp.setPlanAnnualMaxRemaining(Constants.SCRAPPING_ISSUE_FETCHING); } } else
-		 * if (td.getText().equals("Deductible - Benefit Period")) { try {
-		 * dtemp.setPlanIndividualDeductible(el.findElements(By.tagName("td")).get(1).
-		 * getText() .replace("$", "").replace(",", "").replace("N/A", "")); } catch
-		 * (Exception e) { // e.printStackTrace();
-		 * dtemp.setPlanIndividualDeductible(Constants.SCRAPPING_ISSUE_FETCHING); } }
-		 * else if (td.getText().equals("Deductible - Benefit Period Remaining")) { try
-		 * {
-		 * dtemp.setPlanIndividualDeductibleRemaining(el.findElements(By.tagName("td")).
-		 * get(1).getText() .replace("$", "").replace(",", "").replace("N/A", "")); }
-		 * catch (Exception e) { // e.printStackTrace();
-		 * dtemp.setPlanIndividualDeductibleRemaining(Constants.SCRAPPING_ISSUE_FETCHING
-		 * ); } }
-		 * 
-		 * }
-		 * 
-		 * }
-		 */
+
+		List<WebElement> spans= driver.findElements(By.className("x24k"));
+		String claim="";
+		for(WebElement span:spans) {
+			claim=claim+" "+span.getText().trim();
+		}
+		if (!claim.equals("")) {
+			dtemp.setInsAddress(claim);//140
+			try {
+				dtemp.setPayerId(claim.split("Claim payer ID :")[1]);//141
+				dtemp.setInsAddress(claim.split("Claim payer ID :")[0]);//141
+			}catch(Exception p) {
+				
+			}
+		}
+		if (ageLimtId.equals("")) {
+			try {
+				List<WebElement> aas = driver.findElement(By.id("ageLimtId")).findElements(By.tagName("a"));
+				for (WebElement aa : aas) {
+					if (aa.getText() != null && aa.getText().equals("Click here")) {
+						aa.click();
+						Thread.sleep(3000);
+						List<WebElement> tabs = driver.findElements(By.tagName("table"));
+						try {
+							for (WebElement tab : tabs) {
+								if (tab.getAttribute("summary") != null
+										&& tab.getAttribute("summary").equals("Ortho Age informat")) {
+									dtemp.setOrthoAgeLimit(tab.findElements(By.tagName("td")).get(1).getText());// 92
+									break;
+								}
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+						List<WebElement> buts = driver.findElements(By.tagName("button"));
+						for (WebElement but : buts) {
+							if (but.getText() != null && but.getText().equals("Close")) {
+								but.click();
+								Thread.sleep(3000);
+								break;
+							}
+						}
+						break;
+
+					}
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
 		String planType = dtemp.getPlanType();
 		openSideBarFirst(driver, "Benefit details", true,
 				new String[] { "Endodontics", "Periodontics", "Preventive", "Diagnostic" }, true, temp);
@@ -672,12 +885,12 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 51, 52
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		benefitInfoMap.put("D4910", dt);// a
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 55 56
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		benefitInfoMap.put("D4346", dt);// b
 
 		dt = new DentaBenefitScrapDto();
@@ -692,38 +905,38 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		benefitInfoMap.put("D2740", dt);// d
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitLimitation });// 19
-		dt.setMandatory(new boolean[] { true });
+		dt.setTypes(new String[] { benefitLimitation });// 19 121
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D9944", dt);// e
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 22
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D2930", dt);// f
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 23
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D2931", dt);// g
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 24
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D0120", dt);// h
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 25
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D0140", dt);// i
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 26
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 
 		benefitInfoMap.put("D0145", dt);// j
@@ -734,61 +947,61 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 27
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D0150", dt);// a
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 28
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D0272", dt);// b
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 29
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D0220", dt);// c
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 30
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D0230", dt);// d
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 31 112
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 31 120
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D0210", dt);// e
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitAgeLimit, benefitLimitation });// 33 34
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D1208", dt);// f
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitAgeLimit, benefitLimitation });// 35 36
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D1206", dt);// g
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitAgeLimit, benefitLimitation });// 37 38 39 40 41 42
-		dt.setMandatory(new boolean[] { true, true, true });
+		dt.setMandatory(new boolean[] { false, false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D1351", dt);// h
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 43
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D1110", dt);// i
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 44
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D1120", dt);// j
 
@@ -797,62 +1010,62 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		// 45
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 47 48 49
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D4341", dt);// a
 
 		// 53
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 54 55
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D4355", dt);// b
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract });// 57
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D9230", dt);// c
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract });// 58
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D9243", dt);// d
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract });// 59
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D9248", dt);// e
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract });// 60
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D7210", dt);// f
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract });// 61
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D7240", dt);// g
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 62 63
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D4249", dt);// h
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitAlveoloplasty, benefitLimitation });// 64 65
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D7311", dt);// i
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitAlveoloplasty, benefitLimitation });// 66 67
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D7310", dt);// j
 
@@ -861,61 +1074,61 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 68
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D5110", dt);// a
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 69
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D5130", dt);// b
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 70
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D5213", dt);// c
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 71
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D5214", dt);// d
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 73
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D7953", dt);// e
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract });// 74
-		dt.setMandatory(new boolean[] { true });
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 74 110
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D6010", dt);// f
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract });// 75
-		dt.setMandatory(new boolean[] { true });
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 75 111
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D6057", dt);// g
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract });// 76
-		dt.setMandatory(new boolean[] { true });
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 76 113
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D6190", dt);// h
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract });// 77
-		dt.setMandatory(new boolean[] { true });
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 77 112
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D6065", dt);// i
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract });// 105
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D9945", dt);// j
 
@@ -928,31 +1141,58 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 85 86
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D9310", dt);// a
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 87 88
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D2950", dt);// b
 
 		// 89
 		// 93
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract, benefitAgeLimit });// 90 92
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setTypes(new String[] { benefitContract });// 90
+		dt.setMandatory(new boolean[] { true });
 		dt.setAge(age);
 		benefitInfoMap.put("D8090", dt);// c
 
+		// 94 95
+		// 96 97 98 99 100 101
+
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 94 95
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 102 103
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D6245", dt);// d
 
-		// 96 97 98 99 100 101 102 103 104
+		// 104
+
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 105 107
+		dt.setMandatory(new boolean[] { false, false });
+		dt.setAge(age);
+		benefitInfoMap.put("D5225", dt);// e
+
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 106 108
+		dt.setMandatory(new boolean[] { false, false });
+		dt.setAge(age);
+		benefitInfoMap.put("D5226", dt);// f
+
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 114 122
+		dt.setMandatory(new boolean[] { false, false });
+		dt.setAge(age);
+		benefitInfoMap.put("D9945", dt);// g
+
+		// 117
+		// 119
+		// 123 124 125 126
+		// 128 129 130
+		// 132 133 134 135
 
 		fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info);// call for Fifth 10
 		benefitInfoMap = new HashMap<>();
@@ -1106,7 +1346,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dtemp.setBuildUpsD2950FL(getBenefitProcedureValueFromMap("D2950", benefitLimitation, values, true));// 88
 		// 89
-		dtemp.setBuildUpsD2950FL(getBenefitProcedureValueFromMap("D8090", benefitContract, values, true));// 90
+		dtemp.setOrthoPercentage(getBenefitProcedureValueFromMap("D8090", benefitContract, values, true));// 90
 
 		// 91 qweawe
 
@@ -1118,7 +1358,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		// 96 97 98 99 100 101 102 103 104 105
 		dtemp.setNightGuardsD9945Percentage(getBenefitProcedureValueFromMap("D9945", benefitContract, values, true));// 105
 
-		// 108 109 110
+		// 108 110
 
 		dtemp.setFmxPer(getBenefitProcedureValueFromMap("D0210", benefitContract, values, true));// 111
 
@@ -1844,16 +2084,6 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		return navigate;
 	}
 
-	/**
-	 * Link: https://www.deltadentalins.com/ Username: Crosbyfamilydental Password:
-	 * Crosby000
-	 * 
-	 * @param main
-	 * @throws InterruptedException
-	 * @throws IOException
-	 * @throws MalformedURLException
-	 * @throws FailingHttpStatusCodeException
-	 */
 	private static int GetChromeDriverProcessID(int aPort) throws IOException, InterruptedException {
 		String[] commandArray = new String[3];
 
@@ -1960,6 +2190,17 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		return Integer.parseInt(pieces[pieces.length - 1]);
 	}
 
+	/**
+	 * Link: https://www.deltadentalins.com/ Username: Crosbyfamilydental Password:
+	 * Crosby000
+	 * 
+	 * @param main
+	 * @throws InterruptedException
+	 * @throws IOException
+	 * @throws MalformedURLException
+	 * @throws FailingHttpStatusCodeException
+	 */
+
 	public static void main(String[] main)
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
 		System.out.println("ssda");
@@ -2002,12 +2243,11 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		psc.setMemberId("1125727908");// 632307605
 		psc.setSsnNumber("");
 
-		l.add(psc);
+		//l.add(psc);
 
-		
 		dto.setDto(l);
 		dto.setSiteUrl("https://www.deltadentalins.com/");
-		DeltaDentalServiceImpl i = new DeltaDentalServiceImpl(null, null, f, dto, null, null,
+		DeltaDentalServiceImpl i = new DeltaDentalServiceImpl(null, null, f, dto, null, null,1,"",
 				"D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
 		i.setProps("9500");
 		// i.scrappingSiteDetails = f;

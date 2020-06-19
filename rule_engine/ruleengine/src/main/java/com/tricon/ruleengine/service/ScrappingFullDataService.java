@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 
 public interface ScrappingFullDataService {
 	
@@ -17,7 +18,7 @@ public interface ScrappingFullDataService {
 	
 	public String findRunningStatus(ScrappingFullDataDetailDto dto);
 	
-	
+	public int getScrappingFullDataManagmentProcessCount(int id);
 	
 
 }

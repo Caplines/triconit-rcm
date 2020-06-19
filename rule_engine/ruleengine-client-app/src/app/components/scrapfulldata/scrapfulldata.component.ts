@@ -21,9 +21,9 @@ export class ScrapFullDataComponent implements OnInit {
 
 	@HostListener('document:click', ['$event'])
 	  clickout(event) {
-		console.log(event.target);
-		console.log(event.target.className);
-		console.log(typeof event.target.className);
+		//console.log(event.target);
+		//console.log(event.target.className);
+		//console.log(typeof event.target.className);
 		
 		if (document.getElementById("data-scroll")){
 			if (event.target &&  event.target.className && (typeof event.target.className==='string')) {
@@ -58,6 +58,7 @@ export class ScrapFullDataComponent implements OnInit {
   showLoadingPAA:boolean =false;
   linkData:string="";
   rowCounter:number=1;
+  timerRef:any;	
   dateOptions: DatepickerOptions = {
 		minYear: 1850,
 		maxYear: 2030,  
@@ -160,28 +161,37 @@ export class ScrapFullDataComponent implements OnInit {
 	   this.showScrapMain=false;
 	   this.showLoadingPA=false;
 	   this.showLoadingPAA=false;
+	   this.showLoadingP=false;
    }
   
    parseSite(){
 	   this.linkData="";
+	   //console.log('this.timerRef');
+	   //console.log(this.timerRef);
+	   
+	   if (this.timerRef){
+		   clearTimeout(this.timerRef);
+	   }
 	   this.showLoadingP=true;
 	   this.showLoadingPA=true;
 	   this.showLoadingPAA=false;
 	   this.scrap.siteName=this.site.name;
 	   this.scrap.siteUrl=this.site.url;
-	   console.log(this.scrap.dto);
+	   //console.log(this.scrap.dto);
 	   if(this.validateData()){
 	   this.showLoadingPAA=true;
 	   this.applicationService.postData(this.scrap,"/parsefulldata",
 				(result)=>{
 					  if (result.status == 'OK') {
 						  //this.showLoadingPAA=false;
-						  this.showLoadingP=false;
+						  //this.showLoadingP=false;
 						  this.showLoadingPAA=true;
 						  this.showLoadingPA=false;
-						  console.log(result.data);
-						  if (result.data!='Started'){
+						  //console.log(result.data);
+						  if (result.data.indexOf('Started')<0){
 							  alert(result.data);
+						  }else{
+							  this.checkData(result.data.split("Started-")[1],1000*60*4);
 						  }
 						  /*if ( Object.keys(result.data)[0].indexOf("Scrapping Initiated - ")>-1){
 							    let links=Object.keys(result.data)[0].split("Scrapping Initiated - ")[1];
@@ -205,7 +215,7 @@ export class ScrapFullDataComponent implements OnInit {
 	  let ax:any=[];
 	  let x=0;
 	   for (let dt of dtoo){
-		   console.log(dt);
+		   //console.log(dt);
 		   dt.firstName= dt.firstName.trim();
 		   dt.lastName=dt.lastName.trim();
 		   dt.patientId=dt.patientId.trim();
@@ -232,7 +242,7 @@ export class ScrapFullDataComponent implements OnInit {
 		   dt.patientId==""  &&  dt.ssnNumber=="" &&
 		   dt.enrolleeId=="")){
 			 ax.push(dt);
-			 console.log(this.site.name);
+			 //console.log(this.site.name);
 			 if (this.site.name=='BCBS'){
 				 
 				 if(dt.dob==""){
@@ -261,7 +271,7 @@ export class ScrapFullDataComponent implements OnInit {
 		   }
 	   }	   
 	   if (ret)this.scrap.dto=ax;
-	   console.log(ret);
+	   //console.log(ret);
 	   return ret;
   }
   
@@ -272,6 +282,23 @@ export class ScrapFullDataComponent implements OnInit {
 	   let dtoo=this.scrap.dto;
 		dtoo[i].dob="";  
 	  
+  }
+  checkData(x,t){
+	  let ths=this;
+	  ths.timerRef=setTimeout(() => {
+		  ths.applicationService.postData({id:x},"/parsefulldataProcessInfo",
+					(result)=>{
+						  if (result.status == 'OK') {
+							  if (result.data==0){
+								  alert('Data Scrapped..!!');
+							  }else{
+								  ths.checkData(x,30*1000);
+							  }
+						}
+					 }
+					);
+		
+	}, t);
   }
   
 }

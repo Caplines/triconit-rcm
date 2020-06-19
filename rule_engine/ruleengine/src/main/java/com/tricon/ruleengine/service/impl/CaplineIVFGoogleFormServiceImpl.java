@@ -370,6 +370,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				List<CaplineIVFFormDto> c = map.get(ph.getPdid()+"");
 				for (CaplineIVFFormDto form : c) {
 					List<String> his = form.getHistory();
+					if (ph.getHistoryTooth()==null) ph.setHistoryTooth("");
+					if (ph.getHistorySurface()==null) ph.setHistorySurface("");
+					
 					String l = ((ph.getHistoryCode().equals("")) ? "BLANK" : ph.getHistoryCode()) + Constants.PATH_SEPERATOR_XML_IVF
 							+ ((ph.getHistoryTooth().equals("")) ? "BLANK" : ph.getHistoryTooth()) + Constants.PATH_SEPERATOR_XML_IVF
 							+ ((ph.getHistorySurface().equals("")) ? "BLANK" : ph.getHistorySurface())

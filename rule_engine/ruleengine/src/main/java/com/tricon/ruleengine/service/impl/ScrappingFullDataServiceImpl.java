@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,11 @@ import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
+import com.tricon.ruleengine.model.db.ScrappingSiteFullMaster;
 import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.service.ScrappingFullDataService;
 import com.tricon.ruleengine.service.scrapfull.impl.BCBSDnoaconnectImpl;
@@ -134,7 +137,13 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		//increase the count
 		manage.setProcessCount(manage.getProcessCount()+dto.getDto().size());
 		dataDoa.increasecrapCount(manage);
-		exMess=continueParsing?"Started":manage.getProcessCount()+" Scrap Procedures Already Running.\n Please wait till it finishes.";
+		ScrappingFullDataManagmentProcess manageP=  new ScrappingFullDataManagmentProcess();
+		manageP.setCount(dto.getDto().size());
+		manageP.setCreatedBy(user);
+		manageP.setCreatedDate(new Date());
+		int x=(int) dataDoa.createScrappingSiteManagementProcess(manageP);
+		exMess=continueParsing?("Started-"+x):manage.getProcessCount()+" Scrap Procedures Already Running.\n Please wait till it finishes.";
+		String taxId= dataDoa.getTaxmapping(off, "PPO");
 		try {
 			//update Status in Google Sheet about running a status
 			/*ConnectAndReadSheets.updateSheetMCNADentaRunStatus(dto.getSheetId(), dto.getSheetSubId(),
@@ -158,9 +167,9 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 					 /*map.put(ConstantsScrapping.SCRAPPING_INIT + dto.getSheetId() + ConstantsScrapping.NAME_Separator
 								+ dto.getSheetSubId(), null);*/
 					 System.out.println("';"+env.getProperty("google.chorme.driver"));
-					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off,env.getProperty("google.chorme.driver")));
+					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,env.getProperty("google.chorme.driver")));
 				  } else if (dto.getSiteName().equals("BCBS")) {
-					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off,env.getProperty("google.chorme.driver")));
+					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,env.getProperty("google.chorme.driver")));
 					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
 				  }
 				// exMess="Done"; 
@@ -182,6 +191,12 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		}
 		}
 		return exMess;
+	}
+
+	@Override
+	public int getScrappingFullDataManagmentProcessCount(int id) {
+		// TODO Auto-generated method stub
+		return dataDoa.getScrappingFullDataManagmentDataProcess(id).getCount();
 	}
 
 }

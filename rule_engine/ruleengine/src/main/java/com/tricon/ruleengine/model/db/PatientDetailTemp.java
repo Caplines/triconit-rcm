@@ -377,7 +377,7 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	private String partialDenturesD5213D5214FL;// CX
 
 	@Column(name = "interim_partial_dentures_d5214_fl", length = 50)
-	private String interimPartialDenturesD5214FL;// CY
+	private String interimPartialDenturesD5214FL;// CY this is for D5280
 
 	@Column(name = "bone_grafts_d7953_covered_with_ext", length = 50)
 	private String boneGraftsD7953CoveredWithEXT;// CZ

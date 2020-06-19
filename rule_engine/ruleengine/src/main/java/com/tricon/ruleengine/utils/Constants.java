@@ -300,6 +300,9 @@ public class Constants {
 	public static String SCRAPPING_ISSUE_FETCHING_CODE="CODE_ISSUE";
 	public static String SCRAPPING_MAIN_CONDTION_MET="MAIN_CON_MET";
 	
+	public static String NO_FREQUENCY="No Frequency";
+	
+	
 	
 	
 	
