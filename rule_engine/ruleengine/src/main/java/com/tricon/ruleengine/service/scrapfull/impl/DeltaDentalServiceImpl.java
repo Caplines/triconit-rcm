@@ -479,7 +479,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		// dtemp.setOrthoPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 90
 		dtemp.setOrthoMax(Constants.SCRAPPING_MANDATORY_WARNING);// 91
 		dtemp.setOrthoAgeLimit(Constants.SCRAPPING_MANDATORY_WARNING);// 92 benefit
-		//dtemp.setOrthoSubjectDeductible("");//93
+		//dtemp.setOrthoSubjectDeductible(""); //93
 		//dtemp.setFillingsBundling("");//94
 		//95 //96 //97 //99 //100 //101
 		// dtemp.setBridges1(Constants.SCRAPPING_MANDATORY_WARNING);// 102
@@ -543,17 +543,17 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		String ageLimtId = "";
 		dtemp.setInsName("Denta Dental of Tx");
 		dtemp.setInsContact("8005212227");
-		dtemp.setcSRName("Scraping Tool");
-		dtemp.setTaxId(taxId);
+		dtemp.setcSRName("Scraping Tool");//137
+		dtemp.setTaxId(taxId);//136
 		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));
 		for (WebElement divOffMax : divOfMaximum) {
 
 			try {
 
 				if (divOffMax.getAttribute("summary").equals("Benefits and Covered Services")) {
-					dtemp.setBasicWaitingPeriod("NA");// 20
-					dtemp.setMajorWaitingPeriod("NA");// 21
-					dtemp.setOrthoWaitingPeriod("NA");// 116
+					dtemp.setBasicWaitingPeriod("No");// 20
+					dtemp.setMajorWaitingPeriod("No");// 21
+					dtemp.setOrthoWaitingPeriod("No");// 116
 
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
@@ -638,8 +638,8 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 						try {
 							if (tr.getText().startsWith("Date of birth:")) {
 
-								List<WebElement> tds = tr.findElements(By.className("x26b"));//142
-								dtemp.setPolicyHolderDOB(tds.get(0).getText());
+								List<WebElement> tds = tr.findElements(By.className("x26b"));
+								dtemp.setPolicyHolderDOB(tds.get(0).getText());//146
 								String[] s = tds.get(0).getText().split("/");
 								try {
 									dtemp.setPolicyHolderDOB(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
@@ -746,7 +746,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 							} else {
 								dtemp.setPreventiveSubDed("No");// 118
 							}
-							if (tr.getText().contains("Preventive")) {
+							if (tr.getText().contains("Diagnostic")) {
 								dtemp.setDiagnosticSubDed("Yes");// 109
 							} else {
 								dtemp.setDiagnosticSubDed("No");// 109
