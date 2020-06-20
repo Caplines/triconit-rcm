@@ -1227,9 +1227,9 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		dtemp.setMajorPercentage(getBenefitProcedureValueFromMap("D2740", benefitContract, values, true));// 7
 
 		// 8
-		dtemp.setNightGuardsD9944Fr(getBenefitProcedureValueFromMap("D9944", benefitLimitation, values, true));// 19
+		dtemp.setNightGuardsD9944Fr(getBenefitProcedureValueFromMap("D9944", benefitLimitation, values, false));// 19
 
-		dtemp.setsSCD2930FL(getBenefitProcedureValueFromMap("D2930", benefitLimitation, values, true));// 22
+		dtemp.setsSCD2930FL(getBenefitProcedureValueFromMap("D2930", benefitLimitation, values, false));// 22
 
 		dtemp.setsSCD2931FL(getBenefitProcedureValueFromMap("D2931", benefitLimitation, values, true));// 23
 
