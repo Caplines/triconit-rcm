@@ -196,7 +196,7 @@ export class ReportComponent implements OnInit {
 		for(var r of ro){
 			var cells=r.cells;
 			for(var cell of cells){
-				console.log(cell.innerHTML);
+				//console.log(cell.innerHTML);
 				if (cell.innerHTML.indexOf("MAND.DAT.MISS")>-1  || 
 						cell.innerHTML.indexOf("NOTFOUND")>-1  || 
 						cell.innerHTML.indexOf("ISS.FETCH")>-1  ||

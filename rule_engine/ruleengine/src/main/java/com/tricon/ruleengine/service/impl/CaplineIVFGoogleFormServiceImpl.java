@@ -336,7 +336,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			pdId.add(dto.getId()+"");
 			dto.setPatDid(dto.getId().intValue());
 			dto.setBasicInfo1(off.getName());
-			if (!temp) {
+			if (!temp && !dto.getBasicInfo6().trim().equals("")) {
 				String[] s=dto.getBasicInfo6().trim().split("/");
 				 dto.setBasicInfo6(s[2]+"-"+(s[0].length()==2?s[0]:"0"+s[0])+"-"+(s[1].length()==2?s[1]:"0"+s[1]));
 			}

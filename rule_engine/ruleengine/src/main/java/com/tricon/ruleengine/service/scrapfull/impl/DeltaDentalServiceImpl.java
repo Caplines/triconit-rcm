@@ -191,19 +191,24 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 								manageP.setCount(manageP.getCount() - 1);
 								manageP.setUpdatedBy(user);
 								manageP.setUpdatedDate(new Date());
+								try {
+								Thread.sleep(1000);
 								dataDoa.updateScrappingFullDataManagmentProcess(manageP);
 								if (manage.getProcessCount() > 0) {
 									manage.setProcessCount(manage.getProcessCount() - 1);
 									dataDoa.increasecrapCount(manage);
 								}
-
+								Thread.sleep(1000);
 								dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
+								}catch (Exception e) {
+									e.printStackTrace();
+								}
 							}
 						}
 					};
 
 					thread.start();
-					Thread.sleep(10000);
+					Thread.sleep(15000);
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -545,7 +550,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		dtemp.setInsContact("8005212227");
 		dtemp.setcSRName("Scraping Tool");//137
 		dtemp.setTaxId(taxId);//136
-		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));
+		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));//145
 		for (WebElement divOffMax : divOfMaximum) {
 
 			try {
@@ -805,7 +810,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 							try {
 							
 							List<WebElement> tds = tr.findElements(By.className("x264"));
-							dtemp.setPlanDependentsCoveredtoAge(tds.get(0).getText());// 127
+							dtemp.setPlanDependentsCoveredtoAge(tds.get(0).getText().replace("(Division has no rule)", "").trim());// 127
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -844,13 +849,13 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 				
 			}
 		}
-		if (ageLimtId.equals("")) {
+		if (!ageLimtId.equals("")) {
 			try {
-				List<WebElement> aas = driver.findElement(By.id("ageLimtId")).findElements(By.tagName("a"));
+				List<WebElement> aas = driver.findElement(By.id(ageLimtId)).findElements(By.tagName("a"));
 				for (WebElement aa : aas) {
 					if (aa.getText() != null && aa.getText().equals("Click here")) {
 						aa.click();
-						Thread.sleep(3000);
+						Thread.sleep(15000);
 						List<WebElement> tabs = driver.findElements(By.tagName("table"));
 						try {
 							for (WebElement tab : tabs) {
@@ -883,7 +888,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		openSideBarFirst(driver, "Benefit details", true,
 				new String[] { "Endodontics", "Periodontics", "Preventive", "Diagnostic","Prosthodontics; Removable" }, true, temp);
 		
-		dtemp.setEndodonticsPercentage(fetchBenefitDetails("", temp, driver, "", "Prosthodontics; Removable",
+		dtemp.setMajorPercentage(fetchBenefitDetails("", temp, driver, "", "Prosthodontics; Removable",
 				"", planType, false, true));// 7
 		
 		
@@ -909,7 +914,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		HashMap<String, String> values = new HashMap<>();
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 51, 52
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 50, 51, 52
 		dt.setMandatory(new boolean[] { false, false });
 		benefitInfoMap.put("D4910", dt);// a
 
@@ -925,8 +930,8 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		//////////////////////////////////////
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 7 81 82
-		dt.setMandatory(new boolean[] { true, true });
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 81 82
+		dt.setMandatory(new boolean[] { false, false });
 		benefitInfoMap.put("D2740", dt);// d
 
 		dt = new DentaBenefitScrapDto();
@@ -1013,38 +1018,41 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		benefitInfoMap.put("D1206", dt);// g
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract, benefitAgeLimit, benefitLimitation });// 37 38 39 40 41 42
+		dt.setTypes(new String[] { benefitContract, benefitAgeLimit, benefitLimitation });// 37 38 39 40 41 42 43
 		dt.setMandatory(new boolean[] { false, false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D1351", dt);// h
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitLimitation });// 43
+		dt.setTypes(new String[] { benefitLimitation });// 44
 		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D1110", dt);// i
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitLimitation });// 44
+		dt.setTypes(new String[] { benefitLimitation });// 45
 		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D1120", dt);// j
 
 		fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info);// call for second 10
 		benefitInfoMap = new HashMap<>();
-		// 45
+		// 46
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 47 48 49
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 47 48 
 		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D4341", dt);// a
 
+		//49 50  (51  and 52 are downward)
 		// 53
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 54 55
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 53 54
 		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D4355", dt);// b
+		
+		//55 56 upwards
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract });// 57
@@ -1119,8 +1127,9 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		dt.setTypes(new String[] { benefitLimitation });// 71
 		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
-		benefitInfoMap.put("D5214", dt);// d
+		benefitInfoMap.put("D5820", dt);// d
 
+		//72
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitLimitation });// 73
 		dt.setMandatory(new boolean[] { false });
@@ -1152,7 +1161,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		benefitInfoMap.put("D6065", dt);// i
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract });// 105
+		dt.setTypes(new String[] { benefitContract });// 114
 		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D9945", dt);// j
@@ -1161,6 +1170,7 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		benefitInfoMap = new HashMap<>();
 
 		// 80
+		
 		// 83
 		// 84
 
@@ -1177,10 +1187,9 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		benefitInfoMap.put("D2950", dt);// b
 
 		// 89
-		// 93
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract });// 90
-		dt.setMandatory(new boolean[] { true });
+		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
 		benefitInfoMap.put("D8090", dt);// c
 
@@ -1213,6 +1222,12 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		dt.setAge(age);
 		benefitInfoMap.put("D9945", dt);// g
 
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 51 52 53
+		dt.setMandatory(new boolean[] { false, false });
+		dt.setAge(age);
+		benefitInfoMap.put("D4910", dt);// i
+
 		// 117
 		// 119
 		// 123 124 125 126
@@ -1224,92 +1239,99 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dtemp.setBasicPercentage(getBenefitProcedureValueFromMap("D2391", benefitContract, values, true));// 5
 		
-		dtemp.setMajorPercentage(getBenefitProcedureValueFromMap("D2740", benefitContract, values, true));// 7
-
-		// 8
+				// 8
 		dtemp.setNightGuardsD9944Fr(getBenefitProcedureValueFromMap("D9944", benefitLimitation, values, false));// 19
 
 		dtemp.setsSCD2930FL(getBenefitProcedureValueFromMap("D2930", benefitLimitation, values, false));// 22
 
-		dtemp.setsSCD2931FL(getBenefitProcedureValueFromMap("D2931", benefitLimitation, values, true));// 23
+		dtemp.setsSCD2931FL(getBenefitProcedureValueFromMap("D2931", benefitLimitation, values, false));// 23
 
-		dtemp.setExamsD0120FL(getBenefitProcedureValueFromMap("D0120", benefitLimitation, values, true));// 24
+		dtemp.setExamsD0120FL(getBenefitProcedureValueFromMap("D0120", benefitLimitation, values, false));// 24
 
-		dtemp.setExamsD0140FL(getBenefitProcedureValueFromMap("D0140", benefitLimitation, values, true));// 25
+		dtemp.setExamsD0140FL(getBenefitProcedureValueFromMap("D0140", benefitLimitation, values, false));// 25
 
-		dtemp.seteExamsD0145FL(getBenefitProcedureValueFromMap("D0145", benefitLimitation, values, true));// 26
+		dtemp.seteExamsD0145FL(getBenefitProcedureValueFromMap("D0145", benefitLimitation, values, false));// 26
 
-		dtemp.setExamsD0150FL(getBenefitProcedureValueFromMap("D0150", benefitLimitation, values, true));// 28
+		dtemp.setExamsD0150FL(getBenefitProcedureValueFromMap("D0150", benefitLimitation, values, false));// 27
 
-		dtemp.setxRaysPAD0220FL(getBenefitProcedureValueFromMap("D0220", benefitLimitation, values, true));// 29
+		dtemp.setxRaysBWSFL(getBenefitProcedureValueFromMap("D0272", benefitLimitation, values, false));// 28
 
-		dtemp.setxRaysPAD0230FL(getBenefitProcedureValueFromMap("D0230", benefitLimitation, values, true));// 30
+		dtemp.setxRaysPAD0220FL(getBenefitProcedureValueFromMap("D0220", benefitLimitation, values, false));// 29
 
-		dtemp.setxRaysFMXFL(getBenefitProcedureValueFromMap("D0230", benefitLimitation, values, true));// 31
+		dtemp.setxRaysPAD0230FL(getBenefitProcedureValueFromMap("D0230", benefitLimitation, values, false));// 30
+
+		dtemp.setxRaysFMXFL(getBenefitProcedureValueFromMap("D0210", benefitLimitation, values, false));// 31
 		// 32
 
-		dtemp.setFlourideD1208FL(getBenefitProcedureValueFromMap("D1208", benefitLimitation, values, true));// 33
+		dtemp.setFlourideD1208FL(getBenefitProcedureValueFromMap("D1208", benefitLimitation, values, false));// 33
 
-		dtemp.setFlourideAgeLimit(getBenefitProcedureValueFromMap("D1208", benefitAgeLimit, values, true));// 34
+		dtemp.setFlourideAgeLimit(getBenefitProcedureValueFromMap("D1208", benefitAgeLimit, values, false));// 34
 
-		dtemp.setVarnishD1206FL(getBenefitProcedureValueFromMap("D1206", benefitLimitation, values, true));// 35
+		dtemp.setVarnishD1206FL(getBenefitProcedureValueFromMap("D1206", benefitLimitation, values, false));// 35
 
-		dtemp.setVarnishD1206AgeLimit(getBenefitProcedureValueFromMap("D1206", benefitAgeLimit, values, true));// 36
+		dtemp.setVarnishD1206AgeLimit(getBenefitProcedureValueFromMap("D1206", benefitAgeLimit, values, false));// 36
 
-		dtemp.setSealantsD1351Percentage(getBenefitProcedureValueFromMap("D1351", benefitContract, values, true));// 37
+		dtemp.setSealantsD1351Percentage(getBenefitProcedureValueFromMap("D1351", benefitContract, values, false));// 37
 
-		dtemp.setSealantsD1351FL(getBenefitProcedureValueFromMap("D1351", benefitContract, values, true));// 38
+		dtemp.setSealantsD1351FL(getBenefitProcedureValueFromMap("D1351", benefitContract, values, false));// 38
 
-		dtemp.setSealantsD1351AgeLimit(getBenefitProcedureValueFromMap("D1351", benefitAgeLimit, values, true));// 39
+		dtemp.setSealantsD1351AgeLimit(getBenefitProcedureValueFromMap("D1351", benefitAgeLimit, values, false));// 39
 
-		String lim = getBenefitProcedureValueFromMap("D1351", benefitLimitation + "_TOOTH", values, true);
+		String lim = getBenefitProcedureValueFromMap("D1351", benefitLimitation + "_TOOTH", values, false);
 		System.out.println("LIMITS--" + lim);
 		if (lim != null)
 			lim = lim.replace(" ", "");
 		dtemp.setSealantsD1351PrimaryMolarsCovered(FreqencyUtils.checkForteehIntext(siteName, lim, "A,B,I,J,K,L,S,T"));// 40
-		dtemp.setSealantsD1351PrimaryMolarsCovered(
+		dtemp.setSealantsD1351PreMolarsCovered(
 				FreqencyUtils.checkForteehIntext(siteName, lim, "4,5,12,13,20,21,28,29"));// 41
 		dtemp.setSealantsD1351PermanentMolarsCovered(
-				FreqencyUtils.checkForteehIntext(siteName, lim, "2,3,14,15,18,19,30,31"));// 42
+				FreqencyUtils.checkForteehIntext(siteName, lim, "1,2,3,14,15,16,17,18,19,30,31,32"));// 42
 
-		dtemp.setProphyD1110FL(getBenefitProcedureValueFromMap("D1110", benefitLimitation, values, true));// 43
+		dtemp.setProphyD1110FL(getBenefitProcedureValueFromMap("D1110", benefitLimitation, values, false));// 43
+
+		dtemp.setProphyD1120FL(getBenefitProcedureValueFromMap("D1110", benefitLimitation, values, false));// 44
 		// 45
-		dtemp.setsRPD4341Percentage(getBenefitProcedureValueFromMap("D1120", benefitContract, values, true));// 46
+		dtemp.setsRPD4341Percentage(getBenefitProcedureValueFromMap("D1120", benefitContract, values, false));// 46
 
-		dtemp.setsRPD4341FL(getBenefitProcedureValueFromMap("D4341", benefitLimitation, values, true));// 47
-
-		// dtemp.setsRPD4341QuadsPerDay(getBenefitProcedureValueFromMap("D4341",
-		// benefitLimitation, values, true));// 48
+		dtemp.setsRPD4341Percentage(getBenefitProcedureValueFromMap("D4341", benefitContract, values, false));// 47
+		
+		dtemp.setsRPD4341FL(getBenefitProcedureValueFromMap("D4341", benefitLimitation, values, false));// 48
+		
 		// 49
 		dtemp.setPerioMaintenanceD4910Percentage(
-				getBenefitProcedureValueFromMap("D4910", benefitContract, values, true));// 50
+				getBenefitProcedureValueFromMap("D4910", benefitContract, values, false));// 50
 
-		dtemp.setPerioMaintenanceD4910Percentage(
-				getBenefitProcedureValueFromMap("D4910", benefitLimitation, values, true));// 51
-		// 52
-		dtemp.setFMDD4355Percentage(getBenefitProcedureValueFromMap("D4355", benefitContract, values, true));// 53
+		dtemp.setPerioMaintenanceD4910FL(getBenefitProcedureValueFromMap("D4910", benefitLimitation, values, false));// 51
 
-		dtemp.setfMDD4355FL(getBenefitProcedureValueFromMap("D4355", benefitLimitation, values, true));// 54
+		String cd=getBenefitProcedureValueFromMap("D4910", benefitLimitation, values, false);
+		if (cd.contains("D1110") ||  cd.contains("D1120")) cd="Yes";
+		else cd="No";
+		
+		dtemp.setPerioMaintenanceD4910AltWProphyD0110(cd);// 52
 
-		dtemp.setGingivitisD4346Percentage(getBenefitProcedureValueFromMap("D4346", benefitContract, values, true));// 55
+		dtemp.setFMDD4355Percentage(getBenefitProcedureValueFromMap("D4355", benefitContract, values, false));// 53
 
-		dtemp.setGingivitisD4346FL(getBenefitProcedureValueFromMap("D4346", benefitLimitation, values, true));// 56
+		dtemp.setfMDD4355FL(getBenefitProcedureValueFromMap("D4355", benefitLimitation, values, false));// 54
 
-		dtemp.setNitrousD9230Percentage(getBenefitProcedureValueFromMap("D9230", benefitContract, values, true));// 57
+		dtemp.setGingivitisD4346Percentage(getBenefitProcedureValueFromMap("D4346", benefitContract, values, false));// 55
 
-		dtemp.setiVSedationD9243Percentage(getBenefitProcedureValueFromMap("D9243", benefitContract, values, true));// 58
+		dtemp.setGingivitisD4346FL(getBenefitProcedureValueFromMap("D4346", benefitLimitation, values, false));// 56
 
-		dtemp.setiVSedationD9248Percentage(getBenefitProcedureValueFromMap("D9248", benefitContract, values, true));// 59
+		dtemp.setNitrousD9230Percentage(getBenefitProcedureValueFromMap("D9230", benefitContract, values, false));// 57
 
-		dtemp.setExtractionsMinorPercentage(getBenefitProcedureValueFromMap("D7210", benefitContract, values, true));// 60
+		dtemp.setiVSedationD9243Percentage(getBenefitProcedureValueFromMap("D9243", benefitContract, values, false));// 58
 
-		dtemp.setExtractionsMajorPercentage(getBenefitProcedureValueFromMap("D7240", benefitContract, values, true));// 61
+		dtemp.setiVSedationD9248Percentage(getBenefitProcedureValueFromMap("D9248", benefitContract, values, false));// 59
 
-		dtemp.setCrownLengthD4249Percentage(getBenefitProcedureValueFromMap("D4249", benefitContract, values, true));// 62
+		dtemp.setExtractionsMinorPercentage(getBenefitProcedureValueFromMap("D7210", benefitContract, values, false));// 60
 
-		dtemp.setCrownLengthD4249FL(getBenefitProcedureValueFromMap("D4249", benefitLimitation, values, true));// 63
+		dtemp.setExtractionsMajorPercentage(getBenefitProcedureValueFromMap("D7240", benefitContract, values, false));// 61
 
-		lim = getBenefitProcedureValueFromMap("D7311", benefitAlveoloplasty, values, true);
+		dtemp.setCrownLengthD4249Percentage(getBenefitProcedureValueFromMap("D4249", benefitContract, values, false));// 62
+
+		dtemp.setCrownLengthD4249FL(getBenefitProcedureValueFromMap("D4249", benefitLimitation, values, false));// 63
+
+		lim = getBenefitProcedureValueFromMap("D7311", benefitAlveoloplasty, values, false);
 		if (lim.toLowerCase().contains("alveoloplasty in conjunction with extractions"))
 			lim = "Yes";
 		else
@@ -1317,9 +1339,9 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dtemp.setAlveoD7311CoveredWithEXT(lim);// 64
 
-		dtemp.setAlveoD7311FL(getBenefitProcedureValueFromMap("D7311", benefitLimitation, values, true));// 65
+		dtemp.setAlveoD7311FL(getBenefitProcedureValueFromMap("D7311", benefitLimitation, values, false));// 65
 
-		lim = getBenefitProcedureValueFromMap("D7310", benefitAlveoloplasty, values, true);
+		lim = getBenefitProcedureValueFromMap("D7310", benefitAlveoloplasty, values, false);
 		if (lim.toLowerCase().contains("alveoloplasty in conjunction with extractions"))
 			lim = "Yes";
 		else
@@ -1327,67 +1349,82 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 
 		dtemp.setAlveoD7310CoveredWithEXT(lim);// 66
 
-		dtemp.setAlveoD7310FL(getBenefitProcedureValueFromMap("D7311", benefitLimitation, values, true));// 67
+		dtemp.setAlveoD7310FL(getBenefitProcedureValueFromMap("D7310", benefitLimitation, values, false));// 67
 
 		dtemp.setCompleteDenturesD5110D5120FL(
-				getBenefitProcedureValueFromMap("D5110", benefitLimitation, values, true));// 68
+				getBenefitProcedureValueFromMap("D5110", benefitLimitation, values, false));// 68
 
 		dtemp.setImmediateDenturesD5130D5140FL(
-				getBenefitProcedureValueFromMap("D5130", benefitLimitation, values, true));// 69
+				getBenefitProcedureValueFromMap("D5130", benefitLimitation, values, false));// 69
 
-		dtemp.setPartialDenturesD5213D5214FL(getBenefitProcedureValueFromMap("D5213", benefitLimitation, values, true));// 70
+		dtemp.setPartialDenturesD5213D5214FL(getBenefitProcedureValueFromMap("D5213", benefitLimitation, values, false));// 70
 
 		dtemp.setInterimPartialDenturesD5214FL(
-				getBenefitProcedureValueFromMap("D5214", benefitLimitation, values, true));// 71
+				getBenefitProcedureValueFromMap("D5820", benefitLimitation, values, false));// 71 	This field is actually for the frequency of D5820 and not D5214. The header of the column in the RDBMS was labeled incorrectly."
 		// 72
-		dtemp.setBoneGraftsD7953FL(getBenefitProcedureValueFromMap("D7953", benefitLimitation, values, true));// 73
+		dtemp.setBoneGraftsD7953FL(getBenefitProcedureValueFromMap("D7953", benefitLimitation, values, false));// 73
 
 		dtemp.setImplantCoverageD6010Percentage(
-				getBenefitProcedureValueFromMap("D6010", benefitContract, values, true));// 74
+				getBenefitProcedureValueFromMap("D6010", benefitContract, values, false));// 74
+
+		dtemp.setImplantCoverageD6057Percentage(
+				getBenefitProcedureValueFromMap("D6057", benefitContract, values, false));// 75
 
 		dtemp.setImplantCoverageD6190Percentage(
-				getBenefitProcedureValueFromMap("D6057", benefitContract, values, true));// 75
-
-		dtemp.setImplantCoverageD6190Percentage(
-				getBenefitProcedureValueFromMap("D6190", benefitContract, values, true));// 76
+				getBenefitProcedureValueFromMap("D6190", benefitContract, values, false));// 76
 
 		dtemp.setImplantSupportedPorcCeramicD6065Percentage(
-				getBenefitProcedureValueFromMap("D6065", benefitContract, values, true));// 77
+				getBenefitProcedureValueFromMap("D6065", benefitContract, values, false));// 77
 
-		dtemp.setPostCompositesD2391Percentage(getBenefitProcedureValueFromMap("D2391", benefitContract, values, true));// 78
+		dtemp.setPostCompositesD2391Percentage(getBenefitProcedureValueFromMap("D2391", benefitContract, values, false));// 78
 
-		dtemp.setPostCompositesD2391FL(getBenefitProcedureValueFromMap("D2391", benefitLimitation, values, true));// 79
+		dtemp.setPostCompositesD2391FL(getBenefitProcedureValueFromMap("D2391", benefitLimitation, values, false));// 79
 		// 80
-		dtemp.setCrownsD2750D2740Percentage(getBenefitProcedureValueFromMap("D2740", benefitContract, values, true));// 81
+		dtemp.setCrownsD2750D2740Percentage(getBenefitProcedureValueFromMap("D2740", benefitContract, values, false));// 81
 
-		dtemp.setCrownsD2750D2740FL(getBenefitProcedureValueFromMap("D2740", benefitLimitation, values, true));// 82
+		dtemp.setCrownsD2750D2740FL(getBenefitProcedureValueFromMap("D2740", benefitLimitation, values, false));// 82
 		// 83 84
 
-		dtemp.setD9310Percentage(getBenefitProcedureValueFromMap("D9310", benefitContract, values, true));// 85
+		dtemp.setD9310Percentage(getBenefitProcedureValueFromMap("D9310", benefitContract, values, false));// 85
 
-		dtemp.setD9310FL(getBenefitProcedureValueFromMap("D9310", benefitLimitation, values, true));// 86
+		dtemp.setD9310FL(getBenefitProcedureValueFromMap("D9310", benefitLimitation, values, false));// 86
 
-		dtemp.setBuildUpsD2950Covered(getBenefitProcedureValueFromMap("D2950", benefitContract, values, true));// 87
+		dtemp.setBuildUpsD2950Covered(getBenefitProcedureValueFromMap("D2950", benefitContract, values, false));// 87
 
-		dtemp.setBuildUpsD2950FL(getBenefitProcedureValueFromMap("D2950", benefitLimitation, values, true));// 88
+		dtemp.setBuildUpsD2950FL(getBenefitProcedureValueFromMap("D2950", benefitLimitation, values, false));// 88
 		// 89
-		dtemp.setOrthoPercentage(getBenefitProcedureValueFromMap("D8090", benefitContract, values, true));// 90
+		dtemp.setOrthoPercentage(getBenefitProcedureValueFromMap("D8090", benefitContract, values, false));// 90
 
-		// 91 qweawe
-
-		dtemp.setOrthoAgeLimit(getBenefitProcedureValueFromMap("D8090", benefitAgeLimit, values, true));// 92
 		// 93
-		dtemp.setBridges1(getBenefitProcedureValueFromMap("D6245", benefitContract, values, true));// 94
+		dtemp.setBridges1(getBenefitProcedureValueFromMap("D6245", benefitContract, values, false));// 102
 
-		dtemp.setBridges2(getBenefitProcedureValueFromMap("D6245", benefitLimitation, values, true));// 95
-		// 96 97 98 99 100 101 102 103 104 105
-		dtemp.setNightGuardsD9945Percentage(getBenefitProcedureValueFromMap("D9945", benefitContract, values, true));// 105
+		dtemp.setBridges2(getBenefitProcedureValueFromMap("D6245", benefitLimitation, values, false));// 103
+		// 96 97 98 99 100 101 102 103 104
+		
+		dtemp.setDen5225Per(getBenefitProcedureValueFromMap("D5225", benefitContract, values, false));// 105
+		
+		dtemp.setDen5226Per(getBenefitProcedureValueFromMap("D5226", benefitContract, values, false));//107
+        
+		dtemp.setDenf5225FR(getBenefitProcedureValueFromMap("D5225", benefitLimitation, values, false));// 106
+		
+		dtemp.setDenf5226Fr(getBenefitProcedureValueFromMap("D5226", benefitLimitation, values, false));//108
+		
+		dtemp.setImplantsFrD6010(getBenefitProcedureValueFromMap("D6010", benefitLimitation, values, false));//110
+		
+		dtemp.setImplantsFrD6057(getBenefitProcedureValueFromMap("D6057", benefitLimitation, values, false));//111
+		
+		dtemp.setImplantsFrD6065(getBenefitProcedureValueFromMap("D6065", benefitLimitation, values, false));//112
+		
+		dtemp.setImplantsFrD6190(getBenefitProcedureValueFromMap("D6190", benefitLimitation, values, false));//113
+		
+		dtemp.setNightGuardsD9945Percentage(getBenefitProcedureValueFromMap("D9945", benefitContract, values, false));//114
+		
+		dtemp.setFmxPer(getBenefitProcedureValueFromMap("D0210", benefitContract, values, false));// 120
 
-		// 108 110
+		dtemp.setNightGuardsD9944Fr(getBenefitProcedureValueFromMap("D9944", benefitLimitation, values, false));//121
 
-		dtemp.setFmxPer(getBenefitProcedureValueFromMap("D0210", benefitContract, values, true));// 111
-
-		// CHECK FOR FREQENCY CORRECT LOGIC....
+		dtemp.setNightGuardsD9945Fr(getBenefitProcedureValueFromMap("D9945", benefitLimitation, values, false));//122
+        // CHECK FOR FREQENCY CORRECT LOGIC....
 
 		// By default we have Diagnostic open..
 		// //template1:r1:1:r1:1:r1:0:t1:3:commandLink1

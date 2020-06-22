@@ -378,13 +378,14 @@
 							<span class="newff">{{reportDataInd.policy15}}</span></td>
 						<td>Coverage Book: <span class="newff">{{reportDataInd.policy16}}</span></td>
 					</tr>
+					<!-- 
 					<tr>
 						<td>Dependents Covered to age: <span class="newff">{{reportDataInd.policy11}}</span></td>
 						<td>Pre-D Mandatory.: <span class="newff">{{reportDataInd.policy12}}</span></td>
 						<td colspan="2"></td>
 					</tr>
 
-
+                   -->
 
 				</table>
 
@@ -758,12 +759,12 @@
 				<table class="table table-bordered table-striped">
 					<tr>
 						<th>ADA Code</th>
-						<th>Tooth No.</th>
+						<th>Tooth No.- Surface</th>
 						<th>DOS</th>
 					</tr>
 					<tr *ngFor="let c of reportDataInd.hdto">
 						<td><span class="newff">{{c.historyCode}}</span></td>
-						<td><span class="newff">{{c.historyTooth}} {{c.surfaceTooth}}</span></td>
+						<td><span class="newff">{{c.historyTooth}}</span></td>
 						<td><span class="newff">{{c.historyDos}}</span></td>
 					</tr>
 				</table>

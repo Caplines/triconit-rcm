@@ -204,7 +204,9 @@ export class ScrapFullDataComponent implements OnInit {
 				);
 	      }else{
 	    	   this.showLoadingPA=false;
+	    	   this.showLoadingP=false;
 	   	       this.showLoadingPAA=false;
+	   	   
 	      }
         }
    
@@ -255,6 +257,30 @@ export class ScrapFullDataComponent implements OnInit {
 					 
 					 ret =false;
 				 }
+			 }
+			 //console.log("--"+this.site.name+"--");
+             if (this.site.name=='Delta Dental'){
+				 
+				 if(dt.dob==""){
+					 document.getElementById("patd"+x).setAttribute("style", "border-color: red;");
+					 ret =false;
+				 }
+				 if(dt.firstName==""){
+					 document.getElementById("patf"+x).setAttribute("style", "border-color: red;");
+					 ret =false;
+				 }
+				 if(dt.lastName==""){
+					 document.getElementById("patl"+x).setAttribute("style", "border-color: red;");
+					 ret =false;
+				 }
+				 /*
+				 if(dt.memberId=="" && dt.ssnNumber==""){
+					 document.getElementById("patss"+x).setAttribute("style", "border-color: red;");
+					 document.getElementById("patmem"+x).setAttribute("style", "border-color: red;");
+					 
+					 ret =false;
+				 }
+				 */
 			 } 
 			 
 		 }
@@ -269,7 +295,15 @@ export class ScrapFullDataComponent implements OnInit {
 		    if (document.getElementById("patmem"+0))document.getElementById("patmem"+0).setAttribute("style", "border-color: red;");
 		    ret =false;
 		   }
-	   }	   
+	   }
+	   if (ax.length==0){
+		   if (this.site.name=='Delta Dental'){
+		    if (document.getElementById("patd"+0))document.getElementById("patd"+0).setAttribute("style", "border-color: red;");
+		    if (document.getElementById("patf"+0))document.getElementById("patf"+0).setAttribute("style", "border-color: red;");
+		    if (document.getElementById("patl"+0))document.getElementById("patl"+0).setAttribute("style", "border-color: red;");
+		    ret =false;
+		   }
+	   }
 	   if (ret)this.scrap.dto=ax;
 	   //console.log(ret);
 	   return ret;
