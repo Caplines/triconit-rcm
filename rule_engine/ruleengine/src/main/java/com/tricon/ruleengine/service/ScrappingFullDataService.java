@@ -12,7 +12,7 @@ public interface ScrappingFullDataService {
 	
 	public List<ScrappingFullDataDto> getSiteNames();
 	
-	public ScrappingFullDataDetailDto getScrappingDetails(int siteId, String  offId);
+	public ScrappingFullDataDetailDto getScrappingDetails(int siteId, String  offId,String userName);
 	
 	public String parseFullDataAndSaveDetails(ScrappingFullDataDetailDto dto,String userName);
 	

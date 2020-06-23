@@ -10,6 +10,7 @@ import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
+import com.tricon.ruleengine.model.db.ScrappingSiteFullMaster;
 
 public interface ScrapingFullDataDoa {
 
@@ -26,7 +27,7 @@ public interface ScrapingFullDataDoa {
 	
 	public void updateScrappingDetailsById(ScrappingSiteDetailsFull sdFull);
 	
-	public int findMaxProxyPort(int siteDetailId);
+	public int findMaxProxyPortScrappinSiteDetailsFull();
 	
 	public void updateScrappingSiteRunningStatusAll();
 	
@@ -46,5 +47,6 @@ public interface ScrapingFullDataDoa {
 	
 	public String  getTaxmapping(Office office,String type);
 	
+	public ScrappingSiteFullMaster getScrappingSiteFullMaster(int scrapSiteId);
 	
 }

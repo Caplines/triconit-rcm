@@ -108,8 +108,9 @@ public class ScrappingController {
 	@RequestMapping(value = "/getsitedetailstoparsefulldata", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Object> getSiteDetailstoParseFulldata(@RequestBody ScrappingFullDataDetailDto dto)  {
 		ScrappingFullDataDetailDto data=null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		try {
-			data = fullService.getScrappingDetails(dto.getSiteId(),dto.getOfficeId());
+			data = fullService.getScrappingDetails(dto.getSiteId(),dto.getOfficeId(),authentication.getName());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

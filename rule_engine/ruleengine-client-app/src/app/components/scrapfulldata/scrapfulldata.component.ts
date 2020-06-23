@@ -49,6 +49,7 @@ export class ScrapFullDataComponent implements OnInit {
   offid:string="";
   siteIn:string="";
   site:any;
+  oName:string="";	
   showLoading: boolean = false;
   sites:any;
   showScrapMain:boolean = false;
@@ -94,13 +95,16 @@ export class ScrapFullDataComponent implements OnInit {
 			   this.site=val;
 			   this.site.full=val.name+"("+val.url+")";
 			   this.site.name=val.name;
-		   }
+			}
 		   
 		 }
+	  
 	}
    
    fetchDetails(){
 	   if (this.siteIn!='' && this.offid!=''){
+	   this.oName = this.offices.filter(o => o.uuid === this.offid)[0].name;
+	   console.log(this.oName);
 	   this.showLoadingD=true;
 	   this.showLoadingP=true;
        let d={'siteId':this.siteIn,'officeId':this.offid};

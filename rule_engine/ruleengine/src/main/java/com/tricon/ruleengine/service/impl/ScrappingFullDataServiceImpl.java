@@ -31,6 +31,7 @@ import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.service.ScrappingFullDataService;
 import com.tricon.ruleengine.service.scrapfull.impl.BCBSDnoaconnectImpl;
 import com.tricon.ruleengine.service.scrapfull.impl.DeltaDentalServiceImpl;
+import com.tricon.ruleengine.service.scrapfull.impl.UnitedConcordiaImpl;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.ConstantsScrapping;
 
@@ -68,9 +69,36 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 	}
 
 	@Override
-	public ScrappingFullDataDetailDto getScrappingDetails(int siteId,String offId) {
+	public ScrappingFullDataDetailDto getScrappingDetails(int siteId,String offId,String userName) {
 		
-		return dataDoa.getScrappingDetails(siteId,offDoa.getOfficeByUuid(offId));
+		ScrappingFullDataDetailDto d = dataDoa.getScrappingDetails(siteId,offDoa.getOfficeByUuid(offId));
+		if (d!=null) return d;
+		else {
+			//Save if office not There...
+			User user = userDao.findUserByUsername(userName);
+			Office off=officeDao.getOfficeByUuid(offId);
+			ScrappingSiteDetailsFull fd=new ScrappingSiteDetailsFull();
+			ScrappingSiteFull f=dataDoa.findScrappingSiteFullById(siteId);
+			int port = dataDoa.findMaxProxyPortScrappinSiteDetailsFull();
+			ScrappingSiteFullMaster master= dataDoa.getScrappingSiteFullMaster(siteId);
+			fd.setMaster(master);
+			if (port==0) port = 9500;
+			else port=port+1;
+			
+			fd.setCreatedBy(user);
+			fd.setUserName("");
+//			fd.setGoogleSheetId(dto.getSheetId());
+//			fd.setGoogleSheetName(off.getName());
+//			fd.setGoogleSubId(dto.getSheetSubId());
+			fd.setOffice(off);
+			fd.setPassword("");
+			fd.setScrappingSite(f);
+			fd.setProxyPort(port+"");
+			fd.setRunning(true);
+			int x= (Integer) dataDoa.saveScrappingDetailsById(fd);
+			d=dataDoa.getScrappingDetails(siteId,offDoa.getOfficeByUuid(offId));
+			return d;
+		}
 
 	}
 
@@ -83,7 +111,7 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 	@Override
 	public String parseFullDataAndSaveDetails(ScrappingFullDataDetailDto dto,String userName) {
 		
-		Map<String, List<?>> map = new HashMap<>();
+		//Map<String, List<?>> map = new HashMap<>();
 		// TODO Auto-generated method stub
 		User user = userDao.findUserByUsername(userName);
 		boolean continueParsing=false;
@@ -95,7 +123,7 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		if (full==null) {
 			ScrappingSiteDetailsFull fd=new ScrappingSiteDetailsFull();
 			ScrappingSiteFull f=dataDoa.findScrappingSiteFullById(dto.getSiteId());
-			int port = dataDoa.findMaxProxyPort(dto.getSiteDetailId());
+			int port = dataDoa.findMaxProxyPortScrappinSiteDetailsFull();
 			if (port==0) port = 9500;
 			else port=port+1;
 			
@@ -171,7 +199,11 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 				  } else if (dto.getSiteName().equals("BCBS")) {
 					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,env.getProperty("google.chorme.driver")));
 					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
+				  }else if (dto.getSiteName().equals("United Concordia")) {
+					  service.submit(new UnitedConcordiaImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,env.getProperty("google.chorme.driver")));
+					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
 				  }
+				 
 				// exMess="Done"; 
 				}
 		}

@@ -22,6 +22,7 @@ import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
+import com.tricon.ruleengine.model.db.ScrappingSiteFullMaster;
 import com.tricon.ruleengine.model.db.TaxMapping;
 
 @Repository
@@ -115,7 +116,7 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 	}
 
 	@Override
-	public int findMaxProxyPort(int siteDetailId) {
+	public int findMaxProxyPortScrappinSiteDetailsFull() {
 		
 		Session session =null;
 		Object v=null;
@@ -130,7 +131,7 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 		}
 		if (v==null ) return 0;
 		else 
-		return ((Integer)v).intValue();
+		return Integer.parseInt(v.toString());
 	}
 	
 	
@@ -238,6 +239,24 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 		}
 		if (object==null) object="NOT SET(tax Mapping table)";
 		return (String)object;
+	}
+
+	@Override
+	public ScrappingSiteFullMaster getScrappingSiteFullMaster(int scrapSiteId) {
+		Session session = getSession();
+		Object object = null;
+		try {
+			Criteria criteria = session.createCriteria(ScrappingSiteFullMaster.class);
+			criteria.createAlias("scrappingSite", "scrappingSite");
+			criteria.add(Restrictions.eq("scrappingSite.id", scrapSiteId));
+			object =  criteria.uniqueResult();
+			
+		} finally {
+			closeSession(session);
+
+		}
+		
+		return (ScrappingSiteFullMaster)object;
 	}
 	
 	

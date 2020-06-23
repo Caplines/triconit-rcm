@@ -174,5 +174,14 @@ public class ScrappingSiteDetailsFull extends BaseAudit implements Serializable 
 		this.locationProvider = locationProvider;
 	}
 
+	public ScrappingSiteFullMaster getMaster() {
+		return master;
+	}
+
+	public void setMaster(ScrappingSiteFullMaster master) {
+		this.master = master;
+	}
+
+	
 	
 }

@@ -16,7 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -305,7 +304,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 	private void createPatientDetailsurl(WebDriver driver, PatientTemp temp, PatientScrapSearchDto sh)
 			throws InterruptedException {
 
-		boolean dentalFound = false;
+		//boolean dentalFound = false;
 		try {
 			String id = sh.getMemberId().trim().equals("") ? sh.getSsnNumber().trim() : sh.getMemberId().trim();
 
@@ -319,7 +318,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 
 					if (op.getText().contains(" - Dental")) {
 						select.selectByValue(op.getAttribute("value"));
-						dentalFound = true;
+						//dentalFound = true;
 						Thread.sleep(1000);
 						break;
 					}
@@ -614,6 +613,14 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		for (WebElement div : divs) {
 			x1++;
 			//System.out.println("xxxx--"+x1+"--CT--"+ct);
+			if (div.getText() != null && div.getText().startsWith("Plan Name:")) {
+				try {
+				dtemp.setPlanType(div.getText().split("Plan Name:")[1]);// this is new
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				ct++;
+			}
 			if (div.getText() != null && div.getText().startsWith("Group Name:")) {
 				try {
 				dtemp.setEmployerName(div.getText().split("Group Name:")[1]);//140
@@ -724,11 +731,14 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			}
 			if (div.getText() != null && div.getText().startsWith("Date of Birth:")) {
 				try {
-				String cs = div.findElement(By.tagName("div")).getText().trim();
-				String[] s = cs.trim().split("/");
+				/*	
+				//String cs = div.findElement(By.tagName("div")).getText().trim();
+				
+				String[] s = cs.trim().split("/");//not in website
 				dtemp.setPolicyHolderDOB(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
 						+ (s[1].length() == 2 ? s[1] : "0" + s[1]));
 				
+				*/
 				}catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -756,7 +766,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				if (td.getText().equals("Maximums - Benefit Period")) {
 					try {
 						dtemp.setPlanAnnualMax(el.findElements(By.tagName("td")).get(1).getText().replace("$", "")
-								.replace(",", "").replace("N/A", ""));
+								.replace(",", "").replace("N/A", "")); // 1
 					} catch (Exception e) {
 						// e.printStackTrace();
 						dtemp.setPlanAnnualMax(Constants.SCRAPPING_ISSUE_FETCHING);

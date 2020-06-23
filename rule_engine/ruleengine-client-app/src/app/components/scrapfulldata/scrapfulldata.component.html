@@ -66,6 +66,16 @@
 					<form class="login-form" name="form2"
 						(ngSubmit)="f2.form.valid && parseSite()" #f2="ngForm" novalidate>
 						<div class="form-horizontal">
+						<div class="form-group"
+							>
+							<label class="col-sm-3 control-label" for="sietName">Office Name</label>
+							<div class="col-sm-9" > <input type="text"
+								class="login-signup-form-field form-control" 
+								name="oName" id="oName"
+								[(ngModel)]="oName" #siteO="ngModel"
+								readonly/>
+						</div>		
+						</div>
                         <div class="form-group"
 							[ngClass]="{ 'has-error': f2.submitted && !siteName.valid }">
 							<label class="col-sm-3 control-label" for="sietName">Site Name</label>
