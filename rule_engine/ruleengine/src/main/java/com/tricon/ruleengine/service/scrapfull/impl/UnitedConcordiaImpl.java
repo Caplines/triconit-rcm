@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +34,7 @@ import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
 import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 import com.tricon.ruleengine.model.db.User;
@@ -42,7 +44,7 @@ import com.tricon.ruleengine.utils.DateUtils;
 import com.tricon.ruleengine.utils.FreqencyUtils;
 import com.tricon.ruleengine.utils.MessageUtil;
 
-public class UnitedConcordiaImpl extends BaseScrappingServiceImpl implements Callable<Boolean> {
+public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<Boolean> {
 
 	// document :
 	// https://docs.google.com/spreadsheets/d/1-3PVTrzgSl0n3OEY7Qt0JZ_WDK7twIQWU3Hk7UjSdBM/edit#gid=1557872290
@@ -72,27 +74,10 @@ public class UnitedConcordiaImpl extends BaseScrappingServiceImpl implements Cal
 	// private static String referenceId;
 	// private static String procedureData;
 
-	@Autowired
-	ScrapingFullDataDoa dataDoa;
-
-	@Autowired
-	PatientDao patDao;
-
-	private ScrappingSiteDetailsFull scrappingSiteDetails;
-	// this.CLIENT_SECRET_DIR=CLIENT_SECRET_DIR;
-	// this.CREDENTIALS_FOLDER=CREDENTIALS_FOLDER;
-	// this.mapData=mapData;
-	// this.updateSheet=updateSheet;
-	private ScrappingFullDataDetailDto dto;
-	private Office office;
-	private User user;
-	private String driverLocation;
-
-	private static String siteName = "";
 
 	public UnitedConcordiaImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
 			ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user, Office office,
-			String driverLocation) {
+			int processId,String taxId,String driverLocation) {
 
 		this.patDao = patDao;
 		this.dataDoa = dataDoa;
@@ -106,43 +91,10 @@ public class UnitedConcordiaImpl extends BaseScrappingServiceImpl implements Cal
 		siteName = dto.getSiteName();
 		this.user = user;
 		this.driverLocation = driverLocation;
+		this.processId=processId;
+		this.taxId=taxId;
+
 		// store parameter for later user
-	}
-
-	private WebDriver getBrowserDriver() {
-		// System.setProperty("webdriver.gecko.driver",
-		// "D:/Project/Tricon/linkedinapp/linkedin/lib/geckodriver.exe");
-		// for chrome
-		// webClient = new WebClient();
-		ChromeOptions options = new ChromeOptions();
-		try {
-			// https://chromedriver.chromium.org/downloads
-			System.out.println("getBrowserDriver" + driverLocation);
-			System.setProperty("webdriver.chrome.driver", driverLocation);
-			// ChromeOptions options = new ChromeOptions();
-			// System.out.println("555");
-			options.addArguments("-disable-infobars");
-			// options.addArguments("--headless");
-			options.addArguments("--no-sandbox");
-			options.addArguments("--disable-dev-shm-usage");
-			options.setExperimentalOption("useAutomationExtension", false);
-			// System.out.println("8888");
-			options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
-			// System.out.println("1118888");
-		} catch (Exception e) {
-			e.printStackTrace();
-			// TODO: handle exception
-		}
-		// System.out.println("getBrowserDriver:" + 88888);
-		ChromeDriverService chromeDriverService = ChromeDriverService.createDefaultService();
-		int port = chromeDriverService.getUrl().getPort();
-		System.out.println("PORT---" + port);
-		try {
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		return new ChromeDriver(chromeDriverService, options);
-
 	}
 
 	public String scrapSite(ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user,
@@ -191,11 +143,23 @@ public class UnitedConcordiaImpl extends BaseScrappingServiceImpl implements Cal
 								driver.quit();
 								scrappingSiteDetails.setRunning(false);
 								ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
+								ScrappingFullDataManagmentProcess manageP = dataDoa
+										.getScrappingFullDataManagmentDataProcess(processId);
+								manageP.setCount(manageP.getCount() - 1);
+								manageP.setUpdatedBy(user);
+								manageP.setUpdatedDate(new Date());
+								try {
+								Thread.sleep(1000);
+								dataDoa.updateScrappingFullDataManagmentProcess(manageP);
 								if (manage.getProcessCount() > 0) {
 									manage.setProcessCount(manage.getProcessCount() - 1);
 									dataDoa.increasecrapCount(manage);
 								}
+								Thread.sleep(1000);
 								dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
+								}catch (Exception e) {
+									e.printStackTrace();
+								}
 							}
 						}
 					};
@@ -1262,7 +1226,7 @@ public class UnitedConcordiaImpl extends BaseScrappingServiceImpl implements Cal
 		 */
 
 		dto.setSiteUrl("https://www.unitedconcordia.com/dental-insurance/dentist/");
-		UnitedConcordiaImpl i = new UnitedConcordiaImpl(null, null, null, dto, null, null,
+		UnitedConcordiaImpl i = new UnitedConcordiaImpl(null, null, null, dto, null, null,1,"",
 				"D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
 		i.setProps("9500");
 		// i.scrappingSiteDetails = f;

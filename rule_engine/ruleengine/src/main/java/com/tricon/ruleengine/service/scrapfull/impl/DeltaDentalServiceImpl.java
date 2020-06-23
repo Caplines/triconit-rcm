@@ -1,12 +1,9 @@
 package com.tricon.ruleengine.service.scrapfull.impl;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,18 +12,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang.SystemUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
-import org.openqa.selenium.chrome.ChromeOptions;
-//import org.openqa.selenium.chrome.ChromeDriver;
-//import org.openqa.selenium.chrome.ChromeOptions;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.ScrapingFullDataDoa;
@@ -42,12 +31,11 @@ import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 import com.tricon.ruleengine.model.db.User;
-import com.tricon.ruleengine.service.impl.BaseScrappingServiceImpl;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.DateUtils;
 import com.tricon.ruleengine.utils.FreqencyUtils;
 
-public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements Callable<Boolean> {
+public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callable<Boolean> {
 
 	// document :
 	// https://docs.google.com/spreadsheets/d/1-3PVTrzgSl0n3OEY7Qt0JZ_WDK7twIQWU3Hk7UjSdBM/edit#gid=1557872290
@@ -72,25 +60,6 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 	// private static String benefitMaximumLifeTime = "Maximum Life Time ";
 	// private static String benefitMaximumLifeTimeRem = "Maximum Life Time Rem";
 
-	@Autowired
-	ScrapingFullDataDoa dataDoa;
-
-	@Autowired
-	PatientDao patDao;
-
-	private ScrappingSiteDetailsFull scrappingSiteDetails;
-	// this.CLIENT_SECRET_DIR=CLIENT_SECRET_DIR;
-	// this.CREDENTIALS_FOLDER=CREDENTIALS_FOLDER;
-	// this.mapData=mapData;
-	// this.updateSheet=updateSheet;
-	private ScrappingFullDataDetailDto dto;
-	private Office office;
-	private User user;
-	private String driverLocation;
-	private int processId;
-	private String taxId;
-
-	private static String siteName = "";
 
 	public DeltaDentalServiceImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
 			ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user, Office office,
@@ -113,44 +82,6 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		// store parameter for later user
 	}
 
-	private WebDriver getBrowserDriver() {
-		// System.setProperty("webdriver.gecko.driver",
-		// "D:/Project/Tricon/linkedinapp/linkedin/lib/geckodriver.exe");
-		// for chrome
-		// webClient = new WebClient();
-		ChromeOptions options = new ChromeOptions();
-		try {
-			// https://chromedriver.chromium.org/downloads
-			System.out.println("getBrowserDriver" + driverLocation);
-			System.setProperty("webdriver.chrome.driver", driverLocation);
-			// ChromeOptions options = new ChromeOptions();
-			// System.out.println("555");
-			options.addArguments("-disable-infobars");
-			options.addArguments("--headless");
-			options.addArguments("--no-sandbox");
-			options.addArguments("--disable-dev-shm-usage");
-			options.setExperimentalOption("useAutomationExtension", false);
-			// System.out.println("8888");
-			options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
-			// System.out.println("1118888");
-		} catch (Exception e) {
-			e.printStackTrace();
-			// TODO: handle exception
-		}
-		// System.out.println("getBrowserDriver:" + 88888);
-		ChromeDriverService chromeDriverService = ChromeDriverService.createDefaultService();
-		int port = chromeDriverService.getUrl().getPort();
-		System.out.println("PORT---" + port);
-		try {
-			int chromeDriverProcessID = GetChromeDriverProcessID(port);
-			System.out.println("detected chromedriver process id " + chromeDriverProcessID);
-			System.out.println("detected chrome process id " + GetChromeProcesID(chromeDriverProcessID));
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		return new ChromeDriver(chromeDriverService, options);
-
-	}
 
 	public String scrapSite(ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user,
 			Office office) {
@@ -780,6 +711,16 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
                             	e.printStackTrace();
 							}
 
+						}
+						if (tr.getText().startsWith("Lifetime Individual Deductible")) {
+							try {
+								List<WebElement> tds = tr.findElements(By.className("x264"));
+								dtemp.setOrthoSubjectDeductible(tds.get(0).getText().replace("$", "").replace(",", ""));// 93
+								
+							}catch (Exception e) {
+								// TODO: handle exception
+							}
+							
 						}
 
 					}
@@ -2306,111 +2247,6 @@ public class DeltaDentalServiceImpl extends BaseScrappingServiceImpl implements 
 		return navigate;
 	}
 
-	private static int GetChromeDriverProcessID(int aPort) throws IOException, InterruptedException {
-		String[] commandArray = new String[3];
-
-		if (SystemUtils.IS_OS_LINUX) {
-			commandArray[0] = "/bin/sh";
-			commandArray[1] = "-c";
-			commandArray[2] = "netstat -anp | grep LISTEN | grep " + aPort;
-		} else if (SystemUtils.IS_OS_WINDOWS) {
-			commandArray[0] = "cmd";
-			commandArray[1] = "/c";
-			commandArray[2] = "netstat -aon | findstr LISTENING | findstr " + aPort;
-		} else {
-			System.out.println("platform not supported");
-			System.exit(-1);
-		}
-
-		System.out.println("running command " + commandArray[2]);
-
-		Process p = Runtime.getRuntime().exec(commandArray);
-		p.waitFor();
-
-		BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-		StringBuilder sb = new StringBuilder();
-		String line = "";
-		while ((line = reader.readLine()) != null) {
-			sb.append(line + "\n");
-		}
-
-		String result = sb.toString().trim();
-
-		System.out.println("parse command response line:");
-		System.out.println(result);
-
-		return SystemUtils.IS_OS_LINUX ? ParseChromeDriverLinux(result) : ParseChromeDriverWindows(result);
-	}
-
-	private static int GetChromeProcesID(int chromeDriverProcessID) throws IOException, InterruptedException {
-		String[] commandArray = new String[3];
-
-		if (SystemUtils.IS_OS_LINUX) {
-			commandArray[0] = "/bin/sh";
-			commandArray[1] = "-c";
-			commandArray[2] = "ps -efj | grep google-chrome | grep " + chromeDriverProcessID;
-		} else if (SystemUtils.IS_OS_WINDOWS) {
-			commandArray[0] = "cmd";
-			commandArray[1] = "/c";
-			commandArray[2] = "wmic process get processid,parentprocessid,executablepath | find \"chrome.exe\" |find \""
-					+ chromeDriverProcessID + "\"";
-		} else {
-			System.out.println("platform not supported");
-			System.exit(-1);
-		}
-
-		System.out.println("running command " + commandArray[2]);
-
-		Process p = Runtime.getRuntime().exec(commandArray);
-		p.waitFor();
-
-		BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-		StringBuilder sb = new StringBuilder();
-		String line = "";
-		while ((line = reader.readLine()) != null) {
-			if (SystemUtils.IS_OS_LINUX && line.contains("/bin/sh")) {
-				continue;
-			}
-
-			sb.append(line + "\n");
-		}
-
-		String result = sb.toString().trim();
-
-		System.out.println("parse command response line:");
-		System.out.println(result);
-
-		return SystemUtils.IS_OS_LINUX ? ParseChromeLinux(result) : ParseChromeWindows(result);
-	}
-
-	private static int ParseChromeLinux(String result) {
-		String[] pieces = result.split("\\s+");
-		// root 20780 20772 20759 15980 9 11:04 pts/1 00:00:00
-		// /opt/google/chrome/google-chrome.........
-		// the second one is the chrome process id
-		return Integer.parseInt(pieces[1]);
-	}
-
-	private static int ParseChromeWindows(String result) {
-		String[] pieces = result.split("\\s+");
-		// C:\Program Files (x86)\Google\Chrome\Application\chrome.exe 14304 19960
-		return Integer.parseInt(pieces[pieces.length - 1]);
-	}
-
-	private static int ParseChromeDriverLinux(String netstatResult) {
-		String[] pieces = netstatResult.split("\\s+");
-		String last = pieces[pieces.length - 1];
-		// tcp 0 0 127.0.0.1:2391 0.0.0.0:* LISTEN 3333/chromedriver
-		return Integer.parseInt(last.substring(0, last.indexOf('/')));
-	}
-
-	private static int ParseChromeDriverWindows(String netstatResult) {
-		String[] pieces = netstatResult.split("\\s+");
-		// TCP 127.0.0.1:26599 0.0.0.0:0 LISTENING 22828
-		return Integer.parseInt(pieces[pieces.length - 1]);
-	}
 
 	/**
 	 * Link: https://www.deltadentalins.com/ Username: Crosbyfamilydental Password:
