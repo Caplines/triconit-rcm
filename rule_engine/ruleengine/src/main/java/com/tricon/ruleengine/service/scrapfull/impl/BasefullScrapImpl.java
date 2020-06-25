@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.Date;
 
 import org.apache.commons.lang.SystemUtils;
 import org.openqa.selenium.WebDriver;
@@ -16,6 +17,8 @@ import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.ScrapingFullDataDoa;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.User;
 
@@ -278,6 +281,29 @@ public class BasefullScrapImpl {
 		String[] pieces = netstatResult.split("\\s+");
 		// TCP 127.0.0.1:26599 0.0.0.0:0 LISTENING 22828
 		return Integer.parseInt(pieces[pieces.length - 1]);
+	}
+	
+	protected void finalSetUpCall() {
+		scrappingSiteDetails.setRunning(false);
+		ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
+		ScrappingFullDataManagmentProcess manageP = dataDoa
+				.getScrappingFullDataManagmentDataProcess(processId);
+		manageP.setCount(manageP.getCount() - 1);
+		manageP.setUpdatedBy(user);
+		manageP.setUpdatedDate(new Date());
+		try {
+		Thread.sleep(1000);
+		dataDoa.updateScrappingFullDataManagmentProcess(manageP);
+		if (manage.getProcessCount() > 0) {
+			manage.setProcessCount(manage.getProcessCount() - 1);
+			dataDoa.increasecrapCount(manage);
+		}
+		Thread.sleep(1000);
+		dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 

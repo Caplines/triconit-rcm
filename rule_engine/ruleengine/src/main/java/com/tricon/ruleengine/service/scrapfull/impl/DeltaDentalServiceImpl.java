@@ -115,25 +115,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 							} finally {
 								driver.close();
 								driver.quit();
-								scrappingSiteDetails.setRunning(false);
-								ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
-								ScrappingFullDataManagmentProcess manageP = dataDoa
-										.getScrappingFullDataManagmentDataProcess(processId);
-								manageP.setCount(manageP.getCount() - 1);
-								manageP.setUpdatedBy(user);
-								manageP.setUpdatedDate(new Date());
-								try {
-								Thread.sleep(1000);
-								dataDoa.updateScrappingFullDataManagmentProcess(manageP);
-								if (manage.getProcessCount() > 0) {
-									manage.setProcessCount(manage.getProcessCount() - 1);
-									dataDoa.increasecrapCount(manage);
-								}
-								Thread.sleep(1000);
-								dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
-								}catch (Exception e) {
-									e.printStackTrace();
-								}
+								finalSetUpCall();
 							}
 						}
 					};
@@ -1398,10 +1380,15 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 			ret = Constants.SCRAPPING_MANDATORY_WARNING;
 
 		if (val != null) {
-			if (type.equals(benefitAgeLimit))
+			if (type.equals(benefitAgeLimit)) {
+				val=val.replaceAll("[a-zA-Z]", "").trim();
 				ret = val;
-			else if (type.equals(benefitAlveoloplasty))
-				ret = val;
+			}
+			else if (type.equals(benefitAlveoloplasty)) {
+				if (val.contains("Alveoloplasty in conjunction with extractions"))
+				ret = "Yes";
+				else ret="No";
+			}
 			else if (type.equals(benefitContract))
 				ret = val.split(" ")[0];
 			else if (type.equals(benefitLimitation)) {
@@ -2265,6 +2252,11 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 		System.out.println("taskkill /f /im chromedriver.exe");
 		String g = "[{Deepak$,.[{";
 		try {
+			String val="Child up to and not including age 19";
+			System.out.println("123".matches("(.*?)[a-zA-Z](.*?)"));
+			System.out.println("s".matches("(.*?)[a-zA-Z](.*?)"));
+			val=val.replaceAll("[a-zA-Z]", "").trim();
+			System.out.println("val-"+val);
 			System.out.println(g.replaceFirst("\\[\\{", "{"));
 		} catch (Exception e) {
 			e.printStackTrace();

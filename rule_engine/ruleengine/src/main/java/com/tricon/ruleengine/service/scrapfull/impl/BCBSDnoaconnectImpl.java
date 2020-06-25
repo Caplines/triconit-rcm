@@ -262,7 +262,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		t.setOffice(office);
 		t.setMemberId(sh.getMemberId().trim());
 		t.setMemberSSN(sh.getSsnNumber().trim());
-
+		/* un-comment this to populate SSN in case client wants
+		try {
+		String id = sh.getMemberId().trim().equals("") ? sh.getSsnNumber().trim() : sh.getMemberId().trim();
+		if (id.matches("(.*?)[a-zA-Z](.*?)") && t.getMemberSSN().equals("")){
+			t.setMemberSSN(id);
+		};
+		}catch(Exception y) {
+			
+		}
+		*/
 		Set<PatientDetailTemp> s = new HashSet<>();
 		s.add(t);
 		temp.setPatientDetails(s);
@@ -278,7 +287,13 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		}
 		temp.setStatus("Patient found..");
 		populateMandatoryData(temp);
-		createPatientDetailsurl(driver, temp, sh);
+		boolean sd= createPatientDetailsurl(driver, temp, sh);
+		if (sd== false) {
+			if (temp.getFirstName().equals(""))temp.setFirstName(sh.getFirstName());
+			if (temp.getLastName().equals(""))temp.setLastName(sh.getLastName());
+			temp.setPatientId(sh.getPatientId());
+			temp.setStatus("Web Site not responsed while Scrapping Also Check Password/User Name . Please try after Some Time..");
+		}
 		// Logic to fetch data from Site...
 
 		return temp;
@@ -301,7 +316,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		}
 	}
 
-	private void createPatientDetailsurl(WebDriver driver, PatientTemp temp, PatientScrapSearchDto sh)
+	private boolean createPatientDetailsurl(WebDriver driver, PatientTemp temp, PatientScrapSearchDto sh)
 			throws InterruptedException {
 
 		//boolean dentalFound = false;
@@ -363,6 +378,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 
 			String url = "";
 			String[] dobA = null;
+			
+			
 			id=id.replaceAll("[a-zA-Z]", "");
 			try {
 				dobA = sh.getDob().split("/");// mm/dd/yyyy
@@ -431,14 +448,14 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			// String url=dobA[2]+"%2F"+dobA[0]+"%2F"+dobA[1];
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 			// TODO: handle exception
 		}
-
+          return true;
 	}
 
 	private boolean searchPatient(WebDriver driver, PatientTemp temp, String memberid, String ssn, String dob)
 			throws InterruptedException {
-
 		String id = memberid.trim().equals("") ? ssn.trim() : memberid.trim();
 		if (id.equals("") || dob.equals(""))
 			return false;
@@ -454,12 +471,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			return false;
 		}
 		Thread.sleep(4000);
+		try {
 		WebElement pTag = driver
 				.findElement(By.xpath("/html/body/ui-view/div/div/ui-view/div/form/div/div[1]/div/div/div[2]/p[3]"));
-		if (pTag != null) {
+		if (pTag != null && pTag.getText()!=null) {
 			if (pTag.getText().startsWith("We're sorry! We were unable to locate you")) {
 				return false;
 			}
+		}
+		}catch(Exception y) {
+			
 		}
 		return true;
 
@@ -647,7 +668,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			}
 			if (div.getText() != null && div.getText().startsWith("Payer ID:")) {
 				try {
-				dtemp.setPayerId(div.getText().split("Payer ID:")[1]);//143
+				dtemp.setPayerId(div.getText().split("Payer ID:")[1].replace("\n", ""));//143
 				}catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -746,7 +767,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			}
 
 			//System.out.println("ct---"+ct);
-			if (ct==9 || x1>100) break;
+			if (ct==10 || x1>100) break;
 			//System.out.println("432142");
 		}
 		}
@@ -1502,10 +1523,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		driver.get(dto.getSiteUrl());
 		Thread.sleep(4000);// Need to keep this number high for Linux issue.
 		WebElement userNameElement = driver.findElement(By.id("username"));
-		userNameElement.sendKeys(dto.getUserName());
+		userNameElement.sendKeys(dto.getUserName().trim());
 		WebElement passwordElement = driver.findElement(By.id("password"));
 
-		passwordElement.sendKeys(dto.getPassword());
+		passwordElement.sendKeys(dto.getPassword().trim());
 		WebElement loginButonElement = driver.findElement(
 				By.xpath("/html/body/ui-view/div/div/ui-view/div[2]/div/div[2]/div[1]/form/div[4]/button"));
 
@@ -1557,16 +1578,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smile123");
-		dto.setUserName("crosbyfd07");
+		dto.setPassword("smile001");
+		dto.setUserName("lavaca001");
 		dto.setSiteName("BCBS");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("07/26/2007");
-		psc.setFirstName("Lynette");
-		psc.setLastName("IBARRA JR");
-		psc.setMemberId("829094350");
+		psc.setDob("04/27/1974");
+		psc.setFirstName("");
+		psc.setLastName("");
+		psc.setMemberId("836004973");
 		psc.setSsnNumber("");
 
 		l.add(psc);

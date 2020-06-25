@@ -141,25 +141,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 							} finally {
 								driver.close();
 								driver.quit();
-								scrappingSiteDetails.setRunning(false);
-								ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
-								ScrappingFullDataManagmentProcess manageP = dataDoa
-										.getScrappingFullDataManagmentDataProcess(processId);
-								manageP.setCount(manageP.getCount() - 1);
-								manageP.setUpdatedBy(user);
-								manageP.setUpdatedDate(new Date());
-								try {
-								Thread.sleep(1000);
-								dataDoa.updateScrappingFullDataManagmentProcess(manageP);
-								if (manage.getProcessCount() > 0) {
-									manage.setProcessCount(manage.getProcessCount() - 1);
-									dataDoa.increasecrapCount(manage);
-								}
-								Thread.sleep(1000);
-								dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
-								}catch (Exception e) {
-									e.printStackTrace();
-								}
+								finalSetUpCall();
 							}
 						}
 					};
