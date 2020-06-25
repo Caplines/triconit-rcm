@@ -80,6 +80,11 @@ public class PatientTemp extends BaseAudit implements Serializable{
 	private Set<PatientHistoryTemp> patientHistory = new HashSet<PatientHistoryTemp>(0);
 	
 	
+	
+	
+	@Column(name = "grade_pay")
+	private String gradePay;
+	
 	@Transient
 	private String referenceId;
 	
@@ -207,6 +212,14 @@ public class PatientTemp extends BaseAudit implements Serializable{
 
 	public void setCounterElementMap(Map<String, String> counterElementMap) {
 		this.counterElementMap = counterElementMap;
+	}
+
+	public String getGradePay() {
+		return gradePay;
+	}
+
+	public void setGradePay(String gradePay) {
+		this.gradePay = gradePay;
 	}
 
 

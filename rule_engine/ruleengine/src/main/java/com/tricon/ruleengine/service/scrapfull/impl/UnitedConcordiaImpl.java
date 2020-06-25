@@ -6,8 +6,10 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
@@ -29,6 +31,7 @@ import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.ScrapingFullDataDoa;
 import com.tricon.ruleengine.dto.PatientScrapSearchDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
+import com.tricon.ruleengine.dto.scrapping.UnitedConLimitationDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
@@ -44,7 +47,7 @@ import com.tricon.ruleengine.utils.DateUtils;
 import com.tricon.ruleengine.utils.FreqencyUtils;
 import com.tricon.ruleengine.utils.MessageUtil;
 
-public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<Boolean> {
+public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<Boolean> {
 
 	// document :
 	// https://docs.google.com/spreadsheets/d/1-3PVTrzgSl0n3OEY7Qt0JZ_WDK7twIQWU3Hk7UjSdBM/edit#gid=1557872290
@@ -58,26 +61,15 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 
 	}
 
-	private static String inNetworkCoinsurance = "In Network Coinsurance";
-	private static String inNetworkDeductible = "In Network Deductible";
-	private static String lastrowunder2ndcolumn = "lastrowunder2ndcolumn";
-	private static String lastrowunder2ndcolumnNext = "lastrowunder2ndcolumnNext";
-
-	private static String uptoAge = "Up to Age";
-	private static String otherLimitations = "Other Limitations";
-
-	private static String benefitInNetwork = "In Network";
-	private static String benefitInDeductible = "In Network ded";
-	private static String benefitWaitingPeriod = "Waiting Period";
-	private static String benefitMaximumLifeTime = "Maximum Life Time ";
-	private static String benefitMaximumLifeTimeRem = "Maximum Life Time  Rem";
+	private static String benefitProcCopy = "Coverage % or Copay $";
+	private static String benefitProAppliedtoded= "Coverage % or Copay $";
+		private static String benefitProcLimitation = "Limitation";
 	// private static String referenceId;
 	// private static String procedureData;
 
-
 	public UnitedConcordiaImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
 			ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user, Office office,
-			int processId,String taxId,String driverLocation) {
+			int processId, String taxId, String driverLocation) {
 
 		this.patDao = patDao;
 		this.dataDoa = dataDoa;
@@ -91,8 +83,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 		siteName = dto.getSiteName();
 		this.user = user;
 		this.driverLocation = driverLocation;
-		this.processId=processId;
-		this.taxId=taxId;
+		this.processId = processId;
+		this.taxId = taxId;
 
 		// store parameter for later user
 	}
@@ -235,7 +227,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 
 	private void createPatientDetailSetup(WebDriver driver, PatientTemp temp, PatientScrapSearchDto sh)
 			throws InterruptedException {
-       Thread.sleep(3000);
+		Thread.sleep(3000);
 		try {
 			String id = sh.getMemberId().trim().equals("") ? sh.getSsnNumber().trim() : sh.getMemberId().trim();
 			// Check For name...
@@ -448,372 +440,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 		// openSideBarFirst(driver,"Procedure History");
 		fetchHistoryformation(driver, hisSet);
 
-		WebElement eleBody = driver.findElement(
-				By.xpath("/html/body/ui-view/ui-view/div/div[3]/div[2]/div/div[2]/plan-info/div/div[2]/table/tbody"));
-		List<WebElement> eleTR = eleBody.findElements(By.tagName("tr"));
-		Thread.sleep(500);
-		for (WebElement el : eleTR) {
-			List<WebElement> tds = el.findElements(By.tagName("td"));
-			for (WebElement td : tds) {
-
-				if (td.getText().equals("Maximums - Benefit Period")) {
-					try {
-						dtemp.setPlanAnnualMax(el.findElements(By.tagName("td")).get(1).getText().replace("$", "")
-								.replace(",", "").replace("N/A", ""));
-					} catch (Exception e) {
-						// e.printStackTrace();
-						dtemp.setPlanAnnualMax(Constants.SCRAPPING_ISSUE_FETCHING);
-						// TODO: handle exception
-					}
-				} else if (td.getText().equals("Maximums - Benefit Period Remaining")) {
-					try {
-						dtemp.setPlanAnnualMaxRemaining(el.findElements(By.tagName("td")).get(1).getText()
-								.replace("$", "").replace(",", "").replace("N/A", ""));
-					} catch (Exception e) {
-						// e.printStackTrace();
-						dtemp.setPlanAnnualMaxRemaining(Constants.SCRAPPING_ISSUE_FETCHING);
-					}
-				} else if (td.getText().equals("Deductible - Benefit Period")) {
-					try {
-						dtemp.setPlanIndividualDeductible(el.findElements(By.tagName("td")).get(1).getText()
-								.replace("$", "").replace(",", "").replace("N/A", ""));
-					} catch (Exception e) {
-						// e.printStackTrace();
-						dtemp.setPlanIndividualDeductible(Constants.SCRAPPING_ISSUE_FETCHING);
-					}
-				} else if (td.getText().equals("Deductible - Benefit Period Remaining")) {
-					try {
-						dtemp.setPlanIndividualDeductibleRemaining(el.findElements(By.tagName("td")).get(1).getText()
-								.replace("$", "").replace(",", "").replace("N/A", ""));
-					} catch (Exception e) {
-						// e.printStackTrace();
-						dtemp.setPlanIndividualDeductibleRemaining(Constants.SCRAPPING_ISSUE_FETCHING);
-					}
-				}
-
-			}
-
-		}
-
-		openSideBarFirst(driver, "Benefit Information");
-		dtemp.setEndodonticsPercentage(fetchBenefitInformation("Endodontics", driver, benefitInNetwork, true, true));// 9
-		dtemp.setEndoSubjectDeductible(MessageUtil
-				.getTEXTNAORYES(fetchBenefitInformation("Endodontics", driver, benefitInDeductible, true, true)));// 10
-		dtemp.setPerioSurgeryPercentage(
-				fetchBenefitInformation("Periodontal Surgery", driver, benefitInNetwork, true, true));// 11
-		dtemp.setPerioSurgerySubjectDeductible(MessageUtil.getTEXTNAORYES(
-				fetchBenefitInformation("Periodontal Surgery", driver, benefitInDeductible, true, true)));// 12
-
-		dtemp.setBasicWaitingPeriod(MessageUtil.getTEXTSatisfied(
-				fetchBenefitInformation("Composite Fillings", driver, benefitWaitingPeriod, true, true)));// 20 in DOC
-		dtemp.setMajorWaitingPeriod(MessageUtil
-				.getTEXTSatisfied(fetchBenefitInformation("Crowns", driver, benefitWaitingPeriod, true, true)));// 21 in
-																												// DOC
-
-		dtemp.setOrthoMax(fetchBenefitInformation("Orthodontics", driver, benefitMaximumLifeTime, false, true));// 91
-		dtemp.setOrthoRemaining(
-				fetchBenefitInformation("Orthodontics", driver, benefitMaximumLifeTimeRem, false, false));// 115
-		dtemp.setOrthoWaitingPeriod(MessageUtil
-				.getTEXTSatisfied(fetchBenefitInformation("Orthodontics", driver, benefitWaitingPeriod, true, false)));// 116
-
-		dtemp.setDiagnosticSubDed(MessageUtil
-				.getTEXTNAORYES(fetchBenefitInformation("Oral Exams", driver, benefitInDeductible, true, true)));// 109
-
-		dtemp.setPreventiveSubDed(MessageUtil
-				.getTEXTNAORYES(fetchBenefitInformation("Amalgam Fillings", driver, benefitInDeductible, true, true)));// 118
-
-		/*
-		 * //open tab List<WebElement> e1 = driver.findElements(By.tagName("a"));
-		 * for(WebElement e2:e1) { String s= e2.getAttribute("target"); if
-		 * (e2.isDisplayed() && s!=null && s.equals("_blank")){ e2.click(); break; } }
-		 * //e1.sendKeys(Keys.CONTROL +"t");0 ArrayList<String> tabs = new
-		 * ArrayList<String> (driver.getWindowHandles());
-		 * System.out.println("TAB SIZE--"+tabs.size());
-		 * 
-		 * driver.switchTo().window(tabs.get(1)); //switches to new tab
-		 */
-		String basicper6 = fetchValueByCode("D4346", temp, driver, inNetworkCoinsurance, true, false, true);
-		if (basicper6.equals(""))
-			basicper6 = "0";
-		String basicper1 = fetchValueByCode("D4341", temp, driver, inNetworkCoinsurance, true, false, true);
-		if (basicper1.equals(""))
-			basicper1 = "0";
-		try {
-			String v = new Float(basicper6).floatValue() >= new Float(basicper1).floatValue() ? "D4341" : "D4346";
-			dtemp.setBasicSubjectDeductible(MessageUtil
-					.getTEXTNAORYES(fetchValueByCode(v, temp, driver, inNetworkDeductible, true, false, true)));
-			dtemp.setBasicPercentage(
-					new Float(basicper6).floatValue() >= new Float(basicper1).floatValue() ? basicper1 : basicper6);
-
-		} catch (Exception p) {
-			dtemp.setBasicPercentage(basicper6 + "" + basicper1);
-			dtemp.setBasicSubjectDeductible(Constants.SCRAPPING_ISSUE_FETCHING);
-		}
-
-		dtemp.setMajorPercentage(fetchValueByCode("D2740", temp, driver, inNetworkCoinsurance, true, false, true));// 7
-
-		dtemp.setMajorSubjectDeductible(MessageUtil
-				.getTEXTNAORYES(fetchValueByCode("D2750", temp, driver, inNetworkDeductible, true, false, true)));// 8
-		dtemp.setCrownsD2750D2740Percentage(
-				fetchValueByCode("D2750", temp, driver, inNetworkCoinsurance, true, true, false));// 81
-		dtemp.setCrownsD2750D2740FL(fetchValueByCode("D2750", temp, driver, lastrowunder2ndcolumn, false, true, true));// 82
-
-		dtemp.setPreventivePercentage(fetchValueByCode("D1110", temp, driver, inNetworkCoinsurance, true, false, true));// 13
-		dtemp.setProphyD1110FL(fetchValueByCode("D1110", temp, driver, lastrowunder2ndcolumn, false, true, true));// 43
-
-		String v = fetchValueByCode("D0150", temp, driver, inNetworkCoinsurance, true, false, false);
-		dtemp.setDiagnosticPercentage(v);// 14
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setExamsD0150FL(fetchValueByCode("D0150", temp, driver, lastrowunder2ndcolumn, false, true, true));// 27
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D0220", temp, driver, inNetworkCoinsurance, true, false, false);
-		dtemp.setpAXRaysPercentage(v);// 15
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setxRaysPAD0220FL(fetchValueByCode("D0220", temp, driver, lastrowunder2ndcolumn, false, true, true));// 29
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		dtemp.setNightGuardsD9944Fr(fetchValueByCode("D9944", temp, driver, inNetworkCoinsurance, true, false, false));// 19
-																														// //Cross
-																														// Check
-		dtemp.setNightGuardsD9944Fr(fetchValueByCode("D9944", temp, driver, lastrowunder2ndcolumn, false, true, true));// 121
-
-		v = fetchValueByCode("D2930", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setsSCD2930FL(fetchValueByCode("D2930", temp, driver, lastrowunder2ndcolumn, false, true, true));// 22
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D2931", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setsSCD2931FL(fetchValueByCode("D2931", temp, driver, lastrowunder2ndcolumn, false, true, true));// 23
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D0120", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setExamsD0120FL(fetchValueByCode("D0120", temp, driver, lastrowunder2ndcolumn, false, true, true));// 24
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D0140", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setExamsD0140FL(fetchValueByCode("D0140", temp, driver, lastrowunder2ndcolumn, false, true, true));// 25
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D0145", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.seteExamsD0145FL(fetchValueByCode("D0145", temp, driver, lastrowunder2ndcolumn, false, true, true));// 26
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D0272", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setxRaysBWSFL(fetchValueByCode("D0272", temp, driver, lastrowunder2ndcolumn, false, true, true));// 28
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D0230", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setxRaysPAD0230FL(fetchValueByCode("D0230", temp, driver, lastrowunder2ndcolumn, false, true, true));// 30
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D0210", temp, driver, inNetworkCoinsurance, true, false, false);
-		dtemp.setFmxPer(v);// 120
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setxRaysFMXFL(fetchValueByCode("D0210", temp, driver, lastrowunder2ndcolumn, false, true, true));// 31
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-		// 32 missing
-
-		v = fetchValueByCode("D01208", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setFlourideD1208FL(
-					fetchValueByCode("D01208", temp, driver, lastrowunder2ndcolumn, false, true, false));// 33
-
-		v = fetchValueByCode("D1208", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setFlourideAgeLimit(fetchValueByCode("D1208", temp, driver, uptoAge, false, true, true));// 34
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D1206", temp, driver, inNetworkCoinsurance, false, false, false);
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setVarnishD1206FL(fetchValueByCode("D1206", temp, driver, lastrowunder2ndcolumn, false, true, false));// 35
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setVarnishD1206AgeLimit(fetchValueByCode("D1206", temp, driver, uptoAge, false, true, true));// 36
-		else
-			fetchValueByCode("", temp, driver, "", false, true, true);
-
-		v = fetchValueByCode("D1351", temp, driver, inNetworkCoinsurance, true, false, false);
-		dtemp.setSealantsD1351Percentage(v);// 37
-		if (!v.equals("0"))
-			dtemp.setSealantsD1351FL(
-					fetchValueByCode("D1351", temp, driver, lastrowunder2ndcolumn, false, true, false));// 38
-
-		if (!v.equals("0"))
-			dtemp.setSealantsD1351AgeLimit(fetchValueByCode("D1351", temp, driver, uptoAge, false, true, false));// 39
-
-		String th = fetchValueByCode("D1351", temp, driver, otherLimitations, false, true, false);
-
-		if (!th.contains(Constants.SCRAPPING_ISSUE_FETCHING)) {
-			dtemp.setSealantsD1351PrimaryMolarsCovered(
-					FreqencyUtils.checkForteehIntext(siteName, th, "A,B,I,J,K,L,S,T"));// 40
-			dtemp.setSealantsD1351PrimaryMolarsCovered(
-					FreqencyUtils.checkForteehIntext(siteName, th, "4,5,12,13,20,21,28,29"));// 41
-			dtemp.setSealantsD1351PermanentMolarsCovered(
-					FreqencyUtils.checkForteehIntext(siteName, th, "2,3,14,15,18,19,30,31"));// 42
-
-		}
-
-		dtemp.setpAXRaysSubDed(fetchValueByCode("D1351", temp, driver, inNetworkDeductible, true, true, true));// 117
-
-		// 4 May
-
-		dtemp.setProphyD1120FL(fetchValueByCode("D1120", temp, driver, lastrowunder2ndcolumn, false, false, true));// 44
-		// 45 missing
-		dtemp.setsRPD4341Percentage(fetchValueByCode("D4341", temp, driver, inNetworkCoinsurance, true, false, false));// 46
-		dtemp.setsRPD4341FL(fetchValueByCode("D4341", temp, driver, lastrowunder2ndcolumn, false, true, true));// 47
-		// 48
-		// 49
-		dtemp.setPerioMaintenanceD4910Percentage(
-				fetchValueByCode("D4910", temp, driver, inNetworkCoinsurance, true, false, false));// 50
-		dtemp.setPerioMaintenanceD4910FL(
-				fetchValueByCode("D4910", temp, driver, lastrowunder2ndcolumn, false, true, false));// 51
-		v = fetchValueByCode("D4910", temp, driver, lastrowunder2ndcolumnNext, true, true, true);
-		dtemp.setPerioMaintenanceD4910AltWProphyD0110(FreqencyUtils.checkForteehIntext(siteName, v, "D1110,D1120"));// 52
-
-		v = fetchValueByCode("D4355", temp, driver, inNetworkCoinsurance, true, false, false);
-		dtemp.setFMDD4355Percentage(v);// 53
-		// It might also be missing if there is no frequency but procedure is covered"
-		if (!v.equals("0"))
-			dtemp.setfMDD4355FL(fetchValueByCode("D4355", temp, driver, lastrowunder2ndcolumn, false, true, false));// 54
-
-		dtemp.setGingivitisD4346Percentage(
-				fetchValueByCode("D4355", temp, driver, inNetworkCoinsurance, true, true, false));// 55
-		dtemp.setGingivitisD4346FL(fetchValueByCode("D4355", temp, driver, lastrowunder2ndcolumn, false, true, true));// 56
-
-		dtemp.setNitrousD9230Percentage(
-				fetchValueByCode("D9230", temp, driver, inNetworkCoinsurance, true, false, true));// 57
-		dtemp.setiVSedationD9243Percentage(
-				fetchValueByCode("D9243", temp, driver, inNetworkCoinsurance, true, false, true));// 58
-		dtemp.setiVSedationD9248Percentage(
-				fetchValueByCode("D9248", temp, driver, inNetworkCoinsurance, true, false, true));// 59
-		dtemp.setExtractionsMinorPercentage(
-				fetchValueByCode("D7140", temp, driver, inNetworkCoinsurance, true, false, true));// 60
-		dtemp.setExtractionsMajorPercentage(
-				fetchValueByCode("D7210", temp, driver, inNetworkCoinsurance, true, false, true));// 61
-		dtemp.setCrownLengthD4249Percentage(
-				fetchValueByCode("D4249", temp, driver, inNetworkCoinsurance, true, false, false));// 62
-		dtemp.setCrownLengthD4249FL(fetchValueByCode("D4249", temp, driver, lastrowunder2ndcolumn, false, true, true));// 63
-		// 64
-		dtemp.setAlveoD7311FL(fetchValueByCode("D7311", temp, driver, lastrowunder2ndcolumn, false, false, true));// 65
-		// 66
-		dtemp.setAlveoD7310FL(fetchValueByCode("D7310", temp, driver, lastrowunder2ndcolumn, false, false, true));// 67
-
-		dtemp.setCompleteDenturesD5110D5120FL(
-				fetchValueByCode("D5110", temp, driver, lastrowunder2ndcolumn, false, false, true));// 68
-		dtemp.setImmediateDenturesD5130D5140FL(
-				fetchValueByCode("D5130", temp, driver, lastrowunder2ndcolumn, false, false, true));// 69
-		dtemp.setPartialDenturesD5213D5214FL(
-				fetchValueByCode("D5213", temp, driver, lastrowunder2ndcolumn, false, false, true));// 70
-		dtemp.setInterimPartialDenturesD5214FL(
-				fetchValueByCode("D5214", temp, driver, lastrowunder2ndcolumn, false, false, true));// 71
-		// 72
-		dtemp.setBoneGraftsD7953FL(fetchValueByCode("D7953", temp, driver, lastrowunder2ndcolumn, false, false, true));// 73
-
-		dtemp.setImplantCoverageD6010Percentage(
-				fetchValueByCode("D6010", temp, driver, inNetworkCoinsurance, true, false, true));// 74
-		dtemp.setImplantsFrD6010(fetchValueByCode("D6010", temp, driver, lastrowunder2ndcolumn, false, true, true));// 110
-
-		dtemp.setImplantCoverageD6057Percentage(
-				fetchValueByCode("D6057", temp, driver, inNetworkCoinsurance, true, false, true));// 75
-		dtemp.setImplantsFrD6057(fetchValueByCode("D6057", temp, driver, lastrowunder2ndcolumn, false, true, true));// 111
-
-		dtemp.setImplantCoverageD6190Percentage(
-				fetchValueByCode("D6190", temp, driver, inNetworkCoinsurance, true, false, true));// 76
-		dtemp.setImplantsFrD6190(fetchValueByCode("D6190", temp, driver, lastrowunder2ndcolumn, false, true, true));// 113
-
-		dtemp.setImplantSupportedPorcCeramicD6065Percentage(
-				fetchValueByCode("D6065", temp, driver, inNetworkCoinsurance, true, false, true));// 77
-		dtemp.setImplantsFrD6065(fetchValueByCode("D6065", temp, driver, lastrowunder2ndcolumn, false, true, true));// 112
-
-		dtemp.setPostCompositesD2391Percentage(
-				fetchValueByCode("D2391", temp, driver, inNetworkCoinsurance, true, false, false));// 78
-		dtemp.setPostCompositesD2391FL(
-				fetchValueByCode("D2391", temp, driver, lastrowunder2ndcolumn, false, true, true));// 79
-		// 80
-		// 83
-		// 84
-		dtemp.setD9310Percentage(fetchValueByCode("D9310", temp, driver, inNetworkCoinsurance, true, false, false));// 85
-		dtemp.setD9310FL(fetchValueByCode("D9310", temp, driver, lastrowunder2ndcolumn, false, true, true));// 86
-
-		dtemp.setBuildUpsD2950Covered(
-				fetchValueByCode("D2950", temp, driver, inNetworkCoinsurance, true, false, false));// 87
-		dtemp.setBuildUpsD2950FL(fetchValueByCode("D2950", temp, driver, lastrowunder2ndcolumn, false, true, true));// 88
-		// 89
-		dtemp.setOrthoPercentage(fetchValueByCode("D8090", temp, driver, inNetworkCoinsurance, true, false, false));// 90
-		dtemp.setOrthoAgeLimit(fetchValueByCode("D8090", temp, driver, uptoAge, false, true, true));// 92
-		// 93 //94 //95 //96 //97 //99 //100 //101
-
-		dtemp.setBridges1(fetchValueByCode("D6245", temp, driver, inNetworkCoinsurance, true, false, false));// 102
-		dtemp.setBridges2(fetchValueByCode("D6245", temp, driver, lastrowunder2ndcolumn, false, true, true));// 103
-		// 104
-		dtemp.setDen5225Per(fetchValueByCode("D5225", temp, driver, inNetworkCoinsurance, true, false, false));// 105
-		dtemp.setDenf5225FR(fetchValueByCode("D5225", temp, driver, lastrowunder2ndcolumn, false, true, true));// 107
-
-		dtemp.setDen5226Per(fetchValueByCode("D5226", temp, driver, inNetworkCoinsurance, true, false, false));// 106
-		dtemp.setDenf5226Fr(fetchValueByCode("D5226", temp, driver, lastrowunder2ndcolumn, false, true, true));// 108
-
-		dtemp.setNightGuardsD9945Percentage(
-				fetchValueByCode("D9945", temp, driver, inNetworkCoinsurance, true, false, true));// 114
-		dtemp.setNightGuardsD9945Fr(fetchValueByCode("D9945", temp, driver, lastrowunder2ndcolumn, false, true, true));// 122
-		// driver.close();
-		// ArrayList<String> tabs1 = new ArrayList<String> (driver.getWindowHandles());
-		// System.out.println("TAB SIZE--"+tabs1.size());
-		// Thread.sleep(2000);
-		// driver.switchTo().window(tabs.get(0)); // switch back to main screen
-		// Thread.sleep(20000);
-		// 119
-		// 123 //124 //125 //126
-
 		dtemp.setAptDate("");
 
-	}
-
-	private void openSideBarFirst(WebDriver driver, String sideBarName) throws InterruptedException {
-		Thread.sleep(5000);
-		List<WebElement> lis = driver.findElements(By.xpath("//*[@id=\"sidenav\"]/li"));
-		try {
-			for (WebElement li : lis) {
-				String bi = li.findElement(By.tagName("p")).getText();
-				if (bi.equals(sideBarName)) {
-					li.findElement(By.tagName("a")).click();
-					Thread.sleep(15000);
-					break;
-				}
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
 	}
 
 	private void fetchHistoryformation(WebDriver driver, Set<PatientHistoryTemp> setHis) throws InterruptedException {
@@ -832,16 +460,17 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 				setHis.add(t);
 			}
 		} catch (Exception ex) {
-          ex.printStackTrace();
+			ex.printStackTrace();
 		}
-        System.out.println("RRR");
+		System.out.println("RRR");
 	}
 
-	private String fetchBenefitInformation(String name, WebDriver driver, String type, boolean mandatory,
-			boolean subsectionOPen) throws InterruptedException {
-		System.out.println("fetchBenefitInformation" + name);
+	private String fetchBenefitByProcedure(String name, String[] codes, WebDriver driver, String type,
+			boolean mandatory, boolean subsectionOPen, boolean close, String gradePay) throws InterruptedException {
+		System.out.println("fetchBenefitByProcedure" + name);
 
 		String value = Constants.SCRAPPING_NOT_FOUND;
+		Map<String, List<UnitedConLimitationDto>> dataMap = new HashMap<>();
 		WebElement togggle = null;
 		if (mandatory)
 			value = value + ". " + Constants.SCRAPPING_MANDATORY_WARNING;
@@ -849,254 +478,136 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 			value = "";
 		Thread.sleep(1000);
 		try {
-			List<WebElement> divForNames = driver.findElements(By.className("benefit-category-data"));
-			for (WebElement divForName : divForNames) {
-				WebElement span = divForName.findElements(By.tagName("span")).get(0);
-				String spanText = span.findElements(By.tagName("div")).get(0).getText().trim();
-				if (spanText.equals(name)) {
-					if (type.equals(benefitInNetwork)) {
-						value = span.findElements(By.className("text-center")).get(6).getText().replace("%", "");
+			if (!subsectionOPen) {
+				WebElement formElement = driver.findElement(By.id("j_id_jm"));
+				List<WebElement> maintables = formElement.findElements(By.tagName("table"));
+				for (WebElement maintable : maintables) {
+					if (maintable.getText() != null && maintable.getText().startsWith(name)) {
+						maintable.findElements(By.tagName("span")).get(0).click();
+						Thread.sleep(1000);
 						break;
-					} else if (type.equals(benefitInDeductible)) {
-						value = span.findElements(By.className("text-center")).get(7).getText().replace("%", "");
-						break;
-					} else if (type.equals(benefitWaitingPeriod)) {
+					}
+				}
+			}
+			WebElement formElement = driver.findElement(By.id("j_id_jm"));
+			List<WebElement> maintables = formElement.findElements(By.tagName("table"));
+			for (WebElement maintable : maintables) {
+				if (maintable.getAttribute("id") != null
+						&& maintable.getAttribute("id").equals("benefitDetailAllServiceProceduresList")
+						&& !maintable.getAttribute("class").contains(" hidden")) {
 
-						togggle = span.findElements(By.tagName("div")).get(0);
-						if (true) {
-							togggle.click();
+					Thread.sleep(1000);
 
-							Thread.sleep(3000);
-						}
-						value = divForName.findElement(By.tagName("dd")).getText();
-						break;
-					} else if (type.equals(benefitMaximumLifeTime)) {
+					List<WebElement> trs = formElement.findElements(By.tagName("tr"));
+					trs.remove(0);// remove th row
+					for (WebElement tr : trs) {
+						String code = tr.findElements(By.tagName("td")).get(0).getText();// code
+						try {
+							UnitedConLimitationDto dto = new UnitedConLimitationDto();
+							//String vm="";
+							if (benefitProcCopy.equals(type)) {
 
-						togggle = span.findElements(By.tagName("div")).get(0);
-						if (true) {
-							togggle.click();
-							Thread.sleep(3000);
-						}
-						WebElement table = divForName.findElement(By.tagName("table"));
-						List<WebElement> trs = table.findElements(By.tagName("tr"));
-						for (WebElement tr : trs) {
-							// System.out.println(tr.getText());
-							if (tr.getText().contains("Maximums - Lifetime")) {//
-								value = tr.findElements(By.tagName("td")).get(1).getText().replace("$", "").replace(",",
-										"");
-								break;
+								dto.setCopay(Integer.parseInt(tr.findElements(By.tagName("td"))
+										.get(4).getText().trim().replace("%", "")));//Co Pay
 							}
-							//
-						}
+							if (benefitProAppliedtoded.equals(type)) {
 
-						break;
-					} else if (type.equals(benefitMaximumLifeTimeRem)) {
-
-						togggle = span.findElements(By.tagName("div")).get(0);
-						if (true) {
-							togggle.click();
-							Thread.sleep(3000);
-						}
-						WebElement table = divForName.findElement(By.tagName("table"));
-						List<WebElement> trs = table.findElements(By.tagName("tr"));
-						for (WebElement tr : trs) {
-							// System.out.println(tr.getText());
-							if (tr.getText().contains("Maximums - Lifetime Remaining")) {
-								value = tr.findElements(By.tagName("td")).get(1).getText().replace("$", "").replace(",",
-										"");
-								break;
+								dto.setAppliedtoDed(tr.findElements(By.tagName("td"))
+										.get(4).getText().trim());//Applied to Deductible 
 							}
-							//
+
+								String limitation = tr.findElements(By.tagName("td")).get(5).getText().trim().replace(" | More...", "").trim();// limitation
+								
+								dto.setLimitation(limitation);
+								if (dataMap.get(code) == null) {
+									List<UnitedConLimitationDto> li = new ArrayList<>();
+									li.add(dto);
+									dataMap.put(code, li);
+								} else {
+									List<UnitedConLimitationDto> li = dataMap.get(code);
+									li.add(dto);
+									dataMap.put(code, li);
+
+								}
+							
+						} catch (Exception n) {
+							UnitedConLimitationDto dto = new UnitedConLimitationDto();
+							dto.setCopay(-1);
+							List<UnitedConLimitationDto> li = new ArrayList<>();
+							li.add(dto);
+							dataMap.put(code,li);
 						}
 					}
+
 					break;
 				}
 			}
-
+			
+			int coPay=-1;
+			
+			boolean found=false;
+			for (Map.Entry<String,List<UnitedConLimitationDto>> entry : dataMap.entrySet()) {
+				//List<UnitedConLimitationDto> li=entry.getValue();
+				
+				if (benefitProAppliedtoded.equals(type)) {
+					for(UnitedConLimitationDto dto:entry.getValue()) {
+					 if (dto.getAppliedtoDed().equalsIgnoreCase("yes")) {
+						 value="Yes";
+						 found=true;
+						 break;
+					 }
+					 
+					}
+				}
+				if (benefitProAppliedtoded.equals(type) && found) {
+					break;
+				}
+				if (benefitProcCopy.equals(type)) {
+            		if (codes!=null) {
+            			for(String cd:codes) {
+            				if (entry.getKey().equals(cd)){
+            					for(UnitedConLimitationDto dto:entry.getValue()) {
+            						
+            						if (!gradePay.equals("") && gradePay.contains(dto.getLimitation())) { 
+            							found=true;
+            							coPay=dto.getCopay();
+            							break;
+            		                 }else if (gradePay.equals("")){
+            		                	found=true;
+            		                	coPay=dto.getCopay();
+            		                	break;
+            		                 }
+            					
+            				    }
+            			}
+            		}
+            	}//codes null
+            	if (!found) {
+            		for(UnitedConLimitationDto dto:entry.getValue()) {
+						
+						if (!gradePay.equals("") && gradePay.contains(dto.getLimitation())) { 
+							if(coPay< dto.getCopay()) coPay=dto.getCopay();
+		                 }else if (gradePay.equals("")){
+		                	 if(coPay< dto.getCopay()) coPay=dto.getCopay();
+		                 }
+					
+				    }
+            	}
+	            
+			 }//co pay
+		   }
+			if (benefitProcCopy.equals(type)) {
+				if (coPay==-1) value=""; 
+				else value=coPay+"";
+			}
+			if (close) {
+				// click on Toogle
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return value + " " + Constants.SCRAPPING_ISSUE_FETCHING;
 		}
-		if (togggle != null)
-			togggle.click();
 		return value;
-	}
-
-	private String callBenefitCodeUrl(String code, WebDriver driver, PatientTemp temp) {
-		System.out.println("CALLED--URL...");
-		String data = "";
-		try {
-			String url = "https://www.dnoaconnect.com/members/" + temp.getReferenceId() + "/procedureBenefits/"
-					+ code.substring(1);
-			navigatetoUrl(driver, url, 2000);
-			data = driver.getPageSource();
-			// System.out.println("data");
-			// System.out.println(data);
-			data = data.replace("</pre></body></html>", "");
-			data = "{\"subscriber\":" + data.split("\"subscriberId\":")[1];
-			JSONObject jsonObj = new JSONObject(data);
-			if (jsonObj.get("procedureStatus").toString().equals("active")) {
-
-			} else {
-				data = "";
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			data = "";
-			// TODO: handle exception
-		}
-		return data;
-
-	}
-
-	/**
-	 * 
-	 * @param code
-	 * @param driver
-	 * @param type
-	 * @param mandatory
-	 * @param directoryValues
-	 *            mean Procedure code is already Clicked
-	 * @return
-	 * @throws InterruptedException
-	 */
-	private String fetchValueByCode(String code, PatientTemp temp, WebDriver driver, String type, boolean mandatory,
-			boolean directValues, boolean close) throws InterruptedException {
-		System.out.println("fetchValueByCode" + code + " " + type);
-		String value = Constants.SCRAPPING_NOT_FOUND;
-		if (mandatory)
-			value = value + ". " + Constants.SCRAPPING_MANDATORY_WARNING;
-		if (!directValues) {
-			temp.setProcedureData(callBenefitCodeUrl(code, driver, temp));
-			// check for code existence
-		}
-		value = Constants.SCRAPPING_MAIN_CONDTION_MET;
-		try {
-			if (type.equals(inNetworkCoinsurance)) {
-				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
-				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
-				// jsonObj = ja.get("coinsuranceInNetwork").toString();
-				value = ja.get("coinsuranceInNetwork").toString().replace("%", "");
-
-				/*
-				 * WebElement div = driver.findElement(By.xpath(
-				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[1]/div[2]/dl/div")); value
-				 * =div.findElements(By.tagName("dd")).get(0).getText().replace("%","");
-				 */
-			} else if (type.equals(inNetworkDeductible)) {
-				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
-				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
-				// jsonObj = ja.get("coinsuranceInNetwork").toString();
-				Object t = ja.get("deductibleMetInNetwork");
-				if (t == null)
-					value = "N/A";
-				else
-					value = t.toString().replace("null", "N/A");
-				/*
-				 * WebElement div =driver.findElement(By.xpath(
-				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[1]/div[2]/dl/div")); value
-				 * =div.findElements(By.tagName("dd")).get(1).getText();
-				 */
-
-			} else if (type.equals(lastrowunder2ndcolumn)) {
-
-				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
-				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
-				JSONObject limit = (JSONObject) ja.get("limitations");
-				value = ja.get("coinsuranceInNetwork").toString().replace("%", "");
-				if (!value.equals("0")) {
-					value = limit.get("occurrences").toString() + "X" + limit.get("length").toString()
-							+ limit.get("unit").toString();
-					if (value.equals("nullXnullnull"))
-						value = "";
-				} else {
-					value = "N/A";
-				}
-				value = FreqencyUtils.convertFrequecyString(siteName, value);
-				/*
-				 * WebElement div =driver.findElement(By.xpath(
-				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[2]")); try { value
-				 * =FreqencyUtils.convertFrequecyString(siteName,div.findElements(By.tagName(
-				 * "dt")).get(0).getText()); }catch (Exception e) { value=""; }
-				 */
-
-			} else if (type.equals(lastrowunder2ndcolumnNext)) {
-				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
-				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
-				JSONObject limit = (JSONObject) ja.get("limitations");
-				JSONArray proc = (JSONArray) limit.get("procedures");
-				if (proc != null && proc.length() > 0) {
-					value = "";
-					String comma = "";
-					for (int i = 0; i < proc.length(); i++) {
-						JSONObject childObject = proc.optJSONObject(i);
-						JSONArray ar = (JSONArray) childObject.get("codes");
-						if (ar != null && ar.length() > 0) {
-							for (int j = 0; j < ar.length(); j++) {
-								// System.out.println(ar.get(j));
-								value = value + comma + ar.get(j);
-								comma = ",";
-
-							}
-						}
-					}
-				}
-
-				/*
-				 * WebElement div =driver.findElement(By.xpath(
-				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[2]")); try { value
-				 * =div.findElements(By.tagName("dd")).get(0).getText(); }catch (Exception e) {
-				 * value=""; }
-				 */
-			} else if (type.equals(uptoAge)) {
-				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
-				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
-				JSONObject limit = (JSONObject) ja.get("limitations");
-				value = ((Integer) limit.get("ageMaximum")).toString();
-				/*
-				 * WebElement div =driver.findElement(By.xpath(
-				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[1]/dl")); value
-				 * =MessageUtil.removeUptoAge(siteName,div.findElements(By.tagName("dt")).get(0)
-				 * .getText());
-				 */
-			} else if (type.equals(otherLimitations)) {
-				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
-				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
-				JSONObject limit = (JSONObject) ja.get("limitations");
-				JSONArray proc = (JSONArray) limit.get("limitedToTeeth");
-				if (proc != null && proc.length() > 0) {
-					value = "";
-					String comma = "";
-					for (int i = 0; i < proc.length(); i++) {
-						// System.out.println(proc.optString(i));
-						value = value + comma + proc.optString(i);
-						comma = ",";
-					}
-				}
-
-				/*
-				 * WebElement dd =driver.findElement(By.xpath(
-				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[1]/dl/span[3]/dd"));
-				 * if (dd.getText().startsWith("Limited to teeth")) value
-				 * =MessageUtil.removeLimitedToteeth(siteName,dd.getText()); else value
-				 * =Constants.SCRAPPING_ISSUE_FETCHING;
-				 */
-
-			}
-		} catch (Exception x) {
-			x.printStackTrace();
-			return value + " " + Constants.SCRAPPING_ISSUE_FETCHING;
-		}
-		// Close Button
-		/*
-		 * if (close) { try { driver.findElement(By.xpath(
-		 * "/html/body/div[1]/div/div/div[4]/div/div/div/button")).click();
-		 * 
-		 * }catch (Exception e) { // TODO: handle exception } }
-		 */
-		System.out.println("VALUE:" + value);
-		return value;
-
 	}
 
 	private void navigatetoUrl(WebDriver driver, String url, int sec)
@@ -1166,7 +677,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 	public static void main(String[] main)
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
 		System.out.println("ssda");
-
+		System.out.println("taskkill /f /im chromedriver.exe");
 		String g = "[{Deepak$,.[{";
 		try {
 			System.out.println(g.replaceFirst("\\[\\{", "{"));
@@ -1195,6 +706,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 		psc.setLastName("D. BIAS");
 		psc.setMemberId("01144286800");
 		psc.setSsnNumber("");
+		psc.setGradePay("");
 
 		l.add(psc);
 		// dto.setPassword("Smile123");
@@ -1208,7 +720,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl  implements Callable<
 		 */
 
 		dto.setSiteUrl("https://www.unitedconcordia.com/dental-insurance/dentist/");
-		UnitedConcordiaImpl i = new UnitedConcordiaImpl(null, null, null, dto, null, null,1,"",
+		UnitedConcordiaImpl i = new UnitedConcordiaImpl(null, null, null, dto, null, null, 1, "",
 				"D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
 		i.setProps("9500");
 		// i.scrappingSiteDetails = f;

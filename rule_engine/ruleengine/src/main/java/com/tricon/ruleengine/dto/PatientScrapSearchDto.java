@@ -16,6 +16,8 @@ public class PatientScrapSearchDto {
 	private String ssnNumber;
 	private String memberId;
 	private String locationProvider;
+	private String gradePay;
+	
 	
 	public String getPatientId() {
 		return patientId;
@@ -64,6 +66,12 @@ public class PatientScrapSearchDto {
 	}
 	public void setMemberId(String memberId) {
 		this.memberId = memberId;
+	}
+	public String getGradePay() {
+		return gradePay;
+	}
+	public void setGradePay(String gradePay) {
+		this.gradePay = gradePay;
 	}
 
 	
