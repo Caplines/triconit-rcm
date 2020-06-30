@@ -69,7 +69,7 @@ export class ReportComponent implements OnInit {
 	}
 
 	reportParam(value,e) {
-		console.log(e);
+		//console.log(e);
 		this.mainReportName=e.target.text;
 		this.report = new ReportModel();
 		let filter = this.showParam;
@@ -160,6 +160,9 @@ export class ReportComponent implements OnInit {
 				if (result.status === 'OK') {
 					this.reportData = result.data;
                    if (this.report.reportType === 'ivfRDBMS' || this.report.reportType === 'ivfRDBMSWebsiteParse') {
+                	   if (this.report.reportType === 'ivfRDBMSWebsiteParse'){
+                		   this.reportData= this.convertLocalTime(this.reportData);
+                       }
 						this.arrayOfKeys = this.reportData;
 						//console.log("v",this.arrayOfKeys);
 					} else {
@@ -263,6 +266,21 @@ export class ReportComponent implements OnInit {
 				ths.users = result.data
 			}
 		})
+	}
+	
+	convertLocalTime(rpdata:any){
+		//console.log(rpdata);
+		rpdata.forEach(function (value) {  
+			  //console.log(value.createdDate);
+			  if (value.createdDate!=''){
+				  let a =value.createdDate.split(" ");
+				  let a0=a[0].split("/");
+				  let dt:any=new Date(a0[1]+"/"+a0[0]+'/'+a0[2]+" "+a[1]+" UTC");
+				  //console.log(dt);
+				  value.createdDate=dt.getDate()+"/"+(dt.getMonth()+1)+"/"+(dt.getYear()+1900)+" "+dt.getHours()+":"+dt.getMinutes()+":"+dt.getSeconds();
+			  }
+			}); 
+		return rpdata;
 	}
 
 }
