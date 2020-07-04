@@ -1000,28 +1000,6 @@ public class FreqencyUtils {
 		//2  :Twice per benefit period consisting of codes:
 		//3  :6 times per benefit period consisting of codes
 	/*
-	 	System.out.println(convertFrequecyString("","Once per tooth per 60 months consisting of codes:"));
-		System.out.println(convertFrequecyString("","Once per 36 months consisting of codes:"));
-		System.out.println(convertFrequecyString("","Twice per benefit period consisting of codes:"));
-		System.out.println(convertFrequecyString("","Once per tooth per lifetime consisting of codes:"));
-		System.out.println(convertFrequecyString("","4 times per benefit period consisting of codes:"));
-		System.out.println(convertFrequecyString("","Once per 12 months consisting of codes:"));
-		System.out.println(convertFrequecyString("","Once per benefit period consisting of codes:"));
-		System.out.println(convertFrequecyString("","Once per tooth per lifetime consisting of codes:"));
-		System.out.println(convertFrequecyString("","Once per 60 months consisting of codes:"));
-		System.out.println(convertFrequecyString("","Once per tooth per 12 months consisting of codes:"));
-		System.out.println(convertFrequecyString("","Once per 36 months consisting of codes:"));
-		System.out.println(convertFrequecyString("","Once per quadrant per 24 months consisting of codes:"));
-		
-		
-	 */
-	}
-
-	public static void main(String [] a) {
-		System.out.println(convertFrequecyString("","0"));
-		
-		System.out.println(convertFrequecyString("","no frequency"));
-		 
 		System.out.println(convertFrequecyDentaString("","Benefit is limited to two of any oral evaluation procedure within a calendar year"));
 		System.out.println(convertFrequecyDentaString("","Benefit is based on professional determination"));
 		System.out.println(convertFrequecyDentaString("","Benefit is limited to two of any oral evaluation procedure within a calendar year. Comprehensive evaluations are limited to once per provider."));
@@ -1058,7 +1036,97 @@ public class FreqencyUtils {
 	    System.out.println(convertFrequecyDentaString("", "Benefit is limited to once per surface, per tooth within a 12 month period"));
 	    System.out.println(convertFrequecyDentaString("", ""));
 	    System.out.println(convertFrequecyDentaString("", "1234567891011121314as ddadas sssdsd").split("----")[1]);
-	    
+		
+		
+	 */
+	}
+
+	public static String convertFrequecyUCCIString(String text) {
+		// 3 Per 12 Months | 2 Per 12 Months ~ Per Office 
+		try {
+		text=text.trim().toLowerCase();
+		String convert="";
+		text=text.replaceAll("~", "");
+		
+		if (text.contains("no coverage due to age limitation"))	text="0";
+		if (text.contains("not covered")) text="0";
+		text=text.replace("in combination with routine cleanings", "");
+		text=text.replace("bitewings four Films-", "");
+		text=text.replace("per office", "");
+		text=text.replace("| more...", "");
+		text=text.replace("ortho related", "");
+		text=text.replace("per area of the mouth", "");
+		if (text.contains("per day")) {
+		  text=text.replace("per day", "");
+		 
+		}
+		if (text.contains("per tooth")) {//1 Per Tooth ~ Per 3 Years
+			text=text.replace(" per tooth ", "Per-Tooth");
+		}
+		if (text.contains("per") && text.contains("months")) {
+			String temp[] = text.split(" ");
+			int count = 0;
+			for (int i = 0; i < temp.length; i++) {
+			if ("months".equals(temp[i]))
+			count++;
+			}
+			if (count>1) {
+				text=text.replaceAll("\\|", "");
+				System.out.println("AAAA="+text);
+				String regex = "(.*?)per(.*?)months(.*?)per(.*?)months(.*?)";
+				Pattern pattern = Pattern.compile(regex);
+				Matcher matcher = pattern.matcher(text);
+				int p1=0;
+				int m1=0;
+				int p2=0;
+				int m2=0;
+				
+				if(matcher.matches() && matcher.groupCount()>=5) {
+				    p1=Integer.parseInt(matcher.group(1).trim());
+				    m1=Integer.parseInt(matcher.group(2).trim());
+				    p2=Integer.parseInt(matcher.group(3).trim());
+				    
+				    m2=Integer.parseInt(matcher.group(4).trim());
+				    if (p1>p2) {
+				    	convert=p2+"x"+m2+"Mo";
+				    }else {
+				    	convert=p1+"x"+m1+"Mo";
+				    }
+				}else {
+					convert=matcher.group(0).trim();
+				}
+			}else {
+				String regex = "(.*?)per(.*?)months(.*?)";
+				Pattern pattern = Pattern.compile(regex);
+				Matcher matcher = pattern.matcher(text);
+				if(matcher.matches() && matcher.groupCount()>=3) {
+				    convert=matcher.group(1).trim()+"x"+matcher.group(2).trim()+"Mo";
+				}
+			}
+		}else if (text.contains("calendar year")){
+			convert=text.replaceAll("[a-zA-Z]", "").trim()+"xCY";
+			
+		}else if (text.contains("in network/blank")){
+			convert="No Frequency";
+		}else if (text.contains("in network")){
+			convert="No Frequency";
+		}else if (text.contains("blank")){
+			convert="No Frequency";
+		}else if (text.contains("")){
+			convert="No Frequency";
+		}
+		System.out.println("Con-"+convert);
+		return convert;
+		}catch (Exception e) {
+			return "ISSUE";
+		}
+	}
+		public static void main(String [] a) {
+			convertFrequecyUCCIString("1 Per 12 Months | 2 Per 122 Months ~ Per Office ");
+			convertFrequecyUCCIString("2 Per 122 Months ~ Per Office ");
+			convertFrequecyUCCIString("2 Per Calendar Year");
+			convertFrequecyUCCIString("In Network/Blank");
+		    convertFrequecyUCCIString("4 Per Calendar Year ~ In Combination With Routine Cleanings");
 	    
 	    
 	}

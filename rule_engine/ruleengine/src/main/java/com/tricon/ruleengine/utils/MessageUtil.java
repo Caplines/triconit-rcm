@@ -39,6 +39,37 @@ public class MessageUtil {
 		if (text.equalsIgnoreCase("Satisfied")) return "No";
 		else return "Yes";
 	}
+	
+	public static void main(String [] a) {
+		System.out.println(getTEXTWaitingPeriodBCBS("Will be satisfied on 5/1/2021", "2020-05-01"));
+	}
+	public static String getTEXTWaitingPeriodBCBS(String text,String efective) {
+		if (text.contains(Constants.SCRAPPING_MANDATORY_WARNING)
+			|| text.contains(Constants.SCRAPPING_NOT_FOUND)
+			||text.contains(Constants.SCRAPPING_ISSUE_FETCHING)
+				) return text;
+		
+		System.out.println("getTEXTWaitingPeriodBCBS - "+text);//
+		try {
+			text=text.toLowerCase().replaceAll("[a-zA-Z]", "").trim();//5/1/2021
+			//String [] efectiveA=efective.split("-");//2020-05-01 //yyyy-mm-dd
+			//String efectiveNew = ((efectiveA[0].length() == 1) ? ("0" + efectiveA[0]) : efectiveA[0]) + "/"
+			//		+ ((efectiveA[1].length() == 1) ? ("0" + efectiveA[1]) : efectiveA[1]) + "/" + efectiveA[2];
+			String [] textA=text.split("/");//2020-05-01 //yyyy-mm-dd
+			String textANew = textA[2]+"-"+((textA[0].length() == 1) ? ("0" + textA[0]) : textA[0]) + "-"
+					+ ((textA[1].length() == 1) ? ("0" + textA[1]) : textA[1]);
+			String r=DateUtils.getDiffBetweenMonthsIV(efective, textANew);
+			System.out.println(r);
+			return r;
+			
+			
+			
+		}catch(Exception x) {
+			System.out.println("No");
+			return "No";
+		}
+		
+	}
 
 	public static String removeUptoAge(String siteName, String text) {
 		return text.replace("Up to Age ", "").replace(":", "");

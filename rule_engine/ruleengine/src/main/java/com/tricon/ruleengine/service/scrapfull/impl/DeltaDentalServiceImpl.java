@@ -1353,7 +1353,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 		// //template1:r1:1:r1:1:r1:0:t1:3:commandLink1
 
 		System.out.println("dd" + dd);
-		Set<PatientHistoryTemp> hisSet = temp.getPatientHistory();
+		List<PatientHistoryTemp> hisSet = temp.getPatientHistory();
 		openSideBarFirst(driver, "Treatment history", false, null, false, temp);
 		fetchHistoryformation(driver, hisSet);
 		System.out.println("999");
@@ -1486,7 +1486,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 		}
 	}
 
-	private void fetchHistoryformation(WebDriver driver, Set<PatientHistoryTemp> setHis) throws InterruptedException {
+	private void fetchHistoryformation(WebDriver driver, List<PatientHistoryTemp> setHis) throws InterruptedException {
 		Thread.sleep(3000);
 		System.out.println(driver.getCurrentUrl());
 

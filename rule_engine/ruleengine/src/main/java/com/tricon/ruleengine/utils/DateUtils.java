@@ -461,6 +461,27 @@ public class DateUtils {
 		//return "0";
 		
 	}
+	public static String getDiffBetweenMonthsIV(String s,String e) {
+		
+		try {
+		Date startDate=Constants.SIMPLE_DATE_FORMAT_IVF.parse(s);
+		Date endDate=Constants.SIMPLE_DATE_FORMAT_IVF.parse(e);
+		
+		Calendar startCalendar = new GregorianCalendar();
+		startCalendar.setTime(startDate);
+		Calendar endCalendar = new GregorianCalendar();
+		endCalendar.setTime(endDate);
+
+		int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+		return (diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH))+"";
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			return "No";
+		}
+		//return "0";
+		
+	}
+
 	
 	public static void main(String[] a) {
 		  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
