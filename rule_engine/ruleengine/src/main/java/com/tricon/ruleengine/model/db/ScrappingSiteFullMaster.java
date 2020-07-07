@@ -55,6 +55,9 @@ public class ScrappingSiteFullMaster extends BaseAudit implements Serializable{
 	@Column(name = "location_provider")
 	private boolean locationProvider;
 
+	@Column(name = "grade_pay")
+	private boolean gradePay;
+
 	public int getId() {
 		return id;
 	}
@@ -133,6 +136,14 @@ public class ScrappingSiteFullMaster extends BaseAudit implements Serializable{
 
 	public void setMemberId(boolean memberId) {
 		this.memberId = memberId;
+	}
+
+	public boolean isGradePay() {
+		return gradePay;
+	}
+
+	public void setGradePay(boolean gradePay) {
+		this.gradePay = gradePay;
 	}
 
 	
