@@ -8,5 +8,7 @@ export class ScrapFullPatientDataModel {
 	ssnNumber:string="";
     enrolleeId:string="";
     memberId:string="";
+    gradePay:string="";
+
     
 }

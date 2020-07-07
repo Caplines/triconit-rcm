@@ -185,7 +185,13 @@
 							        <input type="text" class="login-signup-form-field form-control" 
 									name="patmem{{ind}}" id="patmem{{ind}}" [(ngModel)]="q.memberId"	/>
 							   </td>
-							   </ng-container>		
+							   </ng-container>
+							   <ng-container *ngIf="scrap.gradePay">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patgr{{ind}}" id="patgr{{ind}}" [(ngModel)]="q.gradePay"	/>
+							   </td>
+							   </ng-container>			
 						    </tr>
 						    </table>
 						    <a href="javascript:void(0)" (click)="createBlankRow(1)" class="btn">Add Patient

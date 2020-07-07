@@ -23,6 +23,8 @@ public class ScrappingFullDataDetailDto {
 	private boolean ssnNumber;
 	private boolean locationProvider;
 	private boolean memberId;
+	private boolean gradePay;
+	
 	
     
     ///
@@ -136,6 +138,12 @@ public class ScrappingFullDataDetailDto {
 	}
 	public void setMemberId(boolean memberId) {
 		this.memberId = memberId;
+	}
+	public boolean isGradePay() {
+		return gradePay;
+	}
+	public void setGradePay(boolean gradePay) {
+		this.gradePay = gradePay;
 	}
  
 	

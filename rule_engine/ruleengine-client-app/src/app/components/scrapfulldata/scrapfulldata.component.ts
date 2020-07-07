@@ -150,6 +150,7 @@ export class ScrapFullDataComponent implements OnInit {
 		 if (sc.ssnNumber) thtml=thtml+"<th  class='data-scroll-thd'>SSN Number</th>";
 		 if (sc.locationProvider) thtml=thtml+"<th  class='data-scroll-thd'>Location Provider</th>";
 		 if (sc.memberId) thtml=thtml+"<th  class='data-scroll-thd'>Member Id</th>";
+		 if (sc.gradePay) thtml=thtml+"<th  class='data-scroll-thd'>Grade Pay</th>";
 		 setTimeout(() => {
 			 if (n==0){
 				 document.getElementById("data-scroll-tr1").innerHTML=thtml;	
@@ -232,6 +233,8 @@ export class ScrapFullDataComponent implements OnInit {
 		   dt.patientId=dt.patientId.trim(); 
 		   dt.ssnNumber=dt.ssnNumber.trim();
 		   dt.enrolleeId=dt.enrolleeId.trim();
+		   dt.gradePay=dt.gradePay.trim();
+		   
 		    if (document.getElementById("pati"+x))document.getElementById("pati"+x).setAttribute("style", "border-color: ;");
 		    if (document.getElementById("patf"+x))document.getElementById("patf"+x).setAttribute("style", "border-color: ;");
 		    if (document.getElementById("patl"+x))document.getElementById("patl"+x).setAttribute("style", "border-color: ;");
@@ -240,13 +243,14 @@ export class ScrapFullDataComponent implements OnInit {
 		    if (document.getElementById("patss"+x))document.getElementById("patss"+x).setAttribute("style", "border-color: ;");
 		    if (document.getElementById("patloc"+x))document.getElementById("patloc"+x).setAttribute("style", "border-color: ;");
 		    if (document.getElementById("patmem"+x))document.getElementById("patmem"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("patgr"+x))document.getElementById("patgr"+x).setAttribute("style", "border-color: ;");
 		    
 		    
 		 if(!(dt.firstName=="" && dt.lastName=="" &&
 		   dt.patientId=="" && dt.dob=="" &&
 		   dt.locationProvider=="" && dt.memberId=="" &&
 		   dt.patientId==""  &&  dt.ssnNumber=="" &&
-		   dt.enrolleeId=="")){
+		   dt.enrolleeId=="" && dt.gradePay=="")){
 			 ax.push(dt);
 			 //console.log(this.site.name);
 			 if (this.site.name=='BCBS'){
@@ -285,7 +289,30 @@ export class ScrapFullDataComponent implements OnInit {
 					 ret =false;
 				 }
 				 */
-			 } 
+			 }
+            if (this.site.name=='United Concordia'){
+				 
+				 if(dt.dob==""){
+					 document.getElementById("patd"+x).setAttribute("style", "border-color: red;");
+					 ret =false;
+				 }
+				 if(dt.firstName==""){
+					 document.getElementById("patf"+x).setAttribute("style", "border-color: red;");
+					 ret =false;
+				 }
+				 if(dt.lastName==""){
+					 document.getElementById("patl"+x).setAttribute("style", "border-color: red;");
+					 ret =false;
+				 }
+				 
+				 if(dt.memberId==""){
+					 document.getElementById("patss"+x).setAttribute("style", "border-color: red;");
+					 document.getElementById("patmem"+x).setAttribute("style", "border-color: red;");
+					 
+					 ret =false;
+				 }
+				 
+			 }
 			 
 		 }
 		 
@@ -302,6 +329,14 @@ export class ScrapFullDataComponent implements OnInit {
 	   }
 	   if (ax.length==0){
 		   if (this.site.name=='Delta Dental'){
+		    if (document.getElementById("patd"+0))document.getElementById("patd"+0).setAttribute("style", "border-color: red;");
+		    if (document.getElementById("patf"+0))document.getElementById("patf"+0).setAttribute("style", "border-color: red;");
+		    if (document.getElementById("patl"+0))document.getElementById("patl"+0).setAttribute("style", "border-color: red;");
+		    ret =false;
+		   }
+	   }
+	   if (ax.length==0){
+		   if (this.site.name=='United Concordia'){
 		    if (document.getElementById("patd"+0))document.getElementById("patd"+0).setAttribute("style", "border-color: red;");
 		    if (document.getElementById("patf"+0))document.getElementById("patf"+0).setAttribute("style", "border-color: red;");
 		    if (document.getElementById("patl"+0))document.getElementById("patl"+0).setAttribute("style", "border-color: red;");

@@ -1043,9 +1043,11 @@ public class FreqencyUtils {
 
 	public static String convertFrequecyUCCIString(String text) {
 		// 3 Per 12 Months | 2 Per 12 Months ~ Per Office 
+		//For grade pay -- Endodontic Procedures
 		try {
 		text=text.trim().toLowerCase();
 		String convert="";
+		System.out.println("TTT:"+text);
 		text=text.replaceAll("~", "");
 		
 		if (text.contains("no coverage due to age limitation"))	text="0";
@@ -1054,8 +1056,15 @@ public class FreqencyUtils {
 		text=text.replace("bitewings four Films-", "");
 		text=text.replace("per office", "");
 		text=text.replace("| more...", "");
+		text=text.replace("CONUS |", "");
+		//1 Per 36 Months | Age 5 And Older |
 		text=text.replace("ortho related", "");
 		text=text.replace("per area of the mouth", "");
+		text=text.replace("pay grades e1 thru e4 | ", "");
+		text=text.replace("all other pay grades | ", "");
+		text=text.replace("in combination with cleanings", "");
+		text=text.replace("no alternate benefit", "");
+		text=text.replace("per inpatient or short procedure unit", "");
 		if (text.contains("per day")) {
 		  text=text.replace("per day", "");
 		 
@@ -1064,6 +1073,10 @@ public class FreqencyUtils {
 			text=text.replace(" per tooth ", "Per-Tooth");
 		}
 		if (text.contains("per") && text.contains("months")) {
+			String pDent="";
+			if (text.contains("per dentist")){
+				pDent="xprovider";
+			}
 			String temp[] = text.split(" ");
 			int count = 0;
 			for (int i = 0; i < temp.length; i++) {
@@ -1072,7 +1085,6 @@ public class FreqencyUtils {
 			}
 			if (count>1) {
 				text=text.replaceAll("\\|", "");
-				System.out.println("AAAA="+text);
 				String regex = "(.*?)per(.*?)months(.*?)per(.*?)months(.*?)";
 				Pattern pattern = Pattern.compile(regex);
 				Matcher matcher = pattern.matcher(text);
@@ -1102,10 +1114,41 @@ public class FreqencyUtils {
 				if(matcher.matches() && matcher.groupCount()>=3) {
 				    convert=matcher.group(1).trim()+"x"+matcher.group(2).trim()+"Mo";
 				}
+				
+			if (!pDent.equals("")) {
+				convert=convert.replace("x", pDent+"x");
+			}
 			}
 		}else if (text.contains("calendar year")){
 			convert=text.replaceAll("[a-zA-Z]", "").trim()+"xCY";
 			
+		}else if (text.contains("per consultant")){
+			convert=text.split("per consultant")[0].trim();
+			
+		}else if (text.contains("per") && text.contains("years")){
+			
+			String regex = "(.*?)per(.*?)years(.*?)";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(text);
+			System.err.println("BR-"+matcher.groupCount());
+			if(matcher.matches() && matcher.groupCount()>=3) {
+			 String tp=" per"+matcher.group(2)+"years";
+			 convert=text.replace(tp, "x"+matcher.group(2).trim()+"CY");
+			 if (convert.contains("Per-Tooth")) {
+				 convert=convert.replace("Per-Tooth", "xPer-Tooth");
+			 }
+			 
+			}
+		}else if (text.contains("calendar") && text.contains("year")){
+			convert=text.replaceAll("[a-zA-Z]","").trim()+"xCY";
+			if (text.contains("Per-Tooth")) {
+				convert=convert.replace("-","x").replace("xLT", "per-ToothxLT");
+		 }		
+		}else if (text.contains("per lifetime")){
+			convert=text.replaceAll("[a-zA-Z]","").trim()+"xLT";
+			if (text.contains("Per-Tooth")) {
+				convert=convert.replace("-","x").replace("xLT", "per-ToothxLT");
+		 }		
 		}else if (text.contains("in network/blank")){
 			convert="No Frequency";
 		}else if (text.contains("in network")){
@@ -1122,14 +1165,29 @@ public class FreqencyUtils {
 		}
 	}
 		public static void main(String [] a) {
-			convertFrequecyUCCIString("1 Per 12 Months | 2 Per 122 Months ~ Per Office ");
+			convertFrequecyUCCIString("1 Per 12 M"
+					+ "onths | 2 Per 122 Months ~ Per Office ");
 			convertFrequecyUCCIString("2 Per 122 Months ~ Per Office ");
 			convertFrequecyUCCIString("2 Per Calendar Year");
 			convertFrequecyUCCIString("In Network/Blank");
 		    convertFrequecyUCCIString("4 Per Calendar Year ~ In Combination With Routine Cleanings");
-	    
-	    
-	}
+		    convertFrequecyUCCIString("1 Per 36 Months | Age 5 And Older |");
+		    convertFrequecyUCCIString("Pay Grades E1 thru E4 | 1 Per Tooth ~ Per Lifetime | More...");
+		    //Pay Grades E1 thru E4 | 1 Per Tooth ~ Per Lifetime | More...
+	        //Pay Grades E1 thru E4 | 1 Per Tooth ~ Per Lifetime ~ Anterior Primary Teeth ~ Under 6 Years Of Age ~ Posterior Primary Teeth ~ Under 11 Years Of Age | More...
+		    convertFrequecyUCCIString("1 Per 12 Months ~ Per Dentist");
+		    convertFrequecyUCCIString("1 Per Lifetime");
+		    convertFrequecyUCCIString("1 Per Tooth ~ Per Lifetime");
+		    convertFrequecyUCCIString("1 Per Tooth ~ Per 3 Years");
+		    convertFrequecyUCCIString("1 Per 5 Years");
+		    convertFrequecyUCCIString("1 Per Tooth ~ Per 3 Years");
+		    convertFrequecyUCCIString("1 Per 5 Years");
+		    convertFrequecyUCCIString("1 Per Tooth ~ Per 5 Years");
+		    convertFrequecyUCCIString("2 Per Calendar Year");
+		    convertFrequecyUCCIString("4 Per Calendar Year ~ In Combination With Routine Cleanings");
+		    
+		    
+		}
 
 	
 }
