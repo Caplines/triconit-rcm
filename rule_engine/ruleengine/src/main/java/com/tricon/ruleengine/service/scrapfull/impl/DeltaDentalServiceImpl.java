@@ -1084,8 +1084,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 		benefitInfoMap.put("D6065", dt);// i
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract });// 114
-		dt.setMandatory(new boolean[] { false });
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 114 122
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D9945", dt);// j
 
@@ -1140,16 +1140,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 		benefitInfoMap.put("D5226", dt);// f
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 114 122
-		dt.setMandatory(new boolean[] { false, false });
-		dt.setAge(age);
-		benefitInfoMap.put("D9945", dt);// g
-
-		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 51 52 53
 		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
-		benefitInfoMap.put("D4910", dt);// i
+		benefitInfoMap.put("D4910", dt);//g
 
 		// 117
 		// 119
@@ -1399,7 +1393,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 				ret = val;
 			}
 		}
-		System.out.println("VAL RET--" + val);
+		System.out.println("VAL RET--" + ret);
 
 		return ret;
 	}
@@ -1413,7 +1407,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 		js.executeScript(bluff);
 		// }
 		// System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-		Thread.sleep(3000);
+		Thread.sleep(4000);
 		// WebElement dd =
 		// driver.findElement(By.id("template1:r1:1:r1:1:r1:0:r4:0:cellFormat3"));
 		// Actions actions = new Actions(driver);
@@ -1431,7 +1425,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 					// Actions actions = new Actions(driver);
 
 					// actions.moveToElement(li).click();
-					String counterLink = li.getAttribute("id");
+					//String counterLink = li.getAttribute("id");
 					// System.out.println(li.getAttribute("id"));
 					// asdadad anscetor logic
 					//
@@ -2248,16 +2242,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 
 	public static void main(String[] main)
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
-		System.out.println("ssda");
 		System.out.println("taskkill /f /im chromedriver.exe");
-		String g = "[{Deepak$,.[{";
 		try {
-			String val="Child up to and not including age 19";
-			System.out.println("123".matches("(.*?)[a-zA-Z](.*?)"));
-			System.out.println("s".matches("(.*?)[a-zA-Z](.*?)"));
-			val=val.replaceAll("[a-zA-Z]", "").trim();
-			System.out.println("val-"+val);
-			System.out.println(g.replaceFirst("\\[\\{", "{"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2280,7 +2266,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl  implements Callab
 		psc.setDob("03/20/1992");
 		psc.setFirstName("Heather");
 		psc.setLastName("Griffith");
-		psc.setMemberId("1125727908");// 632307605
+		psc.setMemberId("");//1125727908.. 632307605
 		psc.setSsnNumber("");
 
 		l.add(psc);

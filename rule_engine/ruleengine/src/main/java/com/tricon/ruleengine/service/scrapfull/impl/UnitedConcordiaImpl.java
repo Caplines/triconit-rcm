@@ -55,6 +55,9 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 	private static String benefitProcCopy = "Coverage % or Copay $";
 	private static String benefitProAppliedtoded = "Applied to Deductbile";
 	private static String benefitProcLimitation = "Limitation";
+	private static String benefitProcLimitationSentence="Sentence Under 14 Years Of Age";
+	private static String benefitProcLimitationSentencePrimayMolar="Primary & Molars";
+	private static String benefitProcLimitationSentencePermanentMolar="Permanent & Molars";
 	// private static String referenceId;
 	// private static String procedureData;
 
@@ -451,28 +454,141 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		// openSideBarFirst(driver,"Procedure History");
 		fetchHistoryformation(driver, hisSet);
 
+		dtemp.setMissingToothClause(fetchCordinationBenefit("Coordination and Other Benefits", driver,
+				"Missing Tooth Clause", true, false, false));// 16
+
+		dtemp.setReplacementClause(fetchCordinationBenefit("Coordination and Other Benefits", driver,
+				"Prosthetic Prior Placement", true, true, false));// 17
+
+		dtemp.setxRaysBundling(fetchCordinationBenefit("Coordination and Other Benefits", driver,
+				"Accumulate Xrays", true, false, false));// 32
+		
 		dtemp.setPlanAssignmentofBenefits(fetchCordinationBenefit("Coordination and Other Benefits", driver,
-				"Assignment Of Benefits", true, false, false));// 131
+				"Assignment Of Benefits", true, true, false));// 131
 
 		dtemp.setBasicPercentage(fetchBenefitByProcedure("Restorations", new String[] { "D2391", "D2392", "D2393" },
 				driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 5
+		
 		dtemp.setBasicSubjectDeductible(fetchBenefitByProcedure("Restorations", null, driver, benefitProAppliedtoded,
 				false, true, false, temp.getGradePay()));// 6
+		
 		dtemp.setMajorPercentage(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
 				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 7
 
+		dtemp.setMajorSubjectDeductible(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
+				null, driver, benefitProAppliedtoded, true, true, false, temp.getGradePay()));// 8
+
+		dtemp.setEndodonticsPercentage(fetchBenefitByProcedure("Endodontic Procedures",
+				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 9
+
+		dtemp.setEndoSubjectDeductible(fetchBenefitByProcedure("Endodontic Procedures",
+				null, driver, benefitProAppliedtoded, true, true, false, temp.getGradePay()));// 10
+
+		dtemp.setPerioSurgeryPercentage(fetchBenefitByProcedure("Endodontic Procedures",
+				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 11
+
+		dtemp.setPerioSurgerySubjectDeductible(fetchBenefitByProcedure("Endodontic Procedures",
+				null, driver, benefitProAppliedtoded, true, true, false, temp.getGradePay()));// 12
+
+		dtemp.setPreventivePercentage(fetchBenefitByProcedure("Cleanings & Fluoride",
+				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 13
+
+		dtemp.setDiagnosticPercentage(fetchBenefitByProcedure("Preventive Exams",
+				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 14
+
+		dtemp.setNightGuardsD9940Percentage(fetchBenefitByProcedure("Miscellaneous Services",
+				new String[] {"D9944"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 19
+		
 		dtemp.setNightGuardsD9944Fr(fetchBenefitByProcedure("Miscellaneous Services",
-				new String[] {"D9944"}, driver, benefitProcLimitation, false, false, false, temp.getGradePay()));// 121
+				new String[] {"D9944"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 121
 
 		dtemp.setNightGuardsD9945Fr(fetchBenefitByProcedure("Miscellaneous Services",
-				new String[] {"D9945"}, driver, benefitProcLimitation, false, true, false, temp.getGradePay()));// 122
+				new String[] {"D9945"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 122
 
-		fetchBenefitByProcedure("Miscellaneous Services",
-				new String[] {"D9950"}, driver, benefitProcLimitation, false, true, false, temp.getGradePay());
+		dtemp.setsSCD2930FL(fetchBenefitByProcedure("Other Restorations",
+				new String[] {"D2930"}, driver, benefitProcLimitation, false, false, true, temp.getGradePay()));// 22
 		
-		fetchBenefitByProcedure("Miscellaneous Services",
-				new String[] {"D9950"}, driver, benefitProcCopy, false, true, false, temp.getGradePay());
-		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));
+		dtemp.setsSCD2931FL(fetchBenefitByProcedure("Other Restorations",
+				new String[] {"D2931"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 23
+		
+		dtemp.setExamsD0120FL(fetchBenefitByProcedure("Preventive Exams",
+				new String[] {"D0120"}, driver, benefitProcLimitation, false, false, true, temp.getGradePay()));// 24
+		
+		dtemp.setExamsD0140FL(fetchBenefitByProcedure("Preventive Exams",
+				new String[] {"D0140"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 25
+		
+		dtemp.seteExamsD0145FL(fetchBenefitByProcedure("Preventive Exams",
+				new String[] {"D0145"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 26
+		
+		dtemp.setExamsD0150FL(fetchBenefitByProcedure("Preventive Exams",
+				new String[] {"D0150"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 27
+		
+		dtemp.setpAXRaysPercentage(fetchBenefitByProcedure("X-rays",
+				new String[] { "D0220"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 15
+
+		dtemp.setxRaysBWSFL(fetchBenefitByProcedure("X-rays",
+				new String[] {"D0272","D0274"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 28
+		
+		dtemp.setxRaysPAD0220FL(fetchBenefitByProcedure("X-rays",
+				new String[] {"D0220"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 29
+
+		dtemp.setxRaysPAD0230FL(fetchBenefitByProcedure("X-rays",
+				new String[] {"D0230"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 30
+		
+		dtemp.setxRaysFMXFL(fetchBenefitByProcedure("X-rays",
+				new String[] {"D0210"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 31
+		
+		dtemp.setFlourideD1208FL(fetchBenefitByProcedure("Cleanings & Fluoride",
+				new String[] {"D1208"}, driver, benefitProcLimitation, false, false, true, temp.getGradePay()));// 33
+		
+		dtemp.setFlourideAgeLimit(fetchBenefitByProcedure("Cleanings & Fluoride",
+				new String[] {"D1208"}, driver, benefitProcLimitationSentence, false, true, true, temp.getGradePay()));// 34
+		
+		dtemp.setVarnishD1206FL(fetchBenefitByProcedure("Cleanings & Fluoride",
+				new String[] {"D1206"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 35
+		
+		dtemp.setVarnishD1206AgeLimit(fetchBenefitByProcedure("Cleanings & Fluoride",
+				new String[] {"D1206"}, driver, benefitProcLimitationSentence, false, true, true, temp.getGradePay()));// 36
+		
+		dtemp.setProphyD1110FL(fetchBenefitByProcedure("Cleanings & Fluoride",
+				new String[] {"D1110"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 42
+
+		dtemp.setProphyD1120FL(fetchBenefitByProcedure("Cleanings & Fluoride",
+				new String[] {"D1120"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 43
+
+		dtemp.setSealantsD1351Percentage(fetchBenefitByProcedure("Sealants",
+				new String[] {"D1351"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 37
+
+		dtemp.setSealantsD1351FL(fetchBenefitByProcedure("Sealants",
+				new String[] {"D1351"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 38
+
+		dtemp.setSealantsD1351AgeLimit(fetchBenefitByProcedure("Sealants",
+				new String[] {"D1351"}, driver, benefitProcLimitationSentence, false, true, true, temp.getGradePay()));// 39
+		
+		dtemp.setSealantsD1351AgeLimit(fetchBenefitByProcedure("Sealants",
+				new String[] {"D1351"}, driver, benefitProcLimitationSentencePrimayMolar, false, true, true, temp.getGradePay()));// 40
+
+		//41
+		dtemp.setSealantsD1351AgeLimit(fetchBenefitByProcedure("Sealants",
+				new String[] {"D1351"}, driver, benefitProcLimitationSentencePermanentMolar, false, true, true, temp.getGradePay()));// 42
+
+		//45
+		
+		dtemp.setsRPD4341Percentage(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
+				new String[] {"D4341"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 46
+
+		dtemp.setsRPD4341FL(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
+				new String[] {"D4341"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 47
+
+		//48 49
+		dtemp.setPerioMaintenanceD4910Percentage(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
+				new String[] {"D4910"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 47
+
+		dtemp.setPerioMaintenanceD4910FL(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
+				new String[] {"D4910"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 50
+		
+		
+		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));//147
 
 		WebElement el = driver.findElement(By.id("memberBackground"));
 		List<WebElement> divs = el.findElements(By.tagName("div"));
@@ -485,7 +601,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 							+ (s[1].length() == 2 ? s[1] : "0" + s[1]));// 146
 
 				} catch (Exception e) {
-					dtemp.setPlanEffectiveDate("");
+					dtemp.setPlanEffectiveDate("");//146
 				}
 				break;
 			}
@@ -553,7 +669,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		System.out.println("fetchCordinationBenefit-" + name + " -" + type);
 
 		String value = Constants.SCRAPPING_NOT_FOUND;
-		Map<String, List<UnitedConLimitationDto>> dataMap = new HashMap<>();
+		//Map<String, List<UnitedConLimitationDto>> dataMap = new HashMap<>();
 		// WebElement togggle = null;
 		if (mandatory)
 			value = value + ". " + Constants.SCRAPPING_MANDATORY_WARNING;
@@ -593,7 +709,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 	}
 
 	private String fetchBenefitByProcedure(String name, String[] codes, WebDriver driver, String type,
-			boolean mandatory, boolean subsectionOPen, boolean close, String gradePay) throws InterruptedException {
+			boolean mandatory, boolean subsectionOPen, boolean findInCodesOnly, String gradePay) throws InterruptedException {
 		System.out.println("fetchBenefitByProcedure-" + name);
 
 		String value = Constants.SCRAPPING_NOT_FOUND;
@@ -606,30 +722,41 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		Thread.sleep(1000);
 		try {
 			if (!subsectionOPen) {
+				//System.out.println("5");
 				WebElement formElement = driver.findElement(By.id("j_id_jm"));
+				//System.out.println("6");
 				List<WebElement> maintables = formElement.findElements(By.tagName("table"));
+				//System.out.println("7");
 				for (WebElement maintable : maintables) {
 					if (maintable.getText() != null && maintable.getText().startsWith(name)) {
+						//System.out.println("8");
 						maintable.findElements(By.tagName("span")).get(0).click();
+						//System.out.println("9");
 						Thread.sleep(5000);
 						break;
 					}
 				}
 			}
+			//System.out.println("10");
 			WebElement formElement = driver.findElement(By.id("j_id_jm"));
+			//System.out.println("11");
 			List<WebElement> maintables = formElement.findElements(By.tagName("table"));
+			//System.out.println("12");
 			for (WebElement maintable : maintables) {
 				if (maintable.getAttribute("id") != null
 						&& maintable.getAttribute("id").equals("benefitDetailAllServiceProceduresList")
 						&& !maintable.getAttribute("class").contains(" hidden")) {
 
 					Thread.sleep(1000);
-
+					//System.out.println("13");
 					List<WebElement> trs = maintable.findElements(By.tagName("tr"));
 					trs.remove(0);// remove th row
 					for (WebElement tr : trs) {
+						//System.out.println("14");
 						String code = tr.findElements(By.tagName("td")).get(0).getText().trim();// code
+						//System.out.println("CODE-"+code);
 						try {
+							//System.out.println("15");
 							UnitedConLimitationDto dto = new UnitedConLimitationDto();
 							// String vm="";
 							if (tr.findElements(By.tagName("td")).get(2).getText().equals("Not Covered")) {
@@ -650,6 +777,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 								continue;
 							}
 							if (benefitProcCopy.equals(type)) {
+								//System.out.println("16");
 								try {
 									dto.setCopay(Integer.parseInt(tr.findElements(By.tagName("td")).get(4).getText()
 											.trim().replace("%", "")));// Co Pay
@@ -659,6 +787,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 								}
 							}
 							if (benefitProAppliedtoded.equals(type)) {
+								//System.out.println("17");
 								try {
 									dto.setAppliedtoDed(tr.findElements(By.tagName("td")).get(6).getText().trim());// Applied
 																													// to
@@ -721,7 +850,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				if (benefitProAppliedtoded.equals(type) && found) {
 					break;
 				}
-				if (benefitProcCopy.equals(type) || benefitProcLimitation.equals(type)) {
+				if (benefitProcCopy.equals(type) || benefitProcLimitation.equals(type) || benefitProcLimitationSentence.equals(type)
+						|| benefitProcLimitationSentencePermanentMolar.equals(type) || benefitProcLimitationSentencePrimayMolar.equals(type)) {
 					if (codes != null) {
 						for (String cd : codes) {
 							// System.out.println("KEY--"+entry.getKey()+"-");
@@ -760,7 +890,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 						}
 					} // codes!= null
 					//if (codes==null) {
-					if (!found) {
+					if (!found && !findInCodesOnly) {
 						for (UnitedConLimitationDto dto : entry.getValue()) {
 							// System.out.println("cccc-"+dto.getCopay());
 							// System.out.println("cccc-"+entry.getKey());
@@ -786,6 +916,9 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 					if (benefitProcLimitation.equals(type) && found) {
 						break;
 					}
+					if (benefitProcLimitationSentence.equals(type) && found) {
+						break;
+					}
 
 				} // co pay
 			}
@@ -804,12 +937,38 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 					value = limit + "";
 				}
 			}
+			if (benefitProcLimitationSentence.equals(type)) {
+				if (limit.equals("-1"))
+					value = "99";
+				else {
+					if (limit.contains("Under 14 Years Of Age")) value="14";
+					else value = "99";
+				}
+			}
+			if (benefitProcLimitationSentencePermanentMolar.equals(type)) {
+				if (limit.equals("-1"))
+					value = "No";
+				else {
+					if (limit.contains("Permanent") && limit.contains("Molars")) value="Yes";
+					else value = "No";
+				}
+			}
+			if (benefitProcLimitationSentencePrimayMolar.equals(type)) {
+				if (limit.equals("-1"))
+					value = "No";
+				else {
+					if (limit.contains("Primary") && limit.contains("Molars")) value="Yes";
+					else value = "No";
+				}
+			}
 			if (benefitProAppliedtoded.equals(type)) {
-				if (value.equals(""))
+				if (value.equals("") || mandatory)
 					value = "No";
 
 			}
-			if (close) {
+			
+			
+			if (findInCodesOnly) {
 				/*
 				 * formElement = driver.findElement(By.id("j_id_jm")); maintables =
 				 * formElement.findElements(By.tagName("table")); for (WebElement maintable :
