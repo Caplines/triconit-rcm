@@ -912,8 +912,37 @@ public class FreqencyUtils {
 			convert1="9"+"x";
 		}else if (text.contains("benefit is limited to ten")) {
 			convert1="10"+"x";
-		}else if(text.contains("this procedure is not a benefit")) {
+		}else if (text.contains("benefit is limited to any once")) {
+			convert1="1"+"x";
+		}else if (text.contains("benefit is limited to any either")) {
+			convert1="1"+"x";
+		}else if (text.contains("benefit is limited to any two")) {
+			convert1="2"+"x";
+		}else if (text.contains("benefit is limited to any three")) {
+			convert1="3"+"x";
+		}else if (text.contains("benefit is limited to any four")) {
+			convert1="4"+"x";
+		}else if (text.contains("benefit is limited to any five")) {
+			convert1="5"+"x";
+		}else if (text.contains("benefit is limited to any six")) {
+			convert1="6"+"x";
+		}else if (text.contains("benefit is limited to any seven")) {
+			convert1="7"+"x";
+		}else if (text.contains("benefit is limited to any eight")) {
+			convert1="8"+"x";
+		}else if (text.contains("benefit is limited to any nine")) {
+			convert1="9"+"x";
+		}else if (text.contains("benefit is limited to any ten")) {
+			convert1="10"+"x";
+		}
+		else if(text.contains("this procedure is not a benefit")) {
 			convert1="0";
+		}else if(text.contains("benefit is limited to ")) {
+			
+			convert1=text.split("benefit is limited to ")[1].replaceAll("[a-zA-Z]", "").replace(".", "").trim()+"x";
+		}else if(text.contains("benefit is limited to any ")) {
+			
+			convert1=text.split("benefit is limited to ")[1].replaceAll("[a-zA-Z]", "").replace(".", "").trim()+"x";
 		}
 		
 		if (text.contains("benefit is based on professional determination")) {
@@ -980,6 +1009,12 @@ public class FreqencyUtils {
 			convert="No Frequency";
 		}else if (text.contains("this procedure is not a benefit of ")) {
 			//convert="No";
+		}else if (text.contains("date of service")) {
+			if (text.contains("per date of service"))convert="1DOS";
+			//if (text.contains("twice date of service"))convert="1DOS";
+			//if (text.contains("twice"))convert="1DOS";
+			//if (text.contains("per"))convert="1DOS";
+			//if (text.contains("per"))convert="1DOS";
 		}
 		
 		if(text.contains("limited to once per provider")) {
@@ -1165,6 +1200,9 @@ public class FreqencyUtils {
 		}
 	}
 		public static void main(String [] a) {
+			System.out.println(convertFrequecyDentaString("", "Benefit is limited to any 100 oral evaluation procedures within the contract period. Comprehensive evaluations are limited to once per provider."));
+		System.out.println(convertFrequecyDentaString("", "Benefit is limited to one crown procedure per tooth within a 5 year period."));
+			System.out.println(convertFrequecyDentaString("", "Benefit is limited to 13 periapical films per date of service"));
 			convertFrequecyUCCIString("1 Per 12 M"
 					+ "onths | 2 Per 122 Months ~ Per Office ");
 			convertFrequecyUCCIString("2 Per 122 Months ~ Per Office ");

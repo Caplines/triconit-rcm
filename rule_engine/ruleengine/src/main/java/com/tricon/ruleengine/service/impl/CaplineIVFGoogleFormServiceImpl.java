@@ -583,13 +583,14 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				CaplineIVFFormDtoToXML xml = new CaplineIVFFormDtoToXML();
 				String filePath = xml.convertToXML(form, XSLT_PATH);
 				File file = new File(filePath);
-				
+				if (dto.getPdf()==null) {
 				o = xml.createPdfStream(
 
 						xml.createHtml(filePath, XSLT_FILE), "");
+			    }
 				if (file!=null) file.delete(); 
 				//To test html for issues
-				//o=xml.createHtmlOut(filePath, XSLT_FILE);
+				if (dto.getPdf()!=null)  o=xml.createHtmlOut(filePath, XSLT_FILE);
 				obj[1]=o;
 
 			}

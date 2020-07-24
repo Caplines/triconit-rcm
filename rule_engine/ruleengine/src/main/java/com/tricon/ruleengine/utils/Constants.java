@@ -266,7 +266,7 @@ public class Constants {
 	public static String EN_REP_COUNT_SEP=";";
 	
 	public static String DQ_PLAN_NAME_CHECK= "DQ Chip,DQ Medicaid,MCNA Chip,MCNA Medicaid,MCNA - MEDICAID," + 
-			                                 "DENTAQUEST - MEDICAID,MCNA - CHIP,DENTAQUEST - CHIP";
+			                                 "DENTAQUEST - MEDICAID,MCNA - CHIP,DENTAQUEST - CHIP,DENTAQUEST,MCNA";
 	
 	public static int userType_TR=1;//for Treatment
 	

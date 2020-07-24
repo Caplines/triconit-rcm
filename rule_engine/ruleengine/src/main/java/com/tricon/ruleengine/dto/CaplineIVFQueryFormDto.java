@@ -22,7 +22,7 @@ public class CaplineIVFQueryFormDto {
 	private String clause;
 	private String websiteNameDB;
 	
-	
+	private String pdf;
 	
 	
 	
@@ -130,6 +130,12 @@ public class CaplineIVFQueryFormDto {
 	}
 	public void setWebsiteNameDB(String websiteNameDB) {
 		this.websiteNameDB = websiteNameDB;
+	}
+	public String getPdf() {
+		return pdf;
+	}
+	public void setPdf(String pdf) {
+		this.pdf = pdf;
 	}
 	
 	

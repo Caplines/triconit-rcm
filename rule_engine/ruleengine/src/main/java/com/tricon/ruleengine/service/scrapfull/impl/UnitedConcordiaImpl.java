@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +57,9 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 	private static String benefitProcLimitationSentence="Sentence Under 14 Years Of Age";
 	private static String benefitProcLimitationSentencePrimayMolar="Primary & Molars";
 	private static String benefitProcLimitationSentencePermanentMolar="Permanent & Molars";
+	private static String benefitProcLimitationSentenceCombinationRoutine="In Combination with Routine Cleanings";
+	private static String benefitProcLimitationSentenceAlternateBenefitProvision="Alternate Benefit Provision";
+	
 	// private static String referenceId;
 	// private static String procedureData;
 
@@ -321,23 +323,26 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setPlanAnnualMaxRemaining(Constants.SCRAPPING_MANDATORY_WARNING);// 2
 		dtemp.setPlanIndividualDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 3
 		dtemp.setPlanIndividualDeductibleRemaining(Constants.SCRAPPING_MANDATORY_WARNING);// 4
-		dtemp.setBasicPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 5
+		//dtemp.setBasicPercentage();// 5
 		dtemp.setBasicSubjectDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 6
-		dtemp.setMajorPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 7
+		//dtemp.setMajorPercentage();// 7
 		dtemp.setMajorSubjectDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 8
-		dtemp.setEndodonticsPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 9
+		//dtemp.setEndodonticsPercentage();// 9
 		dtemp.setEndoSubjectDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 10
 
-		dtemp.setPerioSurgeryPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 11
+		//dtemp.setPerioSurgeryPercentage();// 11
 		dtemp.setPerioSurgerySubjectDeductible(Constants.SCRAPPING_MANDATORY_WARNING);// 12
 
-		dtemp.setPreventivePercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 13
-		dtemp.setDiagnosticPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 14
-		dtemp.setpAXRaysPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 15
-		dtemp.setNightGuardsD9944Fr(Constants.SCRAPPING_MANDATORY_WARNING);// 19 //Cross Check
+		//dtemp.setPreventivePercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 13
+		//dtemp.setDiagnosticPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 14
+		//dtemp.setpAXRaysPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 15
+		dtemp.setMissingToothClause(Constants.SCRAPPING_MANDATORY_WARNING);//16
+		dtemp.setReplacementClause(Constants.SCRAPPING_MANDATORY_WARNING);//17
+		
+		//dtemp.setNightGuardsD9944Fr();// 19 //Cross Check
 
-		dtemp.setBasicWaitingPeriod(Constants.SCRAPPING_MANDATORY_WARNING);// 20 in DOC
-		dtemp.setMajorWaitingPeriod(Constants.SCRAPPING_MANDATORY_WARNING);// 21 in DOC
+		//dtemp.setBasicWaitingPeriod();// 20 in DOC
+		//dtemp.setMajorWaitingPeriod();// 21 in DOC
 
 		// dtemp.setsSCD2930FL();//22 not mandatory
 		// dtemp.setsSCD2931FL();//23 not mandatory
@@ -349,37 +354,39 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		// dtemp.setxRaysPAD0220FL("");//29 not mandatory
 		// dtemp.setxRaysPAD0230FL("");//30 not mandatory
 		// dtemp.setxRaysFMXFL("");//31 not mandatory
+		dtemp.setxRaysBundling(Constants.SCRAPPING_MANDATORY_WARNING);//32
+		
 		// 32 missing
 		// dtemp.setFlourideD1208FL("");//33 not mandatory
 		// dtemp.setFlourideAgeLimit("");//34 not mandatory
 		// dtemp.setVarnishD1206FL("");//35 not mandatory
 		// dtemp.setVarnishD1206AgeLimit("");//36 not mandatory
-		dtemp.setSealantsD1351Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 37
+		//dtemp.setSealantsD1351Percentage();// 37
 		// dtemp.setSealantsD1351FL("");//38
 		// dtemp.setSealantsD1351AgeLimit("")//39
-		dtemp.setSealantsD1351PrimaryMolarsCovered(Constants.SCRAPPING_MANDATORY_WARNING);// 40
-		dtemp.setSealantsD1351PrimaryMolarsCovered(Constants.SCRAPPING_MANDATORY_WARNING);// 41
-		dtemp.setSealantsD1351PermanentMolarsCovered(Constants.SCRAPPING_MANDATORY_WARNING);// 42
+		//dtemp.setSealantsD1351PrimaryMolarsCovered(Constants.);// 40
+		//dtemp.setSealantsD1351PrimaryMolarsCovered(Constants.);// 41
+		//dtemp.setSealantsD1351PermanentMolarsCovered(Constants.);// 42
 		// dtemp.setProphyD1110FL("");//43
 		// dtemp.setProphyD1120FL("");//44
 		// 45 missing
-		dtemp.setsRPD4341Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 46
+		//dtemp.setsRPD4341Percentage(Constants.);// 46
 		// dtemp.setsRPD4341FL("");//47
 		// 48
 		// 49
-		dtemp.setPerioMaintenanceD4910Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 50
+		//dtemp.setPerioMaintenanceD4910Percentage(Constants.);// 50
 		// dtemp.setPerioMaintenanceD4910FL("");//51
-		dtemp.setPerioMaintenanceD4910AltWProphyD0110(Constants.SCRAPPING_MANDATORY_WARNING);// 52
-		dtemp.setFMDD4355Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 53
+		//dtemp.setPerioMaintenanceD4910AltWProphyD0110(Constants.);// 52
+		//dtemp.setFMDD4355Percentage(Constants.=);// 53
 		// dtemp.setfMDD4355FL("");//54
-		dtemp.setGingivitisD4346Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 55
+		//dtemp.setGingivitisD4346Percentage(Constants.);// 55
 		// dtemp.setGingivitisD4346FL("");//56
-		dtemp.setNitrousD9230Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 57
-		dtemp.setiVSedationD9243Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 58
-		dtemp.setiVSedationD9248Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 59
-		dtemp.setExtractionsMinorPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 60
-		dtemp.setExtractionsMajorPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 61
-		dtemp.setCrownLengthD4249Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 62
+		//dtemp.setNitrousD9230Percentage(Constants.);// 57
+		//dtemp.setiVSedationD9243Percentage(Constants.);// 58
+		//dtemp.setiVSedationD9248Percentage(Constants.);// 59
+		//dtemp.setExtractionsMinorPercentage(Constants.);// 60
+		//dtemp.setExtractionsMajorPercentage(Constants.);// 61
+		//dtemp.setCrownLengthD4249Percentage(Constants.);// 62
 		// dtemp.setCrownLengthD4249FL("");//63
 		// 64
 		// dtemp.setAlveoD7311FL("");//65
@@ -391,51 +398,51 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		// dtemp.setInterimPartialDenturesD5214FL("");//71
 		// 72
 		// dtemp.setBoneGraftsD7953FL("");//73
-		dtemp.setImplantCoverageD6010Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 74
-		dtemp.setImplantCoverageD6057Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 75
-		dtemp.setImplantCoverageD6190Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 76
-		dtemp.setImplantSupportedPorcCeramicD6065Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 77
-		dtemp.setPostCompositesD2391Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 78
+		//dtemp.setImplantCoverageD6010Percentage(Constants.);// 74
+		//dtemp.setImplantCoverageD6057Percentage(Constants.);// 75
+		//dtemp.setImplantCoverageD6190Percentage(Constants.);// 76
+		//dtemp.setImplantSupportedPorcCeramicD6065Percentage(Constants);// 77
+		//dtemp.setPostCompositesD2391Percentage(Constants.);// 78
 		// dtemp.setPostCompositesD2391FL("");//79
 		// 80
-		dtemp.setCrownsD2750D2740Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 81
+		//dtemp.setCrownsD2750D2740Percentage(Constants.);// 81
 		// dtemp.setCrownsD2750D2740FL("");//82
 		// 83
 		// 84
-		dtemp.setD9310Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 85
+		//dtemp.setD9310Percentage(Constants);// 85
 		// dtemp.setD9310FL("");//86
 
-		dtemp.setBuildUpsD2950Covered(Constants.SCRAPPING_MANDATORY_WARNING);// 87
+		//dtemp.setBuildUpsD2950Covered(Constants);// 87
 		// dtemp.setBuildUpsD2950FL("");//88
 		// 89
-		dtemp.setOrthoPercentage(Constants.SCRAPPING_MANDATORY_WARNING);// 90
-		// dtemp.setOrthoMax();//91
+		//dtemp.setOrthoPercentage();// 90
+		dtemp.setOrthoMax(Constants.SCRAPPING_MANDATORY_WARNING);//91
 		// dtemp.setOrthoAgeLimit("");//92 benefit
 		// 93 //94 //95 //96 //97 //99 //100 //101
-		dtemp.setBridges1(Constants.SCRAPPING_MANDATORY_WARNING);// 102
+		//dtemp.setBridges1(Constants.SCRAPPING_MANDATORY_WARNING);// 102
 		// dtemp.setBridges2("");//103
 		// 104
-		dtemp.setDen5225Per(Constants.SCRAPPING_MANDATORY_WARNING);// 105
+		//dtemp.setDen5225Per(Constants.SCRAPPING_MANDATORY_WARNING);// 105
 		// dtemp.setDenf5225FR("");//107
 
-		dtemp.setDen5226Per(Constants.SCRAPPING_MANDATORY_WARNING);// 106
+		//dtemp.setDen5226Per(Constants.SCRAPPING_MANDATORY_WARNING);// 106
 		// dtemp.setDenf5226Fr("");//108
-		dtemp.setDiagnosticSubDed(Constants.SCRAPPING_MANDATORY_WARNING);// 109
+		//dtemp.setDiagnosticSubDed(Constants.SCRAPPING_MANDATORY_WARNING);// 109
 
 		// dtemp.setImplantsFrD6010("");//110
 		// dtemp.setImplantsFrD6057("");//111
 		// dtemp.setImplantsFrD6065("");//112
 		// dtemp.setImplantsFrD6190("");//113
-		dtemp.setNightGuardsD9945Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 114
+		//dtemp.setNightGuardsD9945Percentage(Constants.SCRAPPING_MANDATORY_WARNING);// 114
 		// dtemp.setOrthoRemaining("");//115
 		// dtemp.setOrthoWaitingPeriod("");//116
-		dtemp.setpAXRaysSubDed(Constants.SCRAPPING_MANDATORY_WARNING);// 117
-		dtemp.setPreventiveSubDed(Constants.SCRAPPING_MANDATORY_WARNING);// 118
+		//dtemp.setpAXRaysSubDed(Constants.SCRAPPING_MANDATORY_WARNING);// 117
+		//dtemp.setPreventiveSubDed(Constants.SCRAPPING_MANDATORY_WARNING);// 118
 		// 119
-		dtemp.setFmxPer(Constants.SCRAPPING_MANDATORY_WARNING);// 120
+		//dtemp.setFmxPer(Constants.SCRAPPING_MANDATORY_WARNING);// 120
 		// dtemp.setNightGuardsD9944Fr("");//121
 		// dtemp.setNightGuardsD9945Fr("");//122
-
+        dtemp.setPlanAssignmentofBenefits(Constants.SCRAPPING_MANDATORY_WARNING);//131
 		// 123 //124 //125 //126
 
 		// Debug
@@ -445,26 +452,89 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		Thread.sleep(5000);
 		PatientDetailTemp dtemp = temp.getPatientDetails().iterator().next();
 
-		dtemp.setInsName("United Concordia");
-		dtemp.setInsContact("800-332-0366");
-		dtemp.setcSRName("UCCI Scraping Tool");
-		dtemp.setTaxId(taxId);
+		dtemp.setInsName("United Concordia"); //136
+		dtemp.setInsContact("800-332-0366"); // 138
+		dtemp.setcSRName("UCCI Scraping Tool");// 139
+		dtemp.setTaxId(taxId); //137
 
 		List<PatientHistoryTemp> hisSet = temp.getPatientHistory();
 		// openSideBarFirst(driver,"Procedure History");
 		fetchHistoryformation(driver, hisSet);
-
+		dtemp.setPlanAnnualMaxRemaining("0");//Set default as Zero //2 mand
+		dtemp.setPlanIndividualDeductibleRemaining("0");//Set default as Zero //3 mand
+		dtemp.setOrthoRemaining("0");//Set default as Zero
+		try {
+	   WebElement accums=driver.findElement(By.className("accums"));
+	   List<WebElement> acc= accums.findElements(By.className("panel-default"));
+	   for(WebElement ac:acc) {
+		   if (ac.getText().contains("PROGRAM DOLLAR MAX")  ) {
+			  if (ac.getText().contains("No maximum applied to the current")) {
+				  dtemp.setPlanAnnualMaxRemaining("0");
+				  
+			  }else {
+				    List<WebElement> pbs =ac.findElements(By.className("panel-body"));
+					  for(WebElement pb:pbs) {
+						    if (pb.getText().trim().startsWith("INDIVIDUAL")) {
+						    	dtemp.setPlanAnnualMaxRemaining(pb.findElement(By.tagName("strong")).getText().replace("Remaining", "")
+						    	.replace("$", "").replace(",", "").trim());//2 mand
+						    	break;
+						    }
+					  }
+				  
+			  }
+		   }
+		   if (ac.getText().contains("PROGRAM DOLLAR DED")  ) {
+				  if (ac.getText().contains("No maximum applied to the current")) {
+					   dtemp.setPlanIndividualDeductibleRemaining("0");
+				  }else {
+					  List<WebElement> pbs =ac.findElements(By.className("panel-body"));
+					  for(WebElement pb:pbs) {
+						    if (pb.getText().trim().startsWith("INDIVIDUAL")) {
+						    	dtemp.setPlanIndividualDeductibleRemaining(pb.findElement(By.tagName("strong")).getText().replace("Remaining", "")
+						    	.replace("$", "").replace(",", "").trim());//4
+						    	break;
+						    }
+					  }
+				  }
+		   }
+	      }
+			   
+	   
+        }catch(Exception x) {
+        	
+        }
+        
+        String []v= fetchDeductiblesAndMaximums("Deductibles and Maximums", driver, false, false);
+        dtemp.setPlanAnnualMax(v[0]);//1 mand
+        
+        dtemp.setPlanIndividualDeductible(v[1]);//3 mand
+        
+        if (dtemp.getPlanAnnualMaxRemaining().equals("0")){
+		dtemp.setPlanAnnualMaxRemaining(dtemp.getPlanAnnualMax());
+        }
+        
+	     if (dtemp.getPlanIndividualDeductibleRemaining().equals("0")){
+		  dtemp.setPlanIndividualDeductibleRemaining(dtemp.getPlanIndividualDeductible());
+	     }
+	     
+	     
+	     dtemp.setOrthoMax(v[2]);//91 mand
+	     
+	     if (dtemp.getOrthoRemaining().equals("0")){
+	  		  dtemp.setOrthoRemaining(dtemp.getOrthoMax());
+	  	 }
+	        
 		dtemp.setMissingToothClause(fetchCordinationBenefit("Coordination and Other Benefits", driver,
-				"Missing Tooth Clause", true, false, false));// 16
+				"Missing Tooth Clause", true, false, false));// 16 mand
 
 		dtemp.setReplacementClause(fetchCordinationBenefit("Coordination and Other Benefits", driver,
-				"Prosthetic Prior Placement", true, true, false));// 17
+				"Prosthetic Prior Placement", true, true, false));// 17 mand
 
 		dtemp.setxRaysBundling(fetchCordinationBenefit("Coordination and Other Benefits", driver,
 				"Accumulate Xrays", true, false, false));// 32
 		
 		dtemp.setPlanAssignmentofBenefits(fetchCordinationBenefit("Coordination and Other Benefits", driver,
-				"Assignment Of Benefits", true, true, false));// 131
+				"Assignment Of Benefits", true, true, false));// 131 mand
 
 		dtemp.setBasicPercentage(fetchBenefitByProcedure("Restorations", new String[] { "D2391", "D2392", "D2393" },
 				driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 5
@@ -472,30 +542,66 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setBasicSubjectDeductible(fetchBenefitByProcedure("Restorations", null, driver, benefitProAppliedtoded,
 				false, true, false, temp.getGradePay()));// 6
 		
+		dtemp.setPostCompositesD2391Percentage(fetchBenefitByProcedure("Restorations", new String[] {"D2391"}, driver, benefitProcCopy,
+				false, true, true, temp.getGradePay()));// 78
+		
+		dtemp.setPostCompositesD2391FL(fetchBenefitByProcedure("Restorations", new String[] {"D2391"}, driver, benefitProcLimitation,
+				false, true, true, temp.getGradePay()));// 79
+		
+		dtemp.setPosteriorCompositesD2391Downgrade(fetchBenefitByProcedure("Restorations", new String[] {"D2391"}, driver, benefitProcLimitationSentenceAlternateBenefitProvision,
+				false, true, true, temp.getGradePay()));// 80
+
 		dtemp.setMajorPercentage(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
 				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 7
 
 		dtemp.setMajorSubjectDeductible(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
-				null, driver, benefitProAppliedtoded, true, true, false, temp.getGradePay()));// 8
+				null, driver, benefitProAppliedtoded, true, true, false, temp.getGradePay()));// 8 mand
+
+		dtemp.setCompleteDenturesD5110D5120FL(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
+				new String[] {"D5110"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 68
+
+		dtemp.setImmediateDenturesD5130D5140FL(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
+				new String[] {"D5130"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 69
+
+		dtemp.setPartialDenturesD5213D5214FL(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
+				new String[] {"D5213"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 70
+
+		dtemp.setInterimPartialDenturesD5214FL(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
+				new String[] {"D5820"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 71
+
+		dtemp.setDen5225Per(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
+				new String[] {"D5225"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 105
+
+		dtemp.setDen5226Per(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
+				new String[] {"D5226"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 106
+
+		dtemp.setDenf5225FR(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
+				new String[] {"D5225"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 107
+
+		dtemp.setDenf5226Fr(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
+				new String[] {"D5226"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 108
 
 		dtemp.setEndodonticsPercentage(fetchBenefitByProcedure("Endodontic Procedures",
 				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 9
 
 		dtemp.setEndoSubjectDeductible(fetchBenefitByProcedure("Endodontic Procedures",
-				null, driver, benefitProAppliedtoded, true, true, false, temp.getGradePay()));// 10
+				null, driver, benefitProAppliedtoded, true, true, false, temp.getGradePay()));// 10 mand
 
 		dtemp.setPerioSurgeryPercentage(fetchBenefitByProcedure("Endodontic Procedures",
 				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 11
 
 		dtemp.setPerioSurgerySubjectDeductible(fetchBenefitByProcedure("Endodontic Procedures",
-				null, driver, benefitProAppliedtoded, true, true, false, temp.getGradePay()));// 12
+				null, driver, benefitProAppliedtoded, true, true, false, temp.getGradePay()));// 12 mand
 
 		dtemp.setPreventivePercentage(fetchBenefitByProcedure("Cleanings & Fluoride",
 				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 13
 
 		dtemp.setDiagnosticPercentage(fetchBenefitByProcedure("Preventive Exams",
 				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 14
-
+		
+		dtemp.setDiagnosticSubDed(fetchBenefitByProcedure("Preventive Exams",
+				null, driver, benefitProAppliedtoded, false, true, false, temp.getGradePay()));// 109
+		
 		dtemp.setNightGuardsD9940Percentage(fetchBenefitByProcedure("Miscellaneous Services",
 				new String[] {"D9944"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 19
 		
@@ -505,12 +611,21 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setNightGuardsD9945Fr(fetchBenefitByProcedure("Miscellaneous Services",
 				new String[] {"D9945"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 122
 
+		dtemp.setNightGuardsD9945Percentage(fetchBenefitByProcedure("Miscellaneous Services",
+				new String[] {"D9945"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 114 cross check
+
 		dtemp.setsSCD2930FL(fetchBenefitByProcedure("Other Restorations",
 				new String[] {"D2930"}, driver, benefitProcLimitation, false, false, true, temp.getGradePay()));// 22
 		
 		dtemp.setsSCD2931FL(fetchBenefitByProcedure("Other Restorations",
 				new String[] {"D2931"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 23
 		
+		dtemp.setBuildUpsD2950Covered(fetchBenefitByProcedure("Other Restorations",
+				new String[] {"D2950"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 87
+
+		dtemp.setBuildUpsD2950FL(fetchBenefitByProcedure("Other Restorations",
+				new String[] {"D2950"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 88
+
 		dtemp.setExamsD0120FL(fetchBenefitByProcedure("Preventive Exams",
 				new String[] {"D0120"}, driver, benefitProcLimitation, false, false, true, temp.getGradePay()));// 24
 		
@@ -538,6 +653,13 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setxRaysFMXFL(fetchBenefitByProcedure("X-rays",
 				new String[] {"D0210"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 31
 		
+		dtemp.setpAXRaysSubDed(fetchBenefitByProcedure("X-rays",
+				new String[] {"D0220"}, driver, benefitProAppliedtoded, false, true, true, temp.getGradePay()));// 117
+
+		dtemp.setFmxPer(fetchBenefitByProcedure("X-rays",
+				new String[] {"D0210"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 120
+		
+		
 		dtemp.setFlourideD1208FL(fetchBenefitByProcedure("Cleanings & Fluoride",
 				new String[] {"D1208"}, driver, benefitProcLimitation, false, false, true, temp.getGradePay()));// 33
 		
@@ -551,11 +673,14 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				new String[] {"D1206"}, driver, benefitProcLimitationSentence, false, true, true, temp.getGradePay()));// 36
 		
 		dtemp.setProphyD1110FL(fetchBenefitByProcedure("Cleanings & Fluoride",
-				new String[] {"D1110"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 42
+				new String[] {"D1110"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 43
 
 		dtemp.setProphyD1120FL(fetchBenefitByProcedure("Cleanings & Fluoride",
-				new String[] {"D1120"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 43
+				new String[] {"D1120"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 44
 
+		dtemp.setProphyD1120FL(fetchBenefitByProcedure("Cleanings & Fluoride",
+				null, driver, benefitProAppliedtoded, false, true, false, temp.getGradePay()));// 118
+		
 		dtemp.setSealantsD1351Percentage(fetchBenefitByProcedure("Sealants",
 				new String[] {"D1351"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 37
 
@@ -582,13 +707,121 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 
 		//48 49
 		dtemp.setPerioMaintenanceD4910Percentage(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
-				new String[] {"D4910"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 47
+				new String[] {"D4910"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 50
 
 		dtemp.setPerioMaintenanceD4910FL(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
-				new String[] {"D4910"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 50
+				new String[] {"D4910"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 51
+		
+		dtemp.setPerioMaintenanceD4910AltWProphyD0110(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
+				new String[] {"D4910"}, driver, benefitProcLimitationSentenceCombinationRoutine, false, true, true, temp.getGradePay()));// 52
+		
+		dtemp.setFMDD4355Percentage(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
+				new String[] {"D4345"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 53
+		
+		dtemp.setfMDD4355FL(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
+				new String[] {"D4345"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 54
+
+		dtemp.setGingivitisD4346Percentage(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
+				new String[] {"D4346"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 55
+
+		dtemp.setGingivitisD4346FL(fetchBenefitByProcedure("Non-Surgical Periodontal Services",
+				new String[] {"D4346"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 56
+
+		dtemp.setNitrousD9230Percentage(fetchBenefitByProcedure("Adjunctive Services",
+				new String[] {"D9230"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 57
+
+		dtemp.setiVSedationD9243Percentage(fetchBenefitByProcedure("Adjunctive Services",
+				new String[] {"D9243"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 58
+
+
+		dtemp.setiVSedationD9248Percentage(fetchBenefitByProcedure("Adjunctive Services",
+				new String[] {"D9248"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 59
+		
+		dtemp.setD9310Percentage(fetchBenefitByProcedure("Adjunctive Services",
+				new String[] {"D9310"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 85
+		
+		dtemp.setD9310FL(fetchBenefitByProcedure("Adjunctive Services",
+				new String[] {"D9310"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 86
+
+		
+		dtemp.setExtractionsMinorPercentage(fetchBenefitByProcedure("Oral Surgery",
+				new String[] {"D7210"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 60
+		
+		dtemp.setExtractionsMajorPercentage(fetchBenefitByProcedure("Oral Surgery",
+				new String[] {"D7140"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 61
+		
+		dtemp.setAlveoD7311FL(fetchBenefitByProcedure("Oral Surgery",
+				new String[] {"D7311"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 65
+
+		dtemp.setCrownLengthD4249Percentage(fetchBenefitByProcedure("Surgical Periodontal Services",
+				new String[] {"D4249"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 62
+		
+		dtemp.setCrownLengthD4249FL(fetchBenefitByProcedure("Surgical Periodontal Services",
+				new String[] {"D4249"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 63
+		
+		//64
+        //72
+		dtemp.setBoneGraftsD7953FL(fetchBenefitByProcedure("Other Repair Procedures",
+				new String[] {"D7953"}, driver, benefitProcLimitation, false, false, true, temp.getGradePay()));// 73
+		
+		dtemp.setImplantCoverageD6010Percentage(fetchBenefitByProcedure("Surgical Implant Procedures",
+				new String[] {"D6010"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 74
+		
+		dtemp.setImplantsFrD6010(fetchBenefitByProcedure("Surgical Implant Procedures",
+				new String[] {"D6010"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 110
 		
 		
-		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));//147
+		dtemp.setImplantCoverageD6057Percentage(fetchBenefitByProcedure("Implant Supported Prosthetics",
+				new String[] {"D6057"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 75
+		
+		dtemp.setImplantCoverageD6190Percentage(fetchBenefitByProcedure("Implant Supported Prosthetics",
+				new String[] {"D6190"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 76
+		
+		dtemp.setImplantSupportedPorcCeramicD6065Percentage(fetchBenefitByProcedure("Implant Supported Prosthetics",
+				new String[] {"D6065"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 77
+		
+		dtemp.setImplantsFrD6057(fetchBenefitByProcedure("Implant Supported Prosthetics",
+				new String[] {"D6057"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 111
+		
+		dtemp.setImplantsFrD6065(fetchBenefitByProcedure("Implant Supported Prosthetics",
+				new String[] {"D6065"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 112
+		
+		dtemp.setImplantsFrD6190(fetchBenefitByProcedure("Implant Supported Prosthetics",
+				new String[] {"D6190"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 113
+		
+		
+		dtemp.setCrownsD2750D2740Percentage(fetchBenefitByProcedure("Crowns, Inlays & Onlays",
+				new String[] {"D2740"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 81
+		
+		dtemp.setCrownsD2750D2740FL(fetchBenefitByProcedure("Crowns, Inlays & Onlays",
+				new String[] {"D2750"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 82
+		//83 84
+		
+		dtemp.setOrthoPercentage(fetchBenefitByProcedure("Orthodontics",
+				new String[] {"D2740"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 91
+		
+		dtemp.setOrthoAgeLimit(fetchBenefitByProcedure("Orthodontics",
+				new String[] {"D8080"}, driver, benefitProcLimitation, false, true, true, temp.getGradePay()));// 92
+		
+		dtemp.setOrthoSubjectDeductible(fetchBenefitByProcedure("Orthodontics",
+				null, driver, benefitProAppliedtoded, false, true, false, temp.getGradePay()));// 93	
+
+		dtemp.setBridges1(fetchBenefitByProcedure("Fixed Prosthetics & Fixed Partial Denture Retainers",
+				new String[] {"D6245","D6740"}, driver, benefitProcCopy, false, false, true, temp.getGradePay()));// 102
+		
+		dtemp.setBridges2(fetchBenefitByProcedure("Fixed Prosthetics & Fixed Partial Denture Retainers",
+				new String[] {"D6245","D6740"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 103  ask puneet
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));//147 and 97
 
 		WebElement el = driver.findElement(By.id("memberBackground"));
 		List<WebElement> divs = el.findElements(By.tagName("div"));
@@ -606,7 +839,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				break;
 			}
 		}
-
+		dtemp.setPlanTermedDate("");//145 keep it blank
 		el = driver.findElement(By.id("policyInfo"));
 		divs = el.findElements(By.tagName("div"));
 		for (WebElement div : divs) {
@@ -640,6 +873,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 			}
 		}
 
+		dtemp.setPayerId("CX007");//143
+		dtemp.setInsAddress("P.O. Box 69451. Harrisburg, PA 17106");//142
 		dtemp.setAptDate("");
 	}
 
@@ -662,6 +897,55 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 			ex.printStackTrace();
 		}
 		System.out.println("RRR");
+	}
+
+	private String[] fetchDeductiblesAndMaximums(String name, WebDriver driver,
+			boolean subsectionOPen, boolean close) throws InterruptedException {
+		System.out.println("fetchCordinationBenefit-" + name + " -" );
+
+		String[] r= new String[3];
+		try {
+			if (!subsectionOPen) {
+				WebElement formElement = driver.findElement(By.id("j_id_hu"));
+				List<WebElement> maintables = formElement.findElements(By.tagName("table"));
+				for (WebElement maintable : maintables) {
+					if (maintable.getText() != null && maintable.getText().startsWith(name)) {
+						maintable.findElements(By.tagName("span")).get(0).click();
+						Thread.sleep(5000);
+						break;
+					}
+				}
+			}
+
+			WebElement tab = driver.findElement(By.id("benefitPolicyInformationDeductiblesAndMaximums"));
+			List<WebElement> trs = tab.findElements(By.tagName("tr"));
+			for (WebElement tr : trs) {
+				String y=tr.getText();
+				if (y != null && y.startsWith("Individual Maximum") && y.contains("Ortho")) {
+					String t=y.replace("Individual Maximum","").trim().split(" ")[0].replace("$","").replace(",","");
+					r[2]=t;
+					// Assignment Of Benefits
+				}
+				if (y != null && y.startsWith("Individual Maximum") && !y.contains("Ortho")) {
+					String t=y.replace("Individual Maximum","").trim().split(" ")[0].replace("$","").replace(",","");
+					r[0]=t;
+					// Assignment Of Benefits
+				}
+				if (y != null && y.startsWith("Individual Deductible")) {
+					if (tr.getText().replaceAll("Individual Deductible", "").trim().contains("None")) {
+						r[1]="0";	
+					}else {
+						r[1]=y.replaceAll("Individual Deductible", "").trim();
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		
+		return r;
 	}
 
 	private String fetchCordinationBenefit(String name, WebDriver driver, String type, boolean mandatory,
@@ -851,7 +1135,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 					break;
 				}
 				if (benefitProcCopy.equals(type) || benefitProcLimitation.equals(type) || benefitProcLimitationSentence.equals(type)
-						|| benefitProcLimitationSentencePermanentMolar.equals(type) || benefitProcLimitationSentencePrimayMolar.equals(type)) {
+						|| benefitProcLimitationSentencePermanentMolar.equals(type) || benefitProcLimitationSentencePrimayMolar.equals(type)
+						|| benefitProcLimitationSentenceCombinationRoutine.equals(type) || benefitProcLimitationSentenceAlternateBenefitProvision.equals(type)) {
 					if (codes != null) {
 						for (String cd : codes) {
 							// System.out.println("KEY--"+entry.getKey()+"-");
@@ -943,6 +1228,22 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				else {
 					if (limit.contains("Under 14 Years Of Age")) value="14";
 					else value = "99";
+				}
+			}
+			if (benefitProcLimitationSentenceCombinationRoutine.equals(type)) {
+				if (limit.equals("-1"))
+					value = "No";
+				else {
+					if (limit.contains("In Combination with Routine Cleanings")) value="Yes";
+					else value = "No";
+				}
+			}
+			if (benefitProcLimitationSentenceAlternateBenefitProvision.equals(type)) {
+				if (limit.equals("-1"))
+					value = "No";
+				else {
+					if (limit.contains("Alternate Benefit Provision")) value="Yes";
+					else value = "No";
 				}
 			}
 			if (benefitProcLimitationSentencePermanentMolar.equals(type)) {
@@ -1094,6 +1395,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		System.out.println("taskkill /f /im chromedriver.exe");
 		String g = "[{Deepak$,.[{";
 		try {
+			String y="Individual Maximum	$1,750 Per Lifetime ~ Ortho related";
+			System.out.println(y.replace("Individual Maximum","").trim().split(" ")[0].replace("$","").replace(",",""));
 			System.out.println(g.replaceFirst("\\[\\{", "{"));
 		} catch (Exception e) {
 			e.printStackTrace();

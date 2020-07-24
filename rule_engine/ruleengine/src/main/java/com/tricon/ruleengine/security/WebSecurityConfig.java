@@ -126,7 +126,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                 HttpMethod.GET,
                 "/queryivdatatopdf",
-				"/.well-known/acme-challenge/8h0NwOQLZreL70OMOZtKMYcM5W2Fme1JUatgJFuTElA",
+                "/queryivdatatohtml",
+                "/.well-known/acme-challenge/8h0NwOQLZreL70OMOZtKMYcM5W2Fme1JUatgJFuTElA",
                 "/.well-known/acme-challenge/AoJiyMAei-mA1StzpKpf22vgqefQLxk8GgBsa3yplpA",
                 "/queryivdatafromdbgoogle",
                 "/queryivdatahistoryfromdbgoogle",

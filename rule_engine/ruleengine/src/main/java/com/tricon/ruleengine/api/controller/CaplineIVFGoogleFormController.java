@@ -266,7 +266,7 @@ public class CaplineIVFGoogleFormController {
 		dto.setPasswordRE(p);
 		dto.setUniqueID(id);
 		dto.setOfficeNameDB(o);
-		
+		dto.setPdf(null);
 		Office office = od.getOfficeByName(dto.getOfficeNameDB());
 
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
@@ -285,6 +285,44 @@ public class CaplineIVFGoogleFormController {
 			//response.setHeader("Content-Disposition", String.format("attachment; filename="+java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")));
 			response.setHeader("Content-Disposition", String.format("attachment; filename="+(obj[0].toString().replaceAll(",", "").replaceAll(" ", "") +".pdf")));
 			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
+			InputStream in = new ByteArrayInputStream(ou.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			ou.close();
+		}
+		
+
+	}
+
+	@CrossOrigin
+	@GetMapping
+	@RequestMapping(value = "/queryivdatatohtml")
+	public void generateHTML(@RequestParam String o ,@RequestParam String id,
+			@RequestParam String p,HttpServletResponse response) throws IOException {
+		//
+		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
+		dto.setPasswordRE(p);
+		dto.setUniqueID(id);
+		dto.setOfficeNameDB(o);
+		dto.setPdf("");
+		Office office = od.getOfficeByName(dto.getOfficeNameDB());
+
+		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
+        Object[] obj=null; 
+		
+		
+		if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
+			obj = civf.generatePDF(dto,office);
+		}
+		if (obj != null && obj[1]!=null) {
+			ByteArrayOutputStream ou =(ByteArrayOutputStream)  obj[1];
+			//response.setContentType("application/pdf");
+			//response.setContentLengthLong(ou.size());
+			
+			//String name="" java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")));
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+(obj[0].toString().replaceAll(",", "").replaceAll(" ", "") +".pdf")));
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
 			InputStream in = new ByteArrayInputStream(ou.toByteArray());
 			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
 			response.flushBuffer();
