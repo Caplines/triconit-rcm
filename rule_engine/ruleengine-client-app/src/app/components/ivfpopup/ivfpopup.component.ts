@@ -24,7 +24,7 @@ export class IVFPopupComponent implements OnInit {
 	activeClE:boolean=false;
 	activeClA:boolean=false;
 	
-	filterType:string='All';
+	filterType:any=['All'];
 	
 	
 	constructor(public applicationService: ApplicationService) { }
@@ -78,7 +78,7 @@ export class IVFPopupComponent implements OnInit {
 				    		ths.ivfmData[key].countE=ths.countE;
 				    	}
 				    	});
-				    ths.toggleResult("fail");
+				    ths.toggleResultFAILALERT();
 				    
 				});
 				this.emitToParent.emit({action: "showIvfData", value: true});
@@ -115,9 +115,12 @@ export class IVFPopupComponent implements OnInit {
 	
 	toggleResult(result:string){
 		this.activeClP=this.activeClE=this.activeClA=this.activeClF=false;
+		debugger;
+		if (this.filterType && this.filterType.length==2) this.filterType=[];
+		//this.filterType!=result    alert,pass
 		if ((result=='fail' ||result=='pass' || result=='alert' || result=='exit')
-			 && this.filterType!=result){
-	       this.filterType=result;
+			 && this.filterType.indexOf(result)<0){
+	       this.filterType=[result];
 	       
 	        if (result=='fail') this.activeClF=true;
 	        else if (result=='pass') this.activeClP=true;
@@ -125,8 +128,16 @@ export class IVFPopupComponent implements OnInit {
 	        else if (result=='exit') this.activeClE=true;
 	       
 		}else{
-		   this.filterType='All';
+		   this.filterType=['All'];
 	     }
+	}
+	toggleResultFAILALERT(){
+		this.activeClP=this.activeClE=this.activeClA=this.activeClF=false;
+		 this.filterType=["fail","alert"];
+	     this.activeClF=true;
+	     this.activeClA=true;
+	        
+		
 	}
 	
 }

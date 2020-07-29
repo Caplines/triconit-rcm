@@ -2030,8 +2030,11 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 										continue;
 									//System.out.println("counterTofind--" + counterTofind);
 									try {
-
-										for (int x = 3; x < dataMap.size() + 3; x++) {
+									List<WebElement> trL= driver.findElements(By.xpath(
+												"//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr"));
+									   //dataMap.size()
+									//System.out.println("SSSSSSSS--"+trL.size());
+										for (int x = 3; x < trL.size() + 3; x++) {
 											WebElement tr = driver.findElement(By.xpath(
 													"//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr[" + x + "]"));
 											List<WebElement> tds = tr.findElements(By.tagName("td"));
@@ -2074,8 +2077,13 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 									boolean fd = false;
 									// List<WebElement> trone =
 									// driver.findElement(By.xpath("//*[@id=\"template1:r1:1:r1:1:r1:0:r1:1:tablePanelGrp\"]/div[7]/table")).findElements(By.tagName("tr"));
+									
 									try {
-										for (int x = 3; x < dataMap.size() + 3; x++) {// 12
+										List<WebElement> trL= driver.findElements(By.xpath(
+												"//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr"));
+									   //dataMap.size()
+									//System.out.println("SSSSSSS777S--"+trL.size());
+										for (int x = 3; x < trL.size() + 3; x++) {// 12
 											WebElement tr = driver.findElement(By.xpath(
 													"//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr[" + x + "]"));
 											List<WebElement> tds = tr.findElements(By.tagName("td"));
@@ -2337,10 +2345,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("07/16/2003");// 03/20/1992 12/26/1988
-		psc.setFirstName("Victoria");// Heather Griffith - Dean Dornak
-		psc.setLastName("Bruce");
-		psc.setMemberId("");// 1125727908.. 632307605
+		psc.setDob("01/08/2009");// 03/20/1992 12/26/1988
+		psc.setFirstName("Ryleigh");// Heather Griffith - Dean Dornak
+		psc.setLastName("Conner");
+		psc.setMemberId("106269");// 1125727908.. 632307605
 		psc.setSsnNumber("");
 
 		l.add(psc);

@@ -2604,6 +2604,9 @@ public class RuleBook {
 		String eff = ivf.getPlanEffectiveDate();
 		String waitb = ivf.getBasicWaitingPeriod();
 		String waitm = ivf.getMajorWaitingPeriod();
+		String wait4m = ivf.getWaitingPeriod4();
+		if (wait4m==null) wait4m="";
+		//add here ANKIT
 		String inv=Constants.invalidStr_TP;
 		boolean insZero=true;
 		if (userType==Constants.userType_CL) {
@@ -2614,9 +2617,11 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz, "getPlanEffectiveDate-" + eff, Constants.rule_log_debug, bw);
 		RuleEngineLogger.generateLogs(clazz, "getBasicWaitingPeriod-" + waitb, Constants.rule_log_debug, bw);
 		RuleEngineLogger.generateLogs(clazz, "getMajorWaitingPeriod-" + waitm, Constants.rule_log_debug, bw);
+		RuleEngineLogger.generateLogs(clazz, "getWaitingPeriod4-" + wait4m, Constants.rule_log_debug, bw);
 		waitb = waitb.toLowerCase().replace("mo", "");
 		waitm = waitm.toLowerCase().replace("mo", "");
-
+		wait4m = wait4m.toLowerCase().replace("mo", "");
+        
 		Date effD = null;
 		Date dos = null;
 		List<TPValidationResponseDto> d = new ArrayList<>();
@@ -2638,6 +2643,8 @@ public class RuleBook {
 					Integer.parseInt(waitb);
 				if (!waitm.trim().equalsIgnoreCase("no"))
 					Integer.parseInt(waitm);
+				if (!wait4m.trim().equalsIgnoreCase("") && !wait4m.trim().equalsIgnoreCase("no"))
+					Integer.parseInt(wait4m);
 
 			} catch (RuleEngineDateException e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -2647,7 +2654,7 @@ public class RuleBook {
 			} catch (Exception e) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.error.message",
-								new Object[] { "(" + waitb + ")(" + waitm + ")(" + effD + ")" }, locale),
+								new Object[] { "(" + waitb + ")(" + waitm + ")("+wait4m+")(" + effD + ")" }, locale),
 						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				return d;
 			}
@@ -2682,7 +2689,10 @@ public class RuleBook {
 				if (map != null && map.getServiceCodeCategory() != null
 						&& map.getServiceCodeCategory().getName() != null
 						&& (map.getServiceCodeCategory().getName().equalsIgnoreCase("Major")
-								|| map.getServiceCodeCategory().getName().equalsIgnoreCase("Basic"))) {
+								|| map.getServiceCodeCategory().getName().equalsIgnoreCase("Basic")
+								|| map.getServiceCodeCategory().getName().equalsIgnoreCase("Preventative")
+								
+								)) {
 					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 					fcodes.add(tp.getServiceCode());
@@ -2697,11 +2707,18 @@ public class RuleBook {
 							&& waitb.equalsIgnoreCase("no")) {
 						continue;
 					}
+					if (map.getServiceCodeCategory().getName().equalsIgnoreCase("Preventative")
+							&& (wait4m.equalsIgnoreCase("no")|| wait4m.equalsIgnoreCase(""))) {
+						continue;
+					}
 					if (map.getServiceCodeCategory().getName().equalsIgnoreCase("Major")) {
 						wt = Integer.parseInt(waitm);
 					}
 					if (map.getServiceCodeCategory().getName().equalsIgnoreCase("Basic")) {
 						wt = Integer.parseInt(waitb);
+					}
+					if (map.getServiceCodeCategory().getName().equalsIgnoreCase("Preventative")) {
+						wt = Integer.parseInt(wait4m);
 					}
 					RuleEngineLogger.generateLogs(clazz, "DOS " + dos, Constants.rule_log_debug, bw);
 

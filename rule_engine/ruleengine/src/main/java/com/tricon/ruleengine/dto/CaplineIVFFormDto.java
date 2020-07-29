@@ -534,6 +534,9 @@ public class CaplineIVFFormDto {
     private String fill1;//
     private String extr1;//
     private String crn1;//
+	private String waitingPeriod4;// waitingPeriod4 //MB T25
+	private String shareFr;// shareFr //MC T26
+
     
     
     //END
@@ -1908,6 +1911,22 @@ public class CaplineIVFFormDto {
 
 	public void setPosterior20(String posterior20) {
 		this.posterior20 = posterior20;
+	}
+
+	public String getWaitingPeriod4() {
+		return waitingPeriod4;
+	}
+
+	public void setWaitingPeriod4(String waitingPeriod4) {
+		this.waitingPeriod4 = waitingPeriod4;
+	}
+
+	public String getShareFr() {
+		return shareFr;
+	}
+
+	public void setShareFr(String shareFr) {
+		this.shareFr = shareFr;
 	}
 
 	

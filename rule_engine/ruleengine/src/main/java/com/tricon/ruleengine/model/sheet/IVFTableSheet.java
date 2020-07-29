@@ -180,9 +180,14 @@ public class IVFTableSheet {
 	private String nightGuardsD9945Fr;//posterior20 T21 LX
 	private String extractionsInYear;// extr1 //LZ T23
 	private String crownsInYear;// crn1   //LY T22
+	
     //end
 	
 	private String fillingsInYear;// fill1 //MA T24
+	
+	private String waitingPeriod4;// waitingPeriod4 //MB T25
+	private String shareFr;// shareFr //MC T26
+	
 	
 	private int rowCounter;// Used for Dump sheets only  
 	private String sheetSubId; //  Used for Dump sheets only   fetch sheet subid in google script create function 
@@ -1362,6 +1367,18 @@ public class IVFTableSheet {
 	}
 	public void setSheetSubId(String sheetSubId) {
 		this.sheetSubId = sheetSubId;
+	}
+	public String getWaitingPeriod4() {
+		return waitingPeriod4;
+	}
+	public void setWaitingPeriod4(String waitingPeriod4) {
+		this.waitingPeriod4 = waitingPeriod4;
+	}
+	public String getShareFr() {
+		return shareFr;
+	}
+	public void setShareFr(String shareFr) {
+		this.shareFr = shareFr;
 	}
 	
 	

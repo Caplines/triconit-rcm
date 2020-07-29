@@ -194,6 +194,9 @@ public class IVFFormConversionUtil {
 		
 		pd.setNightGuardsD9944Fr(d.getPosterior19());
 		pd.setNightGuardsD9945Fr(d.getPosterior20());
+		pd.setWaitingPeriod4(d.getWaitingPeriod4());
+		pd.setShareFr(d.getShareFr());
+		
 		//pd.setInsuranceType(d.getInsuranceType()); //Insurance Type
 		pd.setFillingsInYear(d.getFill1());//fill1
 		pd.setExtractionsInYear(d.getExtr1());//extr1
@@ -435,6 +438,9 @@ public class IVFFormConversionUtil {
 				
 				pd.setNightGuardsD9944Fr(d.getPosterior19());
 				pd.setNightGuardsD9945Fr(d.getPosterior20());
+				pd.setWaitingPeriod4(d.getWaitingPeriod4());
+				pd.setShareFr(d.getShareFr());
+
 				//pd.setInsuranceType(d.getInsuranceType()); //Insurance Type
 				pd.setFillingsInYear(d.getFill1());//fill1
 				pd.setExtractionsInYear(d.getExtr1());//extr1
@@ -748,7 +754,8 @@ public class IVFFormConversionUtil {
 		pd.setFillingsInYear(d.getFillingsInYear());//fill1
 		pd.setExtractionsInYear(d.getExtractionsInYear());//extr1
 		pd.setCrownsInYear(d.getCrownsInYear());//crn1
-
+		pd.setWaitingPeriod4(d.getWaitingPeriod4());//waitingPeriod4
+		pd.setShareFr(d.getShareFr());//shareFr
 		//END		
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_");// -- will set latter;

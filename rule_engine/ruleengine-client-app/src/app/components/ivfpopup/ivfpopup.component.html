@@ -40,9 +40,9 @@
 				<tr> 
 					<th style="min-width: 350px" class="table-heading">Rule Name 
 					<span class="label label-success" [ngClass]="{'active':activeClP}" (click)="toggleResult('pass')">PASS: {{ivfmData[key].countP}}</span> 
-					<span class="label label-danger" [ngClass]="{'active':activeClF}" *ngIf="ivfmData[key].countF>0" (click)="toggleResult('fail')"> FAIL: {{ivfmData[key].countF}}</span>
+					<span class="label label-danger" [ngClass]="{'active':activeClF}" *ngIf="ivfmData[key].countF>0" (click)="toggleResultFAILALERT()"> FAIL: {{ivfmData[key].countF}}</span>
 					<span class="label label-danger" [ngClass]="{'active':activeClE}" *ngIf="ivfmData[key].countE>0" (click)="toggleResult('exit')"> EXIT: {{ivfmData[key].countE}}</span>
-					<span class="label label-info" [ngClass]="{'active':activeClA}" *ngIf="ivfmData[key].countA>0" (click)="toggleResult('alert')">ALERT: {{ivfmData[key].countA}}</span>
+					<span class="label label-info" [ngClass]="{'active':activeClA}" *ngIf="ivfmData[key].countA>0" (click)="toggleResultFAILALERT()">ALERT: {{ivfmData[key].countA}}</span>
 					</th>
 					<th>Service&nbsp;Codes</th>
 					<th *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'">Tooth#</th>

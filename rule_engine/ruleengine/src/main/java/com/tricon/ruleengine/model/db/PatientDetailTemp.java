@@ -524,7 +524,13 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 
 	@Column(name = "crowns_in_year", length = 20)
 	private String crownsInYear;// crn1
+
+	@Column(name = "waiting_period4", length = 20)
+	private String waitingPeriod4;// crn1
 	
+	@Column(name = "share_fr", length = 20)
+	private String shareFr;// crn1
+
 	//END
 	public String getD0120() {
 		return d0120;
@@ -1790,6 +1796,24 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 
 	public void setCrownsInYear(String crownsInYear) {
 		this.crownsInYear = crownsInYear;
+	}
+
+	public String getWaitingPeriod4() {
+		return waitingPeriod4;
+	}
+
+	public void setWaitingPeriod4(String waitingPeriod4) {
+		this.waitingPeriod4 = waitingPeriod4;
+	}
+
+	public String getShareFr() {
+		if (shareFr==null) shareFr="";
+		return shareFr;
+	}
+
+	public void setShareFr(String shareFr) {
+		if (shareFr==null) shareFr="";
+		this.shareFr = shareFr;
 	}
 
 	

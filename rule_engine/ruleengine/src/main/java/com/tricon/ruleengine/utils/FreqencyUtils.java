@@ -1200,6 +1200,7 @@ public class FreqencyUtils {
 		}
 	}
 		public static void main(String [] a) {
+			System.out.println(convertFrequecyDentaString("", "Benefit is limited to two fluoride procedures within a calendar year"));
 			System.out.println(convertFrequecyDentaString("", "Benefit is limited to any 100 oral evaluation procedures within the contract period. Comprehensive evaluations are limited to once per provider."));
 		System.out.println(convertFrequecyDentaString("", "Benefit is limited to one crown procedure per tooth within a 5 year period."));
 			System.out.println(convertFrequecyDentaString("", "Benefit is limited to 13 periapical films per date of service"));
