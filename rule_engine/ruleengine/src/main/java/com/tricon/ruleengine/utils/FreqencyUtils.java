@@ -888,7 +888,9 @@ public class FreqencyUtils {
 		String convert1="";
 		String convert2="";
 		//Benefit is limited to either
-		if (text.startsWith("benefit is limited to one")) {
+		if (text.startsWith("this procedure is a benefit once")) {
+			convert1="1"+"x";
+		}else if (text.startsWith("benefit is limited to one")) {
 			convert1="1"+"x";
 		}else if (text.contains("benefit is limited to once")) {
 			convert1="1"+"x";
@@ -1019,6 +1021,10 @@ public class FreqencyUtils {
 		
 		if(text.contains("limited to once per provider")) {
 			convert2=",once per provider ";
+			
+		}
+		if (convert.equals("LT")) {
+			//convert="1xLT";
 			
 		}
 		if (text.equals("")) {
@@ -1204,6 +1210,7 @@ public class FreqencyUtils {
 			System.out.println(convertFrequecyDentaString("", "Benefit is limited to any 100 oral evaluation procedures within the contract period. Comprehensive evaluations are limited to once per provider."));
 		System.out.println(convertFrequecyDentaString("", "Benefit is limited to one crown procedure per tooth within a 5 year period."));
 			System.out.println(convertFrequecyDentaString("", "Benefit is limited to 13 periapical films per date of service"));
+		System.out.println(convertFrequecyDentaString("", "This procedure is a benefit once per lifetime per provider and is included as part of the oral evaluation limitations of your program."));
 			convertFrequecyUCCIString("1 Per 12 M"
 					+ "onths | 2 Per 122 Months ~ Per Office ");
 			convertFrequecyUCCIString("2 Per 122 Months ~ Per Office ");

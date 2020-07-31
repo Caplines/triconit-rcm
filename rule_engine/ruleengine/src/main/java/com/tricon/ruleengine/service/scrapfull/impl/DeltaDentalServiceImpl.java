@@ -508,14 +508,18 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		
 		
 		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));// 145
+		dtemp.setPlanAnnualMax("0");// 1
+		dtemp.setPlanAnnualMaxRemaining("0");// 2
+		dtemp.setOrthoRemaining("0");// 115
+		dtemp.setOrthoMax("0");// 91
+		dtemp.setBasicWaitingPeriod("No");// 20
+		dtemp.setMajorWaitingPeriod("No");// 21
+		dtemp.setOrthoWaitingPeriod("No");// 116
 		for (WebElement divOffMax : divOfMaximum) {
 
 			try {
 
 				if (divOffMax.getAttribute("summary").equals("Benefits and Covered Services")) {
-					dtemp.setBasicWaitingPeriod("No");// 20
-					dtemp.setMajorWaitingPeriod("No");// 21
-					dtemp.setOrthoWaitingPeriod("No");// 116
 
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
@@ -670,10 +674,6 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 					//
 				}
 				
-				dtemp.setPlanAnnualMax("0");// 1
-				dtemp.setPlanAnnualMaxRemaining("0");// 2
-				dtemp.setOrthoRemaining("0");// 115
-				dtemp.setOrthoMax("0");// 91
 				
 				if (divOffMax.getAttribute("summary").equals("Maximums")) {
 					
@@ -714,7 +714,12 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 				if (divOffMax.getAttribute("summary").equals("Deductibles")) {
 					dtemp.setPlanIndividualDeductible("0");// 3
 					dtemp.setPlanIndividualDeductibleRemaining("0");// 4
-					
+					dtemp.setPreventiveSubDed("No");// 118
+					dtemp.setDiagnosticSubDed("No");// 109
+					dtemp.setBasicSubjectDeductible("No");// 6
+					dtemp.setMajorSubjectDeductible("No");// 8
+					dtemp.setEndoSubjectDeductible("No");// 10
+					dtemp.setPerioSurgerySubjectDeductible("No");// 12
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
 						if (tr.getText().startsWith("Contract Individual Deductible") || tr.getText().startsWith("Calendar Individual Deductible")) {
@@ -824,7 +829,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			}
 
 		}
-
+        //System.out.println(dtemp.getPlanAnnualMax());
 		List<WebElement> spans = driver.findElements(By.className("x24k"));
 		String claim = "";
 		for (WebElement span : spans) {
@@ -875,12 +880,17 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			}
 		}
 		String planType = dtemp.getPlanType();
+		temp.setPlanTypeinSite(false);
 		openSideBarFirst(driver, "Benefit details", true,
 				new String[] { "Endodontics", "Periodontics", "Preventive", "Diagnostic", "Prosthodontics; Removable" },
 				true, temp);
-
 		dtemp.setMajorPercentage(
 				fetchBenefitDetails("", temp, driver, "", "Prosthodontics; Removable", "", planType, false, true));// 7
+        if (!temp.isPlanTypeinSite()) {
+        	planType="Delta Dental";
+    		dtemp.setMajorPercentage(
+    				fetchBenefitDetails("", temp, driver, "", "Prosthodontics; Removable", "", planType, true, true));// 7
+        }
 
 		dtemp.setEndodonticsPercentage(
 				fetchBenefitDetails("", temp, driver, "", "Endodontics", "", planType, false, true));// 9
@@ -1780,6 +1790,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 									//System.out.println("99999999 2" + planType + "--");
 
 									if (th.getText() != null && th.getText().contains(planType)) {
+										temp.setPlanTypeinSite(true);
 										// found = true;
 										try {
 											counter = counter + Integer.parseInt(th.getAttribute("colspan"));
@@ -2340,15 +2351,15 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smilepoint@1230");
-		dto.setUserName("JasperJFD");
+		dto.setPassword("Smile12345");
+		dto.setUserName("lavacafd007");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("01/08/2009");// 03/20/1992 12/26/1988
-		psc.setFirstName("Ryleigh");// Heather Griffith - Dean Dornak
-		psc.setLastName("Conner");
-		psc.setMemberId("106269");// 1125727908.. 632307605
+		psc.setDob("12/28/1994");// 03/20/1992 12/26/1988
+		psc.setFirstName("Esteban");// Heather Griffith - Dean Dornak
+		psc.setLastName("Morales");
+		psc.setMemberId("");// 1125727908.. 632307605
 		psc.setSsnNumber("");
 
 		l.add(psc);

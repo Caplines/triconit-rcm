@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "patient_detail_temp")
@@ -532,6 +533,11 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	private String shareFr;// crn1
 
 	//END
+	
+	//For delta Dental only
+	@Transient
+	private boolean planTypeinSite;
+
 	public String getD0120() {
 		return d0120;
 	}
@@ -1814,6 +1820,14 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	public void setShareFr(String shareFr) {
 		if (shareFr==null) shareFr="";
 		this.shareFr = shareFr;
+	}
+
+	public boolean isPlanTypeinSite() {
+		return planTypeinSite;
+	}
+
+	public void setPlanTypeinSite(boolean planTypeinSite) {
+		this.planTypeinSite = planTypeinSite;
 	}
 
 	

@@ -260,13 +260,15 @@ public class CaplineIVFGoogleFormController {
 	@GetMapping
 	@RequestMapping(value = "/queryivdatatopdf")
 	public void generatePDF(@RequestParam String o ,@RequestParam String id,
-			@RequestParam String p,HttpServletResponse response) throws IOException {
+			@RequestParam String p,@RequestParam(value = "n", required=false) String n,HttpServletResponse response) throws IOException {
 		//
 		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
 		dto.setPasswordRE(p);
 		dto.setUniqueID(id);
 		dto.setOfficeNameDB(o);
 		dto.setPdf(null);
+		dto.setNewFormat("");
+		if (n!=null && n.equals("1")) dto.setNewFormat(n);
 		Office office = od.getOfficeByName(dto.getOfficeNameDB());
 
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
@@ -298,13 +300,15 @@ public class CaplineIVFGoogleFormController {
 	@GetMapping
 	@RequestMapping(value = "/queryivdatatohtml")
 	public void generateHTML(@RequestParam String o ,@RequestParam String id,
-			@RequestParam String p,HttpServletResponse response) throws IOException {
+			@RequestParam String p,@RequestParam(value = "n", required=false) String n,HttpServletResponse response) throws IOException {
 		//
 		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
 		dto.setPasswordRE(p);
 		dto.setUniqueID(id);
 		dto.setOfficeNameDB(o);
 		dto.setPdf("");
+		dto.setNewFormat("");
+		if (n!=null && n.equals("1")) dto.setNewFormat(n);
 		Office office = od.getOfficeByName(dto.getOfficeNameDB());
 
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);

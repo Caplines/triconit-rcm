@@ -91,6 +91,10 @@ public class PatientTemp extends BaseAudit implements Serializable{
 	@Transient
 	private String procedureData;
 
+	//For delta Dental only
+	@Transient
+	private boolean planTypeinSite;
+
 	@Transient
 	private  Map<String, String> counterElementMap = new HashMap<>();
 
@@ -220,6 +224,14 @@ public class PatientTemp extends BaseAudit implements Serializable{
 
 	public void setGradePay(String gradePay) {
 		this.gradePay = gradePay;
+	}
+
+	public boolean isPlanTypeinSite() {
+		return planTypeinSite;
+	}
+
+	public void setPlanTypeinSite(boolean planTypeinSite) {
+		this.planTypeinSite = planTypeinSite;
 	}
 
 

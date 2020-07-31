@@ -58,6 +58,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	@Value("${re.xslt.file}")
 	private String XSLT_FILE;
 	
+	@Value("${re.xslt.filenew}")
+	private String XSLT_FILE_NEW;
+	
 	@Value("${google.credential.folder}")
 	private String CREDENTIALS_FOLDER;
 
@@ -337,9 +340,13 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			dto.setPatDid(dto.getId().intValue());
 			dto.setBasicInfo1(off.getName());
 			if (!temp && !dto.getBasicInfo6().trim().equals("")) {
+				try {
 				String[] s=dto.getBasicInfo6().trim().split("/");
 				 dto.setBasicInfo6(s[2]+"-"+(s[0].length()==2?s[0]:"0"+s[0])+"-"+(s[1].length()==2?s[1]:"0"+s[1]));
-			}
+				}catch(Exception e) {
+					
+				}
+				}
 			if (patientIds == null) {
 				patientIds = new HashSet<>();
 				patientIdsDB  = new HashSet<>();
@@ -584,13 +591,20 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				String filePath = xml.convertToXML(form, XSLT_PATH);
 				File file = new File(filePath);
 				if (dto.getPdf()==null) {
-				o = xml.createPdfStream(
+				
+				if (dto.getNewFormat().equals(""))o = xml.createPdfStream(
 
 						xml.createHtml(filePath, XSLT_FILE), "");
+				else  o= xml.createPdfStream(
+
+						xml.createHtml(filePath, XSLT_FILE_NEW), "");
 			    }
 				if (file!=null) file.delete(); 
 				//To test html for issues
-				if (dto.getPdf()!=null)  o=xml.createHtmlOut(filePath, XSLT_FILE);
+				if (dto.getPdf()!=null) {
+					if (dto.getNewFormat().equals(""))o=xml.createHtmlOut(filePath, XSLT_FILE);
+					else  o=xml.createHtmlOut(filePath, XSLT_FILE_NEW);
+				}
 				obj[1]=o;
 
 			}

@@ -23,6 +23,7 @@ public class CaplineIVFQueryFormDto {
 	private String websiteNameDB;
 	
 	private String pdf;
+	private String newFormat;
 	
 	
 	
@@ -136,6 +137,12 @@ public class CaplineIVFQueryFormDto {
 	}
 	public void setPdf(String pdf) {
 		this.pdf = pdf;
+	}
+	public String getNewFormat() {
+		return newFormat;
+	}
+	public void setNewFormat(String newFormat) {
+		this.newFormat = newFormat;
 	}
 	
 	
