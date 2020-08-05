@@ -1522,10 +1522,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 					ret = "Yes";
 				else
 					ret = "No";
-			} else if (type.equals(benefitContract))
+			} else if (type.equals(benefitContract)) {
 				ret = val.split(" ")[0];
 			    if (ret.equals("")) ret="0";
-			else if (type.equals(benefitLimitation)) {
+			}else if (type.equals(benefitLimitation)) {
 				ret = val.split("----")[0];
 				if (ret.equals("") && val.split("----").length > 1)
 					ret = val.split("----")[1];
@@ -2397,14 +2397,14 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smilepoint@1230");
-		dto.setUserName("SplendoraSD");
+		dto.setPassword("Dental@2030");
+		dto.setUserName("Smilepoint86");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("07/07/1977");// 03/20/1992 12/26/1988
-		psc.setFirstName("Jennifer");// Heather Griffith - Dean Dornak
-		psc.setLastName("Palmer");
+		psc.setDob("04/21/2003");// 03/20/1992 12/26/1988
+		psc.setFirstName("Kollin");// Heather Griffith - Dean Dornak
+		psc.setLastName("Kearse");
 		psc.setMemberId("");// 1125727908.. 632307605
 		psc.setSsnNumber("");
 
@@ -2413,8 +2413,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 		psc = new PatientScrapSearchDto();
 		psc.setDob("03/20/1992");
-		psc.setFirstName("Heather");
-		psc.setLastName("Griffith");
+		psc.setFirstName("Kollin");
+		psc.setLastName("Kearse");
 		psc.setMemberId("");// 632307605
 		psc.setSsnNumber("");
 

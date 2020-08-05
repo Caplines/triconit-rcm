@@ -202,7 +202,7 @@ public class ReportController {
 		//dto.setPatientIdDB(rdto.getReportField1());
 		dto.setUniqueID(rdto.getReportField1()); 
 		dto.setPatientName("");
-		
+		dto.setNewFormat("");
 		Office office = od.getOfficeByUuid(dto.getOfficeNameDB());
         Object[] obj=null; 
 		
