@@ -893,6 +893,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								if (tab.getAttribute("summary") != null
 										&& tab.getAttribute("summary").equals("Ortho Age informat")) {
 									dtemp.setOrthoAgeLimit(tab.findElements(By.tagName("td")).get(1).getText());// 92
+									if (dtemp.getOrthoAgeLimit()!=null && 
+											dtemp.getOrthoAgeLimit().toLowerCase().contains("no age limit")) {
+										    dtemp.setOrthoAgeLimit("99");
+									}
 									break;
 								}
 							}
@@ -1529,7 +1533,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 				ret = val.split("----")[0];
 				if (ret.equals("") && val.split("----").length > 1)
 					ret = val.split("----")[1];
-				if (ret.equals("")) ret="N/A";
+				if (ret.equals("")) ret="0";//as per email date 6 aug :Re: Denta Dental - Scrapping Issue (Part 2)
 			} else if (type.equals(benefitLimitation + "_TOOTH")) {
 				ret = val;
 			}

@@ -462,12 +462,21 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			return false;
 		WebElement sub = driver.findElement(By.id("subscriberId"));
 		WebElement db = driver.findElement(By.id("dateOfBirth"));
-		WebElement validate = driver.findElement(
-				By.xpath("/html/body/ui-view/div/div/ui-view/div/form/div/div[1]/div/div/div[6]/div/button"));
+		List<WebElement> validates = driver.findElements(By.tagName("button"));
+		WebElement validateB=null;
+	    for(WebElement validate:validates) {
+	    	if (validate.getText()!=null &&  
+	    		validate.getText().trim().equals("VALIDATE")) {
+	    		validateB=	validate;
+	    		
+	    	}
+	    }
+		//WebElement validate = driver.findElement(
+		//		By.xpath("/html/body/ui-view/div/div/ui-view/div/form/div/div[1]/div/div/div[6]/div/button"));
 		sub.sendKeys(id);
 		db.sendKeys(dob);
 		try {
-			validate.click();
+			validateB.click();
 		} catch (Exception e) {
 			return false;
 		}
@@ -1604,16 +1613,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("smile001");
-		dto.setUserName("lavaca001");
+		dto.setPassword("Smile123");
+		dto.setUserName("crosbyfd07");
 		dto.setSiteName("BCBS");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("07/31/2010");
+		psc.setDob("06/30/2003");
 		psc.setFirstName("");
 		psc.setLastName("");
-		psc.setMemberId("823143929");
+		psc.setMemberId("824343329");
 		psc.setSsnNumber("");
 
 		l.add(psc);
