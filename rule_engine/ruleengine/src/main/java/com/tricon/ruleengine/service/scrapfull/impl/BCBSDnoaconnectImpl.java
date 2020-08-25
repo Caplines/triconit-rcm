@@ -281,8 +281,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		issueNo = searchPatient(driver, temp, sh.getMemberId(), sh.getSsnNumber(), sh.getDob());
 		if (!issueNo) {
 			temp.setStatus("Patient Not found.." + sh.getDob() + " " + sh.getMemberId() + " " + sh.getSsnNumber());
-			temp.setFirstName(sh.getFirstName());
-			temp.setLastName(sh.getLastName());
+			temp.setFirstName(sh.getFirstName().trim());
+			temp.setLastName(sh.getLastName().trim());
 
 			return temp;
 		}
@@ -393,13 +393,18 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			if (carryOn) {
 				navigatetoUrl(driver, url, 3000);
 				String z = driver.getPageSource();
-				//System.out.println(z);
+				System.out.println(z);
+				System.out.println("444444444");
+				
 				boolean arrayC = false;
 				z = z.replaceFirst("\\[\\{", "{");
-				if (z.contains("}]}]")) {
+				if (z.contains("}]}]}]")) {///   }]}]}
+					z = z.replace("}]}]}]", "}]}]}");// }]}]
+					arrayC = true;
+				}else if (z.contains("}]}]")) {
 					z = z.replace("}]}]", "}]}");// }]}]
 					arrayC = true;
-				} else
+				}else
 					z = z.replace("}]", "  }");// }]}]
 				 System.out.println(z);
 				z = z.replace("</pre></body></html>", "");
@@ -1619,20 +1624,20 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("06/30/2003");
-		psc.setFirstName("");
-		psc.setLastName("");
-		psc.setMemberId("824343329");
+		psc.setDob("03/21/1986");
+		psc.setFirstName("KYNDRICK");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
+		psc.setLastName("HILL");
+		psc.setMemberId("831918461");
 		psc.setSsnNumber("");
 
 		l.add(psc);
 		// dto.setPassword("Smile123");
 		dto.setDto(l);
 		psc = new PatientScrapSearchDto();
-		psc.setDob("11/20/1973");
-		psc.setFirstName("Vivian");
-		psc.setLastName("Courtney");
-		psc.setMemberId("825711808");
+		psc.setDob("03/21/1986");
+		psc.setFirstName("KYNDRICK"); 
+		psc.setLastName("HILL");
+		psc.setMemberId("831918461");
 		psc.setSsnNumber("");
 		// l.add(psc);
 
