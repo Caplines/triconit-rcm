@@ -27,6 +27,8 @@ public class MessageUtil {
 				) return text;
 		System.out.println("getTEXTNAORYES-"+text);
 		if (text.equalsIgnoreCase("N/A")) return "No";
+		if (text.equalsIgnoreCase("No")) return "No";
+		
 		else return "Yes";
 	}
 	

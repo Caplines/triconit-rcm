@@ -637,7 +637,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setInsContact("8005212227");
 		dtemp.setcSRName("Scraping Tool");
 		dtemp.setTaxId(taxId);
-		
+		dtemp.setsRPD4341QuadsPerDay("2");
+		dtemp.setsRPD4341DaysBwTreatment("1");
 		List<WebElement> cards = driver.findElements(By.className("card-content"));
 		int x1=0;
 		int ct=0;
@@ -1281,10 +1282,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				String spanText = span.findElements(By.tagName("div")).get(0).getText().trim();
 				
 				if (spanText.equals(name)) {
-					boolean covered =span.getText().contains("Not covered");
+					boolean covered =span.getText().toLowerCase().contains("not covered");
 						if (type.equals(benefitInNetwork)) {
 						if (covered) {
-								 value="No";
+								 value="0";
 								 break;
 						}	
 						value = span.findElements(By.className("text-center")).get(cbenefitInNetwork).getText().replace("%", "");
@@ -1618,16 +1619,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smile123");
-		dto.setUserName("crosbyfd07");
+		dto.setPassword("Smilepnt36");
+		dto.setUserName("caladent02");
 		dto.setSiteName("BCBS");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("03/21/1986");
-		psc.setFirstName("KYNDRICK");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
-		psc.setLastName("HILL");
-		psc.setMemberId("831918461");
+		psc.setDob("02/27/1963");
+		psc.setFirstName("LARRY");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
+		psc.setLastName("MARTIN");
+		psc.setMemberId("822853212");
 		psc.setSsnNumber("");
 
 		l.add(psc);

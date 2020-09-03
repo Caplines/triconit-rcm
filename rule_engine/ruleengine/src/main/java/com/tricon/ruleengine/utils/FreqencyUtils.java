@@ -854,7 +854,7 @@ public class FreqencyUtils {
 		if (text.equals("")) convert=Constants.NO_FREQUENCY;
 		
 		
-		if (text.equalsIgnoreCase("not coverded")) convert=Constants.NO_FREQUENCY;
+		if (text.equalsIgnoreCase("not covered")) convert=Constants.NO_FREQUENCY;
 		convert = convert.replace("benefitperiod", "CY");
 		convert = convert.replace("1LT", "LT");
 		if (convert.equals("nofrequency")) convert=Constants.NO_FREQUENCY;
@@ -939,6 +939,8 @@ public class FreqencyUtils {
 		}
 		else if(text.contains("this procedure is not a benefit")) {
 			convert1="0";
+		}else if(text.contains("benefit is limited by other services performed on same date")) {//email : Re: Scrapping - Frequency 8/25/2020
+			convert1="No Frequency";
 		}else if(text.contains("benefit is limited to ")) {
 			
 			convert1=text.split("benefit is limited to ")[1].replaceAll("[a-zA-Z]", "").replace(".", "").trim()+"x";
@@ -1020,6 +1022,10 @@ public class FreqencyUtils {
 		}
 		
 		if(text.contains("limited to once per provider")) {
+			convert2=",once per provider ";
+			
+		}
+		if(text.contains("lifetime per provider")) {
 			convert2=",once per provider ";
 			
 		}
@@ -1206,12 +1212,17 @@ public class FreqencyUtils {
 		}
 	}
 		public static void main(String [] a) {
+			
+			
+			////
 			System.out.println(convertFrequecyDentaString("", "Benefit is limited to two fluoride procedures within a calendar year"));
 			System.out.println(convertFrequecyDentaString("", "Benefit is limited to any 100 oral evaluation procedures within the contract period. Comprehensive evaluations are limited to once per provider."));
 		System.out.println(convertFrequecyDentaString("", "Benefit is limited to one crown procedure per tooth within a 5 year period."));
 			System.out.println(convertFrequecyDentaString("", "Benefit is limited to 13 periapical films per date of service"));
-		System.out.println(convertFrequecyDentaString("", "This procedure is a benefit once per lifetime per provider and is included as part of the oral evaluation limitations of your program."));
-			convertFrequecyUCCIString("1 Per 12 M"
+			System.out.println("77777777777777777");
+		
+			System.out.println(convertFrequecyDentaString("", ""));
+				convertFrequecyUCCIString("1 Per 12 M"
 					+ "onths | 2 Per 122 Months ~ Per Office ");
 			convertFrequecyUCCIString("2 Per 122 Months ~ Per Office ");
 			convertFrequecyUCCIString("2 Per Calendar Year");
