@@ -32,7 +32,7 @@
   overflow: auto
 }
 
-table#data-scroll-t th {
+table#data-scroll-t th, table#data-scroll-tre th{
   position: -webkit-sticky;
   position: sticky;
   top: 0;
@@ -42,28 +42,28 @@ table#data-scroll-t th {
   z-index:1
 }
 
-#data-scroll-t .data-scroll-thd{
+#data-scroll-t .data-scroll-thd ,#data-scroll-tre .data-scroll-thdtre{
   font-family: 'Roboto', sans-serif;
   font-size: 13px;
  font-weight: 300;
 }
 
-table#data-scroll-t {
+table#data-scroll-t,table#data-scroll-tre {
   border-collapse: collapse;
   width:100%
 }
 
-th#table#data-scroll-thd {
+th#table#data-scroll-thd ,th#table#data-scroll-thdtre {
   background-color: #1976D2;
   color: #fff;
 }
 
 th#table#data-scroll-thd,
-td#table#data-scroll-thd {
+td#table#data-scroll-thdtre {
   padding: 1.1em 1.5em;
 }
 
-table#data-scroll-t tr {
+table#data-scroll-t tr,table#data-scroll-tre tr {
   color: #212121;
 }
 

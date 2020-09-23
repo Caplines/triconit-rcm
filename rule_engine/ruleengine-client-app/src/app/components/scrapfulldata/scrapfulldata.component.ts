@@ -57,6 +57,8 @@ export class ScrapFullDataComponent implements OnInit {
   showLoadingP: boolean = false;
   showLoadingPA: boolean = false;
   showLoadingPAA:boolean =false;
+  displayResultV:boolean =false;
+  rdata:any=[];	
   linkData:string="";
   rowCounter:number=1;
   timerRef:any;	
@@ -104,7 +106,9 @@ export class ScrapFullDataComponent implements OnInit {
    fetchDetails(){
 	   if (this.siteIn!='' && this.offid!=''){
 	   this.oName = this.offices.filter(o => o.uuid === this.offid)[0].name;
-	   console.log(this.oName);
+	   //console.log(this.oName);
+	   //this.rdata.push({"patientId":"qqqwqwqss","firstName":"xcxcxcxc","status":"zzzsa asdsadas dsa das dasd asdsadsa dasdasd sad sadsad sa",
+		//                "lastName":"asddAS Ss ASSASD","dob":"12/12/2001"});
 	   this.showLoadingD=true;
 	   this.showLoadingP=true;
        let d={'siteId':this.siteIn,'officeId':this.offid};
@@ -150,6 +154,10 @@ export class ScrapFullDataComponent implements OnInit {
 		 if (sc.ssnNumber) thtml=thtml+"<th  class='data-scroll-thd'>SSN Number</th>";
 		 if (sc.locationProvider) thtml=thtml+"<th  class='data-scroll-thd'>Location Provider</th>";
 		 if (sc.memberId) thtml=thtml+"<th  class='data-scroll-thd'>Member Id</th>";
+		 if (sc.subscribersFirstName) thtml=thtml+"<th  class='data-scroll-thd'>Subs. First Name</th>";
+		 if (sc.subscribersLastName) thtml=thtml+"<th  class='data-scroll-thd'>Subs Last Name</th>";
+		 if (sc.subscribersDob) thtml=thtml+"<th  class='data-scroll-thd'>Subs. DOB</th>";
+		 
 		 if (sc.gradePay) thtml=thtml+"<th  class='data-scroll-thd'>Grade Pay</th>";
 		 setTimeout(() => {
 			 if (n==0){
@@ -162,11 +170,14 @@ export class ScrapFullDataComponent implements OnInit {
 		 this.rowCounter++;	
    }
    goBack(){
-	   this.showLoadingD=false;
-	   this.showScrapMain=false;
-	   this.showLoadingPA=false;
-	   this.showLoadingPAA=false;
-	   this.showLoadingP=false;
+	   let th=this;
+	   th.showLoadingD=false;
+	   th.showScrapMain=false;
+	   th.showLoadingPA=false;
+	   th.showLoadingPAA=false;
+	   th.showLoadingP=false;
+	   th.displayResultV=false;
+	   th.rdata=[];
    }
   
    parseSite(){
@@ -245,12 +256,16 @@ export class ScrapFullDataComponent implements OnInit {
 		    if (document.getElementById("patmem"+x))document.getElementById("patmem"+x).setAttribute("style", "border-color: ;");
 		    if (document.getElementById("patgr"+x))document.getElementById("patgr"+x).setAttribute("style", "border-color: ;");
 		    
-		    
+		    if (document.getElementById("patsfn"+x))document.getElementById("patsfn"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("patsln"+x))document.getElementById("patsln"+x).setAttribute("style", "border-color: ;");
+		    if (document.getElementById("patsdob"+x))document.getElementById("patsdob"+x).setAttribute("style", "border-color: ;");
 		 if(!(dt.firstName=="" && dt.lastName=="" &&
 		   dt.patientId=="" && dt.dob=="" &&
 		   dt.locationProvider=="" && dt.memberId=="" &&
 		   dt.patientId==""  &&  dt.ssnNumber=="" &&
-		   dt.enrolleeId=="" && dt.gradePay=="")){
+		   dt.enrolleeId=="" && dt.gradePay=="" &&
+		   dt.subscribersFirstName=="" && dt.subscribersLastName=="" && dt.subscribersDob==""
+		    )){
 			 ax.push(dt);
 			 //console.log(this.site.name);
 			 if (this.site.name=='BCBS'){
@@ -362,8 +377,10 @@ export class ScrapFullDataComponent implements OnInit {
 		  ths.applicationService.postData({id:x},"/parsefulldataProcessInfo",
 					(result)=>{
 						  if (result.status == 'OK') {
-							  if (result.data==0){
+							  if (result.data.count==0){
 								  alert('Data Scrapped..!!');
+								  ths.displayResultV=true;
+								  ths.displayResult(result.data.listPatient);
 							  }else{
 								  ths.checkData(x,30*1000);
 							  }
@@ -372,6 +389,14 @@ export class ScrapFullDataComponent implements OnInit {
 					);
 		
 	}, t);
+  }
+  
+  displayResult(d){
+	  
+	  this.rdata=d;
+	  
+
+	  
   }
   
 }

@@ -10,5 +10,8 @@ export class ScrapFullPatientDataModel {
     memberId:string="";
     gradePay:string="";
 
-    
+    subscribersFirstName:string="";
+    subscribersLastName:string="";
+    subscribersDob:string="";
+
 }

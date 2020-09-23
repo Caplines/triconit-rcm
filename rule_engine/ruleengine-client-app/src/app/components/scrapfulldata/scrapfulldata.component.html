@@ -183,9 +183,38 @@
 							   <ng-container *ngIf="scrap.memberId">
 							   <td>
 							        <input type="text" class="login-signup-form-field form-control" 
-									name="patmem{{ind}}" id="patmem{{ind}}" [(ngModel)]="q.memberId"	/>
+									name="patmem{{ind}}" id="patmem{{ind}}" [(ngModel)]="q.memberId"/>
 							   </td>
 							   </ng-container>
+							   
+							   
+							   
+							   <ng-container *ngIf="scrap.subscribersFirstName">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patsfn{{ind}}" id="patsfn{{ind}}" [(ngModel)]="q.subscribersFirstName"/>
+							   </td>
+							   </ng-container>
+							   <ng-container *ngIf="scrap.subscribersLastName">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patsln{{ind}}" id="patsln{{ind}}" [(ngModel)]="q.subscribersLastName"/>
+							   </td>
+							   </ng-container>
+							   <ng-container *ngIf="scrap.subscribersDob">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patsdob{{ind}}" id="patsdob{{ind}}" [(ngModel)]="q.subscribersDob" placeholder="MM/DD/YYYY"/>
+							   </td>
+							   </ng-container>
+							   
+							    
+							   
+							   
+							   
+							   
+							   
+							   
 							   <ng-container *ngIf="scrap.gradePay">
 							   <td>
 							        <input type="text" class="login-signup-form-field form-control" 
@@ -208,7 +237,30 @@
 						to see the Parsed data in the Report Section ( IVF RDBMS - WebSite Parsed Data ).<br>
 						
 						</div>
-						
+						<div *ngIf="displayResultV">
+						<div class="form-horizontal">
+						<div class="form-group">
+						    <div class="col-sm-12">
+						<table id="data-scroll-t">
+						    <tr>
+						        <th class="data-scroll-thdtre">Patient Id</th>
+						        <th class="data-scroll-thdtre">First Name</th>
+						        <th class="data-scroll-thdtre">Last Name</th>
+						        <th class="data-scroll-thdtre">DOB</th>
+						        <th class="data-scroll-thdtre">Status</th>
+						    </tr>
+						    <tr *ngFor="let q1 of rdata let ind = index">
+						       <td class="data-scroll-thdtre">{{q1.patientId}}</td>
+						      <td class="data-scroll-thdtre">{{q1.firstName}}</td>
+						      <td class="data-scroll-thdtre">{{q1.lastName}}</td>
+						      <td class="data-scroll-thdtre">{{q1.dob}}</td>
+						      <td class="data-scroll-thdtre">{{q1.status}}</td>
+						    </tr>
+						</table>
+						</div>
+						</div>
+						</div>
+						</div>
 
 					</form>
 				</div>
