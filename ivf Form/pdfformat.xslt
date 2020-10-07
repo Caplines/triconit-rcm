@@ -431,11 +431,11 @@ border-collapse: collapse;
                         <td class="colourfreq">						 
 						 <span class="main-heading-1">Frequency</span>
                         </td>
-						<td class="withds11 colourexam">
-                         <span class="main-heading-1">SSC</span>
+						<td class="withds11">
+                         <span class="main-heading-1"></span>
                          </td>
-                        <td class="withds11 colourfreq">						 
-						 <span class="main-heading-1">Frequency</span>
+                        <td class="withds11">						 
+						 <span class="main-heading-1"></span>
                         </td>
            </tr>
 		   <tr>
@@ -463,10 +463,10 @@ border-collapse: collapse;
 						 <span class="sub-heading"><xsl:value-of select="fluroide3"/></span>
                         </td>
 						<td class="withds">
-                         <span class="main-heading-1">D2930</span>
+                         <span class="main-heading-1"></span>
                          </td>
                         <td class="withds">						 
-						 <span class="sub-heading"><xsl:value-of select="ssc1"/></span>
+						 <span class="sub-heading"></span>
                         </td>
            </tr>
 		   <tr>
@@ -494,10 +494,10 @@ border-collapse: collapse;
 						 <span class="sub-heading"><xsl:value-of select="fluroide4"/></span>
                         </td>
 						<td class="withds">
-                         <span class="main-heading-1">D2931</span>
+                         <span class="main-heading-1"></span>
                          </td>
                         <td class="withds">						 
-						 <span class="sub-heading"><xsl:value-of select="ssc2"/></span>
+						 <span class="sub-heading"></span>
                         </td>
            </tr>
 		   <tr>
@@ -669,22 +669,22 @@ border-collapse: collapse;
 						<td>
 						   <span class="sub-heading"><xsl:value-of select="policy18"/></span>
 						 </td>
-                        <td  class="withds">
-                           <span class="main-heading-1"></span>
+                        <td  class="withds colourexam">
+                           <span class="main-heading-1">D0160</span>
 						 </td>
-                        <td> <span class="sub-heading"></span>
+                        <td> <span class="sub-heading"><xsl:value-of select="pedo1"/></span>
                         </td>
-                        <td>
-                         <span class="main-heading-1"></span>
+                        <td class="withds colourexam">
+                         <span class="main-heading-1">D0330</span>
                          </td>
                         <td>						 
-						 <span class="sub-heading"></span>
+						 <span class="sub-heading"><xsl:value-of select="pano1"/></span>
                         </td>
-						<td class="withds">
-                         <span class="main-heading-1"></span>
+						<td class="withds colourexam">
+                         <span class="main-heading-1">Does Pano<br/> and FMX shares<br/> the frequency?</span>
                          </td>
                         <td class="withds">						 
-						 <span class="sub-heading"></span>
+						 <span class="sub-heading"><xsl:value-of select="pano2"/></span>
                         </td>
            </tr>
 			</table>
@@ -904,10 +904,12 @@ border-collapse: collapse;
            </tr>
 		  
 		  <tr>
-                        <td class="withds" colspan="2">
-                           <span class="main-heading-1"></span>
+                        <td class="withds colourexam">
+                           <span class="main-heading-1">D4381</span>
 						</td>
-						
+						<td class="withds">
+                           <span class="sub-heading"><xsl:value-of select="d4381"/></span>
+						</td>
                         <td class="withds colourfreq">
                            <span class="main-heading-1">Frequency</span>
 						</td>
@@ -1219,10 +1221,10 @@ border-collapse: collapse;
                         <td>						 
 						 <span class="sub-heading"><xsl:value-of select="implants4"/></span>
                         </td>
-						<td rowspan="4" class="colourfreq">
+						<td rowspan="1" class="colourfreq">
                          <span class="main-heading-1">Frequency<br/> (D7311<br/> and D7310)</span>
                          </td>
-                        <td rowspan="4">						 
+                        <td rowspan="1">						 
 						 <span class="sub-heading"><xsl:value-of select="oral4"/> &amp;<br/><xsl:value-of select="oral6"/> </span>
                         </td>
 						<td>						 
@@ -1253,7 +1255,12 @@ border-collapse: collapse;
                         <td rowspan="3">						 
 						 <span class="sub-heading"><xsl:value-of select="implants7"/></span>
                         </td>
-						
+						<td rowspan="1" class="colourexam">
+                         <span class="main-heading-1">SSC</span>
+                         </td>
+                        <td rowspan="1">						 
+						 <span class="main-heading-1">Frequency</span>
+                        </td>
 						 <td class="withds">						 
 						 <span class="sub-heading"></span>
                         </td>
@@ -1274,7 +1281,12 @@ border-collapse: collapse;
 						 </td>
                         <td class="" rowspan="2"><span><xsl:value-of select="denf5226"/></span>
                         </td>
-                        
+                        <td rowspan="1" class="colourfreq">
+                         <span class="main-heading-1">D2930</span>
+                         </td>
+                        <td rowspan="1">						 
+						 <span class="sub-heading"><xsl:value-of select="ssc1"/></span>
+                        </td>
 						 <td class="withds">						 
 						 <span class="sub-heading"></span>
                         </td>
@@ -1290,7 +1302,12 @@ border-collapse: collapse;
 						   <span class="sub-heading" ><xsl:value-of select="bridges2"/></span>
                         </td>
                         
-                        
+                        <td rowspan="1" class="colourfreq">
+                         <span class="main-heading-1">D2931</span>
+                         </td>
+                        <td rowspan="1">						 
+						 <span class="sub-heading"><xsl:value-of select="ssc2"/></span>
+                        </td>
                         
 						 <td class="">						 
 						 <span class="sub-heading"></span>
@@ -1306,11 +1323,11 @@ border-collapse: collapse;
                         <td>						
 						   <span class="sub-heading" ><xsl:value-of select="cdowngrade"/></span>
                         </td>
-                         <td class="">						 
-						 <span class="sub-heading"></span>
+                         <td class="colourfreq">						 
+						 <span class="main-heading-1">D2934</span> 
                         </td>
 						 <td class="">						 
-						 <span class="sub-heading"></span>
+						 <span class="sub-heading"><xsl:value-of select="pedo2"/></span>
                         </td>
 						<td class="">						 
 						 <span class="sub-heading"></span>
