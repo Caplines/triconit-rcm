@@ -12,7 +12,7 @@ import {ReportComponent} from "./components/report/report.component";
 import {TreatmentPlanComponent} from "./components/treatmentplan/treatmentplan.component";
 import {UserInputComponent} from "./components/userinput/userinput.component";
 import {ResetPasswordComponent} from "./components/resetpassword/resetpassword.component";
-
+import {DynamicIVFComponent} from "./components/dynamic_ivf/dynamic_ivf.component";
 import {DiagnosticComponent} from "./components/diagnostic/diagnostic.component";
 import {EnReportsComponent} from "./components/enhanced_reports/enreports.component";
 import {ScrapComponent} from "./components/scrap/scrap.component";
@@ -118,8 +118,10 @@ const appRoutes: Routes = [
   component: ScrapFullDataComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
   { path: 'help', component: HelpComponent  },
+  { path: 'extIVF', loadChildren: './module/dynamicIvf.module#DynamicIVFAppModule' },
   // otherwise redirect to profile
   { path: '**', redirectTo: '/login' }
+  
 ];
 
 export const routing = RouterModule.forRoot(appRoutes);

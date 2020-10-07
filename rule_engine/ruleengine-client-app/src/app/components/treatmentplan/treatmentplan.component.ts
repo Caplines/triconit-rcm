@@ -60,8 +60,8 @@ export class TreatmentPlanComponent implements OnInit {
 				this.treatmentplanData = result.data;
 				this.arrayOfKeys = Object.keys(this.treatmentplanData);
 				this.showTreatmentPlanData = true;
-				console.log(this.treatmentplanData);
-                console.log(this.isEmpty(this.treatmentplanData));
+				//console.log(this.treatmentplanData);
+                //console.log(this.isEmpty(this.treatmentplanData));
 				if (this.isEmpty(this.treatmentplanData)){
 					alert("The Patient ID was NOT found. Check Patient ID and ensure that Treatment Plan has been processed for the Patient");
 				}

@@ -1,0 +1,55 @@
+
+<div class="inner-bg">
+<div style="background:#fff">
+
+
+ NOW REGENERATE ARRAY
+ -------------------
+<h3>Dynamic IVF FORM DEMO..	</h3>
+
+<form #f="ngForm">
+
+<div>        {{section1.name}} ---
+          <table id="section-1">
+                    <tr *ngFor="let d of section1.data">
+                      <td *ngFor="let data of d" >
+                       <div draggable [dragData]="data" >
+                       <p><label class="" for="{{data.idn+''+data.idv}}" [innerHTML]="data.name" style="vertical-align:top;font-size: 14px;font-family: Roboto,sans-serif;font-weight: 300;"></label>
+							 <input type="text" style="width:150px" droppable (onDrop)="onItemDropSection1($event)"
+							[(ngModel)]="data.value"	name="{{data.idn+''+data.idv}}" id="{{data.idn+''+data.idv}}"  
+								value="{{data.value}}"/>
+						</p>
+                       </div>
+                      </td>
+                    </tr>
+		  </table>
+</div>
+
+	
+</form>
+<form>
+
+<div>        
+----------------------------PDF------------------
+       ---------{{section1.name}} ---
+          <table id="section-1">
+                    <tr *ngFor="let d of section1.data">
+                      <td *ngFor="let data of d" >
+                       <div draggable [dragData]="data">
+                       <label class="" for="{{data.idn+''+data.idv}}" [innerHTML]="data.name" style="vertical-align:top;font-size: 14px;font-family: Roboto,sans-serif;font-weight: 300;"></label>
+							<div style="display:inline" [innerHTML]="data.value"></div>
+						
+                       </div>
+                      </td>
+                    </tr>
+		  </table>
+</div>
+
+	
+</form>
+
+
+     
+
+</div>
+</div>

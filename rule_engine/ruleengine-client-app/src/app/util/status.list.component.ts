@@ -4,10 +4,13 @@ export  class StatusList {//{extends StatusModel{
 	
 	statses: any=[];//Completed, Accepted, Proposed, Rejected, Referred
     status: string="";
+    insTypes: any=[];//Primary, Secondary
+    insType: string="";
 
     constructor(){
     	//super("","");
     	this.setUpStatus();
+    	this.setUpInsurance();
     }
     
     setUpStatus(){
@@ -20,6 +23,13 @@ export  class StatusList {//{extends StatusModel{
     	this.statses.push(new StatusModel("A","Accepted"));
     	this.statses.push(new StatusModel("R","Rejected"));
     	this.statses.push(new StatusModel("F","Referred"));
+    	
+    }
+    setUpInsurance(){
+    	
+    	this.insTypes.push(new StatusModel("Primary","Primary"));
+    	this.insTypes.push(new StatusModel("Secondary","Secondary"));
+    	
     	
     }
 

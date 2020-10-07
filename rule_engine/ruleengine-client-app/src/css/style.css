@@ -217,12 +217,17 @@ button.btn:active:focus, button.btn.active:focus {
     }
     
   .status-form-field {
-  width: 50% !important;
+  /*width: 45% !important;*/
   display: inline !important;
-  float: right;
+  /*float: right;*/
   
 }
-    
+ .instype-form-field {
+  /*width: 45% !important;*/
+  display: inline !important;
+  /*float: left;*/
+  
+}    
 @media (max-width: 768px) {
 	
 	.inner-bg .col-sm-offset-3 {

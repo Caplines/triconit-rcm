@@ -53,6 +53,16 @@
 							</select>
 							<div *ngIf="f.submitted && ivfm.officeId==''" class="error-msg">The
 								Office Name is required</div>
+							<div>
+                        	<select
+								name="insType" [(ngModel)]="ivfm.insType"
+								class="instype-form-field form-control" id="insType">
+								<option value="">Insurance type...</option>
+								<option *ngFor="let sta of ivfm.insTypes" [value]="sta.key">{{sta.value}}</option>
+								
+							</select>
+                            </div>	
+								
 						</div>
 
 

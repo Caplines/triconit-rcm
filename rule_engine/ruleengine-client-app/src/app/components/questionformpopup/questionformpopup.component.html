@@ -206,6 +206,30 @@
 			</div>
 		
 		</div>
+		<div *ngIf = "key == 'Perio Depth Checker'" class="questionpopup">
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th *ngFor="let data of questionFormData[key]">{{data.question}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td *ngFor="let data of questionFormData[key]">
+							<ul *ngFor="let answer of data.questionAnswers">
+								<li *ngIf="data.questionType == 'Y_N'">
+									<input type="radio" [checked]="answer.answer=='Yes'" value="Yes" id="yes_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'Yes')" />
+									<label for="yes_{{answer.answerId}}">Yes</label>										
+									<input type="radio" [checked]="answer.answer=='NA'" value="NA" id="no_{{answer.answerId}}" (change)="saveRadioChanges(answer, 'NA')" />
+									<label for="no_{{answer.answerId}}">N/A</label>
+								</li>
+							</ul>						
+						</td>
+					<tr>
+				</tbody>						
+			</table>
+		
+		</div>
 		<hr/>
 		<!-- NOT USED -->
 		<div *ngIf = "key == 'RULE_BONE_GRAFT'">

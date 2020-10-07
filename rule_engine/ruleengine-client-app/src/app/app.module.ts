@@ -75,7 +75,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
 	UserSettingsComponent,
 	UserSettingsPopupupComponent,
 	ResetPasswordComponent,
-	IVFDumpComponent
+	IVFDumpComponent,
   ],
   imports: [
     BrowserModule,HttpModule,FormsModule,routing,HttpClientModule,NgDatepickerModule
