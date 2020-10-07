@@ -6,9 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +27,8 @@ import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.StatusResetDto;
 import com.tricon.ruleengine.dto.UserRegistrationDto;
+import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.ReportService;
 import com.tricon.ruleengine.service.UserService;
 
@@ -32,7 +39,10 @@ public class AdminRestController {
 	@Autowired
 	private UserService userService;
 
-//	@Autowired
+	@Autowired
+	@Qualifier("jwtUserDetailsService")
+    private UserDetailsService userDetailsService;
+	//	@Autowired
 //	private ReportService reportService;
 
 	/**
@@ -49,6 +59,14 @@ public class AdminRestController {
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto dto) {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
+		dto.setCuuid(user.getCompany().getUuid());
+		
+		
 		return ResponseEntity.ok(userService.registerUser(dto));
 	}
 

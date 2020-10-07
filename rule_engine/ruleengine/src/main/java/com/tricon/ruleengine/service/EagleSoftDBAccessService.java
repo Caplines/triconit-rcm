@@ -13,7 +13,7 @@ import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 public interface EagleSoftDBAccessService {
 
 	
-	public Map<String, List<?>> getPatientData(Map<String, List<Object>> ivfMap,EagleSoftDBDetails esDB,BufferedWriter bw);
+	public Map<String, List<?>> getPatientData(String insuranceType,Map<String, List<Object>> ivfMap,EagleSoftDBDetails esDB,BufferedWriter bw);
 	
 	public Map<String, List<?>> getEmployeeMaster(Map<String, List<EagleSoftPatient>> espatients,EagleSoftDBDetails esDB,BufferedWriter bw);
 	

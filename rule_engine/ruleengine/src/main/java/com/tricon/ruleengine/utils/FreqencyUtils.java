@@ -1246,5 +1246,333 @@ public class FreqencyUtils {
 		    
 		}
 
+		
+		public static List<TPValidationResponseDto>  panoFMXFrequencyLogic(List<ServiceCodeIvfTimesFreqFieldDto> dataIVF,String tpCode,
+				ToothHistoryDto historyD,Class<?> clazz,BufferedWriter bw,int CurrentYear,
+				Date planDate, MessageSource messageSource,Rules rule,IVFTableSheet ivf,
+				Date TP_Date,Locale locale,Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVFFinal,String thKEY
+				) {
+			boolean present = false;
+			List<TPValidationResponseDto> dList = new ArrayList<>();
+			for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF) {
+				String freq = scivfTFD.getFreqency();
+
+				ServiceCodeIvfTimesFreqFieldDto scivfTFDFinal = new ServiceCodeIvfTimesFreqFieldDto(
+						tpCode, scivfTFD.getFieldName(), scivfTFD.getFreqency(), 0, 0,"");
+				scivfTFDFinal.setDos(historyD.getHistoryDos());
+				RuleEngineLogger.generateLogs(clazz,
+						"HISTORY CODE- " + historyD.getHistoryCode(),
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz,
+						"HISTORY DOS- " + historyD.getHistoryDos(),
+						Constants.rule_log_debug, bw);
+
+				RuleEngineLogger.generateLogs(clazz, "Frequency- " + freq,
+						Constants.rule_log_debug, bw);
+				if (historyD.getHistoryDos().equals("") || freq.equalsIgnoreCase("") || freq.equalsIgnoreCase("NF") || freq.equalsIgnoreCase("no frequency"))
+					continue;
+				//System.out.println("DDDDDDDDDDDDDD-"+freq);
+				FreqencyDto FDTO = FreqencyUtils.parseFrequecy(freq);
+				Date[] datesFIS = DateUtils.getFiscalYear(FDTO.getFy());
+				int ti = FDTO.getTimes();
+				scivfTFDFinal.setTimes(ti);
+
+				Date dos = null;
+				try {
+					dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(historyD.getHistoryDos());
+					RuleEngineLogger.generateLogs(clazz,
+							"History DOS-" + historyD.getHistoryDos(),
+							Constants.rule_log_debug, bw);
+				} catch (ParseException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				RuleEngineLogger.generateLogs(clazz, "TIMES:" + ti,
+						Constants.rule_log_debug, bw);
+				if (FDTO.getFy() > 0) {// Fiscal Year
+					// isFiscalpresent=true;
+					RuleEngineLogger.generateLogs(clazz, "Fiscal Year:" + FDTO.getFy(),
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz,
+							"Fiscal Year:" + datesFIS[0] + "-" + datesFIS[1],
+							Constants.rule_log_debug, bw);
+					boolean fiscal = DateUtils.isDatesBetweenDates(datesFIS[0], datesFIS[1],
+							dos);
+					RuleEngineLogger.generateLogs(clazz, "Fiscal Year:" + fiscal,
+							Constants.rule_log_debug, bw);
+					if (fiscal) {
+						present = true;
+						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+						// expCount = expCount + 1;
+					}
+				} else if (FDTO.getCy() > 0) {// Calendar Year
+					RuleEngineLogger.generateLogs(clazz, "Calendar Year:" + FDTO.getCy(),
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "CurrentYear:" + CurrentYear,
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "CurrentYear:" + CurrentYear,
+							Constants.rule_log_debug, bw);
+					Date[] calcy = DateUtils.getCalendarYear(FDTO.getCy());
+					RuleEngineLogger.generateLogs(clazz, "DATE RANGE: FROM -" + calcy[0],
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "DATE RANGE: TO -" + calcy[1],
+							Constants.rule_log_debug, bw);
+
+					// isCalPresent=true;
+					// CurrentYear
+					if (DateUtils.isDatesBetweenDates(calcy[0], calcy[1], dos)) {
+						present = true;
+						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+					}
+
+				} else if (FDTO.getLt() > 0) {// Life Time
+					RuleEngineLogger.generateLogs(clazz, "Life Time:" + FDTO.getLt(),
+							Constants.rule_log_debug, bw);
+					// isLifeTimePresent=true;
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+
+				} else if (FDTO.getPy() > 0) {// Plan Year
+					RuleEngineLogger.generateLogs(clazz, "Plan Year:" + FDTO.getPy(),
+							Constants.rule_log_debug, bw);
+					// isPlanYearPresent=true;
+					Calendar calendar = new GregorianCalendar();
+					if (planDate==null) {
+						dList.add(
+								new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule54.error.message2",
+												new Object[] { }, locale),
+										Constants.FAIL,"","",""));	
+						return dList;
+					}
+					Date nextDate = DateUtils.getNextYear(planDate);
+					// calendar.set(calendar.get(Calendar.YEAR)+1,calendar.get(Calendar.MONTH),
+					// calendar.get(Calendar.DATE)+1);
+					calendar.setTime(dos);
+					boolean fiscal = DateUtils.isDatesBetweenDates(planDate, nextDate, dos);
+					if (fiscal) {
+						present = true;
+						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+					}
+				} else if (FDTO.getCalendarMonth() > 0) {// Calendar Months Done (cal.mo)
+					RuleEngineLogger.generateLogs(clazz,
+							"Calendar Months:" + FDTO.getCalendarMonth(),
+							Constants.rule_log_debug, bw);
+					// (1X6cal.mo) Plan Date 1 Jan - 31 JAN --> jan-june and july-Dec. two
+					// phase..
+					if (planDate==null) {
+						dList.add(
+								new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule54.error.message2",
+												new Object[] {}, locale),
+										Constants.FAIL,"","",""));	
+						return dList;
+					}
+					for (int x = 0; x <= 11;) {
+
+						x = x + FDTO.getCalendarMonth();
+						int initMonth = x - FDTO.getCalendarMonth();
+						int endMonth = (x - 1);
+
+						Calendar calendar = new GregorianCalendar();
+						calendar.setTime(planDate);
+						calendar.set(calendar.get(Calendar.YEAR),
+								calendar.get(Calendar.MONTH) + initMonth,
+								calendar.get(Calendar.DATE));
+						initMonth = calendar.get(Calendar.MONTH);
+
+						calendar = new GregorianCalendar();
+						calendar.setTime(planDate);
+						calendar.set(calendar.get(Calendar.YEAR),
+								calendar.get(Calendar.MONTH) + endMonth,
+								calendar.get(Calendar.DATE));
+						endMonth = calendar.get(Calendar.MONTH);
+
+						RuleEngineLogger
+								.generateLogs(clazz,
+										"Initial Calendar Month for Plan Date is:"
+												+ (initMonth + 1),
+										Constants.rule_log_debug, bw);
+						RuleEngineLogger.generateLogs(clazz,
+								"End Month for Plan Date is:" + (endMonth + 1),
+								Constants.rule_log_debug, bw);
+
+						calendar = new GregorianCalendar();
+						calendar.setTime(dos);
+						int dosmonth = calendar.get(Calendar.MONTH);
+
+						calendar = new GregorianCalendar();
+						calendar.setTime(TP_Date);
+						int tpmonth = calendar.get(Calendar.MONTH);
+
+						RuleEngineLogger.generateLogs(clazz,
+								"Month for DOS is:" + (dosmonth + 1),
+								Constants.rule_log_debug, bw);
+						RuleEngineLogger.generateLogs(clazz,
+								"Month for TP is:" + (tpmonth + 1),
+								Constants.rule_log_debug, bw);
+						RuleEngineLogger.generateLogs(clazz,
+								" IS Month for DOS-(" + (dosmonth + 1)
+										+ ") is between Initial Calendar Month:("
+										+ (initMonth + 1) + ") and End Month for Plan("
+										+ (endMonth + 1) + ")==>"
+										+ (initMonth <= dosmonth && dosmonth >= endMonth),
+								Constants.rule_log_debug, bw);
+
+						RuleEngineLogger.generateLogs(clazz,
+								" IS Month for TP-(" + (tpmonth + 1)
+										+ ") is between Initial Calendar Month:("
+										+ (initMonth + 1) + ") and End Month for Plan("
+										+ (endMonth + 1) + ")==>"
+										+ (initMonth <= tpmonth && tpmonth >= endMonth),
+								Constants.rule_log_debug, bw);
+
+						if ((initMonth <= dosmonth && dosmonth >= endMonth)
+								&& (initMonth <= tpmonth && tpmonth >= endMonth)) {
+							present = true;
+							scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+						}
+					}
+
+				} else if (FDTO.getDays() > 0) {// Months & Days (1x6Mo_1D)
+
+					RuleEngineLogger.generateLogs(clazz, " Days:" + FDTO.getDays(),
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "Months :" + FDTO.getMonths(),
+							Constants.rule_log_debug, bw);
+					//
+					if (planDate==null) {
+						dList.add(
+								new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule54.error.message2",
+												new Object[] {}, locale),
+										Constants.FAIL,"","",""));	
+						return dList;
+					}
+					if (dos.compareTo(planDate) < 0) {
+						RuleEngineLogger.generateLogs(clazz,
+								" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
+								Constants.rule_log_debug, bw);
+
+						// continue;
+					}
+					Calendar nextAvailbleDate = new GregorianCalendar();
+					nextAvailbleDate.setTime(dos);
+					nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+							nextAvailbleDate.get(Calendar.MONTH) + FDTO.getMonths(),
+							nextAvailbleDate.get(Calendar.DATE));
+
+					nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+							nextAvailbleDate.get(Calendar.MONTH),
+							nextAvailbleDate.get(Calendar.DATE) + FDTO.getDays());
+					//
+					RuleEngineLogger.generateLogs(clazz,
+							"NEXT DATE OF SERVICE AVIALBLE :" + nextAvailbleDate.getTime(),
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "Current Date :" + TP_Date,
+							Constants.rule_log_debug, bw);
+
+					// 1 June Dec 12 -->6 Months
+					// 1 Dec Dec 12
+					if (TP_Date.compareTo(nextAvailbleDate.getTime()) <= 0) {
+						RuleEngineLogger.generateLogs(clazz, " INCREASE COUNT BY 1-",
+								Constants.rule_log_debug, bw);
+						present = true;
+						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+					}
+
+				} else if (FDTO.getOnlyDays() > 0) {// Days
+					RuleEngineLogger.generateLogs(clazz, "ONLY DAYS :" + FDTO.getOnlyDays(),
+							Constants.rule_log_debug, bw);
+					if (planDate==null) {
+						dList.add(
+								new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule54.error.message2",
+												new Object[] {}, locale),
+										Constants.FAIL,"","",""));	
+						return dList;
+					}
+					if (dos.compareTo(planDate) < 0) {
+						RuleEngineLogger.generateLogs(clazz,
+								" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
+								Constants.rule_log_debug, bw);
+
+						// continue;
+					}
+					Calendar nextAvailbleDate = new GregorianCalendar();
+					nextAvailbleDate.setTime(dos);
+					nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+							nextAvailbleDate.get(Calendar.MONTH),
+							nextAvailbleDate.get(Calendar.DATE) + FDTO.getOnlyDays());
+					//
+					RuleEngineLogger.generateLogs(clazz,
+							"NEXT DATE OF SERVICE AVIALBLE :" + nextAvailbleDate.getTime(),
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "Current Date :" + TP_Date,
+							Constants.rule_log_debug, bw);
+
+					// 1 June Dec 12 -->6 Months
+					// 1 Dec Dec 12
+					if (TP_Date.compareTo(nextAvailbleDate.getTime()) <= 0) {
+						RuleEngineLogger.generateLogs(clazz, " INCREASE COUNT BY 1-",
+								Constants.rule_log_debug, bw);
+						present = true;
+						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+					}
+
+				} else if (FDTO.getMonths() > 0) {// Months
+					RuleEngineLogger.generateLogs(clazz, "MONTHS :" + FDTO.getMonths(),
+							Constants.rule_log_debug, bw);
+					if (planDate==null) {
+						dList.add(
+								new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule54.error.message2",
+												new Object[] {}, locale),
+										Constants.FAIL,"","",""));	
+						return dList;
+					}
+					if (dos.compareTo(planDate) < 0) {
+						RuleEngineLogger.generateLogs(clazz,
+								" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
+								Constants.rule_log_debug, bw);
+
+						// continue;
+					}
+					Calendar nextAvailbleDate = new GregorianCalendar();
+					nextAvailbleDate.setTime(dos);
+					nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+							nextAvailbleDate.get(Calendar.MONTH) + FDTO.getMonths(),
+							nextAvailbleDate.get(Calendar.DATE));
+					RuleEngineLogger.generateLogs(clazz,
+							"NEXT DATE OF SERVICE AVIALBLE :" + nextAvailbleDate.getTime(),
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "Current Date :" + TP_Date,
+							Constants.rule_log_debug, bw);
+
+					// 1 JUne Dec 12 -->6 Months
+					// 1 Dec Dec 12
+					if (TP_Date.compareTo(nextAvailbleDate.getTime()) <= 0) {
+						RuleEngineLogger.generateLogs(clazz, " INCREASE COUNT BY 1-",
+								Constants.rule_log_debug, bw);
+						present = true;
+						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+					}
+				}
+
+				////
+				if (present) {
+					List<ServiceCodeIvfTimesFreqFieldDto> ln = mapFlIVFFinal.get(thKEY);
+					if (ln == null) {
+						ln = new ArrayList<>();
+						ln.add(scivfTFDFinal);
+						mapFlIVFFinal.put("PANO_FMX", ln);
+					} else {
+						ln.add(scivfTFDFinal);
+					}
+				}
+			}
+			return dList;
+		}
+
 	
 }

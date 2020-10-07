@@ -537,8 +537,13 @@ public class CaplineIVFFormDto {
 	private String waitingPeriod4;// waitingPeriod4 //MB T25
 	private String shareFr;// shareFr //MC T26
 
+	private String pedo1;// pedo1
+	private String pedo2;// pedo2
     
-    
+	private String pano1;// pano1
+	private String pano2;// pano2
+	private String d4381;// d4381
+	
     //END
     
     public String getFill1() {
@@ -1925,8 +1930,48 @@ public class CaplineIVFFormDto {
 		return shareFr;
 	}
 
+	public String getPedo1() {
+		return pedo1;
+	}
+
+	public void setPedo1(String pedo1) {
+		this.pedo1 = pedo1;
+	}
+
+	public String getPedo2() {
+		return pedo2;
+	}
+
+	public void setPedo2(String pedo2) {
+		this.pedo2 = pedo2;
+	}
+
 	public void setShareFr(String shareFr) {
 		this.shareFr = shareFr;
+	}
+
+	public String getPano1() {
+		return pano1;
+	}
+
+	public void setPano1(String pano1) {
+		this.pano1 = pano1;
+	}
+
+	public String getPano2() {
+		return pano2;
+	}
+
+	public void setPano2(String pano2) {
+		this.pano2 = pano2;
+	}
+
+	public String getD4381() {
+		return d4381;
+	}
+
+	public void setD4381(String d4381) {
+		this.d4381 = d4381;
 	}
 
 	

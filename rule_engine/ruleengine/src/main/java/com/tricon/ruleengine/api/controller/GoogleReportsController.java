@@ -23,11 +23,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.ruleengine.dao.CompanyDao;
 import com.tricon.ruleengine.dto.FlexBean;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.GoogleReportDTO;
 import com.tricon.ruleengine.dto.sheetresponse.*;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.GoogleReportService;
 import com.tricon.ruleengine.service.impl.EagleSoftDBAccessServiceImpl;
@@ -46,6 +48,9 @@ public class GoogleReportsController {
 
 	@Autowired
 	EagleSoftDBAccessService es;
+	
+	@Autowired
+	CompanyDao companyDao;
 
 	@CrossOrigin
 	@GetMapping
@@ -62,7 +67,9 @@ public class GoogleReportsController {
 		// query = " select " + + query;
 		//System.out.println(office);
 		//System.out.println(ids);
-		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
+		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+		
+		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password,cmp.getUuid());
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", dataMap));
 
 	}
@@ -83,12 +90,13 @@ public class GoogleReportsController {
 		es.setUpSSLCertificates();
 		List<FlexBean> beanList = new ArrayList<>();
 		FlexBean dataBean = null;
+		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
 		//System.out.println(query);
 		query = " select " + selectcolumns + " " + query;
 		//System.out.println(office);
 		//System.out.println(ids);
 		//System.out.println(query);
-		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
+		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password,cmp.getUuid());
 		String finalData = "";
 		if (dataMap != null) {
 			String a[] = selectcolumns.split(",");
@@ -140,6 +148,7 @@ public class GoogleReportsController {
 			              String office, HttpServletRequest request,
 			HttpServletResponse response) {
 		List<Object> l = new ArrayList<>();	
+		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
 		try {
 			alreadyRunning=true;
 			es.setUpSSLCertificates();
@@ -167,7 +176,7 @@ public class GoogleReportsController {
 			query = " select " + selectcolumns + " " + query;
 			boolean unicode16=false;        //patperio 
 			if (query.toLowerCase().contains("patperio ")) unicode16=true;
-			LinkedHashMap<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password);
+			LinkedHashMap<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password,cmp.getUuid());
 			//String finalData = "";
 			if (dataMap != null) {
 				//List<String> li = Arrays.asList(a);
@@ -280,7 +289,6 @@ public class GoogleReportsController {
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
 			HttpServletResponse response) throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
 		//
-		
 		List<Object> l = null;	
 		if (alreadyRunning) {
 			

@@ -7,7 +7,7 @@ public class DentaBenefitScrapDto {
 	private String[] types;
 	private HashMap<String,String> map = new HashMap<>();
 	private boolean[] mandatory;
-	private int age;
+	private float age;
 
 	public String[] getTypes() {
 		return types;
@@ -34,11 +34,11 @@ public class DentaBenefitScrapDto {
 		this.map = map;
 	}
 
-	public int getAge() {
+	public float getAge() {
 		return age;
 	}
 
-	public void setAge(int age) {
+	public void setAge(float age) {
 		this.age = age;
 	}
 

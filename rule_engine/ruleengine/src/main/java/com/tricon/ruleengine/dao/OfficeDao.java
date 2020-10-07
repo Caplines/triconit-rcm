@@ -12,9 +12,9 @@ public interface OfficeDao {
 	 * Get all offices
 	 * @return
 	 */
-	public Optional<List<OfficeDto>> getAllOffices();
+	public Optional<List<OfficeDto>> getAllOffices(String companyuuid);
 
-	public Office getOfficeByUuid(String uuid);
+	public Office getOfficeByUuid(String uuid,String companyuuid);
 
-	public Office getOfficeByName(String name);
+	public Office getOfficeByName(String name,String companyuuid);
 }

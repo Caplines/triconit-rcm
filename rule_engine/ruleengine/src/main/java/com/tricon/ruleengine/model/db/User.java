@@ -68,7 +68,9 @@ public class User extends BaseAudit implements Serializable {
 	@Column(name = "user_type")
 	private int userType;
 	
-	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "company_id")
+	private Company company;	
 
 	public String getUuid() {
 		return this.uuid;
@@ -160,6 +162,14 @@ public class User extends BaseAudit implements Serializable {
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
+	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 
 	

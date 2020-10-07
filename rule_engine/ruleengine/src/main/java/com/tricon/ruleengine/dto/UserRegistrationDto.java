@@ -10,6 +10,8 @@ public class UserRegistrationDto {
 	private String password;
 	private String officeId;
 	private int userType;
+	private String cuuid;
+	
 	
 	
 	public String getOfficeId() {
@@ -53,6 +55,12 @@ public class UserRegistrationDto {
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+	public String getCuuid() {
+		return cuuid;
+	}
+	public void setCuuid(String cuuid) {
+		this.cuuid = cuuid;
 	}
 	
 	

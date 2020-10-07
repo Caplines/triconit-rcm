@@ -58,6 +58,16 @@ public class ScrappingSiteFullMaster extends BaseAudit implements Serializable{
 	@Column(name = "grade_pay")
 	private boolean gradePay;
 
+	@Column(name = "subscribers_fname")
+	private boolean subscribersFirstName;
+
+	@Column(name = "subscribers_lname")
+	private boolean subscribersLastName;
+
+	@Column(name = "subscribers_dob")
+	private boolean subscribersDob;
+
+
 	public int getId() {
 		return id;
 	}
@@ -144,6 +154,30 @@ public class ScrappingSiteFullMaster extends BaseAudit implements Serializable{
 
 	public void setGradePay(boolean gradePay) {
 		this.gradePay = gradePay;
+	}
+
+	public boolean isSubscribersFirstName() {
+		return subscribersFirstName;
+	}
+
+	public void setSubscribersFirstName(boolean subscribersFirstName) {
+		this.subscribersFirstName = subscribersFirstName;
+	}
+
+	public boolean isSubscribersLastName() {
+		return subscribersLastName;
+	}
+
+	public void setSubscribersLastName(boolean subscribersLastName) {
+		this.subscribersLastName = subscribersLastName;
+	}
+
+	public boolean isSubscribersDob() {
+		return subscribersDob;
+	}
+
+	public void setSubscribersDob(boolean subscribersDob) {
+		this.subscribersDob = subscribersDob;
 	}
 
 	

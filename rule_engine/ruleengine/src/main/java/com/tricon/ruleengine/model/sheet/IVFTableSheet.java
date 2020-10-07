@@ -188,6 +188,12 @@ public class IVFTableSheet {
 	private String waitingPeriod4;// waitingPeriod4 //MB T25
 	private String shareFr;// shareFr //MC T26
 	
+	private String pedo1;// pedo1 //MC T27
+	private String pedo2;// pedo2 //MC T28
+	
+	private String pano1;// pano1 //MC T29
+	private String pano2;// pano2 //MC T30
+    private String d4381;//d4381 //MC T31	
 	
 	private int rowCounter;// Used for Dump sheets only  
 	private String sheetSubId; //  Used for Dump sheets only   fetch sheet subid in google script create function 
@@ -1379,6 +1385,36 @@ public class IVFTableSheet {
 	}
 	public void setShareFr(String shareFr) {
 		this.shareFr = shareFr;
+	}
+	public String getPedo1() {
+		return pedo1;
+	}
+	public void setPedo1(String pedo1) {
+		this.pedo1 = pedo1;
+	}
+	public String getPedo2() {
+		return pedo2;
+	}
+	public void setPedo2(String pedo2) {
+		this.pedo2 = pedo2;
+	}
+	public String getPano1() {
+		return pano1;
+	}
+	public void setPano1(String pano1) {
+		this.pano1 = pano1;
+	}
+	public String getPano2() {
+		return pano2;
+	}
+	public void setPano2(String pano2) {
+		this.pano2 = pano2;
+	}
+	public String getD4381() {
+		return d4381;
+	}
+	public void setD4381(String d4381) {
+		this.d4381 = d4381;
 	}
 	
 	

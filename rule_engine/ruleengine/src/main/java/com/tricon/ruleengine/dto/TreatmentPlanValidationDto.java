@@ -10,6 +10,7 @@ public class TreatmentPlanValidationDto {
 	private boolean debugMode;
 	private boolean inputMode;
 	private String status;
+	private String insType;
 	//private List<String> statses;
 	
 	
@@ -51,12 +52,14 @@ public class TreatmentPlanValidationDto {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	/*(public List<String> getStatses() {
-		return statses;
+	public String getInsType() {
+		return insType;
 	}
-	public void setStatses(List<String> statses) {
-		this.statses = statses;
-	}*/
+	public void setInsType(String insType) {
+		this.insType = insType;
+	}
+	
+	
 
 
 

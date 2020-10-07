@@ -18,6 +18,10 @@ public class PatientScrapSearchDto {
 	private String locationProvider;
 	private String gradePay;
 	
+	private String subscribersFirstName;
+	private String subscribersLastName;
+	private String subscribersDob;
+	
 	
 	public String getPatientId() {
 		return patientId;
@@ -72,6 +76,24 @@ public class PatientScrapSearchDto {
 	}
 	public void setGradePay(String gradePay) {
 		this.gradePay = gradePay;
+	}
+	public String getSubscribersFirstName() {
+		return subscribersFirstName;
+	}
+	public void setSubscribersFirstName(String subscribersFirstName) {
+		this.subscribersFirstName = subscribersFirstName;
+	}
+	public String getSubscribersLastName() {
+		return subscribersLastName;
+	}
+	public void setSubscribersLastName(String subscribersLastName) {
+		this.subscribersLastName = subscribersLastName;
+	}
+	public String getSubscribersDob() {
+		return subscribersDob;
+	}
+	public void setSubscribersDob(String subscribersDob) {
+		this.subscribersDob = subscribersDob;
 	}
 
 	

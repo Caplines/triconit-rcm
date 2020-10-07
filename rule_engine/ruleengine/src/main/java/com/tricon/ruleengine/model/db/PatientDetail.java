@@ -526,10 +526,25 @@ public class PatientDetail extends BaseAudit implements Serializable {
 	private String crownsInYear;// crn1
 	
 	@Column(name = "waiting_period4", length = 20)
-	private String waitingPeriod4;// crn1
+	private String waitingPeriod4;// 
 	
 	@Column(name = "share_fr", length = 20)
-	private String shareFr;// crn1
+	private String shareFr;// 
+
+	@Column(name = "pedo1", length = 20)
+	private String pedo1;// pedo1
+
+	@Column(name = "pedo2", length = 20)
+	private String pedo2;// pedo2
+
+	@Column(name = "pano1", length = 20)
+	private String pano1;// pano1
+
+	@Column(name = "pano2", length = 20)
+	private String pano2;// pano2
+
+	@Column(name = "d4381", length = 20)
+	private String d4381;// d4381 
 
 	//END
 	public String getD0120() {
@@ -1814,6 +1829,50 @@ public class PatientDetail extends BaseAudit implements Serializable {
 	public void setShareFr(String shareFr) {
 		if (shareFr==null) shareFr="";
 		this.shareFr = shareFr;
+	}
+
+	public String getPedo1() {
+		if (pedo1==null) pedo1="";
+		return pedo1;
+	}
+
+	public void setPedo1(String pedo1) {
+		if (pedo1==null) pedo1="";
+		this.pedo1 = pedo1;
+	}
+
+	public String getPedo2() {
+		if (pedo2==null) pedo2="";
+		return pedo2;
+	}
+
+	public void setPedo2(String pedo2) {
+		if (pedo2==null) pedo2="";
+		this.pedo2 = pedo2;
+	}
+
+	public String getPano1() {
+		return pano1;
+	}
+
+	public void setPano1(String pano1) {
+		this.pano1 = pano1;
+	}
+
+	public String getPano2() {
+		return pano2;
+	}
+
+	public void setPano2(String pano2) {
+		this.pano2 = pano2;
+	}
+
+	public String getD4381() {
+		return d4381;
+	}
+
+	public void setD4381(String d4381) {
+		this.d4381 = d4381;
 	}
 
 	

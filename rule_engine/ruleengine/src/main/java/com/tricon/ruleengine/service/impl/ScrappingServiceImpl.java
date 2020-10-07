@@ -13,7 +13,12 @@ import java.util.concurrent.Future;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import com.tricon.ruleengine.dao.OfficeDao;
@@ -25,6 +30,7 @@ import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
+import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.ScrappingService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
@@ -50,12 +56,22 @@ public class ScrappingServiceImpl implements ScrappingService {
 	// @Autowired MCNAEligibilityScrappingService meservice;
 	//@Autowired
 	//DentaQEligibilityScrappingService deservice;
+	
+	@Autowired
+	@Qualifier("jwtUserDetailsService")
+    private UserDetailsService userDetailsService;
+	
 
 	@Override
 	public Map<String, List<?>> scrapSite(ScrappingInputDto dto) throws InterruptedException, ExecutionException {
 
 		//boolean updateStatusinSheet = false;
-		Office off = officeDoa.getOfficeByUuid(dto.getOfficeId());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser juser = (JwtUser) userDetails;
+		
+		Office off = officeDoa.getOfficeByUuid(dto.getOfficeId(),juser.getCompany().getUuid());
 		// List<?> data=null;
 		Map<String, List<?>> map = new HashMap<>();
 		// ScrappingSite st= sDao.getScrappingSiteDetails(dto.getSiteId(), off);
@@ -258,7 +274,12 @@ public class ScrappingServiceImpl implements ScrappingService {
 
 	@Override
 	public ScrappingSiteDetails getScrapsiteDetialsByOfficeAndType(int scrapType, String officeUUid) {
-		Office off = officeDoa.getOfficeByUuid(officeUUid);
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser juser = (JwtUser) userDetails;
+		Office off = officeDoa.getOfficeByUuid(officeUUid,juser.getCompany().getUuid());
 		ScrappingSiteDetails sd = sDao.getScrappingSiteDetailsDetail(scrapType, off);
 
 		return sd;
@@ -268,7 +289,13 @@ public class ScrappingServiceImpl implements ScrappingService {
 	@Override
 	public ScrappingSiteDetailsDto getScrappingSiteDetailsDetailSDto(int scrapType, String officeUUid) {
 
-		Office off = officeDoa.getOfficeByUuid(officeUUid);
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser juser = (JwtUser) userDetails;
+		
+		Office off = officeDoa.getOfficeByUuid(officeUUid,juser.getCompany().getUuid());
 		return sDao.getScrappingSiteDetailsDetailSDto(scrapType, off);
 	}
 

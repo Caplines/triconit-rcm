@@ -22,7 +22,7 @@ public interface UserService {
 	 */
 	public GenericResponse registerUser(UserRegistrationDto dto); 
 	
-	public Optional<List<OfficeDto>> getAllOffices(); 
+	public Optional<List<OfficeDto>> getAllOffices(String companyId); 
 	
 	public GenericResponse resetUserPassword(PasswordResetDto dto);
 	

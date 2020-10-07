@@ -12,7 +12,12 @@ import java.util.Optional;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -34,6 +39,7 @@ import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanPatient;
+import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.EagleSoftFetchData;
@@ -43,6 +49,10 @@ import com.tricon.ruleengine.utils.EagleSoftQueryObject;
 @Service
 public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
+	@Autowired
+	@Qualifier("jwtUserDetailsService")
+    private UserDetailsService userDetailsService;
+	
 	@Value("${es.ssl.client.certificate.trustStore}")
 	private String trustStore;
 
@@ -61,7 +71,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	OfficeDao od;
 
 	@Override
-	public Map<String, List<?>> getPatientData(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,
+	public Map<String, List<?>> getPatientData(String insuranceType,Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,
 			BufferedWriter bw) {
 		// TODO Auto-generated method stub
 		EagleSoftFetchData d = new EagleSoftFetchData();
@@ -80,7 +90,12 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
 			String[] pids = ids.toArray(new String[ids.size()]);
 
-			EagleSoftQueryObject q = prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query,
+			EagleSoftQueryObject q = null;
+			if (insuranceType==null) q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_pri,
+					EagleSoftQuery.patient_query_CL_COUNT);
+			else if (insuranceType!=null && insuranceType.equals(Constants.INSURANCE_TYPE_PRI) || insuranceType.equals(""))q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_pri,
+					EagleSoftQuery.patient_query_CL_COUNT);
+			else q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_sec,
 					EagleSoftQuery.patient_query_CL_COUNT);
 			String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
 			if (data != null) {
@@ -324,7 +339,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 						tp.setEstInsurance(des.get(18));
 						tp.setPatientPortion(des.get(19));
 						tp.setEstPrimary(des.get(20));
-
+                        tp.setPatientPortionSec(des.get(21));
 						tp.setTreatmentPlanDetails(treatmentPlanDetails);
 
 						if (returnMap == null)
@@ -415,7 +430,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 						tp.setEstInsurance(des.get(18));
 						tp.setPatientPortion(des.get(19));
 						tp.setEstPrimary(des.get(20));
-
+						tp.setPatientPortionSec(des.get(21));
 						tp.setDetails(details);
 
 						if (returnMap == null)
@@ -593,7 +608,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 						tp.setEstInsurance(des.get(18));
 						tp.setPatientPortion(des.get(19));
 						tp.setEstPrimary(des.get(20));
-
+						tp.setPatientPortionSec(des.get(21));
 						tp.setTreatmentPlanDetails(treatmentPlanDetails);
 						list.add(tp);
 					}
@@ -669,7 +684,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 						tp.setEstInsurance(des.get(18));
 						tp.setPatientPortion(des.get(19));
 						tp.setEstPrimary(des.get(20));
-
+						tp.setPatientPortionSec(des.get(21));
 						tp.setDetails(details);
 						list.add(tp);
 					}
@@ -910,7 +925,12 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	public String[] doDiagnosticCheck(String officeUuid) {
 		// TODO Auto-generated method stub
 
-		Office office = od.getOfficeByUuid(officeUuid);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
+		
+		Office office = od.getOfficeByUuid(officeUuid,user.getCompany().getUuid());
 		String[] ret = new String[3];
 		ret[2] = office.getName();
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
@@ -937,7 +957,13 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	public List<String[]> doDiagnosticCheck() {
 		// TODO Auto-generated method stub
 
-		Optional<List<OfficeDto>> offices = od.getAllOffices();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
+
+		
+		Optional<List<OfficeDto>> offices = od.getAllOffices(user.getCompany().getUuid());
 		List<String[]> rList = new ArrayList<>();
 		String[] ret = null;
 		if (offices.isPresent() && offices.get() != null) {
@@ -946,7 +972,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 				ret = new String[3];
 				
 				ret[2] = dto.getName();
-				EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(od.getOfficeByName(dto.getName()));
+				EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(od.getOfficeByName(dto.getName(),user.getCompany().getUuid()));
 				if (esDB != null) {
 					ret[1] = esDB.getIpAddress();
 

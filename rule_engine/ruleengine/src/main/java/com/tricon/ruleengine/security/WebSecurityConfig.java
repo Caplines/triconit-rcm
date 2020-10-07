@@ -162,6 +162,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/usersettings",
                 "/scrapfulldata",
                 "/userinput",
+                "/extIVF",
                 "/",
                 "/*.html",
                 "/index.jsp",

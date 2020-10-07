@@ -85,6 +85,15 @@ public class PatientTemp extends BaseAudit implements Serializable{
 	@Column(name = "grade_pay")
 	private String gradePay;
 	
+	@Column(name = "subscribers_fname")
+	private String subscribersFirstName;
+
+	@Column(name = "subscribers_lname")
+	private String subscribersLastName;
+
+	@Column(name = "subscribers_dob")
+	private String subscribersDob;
+
 	@Transient
 	private String referenceId;
 	
@@ -232,6 +241,30 @@ public class PatientTemp extends BaseAudit implements Serializable{
 
 	public void setPlanTypeinSite(boolean planTypeinSite) {
 		this.planTypeinSite = planTypeinSite;
+	}
+
+	public String getSubscribersFirstName() {
+		return subscribersFirstName;
+	}
+
+	public void setSubscribersFirstName(String subscribersFirstName) {
+		this.subscribersFirstName = subscribersFirstName;
+	}
+
+	public String getSubscribersLastName() {
+		return subscribersLastName;
+	}
+
+	public void setSubscribersLastName(String subscribersLastName) {
+		this.subscribersLastName = subscribersLastName;
+	}
+
+	public String isSubscribersDob() {
+		return subscribersDob;
+	}
+
+	public void setSubscribersDob(String subscribersDob) {
+		this.subscribersDob = subscribersDob;
 	}
 
 

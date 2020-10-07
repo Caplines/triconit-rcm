@@ -199,7 +199,7 @@ public class ConnectAndReadSheets {
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(sh.getStatusDump())));
 				requests.add(new Request()
 						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(sh.getRowCounter()+1)
-								.setColumnIndex(342))
+								.setColumnIndex(347))
 								.setRows(Arrays.asList(new RowData().setValues(values)))
 								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
 			}
@@ -904,7 +904,32 @@ public class ConnectAndReadSheets {
 						continue;
 					}
 					try {
-						vif.setSheetSubId(obj.get(++x));//MD sheetsubid
+						vif.setPedo1(obj.get(++x));//MD pedo1
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setPedo2(obj.get(++x));//ME pedo2
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setPano1(obj.get(++x));//MF pano1
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setPano2(obj.get(++x));//MG pano2
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD4381(obj.get(++x));//MH d4381
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setSheetSubId(obj.get(++x));//MH sheetsubid
 					}catch (Exception e) {
 						continue;
 					}

@@ -3,7 +3,7 @@ package com.tricon.ruleengine.utils;
 public class EagleSoftQuery {
 	
 	
-	
+	//treatment_plan_query claim_query treatment_plan_by_pat_query claim_by_pat_query
 	public final static String  contstant_REP= " _REPLACE_ME ";
 	
 	public final static String  contstant_REP_DATE= " _RE_DATE_STRING_ME ";
@@ -17,7 +17,7 @@ public class EagleSoftQuery {
 			+ " pla.service_code as service_code,pla.description as description2,"
 			+ " pla.surface as surface,pla.tooth as tooth,pla.status as status2,pla.fee as fee,"
 			+ " pr.last_name as provider_last_name, tpi.est_primary as est_insurance,"
-			+ " (pla.fee- tpi.est_primary ) as patient_portion,tpi.est_primary as est_primary"
+			+ " (pla.fee- tpi.est_primary ) as patient_portion,tpi.est_primary as est_primary,(pla.fee- tpi.est_secondary ) as patient_portion_sec"
 			+ " from  treatment_plan_items tpi, treatment_plans tp,"
 			+ " patient pat , planned_services pla,provider pr where "
 			+ " tpi.treatment_plan_id in ("+contstant_REP+") and tpi.treatment_plan_id=tp.treatment_plan_id"
@@ -25,7 +25,7 @@ public class EagleSoftQuery {
 
 
 	
-	public final static int  treatment_plan_query_CL_COUNT=21;
+	public final static int  treatment_plan_query_CL_COUNT=22;
 
 	public final static String  claim_query="select tp.sequence as app_id,tp.claim_id as id,"
 			+ "pat.patient_id as pat_id,pat.first_name as name, pat.last_name as last_name,pat.birth_date as dob,"
@@ -34,7 +34,7 @@ public class EagleSoftQuery {
 			+ " tp.service_code as service_code,tp.description as description2,"
 			+ " tp.surface as surface,tp.tooth as tooth,tp.status as status2,tp.fee as fee,"
 			+ " pr.last_name as provider_last_name, tp.est_primary as est_insurance,"
-			+ " (tp.fee- tp.est_primary ) as patient_portion,tp.est_primary as est_primary"
+			+ " (tp.fee- tp.est_primary ) as patient_portion,tp.est_primary as est_primary,(tp.fee- tp.est_secondary ) as patient_portion_sec"
 			+ " from  transactions tp left outer join transactions_detail tpi on tpi.tran_num=tp.tran_num, insurance_claim cl, "
 			+ " patient pat ,provider pr "
 			+ " where "
@@ -43,9 +43,9 @@ public class EagleSoftQuery {
 
 
 	
-	public final static int  claim_query_CL_COUNT=21;
+	public final static int  claim_query_CL_COUNT=22;
 
-	public final static String  patient_query="select pat.patient_id as pat_id,pat.first_name as name,"
+	private static String patient_query="select pat.patient_id as pat_id,pat.first_name as name,"
 			+ " pat.last_name as last_name,pat.birth_date as birth_date,"
 			+ " pat.social_security as social_security, pat.prim_member_id as prim_member_id,pat.status as status,"
 			+ " pat.responsible_party_status as responsible_party_status,pat.responsible_party as responsibleparty,"
@@ -55,8 +55,13 @@ public class EagleSoftQuery {
 			+ " emp.name as employer_name, fs.fee_id as feescheduleid,"
 			+ " fs.name as feeschedulename,cov.book_id as covbookheaderid,"
 			+ " cov.name as covbookheadername"
-			+ " from  patient pat , employer emp left outer join cov_book_header  cov on cov.book_id=emp.book_id Left outer join  fee_schedule  fs on fs.fee_id=emp.fee_schedule  where "
+			+ " from  patient pat , employer emp left outer join cov_book_header  cov on cov.book_id=emp.book_id Left outer join  fee_schedule  fs on fs.fee_id=emp.fee_schedule  where ";
+
+	public final static String  patient_query_pri=patient_query 
 			+ " pat.patient_id  in ("+contstant_REP+") and pat.prim_employer_id=emp.employer_id  ";
+
+	public final static String  patient_query_sec=patient_query
+			+" pat.patient_id  in ("+contstant_REP+") and pat.sec_employer_id=emp.employer_id  ";
 
 	public final static int  patient_query_CL_COUNT=20;
 
@@ -84,7 +89,7 @@ public class EagleSoftQuery {
 			+ " pla.service_code as service_code,pla.description as description2,"
 			+ " pla.surface as surface,pla.tooth as tooth,pla.status as status2,pla.fee as fee,"
 			+ " pr.last_name as provider_last_name, tpi.est_primary as est_insurance,"
-			+ " (pla.fee- tpi.est_primary ) as patient_portion,tpi.est_primary as est_primary"
+			+ " (pla.fee- tpi.est_primary ) as patient_portion,tpi.est_primary as est_primary,(pla.fee- tpi.est_secondary ) as patient_portion_sec"
 			+ " from  treatment_plan_items tpi, treatment_plans tp,"
 			+ " patient pat , planned_services pla,provider pr where "
 			+ " tpi.patient_id in ("+contstant_REP+") and tpi.treatment_plan_id=tp.treatment_plan_id"
@@ -92,7 +97,7 @@ public class EagleSoftQuery {
 
 
 	
-	public final static int  treatment_plan_by_pat_query_CL_COUNT=21;
+	public final static int  treatment_plan_by_pat_query_CL_COUNT=22;
 	
 	public final static String  claim_by_pat_query="select tp.sequence as app_id,tp.claim_id as id,"
 			+ "pat.patient_id as pat_id,pat.first_name as name, pat.last_name as last_name,pat.birth_date as dob,"
@@ -101,7 +106,7 @@ public class EagleSoftQuery {
 			+ " tp.service_code as service_code,tp.description as description2,"
 			+ " tp.surface as surface,tp.tooth as tooth,tp.status as status2,tp.fee as fee,"
 			+ " pr.last_name as provider_last_name, tp.est_primary as est_insurance,"
-			+ " (tp.fee- tp.est_primary ) as patient_portion,tp.est_primary as est_primary"
+			+ " (tp.fee- tp.est_primary ) as patient_portion,tp.est_primary as est_primary,(tp.fee- tp.est_secondary ) as patient_portion_sec"
 			+ " from  transactions tp left outer join transactions_detail tpi on tpi.tran_num=tp.tran_num,"
 			+ " patient pat ,provider pr where "
 			+ " tp.patient_id in ("+contstant_REP+") "
@@ -109,7 +114,7 @@ public class EagleSoftQuery {
 
 
 	
-	public final static int  claim_by_pat_query_CL_COUNT=21;
+	public final static int  claim_by_pat_query_CL_COUNT=22;
 	
 	//HERE 111 - YYYY/MM/DD
 	public final static String patient_history_by_months="select wpat.statement_num as statement_num,  wpat.patient_id as  patient_id,"

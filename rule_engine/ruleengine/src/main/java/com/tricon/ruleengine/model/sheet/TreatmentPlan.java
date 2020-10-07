@@ -21,6 +21,7 @@ public class TreatmentPlan {
 	private String 	estInsurance;
 	private String 	PatientPortion;
 	private String 	estPrimary;
+	private String 	PatientPortionSec;
 	
 	
 	public TreatmentPlan() {
@@ -139,6 +140,14 @@ public class TreatmentPlan {
 
 	public void setProviderLastName(String providerLastName) {
 		this.providerLastName = providerLastName;
+	}
+
+	public String getPatientPortionSec() {
+		return PatientPortionSec;
+	}
+
+	public void setPatientPortionSec(String patientPortionSec) {
+		PatientPortionSec = patientPortionSec;
 	}
 	
 	

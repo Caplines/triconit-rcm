@@ -21,7 +21,6 @@ import java.util.TreeSet;
 
 import javax.transaction.Transactional;
 
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,8 +57,6 @@ import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.OneDriveApp;
 import com.tricon.ruleengine.model.db.OneDriveFile;
-import com.tricon.ruleengine.model.db.PatientDetail;
-import com.tricon.ruleengine.model.db.PatientHistory;
 import com.tricon.ruleengine.model.db.ReportClaimDetail;
 import com.tricon.ruleengine.model.db.ReportDetail;
 import com.tricon.ruleengine.model.db.Reports;
@@ -77,7 +74,6 @@ import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
-import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
@@ -163,7 +159,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	CaplineIVFGoogleFormService  caplineIVFGoogleFormService;
 	
 	@Autowired
-    @Qualifier("jwtUserDetailsService")
+	@Qualifier("jwtUserDetailsService")
     private UserDetailsService userDetailsService;
 
 	
@@ -219,17 +215,18 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		BufferedWriter bw = null;
 		Object[] o = null;
 		String tempFname = "";
-		Office off = od.getOfficeByUuid(dtod.getOfficeId());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
+		Office off = od.getOfficeByUuid(dtod.getOfficeId(),user.getCompany().getUuid());
 		try {
 			o = logFileToAppendData(off.getName().trim());
 			fName = (String) o[0];
 			bw = (BufferedWriter) o[1];
 			GoogleSheets ivsheet = null;
 
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			Object principal = authentication.getPrincipal();
-			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
-			JwtUser user = (JwtUser) userDetails;
+			
 			int type =user.getUserType();
             //String TRAN_DATE="";
 			
@@ -318,7 +315,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				
 				
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
-				Map<String, List<EagleSoftFeeShedule>> esfeess = null;
+				Map<String, List<EagleSoftFeeShedule>> esfeess= null;
 				
 				
 				String ivs[] = null;
@@ -508,7 +505,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									Constants.rule_log_debug, bw);
 
 							//
-							espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,bw);
+							espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(dtod.getInsType(), ivfMap, esDB,bw);
 							
 							espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 									new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
@@ -631,7 +628,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}
 						
 					   if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null ) {
-                       espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,bw);
+                       espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(dtod.getInsType(),ivfMap, esDB,bw);
 						
 						espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 								new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
@@ -802,7 +799,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							dtoRL = new ArrayList<>();
 							if (espatients != null) {
 								dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),
-										bw,type);
+										bw,type,dtod.getInsType());
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -974,7 +971,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_17 " Bundling - Fillings
 							rule = getRulesFromList(rules, Constants.RULE_ID_17);
+							if (esfeess!=null)
 							dtoRL = rb.Rule17(tListReduced, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
+							else {
+								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+										Constants.FAIL,"","",""));
+							}
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1145,7 +1148,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//  Filling Bundling 
 							rule = getRulesFromList(rules, Constants.RULE_ID_24);
+							if (esfeess!=null)
 							dtoRL = rb.Rule24(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
+							else {
+								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+										Constants.FAIL,"","",""));
+							}
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1195,7 +1204,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
                             */
 							// DQ Fillings
 							rule = getRulesFromList(rules, Constants.RULE_ID_53);
+							if (esfeess!=null)
 							dtoRL = rb.Rule53(tListReduced, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
+							else {
+								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+										Constants.FAIL,"","",""));
+							}
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -1212,7 +1227,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
                              //
 							//  Crown Bundling with Fillings 
 							rule = getRulesFromList(rules, Constants.RULE_ID_25);
+							if (esfeess!=null)
 							dtoRL = rb.Rule25(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
+							else {
+								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+										Constants.FAIL,"","",""));
+							}
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
@@ -1664,6 +1685,23 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								
 							//END  Major Service Form Requirements (User Input)
 							
+							// Perio Depth Checker
+							rule = getRulesFromList(rules, Constants.RULE_ID_55);
+							dtoRL = rb.Rule55(tList,ansL ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_55,
+									Constants.rule_log_debug, bw);
+								
+							//END Perio Depth Checker
+							
 						}
 
 					} else {
@@ -1674,7 +1712,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						// saveReports(authentication, rule,dtoR, dto,(IVFTableSheet)(ivfList.get(0)));
 					}
 					if (ivfMap != null && ivfMap.get(ivx) != null && tListReduced != null)
-						saveReportsList(authentication, rules, tp, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list, off,type);
+						saveReportsList(authentication, rules, tp, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list, off,type,dtod.getInsType());
 					// else
 					// saveReportsList(authentication, rules, trx, null, list,off);
 
@@ -1718,11 +1756,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 					} else {
 						
-						
+						String iType=dtod.getInsType();
+						if (iType==null) iType=Constants.INSURANCE_TYPE_PRI;
+						else if (iType.equals("")) iType=Constants.INSURANCE_TYPE_PRI;
 						if (type==Constants.userType_TR)
 						returnMap.put(inv+" - " + trx + " IV.id - " + ivx + " Of.Name -  " + off.getName()
 								+ " PT.id - " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
-								+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName()+" Status - "+StatusTypeEnum.getNameByType(dtod.getStatus())+" " + debug, list);
+								+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName()+" Status - "+StatusTypeEnum.getNameByType(dtod.getStatus())+" | Ins. Type- "+iType +" " + debug, list);
 						else {
 							String s=CLAIM_DOS;
 							try{s=Constants.SIMPLE_DATE_FORMAT_HEADER.format(Constants.SIMPLE_DATE_FORMAT.parse(CLAIM_DOS));}catch(Exception e) {}
@@ -1731,7 +1771,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							returnMap.put("Claim ID"+": " + trx +" of " + off.getName()+ " office | "
 						+ " Pt.ID: " + ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " | IV.ID: " + ivx  + " | Pt.Name: "
-						+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() + " | DOS: "+ s+" | Tx plan Date: "+t + debug, list);
+						+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName() + " | DOS: "+ s+" | Tx plan Date: "+t+" | Ins. Type: "+iType +" "+ debug, list);
 					   }
 					}
 					// returnMap.put("IVF ID(" + ivx + ") Treatment Plan IDTP.id (" + trx + ")
@@ -1777,7 +1817,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		BufferedWriter bw = null;
 		Object[] o = null;
 		String tempFname = "";
-		Office off = od.getOfficeByUuid(dtod.getOfficeId());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
+		Office off = od.getOfficeByUuid(dtod.getOfficeId(),user.getCompany().getUuid());
 		try {
 			o = logFileToAppendData(off.getName().trim());
 			fName = (String) o[0];
@@ -1786,11 +1830,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			RuleEngineLogger.generateLogs(clazz, "Entering saveDisplayUserInputsOnly..", Constants.rule_log_debug, bw);
 			// RuleEngineLogger.generateLogs(clazz,
 			// "RuleEngineValidationController", Constants.rule_log_debug,bw);
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			
 			List<TPValidationResponseDto> list2 = new ArrayList<TPValidationResponseDto>();
 			List<Rules> rules = tvd.getAllActiveRules();
 			List<Mappings> mappings = tvd.getAllMappings();
-			MicroSoftGraphToken microsoft = null;
+			//MicroSoftGraphToken microsoft = null;
 
 			boolean eagleSoftDBAccessPresent=false;
 			List<GoogleSheets> sheets = tvd.getAllGoogleSheetByOffice(off);
@@ -1798,10 +1842,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			if (esDB!=null) {
 				eagleSoftDBAccessPresent=true;
 			}
-			List<OneDriveFile> fileOne = spd.getOneDriveFileByOfficeId(dtod.getOfficeId());
+			//List<OneDriveFile> fileOne = spd.getOneDriveFileByOfficeId(dtod.getOfficeId());
 			TPValidationResponseDto dtoR = null;
 			Map<String, List<Object>> ivfMap = null;
 			Rules rule = null;
+			/*
 			OneDriveApp odriveApp = spd.getOneDriveAppDetailsByOfficeId(dtod.getOfficeId());
 			if (eagleSoftDBAccessPresent ==false && (odriveApp != null && odriveApp.getRefreshToken() != null)) {
 
@@ -1844,7 +1889,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				return returnMap;
 
 			}
-			
+			*/
 			if (rules != null && rules.size() == 0) {
 				RuleEngineLogger.generateLogs(clazz, "Generic- No Active Rules Found", Constants.rule_log_debug, bw);
 				dtoR = new TPValidationResponseDto(0, "Generic", "Generic- No Active Rules Found", Constants.FAIL,"","","");
@@ -1856,9 +1901,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				return returnMap;
 			}
 
-			Object principal = authentication.getPrincipal();
-			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
-			JwtUser user = (JwtUser) userDetails;
+			
 			int type =user.getUserType();
 			try {
 				
@@ -1871,7 +1914,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				String ivs[] = dtod.getIvfId().split(",");
 				String trids[] = dtod.getTreatmentPlanId().split(",");
 				// Read Treatment Plan...
-				OneDriveFile tpsheet =null;
+				//OneDriveFile tpsheet =null;
 				GoogleSheets ivsheet = null;
 				if (eagleSoftDBAccessPresent== false) {
 					/*
@@ -2193,7 +2236,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 * rd.setReports(reports); tvd.saveReportDestail(rd); // }
 	 */
 	private void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
-			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType) {
+			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType) {
 		//String[] p=env.getActiveProfiles();
 		//int xx=0;
 		//if (xx==0) return ;
@@ -2253,6 +2296,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rd.setReports(reports);
 				rd.setReportType(HighLevelReportTypeEnum.TXPLAN.getType());
 				rd.setMessageType(MessageUtil.getReportMessageType(d.getMessage()));
+				rd.setInsuranceType(insuranceType);
 				tvd.saveReportDestail(rd);
 			}
 			}else {
@@ -2297,6 +2341,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rd.setReports(reports);
 						rd.setReportType(HighLevelReportTypeEnum.CLAIM.getType());
 						rd.setMessageType(MessageUtil.getReportMessageType(d.getMessage()));
+						rd.setInsuranceType(insuranceType);
 						tvd.saveReportDestail(rd);
 					}
 
@@ -2338,6 +2383,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				user = userDao.findUserByEmail(email);
 			}
 			int check=0;
+			boolean Perio_Depth_Checker=false;
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
 				
@@ -2355,7 +2401,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			//	}
 			//}else {
 				//for null case
- 			    List<String> orthoList= Arrays.asList( Constants.ORTHO_CODE_UI.split(","));
+ 			    //List<String> orthoList= Arrays.asList( Constants.ORTHO_CODE_UI.split(","));
 				 for (UserInputRuleQuestionHeader qh:qhList) {
 					 
 				
@@ -2453,7 +2499,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         }
 					 }
 
-					//For Rule Consent Form Requirements-- END
+					//For Rule Consent Form Requireme	nts-- END
 					 /*
 					 else  if (qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_ORTHO)
 							 && (orthoList.contains(tp.getServiceCode()))
@@ -2525,6 +2571,22 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				         qadto.setPatId(ivf.getPatientId());
 				         qadto.setTpId(tp.getId());
 				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
+					 }else  if ( qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_Perio_Depth_Checker)
+							 && ( tp.getServiceCode().toUpperCase().equals("D4341") || tp.getServiceCode().toUpperCase().equals("D4342") ) 
+							 && !Perio_Depth_Checker) {//RULE 54 Perio Depth checker
+						 //only for code -D4341 or D4342 Email 23 Sept 2020
+						 QuestionAnswerDto qadto= new QuestionAnswerDto();
+						 qadto.setAnswer("");
+						 /*if (qh.getId()== Constants.Perio_Depth_Checker) {
+							 qadto.setAnswer("");
+							 	 
+						 }*/
+						 Perio_Depth_Checker=true;
+						 qadto.setIvfId(ivf.getUniqueID().split("_")[1]);
+				         qadto.setOfficeId(off.getUuid());
+				         qadto.setPatId(ivf.getPatientId());
+				         qadto.setTpId(tp.getId());
+				         userInputQuestionDao.saveAndUpdateAnswers(qadto, off, qh,user,null);
 					 }
 					 /*else  if (tp.getServiceCode().equals("D7953") && qh.getRuleName().equalsIgnoreCase(Constants.User_Input_Name_Question_RULE_BONE_GRAFT)) {
 						 QuestionAnswerDto qadto= new QuestionAnswerDto();
@@ -2555,8 +2617,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		//String[] p=env.getActiveProfiles();
 		//if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
-
-		if (ivfSheet == null)
+	  //int xx=0;
+      //if(xx==0) return ;
+      if (ivfSheet == null)
 			return;
 		String email = "admin@admin.com";
 		try {
@@ -2619,9 +2682,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rd.setMessageType(MessageUtil.getReportMessageType(d.getMessage()));
 				tvd.saveReportDestail(rd);
 			}
-		} catch (Exception x) {
+		} catch (Exception k) {
 
-			x.printStackTrace();
+			k.printStackTrace();
 
 		}
 	}
@@ -2649,13 +2712,16 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 //		System.setProperty("javax.net.ssl.keyStorePassword", "p@ssw0rd");
 		Map<String, List<TPValidationResponseDto>> returnMap = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
 		List<TPValidationResponseDto> list = new ArrayList<TPValidationResponseDto>();
 		List<Rules> rules = tvd.getAllActiveRules();
 		// List<Mappings> mappings = tvd.getAllMappings();
 		//MicroSoftGraphToken microsoft = null;
 		//ReadMicrosoftFile rmF = new ReadMicrosoftFile();
 
-		Office off = od.getOfficeByUuid(dto.getOfficeId());
+		Office off = od.getOfficeByUuid(dto.getOfficeId(),user.getCompany().getUuid());
 		List<GoogleSheets> sheets = tvd.getAllGoogleSheetByOffice(off);
 		
 		
@@ -2746,9 +2812,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		try {
 			
-			Object principal = authentication.getPrincipal();
-			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
-			JwtUser user = (JwtUser) userDetails;
+			
 			int type =user.getUserType();
 
 			// READ IVF Google Sheet
@@ -2761,6 +2825,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			
 			Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 			
+			String iType=dto.getInsType();
+			if (iType==null) iType=Constants.INSURANCE_TYPE_PRI;
+			else if (iType.equals("")) iType=Constants.INSURANCE_TYPE_PRI;
+
 			if (eagleSoftDBAccessPresent==false) {
 				/*
 				ivfMap = ConnectAndReadSheets.readSheet(ivsheet.getSheetId(),
@@ -2891,7 +2959,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							Constants.rule_log_debug, null);
 
 					//
-					espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(ivfMap, esDB,null);
+					espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(iType,ivfMap, esDB,null);
 					
 					//espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 					//		new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
@@ -2988,7 +3056,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// form"
 							if (type==Constants.userType_TR) {
 							rule = getRulesFromList(rules, Constants.RULE_ID_5);
-							dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey), null,type);
+							dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey), null,type,iType);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -3039,11 +3107,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				// saveReportsListBatch(authentication, rules, null, list,off);
 				if (returnMap == null)
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
-				int a = ivfMap.get(ivx).size();
+				//int a = ivfMap.get(ivx).size();
+				
 				if (ivfMap.get(ivx) != null && ivfMap.get(ivx).size() > 0)
 					returnMap.put(" IV.id - " + ivx + " Of.Name -  " + off.getName() + " PT.id - "
 							+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
-							+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName(), list);
+							+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName()+", Ins. Type- "+iType, list);
 
 				else if (ivx == null) {
 					returnMap.put("IVF ID " + Constants.notFound + " - " + ivx, list);
@@ -3071,13 +3140,17 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		MicroSoftGraphToken microsoft = null;
 		ReadMicrosoftFile rmF = new ReadMicrosoftFile();
 
-		List<OneDriveFile> fileOne = spd.getOneDriveFileByOfficeId(dto.getOfficeId());
+		//List<OneDriveFile> fileOne = spd.getOneDriveFileByOfficeId(dto.getOfficeId());
 		OneDriveApp odriveApp = spd.getOneDriveAppDetailsByOfficeId(dto.getOfficeId());
-		OneDriveFile tpsheet = getOneDriveFileFromList(fileOne, Constants.microsoft_treatement_sheet_name);
+		//OneDriveFile tpsheet = getOneDriveFileFromList(fileOne, Constants.microsoft_treatement_sheet_name);
 		String name = "";
 		
 		boolean eagleSoftDBAccessPresent=false;
-		Office off = od.getOfficeByUuid(dto.getOfficeId());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
+		Office off = od.getOfficeByUuid(dto.getOfficeId(),user.getCompany().getUuid());
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
 		if (esDB!=null) {
 		
@@ -3128,10 +3201,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		}else {
 			
 			// new approach
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			Object principal = authentication.getPrincipal();
-			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
-			JwtUser user = (JwtUser) userDetails;
+			
 			int type =user.getUserType();
 
 			if (type==Constants.userType_TR)  {

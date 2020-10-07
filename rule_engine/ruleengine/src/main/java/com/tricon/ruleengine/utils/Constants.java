@@ -31,6 +31,7 @@ public class Constants {
 	public static final int eagleSoftFSNAMESheetID=5;
 	public static final int eagleSoftRemDedBalSheetID=8;
     */
+	public static final String COMPANY_NAME="Capline";//This matches with Company Table  Name Column... 
 	
 	//Entry from Rules Table (These values should Match from Database..)
 	public static final String RULE_ID_1="Eligibility of the patient";
@@ -86,7 +87,8 @@ public class Constants {
 	public static final String RULE_ID_51="DQ Fillings (Provider Same)";//NOT USED NOW
 	public static final String RULE_ID_52="DQ Fillings (Provider Different)";////NOT USED NOW
 	public static final String RULE_ID_53="DQ Fillings";
-	
+	public static final String RULE_ID_54="FMX/Pano Rule";
+	public static final String RULE_ID_55="Perio Depth Checker";
 	
 	/*
 	public static final String SHEET_TYPE_TP="Treatmentplan";
@@ -208,6 +210,7 @@ public class Constants {
 	//public static String User_Input_Name_Question_RULE_BONE_GRAFT="RULE_BONE_GRAFT";
 	public static String User_Input_Name_Question_Comments="Comments in IV Form";
 	public static String User_Input_Name_Question_Major_Service_Form_Requirements="Major Service Form Requirements";
+	public static String User_Input_Name_Question_Perio_Depth_Checker="Perio Depth Checker";
 	
 	
 	
@@ -243,6 +246,7 @@ public class Constants {
 	public static int Major_Service_Form_header_id_Service_code=27;
 	public static int Major_Service_Form_header_id_tooth=28;
 	public static int Major_Service_Form_header_id_Is_major_Available=29;
+	public static int Perio_Depth_Checker=30;
 	
 	
 	//public static int Provider_Change_question_header_id_ref_missing=17;//Not used now
@@ -300,8 +304,12 @@ public class Constants {
 	public static String SCRAPPING_ISSUE_FETCHING_CODE="CODE_ISSUE";
 	public static String SCRAPPING_MAIN_CONDTION_MET="MAIN_CON_MET";
 	
-	public static String NO_FREQUENCY="No Frequency";
+	public static final  String NO_FREQUENCY="No Frequency";
 	
+	public static final  String PATIENT_FOUND="Patient found";
+	
+	public static final String INSURANCE_TYPE_PRI="Primary";//Blank also means primary 
+	public static final String INSURANCE_TYPE_SEC="Secondary"; 
 	
 	
 	

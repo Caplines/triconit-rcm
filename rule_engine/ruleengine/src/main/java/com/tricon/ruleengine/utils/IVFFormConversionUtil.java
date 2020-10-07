@@ -196,7 +196,11 @@ public class IVFFormConversionUtil {
 		pd.setNightGuardsD9945Fr(d.getPosterior20());
 		pd.setWaitingPeriod4(d.getWaitingPeriod4());
 		pd.setShareFr(d.getShareFr());
-		
+		pd.setPedo1(d.getPedo1());//pedo1
+		pd.setPedo2(d.getPedo2());//pedo2
+		pd.setPano1(d.getPano1());//pano1
+		pd.setPano2(d.getPano2());//pano2
+		pd.setD4381(d.getD4381());//d4381
 		//pd.setInsuranceType(d.getInsuranceType()); //Insurance Type
 		pd.setFillingsInYear(d.getFill1());//fill1
 		pd.setExtractionsInYear(d.getExtr1());//extr1
@@ -440,7 +444,11 @@ public class IVFFormConversionUtil {
 				pd.setNightGuardsD9945Fr(d.getPosterior20());
 				pd.setWaitingPeriod4(d.getWaitingPeriod4());
 				pd.setShareFr(d.getShareFr());
-
+				pd.setPedo1(d.getPedo1());//pedo1
+				pd.setPedo2(d.getPedo2());//pedo2
+				pd.setPano1(d.getPano1());//pano1
+				pd.setPano2(d.getPano2());//pano2
+				pd.setD4381(d.getD4381());//d4381
 				//pd.setInsuranceType(d.getInsuranceType()); //Insurance Type
 				pd.setFillingsInYear(d.getFill1());//fill1
 				pd.setExtractionsInYear(d.getExtr1());//extr1
@@ -756,6 +764,12 @@ public class IVFFormConversionUtil {
 		pd.setCrownsInYear(d.getCrownsInYear());//crn1
 		pd.setWaitingPeriod4(d.getWaitingPeriod4());//waitingPeriod4
 		pd.setShareFr(d.getShareFr());//shareFr
+		pd.setPedo1(d.getPedo1());//pedo1
+		pd.setPedo2(d.getPedo2());//pedo2
+		pd.setPano1(d.getPano1());//pano1
+		pd.setPano2(d.getPano2());//pano2
+		pd.setD4381(d.getD4381());//d4381
+		
 		//END		
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_");// -- will set latter;

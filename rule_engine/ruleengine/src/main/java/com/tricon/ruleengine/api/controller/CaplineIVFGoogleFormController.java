@@ -21,14 +21,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.ruleengine.dao.CompanyDao;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GenericResponse;
+import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
+import com.tricon.ruleengine.utils.Constants;
 
 @CrossOrigin
 @RestController
@@ -43,6 +46,9 @@ public class CaplineIVFGoogleFormController {
 	@Autowired
 	OfficeDao od;
 	
+	@Autowired
+	CompanyDao companyDao;
+
 	@Value("${application.url}")
 	private String APP_URL;
 
@@ -55,8 +61,10 @@ public class CaplineIVFGoogleFormController {
 
 		//Integer i = 0;
 		Object [] ob=null;
+	    Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
 		
-		Office office = od.getOfficeByName(dto.getBasicInfo1());
+		
+		Office office = od.getOfficeByName(dto.getBasicInfo1(),cmp.getUuid());
 		try {
 			
 
@@ -90,7 +98,8 @@ public class CaplineIVFGoogleFormController {
 
 		List<CaplineIVFFormDto> cap = null;
 		try {
-			Office office = od.getOfficeByName(dto.getOfficeNameDB());
+			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+			Office office = od.getOfficeByName(dto.getOfficeNameDB(),cmp.getUuid());
 
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
 
@@ -119,7 +128,8 @@ public class CaplineIVFGoogleFormController {
 
 		List<CaplineIVFFormDto> cap = null;
 		try {
-			Office office = od.getOfficeByName(dto.getOfficeNameDB());
+			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+			Office office = od.getOfficeByName(dto.getOfficeNameDB(),cmp.getUuid());
 
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
 
@@ -180,7 +190,8 @@ public class CaplineIVFGoogleFormController {
 		
 		
 		try {
-			Office off = od.getOfficeByName(office);
+			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+			Office off = od.getOfficeByName(office,cmp.getUuid());
 
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
 			
@@ -238,7 +249,8 @@ public class CaplineIVFGoogleFormController {
 		
 		
 		try {
-			Office off = od.getOfficeByName(office);
+			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+			Office off = od.getOfficeByName(office,cmp.getUuid());
 
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
 			
@@ -269,7 +281,9 @@ public class CaplineIVFGoogleFormController {
 		dto.setPdf(null);
 		dto.setNewFormat("");
 		if (n!=null && n.equals("1")) dto.setNewFormat(n);
-		Office office = od.getOfficeByName(dto.getOfficeNameDB());
+		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+		
+		Office office = od.getOfficeByName(dto.getOfficeNameDB(),cmp.getUuid());
 
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
         Object[] obj=null; 
@@ -309,7 +323,9 @@ public class CaplineIVFGoogleFormController {
 		dto.setPdf("");
 		dto.setNewFormat("");
 		if (n!=null && n.equals("1")) dto.setNewFormat(n);
-		Office office = od.getOfficeByName(dto.getOfficeNameDB());
+		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+		
+		Office office = od.getOfficeByName(dto.getOfficeNameDB(), cmp.getUuid());
 
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
         Object[] obj=null; 

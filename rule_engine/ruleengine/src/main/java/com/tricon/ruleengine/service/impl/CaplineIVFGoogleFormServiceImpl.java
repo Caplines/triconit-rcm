@@ -26,7 +26,6 @@ import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GoogleReportsRDDTO;
-import com.tricon.ruleengine.dto.PatientTreamentDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
@@ -298,6 +297,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		
 	}
 
+	/*
 	@Override
 	public Object convertPatientDataToIVFSheetData(Set<String> patIds, String officeName) throws Exception {
 		// TODO Auto-generated method stub
@@ -324,7 +324,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		}
 		return map;
 	}
-
+    */
 	private List<CaplineIVFFormDto> createData(CaplineIVFQueryFormDto d, Office off, Set<String> patIds,boolean temp) {
 
 		List<CaplineIVFFormDto> capD = patientDao.searchPatientDetailFromIVF(d, off, patIds,temp);

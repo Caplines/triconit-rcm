@@ -77,7 +77,7 @@ public class BaseDaoImpl {
 		Session session = getSession();
 		Object object = null;
 		try {
-			Transaction transaction = session.beginTransaction();
+			//Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(clazz);
 			criteria.add(Restrictions.eq(columnName, columnValue));
 			object =  criteria.uniqueResult();
@@ -89,7 +89,7 @@ public class BaseDaoImpl {
 			criteriaQuery.where(builder.equal(queriedObject.get(columnName), columnValue));
 			object =  session.createQuery(criteriaQuery).getSingleResult();
 			*/
-			transaction.commit();
+			//transaction.commit();
 			
 		} finally {
 			closeSession(session);

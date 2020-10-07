@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.tricon.ruleengine.dao.CompanyDao;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.GenericResponse;
@@ -46,6 +47,9 @@ public class UserServiceImpl implements UserService {
 	UserDao userDao;
 	@Autowired
 	OfficeDao officeDao;
+	@Autowired
+	CompanyDao companyDao;
+	
 	
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
@@ -58,10 +62,12 @@ public class UserServiceImpl implements UserService {
 			User user = userDao.findUserByUsername(dto.getUserName());
 			if (user == null) {
 				user = DtoToModel.convertRegistrationDto(dto, office);
+				user.setCompany(companyDao.getCompanyByUUId(dto.getCuuid()));
 				user.setUuid((String) userDao.registerUser(user));
 				UserRole role = new UserRole();
 				role.setRole(Constants.APP_ROLE_USER);
 				role.setUser(user);
+				
 				userDao.generateUserRole(role);
 				return new GenericResponse(HttpStatus.OK, "User Created Successfully", null);
 			}
@@ -154,8 +160,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<List<OfficeDto>> getAllOffices() {
-		return officeDao.getAllOffices();
+	public Optional<List<OfficeDto>> getAllOffices(String companyId) {
+		return officeDao.getAllOffices(companyId);
 	}
 
 	@Override

@@ -28,10 +28,10 @@ public class GoogleReportServiceImpl implements GoogleReportService{
 	
 	@Override
 	public LinkedHashMap<String, List<String>> getESDataFromServer(String query, String ids,int columnCount, String officeName,
-    		String password) {
+    		String password,String companyId) {
 		// TODO Auto-generated method stub
 		
-		Office office= od.getOfficeByName(officeName);
+		Office office= od.getOfficeByName(officeName,companyId);
 		LinkedHashMap<String, List<String>> data=null;
 		if (office==null) {
 			System.out.println("office is null for "+officeName+"-");

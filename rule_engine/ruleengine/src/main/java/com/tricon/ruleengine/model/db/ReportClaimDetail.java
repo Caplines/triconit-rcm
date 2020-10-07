@@ -45,7 +45,8 @@ public class ReportClaimDetail extends BaseAudit implements java.io.Serializable
 	private int reportType;
 	@Column(name = "message_type")
 	private int messageType;
-
+	@Column(name = "insurance_type")
+	private String insuranceType;
 
 	public ReportClaimDetail() {
 	}
@@ -115,6 +116,14 @@ public class ReportClaimDetail extends BaseAudit implements java.io.Serializable
 
 	public void setMessageType(int messageType) {
 		this.messageType = messageType;
+	}
+
+	public String getInsuranceType() {
+		return insuranceType;
+	}
+
+	public void setInsuranceType(String insuranceType) {
+		this.insuranceType = insuranceType;
 	}
 
 	

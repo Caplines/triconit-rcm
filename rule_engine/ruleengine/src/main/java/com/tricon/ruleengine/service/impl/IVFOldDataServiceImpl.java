@@ -27,6 +27,7 @@ import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
+import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.IVFOldDataService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
@@ -61,7 +62,13 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 	@Override
 	public String dumpOldData(IVFDumpDto dto) {
         String p="";
-		Office office = od.getOfficeByUuid(dto.getOfficeId());
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser juser = (JwtUser) userDetails;
+		
+		Office office = od.getOfficeByUuid(dto.getOfficeId(),juser.getCompany().getUuid());
 
 				Map<String, List<Object>> ivfMap = null;
 		try {
@@ -70,13 +77,15 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 			//https://docs.google.com/spreadsheets/d/1POWJC8as3b3MvhN8EtLacUwLu3ABpI88JUECMQ2Ts10/edit#gid=898165103
 			dto.setSheetId("1POWJC8as3b3MvhN8EtLacUwLu3ABpI88JUECMQ2Ts10");//do this hard code 
 			String sheetSubid="";
+			/*ivfMap = ConnectAndReadSheets.readSheetNewDump(dto.getSheetId(), "TEST", null,
+					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);
+			*/
+			
 			ivfMap = ConnectAndReadSheets.readSheetNewDump(dto.getSheetId(), office.getName() + " " + dto.getSheetName(), null,
 					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);
 			// ivfMap = ConnectAndReadSheets.readSheetNewDump(dto.getSheetId(), "TEST", null,
 			//		CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);
 			IVFTableSheet sh = null;
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			Object principal = authentication.getPrincipal();
 			User user = userDao.findUserByUsername(((UserDetails)principal).getUsername());
 			if (ivfMap != null) {
 				int ss=0;

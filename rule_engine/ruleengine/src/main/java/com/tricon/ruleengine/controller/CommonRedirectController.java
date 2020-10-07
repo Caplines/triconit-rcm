@@ -102,7 +102,7 @@ public class CommonRedirectController {
 
 	@CrossOrigin
 	@RequestMapping(value={ "/ivfclaimid", "/ivfcl","/ivfclbatch","/reportcl","/enreportscl","/usersettings",
-			"/dumpOldIVFData","/scrapfulldata" }, method = RequestMethod.GET)
+			"/dumpOldIVFData","/scrapfulldata","/extIVF" }, method = RequestMethod.GET)
 	public void ivfClaimIdForward(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 

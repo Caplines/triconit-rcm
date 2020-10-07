@@ -37,6 +37,9 @@ public class ScrappingFullDataManagmentProcess extends BaseAudit implements Seri
 
 	@Column(name = "count")
 	private int count;
+	
+	@Column(name="status")
+	private String status;
 
 
 	public int getId() {
@@ -58,6 +61,18 @@ public class ScrappingFullDataManagmentProcess extends BaseAudit implements Seri
 		this.count = count;
 	}
 
+
+	public String getStatus() {
+		return status;
+	}
+
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	
+	
 	
 }
 

@@ -21,6 +21,8 @@ public class ClaimData {
 	private String 	estInsurance;
 	private String 	PatientPortion;
 	private String 	estPrimary;
+	private String 	PatientPortionSec;
+	
 	
 	
 	public ClaimData() {
@@ -144,6 +146,14 @@ public class ClaimData {
 
 	public void setDetails(ClaimDataDetails details) {
 		this.details = details;
+	}
+
+	public String getPatientPortionSec() {
+		return PatientPortionSec;
+	}
+
+	public void setPatientPortionSec(String patientPortionSec) {
+		PatientPortionSec = patientPortionSec;
 	}
 	
 	

@@ -31,7 +31,23 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
 	@Override
 	public User findUserByUsername(String username) {
 
-		return (User) getEntityByColumnName(User.class, "userName", username);
+		
+		Session session = getSession();
+		Object object = null;
+		try {
+			//Transaction transaction = session.beginTransaction();
+			Criteria criteria = session.createCriteria(User.class);
+			criteria.add(Restrictions.eq("userName", username));
+			criteria.createAlias("company", "company");
+			object =  criteria.uniqueResult();
+			
+			
+		} finally {
+			closeSession(session);
+
+		}
+		
+		return (User) object;
 	}
 
 	@Override

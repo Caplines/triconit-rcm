@@ -9,6 +9,8 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Repository;
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
+import com.tricon.ruleengine.dto.OfficeDto;
+import com.tricon.ruleengine.dto.scrapping.ScrapPatient;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
@@ -300,8 +304,8 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " crown_grade_code as posterior17,fmx_per as percentages16, " //add new Columns here will_crown_grade as posterior16
 					+ " ortho_remaining as ortho5,ortho_waiting_period as waitingPeriod3, night_guards_d9945_percentage as posterior18, " //add new Columns here
 					+ " night_guards_d9944_fr as posterior19,night_guards_d9945_fr as posterior20,fillings_in_year as fill1," //add new Columns here
-					+ " extractions_in_year as extr1, crowns_in_year as crn1,waiting_period4 as waitingPeriod4,share_fr as shareFr, DATE_FORMAT(p.created_date, '%d/%m/%y %T') as createdDate " ////add new Columns here
-					
+					+ " extractions_in_year as extr1, crowns_in_year as crn1,waiting_period4 as waitingPeriod4,share_fr as shareFr, DATE_FORMAT(p.created_date, '%d/%m/%y %T') as createdDate, " ////add new Columns here
+					+ " pedo1 as pedo1, pedo2 as pedo2,pano1 as pano1, pano2 as pano2, d4381 as d4381 "
 					//+ " as  " //add new Columns here
 					
 					+ fromClause
@@ -457,13 +461,15 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	}
 
 	@Override
-	public void savePatientTempDataWithDetailsAndHistory(PatientTemp pat, Office off, User user) throws Exception{
+	public Integer savePatientTempDataWithDetailsAndHistory(PatientTemp pat, Office off, User user) throws Exception{
 		Session session = getSession();
+		Integer i=0;
 		try {
 
 			// Transaction transaction = session.beginTransaction();
 			pat.setCreatedBy(user);
 			pat.setId(((Integer) session.save(pat)));
+			i=pat.getId();
 			// Patient Detail Start
 			if (pat.getPatientDetails()!=null && pat.getPatientDetails().size()>0) {
 			Iterator<PatientDetailTemp> iter = pat.getPatientDetails().iterator();
@@ -485,7 +491,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			closeSession(session);
 
 		}
-		//return pat;
+		return i;
 	}
 
 	@Override
@@ -503,4 +509,31 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		}
 		//return pat;
 	}
+	
+	@Override
+	public List<ScrapPatient> getScrappingStatusByPatIdsTemp(List<Integer>ids){
+		Session session = getSession();
+		List<ScrapPatient> pats = null;
+		try {
+			Criteria criteria = session.createCriteria(PatientTemp.class);
+			
+			criteria.add(Restrictions.in("id", ids));
+			
+			ProjectionList pjList = Projections.projectionList();
+			pjList.add(Projections.property("patientId"), "patientId");
+			pjList.add(Projections.property("firstName"), "firstName");
+			pjList.add(Projections.property("lastName"), "lastName");
+			pjList.add(Projections.property("status"), "status");
+			pjList.add(Projections.property("dob"), "dob");
+			criteria.setProjection(pjList);
+			criteria.setResultTransformer(Transformers.aliasToBean(ScrapPatient.class));
+			Object o=(Object) criteria.list();
+			if (o!=null) pats = (List<ScrapPatient>)o;
+		} finally {
+			closeSession(session);
+		}
+		return pats;
+		
+	}
+	
 }

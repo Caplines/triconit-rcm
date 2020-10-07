@@ -25,6 +25,11 @@ public class ScrappingFullDataDetailDto {
 	private boolean memberId;
 	private boolean gradePay;
 	
+	private boolean subscribersFirstName;
+	private boolean subscribersLastName;
+	private boolean subscribersDob;
+	
+	
 	
     
     ///
@@ -144,6 +149,24 @@ public class ScrappingFullDataDetailDto {
 	}
 	public void setGradePay(boolean gradePay) {
 		this.gradePay = gradePay;
+	}
+	public boolean isSubscribersFirstName() {
+		return subscribersFirstName;
+	}
+	public void setSubscribersFirstName(boolean subscribersFirstName) {
+		this.subscribersFirstName = subscribersFirstName;
+	}
+	public boolean isSubscribersLastName() {
+		return subscribersLastName;
+	}
+	public void setSubscribersLastName(boolean subscribersLastName) {
+		this.subscribersLastName = subscribersLastName;
+	}
+	public boolean isSubscribersDob() {
+		return subscribersDob;
+	}
+	public void setSubscribersDob(boolean subscribersDob) {
+		this.subscribersDob = subscribersDob;
 	}
  
 	

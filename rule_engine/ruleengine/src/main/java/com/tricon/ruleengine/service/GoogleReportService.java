@@ -7,6 +7,6 @@ import java.util.Map;
 public interface GoogleReportService {
 	
 	public LinkedHashMap<String, List<String>> getESDataFromServer(String query,String ids,int columnCount,String office,
-			String password);
+			String password,String companyId);
 
 }

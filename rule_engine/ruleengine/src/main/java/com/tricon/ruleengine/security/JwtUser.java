@@ -6,6 +6,8 @@ import java.util.Date;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.tricon.ruleengine.model.db.Company;
+
 //import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -26,6 +28,8 @@ public class JwtUser implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
     private final int active;
     private final Date lastPasswordResetDate;
+    private final Company company;
+    
     
 
     public JwtUser(
@@ -37,7 +41,8 @@ public class JwtUser implements UserDetails {
           int userType,
           Collection<? extends GrantedAuthority> authorities,
           int enabled,
-          Date lastPasswordResetDate
+          Date lastPasswordResetDate,
+          Company company
     ) {
         this.uuid = uuid;
         this.firstname = firstname;
@@ -48,6 +53,7 @@ public class JwtUser implements UserDetails {
         this.authorities = authorities;
         this.active = enabled;
         this.lastPasswordResetDate = lastPasswordResetDate;
+        this.company =company;
     }
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -105,6 +111,9 @@ public class JwtUser implements UserDetails {
 	}
 	public int getUserType() {
 		return userType;
+	}
+	public Company getCompany() {
+		return company;
 	}
 
 	

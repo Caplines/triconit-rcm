@@ -124,7 +124,6 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		ChromeOptions options = new ChromeOptions();
 		try {
 			// https://chromedriver.chromium.org/downloads
-			System.out.println("getBrowserDriver" + driverLocation);
 			System.setProperty("webdriver.chrome.driver", driverLocation);
 			// ChromeOptions options = new ChromeOptions();
 			// System.out.println("555");
@@ -173,7 +172,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				for (PatientScrapSearchDto data : dto.getDto()) {
 					Thread thread = new Thread() {
 						public void run() {
-							System.out.println("Thread Running");
+							//System.out.println("Thread Running");
+							String s="0";
 							WebDriver driver = getBrowserDriver();// new HtmlUnitDriver(true);// getBrowserDriver();
 							try {
 								System.out.println("MEM 2-"
@@ -182,12 +182,13 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 								boolean navigate = loginToSiteBCBS(dto, driver);
 
 								boolean issueNo = navigatetoMainSite(driver, navigate);
-								System.out.println("888888888888- STARTED...");
+								//System.out.println("888888888888- STARTED...");
 								PatientTemp d = parsePage(driver, data, siteName, issueNo, office);
-								System.out.println("888888888888 -END " + d.getPatientId());
+								//System.out.println("888888888888 -END " + d.getPatientId());
+								
 								if (d != null) {
 									// Update the Data in Database
-									updateDatainDB(d, office, user);
+									s =updateDatainDB(d, office, user)+"";
 								}
 
 								Thread.sleep(2000);
@@ -201,6 +202,11 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 								ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
 								ScrappingFullDataManagmentProcess manageP = dataDoa
 										.getScrappingFullDataManagmentDataProcess(processId);
+								String os =manageP.getStatus();
+								if (os.equals("")) manageP.setStatus(s); 
+								else {
+									manageP.setStatus(os+","+s);
+								}
 								manageP.setCount(manageP.getCount() - 1);
 								manageP.setUpdatedBy(user);
 								manageP.setUpdatedDate(new Date());
@@ -286,25 +292,26 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 
 			return temp;
 		}
-		temp.setStatus("Patient found..");
+		temp.setStatus(Constants.PATIENT_FOUND);
 		populateMandatoryData(temp);
 		boolean sd= createPatientDetailsurl(driver, temp, sh);
 		if (sd== false) {
 			if (temp.getFirstName().equals(""))temp.setFirstName(sh.getFirstName());
 			if (temp.getLastName().equals(""))temp.setLastName(sh.getLastName());
 			temp.setPatientId(sh.getPatientId());
-			temp.setStatus("Web Site not responsed while Scrapping Also Check Password/User Name . Please try after Some Time..");
+			temp.setStatus("Web Site not responsed while Scrapping Also Check Password/User Name or Website changed. Please try after Some Time..");
 		}
 		// Logic to fetch data from Site...
 
 		return temp;
 	}
 
-	private void updateDatainDB(PatientTemp data, Office office, User user) {
+	private Integer updateDatainDB(PatientTemp data, Office office, User user) {
+		Integer i=0;
 		try {
-			patDao.savePatientTempDataWithDetailsAndHistory(data, office, user);
+			i =patDao.savePatientTempDataWithDetailsAndHistory(data, office, user);
 		} catch (Exception c) {
-			System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIII");
+			//System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIII");
 			StringWriter sw = new StringWriter();
 			c.printStackTrace(new java.io.PrintWriter(sw));
 			// String exceptionAsString = sw.toString();
@@ -315,6 +322,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				// TODO: handle exception
 			}
 		}
+		return i;
 	}
 
 	private boolean createPatientDetailsurl(WebDriver driver, PatientTemp temp, PatientScrapSearchDto sh)
@@ -394,7 +402,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				navigatetoUrl(driver, url, 3000);
 				String z = driver.getPageSource();
 				System.out.println(z);
-				System.out.println("444444444");
+				//System.out.println("444444444");
 				
 				boolean arrayC = false;
 				z = z.replaceFirst("\\[\\{", "{");
@@ -643,7 +651,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		int x1=0;
 		int ct=0;
 		String playTermedDate="";
-		System.out.println(cards.size());
+		//System.out.println(cards.size());
 		for(WebElement card : cards) {
 			List<WebElement> divs =card.findElements(By.tagName("div"));
 		
@@ -791,8 +799,15 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			dtemp.setPlanTermedDate(playTermedDate);
 		}
 		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));
-		WebElement eleBody = driver.findElement(
+		WebElement eleBody = null; 
+		try {
+			eleBody =driver.findElement(
 				By.xpath("/html/body/ui-view/ui-view/div/div[3]/div[2]/div/div[2]/plan-info/div/div[2]/table/tbody"));
+		}catch(Exception x) {
+			
+		}
+		if (eleBody==null) eleBody = driver.findElement(
+		        By.xpath("/html/body/ui-view/ui-view/div/div[4]/div[2]/div/div[4]/plan-info/div/div[2]/table/tbody"));
 		List<WebElement> eleTR = eleBody.findElements(By.tagName("tr"));
 		Thread.sleep(500);
 
@@ -1625,10 +1640,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("02/27/1963");
-		psc.setFirstName("LARRY");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
-		psc.setLastName("MARTIN");
-		psc.setMemberId("822853212");
+		psc.setDob("05/20/1990");
+		psc.setFirstName("THOMAS");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
+		psc.setLastName("CANALES");
+		psc.setMemberId("841013814");
 		psc.setSsnNumber("");
 
 		l.add(psc);

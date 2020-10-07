@@ -82,7 +82,14 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 							"                 or" + 
 							"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+							"                 or" + 
+							"  (rep.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+							"                 or" + 
+							"  (rep.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+							
 							"" + 
 							" )" ;
 				 
@@ -97,6 +104,12 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 							"                 or" + 
 							"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"                 or" + 
+							"  (rep.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"                 or" + 
+							"  (rep.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
 							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 							"" + 
 							" )  and rd.created_by='"+dto.getEmployerName() +"'" ;
@@ -189,9 +202,10 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				" GROUP_CONCAT(distinct ivf_form_id SEPARATOR '"+Constants.EN_REP_COUNT_SEP+"') as ivfId from (" + 
 				" select count(message_type) as ct,message_type,us.first_name as fn,us.last_name as ln,"+t+",ivf_form_id ,patient_id,patient_name,off.name" + 
 				" from "+x+" ,office off,user as us where "+
-				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run "+
-		        " and us.uuid=rep.created_by " ;
-		if (dto.getEmployerName() != null && !dto.getEmployerName().equals("")) 	query=query	+ "  and us.uuid ='"+dto.getEmployerName()+"' " ; 
+				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.TXPLAN.getType()+" and  off.uuid=rep.office_id  "+ 
+				//" and rep.group_run = repd.group_run "+
+		        " and us.uuid=repd.created_by " ;
+		if (dto.getEmployerName() != null && !dto.getEmployerName().equals("")) 	query=query	+ "  and repd.created_by ='"+dto.getEmployerName()+"' " ; 
 		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		if (dto.getpId() != null && !dto.getpId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getpId()+"' " ; 
 		if (dto.getTpId() != null && !dto.getTpId().equals("")) 	    query=query	+ "  and rep."+t+" ='"+dto.getTpId()+"' " ; 
@@ -199,16 +213,24 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 
 		if (dto.getEndDate()!=null && dto.getStartDate()!=null && !dto.getEndDate().equals("") && !dto.getStartDate().equals("")) {
 			query=query+	"  and (" + 
-				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+				"  (repd.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 				"                 or" + 
+				"  (repd.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+				"                 or" + 
+				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+				"                 or" + 
 				"  (rep.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+				
+				
 				"" + 
 				" )" ;
 		}
 			query=query+ " group by repd.message_type,"+t+",ivf_form_id,patient_id,patient_name  order by repd.message_type asc) a" + 
-				"  group by a."+t+" ) as b where b.resultsum is not null	"; 
+				"  group by a."+t+",a.patient_id ) as b where b.resultsum is not null	"; 
 		return query;
 	}
 	
@@ -235,7 +257,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				" select count(message_type) as ct,us.first_name as fn,us.last_name as ln,message_type,"+t+",ivf_form_id,patient_id,patient_name,off.name" + 
 				" from "+x+" ,office off,user as us where "+
 				" repd.report_id=rep.id and repd.report_type="+HighLevelReportTypeEnum.BATCH.getType()+" and  off.uuid=rep.office_id and rep.group_run = repd.group_run  " +
-				" and us.uuid=rep.created_by ";
+				" and us.uuid=repd.created_by ";
 		if (dto.getEmployerName() != null && !dto.getEmployerName().equals("")) 	query=query	+ "  and us.uuid ='"+dto.getEmployerName()+"' " ; 
 		if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		if (dto.getpId() != null && !dto.getpId().equals("")) 	query=query	+ "  and rep.patient_id ='"+dto.getpId()+"' " ; 
@@ -247,6 +269,12 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		
 		if (dto.getEndDate()!=null && dto.getStartDate()!=null  && !dto.getEndDate().equals("") && !dto.getStartDate().equals("")) {
 			query=query+	"  and (" + 
+				"  (repd.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+				"                 or" + 
+				"  (repd.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+				"                 or" + 
 				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 				"                 or" + 
@@ -291,6 +319,12 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		         if (dto.getOfficeId() != null && !dto.getOfficeId().equalsIgnoreCase("All") && !dto.getOfficeId().equals("")) 	query=query	+ "  and rep.office_id ='"+dto.getOfficeId()+"' " ; 
 		         if (dto.getEndDate()!=null && dto.getStartDate()!=null  && !dto.getEndDate().equals("") && !dto.getStartDate().equals("")) {
 		 			query=query+	"  and (" + 
+		 				"  (repd.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+		 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+		 				"                 or" + 
+		 				"  (repd.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+		 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+		 				"                 or" + 
 		 				"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
 		 				"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 		 				"                 or" + 

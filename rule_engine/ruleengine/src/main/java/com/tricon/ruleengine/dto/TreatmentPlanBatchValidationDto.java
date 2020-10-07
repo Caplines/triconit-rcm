@@ -5,6 +5,7 @@ public class TreatmentPlanBatchValidationDto {
 	private String ivfId;
 	private String officeId;
 	private String patientId;
+	private String insType;
 	
 	
 	public String getIvfId() {
@@ -24,6 +25,12 @@ public class TreatmentPlanBatchValidationDto {
 	}
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
+	}
+	public String getInsType() {
+		return insType;
+	}
+	public void setInsType(String insType) {
+		this.insType = insType;
 	}
 
 

@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -32,6 +35,7 @@ import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.service.ReportService;
 
@@ -62,10 +66,18 @@ public class ReportController {
 	public ResponseEntity<?> generateReport(@RequestBody ReportDto dto) {
 		dto.setmType("t");
 		Object o = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
 		if (dto.getReportType().equals("ivfRDBMS")) {
 			// List<CaplineIVFFormDto> cap=null;
 			try {
+				
+				
+				
 				CaplineIVFQueryFormDto d = new CaplineIVFQueryFormDto();
+				
 				
 				d.setPatientIdDB(dto.getReportField1());
 				//d.setOfficeNameDB(officeNameDB);
@@ -73,7 +85,7 @@ public class ReportController {
 				d.setGeneralDateIVFDoneDB(dto.getGeneralDateRun());
 				d.setPatientName(dto.getPatientName());
 
-				o = (List<CaplineIVFFormDto>) civf.searchIVFDataforApp(d,od.getOfficeByUuid(dto.getOfficeId()));
+				o = (List<CaplineIVFFormDto>) civf.searchIVFDataforApp(d,od.getOfficeByUuid(dto.getOfficeId(),user.getCompany().getUuid()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -87,7 +99,7 @@ public class ReportController {
 			d.setEmployerNameDB(dto.getEmployerName());
 			d.setPatientDobDB(dto.getDob());
 			d.setPatientName(dto.getPatientName());
-			o = (List<CaplineIVFFormDto>) civf.searchIVFDataforAppScrap(d,od.getOfficeByUuid(dto.getOfficeId()));
+			o = (List<CaplineIVFFormDto>) civf.searchIVFDataforAppScrap(d,od.getOfficeByUuid(dto.getOfficeId(),user.getCompany().getUuid()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -104,6 +116,10 @@ public class ReportController {
 	public ResponseEntity<?> generateReportCL(@RequestBody ReportDto dto) {
 		dto.setmType("c");
 		Object o = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
 		if (dto.getReportType().equals("ivfRDBMS")) {
 			// List<CaplineIVFFormDto> cap=null;
 			try {
@@ -115,7 +131,7 @@ public class ReportController {
 				d.setGeneralDateIVFDoneDB(dto.getGeneralDateRun());
 				d.setPatientName(dto.getPatientName());
 
-				o = (List<CaplineIVFFormDto>) civf.searchIVFDataforApp(d,od.getOfficeByUuid(dto.getOfficeId()));
+				o = (List<CaplineIVFFormDto>) civf.searchIVFDataforApp(d,od.getOfficeByUuid(dto.getOfficeId(),user.getCompany().getUuid()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -129,7 +145,7 @@ public class ReportController {
 			d.setEmployerNameDB(dto.getEmployerName());
 			d.setPatientDobDB(dto.getDob());
 			d.setPatientName(dto.getPatientName());
-			o = (List<CaplineIVFFormDto>) civf.searchIVFDataforAppScrap(d,od.getOfficeByUuid(dto.getOfficeId()));
+			o = (List<CaplineIVFFormDto>) civf.searchIVFDataforAppScrap(d,od.getOfficeByUuid(dto.getOfficeId(),user.getCompany().getUuid()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -195,6 +211,11 @@ public class ReportController {
 	public void generatePDF(@RequestBody ReportDto rdto, HttpServletResponse response) throws IOException {
 		//
 		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
+		
 		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
 		dto.setEmployerNameDB("");
 		dto.setGeneralDateIVFDoneDB(rdto.getGeneralDateRun());
@@ -203,7 +224,7 @@ public class ReportController {
 		dto.setUniqueID(rdto.getReportField1()); 
 		dto.setPatientName("");
 		dto.setNewFormat("");
-		Office office = od.getOfficeByUuid(dto.getOfficeNameDB());
+		Office office = od.getOfficeByUuid(dto.getOfficeNameDB(),user.getCompany().getUuid());
         Object[] obj=null; 
 		
 		obj = civf.generatePDF(dto, office);
@@ -224,6 +245,13 @@ public class ReportController {
 	@PostMapping
 	@RequestMapping(value = "/fillupgsheet")
 	public void fillupGheet(@RequestBody ReportDto rdto, HttpServletResponse response) throws IOException {
+		
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
+
 		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
 		dto.setEmployerNameDB("");
 		dto.setGeneralDateIVFDoneDB(rdto.getGeneralDateRun());
@@ -232,7 +260,7 @@ public class ReportController {
 		dto.setPatientName("");
 		dto.setSheetId("");
 		dto.setSheetSubId("0");
-		Office office = od.getOfficeByUuid(dto.getOfficeNameDB());
+		Office office = od.getOfficeByUuid(dto.getOfficeNameDB(),user.getCompany().getUuid());
         civf.fillUpGoogleSheet(dto, office);
 		
 		

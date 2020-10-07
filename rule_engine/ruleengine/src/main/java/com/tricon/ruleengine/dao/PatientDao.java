@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
+import com.tricon.ruleengine.dto.scrapping.ScrapPatient;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
 import com.tricon.ruleengine.model.db.PatientDetail;
@@ -43,8 +44,11 @@ public interface PatientDao {
 	 */
 	public PatientTemp checkforPatientWithIdAndOfficeTemp(String patientid, Office off);
 	
-	public void savePatientTempDataWithDetailsAndHistory(PatientTemp pat, Office off, User user) throws Exception;
+	public Integer savePatientTempDataWithDetailsAndHistory(PatientTemp pat, Office off, User user) throws Exception;
 	
 	public void updatePatientTempDataOnly(PatientTemp pat) throws Exception;
+	
+	public List<ScrapPatient> getScrappingStatusByPatIdsTemp(List<Integer> ids); 
+	
 
 }
