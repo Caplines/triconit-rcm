@@ -31,3 +31,29 @@
 .drag-transit {
     border: #3500FF dashed 2px;
 }
+.drag-box {
+	    display: flex;
+    align-items: center;
+    height:60px;
+  
+}
+
+.drag-table {width:98%; margin:0 1%;
+margin-bottom: 20px;}
+.drag-table td {    border: 1px solid #ddd;
+    }
+    
+    .drag-label{
+    vertical-align:top;font-size: 14px;font-family: Roboto,sans-serif;font-weight: 300; line-height:normal; margin-right:5px; text-align:left; padding-left:10px;}
+    .drag-table .drag-box .drag-inp {
+    width:180px; height:40px; line-height:40px;}
+
+    .drag-pdf-box .drag-label{     height: 60px;
+    padding-right: 10px;
+    margin-right: 10px;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    min-width: 70px;
+    border-right: 1px solid #ddd;
+    margin: 0px;}
