@@ -1260,6 +1260,7 @@ public class FreqencyUtils {
 				ServiceCodeIvfTimesFreqFieldDto scivfTFDFinal = new ServiceCodeIvfTimesFreqFieldDto(
 						tpCode, scivfTFD.getFieldName(), scivfTFD.getFreqency(), 0, 0,"");
 				scivfTFDFinal.setDos(historyD.getHistoryDos());
+				scivfTFDFinal.setTooth(historyD.getHistoryTooth());
 				RuleEngineLogger.generateLogs(clazz,
 						"HISTORY CODE- " + historyD.getHistoryCode(),
 						Constants.rule_log_debug, bw);

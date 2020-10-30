@@ -34,6 +34,7 @@ import com.tricon.ruleengine.dto.EnhancedReportDto;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
+import com.tricon.ruleengine.dto.RuleReportDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
@@ -266,4 +267,13 @@ public class ReportController {
 		
 
 	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/rulereportdata", method = RequestMethod.POST)
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	public ResponseEntity<?> generateRuleReport(@RequestBody RuleReportDto dto) {
+		
+	  return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", reportService.getRuleReport(dto)));
+	}
+
 }

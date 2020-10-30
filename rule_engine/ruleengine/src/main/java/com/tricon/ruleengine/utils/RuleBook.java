@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
 
 import com.google.common.collect.Collections2;
+import com.tricon.ruleengine.dto.ExceptionDataDto;
 import com.tricon.ruleengine.dto.FeeToothDto;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
 //import com.tricon.ruleengine.dto.HistoryMatcherDto;
@@ -8386,26 +8387,36 @@ public class RuleBook {
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			boolean D0210=false;
 			boolean D0330=false;
+			boolean DCODE=true;
+			
 			
 			String dt1="";
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
 				dt1=tp.getCdDetails().getDateLastUpdated();
-				if (tp.getServiceCode().toUpperCase().contains("D0210")) D0210=true;
-				if (tp.getServiceCode().toUpperCase().contains("D0330")) D0330=true;
+				if (tp.getServiceCode().toUpperCase().contains("D0210")) {
+					DCODE=true;
+					D0210=true;
+				}
+				if (tp.getServiceCode().toUpperCase().contains("D0330")) {
+					DCODE=true;
+					D0330=true;
+				}
 				
 					
 			}
 		    //Email - Re: Need to add new codes on the Web IV form Date 9/17/2020 12:05 AM
 			if (D0210 && D0330) {
+				
 				pass=false;
 				RuleEngineLogger.generateLogs(clazz,
-						"D0210 && D0330 both are present hence fail",
+						"D0210 / D0330 present hence fail",
 						Constants.rule_log_debug, bw);
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule54.error.message1", new Object[] { "D0210 && D0330" }, locale),
+						messageSource.getMessage("rule54.error.message1", new Object[] { "D0210 and D0330" }, locale),
 						Constants.FAIL,"","",""));
 				return dList;
+			
 			}
 			
 			Date TP_Date = new Date();
@@ -8431,13 +8442,12 @@ public class RuleBook {
 						Method hss = c2.getMethod(hs);	
 						String code = (String) hcm.invoke(hisSheet);
 						String dt = (String) hdm.invoke(hisSheet);
-						
 						if (code.equals("")) continue ;
 						if (dt.equals("")) continue ;
 						if (!checkList.contains(code)) continue;
-						//check for future date 
+						//check for future date
 						try {
-						if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
+						 if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
 						}catch (Exception e) {
 							continue;
 						}
@@ -8456,6 +8466,42 @@ public class RuleBook {
 							}
 						 }
 					 }
+					}
+					for (IVFHistorySheet hisShee:ivf.getiVFHistorySheetList()) {
+						String hc = "getHistoryCode";
+						String hd = "getHistoryDOS";
+						String ht = "getHistoryTooth";
+						String hs = "getHistorySurface";
+						Method hcm = c2.getMethod(hc);
+						Method htm = c2.getMethod(ht);
+						Method hdm = c2.getMethod(hd);
+						Method hss = c2.getMethod(hs);	
+						String code = (String) hcm.invoke(hisShee);
+						String dt = (String) hdm.invoke(hisShee);
+						if (code.equals("")) continue ;
+						if (dt.equals("")) continue ;
+						if (!checkList.contains(code)) continue;
+						//check for future date
+						try {
+							 if ( Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt).after(TP_Date)) continue;
+							}catch (Exception e) {
+								continue;
+							}
+							
+								hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
+										(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));
+							if (checkList.contains(code)) {
+								hispresent=true;	 
+				              if ( mapHistoryM.containsKey(code)) {
+									List<ToothHistoryDto> t = mapHistoryM.get(code);
+									t.add(hdto);
+								} else {
+									List<ToothHistoryDto> l = new ArrayList<>();
+									l.add(hdto);
+									mapHistoryM.put(code, l);
+								}
+							 }
+						
 					}
 					
 					if (hispresent) {
@@ -8502,7 +8548,8 @@ public class RuleBook {
     					//mapFlIVF.put("D0210", dL);
     					
                     
-                    }else {
+                    }
+                    if (D0330) {
                     	//fr= ivf.getPano1();
                     	tpCode="D0330";
                     	scivftff = new ServiceCodeIvfTimesFreqFieldDto("D0330", "PANO1", ivf.getPano1(), 0,
@@ -8547,6 +8594,7 @@ public class RuleBook {
 							
 					    }
 					 }
+					//Alike codes
 					if (D0210C != null || D0330C != null ) {
 						Object[] m = FreqencyUtils.getError(D0210C, D0330C, "D0210", "D0330", thKEY);
 						if (m != null) {
@@ -8559,9 +8607,36 @@ public class RuleBook {
 
 						}
 					}
-
+                   if (pass) {
+                	   Object[] m=null;
+                	   if (D0210C != null ) {
+                		   m = FreqencyUtils.getCountTimeServiceCode(D0210C, "D0210");
+                	   }else if (D0330C != null ) {
+                		   m = FreqencyUtils.getCountTimeServiceCode(D0330C, "D0330");
+                	   }
+                	   if (m != null) {
+                		   if (!failedCodeSet.contains(m[5])) {
+								RuleEngineLogger.generateLogs(clazz, "ACTUAL COUNT for " + m[5] + " -->" + m[0],
+										Constants.rule_log_debug, bw);
+								RuleEngineLogger.generateLogs(clazz, " FREQUENCY   for " + m[5] + " -->" + m[4],
+										Constants.rule_log_debug, bw);
+								if ((int) m[0] >= (int) m[4]) {
+									pass = false;
+									dList.add(
+											new TPValidationResponseDto(rule.getId(), rule.getName(),
+													messageSource.getMessage("rule54.error.message",
+															new Object[] { m[5], m[1], m[2], m[4],m[6],m[7] }, locale),
+													Constants.FAIL,"","",""));
+								}
+							}
+                	   }
+                   }  
 					
-					}
+                   
+					// }
+                     
+				
+					}//present
 			
 			
 			
@@ -8584,7 +8659,7 @@ public class RuleBook {
 	}
 
 	
-	// FMX/Pano Rule 
+	// Perio Depth Checker 
 	public List<TPValidationResponseDto> Rule55(List<Object> tpList,List<QuestionAnswerDto> ansL,MessageSource messageSource,Rules rule,
 			BufferedWriter bw) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_55,
@@ -8639,6 +8714,61 @@ public class RuleBook {
 		return dList;
 	}
 	
+	// Exception Rule 
+	public List<TPValidationResponseDto> Rule56(List<Object> tpList,Object ivfSheet,List<ExceptionDataDto> exceptionData ,MessageSource messageSource,Rules rule,
+			BufferedWriter bw) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_56,
+				Constants.rule_log_debug, bw);
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		//boolean pass=true;
+		
+		try {
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;	
+		ivf.getEmployerName();
+		for (Object t : tpList) {
+			CommonDataCheck tp = (CommonDataCheck)  t;
+			String code=tp.getServiceCode().toLowerCase();
+			for(ExceptionDataDto ed:exceptionData) {
+				if (ed.getEmpolyerName()!=null && ed.getCode()!=null
+						&& ed.getCode().toLowerCase().equals(code)
+						&& ed.getEmpolyerName().toLowerCase().trim().equals(ivf.getEmployerName().toLowerCase().trim())) {
+					//pass=false;
+					if (ed.getResultType().trim().toLowerCase().equals(Constants.FAIL.toLowerCase())) {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("<b style=\"color:#fff0fe\" class=\"error-other-message-api\">Fail:</b>"+ed.getMessage(), new Object[] {  }, locale),
+								Constants.FAIL,"","",""));
+						
+					}else if (ed.getResultType().trim().toLowerCase().equals(Constants.ALERT.toLowerCase())) {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("<b style=\"color:#f1f0ff\" class=\"alert-other-message-api\">Alert:</b>"+ed.getMessage(), new Object[] {  }, locale),
+								Constants.ALERT,"","",""));
+						
+					}else {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("<b style=\"color:#fbfff0\" class=\"pass-other-message-api\">Pass:</b>"+ed.getMessage(), new Object[] {  }, locale),
+								Constants.PASS,"","",""));
+						
+					}
+					
+				}
+			}
+			
+		}
+		if (dList.size()==0) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule56.error.message", new Object[] {  }, locale),
+					Constants.PASS,"","",""));
+		}
+		}catch(Exception x) {
+			 x.printStackTrace();
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+						Constants.FAIL,"","",""));
+				
+		}
+		return dList;
+	}
+
 	// DQ Fillings (Provider Same) NOT USED
 	public List<TPValidationResponseDto> Rule51(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess, MessageSource messageSource,
 			Rules rule, BufferedWriter bw) {

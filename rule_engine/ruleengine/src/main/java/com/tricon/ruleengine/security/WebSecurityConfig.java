@@ -161,6 +161,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/enreportscl",
                 "/usersettings",
                 "/scrapfulldata",
+                "/rulereport",
                 "/userinput",
                 "/extIVF",
                 "/",

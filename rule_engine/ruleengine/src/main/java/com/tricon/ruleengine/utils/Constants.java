@@ -89,6 +89,9 @@ public class Constants {
 	public static final String RULE_ID_53="DQ Fillings";
 	public static final String RULE_ID_54="FMX/Pano Rule";
 	public static final String RULE_ID_55="Perio Depth Checker";
+	public static final String RULE_ID_56="Exception Rule";//This is from Sheet https://docs.google.com/spreadsheets/d/1r_9il1-9p5xfPNBhSIRTZNNqFLPH2EKKdtj1eOo1rDs/edit?skip_itp2_check=true&pli=1#gid=0
+	
+	
 	
 	/*
 	public static final String SHEET_TYPE_TP="Treatmentplan";
@@ -310,6 +313,8 @@ public class Constants {
 	
 	public static final String INSURANCE_TYPE_PRI="Primary";//Blank also means primary 
 	public static final String INSURANCE_TYPE_SEC="Secondary"; 
+	
+	public static final int ATTEMPT_TO_ADD_NEW_COLUMNS=50;
 	
 	
 	

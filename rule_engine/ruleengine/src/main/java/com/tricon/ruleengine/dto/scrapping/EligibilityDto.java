@@ -23,9 +23,39 @@ public class EligibilityDto {
 	private String message;
 	private MCNADentaSheet mcnaSheet;
 	private String providerChange;
+	private String comment;
+	private String subscriberId;
+	private String firstName;
+	private String lastName;
+	private String dob;
+	
+	private String insuranceName;
 	
 	
-	
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public String getSubscriberId() {
+		return subscriberId;
+	}
+
+	public void setSubscriberId(String subscriberId) {
+		this.subscriberId = subscriberId;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
 	/*
 	public EligibilityDto(String name, String eligible, String copay, String benefitRemaining, String employerName,
@@ -127,6 +157,30 @@ public class EligibilityDto {
 
 	public void setProviderChange(String providerChange) {
 		this.providerChange = providerChange;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getDob() {
+		return dob;
+	}
+
+	public void setDob(String dob) {
+		this.dob = dob;
+	}
+
+	public String getInsuranceName() {
+		return insuranceName;
+	}
+
+	public void setInsuranceName(String insuranceName) {
+		this.insuranceName = insuranceName;
 	}
 	
 	

@@ -14,6 +14,14 @@ public class ScrappingInputDto {
 	private String start;
 	private String end;
 	private String locationProvider;
+	private String location;
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	private String siteType;
 	
 	
 	
@@ -79,6 +87,13 @@ public class ScrappingInputDto {
 	}
 	public void setLocationProvider(String locationProvider) {
 		this.locationProvider = locationProvider;
+	}
+	
+	public String getSiteType() {
+		return siteType;
+	}
+	public void setSiteType(String siteType) {
+		this.siteType = siteType;
 	}
 	
 	

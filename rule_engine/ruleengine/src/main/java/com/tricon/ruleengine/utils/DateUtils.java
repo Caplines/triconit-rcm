@@ -484,9 +484,16 @@ public class DateUtils {
 
 	
 	public static void main(String[] a) {
-		  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
+		  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a z");
 		  System.out.println(getDiffBetweenMonths( "09/15/2016","09/20/2017"));
-		  
+		  String dd="10/10/2019";
+		  try {
+			  System.out.println("1570665600000");
+			System.out.println(sdf.parse("10/10/2019 00:00:00 AM GMT").getTime());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		}
 	
 }

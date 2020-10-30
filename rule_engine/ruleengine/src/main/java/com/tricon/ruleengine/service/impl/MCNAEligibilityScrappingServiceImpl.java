@@ -23,6 +23,7 @@ import com.tricon.ruleengine.dto.scrapping.HistoryDto;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
+import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.ConstantsScrapping;
 //import java.util.function.Function;
 
@@ -35,7 +36,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 	
 	private final int  max=2;
 	private int  ctALL=0;
-
+	private int attempt =0;
 	
 
 	public ScrappingSiteDetails getScrappingSiteDetails() {
@@ -68,10 +69,28 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			//System.out.println(e.getMessage().split("Attempting to write column: ")[1].split(",")[0]) ;
+			if (e.getMessage().contains("Attempting to write column: "))
+			appendSheet(r);
 		}
 
 			return r;
     }
+	
+	private void appendSheet(List<EligibilityDto> r) {
+		try {
+			ConnectAndReadSheets.appendCelltoSheet(scrappingSiteDetails.getGoogleSheetId(),
+					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,Constants.ATTEMPT_TO_ADD_NEW_COLUMNS);
+			 if (updateSheet) ConnectAndReadSheets.updateSheetMCNADenta(scrappingSiteDetails.getGoogleSheetId(),
+					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)r,scrappingSiteDetails.getRowCount(),"NO","D");
+			}catch(Exception e) {
+				attempt=attempt+1;
+				e.printStackTrace();
+				if (attempt<50 && e.getMessage().contains("Attempting to write column: "))
+				appendSheet(r);
+			}
+	}
+
 
 
 	public List<EligibilityDto> scrapSite(ScrappingSiteDetails scrappingSiteDetails,
@@ -88,11 +107,21 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 				navigatetoEligiblity(driver);
 				for (Object obj : x) {
 					MCNADentaSheet sh = (MCNADentaSheet) obj;
-					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),false);
+					EligibilityDto d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),sh.getAppointmentDate(),
+							scrappingSiteDetails.getLocationProvider(),"",
+							sh.getfName(),sh.getlName(),sh.getInsuranceName(),false);
 					if (d!=null && d.getEligible().equals(ConstantsScrapping.SUBSCRIBER_NOT_FOUND) && 
 							(!sh.getSubscriberId().equalsIgnoreCase("NA") || !sh.getSubscriberId().trim().equals(""))){
 						navigatetoEligiblity(driver);
-						d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),true);
+						//(WebDriver driver,String dob,String subscriberId,
+						//		String verifyLastName,String verifyFirstName,String zip,String serviceDate,String officeName,String locationProvider,
+						//		String fname,String lname,String insuranceName,boolean byName)
+						
+						
+						
+						d=	parsePage(driver, sh.getDob(), sh.getSubscriberId(), sh.getlName(), sh.getfName(), sh.getZip(),sh.getAppointmentDate(),
+								scrappingSiteDetails.getLocationProvider(),"",
+								sh.getfName(),sh.getlName(),sh.getInsuranceName(),true);
 					}
 					if (d!=null) {
 						d.setMcnaSheet(sh);
@@ -145,7 +174,8 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 	}
 
 	private EligibilityDto parsePage(WebDriver driver,String dob,String subscriberId,
-			String verifyLastName,String verifyFirstName,String zip,boolean byName) throws Exception{
+			String verifyLastName,String verifyFirstName,String zip,String serviceDate,String officeName,String locationProvider,
+			String fname,String lname,String insuranceName,boolean byName) throws Exception{
 		String id="7";//6 old 
 		
 		if (dob.equals("") ) return null;
@@ -280,6 +310,14 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 			dto.setEligible(ConstantsScrapping.SUBSCRIBER_NOT_FOUND);
 		}
 	   
+	   
+	   
+	   dto.setDob(dob);
+       dto.setInsuranceName(insuranceName);
+       dto.setFirstName(fname);
+       dto.setLastName(lname);
+       dto.setSubscriberId(subscriberId);
+       
 	   return dto;
 	}
 	

@@ -41,6 +41,7 @@ import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
+import com.tricon.ruleengine.dto.ExceptionDataDto;
 import com.tricon.ruleengine.dto.MicroSoftGraphToken;
 import com.tricon.ruleengine.dto.PatientTreamentDto;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
@@ -312,7 +313,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				List<MVPandVAP> mvpVapList=null;
 				Map<String, List<Object>> tMap=null;
 				Map<String, List<Object>> tMapReduced=null;
-				
+				List<ExceptionDataDto> exceptionData=null;
 				
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				Map<String, List<EagleSoftFeeShedule>> esfeess= null;
@@ -430,6 +431,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					
 					//In New Approach 
 					if (eagleSoftDBAccessPresent) {
+						
+						//READ Exception RULE GOOGLE SHEET ->
+						//https://docs.google.com/spreadsheets/d/1r_9il1-9p5xfPNBhSIRTZNNqFLPH2EKKdtj1eOo1rDs/edit#gid=0
+						try {
+						//exceptionData=ConnectAndReadSheets.readSheetExceptionRulesheet("1r_9il1-9p5xfPNBhSIRTZNNqFLPH2EKKdtj1eOo1rDs", "Data", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+						}catch(Exception exp) {
+							
+						}
 						if (type==Constants.userType_TR) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
 						if (type==Constants.userType_CL) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getClaimData(trids, esDB,bw);
 						//Phase 3 add new Query
@@ -1685,6 +1694,24 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								
 							//END  Major Service Form Requirements (User Input)
 							
+							// FMX/Pano Rule
+							
+							rule = getRulesFromList(rules, Constants.RULE_ID_54);
+							dtoRL = rb.Rule54(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_54,
+									Constants.rule_log_debug, bw);
+							
+							//END FMX/Pano Rule
+							
 							// Perio Depth Checker
 							rule = getRulesFromList(rules, Constants.RULE_ID_55);
 							dtoRL = rb.Rule55(tList,ansL ,messageSource, rule, bw);
@@ -1702,6 +1729,23 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								
 							//END Perio Depth Checker
 							
+							// Exception Rule 
+							/*
+							rule = getRulesFromList(rules, Constants.RULE_ID_56);
+							dtoRL = rb.Rule56(tList,ivfMap.get(ivx).get(0),exceptionData ,messageSource, rule, bw);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_56,
+									Constants.rule_log_debug, bw);
+							*/	
+							//END Exception Rule 
 						}
 
 					} else {
@@ -2238,7 +2282,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	private void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType) {
 		//String[] p=env.getActiveProfiles();
-		//int xx=0;
+		int xx=0;
 		//if (xx==0) return ;
 		//if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
 		try {
@@ -2617,7 +2661,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		//String[] p=env.getActiveProfiles();
 		//if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
-	  //int xx=0;
+	  int xx=0;
       //if(xx==0) return ;
       if (ivfSheet == null)
 			return;
@@ -3313,7 +3357,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						if (!reduced)x.add(cdc);
 						else {
 							//System.out.println("STATUS ---------------->>"+cdc.getStatus()+"----"+status);
-							System.out.println("STATUS ---------------->>"+cdd.getStatus()+"----"+status);
+							//System.out.println("STATUS ---------------->>"+cdd.getStatus()+"----"+status);
 						  if (status!=null) {	
 						  if ("ALL".trim().toLowerCase().equals(status.trim().toLowerCase()) ||
 							     "".equals(status.trim())) {

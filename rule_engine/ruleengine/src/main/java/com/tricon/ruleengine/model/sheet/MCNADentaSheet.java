@@ -14,10 +14,18 @@ public class MCNADentaSheet {
 	private String insuranceName;
 	private String rowNumber;
 	private String zip;
+	private String location;
+	private String appointmentDate;
+	private String b;
+	private String c;
+	
 
-	public MCNADentaSheet(String fName, String lName, String subscriberId, String dob, String insuranceName,
+	public MCNADentaSheet(String appointmentDate, String b, String c,String fName, String lName, String subscriberId, String dob, String insuranceName,
 			String rowNumber) {
 		super();
+		this.b=b;
+		this.c=c;
+		this.appointmentDate=appointmentDate;
 		this.fName = fName;
 		this.lName = lName;
 		this.subscriberId = subscriberId;
@@ -83,4 +91,38 @@ public class MCNADentaSheet {
 		this.zip = zip;
 	}
 
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getAppointmentDate() {
+		return appointmentDate;
+	}
+
+	public void setAppointmentDate(String appointmentDate) {
+		this.appointmentDate = appointmentDate;
+	}
+
+	public String getB() {
+		return b;
+	}
+
+	public void setB(String b) {
+		this.b = b;
+	}
+
+	public String getC() {
+		return c;
+	}
+
+	public void setC(String c) {
+		this.c = c;
+	}
+
+	
+	
 }

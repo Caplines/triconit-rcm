@@ -1,0 +1,83 @@
+.form-control.inner-inp-2 {height: 38px;
+    margin: 0;
+    padding: 0 10px;
+    vertical-align: middle;
+    background: #ffffff;
+    border: 1px solid #dadada;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 38px;
+    color: #888;
+    border-radius: 4px;
+    box-shadow: none;
+    transition: all .3s;
+}
+    
+.form-horizontal .control-label {
+	font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+}
+
+
+ #data-scroll {
+  display: inline-block;
+  height: 210px;
+  overflow: auto;
+  width:100%;
+}
+
+table#data-scroll-t th, table#data-scroll-tre th{
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  line-height: 32px;
+  text-align: center;
+  background: #BBDEFB;
+  z-index:1
+}
+
+#data-scroll-t .data-scroll-thd ,#data-scroll-tre, .data-scroll-thdtre{
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+ font-weight: 300;
+}
+
+.inblo{
+	display:inline-block;
+	font-family: 'Roboto', sans-serif;
+  font-size: 21px;
+ font-weight: 300;
+}
+.br1px{
+border:1px solid;
+}
+table#data-scroll-t,table#data-scroll-tre {
+  border-collapse: collapse;
+  width:100%
+}
+
+th#table#data-scroll-thd ,th#table#data-scroll-thdtre {
+  background-color: #1976D2;
+  color: #fff;
+}
+
+th#table#data-scroll-thd,
+td#table#data-scroll-thdtre {
+  padding: 1.1em 1.5em;
+}
+
+table#data-scroll-t tr,table#data-scroll-tre tr {
+  color: #212121;
+}
+
+table#data-scroll-t tr:nth-child(odd) {
+  background-color: #BBDEFB;
+}
+
+.heightdef{
+	height:30px!important;
+	border:none!important;
+	width:100%!important;
+}   

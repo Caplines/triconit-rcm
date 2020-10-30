@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.dto;
 
+import org.hibernate.criterion.Projections;
+
 public class ScrappingSiteDetailsDto {
 
 	private String userName;
@@ -9,6 +11,8 @@ public class ScrappingSiteDetailsDto {
 	private String googleSubId;
 	private String locationProvider;
 	private int sid;
+	//private String siteType;
+	private String location;
 	
 	
 	
@@ -53,6 +57,13 @@ public class ScrappingSiteDetailsDto {
 	}
 	public void setSid(int sid) {
 		this.sid = sid;
+	}
+	
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
 	}
 	
 	

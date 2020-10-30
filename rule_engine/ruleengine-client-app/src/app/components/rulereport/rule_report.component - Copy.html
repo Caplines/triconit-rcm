@@ -1,0 +1,219 @@
+<div *ngIf="!showReportData" class="container"> 
+		<div class="row">
+			<div class="col-sm-12 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Rule Report </h3>
+						
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form2"
+						(ngSubmit)="f2.form.valid && runReport()" #f2="ngForm" novalidate>
+						<div class="form-horizontal">
+						<div class="form-group"
+							>
+							<label class="col-sm-3 control-label" for="sietName">Office Name</label>
+							<div class="col-sm-9" >
+							 <select class="login-signup-form-field form-control" name="officeId" id="officeId" [(ngModel)]="showReportData.officeId">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+						</div>		
+						</div>
+                        <div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !siteName.valid }">
+							<label class="col-sm-3 control-label" for="sietName">Rule Name</label>
+							<div class="col-sm-9" > 
+							<select class="login-signup-form-field form-control" name="ruleId" id="ruleId" [(ngModel)]="showReportData.ruleId">
+								<option value="41">MVP Rule</option>
+							</select>
+						</div>		
+						</div>	
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !userName.valid }">
+							<label class="col-sm-3 control-label" for="userName">Site Login User Name</label>
+							<div class="col-sm-9" >
+							 <select class="login-signup-form-field form-control" name="reportType" id="reportType" [(ngModel)]="showReportData.reportType">
+								<option value="t">Treatment</option>
+								<!-- <option value="c">Claim</option> -->
+							</select>
+							</div>	
+							
+						</div>
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !password.valid }">
+							<label class="col-sm-3 control-label" for="password">Start Date</label>
+							<div class="col-sm-9" >
+							 <ng-datepicker [(ngModel)]="showReportData.startDate" name="datepicker1" id ="datepicker1"
+									 [options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
+						    </div>	
+						    <div *ngIf="f.submitted &&  ( report.reportField1=='' || report.reportField2=='')"
+									class="error-msg">Please select valid Date To and from Date.</div>	 
+								
+						</div>
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !password.valid }">
+							<label class="col-sm-3 control-label" for="password">End Date</label>
+							<div class="col-sm-9" >
+							 <ng-datepicker [(ngModel)]="showReportData.startDate" name="datepicker2" id ="datepicker2"
+									 [options]="dateOptions1" class="ngx-end-date"></ng-datepicker>
+						    </div>		 
+								
+						</div>
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group">
+						    <div class="col-sm-12" id="data-scroll">
+						    
+						    <table id="data-scroll-t">
+						    <tr id="data-scroll-tr1"></tr>
+						    <tr *ngFor="let q of scrap.dto; let ind = index">
+						      <ng-container *ngIf="scrap.patientId">
+						      <td class="data-scroll-thd">
+						        <input type="text" class="login-signup-form-field form-control" 
+								name="pati{{ind}}" id="pati{{ind}}" [(ngModel)]="q.patientId"	/>
+								</td>
+						       </ng-container>	
+							      <ng-container *ngIf="scrap.firstName">
+							  <td class="data-scroll-thd">
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patf{{ind}}" id="patf{{ind}}" [(ngModel)]="q.firstName"	/>
+							   </td>
+								   </ng-container>	
+							      <ng-container *ngIf="scrap.lastName">
+							   <td class="data-scroll-thd">
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patl{{ind}}" id="patl{{ind}}" [(ngModel)]="q.lastName"	/>
+							   </td>
+								   </ng-container>	
+							      <ng-container *ngIf="scrap.dob">
+							   
+									   
+							   <td class="data-scroll-thd dobpp">
+							   <input type="text" class="login-signup-form-field form-control" 
+									name="patd{{ind}}" id="patd{{ind}}" [(ngModel)]="q.dob"	placeholder="MM/DD/YYYY"/>
+								<!-- 	
+							   <ng-datepicker [(ngModel)]="q.dob"
+									name="patd{{ind}}" id="patd{{ind}}" class="login-signup-form-field form-control" 
+									[options]="dateOptions"></ng-datepicker>
+								
+							    <div class="deletebut">
+							    <a href="javascript:void(0)" (click)="removeText(ind)"><span class="glyphicon glyphicon-remove"></span></a>
+							     </div>		
+								-->							
+						       </td>
+								   </ng-container>	
+						      <ng-container *ngIf="scrap.enrolleeId">
+							   <td class="data-scroll-thd">
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="paten{{ind}}" id="paten{{ind}}" [(ngModel)]="q.enrolleeId"	/>
+							   </td>
+							   </ng-container>	
+						      <ng-container *ngIf="scrap.ssnNumber">
+							   <td class="data-scroll-thd">
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patss{{ind}}" id="patss{{ind}}" [(ngModel)]="q.ssnNumber"	/>
+							   </td>
+							   </ng-container>	
+						      <ng-container *ngIf="scrap.locationProvider">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patloc{{ind}}" id="patloc{{ind}}" [(ngModel)]="q.locationProvider"	/>
+							   </td>
+							   </ng-container>
+							   <ng-container *ngIf="scrap.memberId">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patmem{{ind}}" id="patmem{{ind}}" [(ngModel)]="q.memberId"/>
+							   </td>
+							   </ng-container>
+							   
+							   
+							   
+							   <ng-container *ngIf="scrap.subscribersFirstName">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patsfn{{ind}}" id="patsfn{{ind}}" [(ngModel)]="q.subscribersFirstName"/>
+							   </td>
+							   </ng-container>
+							   <ng-container *ngIf="scrap.subscribersLastName">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patsln{{ind}}" id="patsln{{ind}}" [(ngModel)]="q.subscribersLastName"/>
+							   </td>
+							   </ng-container>
+							   <ng-container *ngIf="scrap.subscribersDob">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patsdob{{ind}}" id="patsdob{{ind}}" [(ngModel)]="q.subscribersDob" placeholder="MM/DD/YYYY"/>
+							   </td>
+							   </ng-container>
+							   
+							    
+							   
+							   
+							   
+							   
+							   
+							   
+							   <ng-container *ngIf="scrap.gradePay">
+							   <td>
+							        <input type="text" class="login-signup-form-field form-control" 
+									name="patgr{{ind}}" id="patgr{{ind}}" [(ngModel)]="q.gradePay"	/>
+							   </td>
+							   </ng-container>			
+						    </tr>
+						    </table>
+						    <a href="javascript:void(0)" (click)="createBlankRow(1)" class="btn">Add Patient
+							</a>	
+							</div>	
+						</div> 
+						</div>	
+						<p>
+							<button [disabled]="showLoadingP" type="submit" class="btn">Parse Site 
+							</button>
+						</p>
+						<div *ngIf="showLoadingPA" class="loader"></div>
+						<div *ngIf="showLoadingPAA" > Parsing started.. Please Check the search feature after some-time 
+						to see the Parsed data in the Report Section ( IVF RDBMS - WebSite Parsed Data ).<br>
+						
+						</div>
+						<div *ngIf="displayResultV">
+						<div class="form-horizontal">
+						<div class="form-group">
+						    <div class="col-sm-12">
+						<table id="data-scroll-t">
+						    <tr>
+						        <th class="data-scroll-thdtre">Patient Id</th>
+						        <th class="data-scroll-thdtre">First Name</th>
+						        <th class="data-scroll-thdtre">Last Name</th>
+						        <th class="data-scroll-thdtre">DOB</th>
+						        <th class="data-scroll-thdtre">Status</th>
+						    </tr>
+						    <tr *ngFor="let q1 of rdata let ind = index">
+						       <td class="data-scroll-thdtre">{{q1.patientId}}</td>
+						      <td class="data-scroll-thdtre">{{q1.firstName}}</td>
+						      <td class="data-scroll-thdtre">{{q1.lastName}}</td>
+						      <td class="data-scroll-thdtre">{{q1.dob}}</td>
+						      <td class="data-scroll-thdtre">{{q1.status}}</td>
+						    </tr>
+						</table>
+						</div>
+						</div>
+						</div>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>

@@ -11,5 +11,6 @@ export class ScrapModel {
 	start:string="A";
 	end:string="Z";
 	locationProvider:string="";
-	
+	siteType:string="";
+	location:string="";
 }

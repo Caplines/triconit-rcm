@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,6 +62,9 @@ public class ScrappingServiceImpl implements ScrappingService {
 	@Qualifier("jwtUserDetailsService")
     private UserDetailsService userDetailsService;
 	
+	@Autowired
+	private Environment env;
+	
 
 	@Override
 	public Map<String, List<?>> scrapSite(ScrappingInputDto dto) throws InterruptedException, ExecutionException {
@@ -95,13 +99,22 @@ public class ScrappingServiceImpl implements ScrappingService {
 				null);
 		sd.setPassword(dto.getPassword());
 		sd.setUserName(dto.getUsername());
+		if (dto.getLocationProvider()==null) dto.setLocationProvider("");
 		sd.setLocationProvider(dto.getLocationProvider());
-		
+		sd.setLocation(dto.getLocation());
 		if (!sd.isRunning()) {
 			sd.setRunning(true);
 			sDao.updateScrappingSiteRunningStatus(sd);
 
 			try {
+				
+				/*
+				sd.setGoogleSheetId("1VX7370QvZXM8Vv_8YHm0fEzeRWzvaBdXezVTHvIcB4A");
+				sd.setGoogleSheetName("ttt");
+				sd.setGoogleSubId("0");
+				sd.setPassword("Devine%1245976");
+				sd.setUserName("Devin13458");
+				*/
 				RuleEngineLogger.generateLogs(clazz, "ScrappingServiceImpl  " + sd.getScrappingSite().getDescription(),
 						Constants.rule_log_debug, null);
 				if (sd.getScrappingSite().getDescription().equalsIgnoreCase(ConstantsScrapping.ROSTER_FET)) {
@@ -154,7 +167,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 									} else {
 										if (mapData == null)
 											mapData = new HashMap<>();
-										mcna = new MCNADentaSheet(d.getFirstName(), d.getLastName(),
+										mcna = new MCNADentaSheet("","","",d.getFirstName(), d.getLastName(),
 												d.getSubscriberId(), d.getDob(), d.getInsuranceName(), x + "");
 										List<Object> l = new ArrayList<>();
 										l.add(mcna);
@@ -188,14 +201,16 @@ public class ScrappingServiceImpl implements ScrappingService {
 							}
 						} else if (sd.getScrappingSite().getDescription()
 								.equalsIgnoreCase(ConstantsScrapping.DENTA_ELIG)) {
+							
+
 							if (update) {
 								service.submit(new DentaQEligibilityScrappingServiceImpl(sd, CLIENT_SECRET_DIR,
-										CREDENTIALS_FOLDER, mapData, update));
+										CREDENTIALS_FOLDER, mapData, update,dto.getSiteType(),off.getName(),env.getProperty("google.chorme.driver")));
 								map.put(ConstantsScrapping.SCRAPPING_INIT + sd.getGoogleSheetId() + ConstantsScrapping.NAME_Separator
 										+ sd.getGoogleSubId(), null);
 							} else {
 								Future<List<?>> rr = service.submit(new DentaQEligibilityScrappingServiceImpl(sd,
-										CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, mapData, update));
+										CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, mapData, update,dto.getSiteType(),off.getName(),env.getProperty("google.chorme.driver")));
 								r = rr.get();
 								map.put("Done", r);
 							}

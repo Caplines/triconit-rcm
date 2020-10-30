@@ -16,6 +16,8 @@ import com.tricon.ruleengine.dto.EnhancedValidateTxNumReportDto;
 import com.tricon.ruleengine.dto.EnhancedValidateTxReportDto;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
+import com.tricon.ruleengine.dto.RuleMessageDetailDto;
+import com.tricon.ruleengine.dto.RuleReportDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.utils.Constants;
 
@@ -340,4 +342,68 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		return query;
 		
 	}
+	
+	
+	
+	@Override
+	public List<RuleMessageDetailDto> getRuleReports(RuleReportDto dto) {
+		Session session=null;
+		List<RuleMessageDetailDto>  list=null;
+		
+		try {
+			 session=getSession();
+			 String t="reports as rep, report_detail as rd ";
+			 
+			 String o=" ";
+			 if (dto.getOfficeId()!=null && !dto.getOfficeId().equals("")) {
+				 
+				o= " rep.office_id='"+dto.getOfficeId()+"' and ";
+			 }
+			 
+			 if (dto.getReportType()!=null && dto.getReportType().equals("c")) {
+				 t="reports_claim as rep, report_claim_detail as rd";
+			 }
+			 String queryString="SELECT message_type as messageType,rd.created_by as createdBy, "+
+					 " CONCAT( first_name ,' ' ,last_name ) as name, "+
+			 		" DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as createdDate," + 
+			 		" us.email as email,offi.name as officeName,rd.group_run as groupRun, " + 
+			 		"rep.patient_dob as dob,"+
+			 		 " rep.patient_name as pname,rep.patient_id as patientId," + 
+			 		"rd.error_message as message FROM " + 
+		            t + 
+			 		" ,user as us ,office as offi where rd.rule_id="+dto.getRuleId()+" and "+o+ 
+			 		" rep.id=rd.report_id  " + 
+			 		" and us.uuid=rd.created_by and offi.uuid=rep.office_id ";
+				 queryString= queryString+	"  and (" + 
+							"  (rd.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"                 or" + 
+							"  (rd.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+							//"                 or" + 
+							//"  (rep.created_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							//"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+							//"                 or" + 
+							//"  (rep.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							//"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+							//"" + 
+							" )" ;
+				 
+				 
+						 
+			 list=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(RuleMessageDetailDto.class)).list();
+			 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			closeSession(session);
+
+		}
+		
+		return list;
+		
+	}
+
+	
 }

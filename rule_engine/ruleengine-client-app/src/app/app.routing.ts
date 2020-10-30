@@ -118,7 +118,16 @@ const appRoutes: Routes = [
   component: ScrapFullDataComponent,canActivate: [UrlPermission]  },
   { path: 'logout', component: LogoutComponent  },
   { path: 'help', component: HelpComponent  },
-  { path: 'extIVF', loadChildren: './module/dynamicIvf.module#DynamicIVFAppModule' },
+  { path: 'extIVF',
+	  resolve: {
+		    offs: OfficeResolve
+	  },
+	  loadChildren: './module/dynamicIvf.module#DynamicIVFAppModule' },
+  { path: 'rulereport',
+		  resolve: {
+			    offs: OfficeResolve
+		  },
+		  loadChildren: './module/rule_report.module#RuleReportAppModule' },
   // otherwise redirect to profile
   { path: '**', redirectTo: '/login' }
   

@@ -1,0 +1,145 @@
+<div class="inner-bg">
+<div *ngIf="!showReportData"  class="container"> 
+		<div class="row">
+			<div class="col-sm-12 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Rule Report </h3>
+						
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form2"
+						(ngSubmit)="f2.form.valid && runReport()" #f2="ngForm" novalidate>
+						<div class="form-horizontal">
+						<div class="form-group"
+							>
+							<label class="col-sm-3 control-label" for="officeId">Office Name</label>
+							<div class="col-sm-9" >
+							 <select class="officeId1-form-field form-control" name="officeId" id="officeId" [(ngModel)]="reportModel.officeId">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+						</div>		
+						</div>
+                        <div class="form-group"
+							>
+							<label class="col-sm-3 control-label" for="ruleId">Rule Name</label>
+							<div class="col-sm-9" > 
+							<select class="ruleId-form-field form-control" name="ruleId" id="ruleId" [(ngModel)]="reportModel.ruleId">
+								<option value="41">MVP Rule</option>
+							</select>
+						</div>		
+						</div>	
+						<div class="form-group"
+							>
+							<label class="col-sm-3 control-label" for="reportType">Report Type</label>
+							<div class="col-sm-9" >
+							 <select class="reportType-form-field form-control" name="reportType" id="reportType" [(ngModel)]="reportModel.reportType">
+								<option value="t" selected="selected">Treatment</option>
+							</select>
+							</div>	
+							
+						</div>
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group"
+							 >
+							<label class="col-sm-3 control-label" for="datepickersd">Start Date</label>
+							<div class="col-sm-9" >
+							 <ng-datepicker [(ngModel)]="reportModel.startDate" name="datepicker1" id ="datepicker1"
+									 [options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
+									 <div *ngIf="f2.submitted &&  ( reportModel.startDate=='')"
+									class="error-msg" style="color:red">Please select Start Date.</div>	
+						    </div>	
+						     
+								
+						</div>
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group"
+							>
+							<label class="col-sm-3 control-label" for="datepickered">End Date</label>
+							<div class="col-sm-9" >
+							 <ng-datepicker [(ngModel)]="reportModel.endDate" name="datepicker2" id ="datepicker2"
+									 [options]="dateOptions2" class="ngx-end-date"></ng-datepicker>
+									 <div *ngIf="f2.submitted &&  ( reportModel.endDate=='')"
+									class="error-msg" style="color:red">Please select End Date.</div>	 
+						    </div>		 
+								 
+						</div>
+						</div>
+							
+						<p>
+							<button [disabled]="showLoadingPA" type="submit" class="btn">Fetch Report 
+							</button>
+						</p>
+						<div *ngIf="showLoadingPA" class="loader"></div>
+						
+						
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+<div *ngIf="showReportData"  class="container"> 
+		<div class="row">
+			<div class="col-sm-12 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">{{rname}}</h3>
+						<a href="javascript:void(0)" (click)="goBack()">
+			               Go Back
+		                   </a>
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form2"
+						(ngSubmit)="f2.form.valid && runReport()" #f2="ngForm" novalidate>
+						<div class="form-horizontal">
+						<div class="form-group"
+							>
+							<label class="col-sm-4 control-label br1px" for="officeId">Unique Pt. IDs:<div class="inblo">{{reportData.uniqueAllPats}}</div></label>
+							<label class="col-sm-4 control-label br1px" for="officeId">Unique Pt. IDs(MVP Rule Passed):<div class="inblo">{{reportData.uniquePassPats}}</div></label>
+							<label class="col-sm-4 control-label br1px" for="officeId">Unique Pt. IDs(MVP Rule Failed):<div class="inblo">{{reportData.uniqueFailPats}}</div></label>
+						</div>
+                        
+						</div>
+						<div>
+						
+						<div class="form-horizontal" id="data-scroll">
+						<div class="form-group">
+						    <div class="col-sm-12">
+						<table id="data-scroll-t">
+						    <tr>
+						        <th class="data-scroll-thdtre">Patient Id</th>
+						        <th class="data-scroll-thdtre">Patient Name</th>
+						        <th class="data-scroll-thdtre">Created by</th>
+						        <th class="data-scroll-thdtre">Office Name</th>
+						        <th class="data-scroll-thdtre">Failed Messages</th>
+						    </tr>
+						    <tr *ngFor="let q1 of reportData.data let ind = index">
+						       <td class="data-scroll-thdtre">{{q1.patientId}}</td>
+						       <td class="data-scroll-thdtre">{{q1.pname}}</td>
+						       <td class="data-scroll-thdtre">{{q1.name}}</td>
+						       <td class="data-scroll-thdtre">{{q1.officeName}}</td>
+						       <td class="data-scroll-thdtre" [innerHtml]="q1.message"></td>
+						    </tr>
+						</table>
+						</div>
+						</div>
+						</div>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>	
+	</div>

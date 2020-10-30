@@ -1,10 +1,14 @@
 package com.tricon.ruleengine.service.impl;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.stereotype.Service;
 
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
@@ -15,7 +19,8 @@ import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 //@Service 
 public class BaseScrappingServiceImpl {
 	
-	
+	protected String driverLocation;
+
 	public void loginToSiteMCNA(ScrappingSiteDetails scrappingSiteDetails, WebDriver driver) throws InterruptedException {
 
 		driver.get(scrappingSiteDetails.getScrappingSite().getSiteUrl());
@@ -34,12 +39,12 @@ public class BaseScrappingServiceImpl {
 
 	}
 
-	public void loginToSiteDenta(ScrappingSiteDetails scrappingSiteDetails, WebDriver driver) throws InterruptedException {
+	public void loginToSiteDentaOld(ScrappingSiteDetails scrappingSiteDetails, WebDriver driver) throws InterruptedException {
 
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		driver.get("https://govservices.dentaquest.com/Logon.jsp");
 		WebElement element3 = driver.findElement(By.name("Submit"));
-		System.out.println(element3.isSelected());
+		//System.out.println(element3.isSelected());
 		WebElement element = driver.findElement(By.name("USERSXUSERNAME"));
 		element.sendKeys(scrappingSiteDetails.getUserName());
 		WebElement element2 = driver.findElement(By.id("USERSXPASSWORD"));
@@ -49,6 +54,19 @@ public class BaseScrappingServiceImpl {
 
 	}
 	
+	public void loginToSiteDentaNew(ScrappingSiteDetails scrappingSiteDetails, WebDriver driver) throws InterruptedException {
+
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		driver.get("https://connectsso.dentaquest.com/authsso/providersso/SSOProviderLogin.aspx?TYPE=33554433&REALMOID=06-6a4c193d-7520-4f3d-b194-83367a3ef454&GUID=&SMAUTHREASON=0&METHOD=POST&SMAGENTNAME=-SM-imZolSjcs1FQR%2fH0k3NSK1Uvx4zWgziEWSOuwqcKGG1C%2bW%2fQdG3dRa7BVqGyOpNh&TARGET=-SM-https%3a%2f%2fconnectsso%2edentaquest%2ecom%2fprovideraccessv2%2findex%2ehtml");
+		WebElement element3 = driver.findElement(By.name("btnSubmit"));
+		WebElement element = driver.findElement(By.name("USER"));
+		element.sendKeys(scrappingSiteDetails.getUserName());
+		WebElement element2 = driver.findElement(By.id("PASSWORD"));
+		element2.sendKeys(scrappingSiteDetails.getPassword());
+		element3.click();
+		Thread.sleep(5000);
+
+	}
 	
 	public void setProps(String proxyPort) {
 		System.setProperty("http.proxyHost", "127.0.0.1");
@@ -58,6 +76,37 @@ public class BaseScrappingServiceImpl {
 		System.setProperty("https.proxyPort", proxyPort);
 
 	}
+	
+	protected WebDriver getBrowserDriver() {
+		// System.setProperty("webdriver.gecko.driver",
+		// "D:/Project/Tricon/linkedinapp/linkedin/lib/geckodriver.exe");
+		// for chrome
+		// webClient = new WebClient();
+		ChromeOptions options = new ChromeOptions();
+		try {
+			// https://chromedriver.chromium.org/downloads
+			System.out.println("getBrowserDriver" + driverLocation);
+			System.setProperty("webdriver.chrome.driver", driverLocation);
+			// ChromeOptions options = new ChromeOptions();
+			// System.out.println("555");
+			options.addArguments("-disable-infobars");
+			options.addArguments("--headless");
+			options.addArguments("--no-sandbox");
+			options.addArguments("--disable-dev-shm-usage");
+			options.setExperimentalOption("useAutomationExtension", false);
+			// System.out.println("8888");
+			options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+			// System.out.println("1118888");
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+		// System.out.println("getBrowserDriver:" + 88888);
+		ChromeDriverService chromeDriverService = ChromeDriverService.createDefaultService();
+		return new ChromeDriver(chromeDriverService, options);
+
+	}
+
 
 
 	/**

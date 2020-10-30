@@ -89,7 +89,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 	private ScrappingFullDataDetailDto dto;
 	private Office office;
 	private User user;
-	private String driverLocation;
+	//private String driverLocation;
 	private int processId;
 	private String taxId;
 
@@ -115,8 +115,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		this.taxId=taxId;
 		// store parameter for later user
 	}
-
-	private WebDriver getBrowserDriver() {
+/*
+	private WebDriver getBrowserDriver1() {
 		// System.setProperty("webdriver.gecko.driver",
 		// "D:/Project/Tricon/linkedinapp/linkedin/lib/geckodriver.exe");
 		// for chrome
@@ -150,7 +150,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		return new ChromeDriver(chromeDriverService, options);
 
 	}
-
+*/
 	public String scrapSite(ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user,
 			Office office) {
 		// WebDriver driver = null;
@@ -1205,8 +1205,21 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		      else  if (y.length()==2) y="00"+y;
 		      t.setHistoryCode("D"+y);
 		      t.setHistoryDOS(objects.get("serviceDate").toString());
-		      t.setHistoryTooth("");
-			  t.setHistorySurface("");
+		      try {
+		      String d =objects.get("toothNumber").toString(); 
+		      if (d.equals("null")) d="";
+		      if (d.startsWith("0")) d=d.replaceFirst("0", "");
+		      t.setHistoryTooth(d);
+		      }catch(Exception e) {
+		    	  t.setHistoryTooth("");
+			  }
+		      try {
+		    	  String d =objects.get("surfaces").toString(); 
+		    	  if (d.equals("null")) d="";
+			      t.setHistorySurface(d);
+			      }catch(Exception e) {
+				  t.setHistorySurface("");
+			  }
 		      setHis.add(t);
 		      //Iterate through the elements of the array i.
 		      //Get thier value.
@@ -1637,7 +1650,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dto.setPassword("Smilepnt36");
 		dto.setUserName("caladent02");
 		dto.setSiteName("BCBS");
-
+       
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
 		psc.setDob("05/20/1990");

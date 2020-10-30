@@ -194,7 +194,30 @@ export class ApplicationService {
 		);   
 	}
 	
-	generateTreatmentPlanId(treatment:TreatmentPlanModel, callback) {
+  callPostAPI(mod:any,ur:string,callback){
+		this.generateRefreshToken().pipe(switchMap(data => {
+			localStorage.setItem("token", (<any>data).token);
+			return  this.http.post(AppComponent.API_URL+ur,mod);
+		})
+		).subscribe(data => {
+			callback((<any>data));
+		},
+		error => {  
+			if (error.status==401){ 
+				this.router.navigate(['/logout']);
+			}
+			else if (error.status==500){
+				alert("Some Technical issues.");
+				callback(error);
+        }
+    },
+    () => {        
+			// console.log(111);
+			}
+		);   
+	}
+
+  generateTreatmentPlanId(treatment:TreatmentPlanModel, callback) {
 		this.generateRefreshToken().pipe(switchMap(data => {
 			localStorage.setItem("token", (<any>data).token);
 			return  this.http.post(AppComponent.API_URL+'/generateTreatmentId',treatment);

@@ -95,8 +95,7 @@
 							<div *ngIf="f.submitted && scrap.officeId==''" class="error-msg">Office
 								Name is required</div>
 						</div>
-
-						<div class="form-horizontal" *ngIf="pd">
+                        <div class="form-horizontal" *ngIf="pd">
 							<div class="form-group">
 								<label class="col-sm-3 control-label" for="username">Sheet
 									Login Name </label>
@@ -126,6 +125,29 @@
 
 								</div>
 							</div>
+							<div class="form-group" *ngIf="scrap.scrapType==3">
+							<label class="col-sm-3 control-label" for="username">Site Type
+									 </label>
+							<select
+							
+								class="col-sm-9 control-label" name="siteType"
+								id="siteType" [(ngModel)]="scrap.siteType">
+								<option value="">Site Type...</option>
+								<option value="old">Old</option>
+								<option value="new">New</option>
+								
+								</select>
+						</div>
+                        <div class="form-group" *ngIf="scrap.scrapType==3">
+							<label class="col-sm-3 control-label" for="username">Location
+									 </label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control inner-inp-2"
+										name="location" id="location" [(ngModel)]="scrap.location"
+										#username="ngModel" />
+								</div>
+						</div>
+						
 							<div class="form-group" *ngIf="scrap.scrapType==2 && pd">
 								<label class="col-sm-3 control-label" for="password">Sheet
 									Start Alphabet</label>

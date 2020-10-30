@@ -29,7 +29,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.AppendDimensionRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.CellData;
 import com.google.api.services.sheets.v4.model.ExtendedValue;
 import com.google.api.services.sheets.v4.model.GridCoordinate;
@@ -39,6 +41,7 @@ import com.google.api.services.sheets.v4.model.UpdateCellsRequest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.common.collect.Collections2;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
+import com.tricon.ruleengine.dto.ExceptionDataDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
 import com.tricon.ruleengine.dto.scrapping.FullWebsiteScrapDto;
@@ -239,6 +242,23 @@ public class ConnectAndReadSheets {
 		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
 	}
 
+
+	public static void appendCelltoSheet(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
+			int columnCount) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		List<Request> requests = new ArrayList<>();
+		Request request = new Request();
+		AppendDimensionRequest appendRequest = new AppendDimensionRequest();
+		appendRequest.setDimension("COLUMNS");
+		appendRequest.setLength(columnCount);
+		request .setAppendDimension(appendRequest );
+		requests.add(request);
+		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+
+	}
 	public static void updateSheetMCNADenta(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
 			List<EligibilityDto> rList, int rowCount,String status,String medicaltype) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
@@ -271,32 +291,45 @@ public class ConnectAndReadSheets {
 			*/
 			
 			//int x = 4;	
-			int hiscMax = 200;
-			int his = 1;
+			//int hiscMax = 200;
+			//int his = 1;
 			for(EligibilityDto rd:rList) {
 				List<CellData> values = new ArrayList<>();
+				
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getFirstName())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getLastName())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getSubscriberId())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getDob())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getInsuranceName())));
+				
+				
+				
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getEligible())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getEmployerName())));
 				if (medicaltype.equals("M")) {
 					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderChange())));
 					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderName())));
 				}
-				if (medicaltype.equals("D"))values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderName())));
+				if (medicaltype.equals("D")) {
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProviderName())));
+				}
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBenefitRemaining())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getCopay())));
-				
+				if (medicaltype.equals("D")) {
+					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getComment())));
+				}
 				for(HistoryDto d:rd.getHistoryList()) {
 					
 					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getCode())));
 					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getTooth())));
 					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getDos())));
-					his++;
-					if (his > hiscMax) break; 
+					//his++;
+					//if (his > hiscMax) break; 
 				}
 				//setStart(new GridCoordinate().setSheetId(0)
 				requests.add(new Request()
 						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(Integer.parseInt(rd.getMcnaSheet().getRowNumber()))//)
-								 .setColumnIndex(8))
+								 .setColumnIndex(3))
 								.setRows(Arrays.asList(new RowData().setValues(values)))
 								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
 				//x++;
@@ -372,6 +405,15 @@ public class ConnectAndReadSheets {
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
 		return readMCNADentaSheet(response);
+	}
+
+
+	public static List<ExceptionDataDto> readSheetExceptionRulesheet(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		return readExceptionRulesheet(response);
 	}
 
 	public static Map<String, List<Object>> readSheeFullWebsiteParsing(String spreadsheetId, String sheetName,
@@ -985,7 +1027,7 @@ public class ConnectAndReadSheets {
         int ct=-1;
 		while (li.hasNext()) {
 			ArrayList<String> obj = (ArrayList<String>) li.next();
-			String subscriber = "";
+			//String subscriber = "";
 			try {
 				ct++;
 				if (ct<=heading_rows)
@@ -995,9 +1037,9 @@ public class ConnectAndReadSheets {
 				// System.out.println("888888:;" + (obj.get(157)));
 				//Collection<String> ruleGen = null;
 				
-				int x = 2;
-				subscriber = obj.get(5);
-				mcna = new MCNADentaSheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),(ct)+"");
+				int x = -1;
+				//subscriber = obj.get(5);
+				mcna = new MCNADentaSheet(obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),(ct)+"");
 					
 				
 			} catch (Exception ex) {
@@ -1029,6 +1071,63 @@ public class ConnectAndReadSheets {
 		} // While Loop - 1
 
 		return map;
+
+	}
+
+	private static List<ExceptionDataDto> readExceptionRulesheet(ValueRange range) {
+
+		List<List<Object>> values = range.getValues();
+		ListIterator li = values.listIterator();
+		ExceptionDataDto sh = null;
+		// IVFHistorySheet vifH = null;
+		List<ExceptionDataDto> shList = null;
+		// int maxlength= values.size();
+		// int maxlengthT= values.size();
+		// System.out.println("maxlengthT30::"+maxlengthT);
+		int heading_rows = 1;
+        int ct=-1;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			//String subscriber = "";
+			try {
+				ct++;
+				if (ct<=heading_rows)
+				continue;
+				int x = -1;
+				//subscriber = obj.get(5);
+				sh = new ExceptionDataDto();
+				try {
+					sh.setEmpolyerName(obj.get(++x));
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				try {
+					sh.setCode(obj.get(++x));
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				try {
+					sh.setMessage(obj.get(++x));
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				try {
+					sh.setResultType(obj.get(++x));
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+				if (shList==null) shList= new ArrayList<>();
+				shList.add(sh);
+				
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				continue;
+			}
+
+		} // While Loop - 1
+
+		return shList;
 
 	}
 
