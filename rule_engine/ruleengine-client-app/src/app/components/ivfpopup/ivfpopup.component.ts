@@ -115,7 +115,6 @@ export class IVFPopupComponent implements OnInit {
 	
 	toggleResult(result:string){
 		this.activeClP=this.activeClE=this.activeClA=this.activeClF=false;
-		debugger;
 		if (this.filterType && this.filterType.length==2) this.filterType=[];
 		//this.filterType!=result    alert,pass
 		if ((result=='fail' ||result=='pass' || result=='alert' || result=='exit')

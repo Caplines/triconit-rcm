@@ -8724,10 +8724,13 @@ public class RuleBook {
 		
 		try {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;	
-		ivf.getEmployerName();
+		Set<String> cds=new HashSet<>(); 
 		for (Object t : tpList) {
 			CommonDataCheck tp = (CommonDataCheck)  t;
 			String code=tp.getServiceCode().toLowerCase();
+			cds.add(code);
+		}
+		 for(String code:cds) {
 			for(ExceptionDataDto ed:exceptionData) {
 				if (ed.getEmpolyerName()!=null && ed.getCode()!=null
 						&& ed.getCode().toLowerCase().equals(code)
@@ -8735,19 +8738,19 @@ public class RuleBook {
 					//pass=false;
 					if (ed.getResultType().trim().toLowerCase().equals(Constants.FAIL.toLowerCase())) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("<b style=\"color:#fff0fe\" class=\"error-other-message-api\">Fail:</b>"+ed.getMessage(), new Object[] {  }, locale),
+								messageSource.getMessage("rule56.fail.message", new Object[] { ed.getMessage() }, locale),
 								Constants.FAIL,"","",""));
 						
-					}else if (ed.getResultType().trim().toLowerCase().equals(Constants.ALERT.toLowerCase())) {
+					}else if (ed.getResultType().trim().toLowerCase().equals(Constants.ALERT.toLowerCase())||
+							ed.getResultType().trim().toLowerCase().equals("")) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("<b style=\"color:#f1f0ff\" class=\"alert-other-message-api\">Alert:</b>"+ed.getMessage(), new Object[] {  }, locale),
+								messageSource.getMessage("rule56.alert.message", new Object[] { ed.getMessage() }, locale),
 								Constants.ALERT,"","",""));
-						
-					}else {
+
+					}else if(ed.getResultType().trim().toLowerCase().equals(Constants.PASS.toLowerCase())) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("<b style=\"color:#fbfff0\" class=\"pass-other-message-api\">Pass:</b>"+ed.getMessage(), new Object[] {  }, locale),
+								messageSource.getMessage("rule56.pass.message", new Object[] { ed.getMessage() }, locale),
 								Constants.PASS,"","",""));
-						
 					}
 					
 				}
@@ -8756,7 +8759,7 @@ public class RuleBook {
 		}
 		if (dList.size()==0) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule56.error.message", new Object[] {  }, locale),
+					messageSource.getMessage("rule56.passall.message", new Object[] {  }, locale),
 					Constants.PASS,"","",""));
 		}
 		}catch(Exception x) {

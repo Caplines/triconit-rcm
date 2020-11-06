@@ -116,6 +116,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 	@Value("${google.client.secret}")
 	private String CLIENT_SECRET_DIR;
+	
+	@Value("${rule.save.report.data}")
+	private String SAVE_REPORT_DATA;
 
 	@Value("${application.url}")
 	private String AppUrl;
@@ -435,7 +438,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						//READ Exception RULE GOOGLE SHEET ->
 						//https://docs.google.com/spreadsheets/d/1r_9il1-9p5xfPNBhSIRTZNNqFLPH2EKKdtj1eOo1rDs/edit#gid=0
 						try {
-						//exceptionData=ConnectAndReadSheets.readSheetExceptionRulesheet("1r_9il1-9p5xfPNBhSIRTZNNqFLPH2EKKdtj1eOo1rDs", "Data", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+						exceptionData=ConnectAndReadSheets.readSheetExceptionRulesheet("1r_9il1-9p5xfPNBhSIRTZNNqFLPH2EKKdtj1eOo1rDs", "Data", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
 						}catch(Exception exp) {
 							
 						}
@@ -1730,7 +1733,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							//END Perio Depth Checker
 							
 							// Exception Rule 
-							/*
+							
 							rule = getRulesFromList(rules, Constants.RULE_ID_56);
 							dtoRL = rb.Rule56(tList,ivfMap.get(ivx).get(0),exceptionData ,messageSource, rule, bw);
 							if (dtoRL != null) {
@@ -1744,7 +1747,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_56,
 									Constants.rule_log_debug, bw);
-							*/	
+							
 							//END Exception Rule 
 						}
 
@@ -2282,8 +2285,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	private void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType) {
 		//String[] p=env.getActiveProfiles();
-		int xx=0;
+		//int xx=0;
 		//if (xx==0) return ;
+		
+		if (SAVE_REPORT_DATA.equalsIgnoreCase("false")) return;//Not need for report in Dev env.
 		//if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
 		try {
 			if (ivfSheet == null || tp == null)
@@ -2661,8 +2666,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		//String[] p=env.getActiveProfiles();
 		//if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
-	  int xx=0;
+	  //int xx=0;
       //if(xx==0) return ;
+	 if (SAVE_REPORT_DATA.equalsIgnoreCase("false")) return;//Not need for report in Dev env.
       if (ivfSheet == null)
 			return;
 		String email = "admin@admin.com";

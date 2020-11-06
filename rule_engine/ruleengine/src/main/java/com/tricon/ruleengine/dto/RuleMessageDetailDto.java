@@ -1,8 +1,8 @@
-package com.tricon.ruleengine.dto;  
+package com.tricon.ruleengine.dto;
 
-public class RuleMessageDetailDto {
+public class RuleMessageDetailDto{
 
-	
+	private int rid;
 	private String patientId;
 	private String firstName;
 	private String lastName;
@@ -15,6 +15,51 @@ public class RuleMessageDetailDto {
 	private String pname;
 	private String email;
 	private int groupRun;
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		
+		return rid;
+	}
+
+	public int getRid() {
+		return rid;
+	}
+
+	public void setRid(int rid) {
+		this.rid = rid;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object object) {
+		
+		boolean result = false;
+        if (object == null || object.getClass() != getClass()) {
+            result = false;
+        } else {
+        	RuleMessageDetailDto dto = (RuleMessageDetailDto) object;
+        	 if (this.patientId.equals(dto.getPatientId())
+             		&& this.officeName.equals(dto.getOfficeName())) {
+                 result = true;
+            }
+            /*if (this.messageType == dto.getMessageType() && this.message.equals( dto.getMessage()) && this.patientId.equals(dto.getPatientId())
+            		&& this.officeName.equals(dto.getOfficeName()) && this.createdBy.equals(dto.getCreatedBy())) {
+                result = true;
+            }*/
+        }
+        return result;
+	}
+	
 	
 	public String getRuleId() {
 		return ruleId;

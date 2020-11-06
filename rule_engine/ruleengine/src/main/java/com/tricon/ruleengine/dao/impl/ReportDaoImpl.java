@@ -363,7 +363,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 if (dto.getReportType()!=null && dto.getReportType().equals("c")) {
 				 t="reports_claim as rep, report_claim_detail as rd";
 			 }
-			 String queryString="SELECT message_type as messageType,rd.created_by as createdBy, "+
+			 String queryString="SELECT rd.id as rid, message_type as messageType,rd.created_by as createdBy, "+
 					 " CONCAT( first_name ,' ' ,last_name ) as name, "+
 			 		" DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as createdDate," + 
 			 		" us.email as email,offi.name as officeName,rd.group_run as groupRun, " + 
@@ -387,7 +387,9 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 							//"  (rep.updated_date between STR_TO_DATE( '"+dto.getStartDate()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
 							//"  and STR_TO_DATE('"+dto.getEndDate()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
 							//"" + 
-							" )" ;
+							" )" +
+							" order by rd.updated_date desc ";
+				  
 				 
 				 
 						 

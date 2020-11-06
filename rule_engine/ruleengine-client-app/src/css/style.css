@@ -489,7 +489,11 @@ text-decoration: underline;
 .alert-message-api{
 	color:blue;
 }
-	
+
+.error-other-message-api{color:#c30000;}
+.success-other-message-api{color:#7ee871;}
+.alert-other-message-api{color:#001142;}
+
 .ivf-form-validation .inner-bg { padding:0px;}
 .ivf-form-validation .container { width: auto; margin:0px;}
 .ivf-form-validation .login-form {display:flex; align-items: center;}

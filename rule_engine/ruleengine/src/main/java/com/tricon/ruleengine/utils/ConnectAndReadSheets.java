@@ -1084,7 +1084,7 @@ public class ConnectAndReadSheets {
 		// int maxlength= values.size();
 		// int maxlengthT= values.size();
 		// System.out.println("maxlengthT30::"+maxlengthT);
-		int heading_rows = 1;
+		int heading_rows = 0;
         int ct=-1;
 		while (li.hasNext()) {
 			ArrayList<String> obj = (ArrayList<String>) li.next();
@@ -1096,6 +1096,12 @@ public class ConnectAndReadSheets {
 				int x = -1;
 				//subscriber = obj.get(5);
 				sh = new ExceptionDataDto();
+				sh.setEmpolyerName("");
+				sh.setCode("");
+				sh.setMessage("");
+				sh.setResultType("");
+				
+				
 				try {
 					sh.setEmpolyerName(obj.get(++x));
 				}catch (Exception e) {
