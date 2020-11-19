@@ -7,6 +7,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Rule Engine Application';
-static API_URL="http://localhost:8080";
-// static API_URL="http://18.223.22.149"; 
+  // static API_URL="//localhost:8080";
+ //static API_URL="http://localhost";
+ //static API_URL="http://18.223.22.149"; 
+ //static API_URL="https://www.caplineruleengine.com";
 }

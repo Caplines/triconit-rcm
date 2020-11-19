@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import {AppComponent} from "../app.component";
 import { Subject } from 'rxjs';
 import Utils from '../util/utils';
+import { environment } from '../../environments/environment';
 @Injectable()
 export class AuthService {
 
@@ -16,7 +17,7 @@ export class AuthService {
 
   public logIn(user: User){
     let headers = new Headers();
-    return this.http.post(AppComponent.API_URL+"/account/login" ,{"username":user.email,"password":user.password})
+    return this.http.post(environment.API_URL+"/account/login" ,{"username":user.email,"password":user.password})
     .pipe(map((response: Response) => {
         //console.log(response);
         let data=response.json().data;

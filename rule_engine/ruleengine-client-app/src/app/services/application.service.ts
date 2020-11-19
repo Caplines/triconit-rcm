@@ -1,6 +1,6 @@
 import { Http, Headers, RequestOptions,Response} from '@angular/http';
 import { HttpClient,HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable , isDevMode} from '@angular/core';
 import {User} from "../model/model.user";
 import {IVFModel} from "../model/model.ivf";
 import {IVDumpModel} from "../model/model.ivdump";
@@ -14,21 +14,26 @@ import {TreatmentPlanModel} from "../model/model.treatmentplan";
 import {ScrapModel} from "../model/model.scrap";
 import {AuthHeader} from "../util/auth.header";
 import {AppComponent} from "../app.component";
-import { map,flatMap,mergeMap,switchMap,catchError } from 'rxjs/operators';
+import { map,flatMap,mergeMap,switchMap,catchError,timeout } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { timeout } from 'rxjs/operators';
+//import {  timeout } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+
 @Injectable()
 export class ApplicationService {
     
    authHeader= new  AuthHeader(); 
-  constructor(public http: HttpClient,public htt: Http,private router:Router) { }
+  constructor(public http: HttpClient,public htt: Http,private router:Router) {
+	   
+	  
+  }
 
   createAccount(user:User,callback){
       
       this.generateRefreshToken().pipe(switchMap(data => {
         localStorage.setItem("token", (<any>data).token);
-          return  this.http.post(AppComponent.API_URL+'/admin/register',user);
+          return  this.http.post(environment.API_URL+'/admin/register',user);
         })).subscribe(data => {
               // console.log(data['results']);
             callback((<any>data));
@@ -45,7 +50,7 @@ export class ApplicationService {
       /*
 		 * this.generateRefreshToken().pipe(flatMap( (result) => {
 		 * localStorage.setItem("token", result.token); return
-		 * this.http.post(AppComponent.API_URL+'/admin/register',user,AuthHeader.createAuthHeader())
+		 * this.http.post(environment.API_URL+'/admin/register',user,AuthHeader.createAuthHeader())
 		 * .pipe(map(resp=>resp.json())); } )).subscribe(result => {
 		 * callback(result.data); }, error => {
 		 * this.router.navigate(['/logout']); callback(error); }, () => {
@@ -55,7 +60,7 @@ export class ApplicationService {
   }
 
   getOffices(callback){
-      return this.htt.get(AppComponent.API_URL+'/open/getoffices')
+      return this.htt.get(environment.API_URL+'/open/getoffices')
        .pipe(map(resp=>resp.json())).subscribe(result => {
            callback(result.data);
        },
@@ -71,7 +76,7 @@ export class ApplicationService {
   getSdDetails(callback,uuid,st){
       this.generateRefreshToken().pipe(switchMap(data => {
           localStorage.setItem("token", (<any>data).token);
-            return  this.http.get(AppComponent.API_URL+'/scrapsiteud/'+st+"/"+uuid)
+            return  this.http.get(environment.API_URL+'/scrapsiteud/'+st+"/"+uuid)
           })).subscribe(data => {
                 // console.log(data['results']);
               callback((<any>data));
@@ -90,14 +95,14 @@ export class ApplicationService {
 	 * dataFromApi ), catchError( (err) => Observable.throw(err.json().error) ) )
 	 */
   getOfficesPrior(){
-      return this.htt.get(AppComponent.API_URL+'/open/getoffices').pipe(
+      return this.htt.get(environment.API_URL+'/open/getoffices').pipe(
     	map( (resp=>resp.json() ),
        catchError( (err) => Observable.throw(err.json().error) )));
     }
   validateIVF(ivf:IVFModel,ivfValidateName,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
           localStorage.setItem("token", (<any>data).token);
-            return  this.http.post(AppComponent.API_URL+'/'+ivfValidateName,ivf);
+            return  this.http.post(environment.API_URL+'/'+ivfValidateName,ivf);
           },
           )    
       ).subscribe(data => {
@@ -122,7 +127,7 @@ export class ApplicationService {
   doDiagCheck(diagm:DiagnosticModel,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
           localStorage.setItem("token", (<any>data).token);
-            return  this.http.post(AppComponent.API_URL+'/diagnosticcheck',diagm);
+            return  this.http.post(environment.API_URL+'/diagnosticcheck',diagm);
           },
           )    
       ).subscribe(data => {
@@ -150,7 +155,7 @@ export class ApplicationService {
   validateReport(report:ReportModel,ur:string,callback){
 		this.generateRefreshToken().pipe(switchMap(data => {
 			localStorage.setItem("token", (<any>data).token);
-			return  this.http.post(AppComponent.API_URL+ur,report);
+			return  this.http.post(environment.API_URL+ur,report);
 		})
 		).subscribe(data => {
 			// console.log(data['results']);
@@ -174,7 +179,7 @@ export class ApplicationService {
   validateEnReport(enreports:EnReportsModel,ur:string,callback){
 		this.generateRefreshToken().pipe(switchMap(data => {
 			localStorage.setItem("token", (<any>data).token);
-			return  this.http.post(AppComponent.API_URL+ur,enreports);
+			return  this.http.post(environment.API_URL+ur,enreports);
 		})
 		).subscribe(data => {
 			callback((<any>data));
@@ -197,7 +202,7 @@ export class ApplicationService {
   callPostAPI(mod:any,ur:string,callback){
 		this.generateRefreshToken().pipe(switchMap(data => {
 			localStorage.setItem("token", (<any>data).token);
-			return  this.http.post(AppComponent.API_URL+ur,mod);
+			return  this.http.post(environment.API_URL+ur,mod);
 		})
 		).subscribe(data => {
 			callback((<any>data));
@@ -220,7 +225,7 @@ export class ApplicationService {
   generateTreatmentPlanId(treatment:TreatmentPlanModel, callback) {
 		this.generateRefreshToken().pipe(switchMap(data => {
 			localStorage.setItem("token", (<any>data).token);
-			return  this.http.post(AppComponent.API_URL+'/generateTreatmentId',treatment);
+			return  this.http.post(environment.API_URL+'/generateTreatmentId',treatment);
 		})
 		).subscribe(data => {
 			// console.log(data['results']);
@@ -246,7 +251,7 @@ export class ApplicationService {
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          // console.log((<any>data).token);
 	          localStorage.setItem("token", (<any>data).token);
-	            return  this.http.post(AppComponent.API_URL+'/getUserInputQuestionsAns',uim);
+	            return  this.http.post(environment.API_URL+'/getUserInputQuestionsAns',uim);
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -275,7 +280,7 @@ export class ApplicationService {
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          // console.log((<any>data).token);
 	          localStorage.setItem("token", (<any>data).token);
-	            return  this.http.post(AppComponent.API_URL+'/saveUserInput',answerData);
+	            return  this.http.post(environment.API_URL+'/saveUserInput',answerData);
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -303,7 +308,7 @@ export class ApplicationService {
 	  findUserByUserName(userName:string,callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	           localStorage.setItem("token", (<any>data).token);
-	            return  this.http.post(AppComponent.API_URL+'/admin/finduserbyusername',userName);
+	            return  this.http.post(environment.API_URL+'/admin/finduserbyusername',userName);
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -329,7 +334,7 @@ export class ApplicationService {
 	  updatepassword(password:string,uuid:string,callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	           localStorage.setItem("token", (<any>data).token);
-	            return  this.http.post(AppComponent.API_URL+'/resetpassword',{'uuid':uuid,'password':password});
+	            return  this.http.post(environment.API_URL+'/resetpassword',{'uuid':uuid,'password':password});
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -355,7 +360,7 @@ export class ApplicationService {
 	  updateStatus(status:number,uuid:string,callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	           localStorage.setItem("token", (<any>data).token);
-	            return  this.http.post(AppComponent.API_URL+'/admin/resetstatus',{'uuid':uuid,'status':status});
+	            return  this.http.post(environment.API_URL+'/admin/resetstatus',{'uuid':uuid,'status':status});
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -381,7 +386,7 @@ export class ApplicationService {
 	  resetRight(status:number,uuid:string,callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	           localStorage.setItem("token", (<any>data).token);
-	            return  this.http.post(AppComponent.API_URL+'/admin/resetclaimtreatment',{'uuid':uuid,'status':status});
+	            return  this.http.post(environment.API_URL+'/admin/resetclaimtreatment',{'uuid':uuid,'status':status});
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -409,7 +414,7 @@ export class ApplicationService {
 	          // console.log((<any>data).token);
 	          localStorage.setItem("token", (<any>data).token);
 	          // console.log("token is set");
-	            return  this.http.post(AppComponent.API_URL+'/'+scrapsite,scrap)
+	            return  this.http.post(environment.API_URL+'/'+scrapsite,scrap)
 	            /*
 				 * . pipe( timeout(60 * 1000 * 30), catchError(e => { // do
 				 * something on a timeout alert("Data will written in Sheet.
@@ -444,7 +449,7 @@ export class ApplicationService {
 		    headers = headers.append('Accept', 'application/pdf; charset=utf-8');
 			this.generateRefreshToken().pipe(switchMap(data => {
 				localStorage.setItem("token", (<any>data).token);
-				return  this.http.post(AppComponent.API_URL+'/genereatePdf',dataS,{
+				return  this.http.post(environment.API_URL+'/genereatePdf',dataS,{
 					 headers: headers,
 				      observe: 'response',
 				      responseType: 'arraybuffer'
@@ -472,7 +477,7 @@ export class ApplicationService {
 	  dumpIVFOlDData(ivd:IVDumpModel,callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          localStorage.setItem("token", (<any>data).token);
-	            return  this.http.post(AppComponent.API_URL+'/dumpOldIVFData',ivd);
+	            return  this.http.post(environment.API_URL+'/dumpOldIVFData',ivd);
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -498,7 +503,7 @@ export class ApplicationService {
 	  getAllUserNames(callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          localStorage.setItem("token", (<any>data).token);
-	            return  this.http.get(AppComponent.API_URL+'/getAllUsers');
+	            return  this.http.get(environment.API_URL+'/getAllUsers');
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -523,7 +528,7 @@ export class ApplicationService {
 	  getAllScrappingFullDataSites(callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          localStorage.setItem("token", (<any>data).token);
-	            return  this.http.get(AppComponent.API_URL+'/getsitenametoparsefulldata');
+	            return  this.http.get(environment.API_URL+'/getsitenametoparsefulldata');
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -548,7 +553,7 @@ export class ApplicationService {
 	  postData(d:any,url:string,callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {
 	          localStorage.setItem("token", (<any>data).token);
-	            return  this.http.post(AppComponent.API_URL+url,d);
+	            return  this.http.post(environment.API_URL+url,d);
 	          },
 	          )    
 	      ).subscribe(data => {
@@ -572,6 +577,6 @@ export class ApplicationService {
 
 	  
 	  generateRefreshToken(){
-      return this.http.get(AppComponent.API_URL+'/refresh');
+      return this.http.get(environment.API_URL+'/refresh');
   }
 }
