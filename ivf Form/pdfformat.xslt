@@ -33,6 +33,8 @@
 .sub-heading {font-family:helvetica;font-size:9px;}
 .sub-heading1 {font-family:helvetica;font-size:9px;}
 .withds {width:8%}
+.withdlastsections {width:15%}
+.sub-headinglastsections1 {width:15%;font-family:helvetica;font-size:9px;}
 .underline1{text-decoration:underline}
 .colourb{color:#4472c4}
 .colourp{color:#7030a0}
@@ -1376,6 +1378,94 @@ border-collapse: collapse;
 		   </table>
             
             <br/>
+			<table class="tab_with_boder">
+			
+			<tr>
+                        <td class="withds colourprev">
+                           <span class="main-heading-1">Exams</span> 
+						</td>
+                        <td class="withds">						
+						   <span class="sub-heading"></span>
+                        </td>
+                        <td class="withds colourgrnewbg">
+                           <span class="main-heading-1">Xrays</span>
+						</td>
+						<td class="withds">
+                           <span class="sub-heading"></span>
+						</td>
+           </tr>
+			<tr>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D0120</span> 
+						</td>
+                        <td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD0120"/> </span>
+                        </td>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D210</span>
+						</td>
+						<td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD210"/> </span>
+                        </td>
+           </tr>
+		   <tr>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D0140</span> 
+						</td>
+                        <td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD0140"/> </span>
+                        </td>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D220</span>
+						</td>
+						<td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD220"/> </span>
+                        </td>
+           </tr>
+		   <tr>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D0145</span> 
+						</td>
+                        <td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD0145"/> </span>
+                        </td>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D230</span>
+						</td>
+						<td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD230"/> </span>
+                        </td>
+           </tr>
+           <tr>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D0150</span> 
+						</td>
+                        <td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD0150"/> </span>
+                        </td>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D330</span>
+						</td>
+						<td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD330"/> </span>
+                        </td>
+           </tr>
+		   <tr>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D0160</span> 
+						</td>
+                        <td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD0160"/> </span>
+                        </td>
+                        <td class="withdlastsections">
+                           <span class="main-heading-1">D274</span>
+						</td>
+						<td>						
+						   <span class="sub-heading" ><xsl:value-of select="ckD274"/> </span>
+                        </td>
+           </tr>
+			</table>
+			<br/>
 						<table  style="border:0px;width:100%" cellpadding="0" cellspacing="0">
 				<tr>
 					<td vertical-align="top" style="vertical-align:top;">
