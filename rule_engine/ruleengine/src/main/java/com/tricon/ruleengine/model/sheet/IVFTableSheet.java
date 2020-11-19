@@ -202,6 +202,16 @@ public class IVFTableSheet {
    //}
 
 
+	private String ckD0120;//ckD0120
+	private String ckD0140;//ckD0140
+	private String ckD0145;//ckD0145
+	private String ckD0150;//ckD0150
+	private String ckD0160;//ckD0160
+	private String ckD210;//ckD210
+	private String ckD220;//ckD220
+	private String ckD230;//ckD230
+	private String ckD330;//ckD330
+	private String ckD274;//ckD274
 	
 	private String statusDump;// Used for Dump sheets only MC
 	
@@ -1415,6 +1425,66 @@ public class IVFTableSheet {
 	}
 	public void setD4381(String d4381) {
 		this.d4381 = d4381;
+	}
+	public String getCkD0120() {
+		return ckD0120;
+	}
+	public void setCkD0120(String ckD0120) {
+		this.ckD0120 = ckD0120;
+	}
+	public String getCkD0140() {
+		return ckD0140;
+	}
+	public void setCkD0140(String ckD0140) {
+		this.ckD0140 = ckD0140;
+	}
+	public String getCkD0145() {
+		return ckD0145;
+	}
+	public void setCkD0145(String ckD0145) {
+		this.ckD0145 = ckD0145;
+	}
+	public String getCkD0150() {
+		return ckD0150;
+	}
+	public void setCkD0150(String ckD0150) {
+		this.ckD0150 = ckD0150;
+	}
+	public String getCkD0160() {
+		return ckD0160;
+	}
+	public void setCkD0160(String ckD0160) {
+		this.ckD0160 = ckD0160;
+	}
+	public String getCkD210() {
+		return ckD210;
+	}
+	public void setCkD210(String ckD210) {
+		this.ckD210 = ckD210;
+	}
+	public String getCkD220() {
+		return ckD220;
+	}
+	public void setCkD220(String ckD220) {
+		this.ckD220 = ckD220;
+	}
+	public String getCkD230() {
+		return ckD230;
+	}
+	public void setCkD230(String ckD230) {
+		this.ckD230 = ckD230;
+	}
+	public String getCkD330() {
+		return ckD330;
+	}
+	public void setCkD330(String ckD330) {
+		this.ckD330 = ckD330;
+	}
+	public String getCkD274() {
+		return ckD274;
+	}
+	public void setCkD274(String ckD274) {
+		this.ckD274 = ckD274;
 	}
 	
 	

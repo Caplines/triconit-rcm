@@ -305,7 +305,9 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " ortho_remaining as ortho5,ortho_waiting_period as waitingPeriod3, night_guards_d9945_percentage as posterior18, " //add new Columns here
 					+ " night_guards_d9944_fr as posterior19,night_guards_d9945_fr as posterior20,fillings_in_year as fill1," //add new Columns here
 					+ " extractions_in_year as extr1, crowns_in_year as crn1,waiting_period4 as waitingPeriod4,share_fr as shareFr, DATE_FORMAT(p.created_date, '%d/%m/%y %T') as createdDate, " ////add new Columns here
-					+ " pedo1 as pedo1, pedo2 as pedo2,pano1 as pano1, pano2 as pano2, d4381 as d4381 "
+					+ " pedo1 as pedo1, pedo2 as pedo2,pano1 as pano1, pano2 as pano2, d4381 as d4381,"
+					+ " ckd0120 as ckD0120,ckd0140 as ckD0140,ckd0145 as ckD0145,ckd0150 as ckD0150,ckd0160 as ckD0160,ckd210 as ckD210,"
+					+ " ckd220 as ckD220,ckd230 as ckD230,ckd330 as ckD330,ckd274 as ckD274  "
 					//+ " as  " //add new Columns here
 					
 					+ fromClause

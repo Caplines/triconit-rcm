@@ -19,7 +19,7 @@ import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 
 public class IVFFormConversionUtil {
 
-	/*
+	/* Copy from Google Form and DUMP Sheet to IVF RDBMS database 
 	 * if any changes done here make sure to verify same in copyValueToIVFSheet method defined below
 	 */
 	public static Patient copyValueToPatient(CaplineIVFFormDto d, Office off, Date date) {
@@ -206,6 +206,18 @@ public class IVFFormConversionUtil {
 		pd.setExtractionsInYear(d.getExtr1());//extr1
 		pd.setCrownsInYear(d.getCrn1());//crn1
 		 
+		pd.setCkD0120(d.getCkD0120());//ckD0120
+		pd.setCkD0140(d.getCkD0140());//ckD0140
+		pd.setCkD0145(d.getCkD0145());//ckD0145
+		pd.setCkD0150(d.getCkD0150());//ckD0150
+		pd.setCkD0160(d.getCkD0160());//ckD0160
+		pd.setCkD210(d.getCkD210());//ckD210
+		pd.setCkD220(d.getCkD220());//ckD220
+		pd.setCkD230(d.getCkD230());//ckD230
+		pd.setCkD330(d.getCkD330());//ckD330
+		pd.setCkD274(d.getCkD274());//ckD274
+
+		
 		//END		
 		
 		if (off != null)
@@ -455,6 +467,16 @@ public class IVFFormConversionUtil {
 				pd.setCrownsInYear(d.getCrn1());//crn1
 
 				//END			
+				pd.setCkD0120(d.getCkD0120());//ckD0120
+				pd.setCkD0140(d.getCkD0140());//ckD0140
+				pd.setCkD0145(d.getCkD0145());//ckD0145
+				pd.setCkD0150(d.getCkD0150());//ckD0150
+				pd.setCkD0160(d.getCkD0160());//ckD0160
+				pd.setCkD210(d.getCkD210());//ckD210
+				pd.setCkD220(d.getCkD220());//ckD220
+				pd.setCkD230(d.getCkD230());//ckD230
+				pd.setCkD330(d.getCkD330());//ckD330
+				pd.setCkD274(d.getCkD274());//ckD274
 
 		
 		if (off != null)
@@ -771,6 +793,17 @@ public class IVFFormConversionUtil {
 		pd.setD4381(d.getD4381());//d4381
 		
 		//END		
+		pd.setCkD0120(d.getCkD0120());//ckD0120
+		pd.setCkD0140(d.getCkD0140());//ckD0140
+		pd.setCkD0145(d.getCkD0145());//ckD0145
+		pd.setCkD0150(d.getCkD0150());//ckD0150
+		pd.setCkD0160(d.getCkD0160());//ckD0160
+		pd.setCkD210(d.getCkD210());//ckD210
+		pd.setCkD220(d.getCkD220());//ckD220
+		pd.setCkD230(d.getCkD230());//ckD230
+		pd.setCkD330(d.getCkD330());//ckD330
+		pd.setCkD274(d.getCkD274());//ckD274
+
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_");// -- will set latter;
 		pd.setVarnishD1206AgeLimit(d.getVarnishD1206AgeLimit());

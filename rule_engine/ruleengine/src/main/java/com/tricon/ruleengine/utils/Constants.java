@@ -311,6 +311,8 @@ public class Constants {
 	
 	public static final  String PATIENT_FOUND="Patient found";
 	
+	public static final  String PATIENT_NOT_ACTIVE="Patient not active";
+		
 	public static final String INSURANCE_TYPE_PRI="Primary";//Blank also means primary 
 	public static final String INSURANCE_TYPE_SEC="Secondary"; 
 	

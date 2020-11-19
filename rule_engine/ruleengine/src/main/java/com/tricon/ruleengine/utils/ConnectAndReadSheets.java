@@ -1097,13 +1097,16 @@ public class ConnectAndReadSheets {
 				//subscriber = obj.get(5);
 				sh = new ExceptionDataDto();
 				sh.setEmpolyerName("");
+				sh.setGroup("");
 				sh.setCode("");
 				sh.setMessage("");
 				sh.setResultType("");
 				
 				
 				try {
-					sh.setEmpolyerName(obj.get(++x));
+					//sh.setEmpolyerName(obj.get(++x));
+					sh.setGroup(obj.get(++x));
+					
 				}catch (Exception e) {
 					// TODO: handle exception
 				}

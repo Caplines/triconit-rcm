@@ -3,9 +3,12 @@ package com.tricon.ruleengine.dto;
 public class ExceptionDataDto {
 
 	private String empolyerName;
+	private String group;
+	
 	private String code;
 	private String message;
 	private String resultType;
+	
 	public String getEmpolyerName() {
 		return empolyerName;
 	}
@@ -30,6 +33,14 @@ public class ExceptionDataDto {
 	public void setResultType(String resultType) {
 		this.resultType = resultType;
 	}
+	public String getGroup() {
+		return group;
+	}
+	public void setGroup(String group) {
+		this.group = group;
+	}
+	
+	
 	
 	
 	

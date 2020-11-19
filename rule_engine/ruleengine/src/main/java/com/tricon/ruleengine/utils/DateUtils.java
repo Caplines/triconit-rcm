@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.ss.usermodel.DateUtil;
 
+import com.itextpdf.text.log.SysoCounter;
 import com.tricon.ruleengine.model.db.GoogleSheets;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
@@ -440,6 +441,28 @@ public class DateUtils {
 		
 	}
 	
+	/***
+	 * calculate days divide by 30 take int value..
+	 * @param s
+	 * @param e
+	 * @return
+	 */
+	public static float getDiffBetweenMonthsFullDateInParsing(String s,String e) {	
+		try {
+		Date startDate=Constants.SIMPLE_DATE_FORMAT.parse(s);
+		Date endDate=Constants.SIMPLE_DATE_FORMAT.parse(e);
+		
+			long difference = endDate.getTime() - startDate.getTime();
+	       float daysBetween = (difference / (1000*60*60*24));
+	       return (int)daysBetween/30;
+	       
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			return 0;
+		}
+		//return "0";
+
+	}
 	
 	public static String getDiffBetweenMonths(String s,String e) {
 		
@@ -490,6 +513,9 @@ public class DateUtils {
 		  try {
 			  System.out.println("1570665600000");
 			System.out.println(sdf.parse("10/10/2019 00:00:00 AM GMT").getTime());
+			System.out.println(getDiffBetweenMonthsFullDateInParsing( "09/15/2016","09/20/2017"));
+			System.out.println(getDiffBetweenMonthsFullDateInParsing( "12/01/2019","05/31/2020"));
+			System.out.println(getDiffBetweenMonthsFullDateInParsing( "12/01/2019","11/30/2020"));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
