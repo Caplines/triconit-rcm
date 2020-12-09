@@ -25,6 +25,7 @@ import com.tricon.ruleengine.dao.ScrapingFullDataDoa;
 import com.tricon.ruleengine.dto.PatientScrapSearchDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.scrapping.DentaBenefitScrapDto;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
@@ -65,7 +66,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 	public DeltaDentalServiceImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
 			ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user, Office office,
-			int processId, String taxId, String driverLocation) {
+			int processId, String taxId,IVFormType ivFormType, String driverLocation) {
 
 		this.patDao = patDao;
 		this.dataDoa = dataDoa;
@@ -81,6 +82,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		this.driverLocation = driverLocation;
 		this.processId = processId;
 		this.taxId = taxId;
+		this.ivFormType=ivFormType;
 		// store parameter for later user
 	}
 
@@ -95,21 +97,21 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 				for (PatientScrapSearchDto data : dto.getDto()) {
 					Thread thread = new Thread() {
 						public void run() {
-							String s="0";
-							//System.out.println("Thread Running");
+							String s = "0";
+							// System.out.println("Thread Running");
 
 							WebDriver driver = getBrowserDriver();// new HtmlUnitDriver(true);// getBrowserDriver();
 							try {
 								boolean navigate = loginToSiteDelta(dto, driver);
 								boolean issueNo = navigatetoMainSite(driver, navigate);
-								//System.out.println(" DeltaDentalServiceImpl ..888888888888- STARTED...");
-								//System.out.println("MEM 4-"
-								//		+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+								 System.out.println(" DeltaDentalServiceImpl ..888888888888- STARTED...");
+								 System.out.println("MEM 4-"
+								 + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 								PatientTemp d = parsePage(driver, data, siteName, issueNo, office);
-								//System.out.println("888888888888 -END " + d);
+								 System.out.println("888888888888 -END " + d);
 								if (d != null) {
 									// Update the Data in Database
-									s =updateDatainDB(d, office, user)+"";
+									s = updateDatainDB(d, office, user) + "";
 								}
 								Thread.sleep(2000);
 							} catch (Exception dri) {
@@ -121,10 +123,11 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
 								ScrappingFullDataManagmentProcess manageP = dataDoa
 										.getScrappingFullDataManagmentDataProcess(processId);
-								String os =manageP.getStatus();
-								if (os.equals("")) manageP.setStatus(s); 
+								String os = manageP.getStatus();
+								if (os.equals(""))
+									manageP.setStatus(s);
 								else {
-									manageP.setStatus(os+","+s);
+									manageP.setStatus(os + "," + s);
 								}
 								manageP.setCount(manageP.getCount() - 1);
 								manageP.setUpdatedBy(user);
@@ -170,7 +173,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			temp.setSubscribersDob(sh.getSubscribersDob());
 			temp.setSubscribersFirstName(sh.getSubscribersFirstName());
 			temp.setSubscribersLastName(sh.getSubscribersLastName());
-			
+
 			temp.setPatientId(DateUtils.createPatientIdByDate(sh.getPatientId()));
 			// temp.setFirstName(sh.getFirstName());
 			temp.setWebsiteName(webSiteName);
@@ -186,14 +189,16 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			t.setOffice(office);
 			t.setMemberId(sh.getMemberId().trim());
 			t.setMemberSSN(sh.getSsnNumber().trim());
-
+			t.setiVFormType(ivFormType);
+            
 			Set<PatientDetailTemp> s = new HashSet<>();
 			s.add(t);
 			temp.setPatientDetails(s);
 			if (!issueNo)
 				return temp;
 			issueNo = searchPatient(driver, temp, sh.getMemberId(), sh.getSsnNumber(), sh.getDob(), sh.getFirstName(),
-					sh.getLastName(),sh.getSsnNumber(),sh.getSubscribersFirstName(),sh.getSubscribersLastName(),sh.getSubscribersDob());
+					sh.getLastName(), sh.getSsnNumber(), sh.getSubscribersFirstName(), sh.getSubscribersLastName(),
+					sh.getSubscribersDob());
 			if (!issueNo) {
 				temp.setStatus("Patient Not found.." + sh.getDob() + " " + sh.getMemberId());
 				temp.setFirstName(sh.getFirstName());
@@ -206,17 +211,15 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			temp.setLastName(sh.getLastName());
 			populateMandatoryData(temp);
 			createPatientDetailSetup(driver, temp, sh);
-			// Click on Eligibility & benefits Link so that Next Patient can Start to be Searched
-			/*List<WebElement> myPats = driver.findElements(By.tagName("a"));
-			for (WebElement myPat : myPats) {
-				if (myPat.getText() != null && myPat.getText().trim().equals("Eligibility & benefits")) {//Eligibility & benefits //My patients
-					Thread.sleep(2000);
-					myPat.click();
-                    break;
-				}
-			}
-			Thread.sleep(2000);
-            */
+			// Click on Eligibility & benefits Link so that Next Patient can Start to be
+			// Searched
+			/*
+			 * List<WebElement> myPats = driver.findElements(By.tagName("a")); for
+			 * (WebElement myPat : myPats) { if (myPat.getText() != null &&
+			 * myPat.getText().trim().equals("Eligibility & benefits")) {//Eligibility &
+			 * benefits //My patients Thread.sleep(2000); myPat.click(); break; } }
+			 * Thread.sleep(2000);
+			 */
 			// Logic to fetch data from Site...
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -225,11 +228,11 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 	}
 
 	private Integer updateDatainDB(PatientTemp data, Office office, User user) {
-		Integer i=0;
+		Integer i = 0;
 		try {
-			i =patDao.savePatientTempDataWithDetailsAndHistory(data, office, user);
+			i = patDao.savePatientTempDataWithDetailsAndHistory(data, office, user);
 		} catch (Exception c) {
-			//System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIII");
+			// System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIII");
 			StringWriter sw = new StringWriter();
 			c.printStackTrace(new java.io.PrintWriter(sw));
 			// String exceptionAsString = sw.toString();
@@ -248,7 +251,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 		try {
 			fetchPatDetails(driver, temp);
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -258,18 +261,18 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 	}
 
 	private boolean searchPatient(WebDriver driver, PatientTemp temp, String memberid, String ssn1, String dob,
-			String fName, String lName,String ssn,String sfn,String sln,String sdob) throws InterruptedException {
+			String fName, String lName, String ssn, String sfn, String sln, String sdob) throws InterruptedException {
 
 		// String id = memberid.trim().equals("") ? ssn.trim() : memberid.trim();
 		// id.equals("") ||
 		if (dob.equals("") || fName.trim().equals("") || lName.trim().equals(""))
 			return false;
-              //  "/html/body/div[2]/form/div[2]/div[2]/div[1]/table/tbody/tr/td/div/div/table/tbody/tr[2]/td[2]/table/tbody/tr[5]/td[1]/span/input"
+		// "/html/body/div[2]/form/div[2]/div[2]/div[1]/table/tbody/tr/td/div/div/table/tbody/tr[2]/td[2]/table/tbody/tr[5]/td[1]/span/input"
 		WebElement ini = driver.findElement(By.xpath(
 				"/html/body/div[2]/form/div[2]/div[2]/div[1]/table/tbody/tr/td/div/div/table/tbody/tr[2]/td[2]/table/tbody/tr[5]/td[1]/span/input"));
 		ini.clear();
 		Thread.sleep(2000);
-              //  "/html/body/div[2]/form/div[2]/div[2]/div[1]/table/tbody/tr/td/div/div/table/tbody/tr[2]/td[2]/table/tbody/tr[5]/td[2]/button"
+		// "/html/body/div[2]/form/div[2]/div[2]/div[1]/table/tbody/tr/td/div/div/table/tbody/tr[2]/td[2]/table/tbody/tr[5]/td[2]/button"
 		WebElement validate = driver.findElement(By.xpath(
 				"/html/body/div[2]/form/div[2]/div[2]/div[1]/table/tbody/tr/td/div/div/table/tbody/tr[2]/td[2]/table/tbody/tr[5]/td[2]/button"));
 		ini.sendKeys(fName.trim() + " " + lName.trim());
@@ -279,380 +282,355 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			return false;
 		}
 		Thread.sleep(7000);
-		boolean found=true;
-		//Do form here..dob.
+		boolean found = true;
+		// Do form here..dob.
 		List<WebElement> tabs = driver.findElements(By.tagName("table"));
-		for(WebElement tab:tabs) {
+		for (WebElement tab : tabs) {
 			if (tab.getText().contains("No patient record available.")) {
-				found=false;
+				found = false;
 				break;
 			}
 		}
-		
+
 		if (found) {
 			List<WebElement> spans = driver.findElements(By.tagName("span"));
-			for(WebElement span:spans) {
+			for (WebElement span : spans) {
 				if (span.getText().contains("Please make a selection:")) {
 					{
-					 found=false;
+						found = false;
+						break;
+					}
+				}
+				if (!found)
 					break;
-				  }
-				}
-					if (!found) break;
-				}
+			}
 			if (!found) {
 				Date newDate = new Date();
-			    Object[] others=null;
-			    //Object[] empty=null;
-			    Object[] ppo=null;
-			    //Object[] atleastOneEnd=null;
-			    List<Object[]> all=new ArrayList<>();
-			    List<Object[]> allNew=new ArrayList<>();
-			    
-			    List<WebElement> trs = driver.findElements(By.tagName("tr"));
-			    for(WebElement tr:trs) {
-					if (tr.getAttribute("_afrrk")!=null ) {
-						List<WebElement> tds =tr.findElements(By.tagName("td"));
-						System.out.println("-"+tds.get(20).getText().trim()+"-");
-						
-				 try {
-					 Date d1=Constants.SIMPLE_DATE_FORMAT.parse(tds.get(18).getText().trim());			
-					if (tds.get(20).getText().trim().equals("")) {
-							all.add(new Object[] {tr.getText().toLowerCase().contains("ppo"),tds.get(3),d1,newDate});
-						
-					}else {
-						if (newDate.compareTo(d1)<=0) {
-							all.add(new Object[] {tr.getText().toLowerCase().contains("ppo"),
-									     tds.get(3),d1,Constants.SIMPLE_DATE_FORMAT.parse(tds.get(20).getText().trim())});
-						}
-					}
-			    		
-				  }catch(Exception p) {
-					  
-				   }
-			       } 
-			     }
-			    
-			    //Remove Last Date if date less than today
-			    for(Object[] o:all) {
-			         if((newDate).compareTo((Date) o[3])<=0){
-			        	 allNew.add(o);
-			         }
-			    }
-			    
-			    
-			    for(Object[] o:allNew) {
-			    	if ((boolean)o[0]){
-			    		if (ppo==null){
-							ppo = new Object[] {o[1],o[2]};
-						}else if (((Date)ppo[1]).compareTo((Date)o[2])<=0){
-							ppo[1]=o[2];
-							ppo[0]=o[1];
-						}		
-						   
-			    	}else {
-			    		if (others==null){
-			    			others = new Object[] {o[1],o[2]};
-						}else if (((Date)others[1]).compareTo((Date)o[2])<=0){
-							others[1]=o[2];
-							others[0]=o[1];
-						}
-			    	}
-			   }
-			    if (ppo!=null) {
-			    	System.out.println("ppo");
-					System.out.println(((WebElement)ppo[0]).getText());
-					System.out.println(((Date)ppo[1]));
-					 ((WebElement)ppo[0]).click();
-					 
-				}else if (others!=null) {
-					System.out.println("OO");
-					System.out.println(((WebElement)others[0]).getText());
-					System.out.println(((Date)others[1]));
-					 ((WebElement)others[0]).click();
-					 
-				}
-			    /*
-				for(WebElement tr:trs) {
-					if (tr.getAttribute("_afrrk")!=null ) {
-						List<WebElement> tds =tr.findElements(By.tagName("td"));
-						System.out.println("-"+tds.get(20).getText().trim()+"-");
-						
-				 try {
-								
-					if (tds.get(20).getText().trim().equals("")) {
-						Date d1=Constants.SIMPLE_DATE_FORMAT.parse(tds.get(18).getText().trim());
-						if (empty==null){
-							empty = new Object[] {tds.get(3),d1,newDate};
-						}else {
-							if (((Date)empty[1]).compareTo(d1)<=0){
-								empty[1]=d1;
-								empty[0]=tds.get(3);
-							}
-						 }
-				      }
-					  if (tds.get(20).getText().trim().equals("")) {
-							Date d1=Constants.SIMPLE_DATE_FORMAT.parse(tds.get(18).getText().trim());
-							if (tr.getText().toLowerCase().contains("ppo")){
-								if (ppo==null){
-									ppo = new Object[] {tds.get(3),d1,newDate};
-								}else if (((Date)ppo[1]).compareTo(d1)<=0){
-									ppo[1]=d1;
-									ppo[0]=tds.get(3);
-								
-								}		
-								
-							}else {
-								if (others==null){
-									others = new Object[] {tds.get(3),d1,newDate};
-								}else if (((Date)others[1]).compareTo(d1)<=0){
-									others[1]=d1;
-									others[0]=tds.get(3);
-								
+				Object[] others = null;
+				// Object[] empty=null;
+				Object[] ppo = null;
+				// Object[] atleastOneEnd=null;
+				List<Object[]> all = new ArrayList<>();
+				List<Object[]> allNew = new ArrayList<>();
+
+				List<WebElement> trs = driver.findElements(By.tagName("tr"));
+				for (WebElement tr : trs) {
+					if (tr.getAttribute("_afrrk") != null) {
+						List<WebElement> tds = tr.findElements(By.tagName("td"));
+						System.out.println("-" + tds.get(20).getText().trim() + "-");
+
+						try {
+							Date d1 = Constants.SIMPLE_DATE_FORMAT.parse(tds.get(18).getText().trim());
+							if (tds.get(20).getText().trim().equals("")) {
+								all.add(new Object[] { tr.getText().toLowerCase().contains("ppo"), tds.get(3), d1,
+										newDate });
+
+							} else {
+								if (newDate.compareTo(d1) <= 0) {
+									all.add(new Object[] { tr.getText().toLowerCase().contains("ppo"), tds.get(3), d1,
+											Constants.SIMPLE_DATE_FORMAT.parse(tds.get(20).getText().trim()) });
 								}
 							}
-							
-						}else {
-							
-							Date d1=Constants.SIMPLE_DATE_FORMAT.parse(tds.get(20).getText().trim());
-							Date ds=Constants.SIMPLE_DATE_FORMAT.parse(tds.get(18).getText().trim());
-							if (atleastOneEnd==null){
-								atleastOneEnd = new Object[] {tds.get(3),ds,d1};
-							}
-							if (newDate.compareTo(d1)>0) {
-								atleastOneEnd=null;
-							
-							}
-							
-							
-							if (newDate.compareTo(d1)<=0) {
-								found =true;
-								tds.get(3).click();
-								others=empty=ppo=null;
-								break;
-						  }
+
+						} catch (Exception p) {
+
+						}
 					}
-					//if (found) break;
-					}catch(Exception p) {
-				         		
+				}
+
+				// Remove Last Date if date less than today
+				for (Object[] o : all) {
+					if ((newDate).compareTo((Date) o[3]) <= 0) {
+						allNew.add(o);
 					}
-				
-			    }
-			  }
-				if (ppo!=null) {
-					System.out.println(((WebElement)ppo[0]).getText());
-					 ((WebElement)ppo[0]).click();
-					 
-				}else if (others!=null) {
-					System.out.println(((WebElement)others[0]).getText());
-					 ((WebElement)others[0]).click();
-					 
-				}else if (empty!=null) {
-					 ((WebElement)empty[0]).click();
-					 
-				}*/
+				}
+
+				for (Object[] o : allNew) {
+					if ((boolean) o[0]) {
+						if (ppo == null) {
+							ppo = new Object[] { o[1], o[2] };
+						} else if (((Date) ppo[1]).compareTo((Date) o[2]) <= 0) {
+							ppo[1] = o[2];
+							ppo[0] = o[1];
+						}
+
+					} else {
+						if (others == null) {
+							others = new Object[] { o[1], o[2] };
+						} else if (((Date) others[1]).compareTo((Date) o[2]) <= 0) {
+							others[1] = o[2];
+							others[0] = o[1];
+						}
+					}
+				}
+				if (ppo != null) {
+					// System.out.println("ppo");
+					// System.out.println(((WebElement)ppo[0]).getText());
+					// System.out.println(((Date)ppo[1]));
+					((WebElement) ppo[0]).click();
+
+				} else if (others != null) {
+					// System.out.println("OO");
+					// System.out.println(((WebElement)others[0]).getText());
+					// System.out.println(((Date)others[1]));
+					((WebElement) others[0]).click();
+
+				}
+				/*
+				 * for(WebElement tr:trs) { if (tr.getAttribute("_afrrk")!=null ) {
+				 * List<WebElement> tds =tr.findElements(By.tagName("td"));
+				 * System.out.println("-"+tds.get(20).getText().trim()+"-");
+				 * 
+				 * try {
+				 * 
+				 * if (tds.get(20).getText().trim().equals("")) { Date
+				 * d1=Constants.SIMPLE_DATE_FORMAT.parse(tds.get(18).getText().trim()); if
+				 * (empty==null){ empty = new Object[] {tds.get(3),d1,newDate}; }else { if
+				 * (((Date)empty[1]).compareTo(d1)<=0){ empty[1]=d1; empty[0]=tds.get(3); } } }
+				 * if (tds.get(20).getText().trim().equals("")) { Date
+				 * d1=Constants.SIMPLE_DATE_FORMAT.parse(tds.get(18).getText().trim()); if
+				 * (tr.getText().toLowerCase().contains("ppo")){ if (ppo==null){ ppo = new
+				 * Object[] {tds.get(3),d1,newDate}; }else if (((Date)ppo[1]).compareTo(d1)<=0){
+				 * ppo[1]=d1; ppo[0]=tds.get(3);
+				 * 
+				 * }
+				 * 
+				 * }else { if (others==null){ others = new Object[] {tds.get(3),d1,newDate};
+				 * }else if (((Date)others[1]).compareTo(d1)<=0){ others[1]=d1;
+				 * others[0]=tds.get(3);
+				 * 
+				 * } }
+				 * 
+				 * }else {
+				 * 
+				 * Date d1=Constants.SIMPLE_DATE_FORMAT.parse(tds.get(20).getText().trim());
+				 * Date ds=Constants.SIMPLE_DATE_FORMAT.parse(tds.get(18).getText().trim()); if
+				 * (atleastOneEnd==null){ atleastOneEnd = new Object[] {tds.get(3),ds,d1}; } if
+				 * (newDate.compareTo(d1)>0) { atleastOneEnd=null;
+				 * 
+				 * }
+				 * 
+				 * 
+				 * if (newDate.compareTo(d1)<=0) { found =true; tds.get(3).click();
+				 * others=empty=ppo=null; break; } } //if (found) break; }catch(Exception p) {
+				 * 
+				 * }
+				 * 
+				 * } } if (ppo!=null) { System.out.println(((WebElement)ppo[0]).getText());
+				 * ((WebElement)ppo[0]).click();
+				 * 
+				 * }else if (others!=null) {
+				 * System.out.println(((WebElement)others[0]).getText());
+				 * ((WebElement)others[0]).click();
+				 * 
+				 * }else if (empty!=null) { ((WebElement)empty[0]).click();
+				 * 
+				 * }
+				 */
 			}
-			
+
 			Thread.sleep(8000);
 			return true;
 		}
 		if (!found) {
 			List<WebElement> buts = driver.findElements(By.tagName("button"));
-			for(WebElement but:buts) {
+			for (WebElement but : buts) {
 				if (but.getText().contains("Add new patient")) {
 					but.click();
-					
+
 					break;
 				}
 			}
-	   Thread.sleep(10000);		
-	   WebElement fn =	driver.findElement(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[2]/tbody/tr/td[1]/div/div[3]/span/input"));
-	   WebElement ln=  driver.findElement(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[2]/tbody/tr/td[3]/div/div[3]/span/input"));	
-	   WebElement en=  driver.findElement(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[3]/tbody/tr/td[1]/div/div[3]/span/input"));	
-	   WebElement db=  driver.findElement(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[3]/tbody/tr/td[3]/div/div[3]/span/input"));	
-	   WebElement dfn=  driver.findElement(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[5]/tbody/tr/td[1]/div/div[3]/span/input"));
-	   WebElement ddb=  driver.findElement(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[5]/tbody/tr/td[3]/div/div[3]/table/tbody/tr/td[2]/input"));
-	   if ( (fName.trim()+ lName.trim()).equals(sfn.trim()+ sln.trim()) ) {	
-		   fn.sendKeys(fName.trim());
-		   ln.sendKeys(lName.trim());
-		   en.sendKeys(memberid.trim());
-		   db.sendKeys(dob);
-		   
-		}else {
-			fn.sendKeys(sfn.trim());
-			ln.sendKeys(sln.trim());
-			en.sendKeys(memberid.trim());
-			db.sendKeys(sdob);
-			dfn.sendKeys(fName.trim());
-			ddb.sendKeys(dob);
-			//dln.sendKeys(lName.trim());
-			Thread.sleep(3000);
-			WebElement oth=  driver.findElement(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/div/div[3]/table/tbody/tr/td[2]/select"));
-			Select dropdown = new Select(oth);
-			Thread.sleep(3000);
-			dropdown.selectByVisibleText("Other");
-			
-			
-		}
-	   
-	   buts = driver.findElements(By.tagName("button"));
-		for(WebElement but:buts) {
-			if (but.getText().contains("Find patient")) {
-				but.click();
-			    
-				break;
+			Thread.sleep(10000);
+			WebElement fn = driver.findElement(By.xpath(
+					"/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[2]/tbody/tr/td[1]/div/div[3]/span/input"));
+			WebElement ln = driver.findElement(By.xpath(
+					"/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[2]/tbody/tr/td[3]/div/div[3]/span/input"));
+			WebElement en = driver.findElement(By.xpath(
+					"/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[3]/tbody/tr/td[1]/div/div[3]/span/input"));
+			WebElement db = driver.findElement(By.xpath(
+					"/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[3]/tbody/tr/td[3]/div/div[3]/span/input"));
+			WebElement dfn = driver.findElement(By.xpath(
+					"/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[5]/tbody/tr/td[1]/div/div[3]/span/input"));
+			WebElement ddb = driver.findElement(By.xpath(
+					"/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[5]/tbody/tr/td[3]/div/div[3]/table/tbody/tr/td[2]/input"));
+			if ((fName.trim() + lName.trim()).equals(sfn.trim() + sln.trim())) {
+				fn.sendKeys(fName.trim());
+				ln.sendKeys(lName.trim());
+				en.sendKeys(memberid.trim());
+				db.sendKeys(dob);
+
+			} else {
+				fn.sendKeys(sfn.trim());
+				ln.sendKeys(sln.trim());
+				en.sendKeys(memberid.trim());
+				db.sendKeys(sdob);
+				dfn.sendKeys(fName.trim());
+				ddb.sendKeys(dob);
+				// dln.sendKeys(lName.trim());
+				Thread.sleep(3000);
+				WebElement oth = driver.findElement(By.xpath(
+						"/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/div/div[3]/table/tbody/tr/td[2]/select"));
+				Select dropdown = new Select(oth);
+				Thread.sleep(3000);
+				dropdown.selectByVisibleText("Other");
+
 			}
-		 }
-		Thread.sleep(10000);	
-		found=true;
-		List<WebElement> spans = driver.findElements(By.tagName("span"));
-		for(WebElement span:spans) {
-			if (span.getText().contains("Enrollee information was not found using our local enterprise search")) {
-				
-				 buts = driver.findElements(By.tagName("button"));
-				 for(WebElement but:buts) {
+
+			buts = driver.findElements(By.tagName("button"));
+			for (WebElement but : buts) {
+				if (but.getText().contains("Find patient")) {
+					but.click();
+
+					break;
+				}
+			}
+			Thread.sleep(10000);
+			found = true;
+			List<WebElement> spans = driver.findElements(By.tagName("span"));
+			for (WebElement span : spans) {
+				if (span.getText().contains("Enrollee information was not found using our local enterprise search")) {
+
+					buts = driver.findElements(By.tagName("button"));
+					for (WebElement but : buts) {
 						if (but.getText().contains("Close")) {
 							but.click();
-						    found=false;
+							found = false;
 							break;
 						}
-					 }
+					}
+				}
+				if (!found)
+					break;
 			}
-				if (!found) break;
-			}
-		   if (!found) {
-			   if (ssn.trim().equals("")) return false;
-		       Thread.sleep(3000);	
-			   found=true;
-			   en=  driver.findElement(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[3]/tbody/tr/td[1]/div/div[3]/span/input"));	
-			   en.clear();
-			   en.sendKeys(ssn.trim());
-			   buts = driver.findElements(By.tagName("button"));
-				for(WebElement but:buts) {
+			if (!found) {
+				if (ssn.trim().equals(""))
+					return false;
+				Thread.sleep(3000);
+				found = true;
+				en = driver.findElement(By.xpath(
+						"/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[6]/span/table[3]/tbody/tr/td[1]/div/div[3]/span/input"));
+				en.clear();
+				en.sendKeys(ssn.trim());
+				buts = driver.findElements(By.tagName("button"));
+				for (WebElement but : buts) {
 					if (but.getText().contains("Find patient")) {
 						but.click();
 						break;
 					}
-				 }
-				
-			    Thread.sleep(5000);	
+				}
+
+				Thread.sleep(5000);
 				spans = driver.findElements(By.tagName("span"));
-				found=true;
-				for(WebElement span:spans) {
-					if (span.getText().contains("Enrollee information was not found using our local enterprise search")) {
-						
-						 buts = driver.findElements(By.tagName("button"));
-						 for(WebElement but:buts) {
-								if (but.getText().contains("Close")) {
-									but.click();
-								    Thread.sleep(3000);	
-								    found=false;
-									break;
-								}
-							 }
-						if  (!found) break;
-					}
-			}
-			   
-		   }
-		 }//found if end
-		
-		
-		if (!found) return false;
-		else {
-			String vLink="";
-			String addLink="";
-			found=false;
-			List<WebElement> trs = driver.findElements(By.tagName("tr"));
-			for(WebElement tr:trs) {
-				if (tr.getAttribute("_afrrk")!=null ) {
-					int c=0;
-					List<WebElement> tds =tr.findElements(By.tagName("td"));
-					for(WebElement td:tds) {
-						if (td.getAttribute("class")!=null && td.getAttribute("class").equals("xh7")) {
-							c++;
-							if (c==3) {
-								try {
-									Date d=new Date();
-									Date dt=Constants.SIMPLE_DATE_FORMAT.parse(td.getText().split(" to ")[1]);
-									if (d.compareTo(dt)<=0) {
-								    	found =true;
-								    	//break;
-								    }
-								}catch(Exception x) {
-									found =true;
-									//break;
-								}
-								
+				found = true;
+				for (WebElement span : spans) {
+					if (span.getText()
+							.contains("Enrollee information was not found using our local enterprise search")) {
+
+						buts = driver.findElements(By.tagName("button"));
+						for (WebElement but : buts) {
+							if (but.getText().contains("Close")) {
+								but.click();
+								Thread.sleep(3000);
+								found = false;
+								break;
 							}
-							if (c==4 && found) {
-							List<WebElement> aa=td.findElements(By.tagName("a"));
-							for(WebElement a: aa) {
-								if (a.getText().equals("View eligibility & benefits")) {
-									vLink=	a.getAttribute("id");		
-								}else if (a.getText().equals("Add to 'My patients' list")) {
-									addLink=a.getAttribute("id");
-									
-								}
-							  }
+						}
+						if (!found)
 							break;
+					}
+				}
+
+			}
+		} // found if end
+
+		if (!found)
+			return false;
+		else {
+			String vLink = "";
+			String addLink = "";
+			found = false;
+			List<WebElement> trs = driver.findElements(By.tagName("tr"));
+			for (WebElement tr : trs) {
+				if (tr.getAttribute("_afrrk") != null) {
+					int c = 0;
+					List<WebElement> tds = tr.findElements(By.tagName("td"));
+					for (WebElement td : tds) {
+						if (td.getAttribute("class") != null && td.getAttribute("class").equals("xh7")) {
+							c++;
+							if (c == 3) {
+								try {
+									Date d = new Date();
+									Date dt = Constants.SIMPLE_DATE_FORMAT.parse(td.getText().split(" to ")[1]);
+									if (d.compareTo(dt) <= 0) {
+										found = true;
+										// break;
+									}
+								} catch (Exception x) {
+									found = true;
+									// break;
+								}
+
+							}
+							if (c == 4 && found) {
+								List<WebElement> aa = td.findElements(By.tagName("a"));
+								for (WebElement a : aa) {
+									if (a.getText().equals("View eligibility & benefits")) {
+										vLink = a.getAttribute("id");
+									} else if (a.getText().equals("Add to 'My patients' list")) {
+										addLink = a.getAttribute("id");
+
+									}
+								}
+								break;
 							}
 						}
 					}
 				}
-				if (found) break;
-				}
-		
+				if (found)
+					break;
+			}
+
 			if (!addLink.equals("")) {
 				driver.findElement(By.id(addLink)).click();
 				Thread.sleep(3000);
-				//if there is any popup then add Logic to close popup
-				
+				// if there is any popup then add Logic to close popup
+
 			}
 			if (!vLink.equals("")) {
 				driver.findElement(By.id(vLink)).click();
 				Thread.sleep(3000);
 				return true;
 			}
-			
+
 		}
-		//write code to add patient in Website after that do view Click on Elegiblity  
+		// write code to add patient in Website after that do view Click on Elegiblity
 		/*
-		List<WebElement> rows = driver.findElements(By.className("data-table-row"));
-		// boolean found=false;
-		if (rows != null && rows.size() > 0) {
-			try {
-				for (WebElement row : rows) {
-
-					List<WebElement> tds = row.findElements(By.tagName("td"));
-					// List<WebElement>d=tds.get(7).findElements(By.tagName("span")).get(1).getText();
-					String name = tds.get(7).findElements(By.tagName("span")).get(1).getText();// findElement(By.tagName("span")).getText();
-					String[] dobA = tds.get(7).findElements(By.tagName("span")).get(0).findElements(By.tagName("span"))
-							.get(3).getText().split("/");
-					String dobS = ((dobA[0].length() == 1) ? ("0" + dobA[0]) : dobA[0]) + "/"
-							+ ((dobA[1].length() == 1) ? ("0" + dobA[1]) : dobA[1]) + "/" + dobA[2];
-					
-					String status = tds.get(14).getText();
-					System.out.println("statusstatus-"+status);
-					if (status.trim().equalsIgnoreCase("no")) continue;//Check only for active users
-					if (name.equalsIgnoreCase((fName.trim() + " " + lName.trim())) &&
-					// id .contains(mem) &&
-							dobS.equals(dob)) {
-						// found=true;
-						row.findElement(By.className("table-col8")).findElements(By.tagName("a")).get(0).click();
-						Thread.sleep(5000);
-						return true;
-
-					}
-				}
-			} catch (Exception e) {
-				return false;
-				// TODO: handle exception
-			}
-		} else {
-			return false;
-		}
-		*/
+		 * List<WebElement> rows = driver.findElements(By.className("data-table-row"));
+		 * // boolean found=false; if (rows != null && rows.size() > 0) { try { for
+		 * (WebElement row : rows) {
+		 * 
+		 * List<WebElement> tds = row.findElements(By.tagName("td")); //
+		 * List<WebElement>d=tds.get(7).findElements(By.tagName("span")).get(1).getText(
+		 * ); String name =
+		 * tds.get(7).findElements(By.tagName("span")).get(1).getText();//
+		 * findElement(By.tagName("span")).getText(); String[] dobA =
+		 * tds.get(7).findElements(By.tagName("span")).get(0).findElements(By.tagName(
+		 * "span")) .get(3).getText().split("/"); String dobS = ((dobA[0].length() == 1)
+		 * ? ("0" + dobA[0]) : dobA[0]) + "/" + ((dobA[1].length() == 1) ? ("0" +
+		 * dobA[1]) : dobA[1]) + "/" + dobA[2];
+		 * 
+		 * String status = tds.get(14).getText();
+		 * System.out.println("statusstatus-"+status); if
+		 * (status.trim().equalsIgnoreCase("no")) continue;//Check only for active users
+		 * if (name.equalsIgnoreCase((fName.trim() + " " + lName.trim())) && // id
+		 * .contains(mem) && dobS.equals(dob)) { // found=true;
+		 * row.findElement(By.className("table-col8")).findElements(By.tagName("a")).get
+		 * (0).click(); Thread.sleep(5000); return true;
+		 * 
+		 * } } } catch (Exception e) { return false; // TODO: handle exception } } else
+		 * { return false; }
+		 */
 		return false;
 
 	}
@@ -824,22 +802,22 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 		// WebElement divOffBenfitm=
 		// driver.findElement(By.xpath("/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/div[1]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td/div/div[1]/div/div/div/table/tbody/tr/td[2]/div"));
-		
+
 		try {
 			driver.manage().window().maximize();
 			JavascriptExecutor js = (JavascriptExecutor) driver;
 			String bluff = "document.getElementsByClassName(\"QSISlider\")[0].remove()";
 			js.executeScript(bluff);
-		Thread.sleep(15000);
-		}catch(Exception sli) {
+			Thread.sleep(15000);
+		} catch (Exception sli) {
 			sli.printStackTrace();
 		}
 		List<WebElement> divOfMaximum = driver.findElements(By.tagName("table"));
-		//String dd = "";
+		// String dd = "";
 		float age = 0;
 		try {
-			int[] agArray=DateUtils.calculateAgeYMD(temp.getDob(), false);
-			age = agArray[0]+(agArray[0]/10);
+			int[] agArray = DateUtils.calculateAgeYMD(temp.getDob(), false);
+			age = agArray[0] + (agArray[0] / 10);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -851,40 +829,40 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dtemp.setTaxId(taxId);// 136
 		dtemp.setsRPD4341QuadsPerDay("2");
 		dtemp.setsRPD4341DaysBwTreatment("1");
-		boolean skip=false;
-		
-		//check for Plan Selection in some patients "This table contains column headers corresponding to the data body table below"
+		boolean skip = false;
+
+		// check for Plan Selection in some patients "This table contains column headers
+		// corresponding to the data body table below"
 		for (WebElement divOffMax : divOfMaximum) {
-			if (divOffMax!=null && divOffMax.getAttribute("summary").equals("This table contains column headers corresponding to the data body table below")) {
-				//now select Plan
-		    //int skip=0;
-			List<WebElement> trs=	divOffMax.findElement(By.xpath("..")).findElement(By.xpath("..")).findElements(By.tagName("table")).get(1).findElements(By.tagName("tr"));
-			for(WebElement tr:trs) {
-				
-				
-				try {
-				if (tr.findElements(By.tagName("td")).get(20).getText().trim().equals("")) {
-					tr.findElements(By.tagName("td")).get(3).findElement(By.tagName("a")).click();
-				    Thread.sleep(8000);
-				     divOfMaximum = driver.findElements(By.tagName("table"));
-				     skip=true;
-				     break;
+			if (divOffMax != null && divOffMax.getAttribute("summary")
+					.equals("This table contains column headers corresponding to the data body table below")) {
+				// now select Plan
+				// int skip=0;
+				List<WebElement> trs = divOffMax.findElement(By.xpath("..")).findElement(By.xpath(".."))
+						.findElements(By.tagName("table")).get(1).findElements(By.tagName("tr"));
+				for (WebElement tr : trs) {
+
+					try {
+						if (tr.findElements(By.tagName("td")).get(20).getText().trim().equals("")) {
+							tr.findElements(By.tagName("td")).get(3).findElement(By.tagName("a")).click();
+							Thread.sleep(8000);
+							divOfMaximum = driver.findElements(By.tagName("table"));
+							skip = true;
+							break;
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+
+					// skip++;
 				}
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
-				
-				//skip++;
+				if (skip)
+					break;
+
 			}
-			if (skip) break;
-			
-			}
-			
+
 		}
-		
-		
-		
-		
+
 		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(new Date()));// 145
 		dtemp.setPlanAnnualMax("0");// 1
 		dtemp.setPlanAnnualMaxRemaining("0");// 2
@@ -893,7 +871,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dtemp.setBasicWaitingPeriod("No");// 20
 		dtemp.setMajorWaitingPeriod("No");// 21
 		dtemp.setOrthoWaitingPeriod("No");// 116
-		
+		dtemp.setWaitingPeriod4("No");
+
 		dtemp.setPlanIndividualDeductible("0");// 3
 		dtemp.setPlanIndividualDeductibleRemaining("0");// 4
 		dtemp.setPreventiveSubDed("No");// 118
@@ -902,19 +881,27 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dtemp.setMajorSubjectDeductible("No");// 8
 		dtemp.setEndoSubjectDeductible("No");// 10
 		dtemp.setPerioSurgerySubjectDeductible("No");// 12
-		dtemp.setOrthoSubjectDeductible("No");//93
-		dtemp.setOrthoRemaining("0");//115
-		dtemp.setOrthoMax("0");// 91	
+		dtemp.setOrthoSubjectDeductible("No");// 93
+		dtemp.setOrthoRemaining("0");// 115
+		dtemp.setOrthoMax("0");// 91
 		dtemp.setpAXRaysSubDed("No");
 		dtemp.setNightGuardsD9940Percentage("0");
-		boolean lifetimeindpresent=false;
-		String lifetimeindorthodics="No";
+		boolean lifetimeindpresent = false;
+		String lifetimeindorthodics = "No";
 		String planType = "";
 		String planTypeSUP = "";
-		boolean restorative=false;//restorative can come twice
-		String familytermDate="";
-		String termDate="";
-		
+		boolean restorative = false;// restorative can come twice
+		String familytermDate = "";
+		String termDate = "";
+		String familyEffectiveDate = "";
+		String effectiveDate = "";
+		Date cDatewithNoTime=null;
+		try {
+		cDatewithNoTime=Constants.SIMPLE_DATE_FORMAT.parse(Constants.SIMPLE_DATE_FORMAT.format(new Date()));
+		}catch(Exception d) {
+			
+		}
+
 		for (WebElement divOffMax : divOfMaximum) {
 
 			try {
@@ -924,17 +911,20 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 						if (tr.getText().startsWith("Restorative")) {
 							try {
-								List<WebElement> tds = tr.findElements(By.tagName("td"));//Last two columns fetch..
-								//if (tds.size()==0) tds = tr.findElements(By.className("x26f"));
-								String dt = tds.get(tds.size()-2).getText();//tds.get(1).getText();
-								String de = tds.get(tds.size()-1).getText();
-								if (dt.equals("")) continue;
-								if (tr.getText().toLowerCase().contains("amalgam") ||  !restorative) {
-									dtemp.setBasicWaitingPeriod(DateUtils.getDiffBetweenMonthsFullDateInParsing(dt, de)+"");// 20
-									restorative=true;
+								List<WebElement> tds = tr.findElements(By.tagName("td"));// Last two columns fetch..
+								// if (tds.size()==0) tds = tr.findElements(By.className("x26f"));
+								String dt = tds.get(tds.size() - 2).getText();// tds.get(1).getText();
+								String de = tds.get(tds.size() - 1).getText();
+								if (dt.equals(""))
+									continue;
+								if (tr.getText().toLowerCase().contains("amalgam") || !restorative) {
+									dtemp.setBasicWaitingPeriod(
+											DateUtils.getDiffBetweenMonthsFullDateInParsing(dt, de) + "");// 20
+									if (DateUtils.waitingPeroidCheck(cDatewithNoTime,Constants.SIMPLE_DATE_FORMAT.parse(de))) {
+										dtemp.setBasicWaitingPeriod("No");
+									}
 								}
-								
-								
+
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -942,11 +932,16 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 						if (tr.getText().startsWith("Prosthodontics; Removable")) {
 							try {
 								List<WebElement> tds = tr.findElements(By.tagName("td"));
-								//if (tds.size()==0) tds = tr.findElements(By.className("x26f"));
-								String dt = tds.get(tds.size()-2).getText();//tds.get(1).getText();
-								if (dt.equals("")) continue;
-								String de = tds.get(tds.size()-1).getText();// need Logic
-								dtemp.setMajorWaitingPeriod(DateUtils.getDiffBetweenMonthsFullDateInParsing(dt, de)+"");// 21
+								// if (tds.size()==0) tds = tr.findElements(By.className("x26f"));
+								String dt = tds.get(tds.size() - 2).getText();// tds.get(1).getText();
+								if (dt.equals(""))
+									continue;
+								String de = tds.get(tds.size() - 1).getText();// need Logic
+								dtemp.setMajorWaitingPeriod(
+										DateUtils.getDiffBetweenMonthsFullDateInParsing(dt, de) + "");// 21
+								if (DateUtils.waitingPeroidCheck(cDatewithNoTime,Constants.SIMPLE_DATE_FORMAT.parse(de))) {
+									dtemp.setMajorWaitingPeriod("No");
+								}
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -954,11 +949,35 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 						if (tr.getText().startsWith("Orthodontics")) {
 							try {
 								List<WebElement> tds = tr.findElements(By.tagName("td"));
-								//if (tds.size()==0) tds = tr.findElements(By.className("x26f"));
-								String dt = tds.get(tds.size()-2).getText();//tds.get(1).getText();
-								if (dt.equals("")) continue;
-								String de = tds.get(tds.size()-1).getText();// need Logic
-								dtemp.setOrthoWaitingPeriod(DateUtils.getDiffBetweenMonthsFullDateInParsing(dt, de)+"");// 116
+								// if (tds.size()==0) tds = tr.findElements(By.className("x26f"));
+								String dt = tds.get(tds.size() - 2).getText();// tds.get(1).getText();
+								if (dt.equals(""))
+									continue;
+								String de = tds.get(tds.size() - 1).getText();// need Logic
+								dtemp.setOrthoWaitingPeriod(
+										DateUtils.getDiffBetweenMonthsFullDateInParsing(dt, de) + "");// 116
+								if (DateUtils.waitingPeroidCheck(cDatewithNoTime,Constants.SIMPLE_DATE_FORMAT.parse(de))) {
+									dtemp.setOrthoWaitingPeriod("No");
+								}
+
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						if (tr.getText().startsWith("NEED TO CONFIRM")) {
+							try {
+								List<WebElement> tds = tr.findElements(By.tagName("td"));
+								// if (tds.size()==0) tds = tr.findElements(By.className("x26f"));
+								String dt = tds.get(tds.size() - 2).getText();// tds.get(1).getText();
+								if (dt.equals(""))
+									continue;
+								String de = tds.get(tds.size() - 1).getText();// need Logic
+								dtemp.setWaitingPeriod4(DateUtils.getDiffBetweenMonthsFullDateInParsing(dt, de) + "");// Preventive
+																														// waiting
+																														// Period
+								if (DateUtils.waitingPeroidCheck(cDatewithNoTime,Constants.SIMPLE_DATE_FORMAT.parse(de))) {
+									dtemp.setWaitingPeriod4("No");
+								}
 
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -972,36 +991,39 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 						try {
 							if (tr.getText().startsWith("Eligibility status:")) {
-                               List<WebElement> tds = tr.findElements(By.className("x26d"));
-								if (tds.size()==0) tds = tr.findElements(By.className("x26e"));
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
-								if (!(tds.get(0).getText().equals("Active"))){
-									temp.setStatus(Constants.PATIENT_NOT_ACTIVE);	
-									return ;
+								List<WebElement> tds = tr.findElements(By.className("x26d"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className("x26e"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
+								if (!(tds.get(0).getText().equals("Active"))) {
+									temp.setStatus(Constants.PATIENT_NOT_ACTIVE);
+									return;
 								}
-								
-								
 
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						
+
 						try {
 							if (tr.getText().startsWith("Program type:")) {
-                                System.out.println("Program type: found");
+								System.out.println("Program type: found");
 								List<WebElement> tds = tr.findElements(By.className("x26d"));
-								if (tds.size()==0) tds = tr.findElements(By.className("x26e"));
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
-								
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className("x26e"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
+
 								dtemp.setPlanType(tds.get(0).getText().replace("@", ""));
-								planType=tds.get(0).getText().replace("@", "");
+								planType = tds.get(0).getText().replace("@", "");
 								try {
 									planTypeSUP = tds.get(0).findElement(By.tagName("sup")).getText();
-								}catch (Exception e) {
+								} catch (Exception e) {
 									// TODO: handle exception
 								}
-								if (planType.equals("")) planType="Delta Dental";
+								if (planType.equals(""))
+									planType = "Delta Dental";
 
 							}
 						} catch (Exception e) {
@@ -1011,8 +1033,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							if (tr.getText().startsWith("Plan name:")) {
 
 								List<WebElement> tds = tr.findElements(By.className("x26a"));// 138
-								if (tds.size()==0) tds = tr.findElements(By.className("x26d"));// 142
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className("x26d"));// 142
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
 								dtemp.setEmployerName(tds.get(0).getText());
 
 							}
@@ -1023,7 +1047,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							if (tr.getText().startsWith("Plan number:")) {
 
 								List<WebElement> tds = tr.findElements(By.className("x26d"));// 139
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
 								dtemp.setGroup(tds.get(0).getText());
 
 							}
@@ -1035,8 +1060,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							if (tr.getText().startsWith("Enrollee name:")) {
 
 								List<WebElement> tds = tr.findElements(By.className("x26a"));// 142
-								if (tds.size()==0) tds = tr.findElements(By.className("x26d"));// 142
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className("x26d"));// 142
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
 								dtemp.setPolicyHolder(tds.get(0).getText());
 
 							}
@@ -1047,7 +1074,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							if (tr.getText().startsWith("Date of birth:")) {
 
 								List<WebElement> tds = tr.findElements(By.className("x26d"));
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
 								dtemp.setPolicyHolderDOB(tds.get(0).getText());// 146
 								String[] s = tds.get(0).getText().split("/");
 								try {
@@ -1066,9 +1094,9 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							if (tr.getText().startsWith("Enrollee ID:")) {
 
 								List<WebElement> tds = tr.findElements(By.className("x26d"));
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
-								dtemp.setMemberId(tds.get(0).getText());//PolicyHolderDOB(tds.get(0).getText());//
-								
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
+								dtemp.setMemberId(tds.get(0).getText());// PolicyHolderDOB(tds.get(0).getText());//
 
 							}
 						} catch (Exception e) {
@@ -1078,13 +1106,44 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							if (tr.getText().startsWith("Effective date:")) {
 
 								List<WebElement> tds = tr.findElements(By.className("x26a"));
-								if (tds.size()==0) tds = tr.findElements(By.className("x26d"));
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className("x26d"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
 								dtemp.setPlanEffectiveDate(tds.get(0).getText());// 144
 								String[] s = tds.get(0).getText().split("/");
 								try {
-									dtemp.setPlanEffectiveDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0])
-											+ "-" + (s[1].length() == 2 ? s[1] : "0" + s[1]));// 144
+									effectiveDate = s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
+											+ (s[1].length() == 2 ? s[1] : "0" + s[1]);
+									// dtemp.setPlanEffectiveDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" +
+									// s[0])
+									// + "-" + (s[1].length() == 2 ? s[1] : "0" + s[1]));// 144
+
+								} catch (Exception e) {
+									// TODO: handle exception
+									// dtemp.setPlanEffectiveDate("");
+								}
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							if (tr.getText().startsWith("Family member effective date:")) {
+
+								List<WebElement> tds = tr.findElements(By.className("x26a"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className("x26d"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
+								dtemp.setPlanEffectiveDate(tds.get(0).getText());// 144
+								String[] s = tds.get(0).getText().split("/");
+								try {
+									familyEffectiveDate = s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
+											+ (s[1].length() == 2 ? s[1] : "0" + s[1]);
+									// dtemp.setPlanEffectiveDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" +
+									// s[0])
+									// + "-" + (s[1].length() == 2 ? s[1] : "0" + s[1]));// 144
 
 								} catch (Exception e) {
 									// TODO: handle exception
@@ -1099,15 +1158,18 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							if (tr.getText().startsWith("End date:")) {
 
 								List<WebElement> tds = tr.findElements(By.className("x26a"));
-								if (tds.size()==0) tds = tr.findElements(By.className("x26d"));
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className("x26d"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
 								dtemp.setPlanTermedDate(tds.get(0).getText());// 143
 								String[] s = tds.get(0).getText().split("/");
 								try {
-									termDate=s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
+									termDate = s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
 											+ (s[1].length() == 2 ? s[1] : "0" + s[1]);
-									//dtemp.setPlanTermedDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
-									//		+ (s[1].length() == 2 ? s[1] : "0" + s[1]));// 143
+									// dtemp.setPlanTermedDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0])
+									// + "-"
+									// + (s[1].length() == 2 ? s[1] : "0" + s[1]));// 143
 
 								} catch (Exception e) {
 									// TODO: handle exception
@@ -1122,15 +1184,18 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							if (tr.getText().startsWith("Family member end date:")) {
 
 								List<WebElement> tds = tr.findElements(By.className("x26a"));
-								if (tds.size()==0) tds = tr.findElements(By.className("x26d"));
-								if (tds.size()==0) tds = tr.findElements(By.tagName("td"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className("x26d"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.tagName("td"));
 								dtemp.setPlanTermedDate(tds.get(0).getText());// 143
 								String[] s = tds.get(0).getText().split("/");
 								try {
-									familytermDate=s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
+									familytermDate = s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
 											+ (s[1].length() == 2 ? s[1] : "0" + s[1]);
-									//dtemp.setPlanTermedDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
-									//		+ (s[1].length() == 2 ? s[1] : "0" + s[1]));// 143
+									// dtemp.setPlanTermedDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0])
+									// + "-"
+									// + (s[1].length() == 2 ? s[1] : "0" + s[1]));// 143
 
 								} catch (Exception e) {
 									// TODO: handle exception
@@ -1145,58 +1210,72 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 					}
 					//
 				}
-				
-				
+
 				if (divOffMax.getAttribute("summary").equals("Maximums")) {
-					boolean found=false;
-					String className =getClassNameforSummaryTags(divOffMax,"Maximums");
+					boolean found = false;
+					String className = getClassNameforSummaryTags(divOffMax, "Maximums");
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
-						
 
-						if (tr.getText().startsWith("Contract Individual Maximum") || tr.getText().startsWith("Calendar Individual Maximum")) {
+						if (tr.getText().startsWith("Contract Individual Maximum")
+								|| tr.getText().startsWith("Calendar Individual Maximum")
+								|| tr.getText().startsWith("Carryover Individual Maximum")) {
 							try {
 								if (tr.getText().contains(dtemp.getPlanType())) {
-								found=true;
-								List<WebElement> tds = tr.findElements(By.className("x264"));
-								//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-								if (tds.size()==0) tds = tr.findElements(By.className(className));
-								
-								dtemp.setPlanAnnualMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 1
-								dtemp.setPlanAnnualMaxRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 2
-								}else if (dtemp.getPlanAnnualMax().equals("0")) {
+									found = true;
+									if (!(dtemp.getPlanAnnualMax().equals("0")
+											|| (tr.getText().toLowerCase().contains("restorative")
+													|| tr.getText().toLowerCase().contains("preventive")))) {
+										continue;
+									}
 									List<WebElement> tds = tr.findElements(By.className("x264"));
-									//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-									if (tds.size()==0) tds = tr.findElements(By.className(className));
-									
+									// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+									if (tds.size() == 0)
+										tds = tr.findElements(By.className(className));
+
 									dtemp.setPlanAnnualMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 1
-									dtemp.setPlanAnnualMaxRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 2
-									
+									dtemp.setPlanAnnualMaxRemaining(
+											tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 2
+
+								} else if (dtemp.getPlanAnnualMax().equals("0")) {
+									List<WebElement> tds = tr.findElements(By.className("x264"));
+									// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+									if (tds.size() == 0)
+										tds = tr.findElements(By.className(className));
+
+									dtemp.setPlanAnnualMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 1
+									dtemp.setPlanAnnualMaxRemaining(
+											tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 2
+
 								}
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
-						if (tr.getText().startsWith("Lifetime Individual Maximum")){
+						if (tr.getText().startsWith("Lifetime Individual Maximum")) {
 							if (tr.getText().contains(dtemp.getPlanType())) {
-								found=true;
+								found = true;
 							}
 						}
-								
+
 						if (tr.getText().startsWith("Lifetime Individual Maximum")
 								&& tr.getText().contains("Orthodontics")) {
 							try {
 								if (tr.getText().contains(dtemp.getPlanType())) {
-								List<WebElement> tds = tr.findElements(By.className("x264"));
-								//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-								if (tds.size()==0) tds = tr.findElements(By.className(className));
-								
-								dtemp.setOrthoRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 115
-								}else if (dtemp.getOrthoRemaining().equals("")) {
 									List<WebElement> tds = tr.findElements(By.className("x264"));
-									//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-									if (tds.size()==0) tds = tr.findElements(By.className(className));
-									
-									dtemp.setOrthoRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 115	
+									// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+									if (tds.size() == 0)
+										tds = tr.findElements(By.className(className));
+
+									dtemp.setOrthoRemaining(
+											tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 115
+								} else if (dtemp.getOrthoRemaining().equals("")) {
+									List<WebElement> tds = tr.findElements(By.className("x264"));
+									// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+									if (tds.size() == 0)
+										tds = tr.findElements(By.className(className));
+
+									dtemp.setOrthoRemaining(
+											tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 115
 								}
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -1207,62 +1286,78 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								&& tr.getText().contains("Orthodontics")) {
 							try {
 								if (tr.getText().contains(dtemp.getPlanType())) {
-								List<WebElement> tds = tr.findElements(By.className("x264"));
-								if (tds.size()==0) tds = tr.findElements(By.className(className));
-								dtemp.setOrthoMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 91
-								}else if (dtemp.getOrthoMax().equals("")) {
 									List<WebElement> tds = tr.findElements(By.className("x264"));
-									if (tds.size()==0) tds = tr.findElements(By.className(className));
-									dtemp.setOrthoMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 91	
+									if (tds.size() == 0)
+										tds = tr.findElements(By.className(className));
+									dtemp.setOrthoMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 91
+								} else if (dtemp.getOrthoMax().equals("")) {
+									List<WebElement> tds = tr.findElements(By.className("x264"));
+									if (tds.size() == 0)
+										tds = tr.findElements(By.className(className));
+									dtemp.setOrthoMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 91
 								}
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
 
 						}
-					}//for LOOP
+					} // for LOOP
 					if (!found) {
-						planType="Denta Dental";
-						if (dtemp.getPlanType().contains("PPO"))planType="Delta Dental PPO";
+						planType = "Denta Dental";
+						if (dtemp.getPlanType().contains("PPO"))
+							planType = "Delta Dental PPO";
 						for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
-							
 
-							if (tr.getText().startsWith("Contract Individual Maximum") || tr.getText().startsWith("Calendar Individual Maximum")) {
+							if (tr.getText().startsWith("Contract Individual Maximum")
+									|| tr.getText().startsWith("Calendar Individual Maximum")
+									|| tr.getText().startsWith("Carryover Individual Maximum")) {
 								try {
 									if (tr.getText().contains(planType)) {
-									List<WebElement> tds = tr.findElements(By.className("x264"));
-									if (tds.size()==0) tds = tr.findElements(By.className(className));
-									dtemp.setPlanAnnualMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 1
-									dtemp.setPlanAnnualMaxRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 2
-									}else if (dtemp.getPlanAnnualMax().equals("0")) {
+										if (!(dtemp.getPlanAnnualMax().equals("0")
+												|| (tr.getText().toLowerCase().contains("restorative")
+														|| tr.getText().toLowerCase().contains("preventive")))) {
+											continue;
+										}
 										List<WebElement> tds = tr.findElements(By.className("x264"));
-										//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-										if (tds.size()==0) tds = tr.findElements(By.className(className));
-										
+										if (tds.size() == 0)
+											tds = tr.findElements(By.className(className));
 										dtemp.setPlanAnnualMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 1
-										dtemp.setPlanAnnualMaxRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 2
-										
+										dtemp.setPlanAnnualMaxRemaining(
+												tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 2
+									} else if (dtemp.getPlanAnnualMax().equals("0")) {
+										List<WebElement> tds = tr.findElements(By.className("x264"));
+										// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+										if (tds.size() == 0)
+											tds = tr.findElements(By.className(className));
+
+										dtemp.setPlanAnnualMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 1
+										dtemp.setPlanAnnualMaxRemaining(
+												tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 2
+
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
 							}
-							if (tr.getText().startsWith("Lifetime Individual Maximum")){
+							if (tr.getText().startsWith("Lifetime Individual Maximum")) {
 								if (tr.getText().contains(planType)) {
 								}
 							}
-									
+
 							if (tr.getText().startsWith("Lifetime Individual Maximum")
 									&& tr.getText().contains("Orthodontics")) {
 								try {
 									if (tr.getText().contains(planType)) {
-									List<WebElement> tds = tr.findElements(By.className("x264"));
-									if (tds.size()==0) tds = tr.findElements(By.className(className));
-									dtemp.setOrthoRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 115
-									}else if (dtemp.getOrthoRemaining().equals("")) {
 										List<WebElement> tds = tr.findElements(By.className("x264"));
-										if (tds.size()==0) tds = tr.findElements(By.className(className));
-										dtemp.setOrthoRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 115	
+										if (tds.size() == 0)
+											tds = tr.findElements(By.className(className));
+										dtemp.setOrthoRemaining(tds.get(1).getText().replace("$", "").replace(",", ""));// 115
+									} else if (dtemp.getOrthoRemaining().equals("")) {
+										List<WebElement> tds = tr.findElements(By.className("x264"));
+										if (tds.size() == 0)
+											tds = tr.findElements(By.className(className));
+										dtemp.setOrthoRemaining(
+												tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 115
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -1273,51 +1368,55 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 									&& tr.getText().contains("Orthodontics")) {
 								try {
 									if (tr.getText().contains(planType)) {
-									List<WebElement> tds = tr.findElements(By.className("x264"));
-									if (tds.size()==0) tds = tr.findElements(By.className(className));
-									dtemp.setOrthoMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 91
-									}else if (dtemp.getOrthoMax().equals("")) {
 										List<WebElement> tds = tr.findElements(By.className("x264"));
-										if (tds.size()==0) tds = tr.findElements(By.className(className));
-										dtemp.setOrthoMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 91	
+										if (tds.size() == 0)
+											tds = tr.findElements(By.className(className));
+										dtemp.setOrthoMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 91
+									} else if (dtemp.getOrthoMax().equals("")) {
+										List<WebElement> tds = tr.findElements(By.className("x264"));
+										if (tds.size() == 0)
+											tds = tr.findElements(By.className(className));
+										dtemp.setOrthoMax(tds.get(0).getText().replace("$", "").replace(",", ""));// 91
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
 
 							}
-						}//for LOOP					}
-					//
-				 }//maximums
+						} // for LOOP }
+							//
+					} // maximums
 				}
 				if (divOffMax.getAttribute("summary").equals("Deductibles")) {
-					boolean found=false;
-					String className =getClassNameforSummaryTags(divOffMax,"Deductibles");
+					boolean found = false;
+					String className = getClassNameforSummaryTags(divOffMax, "Deductibles");
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
-						if (tr.getText().startsWith("Contract Individual Deductible") || tr.getText().startsWith("Calendar Individual Deductible")
+						if (tr.getText().startsWith("Contract Individual Deductible")
+								|| tr.getText().startsWith("Calendar Individual Deductible")
 								|| tr.getText().startsWith("Carryover Individual Deductible")) {
 							try {
 								if (tr.getText().contains(dtemp.getPlanType())) {
-								found=true;
-								List<WebElement> tds = tr.findElements(By.className("x264"));
-								if (tds.size()==0) tds = tr.findElements(By.className(className));
-								dtemp.setPlanIndividualDeductible(
-										tds.get(0).getText().replace("$", "").replace(",", ""));// 3
-								dtemp.setPlanIndividualDeductibleRemaining(
-										tds.get(1).getText().replace("$", "").replace(",", ""));// 4
-								}else if (dtemp.getPlanIndividualDeductible().equals("0")) { 
+									found = true;
 									List<WebElement> tds = tr.findElements(By.className("x264"));
-									if (tds.size()==0) tds = tr.findElements(By.className(className));
+									if (tds.size() == 0)
+										tds = tr.findElements(By.className(className));
 									dtemp.setPlanIndividualDeductible(
 											tds.get(0).getText().replace("$", "").replace(",", ""));// 3
 									dtemp.setPlanIndividualDeductibleRemaining(
-											tds.get(1).getText().replace("$", "").replace(",", ""));// 4
+											tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 4
+								} else if (dtemp.getPlanIndividualDeductible().equals("0")) {
+									List<WebElement> tds = tr.findElements(By.className("x264"));
+									if (tds.size() == 0)
+										tds = tr.findElements(By.className(className));
+									dtemp.setPlanIndividualDeductible(
+											tds.get(0).getText().replace("$", "").replace(",", ""));// 3
+									dtemp.setPlanIndividualDeductibleRemaining(
+											tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 4
 								}
-								String wholeText=tr.getText();
-								String[] wholeTextArray=wholeText.split("Accumulation period for this");
-								
-								
+								String wholeText = tr.getText();
+								String[] wholeTextArray = wholeText.split("Accumulation period for this");
+
 								if (tr.getText().contains("Preventive")) {
 									dtemp.setPreventiveSubDed("Yes");// 118
 								} else {
@@ -1348,90 +1447,95 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								} else {
 									dtemp.setPerioSurgerySubjectDeductible("No");// 12
 								}
-								
+
 								if (tr.getText().contains("Orthodontics")) {
-									lifetimeindorthodics="Yes";
+									lifetimeindorthodics = "Yes";
 								} else {
-									lifetimeindorthodics="No";
+									lifetimeindorthodics = "No";
 								}
-								
-								if (wholeTextArray.length>=3) {
-									
-									
-									//Case where We have multiple value of Accumulation period for this example Patient id =12937 Jasper
+
+								if (wholeTextArray.length >= 3) {
+
+									// Case where We have multiple value of Accumulation period for this example
+									// Patient id =12937 Jasper
 									try {
 										List<WebElement> tds = tr.findElements(By.className("x264"));
-										if (tds.size()==0) tds = tr.findElements(By.className(className));
-									String id =	tds.get(0).findElement(By.xpath("..")).getAttribute("id");
-									id= id.split("column")[0]+"column"+(Integer.parseInt(id.split("column")[1].split("xx")[0])-1)+"xx";
-									
-									WebElement tdsPlanName = tr.findElement(By.id(id));
-									System.out.println(tdsPlanName.getText());
-									int ct=-1;
-									List<WebElement> tdsPnames = tdsPlanName.findElements(By.className("x263"));
-									if (tdsPnames.size()==0) tdsPnames=tdsPlanName.findElements(By.className("x264"));
-									if (tdsPnames.size()==0) tdsPnames=tdsPlanName.findElements(By.className(className));
-									for(WebElement tdsPname:tdsPnames) {
-										ct=ct+1;
-										if (tdsPname.getText().contains(planType)) {
-										break;	
+										if (tds.size() == 0)
+											tds = tr.findElements(By.className(className));
+										String id = tds.get(0).findElement(By.xpath("..")).getAttribute("id");
+										id = id.split("column")[0] + "column"
+												+ (Integer.parseInt(id.split("column")[1].split("xx")[0]) - 1) + "xx";
+
+										WebElement tdsPlanName = tr.findElement(By.id(id));
+										System.out.println(tdsPlanName.getText());
+										int ct = -1;
+										List<WebElement> tdsPnames = tdsPlanName.findElements(By.className("x263"));
+										if (tdsPnames.size() == 0)
+											tdsPnames = tdsPlanName.findElements(By.className("x264"));
+										if (tdsPnames.size() == 0)
+											tdsPnames = tdsPlanName.findElements(By.className(className));
+										for (WebElement tdsPname : tdsPnames) {
+											ct = ct + 1;
+											if (tdsPname.getText().contains(planType)) {
+												break;
+											}
 										}
-									}
-									
-									String textT=tr.findElements(By.tagName("td")).get(1).getText().split("Accumulation period for this program")[ct+1];
-									if (textT.contains("Preventive")) {
-										dtemp.setPreventiveSubDed("Yes");// 118
-									} else {
-										dtemp.setPreventiveSubDed("No");// 118
-									}
-									if (textT.contains("Diagnostic")) {
-										dtemp.setDiagnosticSubDed("Yes");// 109
-									} else {
-										dtemp.setDiagnosticSubDed("No");// 109
-									}
-									if (textT.contains("Restorative")) {
-										dtemp.setBasicSubjectDeductible("Yes");// 6
-									} else {
-										dtemp.setBasicSubjectDeductible("No");// 6
-									}
-									if (textT.contains("Prosthodontics")) {
-										dtemp.setMajorSubjectDeductible("Yes");// 8
-									} else {
-										dtemp.setMajorSubjectDeductible("No");// 8
-									}
-									if (textT.contains("Endodontics")) {
-										dtemp.setEndoSubjectDeductible("Yes");// 10
-									} else {
-										dtemp.setEndoSubjectDeductible("No");// 10
-									}
-									if (tr.getText().contains("Endodontics")) {
-										dtemp.setPerioSurgerySubjectDeductible("Yes");// 12
-									} else {
-										dtemp.setPerioSurgerySubjectDeductible("No");// 12
-									}
-									
-									if (tr.getText().contains("Orthodontics")) {
-										lifetimeindorthodics="Yes";
-									} else {
-										lifetimeindorthodics="No";
-									}
-									
-									
-									}catch(Exception e) {
-										
+
+										String textT = tr.findElements(By.tagName("td")).get(1).getText()
+												.split("Accumulation period for this program")[ct + 1];
+										if (textT.contains("Preventive")) {
+											dtemp.setPreventiveSubDed("Yes");// 118
+										} else {
+											dtemp.setPreventiveSubDed("No");// 118
+										}
+										if (textT.contains("Diagnostic")) {
+											dtemp.setDiagnosticSubDed("Yes");// 109
+										} else {
+											dtemp.setDiagnosticSubDed("No");// 109
+										}
+										if (textT.contains("Restorative")) {
+											dtemp.setBasicSubjectDeductible("Yes");// 6
+										} else {
+											dtemp.setBasicSubjectDeductible("No");// 6
+										}
+										if (textT.contains("Prosthodontics")) {
+											dtemp.setMajorSubjectDeductible("Yes");// 8
+										} else {
+											dtemp.setMajorSubjectDeductible("No");// 8
+										}
+										if (textT.contains("Endodontics")) {
+											dtemp.setEndoSubjectDeductible("Yes");// 10
+										} else {
+											dtemp.setEndoSubjectDeductible("No");// 10
+										}
+										if (tr.getText().contains("Endodontics")) {
+											dtemp.setPerioSurgerySubjectDeductible("Yes");// 12
+										} else {
+											dtemp.setPerioSurgerySubjectDeductible("No");// 12
+										}
+
+										if (tr.getText().contains("Orthodontics")) {
+											lifetimeindorthodics = "Yes";
+										} else {
+											lifetimeindorthodics = "No";
+										}
+
+									} catch (Exception e) {
+
 									}
 								}
-						
+
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
 
 						}
 						if (tr.getText().startsWith("Lifetime Individual Deductible")) {
-							lifetimeindpresent=true;
+							lifetimeindpresent = true;
 							try {
-								//List<WebElement> tds = tr.findElements(By.className("x264"));
-								//dtemp.setOrthoSubjectDeductible(tds.get(0).getText().replace("$", "").replace(",", ""));// 93
+								// List<WebElement> tds = tr.findElements(By.className("x264"));
+								// dtemp.setOrthoSubjectDeductible(tds.get(0).getText().replace("$",
+								// "").replace(",", ""));// 93
 								if (tr.getText().contains("Orthodontics")) {
 									dtemp.setOrthoSubjectDeductible("Yes");// 93
 								} else {
@@ -1443,99 +1547,108 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 						}
 
-					}//for loop
+					} // for loop
 					if (!found) {
 						for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
-							if (tr.getText().startsWith("Contract Individual Deductible") || tr.getText().startsWith("Calendar Individual Deductible")
+							if (tr.getText().startsWith("Contract Individual Deductible")
+									|| tr.getText().startsWith("Calendar Individual Deductible")
 									|| tr.getText().startsWith("Carryover Individual Deductible")) {
 								try {
-									//System.out.println("dddddd"+tr.getText());
-									//System.out.println(tr.getText().contains(planType));
+									// System.out.println("dddddd"+tr.getText());
+									// System.out.println(tr.getText().contains(planType));
 									if (tr.getText().contains(planType)) {
-									//found=true;
-									List<WebElement> tds = tr.findElements(By.className("x264"));
-									//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-									if (tds.size()==0) tds = tr.findElements(By.className(className));
-									dtemp.setPlanIndividualDeductible(
-											tds.get(0).getText().replace("$", "").replace(",", ""));// 3
-									dtemp.setPlanIndividualDeductibleRemaining(
-											tds.get(1).getText().replace("$", "").replace(",", ""));// 4
-									}else if (dtemp.getPlanIndividualDeductible().equals("0")) { 
+										// found=true;
 										List<WebElement> tds = tr.findElements(By.className("x264"));
-										//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-										if (tds.size()==0) tds = tr.findElements(By.className(className));
+										// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+										if (tds.size() == 0)
+											tds = tr.findElements(By.className(className));
 										dtemp.setPlanIndividualDeductible(
 												tds.get(0).getText().replace("$", "").replace(",", ""));// 3
 										dtemp.setPlanIndividualDeductibleRemaining(
-												tds.get(1).getText().replace("$", "").replace(",", ""));// 4
+												tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 4
+									} else if (dtemp.getPlanIndividualDeductible().equals("0")) {
+										List<WebElement> tds = tr.findElements(By.className("x264"));
+										// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+										if (tds.size() == 0)
+											tds = tr.findElements(By.className(className));
+										dtemp.setPlanIndividualDeductible(
+												tds.get(0).getText().replace("$", "").replace(",", ""));// 3
+										dtemp.setPlanIndividualDeductibleRemaining(
+												tds.get(1).getAttribute("innerText").replace("$", "").replace(",", ""));// 4
 									}
-									
-									String wholeText=tr.getText();
-									String[] wholeTextArray=wholeText.split("Accumulation period for this");
-									
-										if (tr.getText().contains("Preventive")) {
-											dtemp.setPreventiveSubDed("Yes");// 118
-										} else {
-											dtemp.setPreventiveSubDed("No");// 118
-										}
-										if (tr.getText().contains("Diagnostic")) {
-											dtemp.setDiagnosticSubDed("Yes");// 109
-										} else {
-											dtemp.setDiagnosticSubDed("No");// 109
-										}
-										if (tr.getText().contains("Restorative")) {
-											dtemp.setBasicSubjectDeductible("Yes");// 6
-										} else {
-											dtemp.setBasicSubjectDeductible("No");// 6
-										}
-										if (tr.getText().contains("Prosthodontics")) {
-											dtemp.setMajorSubjectDeductible("Yes");// 8
-										} else {
-											dtemp.setMajorSubjectDeductible("No");// 8
-										}
-										if (tr.getText().contains("Endodontics")) {
-											dtemp.setEndoSubjectDeductible("Yes");// 10
-										} else {
-											dtemp.setEndoSubjectDeductible("No");// 10
-										}
-										if (tr.getText().contains("Endodontics")) {
-											dtemp.setPerioSurgerySubjectDeductible("Yes");// 12
-										} else {
-											dtemp.setPerioSurgerySubjectDeductible("No");// 12
-										}
-										
-										if (tr.getText().contains("Orthodontics")) {
-											lifetimeindorthodics="Yes";
-										} else {
-											lifetimeindorthodics="No";
-										}
-										
-										if (wholeTextArray.length>=3) {
-									
-											
-											//Case where We have multiple value of Accumulation period for this example Patient id =12937 Jasper
-											try {
-												List<WebElement> tds = tr.findElements(By.className("x264"));
-												//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-												if (tds.size()==0) tds = tr.findElements(By.className(className));
-											String id =	tds.get(0).findElement(By.xpath("..")).getAttribute("id");
-											id= id.split("column")[0]+"column"+(Integer.parseInt(id.split("column")[1].split("xx")[0])-1)+"xx";
-											
+
+									String wholeText = tr.getText();
+									String[] wholeTextArray = wholeText.split("Accumulation period for this");
+
+									if (tr.getText().contains("Preventive")) {
+										dtemp.setPreventiveSubDed("Yes");// 118
+									} else {
+										dtemp.setPreventiveSubDed("No");// 118
+									}
+									if (tr.getText().contains("Diagnostic")) {
+										dtemp.setDiagnosticSubDed("Yes");// 109
+									} else {
+										dtemp.setDiagnosticSubDed("No");// 109
+									}
+									if (tr.getText().contains("Restorative")) {
+										dtemp.setBasicSubjectDeductible("Yes");// 6
+									} else {
+										dtemp.setBasicSubjectDeductible("No");// 6
+									}
+									if (tr.getText().contains("Prosthodontics")) {
+										dtemp.setMajorSubjectDeductible("Yes");// 8
+									} else {
+										dtemp.setMajorSubjectDeductible("No");// 8
+									}
+									if (tr.getText().contains("Endodontics")) {
+										dtemp.setEndoSubjectDeductible("Yes");// 10
+									} else {
+										dtemp.setEndoSubjectDeductible("No");// 10
+									}
+									if (tr.getText().contains("Endodontics")) {
+										dtemp.setPerioSurgerySubjectDeductible("Yes");// 12
+									} else {
+										dtemp.setPerioSurgerySubjectDeductible("No");// 12
+									}
+
+									if (tr.getText().contains("Orthodontics")) {
+										lifetimeindorthodics = "Yes";
+									} else {
+										lifetimeindorthodics = "No";
+									}
+
+									if (wholeTextArray.length >= 3) {
+
+										// Case where We have multiple value of Accumulation period for this example
+										// Patient id =12937 Jasper
+										try {
+											List<WebElement> tds = tr.findElements(By.className("x264"));
+											// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+											if (tds.size() == 0)
+												tds = tr.findElements(By.className(className));
+											String id = tds.get(0).findElement(By.xpath("..")).getAttribute("id");
+											id = id.split("column")[0] + "column"
+													+ (Integer.parseInt(id.split("column")[1].split("xx")[0]) - 1)
+													+ "xx";
+
 											WebElement tdsPlanName = tr.findElement(By.id(id));
-											//System.out.println(tdsPlanName.getText());
-											int ct=-1;
+											// System.out.println(tdsPlanName.getText());
+											int ct = -1;
 											List<WebElement> tdsPnames = tdsPlanName.findElements(By.className("x263"));
-											if (tdsPnames.size()==0) tdsPnames=tdsPlanName.findElements(By.className("x264"));
-											if (tdsPnames.size()==0) tdsPnames=tdsPlanName.findElements(By.className(className));
-											for(WebElement tdsPname:tdsPnames) {
-												ct=ct+1;
+											if (tdsPnames.size() == 0)
+												tdsPnames = tdsPlanName.findElements(By.className("x264"));
+											if (tdsPnames.size() == 0)
+												tdsPnames = tdsPlanName.findElements(By.className(className));
+											for (WebElement tdsPname : tdsPnames) {
+												ct = ct + 1;
 												if (tdsPname.getText().contains(planType)) {
-												break;	
+													break;
 												}
 											}
-											
-											String textT=tr.findElements(By.tagName("td")).get(1).getText().split("Accumulation period for this program")[ct+1];
+
+											String textT = tr.findElements(By.tagName("td")).get(1).getText()
+													.split("Accumulation period for this program")[ct + 1];
 											if (textT.contains("Preventive")) {
 												dtemp.setPreventiveSubDed("Yes");// 118
 											} else {
@@ -1566,40 +1679,38 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 											} else {
 												dtemp.setPerioSurgerySubjectDeductible("No");// 12
 											}
-											
+
 											if (tr.getText().contains("Orthodontics")) {
-												lifetimeindorthodics="Yes";
+												lifetimeindorthodics = "Yes";
 											} else {
-												lifetimeindorthodics="No";
+												lifetimeindorthodics = "No";
 											}
-									
-											
-											}catch(Exception e) {
-												
-											}
-											
-										
-									     }
+
+										} catch (Exception e) {
+
+										}
+
+									}
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
 
 							}
 
-
-						}//for loop
+						} // for loop
 					}
 					//
 				}
 				if (divOffMax.getAttribute("summary").equals("Other Provisions")) {
-					String className =getClassNameforSummaryTags(divOffMax,"Other Provisions");
+					String className = getClassNameforSummaryTags(divOffMax, "Other Provisions");
 					for (WebElement tr : divOffMax.findElements(By.tagName("tr"))) {
 
 						if (tr.getText().startsWith("Missing Tooth Coverage")) {
 							try {
 								List<WebElement> tds = tr.findElements(By.className("x264"));
-								//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-								if (tds.size()==0) tds = tr.findElements(By.className(className));
+								// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className(className));
 								dtemp.setMissingToothClause(tds.get(0).getText().replace("$", "").replace(",", ""));// 16
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -1619,8 +1730,9 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							try {
 
 								List<WebElement> tds = tr.findElements(By.className("x264"));
-								//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-								if (tds.size()==0) tds = tr.findElements(By.className(className));
+								// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className(className));
 								dtemp.setPlanDependentsCoveredtoAge(
 										tds.get(0).getText().replace("(Division has no rule)", "").trim());// 127
 							} catch (Exception e) {
@@ -1630,9 +1742,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 						if (tr.getText().startsWith("Assignment of Benefits")) {
 							try {
 								List<WebElement> tds = tr.findElements(By.className("x264"));
-								//if (tds.size()==0) tds = tr.findElements(By.className("x265"));
-								if (tds.size()==0) tds = tr.findElements(By.className(className));
-								
+								// if (tds.size()==0) tds = tr.findElements(By.className("x265"));
+								if (tds.size() == 0)
+									tds = tr.findElements(By.className(className));
+
 								if (tds.get(0) != null && tds.get(0).getText() != null && tds.get(0).getText()
 										.toLowerCase().contains("group accepts assignment of benefits"))
 									dtemp.setPlanAssignmentofBenefits("Yes");// 131
@@ -1650,16 +1763,26 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			}
 
 		}
-		
-		if (familytermDate.equals("")) dtemp.setPlanTermedDate(termDate);
-		else dtemp.setPlanTermedDate(familytermDate);
-		
+
+		if (familytermDate.equals(""))
+			dtemp.setPlanTermedDate(termDate);
+		else
+			dtemp.setPlanTermedDate(familytermDate);
+
+		if (familyEffectiveDate.equals(""))
+			dtemp.setPlanEffectiveDate(effectiveDate);
+		else
+			dtemp.setPlanEffectiveDate(familyEffectiveDate);
+
 		if (!lifetimeindpresent) {
 			dtemp.setOrthoSubjectDeductible(lifetimeindorthodics);// 93
 		}
-        System.out.println(dtemp.getPlanAnnualMax());
+
+		System.out.println("getPlanAnnualMax()");
+		System.out.println(dtemp.getPlanAnnualMax());
+		System.out.println(dtemp.getPlanAnnualMaxRemaining());
 		List<WebElement> spans = driver.findElements(By.className("x24l"));
-		//if (spans.size()==0)  spans = driver.findElements(By.className("x24l"));
+		// if (spans.size()==0) spans = driver.findElements(By.className("x24l"));
 		String claim = "";
 		for (WebElement span : spans) {
 			claim = claim + " " + span.getText().trim();
@@ -1676,11 +1799,11 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dtemp.setOrthoAgeLimit("0");
 		if (!ageLimtId.equals("")) {
 			try {
-				boolean clickMePresent=false;
+				boolean clickMePresent = false;
 				List<WebElement> aas = driver.findElement(By.id(ageLimtId)).findElements(By.tagName("a"));
 				for (WebElement aa : aas) {
 					if (aa.getText() != null && aa.getText().equals("Click here")) {
-						clickMePresent=true;
+						clickMePresent = true;
 						aa.click();
 						Thread.sleep(15000);
 						List<WebElement> tabs = driver.findElements(By.tagName("table"));
@@ -1689,9 +1812,9 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								if (tab.getAttribute("summary") != null
 										&& tab.getAttribute("summary").equals("Ortho Age informat")) {
 									dtemp.setOrthoAgeLimit(tab.findElements(By.tagName("td")).get(1).getText());// 92
-									if (dtemp.getOrthoAgeLimit()!=null && 
-											dtemp.getOrthoAgeLimit().toLowerCase().contains("no age limit")) {
-										    dtemp.setOrthoAgeLimit("99");
+									if (dtemp.getOrthoAgeLimit() != null
+											&& dtemp.getOrthoAgeLimit().toLowerCase().contains("no age limit")) {
+										dtemp.setOrthoAgeLimit("99");
 									}
 									break;
 								}
@@ -1711,31 +1834,32 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 					}
 					if (!clickMePresent) {
-						//TO DO IT CAPLINE SAYS
+						// TO DO IT CAPLINE SAYS
 					}
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
 		}
-		//String planType = dtemp.getPlanType();
+		// String planType = dtemp.getPlanType();
 		temp.setPlanTypeinSite(false);
 		openSideBarFirst(driver, "Benefit details", true,
 				new String[] { "Endodontics", "Periodontics", "Preventive", "Diagnostic", "Prosthodontics; Removable" },
 				true, temp);
 		dtemp.setMajorPercentage(
 				fetchBenefitDetails("", temp, driver, "", "Prosthodontics; Removable", "", planType, false, true));// 7
-        if (!temp.isPlanTypeinSite()) {
-        	if (planType.contains("PPO"))
-        	planType="Delta Dental PPO";
-        	else planType="Delta Dental";
-    		dtemp.setMajorPercentage(
-    				fetchBenefitDetails("", temp, driver, "", "Prosthodontics; Removable", "", planType, false, true));// 7
-        }
+		if (!temp.isPlanTypeinSite()) {
+			if (planType.contains("PPO"))
+				planType = "Delta Dental PPO";
+			else
+				planType = "Delta Dental";
+			dtemp.setMajorPercentage(
+					fetchBenefitDetails("", temp, driver, "", "Prosthodontics; Removable", "", planType, false, true));// 7
+		}
 
 		dtemp.setEndodonticsPercentage(
 				fetchBenefitDetails("", temp, driver, "", "Endodontics", "", planType, false, true));// 9
-		
+
 		// 10
 		dtemp.setPerioSurgeryPercentage(
 				fetchBenefitDetails("", temp, driver, "", "Periodontics", "Surgical Services", planType, false, true));// 11
@@ -1745,7 +1869,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 				fetchBenefitDetails("", temp, driver, "", "Preventive", "", planType, false, true));// 13
 		dtemp.setDiagnosticPercentage(
 				fetchBenefitDetails("", temp, driver, "", "Diagnostic", "", planType, false, true));// 14
-		
+
 		dtemp.setpAXRaysPercentage(fetchBenefitDetails("D0220", temp, driver, "", "Diagnostic",
 				"Radiographs/Diagnostic Imaging", planType, true, true));// 15
 
@@ -1785,8 +1909,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		benefitInfoMap.put("D2740", dt);// d
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitContract,benefitLimitation });// 19 121
-		dt.setMandatory(new boolean[] { false,false });
+		dt.setTypes(new String[] { benefitContract, benefitLimitation });// 19 121
+		dt.setMandatory(new boolean[] { false, false });
 		dt.setAge(age);
 		benefitInfoMap.put("D9944", dt);// e --------add benefitContract if needed for D9944
 
@@ -1818,13 +1942,14 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dt.setTypes(new String[] { benefitLimitation });// 26
 		dt.setMandatory(new boolean[] { false });
 		dt.setAge(age);
-
 		benefitInfoMap.put("D0145", dt);// j
+
 		dtemp.setComments("");
-		String[] info = fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, false, null,true);// call for
-																											// first 10
-		dtemp.setComments(info[4]+"\n"+info[5]);
-		System.out.println("setCommentssetComments+"+dtemp.getComments());
+		String[] info = fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, false, null, true);// call
+																													// for
+		// first 10
+		dtemp.setComments(info[4] + "\n" + info[5]);
+		System.out.println("setCommentssetComments+" + dtemp.getComments());
 		benefitInfoMap = new HashMap<>();
 
 		dt = new DentaBenefitScrapDto();
@@ -1887,8 +2012,12 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dt.setAge(age);
 		benefitInfoMap.put("D1120", dt);// j
 
-		String[] info2= fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info,false);// call for second 10
-		if (!info2[5].equals(""))dtemp.setComments(dtemp.getComments()+"\n"+info2[5]);
+		String[] info2 = fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info, false);// call
+																													// for
+																													// second
+																													// 10
+		if (!info2[5].equals(""))
+			dtemp.setComments(dtemp.getComments() + "\n" + info2[5]);
 		benefitInfoMap = new HashMap<>();
 		// 46
 		dt = new DentaBenefitScrapDto();
@@ -1955,8 +2084,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dt.setAge(age);
 		benefitInfoMap.put("D7310", dt);// j
 
-		info2 =fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info,false);// call for third 10
-		if (!info2[5].equals(""))dtemp.setComments(dtemp.getComments()+"\n"+info2[5]);
+		info2 = fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info, false);// call for
+																											// third 10
+		if (!info2[5].equals(""))
+			dtemp.setComments(dtemp.getComments() + "\n" + info2[5]);
 		benefitInfoMap = new HashMap<>();
 
 		dt = new DentaBenefitScrapDto();
@@ -2020,8 +2151,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dt.setAge(age);
 		benefitInfoMap.put("D9945", dt);// j
 
-		info2 =fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info,false);// call for fourth 10
-		if (!info2[5].equals(""))dtemp.setComments(dtemp.getComments()+"\n"+info2[5]);
+		info2 = fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info, false);// call for
+																											// fourth 10
+		if (!info2[5].equals(""))
+			dtemp.setComments(dtemp.getComments() + "\n" + info2[5]);
 		benefitInfoMap = new HashMap<>();
 
 		// 80
@@ -2083,28 +2216,62 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dt.setMandatory(new boolean[] { true, true });// For D2391 > D2140 //( 5 78 79)
 		benefitInfoMap.put("D2140", dt);// h
 
-		
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitContract });
+		dt.setAge(age);
+		dt.setMandatory(new boolean[] { false });
+		benefitInfoMap.put("D0330", dt);
+
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitContract });
+		dt.setAge(age);
+		dt.setMandatory(new boolean[] { false });//
+		benefitInfoMap.put("D2934", dt);// this is 10 th
+
 		// 117
 		// 119
 		// 123 124 125 126
 		// 128 129 130
 		// 132 133 134 135
 
-		info2 =fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info,false);// call for Fifth 10
-		if (!info2[5].equals(""))dtemp.setComments(dtemp.getComments()+"\n"+info2[5]);
+		info2 = fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info, false);// call for
+																											// Fifth 10
+		if (!info2[5].equals(""))
+			dtemp.setComments(dtemp.getComments() + "\n" + info2[5]);
+		
 		benefitInfoMap = new HashMap<>();
-        //for patient  Adrian Flores -->Sinton 1833 this is not mandatory
+		
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitContract });
+		dt.setAge(age);
+		dt.setMandatory(new boolean[] { false });
+		benefitInfoMap.put("D0160", dt);
+
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitContract });
+		dt.setAge(age);
+		dt.setMandatory(new boolean[] { false });//
+		benefitInfoMap.put("D4381", dt);// this is 2
+
+		info2 = fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info, false);// call for
+																											// sixth 2
+		if (!info2[5].equals(""))
+			dtemp.setComments(dtemp.getComments() + "\n" + info2[5]);
+
+		benefitInfoMap = new HashMap<>();
+		// for patient Adrian Flores -->Sinton 1833 this is not mandatory
 		dtemp.setBasicPercentage(getBenefitProcedureValueFromMap("D2391", benefitContract, values, false));// 5
-		boolean checkforD2391D2140=true;
-		if (dtemp.getBasicPercentage().contains(Constants.SCRAPPING_NOT_FOUND) || dtemp.getBasicPercentage().contains(Constants.SCRAPPING_MANDATORY_WARNING) || 
-				dtemp.getBasicPercentage().trim().equals("") || dtemp.getBasicPercentage().trim().equals("0")) {
-			dtemp.setBasicPercentage(getBenefitProcedureValueFromMap("D2140", benefitContract, values, true)); //5
-			checkforD2391D2140=false;
+		boolean checkforD2391D2140 = true;
+		if (dtemp.getBasicPercentage().contains(Constants.SCRAPPING_NOT_FOUND)
+				|| dtemp.getBasicPercentage().contains(Constants.SCRAPPING_MANDATORY_WARNING)
+				|| dtemp.getBasicPercentage().trim().equals("") || dtemp.getBasicPercentage().trim().equals("0")) {
+			dtemp.setBasicPercentage(getBenefitProcedureValueFromMap("D2140", benefitContract, values, true)); // 5
+			checkforD2391D2140 = false;
 		}
 
 		// 8
 		dtemp.setNightGuardsD9944Fr(getBenefitProcedureValueFromMap("D9944", benefitLimitation, values, false));// 19
-		
+
 		dtemp.setsSCD2930FL(getBenefitProcedureValueFromMap("D2930", benefitLimitation, values, false));// 22
 
 		dtemp.setsSCD2931FL(getBenefitProcedureValueFromMap("D2931", benefitLimitation, values, false));// 23
@@ -2119,20 +2286,25 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 		dtemp.setxRaysBWSFL(getBenefitProcedureValueFromMap("D0272", benefitLimitation, values, false));// 28
 
-		String D0220F=getBenefitProcedureValueFromMap("D0220", benefitLimitation, values, false);//29
+		String D0220F = getBenefitProcedureValueFromMap("D0220", benefitLimitation, values, false);// 29
+		// System.out.println("**(*(*(*(*(*(*(*(**((*");
+		// System.out.println("**(*(*(*(*(*(*(*(**((*"+D0220F);
+
 		if (D0220F.equalsIgnoreCase("Pre-D") || D0220F.equalsIgnoreCase("benefit is limited")) {
 			dtemp.setxRaysPAD0220FL("No Frequency");// 29
-		}else {
+		} else {
 			dtemp.setxRaysPAD0220FL(D0220F);// 29
 		}
 
-		String D0230F=getBenefitProcedureValueFromMap("D0230", benefitLimitation, values, false);//30
+		String D0230F = getBenefitProcedureValueFromMap("D0230", benefitLimitation, values, false);// 30
+		// System.out.println("**(*(*(*(*(*(*(*(**((*"+D0230F+"----");
 		if (D0230F.equalsIgnoreCase("Pre-D") || D0230F.equalsIgnoreCase("benefit is limited")) {
 			dtemp.setxRaysPAD0230FL("No Frequency");// 30
-		}else {
+		} else {
 			dtemp.setxRaysPAD0230FL(D0230F);// 30
 		}
-		//dtemp.setxRaysPAD0230FL(getBenefitProcedureValueFromMap("D0230", benefitLimitation, values, false));// 30
+		// dtemp.setxRaysPAD0230FL(getBenefitProcedureValueFromMap("D0230",
+		// benefitLimitation, values, false));// 30
 
 		dtemp.setxRaysFMXFL(getBenefitProcedureValueFromMap("D0210", benefitLimitation, values, false));// 31
 		// 32
@@ -2175,7 +2347,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 		dtemp.setPerioMaintenanceD4910FL(getBenefitProcedureValueFromMap("D4910", benefitLimitation, values, false));// 51
 
-		String cd = getBenefitProcedureValueFromMap("D4910", benefitLimitation+"_FULL", values, false);
+		String cd = getBenefitProcedureValueFromMap("D4910", benefitLimitation + "_FULL", values, false);
 		if (cd.contains("D1110") || cd.contains("D1120"))
 			cd = "Yes";
 		else
@@ -2206,23 +2378,25 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dtemp.setCrownLengthD4249FL(getBenefitProcedureValueFromMap("D4249", benefitLimitation, values, false));// 63
 
 		lim = getBenefitProcedureValueFromMap("D7311", benefitAlveoloplasty, values, false);
-		//if (lim.toLowerCase().contains("alveoloplasty in conjunction with extractions"))
-		//	lim = "Yes";d
-		//else
-		//	lim = "No";
-       System.out.println("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-       System.out.println(lim);
+		// if (lim.toLowerCase().contains("alveoloplasty in conjunction with
+		// extractions"))
+		// lim = "Yes";d
+		// else
+		// lim = "No";
+		System.out.println("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+		System.out.println(lim);
 		dtemp.setAlveoD7311CoveredWithEXT(lim);// 64
 
 		dtemp.setAlveoD7311FL(getBenefitProcedureValueFromMap("D7311", benefitLimitation, values, false));// 65
 
 		lim = getBenefitProcedureValueFromMap("D7310", benefitAlveoloplasty, values, false);
-		//if (lim.toLowerCase().contains("alveoloplasty in conjunction with extractions"))
-		//	lim = "Yes";
-		//else
-		//	lim = "No";
-	       System.out.println("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-	       System.out.println(lim);
+		// if (lim.toLowerCase().contains("alveoloplasty in conjunction with
+		// extractions"))
+		// lim = "Yes";
+		// else
+		// lim = "No";
+		System.out.println("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+		System.out.println(lim);
 
 		dtemp.setAlveoD7310CoveredWithEXT(lim);// 66
 
@@ -2260,27 +2434,26 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 				getBenefitProcedureValueFromMap("D6065", benefitContract, values, false));// 77
 
 		if (checkforD2391D2140) {
-		dtemp.setPostCompositesD2391Percentage(
-				getBenefitProcedureValueFromMap("D2391", benefitContract, values, false));// 78
+			dtemp.setPostCompositesD2391Percentage(
+					getBenefitProcedureValueFromMap("D2391", benefitContract, values, false));// 78
 
-		dtemp.setPostCompositesD2391FL(getBenefitProcedureValueFromMap("D2391", benefitLimitation, values, false));// 79
-		dtemp.setCrownsD2750D2740Downgrade("No");
-		}
-		else{
+			dtemp.setPostCompositesD2391FL(getBenefitProcedureValueFromMap("D2391", benefitLimitation, values, false));// 79
+			dtemp.setCrownsD2750D2740Downgrade("No");
+		} else {
 			dtemp.setPostCompositesD2391Percentage(
 					getBenefitProcedureValueFromMap("D2140", benefitContract, values, false));// 78
 
 			dtemp.setPostCompositesD2391FL(getBenefitProcedureValueFromMap("D2140", benefitLimitation, values, false));// 79
 			dtemp.setCrownsD2750D2740Downgrade("Yes");
-			
+
 		}
 		// 80
 		dtemp.setCrownsD2750D2740Percentage(getBenefitProcedureValueFromMap("D2740", benefitContract, values, false));// 81
 
 		dtemp.setCrownsD2750D2740FL(getBenefitProcedureValueFromMap("D2740", benefitLimitation, values, false));// 82
-		// 83 
-		dtemp.setNightGuardsD9940Percentage(getBenefitProcedureValueFromMap("D9944", benefitContract, values, false)); //84
-		
+		// 83
+		dtemp.setNightGuardsD9940Percentage(getBenefitProcedureValueFromMap("D9944", benefitContract, values, false)); // 84
+
 		dtemp.setD9310Percentage(getBenefitProcedureValueFromMap("D9310", benefitContract, values, false));// 85
 
 		dtemp.setD9310FL(getBenefitProcedureValueFromMap("D9310", benefitLimitation, values, false));// 86
@@ -2320,24 +2493,70 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dtemp.setNightGuardsD9944Fr(getBenefitProcedureValueFromMap("D9944", benefitLimitation, values, false));// 121
 
 		dtemp.setNightGuardsD9945Fr(getBenefitProcedureValueFromMap("D9945", benefitLimitation, values, false));// 122
+
+		dtemp.setPano1(getBenefitProcedureValueFromMap("D0330", benefitContract, values, false));//
+
+		dtemp.setPedo2(getBenefitProcedureValueFromMap("D2934", benefitContract, values, false));//
+
+		dtemp.setPedo1(getBenefitProcedureValueFromMap("D0160", benefitContract, values, false));//
+
+		dtemp.setD4381(getBenefitProcedureValueFromMap("D4381", benefitContract, values, false));//
+
 		// CHECK FOR FREQENCY CORRECT LOGIC....
 
 		// By default we have Diagnostic open..
 		// //template1:r1:1:r1:1:r1:0:t1:3:commandLink1
 
-		//System.out.println("dd" + dd);
+		// System.out.println("dd" + dd);
 		List<PatientHistoryTemp> hisSet = temp.getPatientHistory();
 		openSideBarFirst(driver, "Treatment history", false, null, false, temp);
 		fetchHistoryformation(driver, hisSet);
-		//System.out.println("999");
+
+		dtemp.setCkD0120("No");
+		dtemp.setCkD0140("No");
+		dtemp.setCkD0145("No");
+		dtemp.setCkD0150("No");
+		dtemp.setCkD0160("No");
+
+		dtemp.setCkD210("No");
+		dtemp.setCkD220("No");
+		dtemp.setCkD230("No");
+		dtemp.setCkD330("No");
+		dtemp.setCkD274("No");
+
+		for (PatientHistoryTemp ht : hisSet) {
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D0120"))
+				dtemp.setCkD0120("Yes");
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D0140"))
+				dtemp.setCkD0140("Yes");
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D0145"))
+				dtemp.setCkD0145("Yes");
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D0150"))
+				dtemp.setCkD0150("Yes");
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D0160"))
+				dtemp.setCkD0160("Yes");
+
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D210"))
+				dtemp.setCkD210("Yes");
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D220"))
+				dtemp.setCkD220("Yes");
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D230"))
+				dtemp.setCkD230("Yes");
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D330"))
+				dtemp.setCkD330("Yes");
+			if (ht.getHistoryCode() != null && ht.getHistoryCode().equalsIgnoreCase("D274"))
+				dtemp.setCkD274("Yes");
+
+		}
+		// System.out.println("999");
 		// int ccc = 0;
 		// if (ccc == 0)
 		// return;
 
 		// 119
 		// 123 //124 //125 //126
-        System.out.println("COMMMMM---"+dtemp.getComments());
-        dtemp.setPlanType(dtemp.getPlanType().replace(planTypeSUP, ""));
+		System.out.println("COMMMMM---" + dtemp.getComments());
+		dtemp.setPlanType(dtemp.getPlanType().replace(planTypeSUP, ""));
 		dtemp.setAptDate("");
 
 	}
@@ -2357,6 +2576,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			if (type.equals(benefitAgeLimit)) {
 				val = val.replaceAll("[a-zA-Z]", "").trim();
 				ret = val;
+				if (ret.equals(""))
+					ret = "99";
 			} else if (type.equals(benefitAlveoloplasty)) {
 				if (val.contains("Alveoloplasty in conjunction with extractions"))
 					ret = "Yes";
@@ -2364,16 +2585,22 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 					ret = "No";
 			} else if (type.equals(benefitContract)) {
 				ret = val.split(" ")[0];
-			    if (ret.equals("")) ret="0";
-			}else if (type.equals(benefitLimitation)) {
+				if (ret.equals(""))
+					ret = "0";
+			} else if (type.equals(benefitLimitation)) {
 				ret = val.split("----")[0];
 				if (ret.equals("") && val.split("----").length > 1)
 					ret = val.split("----")[1];
-				if (ret.equals("")) ret="0";//as per email date 6 aug :Re: Denta Dental - Scrapping Issue (Part 2)
+				if (ret.equals(""))
+					ret = "0";// as per email date 6 aug :Re: Denta Dental - Scrapping Issue (Part 2)
 			} else if (type.equals(benefitLimitation + "_TOOTH")) {
 				ret = val;
 			} else if (type.equals(benefitLimitation + "_FULL")) {
 				ret = val;
+			}
+		} else if (val == null) {
+			if (type.equals(benefitAgeLimit)) {
+				ret = "0";
 			}
 		}
 		System.out.println("VAL RET--" + ret);
@@ -2465,7 +2692,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 	private void fetchHistoryformation(WebDriver driver, List<PatientHistoryTemp> setHis) throws InterruptedException {
 		Thread.sleep(3000);
-		//System.out.println(driver.getCurrentUrl());
+		// System.out.println(driver.getCurrentUrl());
 
 		List<WebElement> tables = driver.findElements(By.tagName("table"));
 
@@ -2585,35 +2812,36 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 	 * togggle.click(); // System.out.println("value--" + value);
 	 * System.out.println("OUT-" + new Date()); return val ue; }
 	 */
-	private String getClassNameforSummaryTags(WebElement  divOffMax,String nameofSummary) {
-		String className="x267";
-		System.out.println("nameofSummary-"+nameofSummary);
+	private String getClassNameforSummaryTags(WebElement divOffMax, String nameofSummary) {
+		String className = "x267";
+		System.out.println("nameofSummary-" + nameofSummary);
 		try {
 			WebElement tr = divOffMax.findElements(By.tagName("tr")).get(1);
-			List<WebElement> tds =tr.findElements(By.tagName("td"));
-			//System.out.println("00"+tds.get(tds.size()-2).findElement(By.tagName("span")).getAttribute("class"));
-			if (tds.get(tds.size()-2).findElement(By.tagName("span")).getAttribute("class")!=null
-				&& !tds.get(tds.size()-2).findElement(By.tagName("span")).getAttribute("class").toString().equals("")	) {
-				className=tds.get(tds.size()-2).findElement(By.tagName("span")).getAttribute("class");	
+			List<WebElement> tds = tr.findElements(By.tagName("td"));
+			// System.out.println("00"+tds.get(tds.size()-2).findElement(By.tagName("span")).getAttribute("class"));
+			if (tds.get(tds.size() - 2).findElement(By.tagName("span")).getAttribute("class") != null && !tds
+					.get(tds.size() - 2).findElement(By.tagName("span")).getAttribute("class").toString().equals("")) {
+				className = tds.get(tds.size() - 2).findElement(By.tagName("span")).getAttribute("class");
 			}
-		
-		}catch(Exception cna) {
-			// cna.printStackTrace();	
-			try { 
-			WebElement tr = divOffMax.findElements(By.tagName("tr")).get(0);
-			List<WebElement> tds =tr.findElements(By.tagName("td"));
-			//System.out.println("00"+tds.get(0).getAttribute("class"));
-			if (tds.get(0).getAttribute("class")!=null
-				&& !tds.get(0).getAttribute("class").toString().equals("")	) {
-				className=tds.get(0).getAttribute("class");	
-			}
-			}catch(Exception next) {
+
+		} catch (Exception cna) {
+			// cna.printStackTrace();
+			try {
+				WebElement tr = divOffMax.findElements(By.tagName("tr")).get(0);
+				List<WebElement> tds = tr.findElements(By.tagName("td"));
+				// System.out.println("00"+tds.get(0).getAttribute("class"));
+				if (tds.get(0).getAttribute("class") != null
+						&& !tds.get(0).getAttribute("class").toString().equals("")) {
+					className = tds.get(0).getAttribute("class");
+				}
+			} catch (Exception next) {
 				next.printStackTrace();
 			}
-		   
+
 		}
 		return className;
 	}
+
 	private String fetchBenefitDetails(String name, PatientTemp temp, WebDriver driver, String type, String firstA,
 			String secondA, String planType, boolean mainOpen, boolean mandatory) throws InterruptedException {
 		System.out.println("fetchBenefitDetails TEST -" + name + " -ss" + secondA + " -firstA" + firstA);
@@ -2655,7 +2883,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 						}
 						// System.out.println(tr.getText());
 						if (tr.getText() != null) {
-							//System.out.println("linkNamesinUi--" + tr.getText()+"--");
+							// System.out.println("linkNamesinUi--" + tr.getText()+"--");
 							linkNamesinUi.add(tr.getText());
 						}
 					}
@@ -2670,41 +2898,42 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 					break;
 				}
 			}
-           System.out.println("%%%%%%%%%"+planType);
-           List<WebElement> tabss = driver.findElements(By.tagName("table"));
-			//System.out.println("size=="+tabss.size());
+			System.out.println("%%%%%%%%%" + planType);
+			List<WebElement> tabss = driver.findElements(By.tagName("table"));
+			// System.out.println("size=="+tabss.size());
 			boolean br = false;
 			boolean found = false;
-			int counter2=0;
+			int counter2 = 0;
 			for (WebElement tab : tabss) {
 				if (tab.getAttribute("summary") != null
 						&& tab.getAttribute("summary").equals("The ProcCode tables on the ShowAll click action")) {
 					WebElement mainDiv = tab.findElement(By.xpath("..")).findElement(By.xpath(".."));
-					mainDiv= mainDiv.findElements(By.tagName("div")).get(counter2);
-					counter2=counter2+7;
-					//System.out.println("***************"+mainDiv.getText());
+					mainDiv = mainDiv.findElements(By.tagName("div")).get(counter2);
+					counter2 = counter2 + 7;
+					// System.out.println("***************"+mainDiv.getText());
 					String divHeading = mainDiv.getText();
 					boolean moveForward = false;
-					
+
 					for (String linkName : linkNamesinUi) {
-						//System.out.println("HERE--"+linkName+"-"+secondA+'-'+divHeading+"-");
+						// System.out.println("HERE--"+linkName+"-"+secondA+'-'+divHeading+"-");
 						if ((divHeading.startsWith(linkName) && linkName.equals(secondA)) || secondA.equals("")) {
 							moveForward = true;
 						}
 						if (moveForward) {
-							WebElement table = tab;//mainDiv.findElement(By.tagName("table"));
-							//System.out.println("table" + table);
+							WebElement table = tab;// mainDiv.findElement(By.tagName("table"));
+							// System.out.println("table" + table);
 							List<WebElement> ths = table.findElements(By.tagName("th"));
-							//System.out.println("ths" + ths);
+							// System.out.println("ths" + ths);
 							// WebElement acTable=null;
 							int counter = 0;
 							for (WebElement th : ths) {
 								try {
-									//System.out.println("99999999 1" + th.getText() + "--");
-									//System.out.println("99999999 2" + planType + "--");
-									String text=th.getText();
-									if (text!=null && text.trim().equals("")) text =th.getAttribute("innerText");
-									
+									// System.out.println("99999999 1" + th.getText() + "--");
+									// System.out.println("99999999 2" + planType + "--");
+									String text = th.getText();
+									if (text != null && text.trim().equals(""))
+										text = th.getAttribute("innerText");
+
 									if (text != null && text.contains(planType)) {
 										temp.setPlanTypeinSite(true);
 										// found = true;
@@ -2717,7 +2946,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 										break;
 
 									}
-									
+
 									try {
 										counter = counter + Integer.parseInt(th.getAttribute("colspan"));
 									} catch (Exception x) {
@@ -2731,11 +2960,13 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 							}
 
-							//*[@id="template1:r1:1:r1:1:r1:1:t3"]/tbody/tr[3]
-							//System.out.println("//*[@id=\""+table.getAttribute("id")+"\"]/tbody/tr[3]");
-							
-							List<WebElement> trs = driver.findElements(By.xpath("//*[@id=\""+table.getAttribute("id")+"\"]/tbody/tr"));//table.findElements(By.tagName("tr"));
-							if (counter>=8) counter=counter+2;
+							// *[@id="template1:r1:1:r1:1:r1:1:t3"]/tbody/tr[3]
+							// System.out.println("//*[@id=\""+table.getAttribute("id")+"\"]/tbody/tr[3]");
+
+							List<WebElement> trs = driver
+									.findElements(By.xpath("//*[@id=\"" + table.getAttribute("id") + "\"]/tbody/tr"));// table.findElements(By.tagName("tr"));
+							if (counter >= 8)
+								counter = counter + 2;
 							int x = 0;
 							for (WebElement tr : trs) {
 								// System.err.println(tr.getText());
@@ -2743,52 +2974,58 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 									x++;
 									continue;
 								}
-								//System.out.println("UUUUUUUU");
-								//System.out.println("--->"+tr.getText());
-								//if (tr.findElements(By.tagName("th")).size()>0)
-									//continue;
-								//if (tr.getText().startsWith("Delta Dental"))
-									//continue;
-								//if (tr.getText().contains("Contract Benefit Level Age limit"))
-									//continue;
+								// System.out.println("UUUUUUUU");
+								// System.out.println("--->"+tr.getText());
+								// if (tr.findElements(By.tagName("th")).size()>0)
+								// continue;
+								// if (tr.getText().startsWith("Delta Dental"))
+								// continue;
+								// if (tr.getText().contains("Contract Benefit Level Age limit"))
+								// continue;
 								// System.out.println("&&&--" + x);
 								List<WebElement> tds = tr.findElements(By.tagName("td"));
-								
-								//System.out.println("99999--" + tds.size());
+
+								// System.out.println("99999--" + tds.size());
 								if (tds != null && tds.size() > 0) {
-									//System.err.println("-"+tds.get(0).getText()+"-");
-									//System.err.println("-"+name+"-");
+									// System.err.println("-"+tds.get(0).getText()+"-");
+									// System.err.println("-"+name+"-");
 									if (tds.get(0).getText().equals(name)) {
-										
+
 										try {
-											WebElement tableIn=tds.get(counter - 1 - 1).findElement(By.tagName("table"));
-											String id =tds.get(counter - 1 - 1).findElement(By.tagName("table")).getAttribute("id");
+											WebElement tableIn = tds.get(counter - 1 - 1)
+													.findElement(By.tagName("table"));
+											String id = tds.get(counter - 1 - 1).findElement(By.tagName("table"))
+													.getAttribute("id");
 											JavascriptExecutor js = (JavascriptExecutor) driver;
 											js.executeScript("window.scrollBy(0,3500)");
-											String script = "return document.getElementById('"+id+"').innerText";
-											value=((String) ((JavascriptExecutor) driver).executeScript(script, tableIn)).replace("%", "").split("%")[0].split("	")[0].replaceAll(" ", "");
-											}catch(Exception t) {
-												value = tds.get(counter - 1 - 1).getText().replace("%", "").split(" ")[0];	
-											}
+											String script = "return document.getElementById('" + id + "').innerText";
+											value = ((String) ((JavascriptExecutor) driver).executeScript(script,
+													tableIn)).replace("%", "").split("%")[0].split("	")[0]
+															.replaceAll(" ", "");
+										} catch (Exception t) {
+											value = tds.get(counter - 1 - 1).getText().replace("%", "").split(" ")[0];
+										}
 										found = true;
 										break;
 									} else if (name.equals("")) {
 										try {
-										WebElement tableIn=tds.get(counter - 1 - 1).findElement(By.tagName("table"));
-										String id =tds.get(counter - 1 - 1).findElement(By.tagName("table")).getAttribute("id");
-										JavascriptExecutor js = (JavascriptExecutor) driver;
-										js.executeScript("window.scrollBy(0,3500)");
-										String script = "return document.getElementById('"+id+"').innerText";
-										value=((String) ((JavascriptExecutor) driver).executeScript(script, tableIn)).split("%")[0].split("	")[0].replaceAll(" ", "");
-										}catch(Exception t) {
-											value = tds.get(counter - 1 - 1).getText().replace("%", "").split(" ")[0];	
+											WebElement tableIn = tds.get(counter - 1 - 1)
+													.findElement(By.tagName("table"));
+											String id = tds.get(counter - 1 - 1).findElement(By.tagName("table"))
+													.getAttribute("id");
+											JavascriptExecutor js = (JavascriptExecutor) driver;
+											js.executeScript("window.scrollBy(0,3500)");
+											String script = "return document.getElementById('" + id + "').innerText";
+											value = ((String) ((JavascriptExecutor) driver).executeScript(script,
+													tableIn)).split("%")[0].split("	")[0].replaceAll(" ", "");
+										} catch (Exception t) {
+											value = tds.get(counter - 1 - 1).getText().replace("%", "").split(" ")[0];
 										}
-										
-										
-										//System.out.println("ccc999-" + value);
+
+										// System.out.println("ccc999-" + value);
 										found = true;
-										//if (!value.equals(""))
-											break;
+										// if (!value.equals(""))
+										break;
 									}
 
 								}
@@ -2804,28 +3041,29 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								break;
 							}
 
-						}//move forward
-					}//for link name
+						} // move forward
+					} // for link name
 				}
-                    if (br) break;
-			}//for 
+				if (br)
+					break;
+			} // for
 		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO: handle exception
 		}
-		System.out.println("value="+value);
+		System.out.println("value=" + value);
 		return value;
 	}
 
 	// return TABLE
 	private String[] fetchBenefitSearchProcedure(HashMap<String, DentaBenefitScrapDto> dataMap,
-			HashMap<String, String> values, WebDriver driver, String planType, boolean clear, String[] divInfo,boolean checkComment)
-			throws InterruptedException {
+			HashMap<String, String> values, WebDriver driver, String planType, boolean clear, String[] divInfo,
+			boolean checkComment) throws InterruptedException {
 		// System.out.println("fetchBenefitInformation" + name);
 
 		Thread.sleep(4000);
 		String[] info = new String[6];
-		info[5] ="";//Used for comment
+		info[5] = "";// Used for comment
 		if (clear) {
 			List<WebElement> el = driver.findElements(By.tagName("a"));
 			for (WebElement e : el) {
@@ -2895,7 +3133,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			Thread.sleep(3000);
 			//
 			// System.out.println("LL:" + tableBd.size());
-			info[4] ="";
+			info[4] = "";
 			int counterTofind = 3;
 			WebElement table = null;
 			if (divInfo == null) {
@@ -2903,14 +3141,14 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 				for (WebElement divMain1 : divMain) {
 					if (divMain1.getAttribute("id").endsWith("tablePanelGrp")) {
 						if (checkComment) {
-						List<WebElement> fos= driver.findElements(By.tagName("font"));
-						for(WebElement fo:fos) {
-							String f=fo.getAttribute("size");
-							if (f!=null && f.equals("3")) {
-								info[4]=fo.getText();
-								break;					
+							List<WebElement> fos = driver.findElements(By.tagName("font"));
+							for (WebElement fo : fos) {
+								String f = fo.getAttribute("size");
+								if (f != null && f.equals("3")) {
+									info[4] = fo.getText();
+									break;
+								}
 							}
-						 }
 						}
 						info[2] = divMain1.getAttribute("id");
 						// table= driver.findElement(By.xpath("//*[@id=\""+info[2]+"\"]/div[7]/table"));
@@ -2945,19 +3183,21 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 					// WebElement
 					// table=driver.findElement(By.xpath("//*[@id=\"template1:r1:1:r1:1:r1:0:r1:1:tablePanelGrp\"]/div[7]/table"));
 					table = driver.findElement(By.xpath("//*[@id=\"" + info[2] + "\"]/div[7]/table"));
-					//System.err.println("FOR ---" + entry.getKey());
+					// System.err.println("FOR ---" + entry.getKey());
 					// for (WebElement table : tableBd)
 					{
-						//System.err.println("FOR -INNN--" + entry.getKey() + "-" + type);
+						// System.err.println("FOR -INNN--" + entry.getKey() + "-" + type);
 						boolean found = false;
 						try {
 							if (values.get(entry.getKey() + "_" + type) != null)
 								break;
 							String clas = table.getAttribute("class");
-							 //System.out.println("DD" + clas+"-");
+							// System.out.println("DD" + clas+"-");
 
 							if (clas != null && clas.equalsIgnoreCase("x22u")) {
-								List<WebElement> ths = driver.findElement(By.xpath("//*[@id=\"" + info[2] + "\"]/div[7]/table")).findElements(By.tagName("th"));//table.findElements(By.tagName("th"));
+								List<WebElement> ths = driver
+										.findElement(By.xpath("//*[@id=\"" + info[2] + "\"]/div[7]/table"))
+										.findElements(By.tagName("th"));// table.findElements(By.tagName("th"));
 								if (type.equals(benefitContract) || type.equals(benefitAgeLimit)
 										|| type.equals(benefitAlveoloplasty)) {
 									int counter = 0;
@@ -2983,40 +3223,52 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 									}
 									if (!found)
 										continue;
-									//System.out.println("counterTofind--" + counterTofind);
+									// System.out.println("counterTofind--" + counterTofind);
 									try {
-									List<WebElement> trL= driver.findElements(By.xpath(
-												"//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr"));
-									   //dataMap.size()
-									
-									//System.out.println("SSSSSSSS--"+trL.size());
+										List<WebElement> trL = driver.findElements(
+												By.xpath("//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr"));
+										// dataMap.size()
+
+										// System.out.println("SSSSSSSS--"+trL.size());
 										for (int x = 3; x < trL.size() + 3; x++) {
 											WebElement tr = driver.findElement(By.xpath(
 													"//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr[" + x + "]"));
 											List<WebElement> tds = tr.findElements(By.tagName("td"));
-											//System.out.println("^^11^^"+tr.getText());
-											//System.out.println("99999--" + counter);
-											//System.err.println(tds.get(0).getText());
+											// System.out.println("^^11^^"+tr.getText());
+											// System.out.println("99999--" + counter);
+											// System.err.println(tds.get(0).getText());
 											if (!tds.get(0).getText().equals(entry.getKey()))
 												continue;
 											if (values.get(entry.getKey() + "_" + type) != null)
 												break;
-											//System.out.println("^^^^"+tr.getText());
+											// System.out.println("^^^^"+tr.getText());
 											if (type.equals(benefitContract)) {
-											   if (counter>=8) 						 
-													value = tds.get(counter+3 - 1 - 1).getText().replace("%", "");
-											   else value = tds.get(counter - 1 - 1).getText().replace("%", "");
+												if (counter >= 8) {
+													value = tds.get(counter + 3 - 1 - 1).getText().replace("%", "");
+												//value = tds.get(counter + 3 - 1 - 1).getAttribute("innerText").replace("%", "");
+												}else {
+													value = tds.get(counter - 1 - 1).getText().replace("%", "");
+											     //value = tds.get(counter - 1 - 1).getAttribute("innerText").replace("%", "");;
+												}
+											//System.out.println(entry.getKey()+"---"+benefitContract+"-->"+value);	
 											}
 											if (type.equals(benefitAgeLimit)) {
+												// System.out.println("888888888888888888");
+
 												value = tds.get(counter - 1 - 1).getText().trim();
+												// System.out.println("8888 1"+ value);
 												if (value.contains(" ")) {// 100% 1 -- 100%
+													System.out.println("8888 2" + value);
 													value = tds.get(counter - 1 + 4).getText();
 
 												} else if (value.equals("")) {
+													// System.out.println("8888 3"+ value);
 													value = tds.get(counter - 1).getText();
 												} else {
+													// System.out.println("8888 4"+ value);
 													value = tds.get(counter - 1 + 3).getText();
 												}
+
 												// value = tds.get(counter - 1).getText();
 											}
 											if (type.equals(benefitAlveoloplasty))
@@ -3035,22 +3287,22 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 									boolean fd = false;
 									// List<WebElement> trone =
 									// driver.findElement(By.xpath("//*[@id=\"template1:r1:1:r1:1:r1:0:r1:1:tablePanelGrp\"]/div[7]/table")).findElements(By.tagName("tr"));
-									
+
 									try {
-										List<WebElement> trL= driver.findElements(By.xpath(
-												"//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr"));
-									   //dataMap.size()
-									//System.out.println("SSSSSSS777S--"+trL.size());
+										List<WebElement> trL = driver.findElements(
+												By.xpath("//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr"));
+										// dataMap.size()
+										// System.out.println("SSSSSSS777S--"+trL.size());
 										for (int x = 3; x < trL.size() + 3; x++) {// 12
 											WebElement tr = driver.findElement(By.xpath(
 													"//*[@id=\"" + info[2] + "\"]/div[7]/table/tbody/tr[" + x + "]"));
 											List<WebElement> tds = tr.findElements(By.tagName("td"));
-											//System.err.println("@@@@"+tds.get(0).getText());
+											// System.err.println("@@@@"+tds.get(0).getText());
 											if (!tds.get(0).getText().equals(entry.getKey()))
 												continue;
 											if (values.get(entry.getKey() + "_" + type) != null)
 												break;
-											//System.err.println("@&&&@@"+tr.getText());
+											// System.err.println("@&&&@@"+tr.getText());
 											// for (WebElement td0 : td0s) {
 											// System.out.println("ooo");
 											// System.out.println("ooo");
@@ -3071,148 +3323,172 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 											fd = true;
 											if (value.contains("[Limitations Apply]")) {
 												try {
-												// Click on Link
-												td.findElements(By.tagName("a")).get(0).click();
-												Thread.sleep(5000);
-												List<String> ar = new ArrayList<>();
-												try {
-													if (divInfo == null && info[3] == null) {
-														List<WebElement> containers = driver
-																.findElements(By.tagName("td"));
-														String containerId = null;
-														for (WebElement container1 : containers) {
-															if (container1.getAttribute("id") != null
-																	&& container1.getAttribute("id")
-																			.contains("::contentContainer")) {
-																containerId = container1.getAttribute("id");
-																info[3] = containerId;
-																break;
-															}
-														}
-													} else if (divInfo != null) {
-														info[3] = divInfo[3];
-													}
-													WebElement container = driver.findElement(By.id(info[3]));
-													List<WebElement> trs = container.findElements(By.tagName("table"))
-															.get(1).findElements(By.tagName("tr"));
-													trs.remove(0);
-
-													for (WebElement tr1 : trs) {
-														List<WebElement> tds1 = tr1.findElements(By.tagName("td"));
-														ar.add(tds1.get(0).getText() + "----" + tds1.get(1).getText()
-																+ "----" + tds1.get(2).getText());
-													}
-												} catch (Exception nn) {
-													nn.printStackTrace();
-												}
-												String tempVal = "";
-												String tempDef = "";
-												String tempValT = "";
-												String tempDefT = "";
-                                                int extracomment=-1;
-												for (String ap : ar) {
-													String[] dd = ap.split("----");
+													// Click on Link
+													td.findElements(By.tagName("a")).get(0).click();
+													Thread.sleep(5000);
+													List<String> ar = new ArrayList<>();
 													try {
-
-														// values.put((entry.getKey()+"_"+type),dd[0]);
-														if (extracomment==-1) {
-														if (dd[1].equals("No")) {
-															tempVal = dd[0];
-															try {
-																tempValT = dd[2];// Not sure if tooth exits or not
-															} catch (Exception e) {
-
-															}
-
-															//break;no need to break...
-														}
-														}
-														System.out.println("KEY- "+entry.getKey());
-														System.out.println("AGE -"+data.getAge());
-														System.out.println("--"
-																+ dd[1].replace("years and older", "").trim() + "---");
-														String te = dd[1].replace("years and older", "").trim();
-														te = te.replace("Child up to and not including age", "").trim();
-														if (te.equals("No")) te="0";
-														System.out.println("te--" + te + "---");
-														if (entry.getKey().equals("D0145")) {
-															System.out.println("9");
-														}
-														boolean check=data.getAge() >= Integer.parseInt(te);
-														if (dd[1].contains("Child up to and not including age")) {
-															check=data.getAge() < Integer.parseInt(te);
-														}
-														check=true;//No need to check age
-														if (check) {
-															System.out.println("extracomment::"+entry.getKey()+":"+extracomment);
-															if (extracomment==-1) {
-																extracomment=0;
-																	tempVal = dd[0];
-																try {
-																	tempValT = dd[2];// Not sure if tooth exits or not
-																} catch (Exception e) {
-	
-																}
-															}else {
-																//Mark in comments for duplicate Frequency  (Beaumont	Maliah Grisham for code- D0150 email 7 aug 2020)
-																String val=FreqencyUtils.convertFrequecyDentaString("", dd[0]);
-																String ret = val.split("----")[0];
-																if (ret.equals("") && val.split("----").length > 1)
-																	ret = val.split("----")[1];
-																if (ret.equals("")) ret="0";//as per email date 6 aug :Re: Denta Dental - Scrapping Issue (Part 2)
-																
-																String oldV= values.get(entry.getKey()+ "_" + type);
-																if (!(oldV!=null && oldV.equals(ret))) {//remove Duplicate
-																info[5] =entry.getKey()+" Frequency :"+ret +"\n"+ info[5];
+														if (divInfo == null && info[3] == null) {
+															List<WebElement> containers = driver
+																	.findElements(By.tagName("td"));
+															String containerId = null;
+															for (WebElement container1 : containers) {
+																if (container1.getAttribute("id") != null
+																		&& container1.getAttribute("id")
+																				.contains("::contentContainer")) {
+																	containerId = container1.getAttribute("id");
+																	info[3] = containerId;
+																	break;
 																}
 															}
-															//break;no need to break..
+														} else if (divInfo != null) {
+															info[3] = divInfo[3];
 														}
-														
-													} catch (Exception ew) {
-														ew.printStackTrace();
-														System.out.println("extracomment--%%%"+extracomment);
-														if (extracomment==-1) {
-													    //extracomment=0;
-														tempDef = "";//dd[0];// Where we do not have text "years and older"
+														WebElement container = driver.findElement(By.id(info[3]));
+														List<WebElement> trs = container
+																.findElements(By.tagName("table")).get(1)
+																.findElements(By.tagName("tr"));
+														trs.remove(0);
+
+														for (WebElement tr1 : trs) {
+															List<WebElement> tds1 = tr1.findElements(By.tagName("td"));
+															ar.add(tds1.get(0).getText() + "----"
+																	+ tds1.get(1).getText() + "----"
+																	+ tds1.get(2).getText());
+														}
+													} catch (Exception nn) {
+														nn.printStackTrace();
+													}
+													String tempVal = "";
+													String tempDef = "";
+													String tempValT = "";
+													String tempDefT = "";
+													int extracomment = -1;
+													for (String ap : ar) {
+														String[] dd = ap.split("----");
 														try {
-															//Child up to and not including age 3 
-															tempDefT = "";//dd[2];// Not sure if tooth exits or not
-														} catch (Exception e) {
+
+															// values.put((entry.getKey()+"_"+type),dd[0]);
+															if (extracomment == -1) {
+																if (dd[1].equals("No")) {
+																	tempVal = dd[0];
+																	try {
+																		tempValT = dd[2];// Not sure if tooth exits or
+																							// not
+																	} catch (Exception e) {
+
+																	}
+
+																	// break;no need to break...
+																}
+															}
+															System.out.println("KEY- " + entry.getKey());
+															System.out.println("AGE -" + data.getAge());
+															System.out.println(
+																	"--" + dd[1].replace("years and older", "").trim()
+																			+ "---");
+															String te = dd[1].replace("years and older", "").trim();
+															te = te.replace("Child up to and not including age", "")
+																	.trim();
+															if (te.equals("No"))
+																te = "0";
+															System.out.println("te--" + te + "---");
+															if (entry.getKey().equals("D0145")) {
+																System.out.println("9");
+															}
+															boolean check = data.getAge() >= Integer.parseInt(te);
+															if (dd[1].contains("Child up to and not including age")) {
+																check = data.getAge() < Integer.parseInt(te);
+															}
+															check = true;// No need to check age
+															if (check) {
+																System.out.println("extracomment::" + entry.getKey()
+																		+ ":" + extracomment);
+																if (extracomment == -1) {
+																	extracomment = 0;
+																	tempVal = dd[0];
+																	try {
+																		tempValT = dd[2];// Not sure if tooth exits or
+																							// not
+																	} catch (Exception e) {
+
+																	}
+																} else {
+																	// Mark in comments for duplicate Frequency
+																	// (Beaumont Maliah Grisham for code- D0150 email 7
+																	// aug 2020)
+																	String val = FreqencyUtils
+																			.convertFrequecyDentaString("", dd[0]);
+																	String ret = val.split("----")[0];
+																	if (ret.equals("") && val.split("----").length > 1)
+																		ret = val.split("----")[1];
+																	if (ret.equals(""))
+																		ret = "0";// as per email date 6 aug :Re: Denta
+																					// Dental - Scrapping Issue (Part 2)
+
+																	String oldV = values
+																			.get(entry.getKey() + "_" + type);
+																	if (!(oldV != null && oldV.equals(ret))) {// remove
+																												// Duplicate
+																		info[5] = entry.getKey() + " Frequency :" + ret
+																				+ "\n" + info[5];
+																	}
+																}
+																// break;no need to break..
+															}
+
+														} catch (Exception ew) {
+															ew.printStackTrace();
+															System.out.println("extracomment--%%%" + extracomment);
+															if (extracomment == -1) {
+																// extracomment=0;
+																tempDef = "";// dd[0];// Where we do not have text
+																				// "years and older"
+																try {
+																	// Child up to and not including age 3
+																	tempDefT = "";// dd[2];// Not sure if tooth exits or
+																					// not
+																} catch (Exception e) {
+
+																}
+															} else {
+
+																// Mark in comments for duplicate Frequency (Beaumont
+																// Maliah Grisham for code- D0150 email 7 aug 2020)
+																// String
+																// val=FreqencyUtils.convertFrequecyDentaString("",
+																// dd[0]);
+																// String ret = val.split("----")[0];
+																// if (ret.equals("") && val.split("----").length > 1)
+																// ret = val.split("----")[1];
+																// if (ret.equals("")) ret="0";//as per email date 6 aug
+																// :Re: Denta Dental - Scrapping Issue (Part 2)
+
+																// info[5] =entry.getKey()+" Frequency :"+ret +"\n"+
+																// info[5];// leave for now
+															}
+															// values.put((entry.getKey()+"_"+type),"");
+															// break;
+														}
+														// data.getAge();
+													}
+													if (tempVal.equals("")) {
+														try {
+															values.put((entry.getKey() + "_" + type), FreqencyUtils
+																	.convertFrequecyDentaString("", tempDef));
+															values.put((entry.getKey() + "_" + type + "_TOOTH"),
+																	tempDefT);
+															// values.put((entry.getKey()+"_"+type),ar.get(ar.size()-1).split("----")[0]);
+														} catch (Exception ew) {
 
 														}
-													  }else {
-														  
-														//Mark in comments for duplicate Frequency  (Beaumont	Maliah Grisham for code- D0150 email 7 aug 2020)
-														  //String val=FreqencyUtils.convertFrequecyDentaString("", dd[0]);
-														//	String ret = val.split("----")[0];
-														//	if (ret.equals("") && val.split("----").length > 1)
-														//		ret = val.split("----")[1];
-														//	if (ret.equals("")) ret="0";//as per email date 6 aug :Re: Denta Dental - Scrapping Issue (Part 2)
-															
-															//info[5] =entry.getKey()+" Frequency :"+ret +"\n"+ info[5];// leave for now
-														}
-														// values.put((entry.getKey()+"_"+type),"");
-														// break;
-													}
-													// data.getAge();
-												}
-												if (tempVal.equals("")) {
-													try {
+													} else {
 														values.put((entry.getKey() + "_" + type),
-																FreqencyUtils.convertFrequecyDentaString("", tempDef));
-														values.put((entry.getKey() + "_" + type + "_TOOTH"), tempDefT);
-														// values.put((entry.getKey()+"_"+type),ar.get(ar.size()-1).split("----")[0]);
-													} catch (Exception ew) {
-
+																FreqencyUtils.convertFrequecyDentaString("", tempVal));
+														values.put((entry.getKey() + "_" + type + "_TOOTH"), tempValT);
 													}
-												} else {
-													values.put((entry.getKey() + "_" + type),
-															FreqencyUtils.convertFrequecyDentaString("", tempVal));
-													values.put((entry.getKey() + "_" + type + "_TOOTH"), tempValT);
-												}
-												
-												}catch (Exception e) {
+
+												} catch (Exception e) {
 													// TODO: handle exception
 												}
 												List<WebElement> buts = driver.findElements(By.tagName("button"));
@@ -3227,10 +3503,10 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 												}
 												break;
 											} // LIMITATIONS
-											System.out.println("KEY-"+entry.getKey() +"---"+value);
+											System.out.println("KEY-" + entry.getKey() + "---" + value);
 											values.put((entry.getKey() + "_" + type),
 													FreqencyUtils.convertFrequecyDentaString("", value));
-											values.put((entry.getKey() + "_" + type+"_FULL"),value);
+											values.put((entry.getKey() + "_" + type + "_FULL"), value);
 											// break;
 											// }//FOR td0s
 											if (fd)
@@ -3278,7 +3554,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 		if (!navigate)
 			return navigate;
-		List<WebElement> eles = driver.findElements(By.className("myToolsTable2"));// myToolsTable for  Eligibility & benefits
+		List<WebElement> eles = driver.findElements(By.className("myToolsTable2"));// myToolsTable for Eligibility &
+																					// benefits
 		eles.get(0).findElement(By.tagName("a")).click();
 		Thread.sleep(20000);
 		return true;
@@ -3326,8 +3603,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 	public static void main(String[] main)
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
 		System.out.println("taskkill /f /im chromedriver.exe");
-		
-		
+
 		try {
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3348,11 +3624,11 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("12/04/1992");// 03/20/1992 12/26/1988
-		psc.setFirstName("Chloe");// Heather Griffith - Dean Dornak Ellen Keck
-		psc.setLastName("Wilson");
-		psc.setMemberId("119272714501");// 1125727908.. 632307605
-		psc.setSsnNumber("119272714501");
+		psc.setDob("01/13/2006");// 03/20/1992 12/26/1988
+		psc.setFirstName("Bryce");// Heather Griffith - Dean Dornak Ellen Keck
+		psc.setLastName("Coleman");
+		psc.setMemberId("118885250401");// 1125727908.. 632307605
+		psc.setSsnNumber("118885250401");
 		psc.setSubscribersFirstName("Jesyka");
 		psc.setSubscribersLastName("Stewart");
 		psc.setSubscribersDob("08/03/1971");
@@ -3367,11 +3643,11 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		psc.setMemberId("");// 632307605
 		psc.setSsnNumber("");
 
-		 //l.add(psc);
+		// l.add(psc);
 
 		dto.setDto(l);
 		dto.setSiteUrl("https://www1.deltadentalins.com/login.html");
-		DeltaDentalServiceImpl i = new DeltaDentalServiceImpl(null, null, f, dto, null, null, 1, "",
+		DeltaDentalServiceImpl i = new DeltaDentalServiceImpl(null, null, f, dto, null, null, 1, "",null,
 				"D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
 		i.setProps("9500");
 		// i.scrappingSiteDetails = f;
