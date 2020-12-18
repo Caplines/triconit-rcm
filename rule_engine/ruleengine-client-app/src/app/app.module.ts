@@ -8,7 +8,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from "./services/auth.service";
 import { OfficeResolve } from "./resolver/office_resolver";
-
+import { OfficeAndIVFormTypeResolve } from "./resolver/office_ivformtype_resolver";
 import { HttpModule , XSRFStrategy, CookieXSRFStrategy, Http} from "@angular/http";
 import { HttpClientXsrfModule} from "@angular/common/http";
 
@@ -86,7 +86,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
       })*/
   ],
   providers: [AuthService,ApplicationService,UrlPermission,UrlAdminPermission,UrlLoggedInCheck,UrlDumpPermission,
-	  OfficeResolve,
+	  OfficeResolve,OfficeAndIVFormTypeResolve,
        {
           provide: HTTP_INTERCEPTORS,
           useClass: TokenInterceptor,

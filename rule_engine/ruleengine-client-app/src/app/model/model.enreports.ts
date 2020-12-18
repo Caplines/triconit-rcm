@@ -7,4 +7,5 @@ startDate: string="";
 endDate: string="";
 officeId:string="";
 employerName:string="";
+ivformTypeId: any="";
 }

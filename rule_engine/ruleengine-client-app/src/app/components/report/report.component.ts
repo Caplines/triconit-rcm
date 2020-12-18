@@ -18,6 +18,7 @@ export class ReportComponent implements OnInit {
 	errorMessage: string;
     mainReportName:string;
 	offices: any;
+    ivformTypes: any;
 	users: any;
 	reportData: any;
 	arrayOfKeys: any;
@@ -34,16 +35,23 @@ export class ReportComponent implements OnInit {
 		displayFormat: 'MM/DD/YYYY',
 		placeholder: 'Click to select a date',
 		fieldId: 'datePicker',
+		maxDate: new Date(Date.now()),
+		useEmptyBarTitle: false
+
 	};
 	dateOptions1: DatepickerOptions = {
 		displayFormat: 'MM/DD/YYYY',
 		placeholder: 'Click to select a From date',
 		fieldId: 'datePicker1',
+		maxDate: new Date(Date.now()),
+		useEmptyBarTitle: false
 	};
 	dateOptions2: DatepickerOptions = {
 		displayFormat: 'MM/DD/YYYY',
 		placeholder: 'Click to select a To date',
 		fieldId: 'datePicker2',
+		maxDate: new Date(Date.now()),
+		useEmptyBarTitle: false
 	};
 	showParam: any = {
 		TreatmentId: false, IvfId: false, Date: false, PatientName: false,
@@ -52,7 +60,8 @@ export class ReportComponent implements OnInit {
 	}
 
 	constructor(public applicationService: ApplicationService, public router: Router, private datePipe: DatePipe, private route: ActivatedRoute) {
-		this.offices = this.route.snapshot.data['offs'].data;
+		this.offices = this.route.snapshot.data['offsAndIVType'].data.offices;
+		this.ivformTypes=this.route.snapshot.data['offsAndIVType'].data.ivforms;
 		this.getAllusers();
 		if (this.route.snapshot.url[0].path == 'reportcl') {
 			this.hd1 = ClaimTreatmentTextModel.claimId;
@@ -226,7 +235,7 @@ export class ReportComponent implements OnInit {
 	downloadPDF(data) {
 
 
-		this.applicationService.downloadIVFPDF({ "reportField1": data.patDid, "officeId": this.report.officeId }, (result) => {
+		this.applicationService.downloadIVFPDF({ "reportField1": data.patDid, "officeId": this.report.officeId,"ivformTypeId":data.ivFormTypeId }, (result) => {
 			this.showLoading = false;
 			if (result.status == '200') {
 				//const filename = result.headers.get('filename');
@@ -270,6 +279,7 @@ export class ReportComponent implements OnInit {
 	
 	convertLocalTime(rpdata:any){
 		//console.log(rpdata);
+		if (rpdata){
 		rpdata.forEach(function (value) {  
 			  //console.log(value.createdDate);
 			  if (value.createdDate!=''){
@@ -280,6 +290,7 @@ export class ReportComponent implements OnInit {
 				  value.createdDate=dt.getDate()+"/"+(dt.getMonth()+1)+"/"+(dt.getYear()+1900)+" "+dt.getHours()+":"+dt.getMinutes()+":"+dt.getSeconds();
 			  }
 			}); 
+	 }
 		return rpdata;
 	}
 

@@ -7,6 +7,6 @@ export class ReportModel {
   employerName:string="";
   patientName:string="";
   dob:string="";
-
+  ivformTypeId: any="";
 
 }

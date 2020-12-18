@@ -20,6 +20,7 @@ export class EnReportsComponent implements OnInit {
   enreports: EnReportsModel = new EnReportsModel();
   errorMessage: string;
   offices:any;
+  ivformTypes:any;
   users:any;
   userName: any;
   userType: any;
@@ -52,7 +53,8 @@ ut:string="1";
 
 
   constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute, private datePipe: DatePipe) {
-	  this.offices =this.route.snapshot.data['offs'].data;
+	  this.offices = this.route.snapshot.data['offsAndIVType'].data.offices;
+	  this.ivformTypes=this.route.snapshot.data['offsAndIVType'].data.ivforms;
 	  this.getAllusers();
 	  this.offices.push({"name":"All OFFICES","uuid":"All"});
 	  this.ut =Utils.fetchUserTypeFromLocalStorage();
@@ -145,7 +147,7 @@ ut:string="1";
 		  if (result.status=='OK'){
 				
 				ths.users = result.data;
-				console.log(111);
+				
 		  }
 	  })
   }

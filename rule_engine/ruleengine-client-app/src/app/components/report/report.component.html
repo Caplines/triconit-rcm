@@ -172,6 +172,17 @@
 									Fields.</div>
 							</div>
 
+								<div *ngIf="showParam.ivfRDBMS || showParam.Date || showParam.DateFromTo
+								       ||showParam.UserName || showParam.DateFromToUserName || showParam.PatientName">
+
+								<label class="sr-only" for="ivformTypeId">IV FORM Type</label> <select
+								class="login-signup-form-field form-control" name="ivformTypeId"
+								id="ivformTypeId" [(ngModel)]="report.ivformTypeId">
+								<option value="">Form Type...</option>
+								<option *ngFor="let vt of ivformTypes" [value]="vt.id">{{vt.name}}</option>
+							</select>
+							
+							</div>
 						
 
 						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
@@ -291,7 +302,7 @@
 				<a href="javascript:void(0)" (click)="showDetailsData=false;">
 					Go Back </a>
 			</div>
-			<div class="table-container">
+			<div class="table-container" *ngIf="reportDataInd.ivFormTypeId==1">
 				<h3>IVF DATA- Details</h3>
 				<span>
 					<p style="text-align: center">Smilepoint - Insurance
@@ -465,10 +476,25 @@
 						<td>D0160: <span class="newff">{{reportDataInd.pedo1}}</span></td>
 						<td>D2934: <span class="newff">{{reportDataInd.pedo2}}</span></td>
 					</tr>
+					<tr>
+						<td><span class="newff">{{reportDataInd.ssc1}}</span></td>
+						<td><span class="newff">{{reportDataInd.ssc2}}</span></td>
+						<td>Frequency <span class="newff">{{reportDataInd.d0160Freq}}</span></td>
+						<td>Frequency <span class="newff">{{reportDataInd.freqD2934}}</span></td>
+					</tr>
                       <tr>
 						<td>D0330: <span class="newff">{{reportDataInd.pano1}}</span></td>
 						<td>Does Pano and FMX shares the frequency? <span class="newff">{{reportDataInd.pano2}}</span></td>
 						<td>D4381: <span class="newff">{{reportDataInd.d4381}}</span></td>
+						<td>D3330: <span class="newff">{{reportDataInd.d3330}}</span></td>
+						
+					</tr>
+		             <tr>
+						<td></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d0330Freq}}</span></td>
+						<td></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d4381Freq}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d3330Freq}}</span></td>
 						
 					</tr>
 				</table>
@@ -708,8 +734,12 @@
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
-						<td>Composites (D2391) %: <span class="newff">{{reportDataInd.posterior1}}</span></td>
+						<td></td>
 						<td colspan="2">Frequency: <span class="newff">{{reportDataInd.posterior2}}</span></td>
+					</tr>
+					<tr>
+						<td>Composites (D2391) %: <span class="newff">{{reportDataInd.posterior1}}</span></td>
+						<td colspan="2">Frequency: <span class="newff">{{reportDataInd.d2391Freq}}</span></td>
 					</tr>
 					<tr>
 						<td colspan="3">Downgraded to Amalgam (D2140): <span class="newff">{{reportDataInd.posterior3}}</span></td>
@@ -763,6 +793,35 @@
 					</tr>
 				</table>
 				<span>
+					<p style="text-align: center"></p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>Exams</td>
+						<td>Xrays</td>
+					</tr>
+					<tr>
+						<td>D0120:<span class="newff">{{reportDataInd.ckD0120}}</span></td>
+						<td>D210:<span class="newff">{{reportDataInd.ckD210}}</span></td>
+					</tr>
+					<tr>
+						<td>D0140:<span class="newff">{{reportDataInd.ckD0140}}</span></td>
+						<td>D220:<span class="newff">{{reportDataInd.ckD220}}</span></td>
+					<tr>
+						<td>D0145:<span class="newff">{{reportDataInd.ckD0145}}</span></td>
+						<td>D230:<span class="newff">{{reportDataInd.ckD230}}</span></td>
+					</tr>
+					<tr>
+						<td>D0150:<span class="newff">{{reportDataInd.ckD0150}}</span></td>
+						<td>D330:<span class="newff">{{reportDataInd.ckD330}}</span></td>
+					</tr>
+					<tr>
+						<td>D0160:<span class="newff">{{reportDataInd.ckD0160}}</span></td>
+						<td>D274:<span class="newff">{{reportDataInd.ckD274}}</span></td>
+					</tr>
+
+				</table>
+				<span>
 				<p style="text-align: center">Complete History</p>
 				</span>
 				<table class="table table-bordered table-striped">
@@ -777,6 +836,7 @@
 						<td><span class="newff">{{c.historyDos}}</span></td>
 					</tr>
 				</table>
+				
 				<span>
 				<p style="text-align: center"></p>
 				</span>
@@ -795,8 +855,204 @@
 					</tr>
 				</table>
 			</div>
+            <div class="table-container" *ngIf="reportDataInd.ivFormTypeId==2">
+				<h3>IVF DATA- Details</h3>
+				<span>
+					<p style="text-align: center">Smilepoint -OS Insurance 	Verification Form</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>Office Name: <span class="newff">{{reportDataInd.basicInfo1}}</span></td>
+						<td>Patient ID : <span class="newff">{{reportDataInd.basicInfo21}}</span></td>
+						<td>Suscriber's Name: <span class="newff">{{reportDataInd.basicInfo5}}</span></td>
+						<td>Suscriber's DOB: <span class="newff">{{reportDataInd.basicInfo9}}</span></td>
+						<td>Patient's Name: <span class="newff">{{reportDataInd.basicInfo2}}</span></td>
+						<td>Patient's DOB: <span class="newff">{{reportDataInd.basicInfo6}}</span></td>
+					</tr>
+					<tr>
+						<td>CSR Name: <span class="newff">{{reportDataInd.basicInfo8}}</span></td>
+						<td>Ref#: <span class="newff">{{reportDataInd.basicInfo12}}</span></td>
+						<td>Provider's Name: <span class="newff">{{reportDataInd.basicInfo19}}</span></td>
+						<td>Tax ID: <span class="newff">{{reportDataInd.basicInfo4}}</span></td>
+						<td>NPI: <span class="newff">{{reportDataInd.npi}}</span></td>
+						<td>Licence #: <span class="newff">{{reportDataInd.licence}}</span></td>
+					</tr>
+					<tr>
+						<td>Plan Type: <span class="newff">{{reportDataInd.policy1}}</span></td>
+						<td>Network: <span class="newff">{{reportDataInd.policy3}}</span></td>
+						<td>SSN#: <span class="newff">{{reportDataInd.basicInfo13}}</span></td>
+						<td>Member ID: <span class="newff">{{reportDataInd.basicInfo16}}</span></td>
+						<td>Effective Date: <span class="newff">{{reportDataInd.policy5}}</span></td>
+						<td>CY/FY: <span class="newff">{{reportDataInd.policy6}}</span></td>
+					</tr>
+					<tr>
+						<td>Fee Schedule: <span class="newff">{{reportDataInd.policy4}}</span></td>
+						<td>Dependents covered upto age?: <span class="newff">{{reportDataInd.policy11}}</span></td>
+						<td>Coordination of benefits: <span class="newff">{{reportDataInd.corrdOfBenefits}}</span></td>
+					</tr>
+					<tr>
+						<td>What is allowable amount for D7210: <span class="newff">{{reportDataInd.whatAmountD7210}}</span></td>
+						<td>Maximum $: <span class="newff">{{reportDataInd.policy7}}</span></td>
+						<td>Deductible: <span class="newff">{{reportDataInd.policy9}}</span></td>
+					</tr>
+					<tr>
+						<td>What is allowable amount for D7240: <span class="newff">{{reportDataInd.allowAmountD7240}}</span></td>
+						<td>Remaining benefits $: <span class="newff">{{reportDataInd.policy8}}</span></td>
+						<td>Remaining Deductible: <span class="newff">{{reportDataInd.policy10}}</span></td>
+					</tr>
+					<tr>
+						<td>Is there a MTC?  <span class="newff">{{reportDataInd.radio3}}</span></td>
+						<td>Eligible for D3330? <span class="newff">{{reportDataInd.radio4}}</span></td>
+						<td>Is there any waiting period? <span class="newff">{{reportDataInd.radio5}}</span></td>
+						<td>Out of Network Benefits: <span class="newff">{{reportDataInd.radio1}}</span></td>
+						<td>Do you file OS under medical first? <span class="newff">{{reportDataInd.radio2}}</span></td>
+					</tr>
 
-		</div>
+				</table>
+
+
+
+				<span>
+					<p style="text-align: center">Extractions:</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>D7210(%): <span class="newff">{{reportDataInd.d7210}}</span></td>
+						<td>D7220(%): <span class="newff">{{reportDataInd.d7220}}</span></td>
+						<td>D7230(%): <span class="newff">{{reportDataInd.d7230}}</span></td>
+						<td>D7240(%): <span class="newff">{{reportDataInd.d7240}}</span></td>
+						<td>D7250(%): <span class="newff">{{reportDataInd.d7250}}</span></td>
+						<td>D7310(%): <span class="newff">{{reportDataInd.d7310}}</span></td>
+					</tr>
+					<tr>
+						<td>D7311%): <span class="newff">{{reportDataInd.d7311}}</span></td>
+						<td>D7320(%): <span class="newff">{{reportDataInd.d7320}}</span></td>
+						<td>D7321(%): <span class="newff">{{reportDataInd.d7321}}</span></td>
+						<td>D7473(%): <span class="newff">{{reportDataInd.d7473}}</span></td>
+					</tr>
+				</table>
+
+				<span>
+					<p style="text-align: center">Sedation:</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>D9230(%): <span class="newff">{{reportDataInd.sedations1}}</span></td>
+						<td>D9248(%): <span class="newff">{{reportDataInd.sedations3}}</span></td>
+						<td>D9239(%): <span class="newff">{{reportDataInd.d9239}}</span></td>
+						<td>D9243(%): <span class="newff">{{reportDataInd.sedations2}}</span></td>
+					</tr>
+				</table>
+
+				<span>
+					<p style="text-align: center">Bone Grafts:</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>D4263(%): <span class="newff">{{reportDataInd.d4263}}</span></td>
+						<td>D4264(%): <span class="newff">{{reportDataInd.d4264}}</span></td>
+						<td>D6104(%): <span class="newff">{{reportDataInd.d6104}}</span></td>
+						<td>D7953(%): <span class="newff">{{reportDataInd.d7953}}</span></td>
+					</tr>
+				</table>
+
+				<span>
+					<p style="text-align: center">Endo:</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>D3310(%): <span class="newff">{{reportDataInd.d3310}}</span></td>
+						<td>D3320(%): <span class="newff">{{reportDataInd.d3320}}</span></td>
+						<td>D3330(%): <span class="newff">{{reportDataInd.d3330}}</span></td>
+						<td>D3346(%): <span class="newff">{{reportDataInd.d3346}}</span></td>
+						<td>D3347(%): <span class="newff">{{reportDataInd.d3347}}</span></td>
+						<td>D3348(%): <span class="newff">{{reportDataInd.d3348}}</span></td>
+					</tr>
+				</table>
+
+				<span>
+					<p style="text-align: center">Implants:</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>D6010(%): <span class="newff">{{reportDataInd.implants1}}</span></td>
+						<td>D6057(%): <span class="newff">{{reportDataInd.implants2}}</span></td>
+						<td>D6058(%): <span class="newff">{{reportDataInd.d6058}}</span></td>
+						<td>D6190(%): <span class="newff">{{reportDataInd.implants3}}</span></td>
+					</tr>
+				</table>
+
+				<span>
+					<p style="text-align: center">Perio:</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>D4249(%): <span class="newff">{{reportDataInd.oral1}}</span></td>
+						<td>D7951(%): <span class="newff">{{reportDataInd.d7951}}</span></td>
+						<td>D9310(%): <span class="newff">{{reportDataInd.posterior8}}</span></td>
+						<td>D4266(%): <span class="newff">{{reportDataInd.d4266}}</span></td>
+						<td>D4267(%): <span class="newff">{{reportDataInd.d4267}}</span></td>
+						<td>D4341(%): <span class="newff">{{reportDataInd.perio1}}</span></td>
+					</tr>
+					<tr>
+						<td>D4273(%): <span class="newff">{{reportDataInd.d4273}}</span></td>
+						<td>D6065(%): <span class="newff">{{reportDataInd.implants4}}</span></td>
+						<td>D7251(%): <span class="newff">{{reportDataInd.d7251}}</span></td>
+					</tr>
+				</table>
+
+				<span>
+					<p style="text-align: center">Guidelines for IV Sedation:</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>{{reportDataInd.ivSedation}}</td>
+					</tr>
+				</table>
+
+				<span>
+					<p style="text-align: center">:</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>Assignment of Benefits : {{reportDataInd.policy15}}</td>
+					</tr>
+				</table>
+
+				<span>
+				<p style="text-align: center">Complete History</p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<th>ADA Code</th>
+						<th>Tooth No.- Surface</th>
+						<th>DOS</th>
+					</tr>
+					<tr *ngFor="let c of reportDataInd.hdto">
+						<td><span class="newff">{{c.historyCode}}</span></td>
+						<td><span class="newff">{{c.historyTooth}}</span></td>
+						<td><span class="newff">{{c.historyDos}}</span></td>
+					</tr>
+				</table>
+				
+				<span>
+				<p style="text-align: center"></p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>Comments :<span class="newff">{{reportDataInd.comments}}</span></td>
+					</tr>
+				</table>
+				<span>
+				<p style="text-align: center"></p>
+				</span>
+				<table class="table table-bordered table-striped">
+					<tr>
+						<td>Benefits Verified by : <span class="newff">{{reportDataInd.benefits}}</span></td>
+						<td>Date : <span class="newff">{{reportDataInd.date}}</span></td>
+					</tr>
+				</table>
+			</div>
 
 	</div>
 	<!--showReportData DIV  -->

@@ -26,7 +26,7 @@ import {UrlDumpPermission} from "./urlPermission/url.dumppermission";
 import {UrlAdminPermission} from "./urlPermission/url.adminpermission";
 import {UrlLoggedInCheck} from "./urlPermission/url.checkloginstate";
 import { OfficeResolve } from "./resolver/office_resolver";
-
+import { OfficeAndIVFormTypeResolve } from "./resolver/office_ivformtype_resolver";
 
 
 
@@ -68,12 +68,12 @@ const appRoutes: Routes = [
   { path: 'resetpassword', component: ResetPasswordComponent,canActivate: [UrlPermission]  },
    { path: 'report', 
 	  resolve: {
-		    offs: OfficeResolve
+		    offsAndIVType: OfficeAndIVFormTypeResolve
 		  },
   component: ReportComponent,canActivate: [UrlPermission]  },
   { path: 'reportcl', 
 	  resolve: {
-		    offs: OfficeResolve
+		  offsAndIVType: OfficeAndIVFormTypeResolve
 		  },
   component: ReportComponent,canActivate: [UrlPermission]  },
   { path: 'ivftreatmentplan',
@@ -98,12 +98,12 @@ const appRoutes: Routes = [
   component: DiagnosticComponent,canActivate: [UrlPermission]  },
   { path: 'enreports',
 	  resolve: {
-		    offs: OfficeResolve
+		  offsAndIVType: OfficeAndIVFormTypeResolve
 		  },
   component: EnReportsComponent,canActivate: [UrlPermission]  },
   { path: 'enreportscl',
 	  resolve: {
-		    offs: OfficeResolve
+		  offsAndIVType: OfficeAndIVFormTypeResolve
 		  },
   component: EnReportsComponent,canActivate: [UrlPermission]  },
   { path: 'scrap',

@@ -99,6 +99,13 @@ export class ApplicationService {
     	map( (resp=>resp.json() ),
        catchError( (err) => Observable.throw(err.json().error) )));
     }
+
+  getOfficesAndIVFormTypePrior(){
+      return this.htt.get(environment.API_URL+'/open/getofficesandFortypecap').pipe(
+    	map( (resp=>resp.json() ),
+       catchError( (err) => Observable.throw(err.json().error) )));
+    }
+
   validateIVF(ivf:IVFModel,ivfValidateName,callback){
       this.generateRefreshToken().pipe(switchMap(data => {
           localStorage.setItem("token", (<any>data).token);
