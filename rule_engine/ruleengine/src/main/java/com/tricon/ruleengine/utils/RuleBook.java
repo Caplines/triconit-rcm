@@ -7293,6 +7293,9 @@ public class RuleBook {
 			 }
 			}
 			if (mvpvapMap!=null) {
+				boolean vapPresentOne=false;
+				
+				//Set<String> vapsMissing = new HashSet<>();
 				Set<String> sf= new HashSet<>();
 				for (Map.Entry<String, Set<MVPandVAP>> entry : mvpvapMap.entrySet()) {
 					Set<MVPandVAP> d=entry.getValue();
@@ -7305,9 +7308,11 @@ public class RuleBook {
 						MVPandVAP calc=null;
 						Set<String> s= new HashSet<>();
 						String baseG="";
+						//boolean vapPresent=false;
 						
 						for(Object obj : tpList) {
 							CommonDataCheck tp = (CommonDataCheck) obj;
+							//vapPresent=false;
 							if(m.getBase()!=null && m.getBaseGroup().equalsIgnoreCase(tp.getServiceCode())) {
 								surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 								teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
@@ -7338,6 +7343,8 @@ public class RuleBook {
 				                        Constants.rule_log_debug, bw);
 									
 							}else if(m.getVap1()!=null && m.getVap1().equalsIgnoreCase(tp.getServiceCode())) {
+								//vapPresent=true;
+								vapPresentOne=true;
 								s.add(m.getVap1());
 								RuleEngineLogger.generateLogs(clazz, "TP Code- "+tp.getServiceCode()
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 1- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
@@ -7351,6 +7358,8 @@ public class RuleBook {
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 2- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
 			                     Constants.rule_log_debug, bw);
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
+								//vapPresent=true;
+								vapPresentOne=true;
 								s.add(m.getVap2());
 								calc=m;
 								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
@@ -7360,6 +7369,8 @@ public class RuleBook {
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 3- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
 			                     Constants.rule_log_debug, bw);
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
+								//vapPresent=true;
+								vapPresentOne=true;
 								s.add(m.getVap3());
 								calc=m;
 								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
@@ -7369,6 +7380,8 @@ public class RuleBook {
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 4- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
 			                     Constants.rule_log_debug, bw);
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
+								//vapPresent=true;
+								vapPresentOne=true;
 								s.add(m.getVap4());
 								calc=m;
 								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
@@ -7378,6 +7391,8 @@ public class RuleBook {
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 5- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
 			                     Constants.rule_log_debug, bw);
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
+								//vapPresent=true;
+								vapPresentOne=true;
 								s.add(m.getVap5());
 								calc=m;
 								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
@@ -7387,21 +7402,29 @@ public class RuleBook {
 	                              +"- Base- "+m.getBaseGroup()+" TP Fees VAP 6- "+tp.getFee()+" -MVP Fee-"+m.getMvp(),
 			                     Constants.rule_log_debug, bw);
 								bgfees=bgfees+Double.parseDouble(tp.getFee());
+								//vapPresent=true;
+								vapPresentOne=true;
 								s.add(m.getVap6());
 								calc=m;
 								RuleEngineLogger.generateLogs(clazz, "THIS IS TP FEE "+tp.getFee()+" - Commulative Fees-"+bgfees,
 				                        Constants.rule_log_debug, bw);
 							}
+							
+							
 						}//For TP 
 						RuleEngineLogger.generateLogs(clazz, "MVP Fees - "+mvpfees
                         +"- Base Group- "+baseG, Constants.rule_log_debug, bw);
 						RuleEngineLogger.generateLogs(clazz, "Base Group Found - "+!baseG.equals(""), Constants.rule_log_debug, bw);
 								
 						if (calc!=null && !baseG.equals("")) {
+							RuleEngineLogger.generateLogs(clazz, "baseG - "+baseG, Constants.rule_log_debug, bw);
+							RuleEngineLogger.generateLogs(clazz, "bgfees - "+bgfees, Constants.rule_log_debug, bw);
+							RuleEngineLogger.generateLogs(clazz, "mvpfees - "+mvpfees, Constants.rule_log_debug, bw);
 							if (bgfees<mvpfees) {
 						      //fail
 								pass=false;
 								sf.addAll(s);
+								///if (!vapPresent) vapsMissing.add(baseG);
 								//dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								//		messageSource.getMessage("rule41.error.message", new Object[] {String.join(",",s)}, locale),
 								//		Constants.FAIL));
@@ -7410,10 +7433,24 @@ public class RuleBook {
 						}
 					}//For TP
 				}//FOR MAP
-				if (!pass)
+				if (!pass) {
+					String miss="";//"VAP<b style=\"color:red\" class=\"error-message-api\"> Not</b> Used";
+					/*if (vapsMissing.size()==0) {
+						
+						miss="";
+					}else {
+						miss = ". VAP <b style=\"color:red\" class=\"error-message-api\">NOT</b> used for "+String.join(",", vapsMissing);
+					}*/
+					if (!vapPresentOne) {
+						miss = ". VAP <b style=\"color:red\" class=\"error-message-api\">NOT</b> used";
+					}
+					
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule41.error.message", new Object[] {String.join(",",sf)}, locale),
+								messageSource.getMessage("rule41.error.message", new Object[] {String.join(",",sf),miss}, locale),
 								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				}
+			}else {
+				//Do nothing
 			}
 
           if (pass) {
@@ -8732,9 +8769,13 @@ public class RuleBook {
 		}
 		 for(String code:cds) {
 			for(ExceptionDataDto ed:exceptionData) {
-				if (ed.getEmpolyerName()!=null && ed.getCode()!=null
+				//if (ed.getEmpolyerName()!=null && ed.getCode()!=null
+				//		&& ed.getCode().toLowerCase().equals(code)
+				//		&& ed.getEmpolyerName().toLowerCase().trim().equals(ivf.getEmployerName().toLowerCase().trim())) {
+				if (ed.getGroup()!=null && ed.getCode()!=null
 						&& ed.getCode().toLowerCase().equals(code)
-						&& ed.getEmpolyerName().toLowerCase().trim().equals(ivf.getEmployerName().toLowerCase().trim())) {
+						&& ed.getGroup().toLowerCase().trim().equals(ivf.getGroup().toLowerCase().trim())) {	
+					
 					//pass=false;
 					if (ed.getResultType().trim().toLowerCase().equals(Constants.FAIL.toLowerCase())) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),

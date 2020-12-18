@@ -28,6 +28,7 @@ import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GoogleReportsRDDTO;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
 import com.tricon.ruleengine.model.db.PatientDetail;
@@ -57,6 +58,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	@Value("${re.xslt.file}")
 	private String XSLT_FILE;
 	
+	@Value("${re.xsltos.file}")
+	private String XSLT_FILE_OS;
+
 	@Value("${re.xslt.filenew}")
 	private String XSLT_FILE_NEW;
 	
@@ -77,7 +81,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	PatientDao patientDao;
 
 	@Override
-	public Object[] saveIVFFormData(CaplineIVFFormDto d,Office office,boolean ivf) throws Exception {
+	public Object[] saveIVFFormData(CaplineIVFFormDto d,Office office,boolean ivf,IVFormType iVFormType) throws Exception {
 
 		// copy value to DB Object
 		/*
@@ -90,11 +94,15 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		 */
 		Date date = new Date();
 		User user = userDao.findUserByUsername(amdinUserName);
-		Patient pat = IVFFormConversionUtil.copyValueToPatient(d, office, date);
-		return saveAllData (pat,office,date,user,ivf,false);
+		Patient pat=null;
+		//if (iVFormType.getName().equals(Constants.IV_GENERAL_FORM_NAME))
+		 pat = IVFFormConversionUtil.copyValueToPatientFROMIVOSGoogle(d, office, date,iVFormType);
+		//else if (iVFormType.getName().equals(Constants.IV_ORAL_SURGERY_FORM_NAME)) 
+		//	pat = IVFFormConversionUtil.copyValueToPatientFROMOSGoogle(d, office, date,iVFormType);
+		return saveAllData (pat,office,date,user,ivf,false,iVFormType);
 	}
 	
-	public Object[] saveAllData (Patient pat, Office office, Date date,User user,boolean ivf,boolean onlyInsert) {
+	public Object[] saveAllData (Patient pat, Office office, Date date,User user,boolean ivf,boolean onlyInsert,IVFormType iVFormType) {
 		
 		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office,pat);
 		Object[] ob= new Object[2];
@@ -104,13 +112,15 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		String generalDate="";
 		String insuranceName="";
 		String employerName="";
+		int ivFormTypeId=0;
 		boolean dumpCheck=false;
 		if (pat.getPatientDetails()!=null && pat.getPatientDetails().size()>0) {
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
 			PatientDetail x = iter.next();
 			generalDate =x.getGeneralDateIVwasDone();
 			insuranceName = x.getInsName();
-			employerName = x.getEmployerName(); 
+			employerName = x.getEmployerName();
+			ivFormTypeId=x.getiVFormType().getId();
 		}
 		try {
 			if (patd == null) {
@@ -122,7 +132,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				int oldPdid=-1;
 				Set<PatientHistory> pholdset= patd.getPatientHistory();
 				for (PatientDetail pd : patd.getPatientDetails()) {
-					if (pd.getGeneralDateIVwasDone().equals(generalDate) 
+					if (pd.getGeneralDateIVwasDone().equals(generalDate) && pd.getiVFormType().getId()==ivFormTypeId  
 							&& pd.getEmployerName().toLowerCase().trim().equals(employerName.toLowerCase().trim())
 							&& pd.getInsName().toLowerCase().trim().equals(insuranceName.toLowerCase().trim())
 							) {
@@ -163,7 +173,8 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 					for (PatientDetail pd : patd.getPatientDetails()) {
 						boolean CheckCondition=pd.getGeneralDateIVwasDone().equals(pdN.getGeneralDateIVwasDone())
 								&& 	pd.getEmployerName().toLowerCase().trim().equals(pdN.getEmployerName().toLowerCase().trim())
-								&& 	pd.getInsName().toLowerCase().trim().equals(pdN.getInsName().toLowerCase().trim());
+								&& 	pd.getInsName().toLowerCase().trim().equals(pdN.getInsName().toLowerCase().trim())
+								&& pd.getiVFormType().getId()==pdN.getiVFormType().getId();
 						/*if (!ivf) CheckCondition=pd.getGeneralDateIVwasDone().equals(pdN.getGeneralDateIVwasDone())
 								  && 	pd.getInsName().toLowerCase().trim().equals(pdN.getInsName().toLowerCase().trim());*/
 						if (CheckCondition) { 
@@ -268,7 +279,11 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 					 if (dumpCheck) {
 						 ob[1]="DUPLICATE";
 					 }else {
+						 
 						    patientDao.updatePatientDataWithDetailsAndHistory1(patd);//Only updates Patient table
+						    Iterator<PatientDetail> iterFirst = pat.getPatientDetails().iterator();
+							PatientDetail pd = iterFirst.next();
+							pd.setiVFormType(iVFormType);
 							Patient pp=patientDao.updatePatientDataWithDetailsAndHistory2(patd,detailsSave,onlyInsert);//Only save in Details  never Update
 							Iterator<PatientDetail> iter = pp.getPatientDetails().iterator();
 							PatientDetail ppd = iter.next();
@@ -517,11 +532,11 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	 */
 
 	@Override
-	public Object[] generatePDF(CaplineIVFQueryFormDto dto,Office office) {
+	public Object[] generatePDF(CaplineIVFQueryFormDto dto,Office office,IVFormType iVFormType) {
 		ByteArrayOutputStream o = null;
 		Object[] obj=new Object[2]; 
 		try {
-			
+			dto.setIvformTypeId(iVFormType.getId()+"");
 			List<CaplineIVFFormDto> li = (List<CaplineIVFFormDto>) searchIVFData(dto,office);
 			if (li!=null  && li.size() > 0) {
 				CaplineIVFFormDto form = li.get(0);
@@ -591,10 +606,13 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				String filePath = xml.convertToXML(form, XSLT_PATH);
 				File file = new File(filePath);
 				if (dto.getPdf()==null) {
-				
+				String xslt=XSLT_FILE;
+				if (iVFormType.getName().equals(Constants.IV_ORAL_SURGERY_FORM_NAME)) {
+					xslt=XSLT_FILE_OS ;
+				}
 				if (dto.getNewFormat().equals(""))o = xml.createPdfStream(
 
-						xml.createHtml(filePath, XSLT_FILE), "");
+						xml.createHtml(filePath, xslt), "");
 				else  o= xml.createPdfStream(
 
 						xml.createHtml(filePath, XSLT_FILE_NEW), "");

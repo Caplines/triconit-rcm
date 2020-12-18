@@ -2,6 +2,7 @@ package com.tricon.ruleengine.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
 import com.tricon.ruleengine.dto.scrapping.HistoryDto;
+import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
@@ -255,6 +257,15 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 			}
 			
 		}
+		dto.setComment("");
+		try {
+		wList=driver.findElements(By.className("advisoryText"));
+		if (wList!=null && wList.size()>0) {
+			dto.setComment(wList.get(1).getText().trim());
+		}
+		}catch(Exception t) {
+			
+		}
 		wList=driver.findElements(By.className("eligTextRight"));
 		for(WebElement w:wList) {
 			//System.out.print(w.getText());
@@ -330,6 +341,32 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		driver.navigate().to(url);
 		
         Thread.sleep(4000);
+		
+	}
+
+	public static void main(String [] stg) throws Exception {
+		
+		ScrappingSiteDetails det=null;  
+		Map<String, List<Object>> mapData=null;
+		List<Object> cc = new ArrayList<>();
+		cc.add(new MCNADentaSheet("","","","", "", "615286147", "11/26/2012", "mcna",0+""));//
+
+		mapData = new HashMap<>();
+		mapData.put("1", cc);
+		det = new ScrappingSiteDetails();
+		det.setProxyPort("111");
+		det.setLocation("");
+         
+		det.setPassword("Splendora@5416");  
+		det.setUserName("Splendora2541");    
+		det.setLocationProvider("");
+		Office f = new Office();
+		f.setName("Beaumont");
+		det.setOffice(f);
+		//det.setOffice("Devine");
+		//det.set
+		MCNAEligibilityScrappingServiceImpl x=new MCNAEligibilityScrappingServiceImpl(det, "E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files", mapData, true);
+		x.scrapSite( det, mapData);
 		
 	}
 

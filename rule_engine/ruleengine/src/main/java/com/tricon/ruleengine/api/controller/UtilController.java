@@ -12,9 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tricon.ruleengine.dao.CompanyDao;
+import com.tricon.ruleengine.dao.IVformTypeDao;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.OfficeDto;
+import com.tricon.ruleengine.dto.OfficesAndIVForms;
 import com.tricon.ruleengine.model.db.Company;
+import com.tricon.ruleengine.model.db.IVFormType;
+import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.service.IVformTypeService;
 import com.tricon.ruleengine.service.UserService;
 import com.tricon.ruleengine.utils.Constants;
 
@@ -26,6 +31,11 @@ public class UtilController {
 	
 	@Autowired
 	CompanyDao companyDao;
+	
+	
+	@Autowired
+	IVformTypeService iVformTypeService;
+
 	
 	@CrossOrigin
 	@RequestMapping(value = "/open/getoffices", method = RequestMethod.GET)
@@ -40,6 +50,23 @@ public class UtilController {
 
 		else
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", ""));
+
+	}
+
+	@CrossOrigin
+	@RequestMapping(value = "/open/getofficesandFortypecap", method = RequestMethod.GET)
+	public ResponseEntity<?> getAlloffifceCapAndForType() {
+		
+		
+		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+		OfficesAndIVForms f= new OfficesAndIVForms();
+		f.setIvforms(iVformTypeService.getAllIVFormType());
+		Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+		if (offices.isPresent() && offices.get() != null) {
+			f.setOffices(offices.get());
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", f));
+		//	return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", ""));
 
 	}
 }

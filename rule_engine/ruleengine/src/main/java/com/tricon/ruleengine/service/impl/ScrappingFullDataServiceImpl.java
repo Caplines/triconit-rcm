@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.tricon.ruleengine.dao.IVformTypeDao;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.ScrapingFullDataDoa;
@@ -25,6 +26,7 @@ import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
 import com.tricon.ruleengine.dto.scrapping.ScrapPatient;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
@@ -40,6 +42,7 @@ import com.tricon.ruleengine.service.scrapfull.impl.BCBSDnoaconnectImpl;
 import com.tricon.ruleengine.service.scrapfull.impl.DeltaDentalServiceImpl;
 import com.tricon.ruleengine.service.scrapfull.impl.UnitedConcordiaImpl;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
+import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.ConstantsScrapping;
 
 @Service
@@ -70,6 +73,9 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 	PatientDao patDao;
 	
 	
+	@Autowired
+	IVformTypeDao iVformTypeDao;
+
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
     private UserDetailsService userDetailsService;
@@ -133,6 +139,7 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		// TODO Auto-generated method stub
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
+		IVFormType fType=iVformTypeDao.getIVFormTypeByName(Constants.IV_GENERAL_FORM_NAME);
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
 		JwtUser juser = (JwtUser) userDetails;
 		
@@ -219,12 +226,12 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 					 /*map.put(ConstantsScrapping.SCRAPPING_INIT + dto.getSheetId() + ConstantsScrapping.NAME_Separator
 								+ dto.getSheetSubId(), null);*/
 					 System.out.println("';"+env.getProperty("google.chorme.driver"));
-					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,env.getProperty("google.chorme.driver")));
+					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,fType,env.getProperty("google.chorme.driver")));
 				  } else if (dto.getSiteName().equals("BCBS")) {
-					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,env.getProperty("google.chorme.driver")));
+					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,fType,env.getProperty("google.chorme.driver")));
 					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
 				  }else if (dto.getSiteName().equals("United Concordia")) {
-					  service.submit(new UnitedConcordiaImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,env.getProperty("google.chorme.driver")));
+					  service.submit(new UnitedConcordiaImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,fType,env.getProperty("google.chorme.driver")));
 					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
 				  }
 				 

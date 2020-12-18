@@ -30,6 +30,7 @@ import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.ScrapingFullDataDoa;
 import com.tricon.ruleengine.dto.PatientScrapSearchDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
@@ -92,12 +93,13 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 	//private String driverLocation;
 	private int processId;
 	private String taxId;
+	private IVFormType ivFormType;
 
 	private static String siteName = "";
 
 	public BCBSDnoaconnectImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
 			ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user, Office office,
-			int processId,String taxId, String driverLocation) {
+			int processId,String taxId,IVFormType ivFormType, String driverLocation) {
 
 		this.patDao = patDao;
 		this.dataDoa = dataDoa;
@@ -113,6 +115,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		this.driverLocation = driverLocation;
 		this.processId = processId;
 		this.taxId=taxId;
+		this.ivFormType=ivFormType;
 		// store parameter for later user
 	}
 /*
@@ -267,6 +270,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		PatientDetailTemp t = new PatientDetailTemp();
 		t.setPatient(temp);
 		t.setOffice(office);
+		t.setiVFormType(ivFormType);
 		t.setMemberId(sh.getMemberId().trim());
 		t.setMemberSSN(sh.getSsnNumber().trim());
 		/* un-comment this to populate SSN in case client wants
@@ -895,6 +899,32 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		List<PatientHistoryTemp> hisSet = temp.getPatientHistory();
 		//openSideBarFirst(driver, "Procedure History");
 		fetchHistoryformation(driver, hisSet,temp.getReferenceId());
+		dtemp.setCkD0120("No");
+		dtemp.setCkD0140("No");
+		dtemp.setCkD0145("No");
+		dtemp.setCkD0150("No");
+		dtemp.setCkD0160("No");
+		
+		dtemp.setCkD210("No");
+		dtemp.setCkD220("No");
+		dtemp.setCkD230("No");
+		dtemp.setCkD330("No");
+		dtemp.setCkD274("No");
+		
+		for(PatientHistoryTemp ht:hisSet) {
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D0120")) dtemp.setCkD0120("Yes");
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D0140")) dtemp.setCkD0140("Yes");
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D0145")) dtemp.setCkD0145("Yes");
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D0150")) dtemp.setCkD0150("Yes");
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D0160")) dtemp.setCkD0160("Yes");
+			
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D210")) dtemp.setCkD210("Yes");
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D220")) dtemp.setCkD220("Yes");
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D230")) dtemp.setCkD230("Yes");
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D330")) dtemp.setCkD330("Yes");
+			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D274")) dtemp.setCkD274("Yes");
+			
+		}
 		String basicper6 = fetchValueByCode("D4346", temp, driver, inNetworkCoinsurance, true, false, true);
 		if (basicper6.equals(""))
 			basicper6 = "0";
@@ -1154,6 +1184,24 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setNightGuardsD9945Percentage(
 				fetchValueByCode("D9945", temp, driver, inNetworkCoinsurance, true, false, true));// 114
 		dtemp.setNightGuardsD9945Fr(fetchValueByCode("D9945", temp, driver, lastrowunder2ndcolumn, false, true, true));// 122
+		
+		
+		dtemp.setPano1(fetchValueByCode("D0330", temp, driver, inNetworkCoinsurance, false, false, false));
+		dtemp.setD0330Freq(fetchValueByCode("D0330", temp, driver, lastrowunder2ndcolumn, false, true, true));
+		
+		dtemp.setPedo2(fetchValueByCode("D2934", temp, driver, inNetworkCoinsurance, false, false, false));
+		dtemp.setFreqD2934(fetchValueByCode("D2934", temp, driver, lastrowunder2ndcolumn, false, true, true));
+		
+		dtemp.setPedo1(fetchValueByCode("D0160", temp, driver, inNetworkCoinsurance, false, false, false));
+		dtemp.setD0160Freq(fetchValueByCode("D0160", temp, driver, lastrowunder2ndcolumn, false, true, true));
+		
+		dtemp.setD4381(fetchValueByCode("D4381", temp, driver, inNetworkCoinsurance, false, false, false));
+		dtemp.setD4381Freq(fetchValueByCode("D4381", temp, driver, lastrowunder2ndcolumn, false, true, true));
+		
+		
+		dtemp.setD3330(fetchValueByCode("D3330", temp, driver, inNetworkCoinsurance, false, false, false));
+		dtemp.setD3330Freq(fetchValueByCode("D3330", temp, driver, lastrowunder2ndcolumn, false, true, true));
+		
 		// driver.close();
 		// ArrayList<String> tabs1 = new ArrayList<String> (driver.getWindowHandles());
 		// System.out.println("TAB SIZE--"+tabs1.size());
@@ -1673,7 +1721,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dto.setDto(l);
 
 		dto.setSiteUrl("https://www.dnoaconnect.com/#!/");
-		BCBSDnoaconnectImpl i = new BCBSDnoaconnectImpl(null, null, null, dto, null, null, 1,"",
+		BCBSDnoaconnectImpl i = new BCBSDnoaconnectImpl(null, null, null, dto, null, null, 1,"",null,
 				"D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
 		i.setProps("9500");
 		// i.scrappingSiteDetails = f;

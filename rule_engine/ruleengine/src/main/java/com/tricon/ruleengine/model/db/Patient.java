@@ -65,6 +65,9 @@ public class Patient extends BaseAudit implements Serializable{
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
 	private Set<PatientHistory> patientHistory = new HashSet<PatientHistory>(0);
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
+	private Set<PatientDetail2> patientDetails2 = new HashSet<PatientDetail2>(0);
+
 	public int getId() {
 		return id;
 	}
@@ -135,6 +138,14 @@ public class Patient extends BaseAudit implements Serializable{
 
 	public void setPatientHistory(Set<PatientHistory> patientHistory) {
 		this.patientHistory = patientHistory;
+	}
+
+	public Set<PatientDetail2> getPatientDetails2() {
+		return patientDetails2;
+	}
+
+	public void setPatientDetails2(Set<PatientDetail2> patientDetails2) {
+		this.patientDetails2 = patientDetails2;
 	}
 
 

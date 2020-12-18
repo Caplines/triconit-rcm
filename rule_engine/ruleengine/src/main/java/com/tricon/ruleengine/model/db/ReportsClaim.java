@@ -46,6 +46,13 @@ public class ReportsClaim extends BaseAudit implements java.io.Serializable {
 	private int groupRun;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "reports")
 	private Set<ReportClaimDetail> reportDetails = new HashSet<ReportClaimDetail>(0);
+	
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "iv_form_type_id",nullable=true)
+	private IVFormType iVFormType;
+
+	
 
 	public ReportsClaim() {
 	}
@@ -128,5 +135,14 @@ public class ReportsClaim extends BaseAudit implements java.io.Serializable {
 		this.patientId = patientId;
 	}
 
+	public IVFormType getiVFormType() {
+		return iVFormType;
+	}
+
+	public void setiVFormType(IVFormType iVFormType) {
+		this.iVFormType = iVFormType;
+	}
+
+	
 	
 }

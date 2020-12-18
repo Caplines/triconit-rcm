@@ -25,6 +25,7 @@ import com.tricon.ruleengine.dao.ScrapingFullDataDoa;
 import com.tricon.ruleengine.dto.PatientScrapSearchDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.scrapping.UnitedConLimitationDto;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
@@ -65,7 +66,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 
 	public UnitedConcordiaImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
 			ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user, Office office,
-			int processId, String taxId, String driverLocation) {
+			int processId, String taxId,IVFormType ivFormType, String driverLocation) {
 
 		this.patDao = patDao;
 		this.dataDoa = dataDoa;
@@ -81,7 +82,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		this.driverLocation = driverLocation;
 		this.processId = processId;
 		this.taxId = taxId;
-
+        this.ivFormType=ivFormType;
 		// store parameter for later user
 	}
 
@@ -183,7 +184,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		t.setOffice(office);
 		t.setMemberId(sh.getMemberId().trim());
 		t.setMemberSSN(sh.getSsnNumber().trim());
-
+        t.setiVFormType(ivFormType);
 		Set<PatientDetailTemp> s = new HashSet<>();
 		s.add(t);
 		temp.setPatientDetails(s);
@@ -1437,7 +1438,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		 */
 
 		dto.setSiteUrl("https://www.unitedconcordia.com/dental-insurance/dentist/");
-		UnitedConcordiaImpl i = new UnitedConcordiaImpl(null, null, null, dto, null, null, 1, "",
+		UnitedConcordiaImpl i = new UnitedConcordiaImpl(null, null, null, dto, null, null, 1, "",null,
 				"D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
 		i.setProps("9500");
 		// i.scrappingSiteDetails = f;

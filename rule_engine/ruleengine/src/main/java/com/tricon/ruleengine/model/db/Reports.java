@@ -1,7 +1,6 @@
 package com.tricon.ruleengine.model.db;
 // Generated Jun 27, 2018 5:33:26 PM by Hibernate Tools 5.2.5.Final
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -49,6 +48,10 @@ public class Reports extends BaseAudit implements java.io.Serializable {
 	private int groupRun;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "reports")
 	private Set<ReportDetail> reportDetails = new HashSet<ReportDetail>(0);
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "iv_form_type_id",nullable=true)
+	private IVFormType iVFormType;
 
 	public Reports() {
 	}
@@ -131,5 +134,14 @@ public class Reports extends BaseAudit implements java.io.Serializable {
 		this.patientId = patientId;
 	}
 
+	public IVFormType getiVFormType() {
+		return iVFormType;
+	}
+
+	public void setiVFormType(IVFormType iVFormType) {
+		this.iVFormType = iVFormType;
+	}
+
+	
 	
 }

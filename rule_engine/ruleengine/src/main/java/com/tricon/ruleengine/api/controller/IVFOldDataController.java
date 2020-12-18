@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.ruleengine.dao.IVformTypeDao;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.IVFDumpDto;
 import com.tricon.ruleengine.service.IVFOldDataService;
+import com.tricon.ruleengine.utils.Constants;
 
 /**
  * @author Deepak.Dogra
@@ -37,6 +39,10 @@ public class IVFOldDataController {
 
 	@Autowired
 	IVFOldDataService iVFOldDataService;
+	
+	@Autowired
+	IVformTypeDao iVformTypeDao;
+	
 
 	@CrossOrigin
 	@PostMapping
@@ -45,7 +51,7 @@ public class IVFOldDataController {
 	public ResponseEntity<Object> dumpIOLData(@RequestBody IVFDumpDto dto) {
 
 		//Map<String, List<TPValidationResponseDto>> map = null;
-		String data = iVFOldDataService.dumpOldData(dto);
+		String data = iVFOldDataService.dumpOldData(dto,iVformTypeDao.getIVFormTypeByName(Constants.IV_GENERAL_FORM_NAME));
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", data));
 
 	}

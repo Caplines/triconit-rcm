@@ -6,6 +6,7 @@ public class TreatmentPlanBatchValidationDto {
 	private String officeId;
 	private String patientId;
 	private String insType;
+	//private String ivformTypeId;
 	
 	
 	public String getIvfId() {
@@ -32,6 +33,12 @@ public class TreatmentPlanBatchValidationDto {
 	public void setInsType(String insType) {
 		this.insType = insType;
 	}
+	/*public String getIvformTypeId() {
+		return ivformTypeId;
+	}
+	public void setIvformTypeId(String ivformTypeId) {
+		this.ivformTypeId = ivformTypeId;
+	}*/
 
 
 

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.ruleengine.dao.CompanyDao;
+import com.tricon.ruleengine.dao.IVformTypeDao;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
@@ -29,6 +30,7 @@ import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.utils.Constants;
@@ -49,6 +51,9 @@ public class CaplineIVFGoogleFormController {
 	@Autowired
 	CompanyDao companyDao;
 
+	@Autowired
+	IVformTypeDao iVformTypeDao;
+
 	@Value("${application.url}")
 	private String APP_URL;
 
@@ -62,7 +67,7 @@ public class CaplineIVFGoogleFormController {
 		//Integer i = 0;
 		Object [] ob=null;
 	    Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
-		
+	    
 		
 		Office office = od.getOfficeByName(dto.getBasicInfo1(),cmp.getUuid());
 		try {
@@ -71,7 +76,43 @@ public class CaplineIVFGoogleFormController {
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
 
 			if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
-				ob = civf.saveIVFFormData(dto, office,true);
+				ob = civf.saveIVFFormData(dto, office,true,iVformTypeDao.getIVFormTypeByName(Constants.IV_GENERAL_FORM_NAME));
+				
+			}else {
+				//i = civf.saveIVFFormData(dto, office);
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String mess = "Data saved successfully with IVF ID "+office.getName()+"_"+ ob[0];
+				
+		if ((Integer)ob[0] == 0)
+			mess = "Data not saved successfully- Reason-"+ob[1];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", mess));
+
+	}
+
+	@RequestMapping(value = "/savedatatoreos")
+	public ResponseEntity<Object> saveOSFromGoogleForm(@RequestBody CaplineIVFFormDto dto,
+			HttpServletRequest request) {
+		//
+
+		//Integer i = 0;
+		Object [] ob=null;
+	    Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+	    
+		
+		Office office = od.getOfficeByName(dto.getBasicInfo1(),cmp.getUuid());
+		try {
+			
+
+			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
+
+			if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
+				ob = civf.saveIVFFormData(dto, office,true,iVformTypeDao.getIVFormTypeByName(Constants.IV_ORAL_SURGERY_FORM_NAME));
 				
 			}else {
 				//i = civf.saveIVFFormData(dto, office);
@@ -93,12 +134,30 @@ public class CaplineIVFGoogleFormController {
 	@CrossOrigin
 	@PostMapping
 	@RequestMapping(value = "/queryivdatafromdb")
-	public ResponseEntity<Object> queryDataFromDB(@RequestBody CaplineIVFQueryFormDto dto, HttpServletRequest request) {
+	public ResponseEntity<Object> queryDataFromDB(@RequestBody CaplineIVFQueryFormDto dto, HttpServletRequest request) throws Exception {
+		//
+		IVFormType v=iVformTypeDao.getIVFormTypeByName(Constants.IV_GENERAL_FORM_NAME);
+		
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", getPatientdataFromDB(dto,v)));
+	}
+
+	@CrossOrigin
+	@PostMapping
+	@RequestMapping(value = "/queryivosdatafromdb")
+	public ResponseEntity<Object> queryOSDataFromDB(@RequestBody CaplineIVFQueryFormDto dto, HttpServletRequest request) throws Exception {
 		//
 
-		List<CaplineIVFFormDto> cap = null;
+		IVFormType v=iVformTypeDao.getIVFormTypeByName(Constants.IV_ORAL_SURGERY_FORM_NAME);
+		
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", getPatientdataFromDB(dto,v)));
+
+	}
+	
+	private List<CaplineIVFFormDto> getPatientdataFromDB(CaplineIVFQueryFormDto dto,IVFormType iVFormType) throws Exception{
+		
 		try {
 			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+			dto.setIvformTypeId(iVFormType.getId()+"");
 			Office office = od.getOfficeByName(dto.getOfficeNameDB(),cmp.getUuid());
 
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
@@ -109,15 +168,13 @@ public class CaplineIVFGoogleFormController {
 						
 					}
 				}*/
-				cap = (List<CaplineIVFFormDto>) civf.searchIVFData(dto,office);
+				return (List<CaplineIVFFormDto>) civf.searchIVFData(dto,office);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", cap));
-
+		return null;
 	}
 
 	@CrossOrigin
@@ -290,7 +347,49 @@ public class CaplineIVFGoogleFormController {
 		
 		
 		if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
-			obj = civf.generatePDF(dto,office);
+			obj = civf.generatePDF(dto,office,iVformTypeDao.getIVFormTypeByName(Constants.IV_GENERAL_FORM_NAME));
+		}
+		if (obj != null && obj[1]!=null) {
+			ByteArrayOutputStream ou =(ByteArrayOutputStream)  obj[1];
+			response.setContentType("application/pdf");
+			//response.setContentLengthLong(ou.size());
+			
+			//String name="" java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")));
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+(obj[0].toString().replaceAll(",", "").replaceAll(" ", "") +".pdf")));
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
+			InputStream in = new ByteArrayInputStream(ou.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			ou.close();
+		}
+		
+
+	}
+
+	@CrossOrigin
+	@GetMapping
+	@RequestMapping(value = "/queryivosdatatopdf")
+	public void generateOSPDF(@RequestParam String o ,@RequestParam String id,
+			@RequestParam String p,@RequestParam(value = "n", required=false) String n,HttpServletResponse response) throws IOException {
+		//
+		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
+		dto.setPasswordRE(p);
+		dto.setUniqueID(id);
+		dto.setOfficeNameDB(o);
+		dto.setPdf(null);
+		dto.setNewFormat("");
+		if (n!=null && n.equals("1")) dto.setNewFormat(n);
+		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+		
+		Office office = od.getOfficeByName(dto.getOfficeNameDB(),cmp.getUuid());
+
+		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
+        Object[] obj=null; 
+		
+		
+		if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
+			obj = civf.generatePDF(dto,office,iVformTypeDao.getIVFormTypeByName(Constants.IV_ORAL_SURGERY_FORM_NAME));
 		}
 		if (obj != null && obj[1]!=null) {
 			ByteArrayOutputStream ou =(ByteArrayOutputStream)  obj[1];
@@ -332,7 +431,7 @@ public class CaplineIVFGoogleFormController {
 		
 		
 		if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
-			obj = civf.generatePDF(dto,office);
+			obj = civf.generatePDF(dto,office,iVformTypeDao.getIVFormTypeByName(Constants.IV_GENERAL_FORM_NAME));
 		}
 		if (obj != null && obj[1]!=null) {
 			ByteArrayOutputStream ou =(ByteArrayOutputStream)  obj[1];

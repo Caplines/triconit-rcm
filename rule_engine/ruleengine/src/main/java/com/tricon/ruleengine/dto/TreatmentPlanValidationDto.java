@@ -11,6 +11,8 @@ public class TreatmentPlanValidationDto {
 	private boolean inputMode;
 	private String status;
 	private String insType;
+	//private String ivformTypeId;
+	
 	//private List<String> statses;
 	
 	
@@ -58,6 +60,12 @@ public class TreatmentPlanValidationDto {
 	public void setInsType(String insType) {
 		this.insType = insType;
 	}
+	//public String getIvformTypeId() {
+	//	return ivformTypeId;
+	//}
+	//public void setIvformTypeId(String ivformTypeId) {
+	//	this.ivformTypeId = ivformTypeId;
+	//}
 	
 	
 

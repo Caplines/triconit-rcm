@@ -19,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 /**
  * This entity class represents Patient table
@@ -79,8 +78,9 @@ public class PatientTemp extends BaseAudit implements Serializable{
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
 	private List<PatientHistoryTemp> patientHistory = new ArrayList<PatientHistoryTemp>(0);
 	
-	
-	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
+	private Set<PatientDetail2> patientDetails2 = new HashSet<PatientDetail2>(0);
+
 	
 	@Column(name = "grade_pay")
 	private String gradePay;
@@ -265,6 +265,14 @@ public class PatientTemp extends BaseAudit implements Serializable{
 
 	public void setSubscribersDob(String subscribersDob) {
 		this.subscribersDob = subscribersDob;
+	}
+
+	public Set<PatientDetail2> getPatientDetails2() {
+		return patientDetails2;
+	}
+
+	public void setPatientDetails2(Set<PatientDetail2> patientDetails2) {
+		this.patientDetails2 = patientDetails2;
 	}
 
 

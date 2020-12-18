@@ -198,11 +198,11 @@ public class ConnectAndReadSheets {
 			List<Object> obL = entry.getValue();
 			for (Object obj : obL) {
 				sh = (IVFTableSheet) obj;
-				List<CellData> values = new ArrayList<>();
+				List<CellData> values = new ArrayList<>();//347 old  353
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(sh.getStatusDump())));
 				requests.add(new Request()
 						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(sh.getRowCounter()+1)
-								.setColumnIndex(347))
+								.setColumnIndex(174))
 								.setRows(Arrays.asList(new RowData().setValues(values)))
 								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
 			}
@@ -315,9 +315,9 @@ public class ConnectAndReadSheets {
 				}
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getBenefitRemaining())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getCopay())));
-				if (medicaltype.equals("D")) {
+				//if (medicaltype.equals("D")) {
 					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getComment())));
-				}
+				//}
 				for(HistoryDto d:rd.getHistoryList()) {
 					
 					values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(d.getCode())));
@@ -740,7 +740,7 @@ public class ConnectAndReadSheets {
 			ArrayList<String> obj = (ArrayList<String>) li.next();
 			String uniqueId = "";
 			try {
-				if (obj.get(Column_NO_UNIQUE).toLowerCase().startsWith("Unique_ID".toLowerCase()))
+				if (obj.get(1).toLowerCase().startsWith("PatientName".toLowerCase()))
 					continue;
 				// System.out.println("id---" + ivds.get(0));
 				// System.out.println("id---" + officeName + "_" + ivds.get(0));
@@ -770,7 +770,8 @@ public class ConnectAndReadSheets {
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), // 20*6
 																												// +5
 							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), // 21*6 +5 =131
-							new IVFHistorySheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							null,
+							/*new IVFHistorySheet(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
@@ -800,7 +801,7 @@ public class ConnectAndReadSheets {
 									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 									obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
-									obj.get(++x)),
+									obj.get(++x))*/
 							obj.get(++x), obj.get(++x), obj.get(++x)
 
 					       );
@@ -971,12 +972,75 @@ public class ConnectAndReadSheets {
 						continue;
 					}
 					try {
-						vif.setSheetSubId(obj.get(++x));//MH sheetsubid
+						vif.setD0160Freq(obj.get(++x));//MI d0160Freq
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD2391Freq(obj.get(++x));//MJ d2391Freq
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD0330Freq(obj.get(++x));//MK d0330Freq
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD4381Freq(obj.get(++x));//ML d4381Freq
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD3330(obj.get(++x));//MM d3330
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD3330Freq(obj.get(++x));//MN d3330Freq
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setFreqD2934(obj.get(++x));//Freq D2934
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setSheetSubId(obj.get(++x));//MO sheetsubid
 					}catch (Exception e) {
 						continue;
 					}
 					vif.setRowCounter(++rowCounter);
-					vif.setStatusDump("OK");
+					vif.setStatusDump("OK");//MP
+					x++;
+					boolean add=false;
+					List<IVFHistorySheet> lh= new ArrayList<>();
+					while(true) {
+						IVFHistorySheet s= new IVFHistorySheet();
+						s.setHistoryCode("");
+						s.setHistoryTooth("");
+						s.setHistorySurface("");
+						s.setHistoryDOS("");
+						try {
+							add=false;
+							s.setHistoryCode(obj.get(++x));
+							s.setHistoryTooth(obj.get(++x));
+							s.setHistoryDOS(DateUtils.correctDateformat(obj.get(++x)));
+							//s.setHistorySurface(obj.get(++x));
+							lh.add(s);
+							 add=true;
+						}catch (Exception e) {
+							if (!add && s.getHistoryCode()!=null  && !s.getHistoryCode().equals("")) lh.add(s);
+							break;
+						}	
+					
+					}
+					
+					vif.setiVFHistorySheetList(lh);
+					IVFHistorySheet hs = new IVFHistorySheet();
+					vif.setHs(hs);
+
 					if (vif.getPatientId().trim().equals(""))continue;
 				 //For new Added Columns
 				

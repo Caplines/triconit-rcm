@@ -25,6 +25,7 @@ import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
 import com.tricon.ruleengine.model.db.PatientDetail;
+import com.tricon.ruleengine.model.db.PatientDetail2;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistory;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
@@ -49,6 +50,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			criteria.createAlias("office", "off");
 			criteria.createAlias("patientHistory", "patientHistory", JoinType.LEFT_OUTER_JOIN);
 			criteria.createAlias("patientDetails", "patientDetails", JoinType.LEFT_OUTER_JOIN);
+			criteria.createAlias("patientDetails2", "patientDetails2", JoinType.LEFT_OUTER_JOIN);
 			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
 			
 			/*if (patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0
@@ -60,6 +62,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			}
             */
 			pat = (Patient) criteria.uniqueResult();
+			
 		} finally {
 			closeSession(session);
 		}
@@ -98,6 +101,13 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			pd.setCreatedBy(user);
 			int id= (Integer)session.save(pd);
 			pd.setId(id);
+			
+			PatientDetail2 pd2= pd.getPatientDetails2();
+			pd2.setCreatedBy(user);
+			pd2.setPatient(pd.getPatient());
+			pd2.setPatientDetail(pd);
+			session.save(pd2);
+			
 			// Patient Detail End
 			// History start
 			for (PatientHistory phi : pat.getPatientHistory()) {
@@ -146,10 +156,22 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			
 			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
 			PatientDetail pd = iter.next();
+			
+			
+			
+			
 			// String x=null;
 			if (detailsSave) {
 				int id= (Integer)saveEntiy(pd);
 				pd.setId(id);
+				
+				PatientDetail2 pd2 = pd.getPatientDetails2();
+				if (pd2.getPatient()==null) pd2.setPatient(pd.getPatient());
+				if (pd2.getPatientDetail()==null) pd2.setPatientDetail(pd);
+				pd2.setCreatedBy(pd.getCreatedBy());
+				int id1= (Integer)saveEntiy(pd2);
+				
+				
 				Set<PatientDetail> s=new HashSet<>();
 				s.add(pd);
 				pat.setPatientDetails(s);
@@ -158,6 +180,40 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			}
 			else if (!onlySave) {
 				updateEntity(pd);
+				//updateEntity(pd2);
+				PatientDetail2 pd21= pd.getPatientDetails2();
+				Set<PatientDetail2> setPD2 = pat.getPatientDetails2();
+				 Integer p21Id=-1;
+				if (setPD2!=null && setPD2.size()>0) {
+					for(PatientDetail2 ps:setPD2) {
+						if (ps.getPatientDetail().getId()==pd.getId()) {
+							p21Id=ps.getId();
+						}
+					}
+					if (p21Id!=-1) {
+					  pd21.setId(p21Id);
+					  pd21.setPatientDetail(pd);
+					  pd21.setCreatedBy(pat.getCreatedBy());
+					  pd21.setUpdatedBy(pat.getUpdatedBy());
+					  pd21.setPatient(pat);
+					  updateEntity(pd21);
+					}else {
+						pd21.setCreatedBy(pat.getCreatedBy());
+						pd21.setPatient(pat);
+						pd21.setPatientDetail(pd);
+						saveEntiy(pd21);
+					}
+				}else {
+					pd21.setCreatedBy(pat.getCreatedBy());
+					pd21.setPatient(pat);
+					pd21.setPatientDetail(pd);
+					saveEntiy(pd21);
+				}
+					//pd21.setUpdatedBy(pat.getUpdatedBy());
+					
+					
+				
+				
 				Set<PatientDetail> s=new HashSet<>();
 				s.add(pd);
 				pat.setPatientDetails(s);
@@ -241,13 +297,13 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			String tableName="";
 			String extraInClause=" ";
 			String status=" ";
-			String fromClause=" from patient_detail"+tableName+" pd , patient"+tableName+" p where " + 
+			String fromClause=" from patient"+tableName+" p , patient_detail"+tableName+" pd left join patient_detail_"+tableName+"2 pd2 on pd2.patient_detail_id=pd.id where " + 
 					          "	 pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id " ;
 			if (!temp) {
 				tableName="_temp";
 				extraInClause=(dto!=null && dto.getWebsiteNameDB()!=null && !dto.getWebsiteNameDB().equals("")? " and p.website_name = '"+dto.getWebsiteNameDB()+"' ":" ");
 				status=", p.status as status ";
-				fromClause=" from patient_detail"+tableName+" pd right join  patient"+tableName+" p on pd.patient_id=p.id where " + 
+				fromClause=" from patient_detail"+tableName+" pd right join  patient"+tableName+" p on pd.patient_id=p.id left join patient_detail"+tableName+"2 pd2 on pd2.patient_detail_id=pd.id where " + 
 				          "	 p.office_id='"+off.getUuid()+"' " ;
 			}
 			////policy18//policy19/policy20 -- need to verify
@@ -256,7 +312,8 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 				inclause= " and p.patient_id in ("+String.join(", ", patIds)+")";
 			}
 			
-			String query = "select p.id as pidDB "+status+",COALESCE(pd.id, 0) as id,policy_holder as basicInfo5,p.patient_id as basicInfo21,"
+			
+			String query = "select p.id as pidDB "+status+",iv_form_type_id as ivFormTypeId, COALESCE(pd.id, 0) as id,policy_holder as basicInfo5,p.patient_id as basicInfo21,"
 					+ " concat(coalesce(p.first_name,''),' ',coalesce(p.last_name,'')) as basicInfo2, p.dob as basicInfo6, "
 					+ " ins_name as basicInfo3 , tax_id as basicInfo4, ins_contact as basicInfo7, "
 					+ " cs_sr_name as basicInfo8, policy_holder_dob as basicInfo9 , employer_name as basicInfo10 ,"
@@ -307,7 +364,18 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " extractions_in_year as extr1, crowns_in_year as crn1,waiting_period4 as waitingPeriod4,share_fr as shareFr, DATE_FORMAT(p.created_date, '%d/%m/%y %T') as createdDate, " ////add new Columns here
 					+ " pedo1 as pedo1, pedo2 as pedo2,pano1 as pano1, pano2 as pano2, d4381 as d4381,"
 					+ " ckd0120 as ckD0120,ckd0140 as ckD0140,ckd0145 as ckD0145,ckd0150 as ckD0150,ckd0160 as ckD0160,ckd210 as ckD210,"
-					+ " ckd220 as ckD220,ckd230 as ckD230,ckd330 as ckD330,ckd274 as ckD274  "
+					+ " ckd220 as ckD220,ckd230 as ckD230,ckd330 as ckD330,ckd274 as ckD274,  "
+					+ " d0160_freq as d0160Freq,d2391_freq as d2391Freq,d0330_freq as d0330Freq,d4381_freq as d4381Freq,  "
+					+ " pd.d3330 as d3330,d3330_freq as d3330Freq,licence as licence,npi as npi,freq_d2934 as  freqD2934, "
+					+ " radio3 as radio3,radio4 as radio4,radio5 as radio5, radio1 as radio1,radio2 as radio2,  "
+					+ " corrd_Of_benefits as corrdOfBenefits,what_amount_d7210 as whatAmountD7210,allow_amount_d7240 as allowAmountD7240,d7210 as D7210,d7220 as D7220,d7230 as D7230,d7240 as D7240,"
+					+ " d7250 as d7250,d7310 as d7310,d7311 as d7311,"
+					+ " d7320 as d7320,d7321 as d7321,d7473 as d7473,d9239 as d9239,"
+					+ " d4263 as d4263,d4264 as d4264,d6104 as d6104,d7953 as d7953,"
+					+ " d3310 as d3310,d3320 as d3320,pd2.d3330 as D33300,d3346 as d3346,"
+					+ " d3347 as d3347,d3348 as d3348,d6058 as d6058,d7951 as d7951,"
+					+ " d4266 as d4266,d4267 as d4267,d4273 as d4273,"
+					+ " d7251 as d7251,ivSedation as ivSedation "
 					//+ " as  " //add new Columns here
 					
 					+ fromClause
@@ -321,7 +389,8 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					(dto!=null && dto.getPolicyHolderNameDB()!=null && !dto.getPolicyHolderNameDB().equals("")? " and pd.policy_holder like '%"+dto.getPolicyHolderNameDB()+"%' ":" ")+
 					(dto!=null && dto.getPatientDobDB()!=null && !dto.getPatientDobDB().equals("")? " and p.dob = '"+dto.getPatientDobDB()+"' ":" ")+
 					(dto!=null && dto.getPatientName()!=null && !dto.getPatientName().equals("")? " and (concat(coalesce(first_name,''),' ',coalesce(last_name,'')) like '%"+dto.getPatientName()+"%')"+" ":" ")+
-					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+"' ":" ")
+					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+"' ":" ")+
+					(dto!=null && dto.getIvformTypeId()!=null && !dto.getIvformTypeId().equals("")? " and pd.iv_form_type_id ='"+dto.getIvformTypeId()+"' ":" ")
 					+ " order by p.created_date desc ";
 					//patientDobDB
 					;

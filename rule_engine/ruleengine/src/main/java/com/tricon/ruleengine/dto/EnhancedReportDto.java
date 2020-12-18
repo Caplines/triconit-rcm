@@ -13,6 +13,7 @@ public class EnhancedReportDto {
 	private String mType;
 	private String employerName;
 	//private String userId;
+	private String ivformTypeId;
 	
 	
 	
@@ -71,6 +72,12 @@ public class EnhancedReportDto {
 	}
 	public void setEmployerName(String employerName) {
 		this.employerName = employerName;
+	}
+	public String getIvformTypeId() {
+		return ivformTypeId;
+	}
+	public void setIvformTypeId(String ivformTypeId) {
+		this.ivformTypeId = ivformTypeId;
 	}
 	
 	

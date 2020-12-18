@@ -539,6 +539,61 @@ public class CaplineIVFFormDto {
 	private String ckD330;//ckD330
 	private String ckD274;//ckD274
 	
+	
+	private String d0160Freq;//d0160Freq
+	private String d2391Freq;//d2391Freq
+	private String d0330Freq;//d0330Freq
+	private String d4381Freq;//d4381Freq
+
+    private String d3330;//d3330
+	private String d3330Freq;// d3330Freq 
+    private String freqD2934;//freqD2934
+	
+	
+    private String npi;
+    private String licence;
+    private String radio3;
+    private String radio4;
+    private String radio5;
+    private String radio1;
+    private String radio2;
+    private String corrdOfBenefits;
+    private String whatAmountD7210;
+    private String allowAmountD7240;
+    private String ivSedation;
+
+    private String d7210;
+    private String d7220;
+    private String d7230;
+    private String d7240;
+    private String d7250;
+    private String d7310;
+    private String d7311;
+    private String d7320;
+    private String d7321;
+    private String d7473;
+
+    private String d9239;
+    private String d4263;
+    private String d4264;
+    private String d6104;
+    private String d7953;
+    private String d3310;
+    private String d3320;
+    private String d33300;
+    private String d3346;
+    private String d3347;
+    private String d3348;
+    private String d6058;
+    private String d7951;
+    private String d4266;
+    private String d4267;
+    private String d4273;
+    private String d7251;
+    
+	
+	private Integer ivFormTypeId;
+	
     //END
     
     public String getFill1() {
@@ -2067,6 +2122,375 @@ public class CaplineIVFFormDto {
 		this.ckD274 = ckD274;
 	}
 
-	
+	public Integer getIvFormTypeId() {
+		return ivFormTypeId;
+	}
+
+	public void setIvFormTypeId(Integer ivFormTypeId) {
+		//if (ivFormTypeId==null) ivFormTypeId=0;
+		this.ivFormTypeId = ivFormTypeId;
+	}
+
+	public String getD0160Freq() {
+		return d0160Freq;
+	}
+
+	public void setD0160Freq(String d0160Freq) {
+		this.d0160Freq = d0160Freq;
+	}
+
+	public String getD2391Freq() {
+		return d2391Freq;
+	}
+
+	public void setD2391Freq(String d2391Freq) {
+		this.d2391Freq = d2391Freq;
+	}
+
+	public String getD0330Freq() {
+		return d0330Freq;
+	}
+
+	public void setD0330Freq(String d0330Freq) {
+		this.d0330Freq = d0330Freq;
+	}
+
+	public String getD4381Freq() {
+		return d4381Freq;
+	}
+
+	public void setD4381Freq(String d4381Freq) {
+		this.d4381Freq = d4381Freq;
+	}
+
+	public String getD3330() {
+		return d3330;
+	}
+
+	public void setD3330(String d3330) {
+		this.d3330 = d3330;
+	}
+
+	public String getD3330Freq() {
+		return d3330Freq;
+	}
+
+	public void setD3330Freq(String d3330Freq) {
+		this.d3330Freq = d3330Freq;
+	}
+
+	public String getNpi() {
+		return npi;
+	}
+
+	public void setNpi(String npi) {
+		this.npi = npi;
+	}
+
+	public String getLicence() {
+		return licence;
+	}
+
+	public void setLicence(String licence) {
+		this.licence = licence;
+	}
+
+	public String getRadio3() {
+		return radio3;
+	}
+
+	public void setRadio3(String radio3) {
+		this.radio3 = radio3;
+	}
+
+	public String getRadio4() {
+		return radio4;
+	}
+
+	public void setRadio4(String radio4) {
+		this.radio4 = radio4;
+	}
+
+	public String getRadio5() {
+		return radio5;
+	}
+
+	public void setRadio5(String radio5) {
+		this.radio5 = radio5;
+	}
+
+	public String getRadio1() {
+		return radio1;
+	}
+
+	public void setRadio1(String radio1) {
+		this.radio1 = radio1;
+	}
+
+	public String getRadio2() {
+		return radio2;
+	}
+
+	public void setRadio2(String radio2) {
+		this.radio2 = radio2;
+	}
+
+	public String getCorrdOfBenefits() {
+		return corrdOfBenefits;
+	}
+
+	public void setCorrdOfBenefits(String corrdOfBenefits) {
+		this.corrdOfBenefits = corrdOfBenefits;
+	}
+
+	public String getWhatAmountD7210() {
+		return whatAmountD7210;
+	}
+
+	public void setWhatAmountD7210(String whatAmountD7210) {
+		this.whatAmountD7210 = whatAmountD7210;
+	}
+
+	public String getAllowAmountD7240() {
+		return allowAmountD7240;
+	}
+
+	public void setAllowAmountD7240(String allowAmountD7240) {
+		this.allowAmountD7240 = allowAmountD7240;
+	}
+
+	public String getIvSedation() {
+		return ivSedation;
+	}
+
+	public void setIvSedation(String ivSedation) {
+		this.ivSedation = ivSedation;
+	}
+
+	public String getD7210() {
+		return d7210;
+	}
+
+	public void setD7210(String d7210) {
+		this.d7210 = d7210;
+	}
+
+	public String getD7220() {
+		return d7220;
+	}
+
+	public void setD7220(String d7220) {
+		this.d7220 = d7220;
+	}
+
+	public String getD7230() {
+		return d7230;
+	}
+
+	public void setD7230(String d7230) {
+		this.d7230 = d7230;
+	}
+
+	public String getD7240() {
+		return d7240;
+	}
+
+	public void setD7240(String d7240) {
+		this.d7240 = d7240;
+	}
+
+	public String getD7250() {
+		return d7250;
+	}
+
+	public void setD7250(String d7250) {
+		this.d7250 = d7250;
+	}
+
+	public String getD7310() {
+		return d7310;
+	}
+
+	public void setD7310(String d7310) {
+		this.d7310 = d7310;
+	}
+
+	public String getD7311() {
+		return d7311;
+	}
+
+	public void setD7311(String d7311) {
+		this.d7311 = d7311;
+	}
+
+	public String getD7320() {
+		return d7320;
+	}
+
+	public void setD7320(String d7320) {
+		this.d7320 = d7320;
+	}
+
+	public String getD7321() {
+		return d7321;
+	}
+
+	public void setD7321(String d7321) {
+		this.d7321 = d7321;
+	}
+
+	public String getD7473() {
+		return d7473;
+	}
+
+	public void setD7473(String d7473) {
+		this.d7473 = d7473;
+	}
+
+	public String getD9239() {
+		return d9239;
+	}
+
+	public void setD9239(String d9239) {
+		this.d9239 = d9239;
+	}
+
+	public String getD4263() {
+		return d4263;
+	}
+
+	public void setD4263(String d4263) {
+		this.d4263 = d4263;
+	}
+
+	public String getD4264() {
+		return d4264;
+	}
+
+	public void setD4264(String d4264) {
+		this.d4264 = d4264;
+	}
+
+	public String getD6104() {
+		return d6104;
+	}
+
+	public void setD6104(String d6104) {
+		this.d6104 = d6104;
+	}
+
+	public String getD7953() {
+		return d7953;
+	}
+
+	public void setD7953(String d7953) {
+		this.d7953 = d7953;
+	}
+
+	public String getD3310() {
+		return d3310;
+	}
+
+	public void setD3310(String d3310) {
+		this.d3310 = d3310;
+	}
+
+	public String getD3320() {
+		return d3320;
+	}
+
+	public void setD3320(String d3320) {
+		this.d3320 = d3320;
+	}
+
+	public String getD33300() {
+		return d33300;
+	}
+
+	public void setD33300(String d33300) {
+		this.d33300 = d33300;
+	}
+
+	public String getD3346() {
+		return d3346;
+	}
+
+	public void setD3346(String d3346) {
+		this.d3346 = d3346;
+	}
+
+	public String getD3347() {
+		return d3347;
+	}
+
+	public void setD3347(String d3347) {
+		this.d3347 = d3347;
+	}
+
+	public String getD3348() {
+		return d3348;
+	}
+
+	public void setD3348(String d3348) {
+		this.d3348 = d3348;
+	}
+
+	public String getD6058() {
+		return d6058;
+	}
+
+	public void setD6058(String d6058) {
+		this.d6058 = d6058;
+	}
+
+	public String getD7951() {
+		return d7951;
+	}
+
+	public void setD7951(String d7951) {
+		this.d7951 = d7951;
+	}
+
+	public String getD4266() {
+		return d4266;
+	}
+
+	public void setD4266(String d4266) {
+		this.d4266 = d4266;
+	}
+
+	public String getD4267() {
+		return d4267;
+	}
+
+	public void setD4267(String d4267) {
+		this.d4267 = d4267;
+	}
+
+	public String getD4273() {
+		return d4273;
+	}
+
+	public void setD4273(String d4273) {
+		this.d4273 = d4273;
+	}
+
+	public String getD7251() {
+		return d7251;
+	}
+
+	public void setD7251(String d7251) {
+		this.d7251 = d7251;
+	}
+
+	public String getFreqD2934() {
+		return freqD2934;
+	}
+
+	public void setFreqD2934(String freqD2934) {
+		this.freqD2934 = freqD2934;
+	}
+
+
 	
 }

@@ -104,9 +104,9 @@ public class BaseDaoImpl {
 		Session session = getSession();
 		Object object = null;
 		try {
-			Transaction transaction = session.beginTransaction();
+			//Transaction transaction = session.beginTransaction();
 			object = session.byId(clazz).load(columnValue);
-			transaction.commit();
+			//transaction.commit();
 		} finally {
 			closeSession(session);
 
@@ -119,10 +119,10 @@ public class BaseDaoImpl {
 		Session session = getSession();
 		List<Object> list = null;
 		try {
-			Transaction transaction = session.beginTransaction();
+			//Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(clazz);
 			list=criteria.list();
-			transaction.commit();
+			//transaction.commit();
 		} finally {
 			closeSession(session);
 
@@ -136,11 +136,11 @@ public class BaseDaoImpl {
 		Session session = getSession();
 		List<Object> list = null;
 		try {
-			Transaction transaction = session.beginTransaction();
+			//Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(clazz);
 			criteria.add(Restrictions.eq(columnName, columnValue));
 			list =  criteria.list();
-			transaction.commit();
+			//transaction.commit();
 			
 		} finally {
 			closeSession(session);

@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -32,8 +33,15 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	private PatientTemp patient;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "office_id")
+	@JoinColumn(name = "office_id",nullable=true)
 	private Office office;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "iv_form_type_id")
+	private IVFormType iVFormType;
+
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "patientDetail")
+	private PatientDetailTemp2 patientDetails2;
 
 	@Column(name = "ins_name", length = 100)
 	private String insName;// C
@@ -579,8 +587,45 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	@Column(name = "ckd274", length = 3)
 	private String ckD274;//ckD274
 
+	@Column(name = "d0160_freq", length = 50)
+	private String d0160Freq;//d0160Freq
+
+	@Column(name = "d2391_freq", length = 50)
+	private String d2391Freq;//d2391Freq
 	
+	@Column(name = "d0330_freq", length = 50)
+	private String d0330Freq;//d0330Freq
+
+	@Column(name = "d4381_freq", length = 50)
+	private String d4381Freq;//d4381Freq
 	
+	@Column(name = "d3330", length = 20)
+	private String d3330;//d3330
+	
+	@Column(name = "d3330_freq", length = 50)
+	private String d3330Freq;// d3330Freq 
+
+	@Column(name = "freq_d2934", length = 50)
+	private String freqD2934;//freq_d2934
+
+	public PatientDetailTemp2 getPatientDetails2() {
+		return patientDetails2;
+	}
+
+	public void setPatientDetails2(PatientDetailTemp2 patientDetails2) {
+		this.patientDetails2 = patientDetails2;
+	}
+
+
+	public String getFreqD2934() {
+		return freqD2934;
+	}
+
+	public void setFreqD2934(String freqD2934) {
+		this.freqD2934 = freqD2934;
+	}
+
+
 	//For delta Dental only
 	@Transient
 	private boolean planTypeinSite;
@@ -1996,6 +2041,64 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	public void setCkD274(String ckD274) {
 		this.ckD274 = ckD274;
 	}
+
+	public IVFormType getiVFormType() {
+		return iVFormType;
+	}
+
+	public void setiVFormType(IVFormType iVFormType) {
+		this.iVFormType = iVFormType;
+	}
+
+	public String getD0160Freq() {
+		return d0160Freq;
+	}
+
+	public void setD0160Freq(String d0160Freq) {
+		this.d0160Freq = d0160Freq;
+	}
+
+	public String getD2391Freq() {
+		return d2391Freq;
+	}
+
+	public void setD2391Freq(String d2391Freq) {
+		this.d2391Freq = d2391Freq;
+	}
+
+	public String getD0330Freq() {
+		return d0330Freq;
+	}
+
+	public void setD0330Freq(String d0330Freq) {
+		this.d0330Freq = d0330Freq;
+	}
+
+	public String getD4381Freq() {
+		return d4381Freq;
+	}
+
+	public void setD4381Freq(String d4381Freq) {
+		this.d4381Freq = d4381Freq;
+	}
+
+	public String getD3330() {
+		return d3330;
+	}
+
+	public void setD3330(String d3330) {
+		this.d3330 = d3330;
+	}
+
+	public String getD3330Freq() {
+		return d3330Freq;
+	}
+
+	public void setD3330Freq(String d3330Freq) {
+		this.d3330Freq = d3330Freq;
+	}
+
+
 
 	
 	

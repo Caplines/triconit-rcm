@@ -25,7 +25,7 @@ public class CaplineIVFQueryFormDto {
 	private String pdf;
 	private String newFormat;
 	
-	
+	private String ivformTypeId;
 	
 	
 	
@@ -143,6 +143,12 @@ public class CaplineIVFQueryFormDto {
 	}
 	public void setNewFormat(String newFormat) {
 		this.newFormat = newFormat;
+	}
+	public String getIvformTypeId() {
+		return ivformTypeId;
+	}
+	public void setIvformTypeId(String ivformTypeId) {
+		this.ivformTypeId = ivformTypeId;
 	}
 	
 	

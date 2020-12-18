@@ -10,9 +10,12 @@ import java.util.Map;
 import java.util.Set;
 
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
+import com.tricon.ruleengine.dto.ToothHistoryDto;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
 import com.tricon.ruleengine.model.db.PatientDetail;
+import com.tricon.ruleengine.model.db.PatientDetail2;
 import com.tricon.ruleengine.model.db.PatientHistory;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
@@ -22,11 +25,12 @@ public class IVFFormConversionUtil {
 	/* Copy from Google Form and DUMP Sheet to IVF RDBMS database 
 	 * if any changes done here make sure to verify same in copyValueToIVFSheet method defined below
 	 */
-	public static Patient copyValueToPatient(CaplineIVFFormDto d, Office off, Date date) {
+	public static Patient copyValueToPatientFROMIVOSGoogle(CaplineIVFFormDto d, Office off, Date date, IVFormType iVFormType) {
 
 		Patient p = new Patient();
 		PatientDetail pd = new PatientDetail();
-
+		PatientDetail2 pd2= new PatientDetail2();
+		pd.setiVFormType(iVFormType);
 		// Office off =od.getOfficeByName(d.getBasicInfo1());
 		// off.getName();
 
@@ -217,7 +221,59 @@ public class IVFFormConversionUtil {
 		pd.setCkD330(d.getCkD330());//ckD330
 		pd.setCkD274(d.getCkD274());//ckD274
 
+		pd.setD0160Freq(d.getD0160Freq());//d0160Freq
+		pd.setD2391Freq(d.getD2391Freq());//d2391Freq
+		pd.setD0330Freq(d.getD0330Freq());//d0330Freq
+		pd.setD4381Freq(d.getD4381Freq());//d4381Freq
+		pd.setD3330(d.getD3330());//d3330
+		pd.setD3330Freq(d.getD3330Freq());//d3330Freq
+		pd.setFreqD2934(d.getFreqD2934());
 		
+		pd2.setNpi(d.getNpi());
+		pd2.setLicence(d.getLicence());
+		pd2.setRadio3(d.getRadio3());
+		pd2.setRadio4(d.getRadio4());
+		pd2.setRadio5(d.getRadio5());
+		pd2.setRadio1(d.getRadio1());
+		pd2.setRadio2(d.getRadio2());
+		pd2.setCorrdOfBenefits(d.getCorrdOfBenefits());
+		pd2.setWhatAmountD7210(d.getWhatAmountD7210());
+		pd2.setAllowAmountD7240(d.getAllowAmountD7240());
+		pd2.setD7210(d.getD7210());
+		pd2.setD7220(d.getD7220());
+		pd2.setD7230(d.getD7230());
+		pd2.setD7240(d.getD7240());
+		pd2.setD7250(d.getD7250());
+		pd2.setD7310(d.getD7310());
+		pd2.setD7311(d.getD7311());
+		pd2.setD7320(d.getD7320());
+		pd2.setD7321(d.getD7321());
+		pd2.setD7473(d.getD7473());
+
+		pd2.setD9239(d.getD9239());
+		pd2.setD4263(d.getD4263());
+		pd2.setD4264(d.getD4264());
+		pd2.setD6104(d.getD6104());
+		pd2.setD7953(d.getD7953());
+		pd2.setD3310(d.getD3310());
+		pd2.setD3320(d.getD3320());
+		pd2.setD3330(d.getD33300());
+		pd2.setD3346(d.getD3346());
+		pd2.setD3347(d.getD3347());
+		pd2.setD3348(d.getD3348());
+		pd2.setD6058(d.getD6058());
+		pd2.setD7951(d.getD7951());
+		pd2.setD4266(d.getD4266());
+		pd2.setD4267(d.getD4267());
+		pd2.setD4273(d.getD4273());
+		pd2.setD7251(d.getD7251());
+		pd2.setIvSedation(d.getIvSedation());
+
+		pd.setPatientDetails2(pd2);
+		Set<PatientDetail2> p2Set = new HashSet<>();
+		p2Set.add(pd2);
+		
+		p.setPatientDetails2(p2Set);
 		//END		
 		
 		if (off != null)
@@ -289,7 +345,8 @@ public class IVFFormConversionUtil {
 
 		// Office off =od.getOfficeByName(d.getBasicInfo1());
 		// off.getName();
-
+		//pd.setivf
+		pd.setIvFormTypeId(d.getIvFormTypeId());
 		pd.setAlveoD7310CoveredWithEXT(d.getOral5());
 		pd.setAlveoD7310FL(d.getOral6());
 		pd.setAlveoD7311CoveredWithEXT(d.getOral3());
@@ -477,8 +534,55 @@ public class IVFFormConversionUtil {
 				pd.setCkD230(d.getCkD230());//ckD230
 				pd.setCkD330(d.getCkD330());//ckD330
 				pd.setCkD274(d.getCkD274());//ckD274
+				pd.setD0160Freq(d.getD0160Freq());//d0160Freq
+				pd.setD2391Freq(d.getD2391Freq());//d2391Freq
+				pd.setD0330Freq(d.getD0330Freq());//d0330Freq
+				pd.setD4381Freq(d.getD4381Freq());//d4381Freq
+				pd.setD3330(d.getD3330());//d3330
+				pd.setD3330Freq(d.getD3330Freq());//d3330Freq
+				pd.setFreqD2934(d.getFreqD2934());
+				
+				pd.setNpi(d.getNpi());
+				pd.setLicence(d.getLicence());
+				pd.setRadio3(d.getRadio3());
+				pd.setRadio4(d.getRadio4());
+				pd.setRadio5(d.getRadio5());
+				pd.setRadio1(d.getRadio1());
+				pd.setRadio2(d.getRadio2());
+				pd.setCorrdOfBenefits(d.getCorrdOfBenefits());
+				pd.setWhatAmountD7210(d.getWhatAmountD7210());
+				pd.setAllowAmountD7240(d.getAllowAmountD7240());
+				pd.setD7210(d.getD7210());
+				pd.setD7220(d.getD7220());
+				pd.setD7230(d.getD7230());
+				pd.setD7240(d.getD7240());
+				pd.setD7250(d.getD7250());
+				pd.setD7310(d.getD7310());
+				pd.setD7311(d.getD7311());
+				pd.setD7320(d.getD7320());
+				pd.setD7321(d.getD7321());
+				pd.setD7473(d.getD7473());
 
-		
+				pd.setD9239(d.getD9239());
+				pd.setD4263(d.getD4263());
+				pd.setD4264(d.getD4264());
+				pd.setD6104(d.getD6104());
+				pd.setD7953(d.getD7953());
+				pd.setD3310(d.getD3310());
+				pd.setD3320(d.getD3320());
+				pd.setD3330(d.getD33300());
+				pd.setD3346(d.getD3346());
+				pd.setD3347(d.getD3347());
+				pd.setD3348(d.getD3348());
+				pd.setD6058(d.getD6058());
+				pd.setD7951(d.getD7951());
+				pd.setD4266(d.getD4266());
+				pd.setD4267(d.getD4267());
+				pd.setD4273(d.getD4273());
+				pd.setD7251(d.getD7251());
+				pd.setIvSedation(d.getIvSedation());
+
+
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
 		pd.setVarnishD1206AgeLimit(d.getFluroide4());
@@ -606,11 +710,13 @@ public class IVFFormConversionUtil {
 		
 	}
 	
-	
-	public static Patient copyValueToPatient(IVFTableSheet d, Office off) {
+	//data Dump only for IVF GENERAL FORM... for  now
+	public static Patient copyValueToPatient(IVFTableSheet d, Office off,IVFormType iVFormType) {
 
 		Patient p = new Patient();
 		PatientDetail pd = new PatientDetail();
+		PatientDetail2 pd2= new PatientDetail2();
+        pd.setiVFormType(iVFormType);
          //Could have used Beanutil but avoided for safer side;
 		// Office off =od.getOfficeByName(d.getBasicInfo1());
 		// off.getName();
@@ -803,6 +909,59 @@ public class IVFFormConversionUtil {
 		pd.setCkD230(d.getCkD230());//ckD230
 		pd.setCkD330(d.getCkD330());//ckD330
 		pd.setCkD274(d.getCkD274());//ckD274
+		pd.setD0160Freq(d.getD0160Freq());//d0160Freq
+		pd.setD2391Freq(d.getD2391Freq());//d2391Freq
+		pd.setD0330Freq(d.getD0330Freq());//d0330Freq
+		pd.setD4381Freq(d.getD4381Freq());//d4381Freq
+		pd.setD3330(d.getD3330());//d3330
+		pd.setD3330Freq(d.getD3330Freq());//d3330Freq
+		pd.setFreqD2934(d.getFreqD2934());
+		
+		pd2.setNpi(d.getNpi());
+		pd2.setLicence(d.getLicence());
+		pd2.setRadio3(d.getRadio3());
+		pd2.setRadio4(d.getRadio4());
+		pd2.setRadio5(d.getRadio5());
+		pd2.setRadio1(d.getRadio1());
+		pd2.setRadio2(d.getRadio2());
+		pd2.setCorrdOfBenefits(d.getCorrdOfBenefits());
+		pd2.setWhatAmountD7210(d.getWhatAmountD7210());
+		pd2.setAllowAmountD7240(d.getAllowAmountD7240());
+		pd2.setD7210(d.getD7210());
+		pd2.setD7220(d.getD7220());
+		pd2.setD7230(d.getD7230());
+		pd2.setD7240(d.getD7240());
+		pd2.setD7250(d.getD7250());
+		pd2.setD7310(d.getD7310());
+		pd2.setD7311(d.getD7311());
+		pd2.setD7320(d.getD7320());
+		pd2.setD7321(d.getD7321());
+		pd2.setD7473(d.getD7473());
+
+		pd2.setD9239(d.getD9239());
+		pd2.setD4263(d.getD4263());
+		pd2.setD4264(d.getD4264());
+		pd2.setD6104(d.getD6104());
+		pd2.setD7953(d.getD7953());
+		pd2.setD3310(d.getD3310());
+		pd2.setD3320(d.getD3320());
+		pd2.setD3330(d.getD33300());
+		pd2.setD3346(d.getD3346());
+		pd2.setD3347(d.getD3347());
+		pd2.setD3348(d.getD3348());
+		pd2.setD6058(d.getD6058());
+		pd2.setD7951(d.getD7951());
+		pd2.setD4266(d.getD4266());
+		pd2.setD4267(d.getD4267());
+		pd2.setD4273(d.getD4273());
+		pd2.setD7251(d.getD7251());
+		pd2.setIvSedation(d.getIvSedation());
+
+		pd.setPatientDetails2(pd2);
+		Set<PatientDetail2> p2Set = new HashSet<>();
+		p2Set.add(pd2);
+		
+		p.setPatientDetails2(p2Set);
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_");// -- will set latter;
@@ -862,9 +1021,35 @@ public class IVFFormConversionUtil {
 							&& ph.getHistorySurface().equals("") && ph.getHistoryTooth().equals("")	))
 						phl.add(ph);
 					}
+			 	 
+			 	for (IVFHistorySheet hisShee: d.getiVFHistorySheetList()) {
+					String hc = "getHistoryCode";
+					String hd = "getHistoryDOS";
+					String ht = "getHistoryTooth";
+					String hs = "getHistorySurface";
+					Method hcm = c2.getMethod(hc);
+					Method htm = c2.getMethod(ht);
+					Method hdm = c2.getMethod(hd);
+					Method hss = c2.getMethod(hs);	
+					String code = (String) hcm.invoke(hisShee);
+					String dt = (String) hdm.invoke(hisShee);
+					
+					if (code.equals("")) continue ;
+					if (dt.equals("")) continue ;
+					ph = new PatientHistory();
+					ph.setHistoryCode((String) hcm.invoke(hisShee));
+					ph.setHistoryDOS((String) hdm.invoke(hisShee));
+					ph.setHistorySurface((String) hss.invoke(hisShee));
+					ph.setHistoryTooth((String) htm.invoke(hisShee));
+					if (!(ph.getHistoryCode().equals("") && ph.getHistoryDOS().equals("")
+						&& ph.getHistorySurface().equals("") && ph.getHistoryTooth().equals("")	))
+					phl.add(ph);
+
+				} 	 
 			 
 		}catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 		}
 		p.setPatientHistory(phl);

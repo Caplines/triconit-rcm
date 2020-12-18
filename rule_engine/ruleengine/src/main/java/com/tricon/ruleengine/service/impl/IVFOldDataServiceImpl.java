@@ -23,7 +23,9 @@ import org.springframework.stereotype.Service;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.IVFDumpDto;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.PatientHistory;
 import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
@@ -31,6 +33,7 @@ import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.IVFOldDataService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
+import com.tricon.ruleengine.utils.DateUtils;
 import com.tricon.ruleengine.utils.IVFFormConversionUtil;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 
@@ -60,7 +63,7 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 	UserDao userDao;
 
 	@Override
-	public String dumpOldData(IVFDumpDto dto) {
+	public String dumpOldData(IVFDumpDto dto,IVFormType iVFormType) {
         String p="";
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -98,21 +101,21 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 						sh = (IVFTableSheet) obj;
 						if (ss==0)sheetSubid=sh.getSheetSubId();
 						ss=1;
-						sh.setPatientDOB(correctDateformat(sh.getPatientDOB()));
-						sh.setPolicyHolderDOB(correctDateformat(sh.getPolicyHolderDOB()));
-						sh.setPlanEffectiveDate(correctDateformat(sh.getPlanEffectiveDate()));
-						sh.setGeneralDateIVwasDone(correctDateformat(sh.getGeneralDateIVwasDone()));
-						sh.setAptDate(correctDateformat(sh.getAptDate()));
+						sh.setPatientDOB(DateUtils.correctDateformat(sh.getPatientDOB()));
+						sh.setPolicyHolderDOB(DateUtils.correctDateformat(sh.getPolicyHolderDOB()));
+						sh.setPlanEffectiveDate(DateUtils.correctDateformat(sh.getPlanEffectiveDate()));
+						sh.setGeneralDateIVwasDone(DateUtils.correctDateformat(sh.getGeneralDateIVwasDone()));
+						sh.setAptDate(DateUtils.correctDateformat(sh.getAptDate()));
 										//sh.getHs()
 						//Default make if Primary
 						//sh.setInsuranceType(Constants.INSURANCE_TPYE_IVF_PRIMARY);
 						if (sh.getHs() != null) {
-							updateHistortList(sh.getHs());
+							updateHistortList(sh.getHs(), sh.getiVFHistorySheetList());
 //null from tooth surface is needed...
 						}
 					//System.out.println("dfdddd--"+sh.getPatientId());
 						//p=sh.getPatientId()+"-"+sh.getPlanAnnualMax();
-						Object[] objR=caplineIVFGoogleFormService.saveAllData(IVFFormConversionUtil.copyValueToPatient(sh, office), office, new Date(), user,false,true);
+						Object[] objR=caplineIVFGoogleFormService.saveAllData(IVFFormConversionUtil.copyValueToPatient(sh, office,iVFormType), office, new Date(), user,false,true,iVFormType);
 						if (!((String)objR[1]).equals("Success")) {
 						p=p+"PatId: "+sh.getPatientId()+" GeneralDate: "+sh.getGeneralDateIVwasDone()+"  Reason: - <div class='error'>"+(String)objR[1]+"</div><br>";
 						sh.setStatusDump("This IV Already Exists in the RDBMS.");
@@ -140,45 +143,6 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
   return p;
 	}
 
-	private static String correctDateformat(String value) {
-		// 4/12/2019 MM/dd/yyyy
-
-		// 2018-10-17 yyyy-MM-dd
-		Date date = null;
-		if (value == null)
-			return "";
-		if (value.trim().equals(""))
-			return "";
-		String myDate = "";
-		try {
-			SimpleDateFormat sdf = Constants.SIMPLE_DATE_FORMAT_IVF;
-
-			date = sdf.parse(value);
-
-			if (!value.equals(sdf.format(date))) {
-				date = null;
-			} else {
-				myDate = value;
-			}
-		} catch (ParseException ex) {
-			// ex.printStackTrace();
-		}
-
-		if (date == null) {
-
-			try {
-				SimpleDateFormat sdf = Constants.SIMPLE_DATE_FORMAT;
-
-				date = sdf.parse(value);
-				myDate = Constants.SIMPLE_DATE_FORMAT_IVF.format(date);
-
-			} catch (ParseException ex) {
-				// ex.printStackTrace();
-			}
-
-		}
-		return myDate;
-	}
 	private static void test() throws Exception{
 		try {
 			String d=null;
@@ -188,7 +152,7 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 		}
 		
 	}
-	private static void updateHistortList(IVFHistorySheet his) {
+	private static void updateHistortList(IVFHistorySheet his,List<IVFHistorySheet> li) {
 		int noOFhistory = Constants.history_codes_size;
 		Class<?> c2=null;
 		PropertyDescriptor pd;
@@ -222,7 +186,7 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 						String shd = "history" + i + "DOS";
 						
 						pd = new PropertyDescriptor(shd, c2);
-						pd.getWriteMethod().invoke(his, correctDateformat(dos));
+						pd.getWriteMethod().invoke(his,DateUtils.correctDateformat(dos));
 						pd = new PropertyDescriptor(shc, c2);
 						pd.getWriteMethod().invoke(his, code);
 						pd = new PropertyDescriptor(sht, c2);
@@ -236,14 +200,41 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 							e.printStackTrace();
 						}	
 					}
+			 	 /*
+			 	PatientHistory ph = null;
+			 	for (IVFHistorySheet hisShee: d.getiVFHistorySheetList()) {
+					String hc = "getHistoryCode";
+					String hd = "getHistoryDOS";
+					String ht = "getHistoryTooth";
+					String hs = "getHistorySurface";
+					Method hcm = c2.getMethod(hc);
+					Method htm = c2.getMethod(ht);
+					Method hdm = c2.getMethod(hd);
+					Method hss = c2.getMethod(hs);	
+					String code = (String) hcm.invoke(hisShee);
+					String dt = (String) hdm.invoke(hisShee);
+					
+					if (code.equals("")) continue ;
+					if (dt.equals("")) continue ;
+					ph = new PatientHistory();
+					ph.setHistoryCode((String) hcm.invoke(his));
+					ph.setHistoryDOS((String) hdm.invoke(his));
+					ph.setHistorySurface((String) hss.invoke(his));
+					ph.setHistoryTooth((String) htm.invoke(his));
+					if (!(ph.getHistoryCode().equals("") && ph.getHistoryDOS().equals("")
+						&& ph.getHistorySurface().equals("") && ph.getHistoryTooth().equals("")	))
+					phl.add(ph);
+
+				}
+				*/
 			 }
 		
 		
 	}
 
 	public static void main(String[] aa) {
-		System.out.println(correctDateformat("4/12/2019"));
-		System.out.println(correctDateformat("2018-10-17"));
+		System.out.println(DateUtils.correctDateformat("4/12/2019"));
+		System.out.println(DateUtils.correctDateformat("2018-10-17"));
 		try {
 		test();
 		}catch (Exception e) {

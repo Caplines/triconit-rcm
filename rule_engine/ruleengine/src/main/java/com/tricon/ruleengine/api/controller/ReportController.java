@@ -38,6 +38,7 @@ import com.tricon.ruleengine.dto.RuleReportDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
+import com.tricon.ruleengine.service.IVformTypeService;
 import com.tricon.ruleengine.service.ReportService;
 
 /**
@@ -53,6 +54,9 @@ public class ReportController {
 
 	@Autowired
 	private ReportService reportService;
+	
+	@Autowired
+	private IVformTypeService iVformTypeService;
 
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
@@ -85,7 +89,7 @@ public class ReportController {
 				d.setEmployerNameDB(dto.getEmployerName());
 				d.setGeneralDateIVFDoneDB(dto.getGeneralDateRun());
 				d.setPatientName(dto.getPatientName());
-
+				d.setIvformTypeId(dto.getIvformTypeId());
 				o = (List<CaplineIVFFormDto>) civf.searchIVFDataforApp(d,od.getOfficeByUuid(dto.getOfficeId(),user.getCompany().getUuid()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -100,6 +104,7 @@ public class ReportController {
 			d.setEmployerNameDB(dto.getEmployerName());
 			d.setPatientDobDB(dto.getDob());
 			d.setPatientName(dto.getPatientName());
+			d.setIvformTypeId(dto.getIvformTypeId());
 			o = (List<CaplineIVFFormDto>) civf.searchIVFDataforAppScrap(d,od.getOfficeByUuid(dto.getOfficeId(),user.getCompany().getUuid()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -228,7 +233,7 @@ public class ReportController {
 		Office office = od.getOfficeByUuid(dto.getOfficeNameDB(),user.getCompany().getUuid());
         Object[] obj=null; 
 		
-		obj = civf.generatePDF(dto, office);
+      obj = civf.generatePDF(dto, office,iVformTypeService.getIVFormTypeById(Integer.parseInt(rdto.getIvformTypeId())));
 		if (obj != null && obj[1]!=null) {
 			ByteArrayOutputStream o =(ByteArrayOutputStream)  obj[1];
 			response.setContentType("application/octet-stream");

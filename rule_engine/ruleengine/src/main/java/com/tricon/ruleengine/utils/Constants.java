@@ -319,6 +319,8 @@ public class Constants {
 	public static final int ATTEMPT_TO_ADD_NEW_COLUMNS=50;
 	
 	
+	public static String IV_GENERAL_FORM_NAME="General form";
+	public static String IV_ORAL_SURGERY_FORM_NAME="Oral Surgery form";
 	
 	
 	

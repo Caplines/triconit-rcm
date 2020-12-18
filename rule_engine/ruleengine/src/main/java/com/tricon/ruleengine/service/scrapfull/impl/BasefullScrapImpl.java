@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.ScrapingFullDataDoa;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
@@ -41,7 +42,7 @@ public class BasefullScrapImpl {
 	protected String driverLocation;
 	protected int processId;
 	protected String taxId;
-	
+	protected IVFormType ivFormType;
 
 	protected static String siteName = "";
 
@@ -126,6 +127,14 @@ public class BasefullScrapImpl {
 	}
 	
 	
+
+	public IVFormType getIvFormTypeId() {
+		return ivFormType;
+	}
+
+	public void setIvFormTypeId(IVFormType ivFormType) {
+		this.ivFormType = ivFormType;
+	}
 
 	protected void setProps(String proxyPort) {
 		System.setProperty("http.proxyHost", "127.0.0.1");

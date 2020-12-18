@@ -116,7 +116,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 HttpMethod.POST,
                 authenticationPath,
                 "/savedatatore",
+                "/savedatatoreos",
                 "/queryivdatafromdb",
+                "/queryivosdatafromdb",
                 "/queryivdatafromdbTemp"
             )
 
@@ -126,6 +128,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                 HttpMethod.GET,
                 "/queryivdatatopdf",
+                "/queryivosdatatopdf",
                 "/queryivdatatohtml",
                 "/.well-known/acme-challenge/8h0NwOQLZreL70OMOZtKMYcM5W2Fme1JUatgJFuTElA",
                 "/.well-known/acme-challenge/AoJiyMAei-mA1StzpKpf22vgqefQLxk8GgBsa3yplpA",
@@ -138,6 +141,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/appdebug/*.txt",
                 "/googleReport",
                 "/savedatatore",
+                "/savedatatoreos",
                 "/googleReport2",
                 "/googleESReport",
                  "/ivf",

@@ -6,12 +6,12 @@ public class ReportDto {
 	private String officeId;
 	private String reportField1;
 	private String reportField2;
-	private String mType;
+	private String mType;//claim vs  Treatment
 	private String patientName;
 	private String employerName;
 	private String generalDateRun;
 	private String dob;
-	
+	private String ivformTypeId;
 	
 	
 	
@@ -68,6 +68,12 @@ public class ReportDto {
 	}
 	public void setDob(String dob) {
 		this.dob = dob;
+	}
+	public String getIvformTypeId() {
+		return ivformTypeId;
+	}
+	public void setIvformTypeId(String ivformTypeId) {
+		this.ivformTypeId = ivformTypeId;
 	}
 	
 	

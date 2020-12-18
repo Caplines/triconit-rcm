@@ -1019,7 +1019,19 @@ public class FreqencyUtils {
 			//if (text.contains("twice"))convert="1DOS";
 			//if (text.contains("per"))convert="1DOS";
 			//if (text.contains("per"))convert="1DOS";
-		}
+		}else if (text.contains("day period")) {
+			String regex = "(.*?)within(.*?)day period(.*?)";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(text);
+			if(matcher.matches() && matcher.groupCount()>=3) {
+			//    System.out.println(matcher.group(2));
+			    String gp=matcher.group(2);
+			    //System.out.println("888888--"+gp);
+			    gp = gp.trim().replaceAll("[a-z]","");
+			    convert=gp.trim()+"Days";
+			}else {
+				convert=matcher.group(0).trim();
+			}		}
 		
 		if(text.contains("limited to once per provider")) {
 			convert2=",once per provider ";
@@ -1221,7 +1233,7 @@ public class FreqencyUtils {
 			System.out.println(convertFrequecyDentaString("", "Benefit is limited to 13 periapical films per date of service"));
 			System.out.println("77777777777777777");
 		
-			System.out.println(convertFrequecyDentaString("", ""));
+			System.out.println(convertFrequecyDentaString("", "benefit is based on professional determination"));
 				convertFrequecyUCCIString("1 Per 12 M"
 					+ "onths | 2 Per 122 Months ~ Per Office ");
 			convertFrequecyUCCIString("2 Per 122 Months ~ Per Office ");

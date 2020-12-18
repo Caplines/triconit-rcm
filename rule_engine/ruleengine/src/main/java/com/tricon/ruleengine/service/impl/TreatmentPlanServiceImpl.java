@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Collections2;
 import com.tricon.ruleengine.api.enums.HighLevelReportTypeEnum;
 import com.tricon.ruleengine.api.enums.StatusTypeEnum;
+import com.tricon.ruleengine.dao.IVformTypeDao;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.SharePointDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
@@ -53,6 +54,7 @@ import com.tricon.ruleengine.dto.UserInputDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.GoogleSheets;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.MVPandVAP;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.Office;
@@ -161,6 +163,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	
 	@Autowired
 	CaplineIVFGoogleFormService  caplineIVFGoogleFormService;
+	
+	@Autowired
+	IVformTypeDao iVformTypeDao;
 	
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
@@ -592,6 +597,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}
 						String pid =tp.getPatient().getId();
 						Map<String, List<Object>> ivfMapPat=null;
+						
 						if (esDB.getSheet()==Constants.VALIDATE_FROM_SHEET ) {
 							CaplineIVFQueryFormDto fd= new CaplineIVFQueryFormDto();
 							fd.setPatientIdDB(pid);
@@ -1758,8 +1764,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						list.add(dtoR);
 						// saveReports(authentication, rule,dtoR, dto,(IVFTableSheet)(ivfList.get(0)));
 					}
+					
 					if (ivfMap != null && ivfMap.get(ivx) != null && tListReduced != null)
-						saveReportsList(authentication, rules, tp, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list, off,type,dtod.getInsType());
+						saveReportsList(authentication, rules, tp, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list, off,type,dtod.getInsType(),
+								iVformTypeDao.getIVFormTypeById(((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()));
 					// else
 					// saveReportsList(authentication, rules, trx, null, list,off);
 
@@ -2283,7 +2291,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 * rd.setReports(reports); tvd.saveReportDestail(rd); // }
 	 */
 	private void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
-			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType) {
+			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType,IVFormType iVFormType) {
 		//String[] p=env.getActiveProfiles();
 		//int xx=0;
 		//if (xx==0) return ;
@@ -2309,6 +2317,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
              
 			if (reports == null) {
 				reports = new Reports();
+				reports.setiVFormType(iVFormType);
 				reports.setCreatedBy(user);
 				reports.setGroupRun(1);
 				if (ivfSheet != null) {
@@ -2354,6 +2363,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		             
 					if (reports == null) {
 						reports = new ReportsClaim();
+						reports.setiVFormType(iVFormType);
 						reports.setCreatedBy(user);
 						reports.setGroupRun(1);
 						if (ivfSheet != null) {
@@ -2368,7 +2378,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						reports.setOffice(off);
 						reports.setPatientId(ivfSheet.getPatientId());
 						Serializable id = tvd.saveReports(reports);
-						reports.setId((int) id);
+						reports.setId((int) id); 
 					} else {
 						reports.setGroupRun(reports.getGroupRun() + 1);
 						if (ivfSheet != null) {
@@ -2662,7 +2672,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	}
 	
 	private void saveReportsListBatch(Authentication authentication, List<Rules> rules, IVFTableSheet ivfSheet,
-			List<TPValidationResponseDto> list, Office off) {
+			List<TPValidationResponseDto> list, Office off,IVFormType iVFormType) {
 		
 		//String[] p=env.getActiveProfiles();
 		//if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
@@ -2694,6 +2704,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 			if (reports == null) {
 				reports = new Reports();
+				reports.setiVFormType(iVFormType);
 				reports.setCreatedBy(user);
 				reports.setTreatementPlanId(Constants.prebatchmode);
 				reports.setGroupRun(1);
@@ -2868,7 +2879,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			// READ IVF Google Sheet
 			/// END
 			// Read Patient Key is Unique Id from IVF sheet
-			OneDriveFile espatient=null;
+			//OneDriveFile espatient=null;
 			Map<String, List<EagleSoftPatient>> espatients=null;
 			
 			//Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis=null;
@@ -2938,6 +2949,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					}else {
 						//write query
 						CaplineIVFQueryFormDto fd= new CaplineIVFQueryFormDto();
+						//fd.setIvformTypeId(dto.getIvformTypeId());
 						Set<String> set = new HashSet<>(Arrays.asList(ids));
 						try {
 						if (isPat) {
@@ -3152,7 +3164,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				}
 
 				if (ivfMap != null && ivfMap.get(ivx) != null)
-					saveReportsListBatch(authentication, rules, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list, off);
+					saveReportsListBatch(authentication, rules, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list, off,
+							iVformTypeDao.getIVFormTypeById(((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()));
 				// else
 				// saveReportsListBatch(authentication, rules, null, list,off);
 				if (returnMap == null)

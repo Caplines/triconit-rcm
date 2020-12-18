@@ -505,7 +505,52 @@ public class DateUtils {
 		
 	}
 
+	public static boolean waitingPeroidCheck(Date one, Date two) {
+
+		return (one.compareTo(two) > 0);
+
+	}
 	
+	public static String correctDateformat(String value) {
+		// 4/12/2019 MM/dd/yyyy
+
+		// 2018-10-17 yyyy-MM-dd
+		Date date = null;
+		if (value == null)
+			return "";
+		if (value.trim().equals(""))
+			return "";
+		String myDate = "";
+		try {
+			SimpleDateFormat sdf = Constants.SIMPLE_DATE_FORMAT_IVF;
+
+			date = sdf.parse(value);
+
+			if (!value.equals(sdf.format(date))) {
+				date = null;
+			} else {
+				myDate = value;
+			}
+		} catch (ParseException ex) {
+			// ex.printStackTrace();
+		}
+
+		if (date == null) {
+
+			try {
+				SimpleDateFormat sdf = Constants.SIMPLE_DATE_FORMAT;
+
+				date = sdf.parse(value);
+				myDate = Constants.SIMPLE_DATE_FORMAT_IVF.format(date);
+
+			} catch (ParseException ex) {
+				// ex.printStackTrace();
+			}
+
+		}
+		return myDate;
+	}
+
 	public static void main(String[] a) {
 		  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a z");
 		  System.out.println(getDiffBetweenMonths( "09/15/2016","09/20/2017"));
@@ -516,6 +561,15 @@ public class DateUtils {
 			System.out.println(getDiffBetweenMonthsFullDateInParsing( "09/15/2016","09/20/2017"));
 			System.out.println(getDiffBetweenMonthsFullDateInParsing( "12/01/2019","05/31/2020"));
 			System.out.println(getDiffBetweenMonthsFullDateInParsing( "12/01/2019","11/30/2020"));
+			
+			Date cd=Constants.SIMPLE_DATE_FORMAT.parse(Constants.SIMPLE_DATE_FORMAT.format(new Date()));
+			Date eDate=Constants.SIMPLE_DATE_FORMAT.parse("12/08/2020");
+			if(waitingPeroidCheck( cd,eDate)) {
+				System.out.println("No");
+			}else {
+				System.out.println("yes");
+			}
+			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
