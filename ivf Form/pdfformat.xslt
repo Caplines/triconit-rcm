@@ -689,6 +689,37 @@ border-collapse: collapse;
 						 <span class="sub-heading"><xsl:value-of select="pano2"/></span>
                         </td>
            </tr>
+		   <tr>
+                        <td class="withds">
+                           <span class="main-heading-1"></span> 
+						</td>
+                        <td>						
+						   <span class="sub-heading" > </span>
+                        </td>
+                        <td class="withds">
+                           <span class="main-heading-1"></span>
+						</td>
+						<td>
+						   <span class="sub-heading"></span>
+						 </td>
+                        <td  class="withds">
+                           <span class="main-heading-1 colourfreq">Frequency</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="d0160Freq"/></span>
+                        </td>
+                        <td class="withds">
+                         <span class="main-heading-1 colourfreq">Frequency</span>
+                         </td>
+                        <td>						 
+						 <span class="sub-heading"><xsl:value-of select="d0330Freq"/></span>
+                        </td>
+						<td class="withds">
+                         <span class="main-heading-1"></span>
+                         </td>
+                        <td class="withds">						 
+						 <span class="sub-heading"></span>
+                        </td>
+           </tr>
 			</table>
 			
 			
@@ -735,9 +766,9 @@ border-collapse: collapse;
 						</td>
 						
                         <td  class="withds colourexam">
-                           <span class="main-heading-1">Posterior<br/>Composites<br/>(D2391)%</span>
+                           <span class="main-heading-1"></span>
 						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="posterior1"/></span>
+                        <td> <span class="sub-heading"></span>
                         </td>
                         <td class="withds colourexam" colspan="2">
                          <span class="main-heading-1">Extractions</span>
@@ -906,11 +937,11 @@ border-collapse: collapse;
            </tr>
 		  
 		  <tr>
-                        <td class="withds colourexam">
-                           <span class="main-heading-1">D4381</span>
+                        <td class="withds">
+                           <span class="main-heading-1"></span>
 						</td>
 						<td class="withds">
-                           <span class="sub-heading"><xsl:value-of select="d4381"/></span>
+                           <span class="sub-heading"></span>
 						</td>
                         <td class="withds colourfreq">
                            <span class="main-heading-1">Frequency</span>
@@ -937,7 +968,71 @@ border-collapse: collapse;
 						 <span class="sub-heading"><xsl:value-of select="posterior20"/></span>
                         </td>
            </tr>
-		   
+		  <tr>
+                        <td class="withds colourexam">
+                           <span class="main-heading-1">D4381</span>
+						</td>
+						<td class="withds">
+                           <span class="sub-heading"><xsl:value-of select="d4381"/></span>
+						</td>
+                        <td class="withds colourexam">
+                           <span class="main-heading-1">Posterior<br/>Composites<br/>(D2391)%</span>
+						</td>
+						<td>
+						   <span class="sub-heading"><xsl:value-of select="posterior1"/></span>
+						 </td>
+                        <td class="withds colourexam">
+                         <span class="main-heading-1">D3330</span>
+                         </td>
+                        <td>						 
+						 <span class="sub-heading"><xsl:value-of select="d3330"/></span>
+                        </td>
+						
+						<td class="">
+                        </td>
+                        
+                        <td class="withds">						 
+						 <span class="sub-heading"></span>
+                        </td>
+						<td class="">
+                        </td>
+                        
+                        <td class="withds">						 
+						 <span class="sub-heading"></span>
+                        </td>
+           </tr>
+		   <tr>
+                        <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+						<td class="withds">
+                           <span class="sub-heading"><xsl:value-of select="d4381Freq"/></span>
+						</td>
+                        <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+						<td>
+						   <span class="sub-heading"><xsl:value-of select="d2391Freq"/></span>
+						 </td>
+                        <td  class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="d3330Freq"/></span>
+                        </td>
+                        <td class="">
+                        </td>
+                        
+                        <td class="withds">						 
+						 <span class="sub-heading"></span>
+                        </td>
+						<td class="">
+                        </td>
+                        
+                        <td class="withds">						 
+						 <span class="sub-heading"></span>
+                        </td>
+           
+           </tr> 
 		   <tr>
                         <td class="colourhow" colspan="3">
                            <span class="main-heading-1">How many Fillings can be done in a year ?</span> 
@@ -1331,11 +1426,11 @@ border-collapse: collapse;
 						 <td class="">						 
 						 <span class="sub-heading"><xsl:value-of select="pedo2"/></span>
                         </td>
-						<td class="">						 
-						 <span class="sub-heading"></span>
+						<td class="colourfreq">						 
+						 <span class="main-heading-1">D2934 Fr</span>
                         </td>
 						 <td class="">						 
-						 <span class="sub-heading"></span>
+						 <span class="sub-heading"><xsl:value-of select="freqD2934"/></span>
                         </td>
                         
                         
@@ -1532,13 +1627,13 @@ border-collapse: collapse;
 			<table cellpadding="0" cellspacing="0" style="width:100%; clear:both;">
                 <tbody>
 				<tr>
-                        <td colspan="2" class="main-heading-11">
+                        <td colspan="2" class="main-heading-11" >
                             Comments:
-							<div>
-							<span class="sub-heading">
-							<textarea id="comments" name="comments" rows="20" cols="48">
+							<div style="border: 1px solid">
+							<span class="sub-heading" >
+							
 							<xsl:value-of select="comments"/>&#160;
-							</textarea>
+							
 							</span>
 							</div>
                              
