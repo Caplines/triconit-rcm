@@ -110,22 +110,22 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		// "Dentaquest",0+""));//
 		// cc.add(new MCNADentaSheet("","","","", "", "739438815", "04/11/2020",
 		// "Dentaquest",0+""));//
-		cc.add(new MCNADentaSheet("", "", "", "", "", "615286147", "11/26/2012", "Dentaquest", 0 + ""));//
+		cc.add(new MCNADentaSheet("", "", "", "", "", "731539564", "2/17/2019", "Dentaquest", 0 + ""));//
 
 		// Ryleigh Britt 2013/06/20
 		mapData = new HashMap<>();
 		mapData.put("1", cc);
 		det = new ScrappingSiteDetails();
 		det.setProxyPort("111");
-		det.setLocation("");
+		det.setLocation("Geetika Rastogi");
 
 		// https://connectsso.dentaquest.com/authsso/providersso/SSOProviderLogin.aspx?TYPE=33554433&REALMOID=06-6a4c193d-7520-4f3d-b194-83367a3ef454&GUID=&SMAUTHREASON=0&METHOD=POST&SMAGENTNAME=-SM-imZolSjcs1FQR%2fH0k3NSK1Uvx4zWgziEWSOuwqcKGG1C%2bW%2fQdG3dRa7BVqGyOpNh&TARGET=-SM-https%3a%2f%2fconnectsso%2edentaquest%2ecom%2fprovideraccessv2%2findex%2ehtml
 		// Dental@6743 offshorebfd for 739438815 04/11/2020 Beaumont
-		det.setPassword("Splendora@5416");// // Devine%1245976
-		det.setUserName("Splendora2541"); // Devin13458
+		det.setPassword("Dental@6747");// // Devine%1245976
+		det.setUserName("Offshorebfd"); // Devin13458
 		det.setLocationProvider("");
 		Office f = new Office();
-		f.setName("Beaumont");
+		f.setName("Jasper");
 		det.setOffice(f);
 		// det.setOffice("Devine");
 		// det.set
@@ -247,14 +247,38 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 				}
 			}
 			// Select Location only for Beaumont or Jasper
+			//Here we pass Provider as Location From UI..
 			String ori = "/html/body/div[3]/div/div[2]/div/div/div[2]/div/div/div/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div/select/option";
 			if (officeName.equalsIgnoreCase("Beaumont") || officeName.equalsIgnoreCase("Jasper")) {
 				Thread.sleep(3000);
-				ori = "/html/body/div[3]/div/div[2]/div/div/div[2]/div/div/div/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div/select/option";
+				
+				try {
+					List<WebElement> wList =	driver.findElement(By.className("testScript_blp_location")).findElements(By.tagName("option"));	
+					for (WebElement w : wList) {
+
+						if (location.equals("")) {
+							w.click();
+						} else {
+							String nm = w.getText();
+							if (!locationProvider.equals("") && nm.replaceAll(" ", "").toLowerCase().contains(locationProvider.replaceAll(" ", "").toLowerCase())) {
+								w.click();
+								break;
+							}
+							w.click();
+						}
+
+					}
+					Thread.sleep(3000);
+				}catch(Exception lp ) {
+					
+				}
+				//ori = "/html/body/div[3]/div/div[2]/div/div/div[2]/div/div/div/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div/select/option";
 				// need Credential for This to write code
 				try {
-					List<WebElement> wList = driver.findElements(By.xpath(
-							"/html/body/div[3]/div/div[2]/div/div/div[2]/div/div/div/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[1]/div[1]/div/div/select/option"));
+					
+					
+					List<WebElement> wList = driver.findElement(By.className("testScript_blp_provider")).findElements(By.tagName("option"));
+					
 
 					for (WebElement w : wList) {
 
@@ -272,6 +296,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 					}
 					Thread.sleep(3000);
 				} catch (Exception e) {
+					e.printStackTrace();
 					// TODO: handle exception
 				}
 			}
@@ -281,6 +306,8 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			// Select(driver.findElement(By.xpath("/html/body/div[3]/div/div[2]/div/div/div[2]/div/div/div/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div/select")));
 			// System.out.println(se.);
 			// se.selectByIndex(1);
+
+			if (!(officeName.equalsIgnoreCase("Beaumont") || officeName.equalsIgnoreCase("Jasper"))) {
 
 			List<WebElement> wList = driver
 
@@ -297,6 +324,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 					}
 					w.click();
 				}
+			}
 			}
 			// 470:111;a
 
