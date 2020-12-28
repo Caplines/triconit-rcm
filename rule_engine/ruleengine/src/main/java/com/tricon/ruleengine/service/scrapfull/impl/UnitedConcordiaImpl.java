@@ -30,6 +30,8 @@ import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
 import com.tricon.ruleengine.model.db.PatientTemp;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
+import com.tricon.ruleengine.model.db.ScrappingFullDataManagmentProcess;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetailsFull;
 import com.tricon.ruleengine.model.db.ScrappingSiteFull;
 import com.tricon.ruleengine.model.db.User;
@@ -42,7 +44,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 
 	// document :
 	// https://docs.google.com/spreadsheets/d/1-3PVTrzgSl0n3OEY7Qt0JZ_WDK7twIQWU3Hk7UjSdBM/edit#gid=1557872290
-	static {
+	/*static {
 
 		java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
 		java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
@@ -50,7 +52,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		java.util.logging.Logger.getLogger("org.gargoylesoftware").setLevel(Level.OFF);
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 
-	}
+	}*/
 
 	private static String benefitProcCopy = "Coverage % or Copay $";
 	private static String benefitProAppliedtoded = "Applied to Deductbile";
@@ -107,32 +109,49 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				for (PatientScrapSearchDto data : dto.getDto()) {
 					Thread thread = new Thread() {
 						public void run() {
+							String s = "0";
 							System.out.println("Thread Running");
 							WebDriver driver = getBrowserDriver();// new HtmlUnitDriver(true);// getBrowserDriver();
 							try {
-								System.out.println("MEM 9-"
-										+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-
 								boolean navigate = loginToSiteUnitedCon(dto, driver);
-
 								boolean issueNo = navigatetoMainSite(driver, navigate);
-								System.out.println("888888888888- STARTED...");
+								System.out.println("issueNo"+issueNo);
+								 System.out.println("MEM 4-"
+								 + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 								PatientTemp d = parsePage(driver, data, siteName, issueNo, office);
-								System.out.println("888888888888 -END " + d.getPatientId());
+								 System.out.println("888888888888 -END " + d);
 								if (d != null) {
 									// Update the Data in Database
-									updateDatainDB(d, office, user);
+									s = updateDatainDB(d, office, user) + "";
 								}
-
 								Thread.sleep(2000);
 							} catch (Exception dri) {
-								dri.printStackTrace();
+
 							} finally {
 								driver.close();
 								driver.quit();
-								finalSetUpCall();
-							}
-						}
+								scrappingSiteDetails.setRunning(false);
+								System.out.println("EE DATE =+"+new Date());
+								ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
+								ScrappingFullDataManagmentProcess manageP = dataDoa
+										.getScrappingFullDataManagmentDataProcess(processId);
+								String os = manageP.getStatus();
+								if (os.equals(""))
+									manageP.setStatus(s);
+								else {
+									manageP.setStatus(os + "," + s);
+								}
+								manageP.setCount(manageP.getCount() - 1);
+								manageP.setUpdatedBy(user);
+								manageP.setUpdatedDate(new Date());
+								dataDoa.updateScrappingFullDataManagmentProcess(manageP);
+								if (manage.getProcessCount() > 0) {
+									manage.setProcessCount(manage.getProcessCount() - 1);
+									dataDoa.increasecrapCount(manage);
+								}
+
+								dataDoa.updateScrappingDetailsById(scrappingSiteDetails);
+							}						}
 					};
 
 					thread.start();
@@ -206,11 +225,12 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		return temp;
 	}
 
-	private void updateDatainDB(PatientTemp data, Office office, User user) {
+	private Integer updateDatainDB(PatientTemp data, Office office, User user) {
+		Integer i = 0;
 		try {
-			patDao.savePatientTempDataWithDetailsAndHistory(data, office, user);
+			i = patDao.savePatientTempDataWithDetailsAndHistory(data, office, user);
 		} catch (Exception c) {
-			System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIII");
+			// System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIII");
 			StringWriter sw = new StringWriter();
 			c.printStackTrace(new java.io.PrintWriter(sw));
 			// String exceptionAsString = sw.toString();
@@ -221,11 +241,12 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				// TODO: handle exception
 			}
 		}
+		return i;
 	}
 
 	private void createPatientDetailSetup(WebDriver driver, PatientTemp temp, PatientScrapSearchDto sh)
 			throws InterruptedException {
-		Thread.sleep(3000);
+		Thread.sleep(13000);
 		try {
 			String id = sh.getMemberId().trim().equals("") ? sh.getSsnNumber().trim() : sh.getMemberId().trim();
 			// Check For name...
@@ -907,7 +928,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		String[] r= new String[3];
 		try {
 			if (!subsectionOPen) {
-				WebElement formElement = driver.findElement(By.id("j_id_hu"));
+				WebElement servicesGroup= driver.findElement(By.id("servicesGroup"));
+				WebElement formElement = servicesGroup.findElements(By.tagName("form")).get(0);
 				List<WebElement> maintables = formElement.findElements(By.tagName("table"));
 				for (WebElement maintable : maintables) {
 					if (maintable.getText() != null && maintable.getText().startsWith(name)) {
@@ -922,18 +944,18 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 			List<WebElement> trs = tab.findElements(By.tagName("tr"));
 			for (WebElement tr : trs) {
 				String y=tr.getText();
-				if (y != null && y.startsWith("Individual Maximum") && y.contains("Ortho")) {
+				if (y != null && y.startsWith("Individual Maximum") && y.toLowerCase().contains("ortho")) {
 					String t=y.replace("Individual Maximum","").trim().split(" ")[0].replace("$","").replace(",","");
 					r[2]=t;
 					// Assignment Of Benefits
 				}
-				if (y != null && y.startsWith("Individual Maximum") && !y.contains("Ortho")) {
+				if (y != null && y.startsWith("Individual Maximum") && !y.toLowerCase().contains("ortho")) {
 					String t=y.replace("Individual Maximum","").trim().split(" ")[0].replace("$","").replace(",","");
 					r[0]=t;
 					// Assignment Of Benefits
 				}
 				if (y != null && y.startsWith("Individual Deductible")) {
-					if (tr.getText().replaceAll("Individual Deductible", "").trim().contains("None")) {
+					if (tr.getText().replaceAll("Individual Deductible", "").trim().toLowerCase().contains("none")) {
 						r[1]="0";	
 					}else {
 						r[1]=y.replaceAll("Individual Deductible", "").trim();
@@ -963,7 +985,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		Thread.sleep(1000);
 		try {
 			if (!subsectionOPen) {
-				WebElement formElement = driver.findElement(By.id("j_id_hu"));
+				WebElement servicesGroup= driver.findElement(By.id("servicesGroup"));
+				WebElement formElement = servicesGroup.findElements(By.tagName("form")).get(0);
 				List<WebElement> maintables = formElement.findElements(By.tagName("table"));
 				for (WebElement maintable : maintables) {
 					if (maintable.getText() != null && maintable.getText().startsWith(name)) {
@@ -1004,11 +1027,11 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 			value = value + ". " + Constants.SCRAPPING_MANDATORY_WARNING;
 		else
 			value = "";
-		Thread.sleep(1000);
+		//Thread.sleep(3000);
 		try {
 			if (!subsectionOPen) {
-				//System.out.println("5");
-				WebElement formElement = driver.findElement(By.id("j_id_jm"));
+				WebElement servicesGroup= driver.findElement(By.id("servicesGroup"));
+				WebElement formElement = servicesGroup.findElements(By.tagName("form")).get(1);
 				//System.out.println("6");
 				List<WebElement> maintables = formElement.findElements(By.tagName("table"));
 				//System.out.println("7");
@@ -1017,22 +1040,26 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 						//System.out.println("8");
 						maintable.findElements(By.tagName("span")).get(0).click();
 						//System.out.println("9");
-						Thread.sleep(5000);
+						Thread.sleep(3000);
 						break;
 					}
 				}
 			}
 			//System.out.println("10");
-			WebElement formElement = driver.findElement(By.id("j_id_jm"));
+			WebElement servicesGroup= driver.findElement(By.id("servicesGroup"));
+			WebElement formElement = servicesGroup.findElements(By.tagName("form")).get(1);
 			//System.out.println("11");
 			List<WebElement> maintables = formElement.findElements(By.tagName("table"));
 			//System.out.println("12");
+			//Thread.sleep(1000);
 			for (WebElement maintable : maintables) {
 				if (maintable.getAttribute("id") != null
 						&& maintable.getAttribute("id").equals("benefitDetailAllServiceProceduresList")
 						&& !maintable.getAttribute("class").contains(" hidden")) {
 
-					Thread.sleep(1000);
+					if (!subsectionOPen) {//IF any issue Remove this condition and directly put Thread Sleep.
+						Thread.sleep(3000);
+					}
 					//System.out.println("13");
 					List<WebElement> trs = maintable.findElements(By.tagName("tr"));
 					trs.remove(0);// remove th row
@@ -1227,7 +1254,16 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				if (limit.equals("-1"))
 					value = "99";
 				else {
-					if (limit.contains("Under 14 Years Of Age")) value="14";
+					if (limit.contains("Under") && limit.contains("Years Of Age")) {
+						value =limit.split("Under")[1].split("Years Of Age")[0].trim();
+					    /*try {
+					    	Integer.parseInt(value);
+					    }catch(Exception p) {
+					    	value="99";
+					    }*/
+						//value="14";//Under 14 Years Of Age
+					}
+					
 					else value = "99";
 				}
 			}
@@ -1375,7 +1411,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 			}
 
 		}
-		// System.out.println(p.getText());
+		 System.out.println("navigate-"+navigate);
 		return navigate;
 	}
 
@@ -1394,7 +1430,10 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
 		System.out.println("ssda");
 		System.out.println("taskkill /f /im chromedriver.exe");
+		System.out.println("ST DATE :"+new Date());
 		String g = "[{Deepak$,.[{";
+		
+		
 		try {
 			String y="Individual Maximum	$1,750 Per Lifetime ~ Ortho related";
 			System.out.println(y.replace("Individual Maximum","").trim().split(" ")[0].replace("$","").replace(",",""));
@@ -1408,21 +1447,21 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		// ScrappingSiteDetails d= new ScrappingSiteDetails();
 		ScrappingSiteDetailsFull f = new ScrappingSiteDetailsFull();
 		ScrappingSiteFull fu = new ScrappingSiteFull();
-		fu.setSiteName("BCBS");
+		fu.setSiteName("United");
 		f.setScrappingSite(fu);
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Capline@12345");
-		dto.setUserName("crosby_ucci");
+		dto.setPassword("Insurance@745");
+		dto.setUserName("Ddental456");
 		dto.setSiteName("United Concordia");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("05/17/2010");
-		psc.setFirstName("STARLYN");
-		psc.setLastName("D. BIAS");
-		psc.setMemberId("01144286800");
+		psc.setDob("05/14/1958");//03/15/1973
+		psc.setFirstName("");
+		psc.setLastName("");
+		psc.setMemberId("126229918001");//129521395001
 		psc.setSsnNumber("");
 		psc.setGradePay("");
 
