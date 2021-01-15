@@ -90,7 +90,10 @@ public class Constants {
 	public static final String RULE_ID_54="FMX/Pano Rule";
 	public static final String RULE_ID_55="Perio Depth Checker";
 	public static final String RULE_ID_56="Exception Rule";//This is from Sheet https://docs.google.com/spreadsheets/d/1r_9il1-9p5xfPNBhSIRTZNNqFLPH2EKKdtj1eOo1rDs/edit?skip_itp2_check=true&pli=1#gid=0
-	
+	public static final String RULE_ID_57="Exam Frequency Limitation";
+	public static final String RULE_ID_58="Exam Frequency Limitation (D0145)";
+	public static final String RULE_ID_59="BWX Age Limitation";
+	public static final String RULE_ID_60="Exams Age Limitation";
 	
 	
 	/*
@@ -157,6 +160,9 @@ public class Constants {
 	public static String microsoft_patient="Patient";
 	public static String google_ivf_sheet="IVF Sheet";
 	public static String insurance_Medicaid="medicaid";
+	public static String insurance_Dentaquest="dentaquest";
+	public static String insurance_Mcna="mcna";
+	public static String insurance_PPO="ppo";
 	public static String insurance_Chip="chip";
 	public static double insurance_Medicaid_max_fee=70.64;
 	public static int history_codes_size=60;
@@ -320,7 +326,9 @@ public class Constants {
 	
 	
 	public static String IV_GENERAL_FORM_NAME="General form";
+	public static int IV_GENERAL_FORM_NAME_ID=1;
 	public static String IV_ORAL_SURGERY_FORM_NAME="Oral Surgery form";
+	public static int IV_ORAL_SURGERY_FORM_NAME_ID=2;
 	
 	
 	

@@ -8,6 +8,7 @@ import java.util.Map;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.sheet.ClaimData;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
+import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 
 public interface EagleSoftDBAccessService {
@@ -30,6 +31,8 @@ public interface EagleSoftDBAccessService {
 	public LinkedHashMap<String, List<String>> getGoogleReportData(String query, String ids,int columnCount,EagleSoftDBDetails esDB,BufferedWriter bw);
 	
 	
+	public Map<String, List<?>> getPerioDataForPatients(Map<String, List<Object>> ivfMap,EagleSoftDBDetails esDB,BufferedWriter bw);
+
 	public Map<String, List<?>> getPatientHistoryES(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,String dateString,int months,
 	BufferedWriter bw);
 

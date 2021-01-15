@@ -36,6 +36,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
+import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanPatient;
@@ -995,4 +996,145 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		}
 		return rList;
 	}
+	
+	@Override
+	public Map<String, List<?>> getPerioDataForPatients(Map<String, List<Object>> ivfMap,EagleSoftDBDetails esDB,BufferedWriter bw){
+
+		// TODO Auto-generated method stub
+		EagleSoftFetchData d = new EagleSoftFetchData();
+		Map<String, List<?>> returnMap = null;
+		RuleEngineLogger.generateLogs(clazz, "Perio Start", Constants.rule_log_debug, bw);
+
+		if (ivfMap != null) {
+			List<String> ids = new ArrayList<>();
+			for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
+				if (entry.getValue() != null) {
+
+					IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
+					ids.add(ivfSheet.getPatientId());
+				}
+			}
+
+			String[] pids = ids.toArray(new String[ids.size()]);
+
+			EagleSoftQueryObject q = prepairEagleSoftQueryObject(pids, EagleSoftQuery.perio_query,
+					EagleSoftQuery.perio_query_CL_COUNT);
+			String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
+			if (data != null) {
+				Perio perio = null;
+				try {
+					ObjectMapper map = new ObjectMapper();
+					// Patient patQ = map.readValue(r, Patient.class);
+					Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
+					});
+
+					RuleEngineLogger.generateLogs(clazz, "Perio DATA-" + cMap.get("dataMap").toString(),
+							Constants.rule_log_debug, bw);
+					Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+					List<Object> list = null;
+					for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+						if (entry.getValue() != null) {
+							List<String> des = (List<String>) (entry.getValue());
+							perio = new Perio();
+
+							perio.setPatientId(des.get(0));
+							perio.setDateEntered(des.get(1));
+							perio.setProviderId(des.get(2));
+							perio.setTooth1(decodeUnicode(des.get(3)));
+							perio.setTooth2(decodeUnicode(des.get(4)));
+							perio.setTooth3(decodeUnicode(des.get(5)));
+							perio.setTooth4(decodeUnicode(des.get(6)));
+							perio.setTooth5(decodeUnicode(des.get(7)));
+							perio.setTooth6(decodeUnicode(des.get(8)));
+							perio.setTooth7(decodeUnicode(des.get(9)));
+							perio.setTooth8(decodeUnicode(des.get(10)));
+							perio.setTooth9(decodeUnicode(des.get(11)));
+							perio.setTooth10(decodeUnicode(des.get(12)));
+							perio.setTooth11(decodeUnicode(des.get(13)));
+							perio.setTooth12(decodeUnicode(des.get(14)));
+							perio.setTooth13(decodeUnicode(des.get(15)));
+							perio.setTooth14(decodeUnicode(des.get(16)));
+							perio.setTooth15(decodeUnicode(des.get(17)));
+							perio.setTooth16(decodeUnicode(des.get(18)));
+							perio.setTooth17(decodeUnicode(des.get(19)));
+							perio.setTooth18(decodeUnicode(des.get(20)));
+							perio.setTooth19(decodeUnicode(des.get(21)));
+							perio.setTooth20(decodeUnicode(des.get(22)));
+							perio.setTooth21(decodeUnicode(des.get(23)));
+							perio.setTooth22(decodeUnicode(des.get(24)));
+							perio.setTooth23(decodeUnicode(des.get(25)));
+							perio.setTooth24(decodeUnicode(des.get(26)));
+							perio.setTooth25(decodeUnicode(des.get(27)));
+							perio.setTooth26(decodeUnicode(des.get(28)));
+							perio.setTooth27(decodeUnicode(des.get(29)));
+							perio.setTooth28(decodeUnicode(des.get(30)));
+							perio.setTooth29(decodeUnicode(des.get(31)));
+							perio.setTooth30(decodeUnicode(des.get(32)));
+							perio.setTooth31(decodeUnicode(des.get(33)));
+							perio.setTooth32(decodeUnicode(des.get(34)));
+							//perio.setProviderLastName(des.get(35));
+							
+							
+							//
+							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
+								if (entry.getValue() != null) {
+
+									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
+									if ((perio.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+										if (returnMap == null)
+											returnMap = new HashMap<>();
+										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
+											// if the key has already been used,
+											// we'll just grab the array list and add the value to it
+											list = (List<Object>) (List<?>) returnMap.get(ivfSheet.getUniqueID());
+											list.add(perio);
+										} else {
+											// if the key hasn't been used yet,
+											// we'll create a new ArrayList<String> object, add the value
+											// and put it in the array list with the new key
+											list = new ArrayList<>();
+											list.add(perio);
+											returnMap.put(ivfSheet.getUniqueID(), list);
+										}
+									}
+								}
+							}
+
+							//
+
+						}
+					}
+
+				} catch (Exception e) {
+					RuleEngineLogger.generateLogs(clazz, "Perio  DATA- ERROR- " + e.getMessage(),
+							Constants.rule_log_debug, bw);
+
+				}
+			}
+
+		}
+
+		return returnMap;
+
+	
+	}
+	
+	
+	private String decodeUnicode(String v) {
+		v=v.replaceAll("\n", "");
+		//System.out.println(v);
+			try {
+		byte[] b=v.getBytes("UTF-8");
+		v="";	
+		for(int n=0;n<b.length;n++) {
+			if ((b[n]+"").equals("32")) continue;
+			v=v+b[n]+",";
+		}
+		v=v.replaceAll(",$", "");
+		 }catch(Exception u) {
+			 return "";
+		 }
+		return v;	
+	}
+
 }

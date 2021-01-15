@@ -592,7 +592,40 @@ public class CaplineIVFFormDto {
     private String d7251;
     
 	
-	private Integer ivFormTypeId;
+    
+    private String d7210fr;
+    private String d7220fr;
+    private String d7230fr;
+    private String d7240fr;
+    private String d7250fr;
+    private String d7310fr;
+    private String d7311fr;
+    private String d7320fr;
+    private String d7321fr;
+    private String d7473fr;
+    private String sedations1fr;
+    private String sedations3fr;
+    private String d9239fr;
+    private String sedations2fr;
+    private String d4263fr;
+    private String d4264fr;
+    private String d6104fr;
+    private String d7953fr;
+    private String d3310fr;
+    private String d3320fr;
+    private String d3346fr;
+    private String d3347fr;
+    private String d3348fr;
+    private String d6058fr;
+    private String oral1fr;
+    private String d7951fr;
+    private String d4266fr;
+    private String d4267fr;
+    private String perio1fr;
+    private String d4273fr;
+    private String d7251fr;
+	
+    private Integer ivFormTypeId;
 	
     //END
     
@@ -625,6 +658,9 @@ public class CaplineIVFFormDto {
     private int commentsRows;
     
     private String benefits;
+    
+    
+    
     
     @XmlElementWrapper
     @XmlElement(name="his") 
@@ -2491,6 +2527,255 @@ public class CaplineIVFFormDto {
 		this.freqD2934 = freqD2934;
 	}
 
+	public String getD7210fr() {
+		return d7210fr;
+	}
 
+	public void setD7210fr(String d7210fr) {
+		this.d7210fr = d7210fr;
+	}
+
+	public String getD7220fr() {
+		return d7220fr;
+	}
+
+	public void setD7220fr(String d7220fr) {
+		this.d7220fr = d7220fr;
+	}
+
+	public String getD7230fr() {
+		return d7230fr;
+	}
+
+	public void setD7230fr(String d7230fr) {
+		this.d7230fr = d7230fr;
+	}
+
+	public String getD7240fr() {
+		return d7240fr;
+	}
+
+	public void setD7240fr(String d7240fr) {
+		this.d7240fr = d7240fr;
+	}
+
+	public String getD7250fr() {
+		return d7250fr;
+	}
+
+	public void setD7250fr(String d7250fr) {
+		this.d7250fr = d7250fr;
+	}
+
+	public String getD7310fr() {
+		return d7310fr;
+	}
+
+	public void setD7310fr(String d7310fr) {
+		this.d7310fr = d7310fr;
+	}
+
+	public String getD7311fr() {
+		return d7311fr;
+	}
+
+	public void setD7311fr(String d7311fr) {
+		this.d7311fr = d7311fr;
+	}
+
+	public String getD7320fr() {
+		return d7320fr;
+	}
+
+	public void setD7320fr(String d7320fr) {
+		this.d7320fr = d7320fr;
+	}
+
+	public String getD7321fr() {
+		return d7321fr;
+	}
+
+	public void setD7321fr(String d7321fr) {
+		this.d7321fr = d7321fr;
+	}
+
+	public String getD7473fr() {
+		return d7473fr;
+	}
+
+	public void setD7473fr(String d7473fr) {
+		this.d7473fr = d7473fr;
+	}
+
+	public String getSedations1fr() {
+		return sedations1fr;
+	}
+
+	public void setSedations1fr(String sedations1fr) {
+		this.sedations1fr = sedations1fr;
+	}
+
+	public String getSedations3fr() {
+		return sedations3fr;
+	}
+
+	public void setSedations3fr(String sedations3fr) {
+		this.sedations3fr = sedations3fr;
+	}
+
+	public String getD9239fr() {
+		return d9239fr;
+	}
+
+	public void setD9239fr(String d9239fr) {
+		this.d9239fr = d9239fr;
+	}
+
+	public String getSedations2fr() {
+		return sedations2fr;
+	}
+
+	public void setSedations2fr(String sedations2fr) {
+		this.sedations2fr = sedations2fr;
+	}
+
+	public String getD4263fr() {
+		return d4263fr;
+	}
+
+	public void setD4263fr(String d4263fr) {
+		this.d4263fr = d4263fr;
+	}
+
+	public String getD4264fr() {
+		return d4264fr;
+	}
+
+	public void setD4264fr(String d4264fr) {
+		this.d4264fr = d4264fr;
+	}
+
+	public String getD6104fr() {
+		return d6104fr;
+	}
+
+	public void setD6104fr(String d6104fr) {
+		this.d6104fr = d6104fr;
+	}
+
+	public String getD7953fr() {
+		return d7953fr;
+	}
+
+	public void setD7953fr(String d7953fr) {
+		this.d7953fr = d7953fr;
+	}
+
+	public String getD3310fr() {
+		return d3310fr;
+	}
+
+	public void setD3310fr(String d3310fr) {
+		this.d3310fr = d3310fr;
+	}
+
+	public String getD3320fr() {
+		return d3320fr;
+	}
+
+	public void setD3320fr(String d3320fr) {
+		this.d3320fr = d3320fr;
+	}
+
+	public String getD3346fr() {
+		return d3346fr;
+	}
+
+	public void setD3346fr(String d3346fr) {
+		this.d3346fr = d3346fr;
+	}
+
+	public String getD3347fr() {
+		return d3347fr;
+	}
+
+	public void setD3347fr(String d3347fr) {
+		this.d3347fr = d3347fr;
+	}
+
+	public String getD3348fr() {
+		return d3348fr;
+	}
+
+	public void setD3348fr(String d3348fr) {
+		this.d3348fr = d3348fr;
+	}
+
+	public String getD6058fr() {
+		return d6058fr;
+	}
+
+	public void setD6058fr(String d6058fr) {
+		this.d6058fr = d6058fr;
+	}
+
+	public String getOral1fr() {
+		return oral1fr;
+	}
+
+	public void setOral1fr(String oral1fr) {
+		this.oral1fr = oral1fr;
+	}
+
+	public String getD7951fr() {
+		return d7951fr;
+	}
+
+	public void setD7951fr(String d7951fr) {
+		this.d7951fr = d7951fr;
+	}
+
+	public String getD4266fr() {
+		return d4266fr;
+	}
+
+	public void setD4266fr(String d4266fr) {
+		this.d4266fr = d4266fr;
+	}
+
+	public String getD4267fr() {
+		return d4267fr;
+	}
+
+	public void setD4267fr(String d4267fr) {
+		this.d4267fr = d4267fr;
+	}
+
+	public String getPerio1fr() {
+		return perio1fr;
+	}
+
+	public void setPerio1fr(String perio1fr) {
+		this.perio1fr = perio1fr;
+	}
+
+	public String getD4273fr() {
+		return d4273fr;
+	}
+
+	public void setD4273fr(String d4273fr) {
+		this.d4273fr = d4273fr;
+	}
+
+	public String getD7251fr() {
+		return d7251fr;
+	}
+
+	public void setD7251fr(String d7251fr) {
+		this.d7251fr = d7251fr;
+	}
+
+
+	
 	
 }

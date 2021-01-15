@@ -375,7 +375,14 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " d3310 as d3310,d3320 as d3320,pd2.d3330 as D33300,d3346 as d3346,"
 					+ " d3347 as d3347,d3348 as d3348,d6058 as d6058,d7951 as d7951,"
 					+ " d4266 as d4266,d4267 as d4267,d4273 as d4273,"
-					+ " d7251 as d7251,ivSedation as ivSedation "
+					+ " d7251 as d7251,ivSedation as ivSedation, "
+					+ " d7210fr as d7210fr,d7220fr as d7220fr,d7230fr as d7230fr,d7240fr as d7240fr,"
+					+ " d7250fr as d7250fr,d7310fr as d7310fr,d7311fr as d7311fr,d7320fr as d7320fr,"
+					+ " d7321fr as d7321fr,d7473fr as d7473fr,sedations1fr as sedations1fr,sedations3fr as sedations3fr,d9239fr as d9239fr,sedations2fr as sedations2fr,"
+					+ " d4263fr as d4263fr,d4264fr as d4264fr,d6104fr as d6104fr,d7953fr as d7953fr,"
+					+ " d3310fr as d3310fr,d3320fr as d3320fr,d3346fr as d3346fr,d3347fr as d3347fr,"
+					+ " d3348fr as d3348fr,d6058fr as d6058fr,oral1fr as oral1fr,d7951fr as d7951fr,"
+					+ " d4266fr as d4266fr,d4267fr as d4267fr,perio1fr as perio1fr,d4273fr as d4273fr,d7251fr as d7251fr "
 					//+ " as  " //add new Columns here
 					
 					+ fromClause

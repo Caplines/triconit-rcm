@@ -1164,6 +1164,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setD9310Percentage(fetchValueByCode("D9310", temp, driver, inNetworkCoinsurance, true, false, false));// 85
 		dtemp.setD9310FL(fetchValueByCode("D9310", temp, driver, lastrowunder2ndcolumn, false, true, true));// 86
 
+		System.out.println("0000 dtemp.setD9310Percentage-"+dtemp.getD9310Percentage());
+		System.out.println("0000 dtemp.setD9310Percentage-"+dtemp.getD9310FL());
 		dtemp.setBuildUpsD2950Covered(
 				fetchValueByCode("D2950", temp, driver, inNetworkCoinsurance, true, false, false));// 87
 		dtemp.setBuildUpsD2950FL(fetchValueByCode("D2950", temp, driver, lastrowunder2ndcolumn, false, true, true));// 88
@@ -1442,7 +1444,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		try {
 			String url = "https://www.dnoaconnect.com/members/" + temp.getReferenceId() + "/procedureBenefits/"
 					+ code.substring(1);
-			navigatetoUrl(driver, url, 2000);
+			navigatetoUrl(driver, url, 4000);
 			data = driver.getPageSource();
 			// System.out.println("data");
 			// System.out.println(data);
@@ -1466,6 +1468,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 	/**
 	 * 
 	 * @param code
+	 * @param temp
 	 * @param driver
 	 * @param type
 	 * @param mandatory
@@ -1695,16 +1698,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smilepnt36");
-		dto.setUserName("caladent02");
+		dto.setPassword("Smile123");
+		dto.setUserName("rockdale001");
 		dto.setSiteName("BCBS");
        
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("05/20/1990");
-		psc.setFirstName("THOMAS");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
-		psc.setLastName("CANALES");
-		psc.setMemberId("841013814");
+		psc.setDob("12/10/1980");
+		psc.setFirstName("CRYSTAL");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
+		psc.setLastName("SIMMONS");
+		psc.setMemberId("924652459");
 		psc.setSsnNumber("");
 
 		l.add(psc);

@@ -7,7 +7,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -95,6 +97,32 @@ public class DateUtils {
 		} else {
 			return 0;
 		}
+	}
+
+	private static long calculateAgeInMonths(Date birthDate) throws ParseException {
+		Date today = new Date();
+		Instant instant = Instant.ofEpochMilli(today.getTime());
+		LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+		LocalDate localDate = localDateTime.toLocalDate();
+
+		Instant instantB = Instant.ofEpochMilli(birthDate.getTime());
+		LocalDateTime birthDateDT = LocalDateTime.ofInstant(instantB, ZoneId.systemDefault());
+		LocalDate birthDateL = birthDateDT.toLocalDate();
+		long monthsBetween = ChronoUnit.MONTHS.between(
+			     YearMonth.from(birthDateL), 
+			     YearMonth.from(localDate));
+		return monthsBetween;
+		
+	}
+
+	public static long calculateAgeInMonths(int[] age) throws ParseException {
+		long months=0;
+        if (age==null) return 0;
+        if (age[0]>0) months= age[0]*12;
+        if (age[1]>0) months= months + age[1];
+        
+		return months;
+		
 	}
 
 	public static int calculateAgeIVF(String birthDateS) throws ParseException {
@@ -564,6 +592,8 @@ public class DateUtils {
 			
 			Date cd=Constants.SIMPLE_DATE_FORMAT.parse(Constants.SIMPLE_DATE_FORMAT.format(new Date()));
 			Date eDate=Constants.SIMPLE_DATE_FORMAT.parse("12/08/2020");
+			System.out.println("**********************");
+			System.out.println(calculateAgeInMonths(DateUtils.calculateAgeYMD("2020-11-29", true)));
 			if(waitingPeroidCheck( cd,eDate)) {
 				System.out.println("No");
 			}else {

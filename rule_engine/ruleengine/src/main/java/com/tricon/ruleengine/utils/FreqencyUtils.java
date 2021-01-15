@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.context.MessageSource;
 
+import com.itextpdf.text.log.SysoCounter;
 import com.tricon.ruleengine.dto.FreqencyDto;
 import com.tricon.ruleengine.dto.ServiceCodeIvfTimesFreqFieldDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
@@ -32,7 +33,7 @@ public class FreqencyUtils {
 		String duration = "";
 		try {
 			String temp = "";
-			frequecny = frequecny.trim().toLowerCase();
+			frequecny = frequecny.trim().toLowerCase().replaceAll(" ", "");
 			String timeAndDuration[] = frequecny.split("x");
 			if (timeAndDuration.length > 0) {
 				dto.setTimes(Integer.parseInt(timeAndDuration[0]));
@@ -326,6 +327,220 @@ public class FreqencyUtils {
 		return mess;
 	}
 
+	public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1, List<ServiceCodeIvfTimesFreqFieldDto> l2,
+			                        List<ServiceCodeIvfTimesFreqFieldDto> l3,List<ServiceCodeIvfTimesFreqFieldDto> l4,List<ServiceCodeIvfTimesFreqFieldDto> l5, String s1,
+			                        String s2, String s3,String s4,String s5,String tooth) {
+		int ct = 0;
+		int ti = 0;
+		int actualmax=-1;
+		Object[] mess = null;
+		String code="";
+		Object c1[] = FreqencyUtils.getCountTimeServiceCode(l1, s1);
+		if ( !((String)c1[5]).equals("")  ){code=code+(String)c1[5];}
+
+		ct = ct + (Integer) c1[0];
+		ti = (Integer) c1[4];
+		if(ti>0) actualmax = ti;
+
+		Object[] c2 = FreqencyUtils.getCountTimeServiceCode(l2, s2);
+		if ( !((String)c2[5]).equals("")  ){code=code+(String)c2[5];}
+
+		ct = ct + (Integer) c2[0];
+		ti = (Integer) c2[4];
+		if ((ti>0 && actualmax==-1) || (ti>0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c3 = FreqencyUtils.getCountTimeServiceCode(l3, s3);
+		if ( !((String)c3[5]).equals("")  ){code=code+(String)c3[5];}
+		ct = ct + (Integer) c3[0];
+		ti = (Integer) c3[4];
+		if ((ti>0 && actualmax==-1) || (ti>0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c4 = FreqencyUtils.getCountTimeServiceCode(l4, s4);
+		if ( !((String)c4[5]).equals("")  ){code=code+(String)c4[5];}
+
+		ct = ct + (Integer) c4[0];
+		ti = (Integer) c4[4];
+		if ((ti>0 && actualmax==-1) || (ti>0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c5 = FreqencyUtils.getCountTimeServiceCode(l5, s5);
+		if ( !((String)c5[5]).equals("")  ){code=code+(String)c5[5];}
+
+		ct = ct + (Integer) c5[0];
+		ti = (Integer) c5[4];
+		if ((ti>0 && actualmax==-1) || (ti>0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		System.out.println("actualmax="+actualmax+" :ct="+ct);
+		if ( (actualmax>0 ) && (ct > 0 && ct > actualmax)) {
+			String dos = "";
+			String fl = "";
+			String fr = "";
+			String sur = "";
+			
+			if (l1 != null) {
+				dos = dos + " " + (String) c1[2];
+				fl = fl + " " + (String) c1[3];
+				fr = fr + " " + (String) c1[6];
+				sur = sur + " " + (String) c1[7];
+				
+			}
+			if (l2 != null) {
+				dos = dos + " " + (String) c2[2];
+				fl = fl + " " + (String) c2[3];
+				fr = fr + " " + (String) c2[6];
+				sur = sur + " " + (String) c2[7];
+				
+			}
+			if (l3 != null) {
+				dos = dos + " " + (String) c3[2];
+				fl = fl + " " + (String) c3[3];
+				fr = fr + " " + (String) c3[6];
+				sur = sur + " " + (String) c3[7];
+				
+			}
+			if (l4 != null) {
+				dos = dos + " " + (String) c4[2];
+				fl = fl + " " + (String) c4[3];
+				fr = fr + " " + (String) c4[6];
+				sur = sur + " " + (String) c4[7];
+				
+			}
+			
+			//3124 code ,TOOTH,DOS, TIMES
+			if (!sur.equals("")) sur="("+sur+")";
+			mess = new Object[] { code,tooth,dos, actualmax,fr,sur};
+
+		}
+		return mess;
+	}
+	
+
+ public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1, List<ServiceCodeIvfTimesFreqFieldDto> l2,
+	            List<ServiceCodeIvfTimesFreqFieldDto> l3,List<ServiceCodeIvfTimesFreqFieldDto> l4,List<ServiceCodeIvfTimesFreqFieldDto> l5,List<ServiceCodeIvfTimesFreqFieldDto> l6,
+	            String s1,String s2, String s3,String s4,String s5,String s6,String tooth) {
+	int ct = 0;
+	int ti = 0;
+	int actualmax=-1;
+	Object[] mess = null;
+	String code="";
+	Object c1[] = FreqencyUtils.getCountTimeServiceCode(l1, s1);
+	if ( !((String)c1[5]).equals("")  ){code=code+(String)c1[5];}
+	
+	ct = ct + (Integer) c1[0];
+	ti = (Integer) c1[4];
+	if(ti>0) actualmax = ti;
+	
+	Object[] c2 = FreqencyUtils.getCountTimeServiceCode(l2, s2);
+	if ( !((String)c2[5]).equals("")  ){code=code+(String)c2[5];}
+	
+	ct = ct + (Integer) c2[0];
+	ti = (Integer) c2[4];
+	if ((ti>0 && actualmax==-1) || (ti>0 && actualmax > ti))
+	actualmax = ti;/// Set to minimum value
+	
+	Object[] c3 = FreqencyUtils.getCountTimeServiceCode(l3, s3);
+	if ( !((String)c3[5]).equals("")  ){code=code+(String)c3[5];}
+	ct = ct + (Integer) c3[0];
+	ti = (Integer) c3[4];
+	if ((ti>0 && actualmax==-1) || (ti>0 && actualmax > ti))
+	actualmax = ti;/// Set to minimum value
+	
+	Object[] c4 = FreqencyUtils.getCountTimeServiceCode(l4, s4);
+	if ( !((String)c4[5]).equals("")  ){code=code+(String)c4[5];}
+	
+	ct = ct + (Integer) c4[0];
+	ti = (Integer) c4[4];
+	if ((ti>0 && actualmax==-1) || (ti>0 && actualmax > ti))
+	actualmax = ti;/// Set to minimum value
+	
+	Object[] c5 = FreqencyUtils.getCountTimeServiceCode(l5, s5);
+	if ( !((String)c5[5]).equals("")  ){code=code+(String)c5[5];}
+	
+	ct = ct + (Integer) c5[0];
+	ti = (Integer) c5[4];
+	if ((ti>0 && actualmax==-1) || (ti>0 && actualmax > ti))
+	actualmax = ti;/// Set to minimum value
+	
+	Object[] c6 = FreqencyUtils.getCountTimeServiceCode(l6, s6);
+	if ( !((String)c6[5]).equals("")  ){code=code+(String)c6[5];}
+	
+	ct = ct + (Integer) c6[0];
+	ti = (Integer) c6[4];
+	if ((ti>0 && actualmax==-1) || (ti>0 && actualmax > ti))
+	actualmax = ti;/// Set to minimum value
+
+	if ( (actualmax>0 ) && (ct > 0 && ct > actualmax)) {
+	String dos = "";
+	String fl = "";
+	String fr = "";
+	String sur = "";
+	
+	if (l1 != null) {
+	dos = dos + " " + (String) c1[2];
+	fl = fl + " " + (String) c1[3];
+	fr = fr + " " + (String) c1[6];
+	sur = sur + " " + (String) c1[7];
+	
+	}
+	if (l2 != null) {
+	dos = dos + " " + (String) c2[2];
+	fl = fl + " " + (String) c2[3];
+	fr = fr + " " + (String) c2[6];
+	sur = sur + " " + (String) c2[7];
+	
+	}
+	if (l3 != null) {
+	dos = dos + " " + (String) c3[2];
+	fl = fl + " " + (String) c3[3];
+	fr = fr + " " + (String) c3[6];
+	sur = sur + " " + (String) c3[7];
+	
+	}
+	if (l4 != null) {
+	dos = dos + " " + (String) c4[2];
+	fl = fl + " " + (String) c4[3];
+	fr = fr + " " + (String) c4[6];
+	sur = sur + " " + (String) c4[7];
+	
+	}
+	
+	//3124 code ,TOOTH,DOS, TIMES
+	if (!sur.equals("")) sur="("+sur+")";
+	mess = new Object[] { code,tooth,dos, actualmax,fr,sur};
+	
+	}
+	return mess;
+	}
+	
+	public static boolean checkforAlikeCodesNew1(String tpCodes, String historyCode) {
+		boolean alikecodepresent = false;
+		/*
+		if ( 
+				 (tpCodes.equals("D0150") || tpCodes.equals("D0120") || tpCodes.equals("D0145") || tpCodes.equals("D0160"))  
+			     && (historyCode.equals("D0150") || historyCode.equals("D0120") || historyCode.equals("D0145") || historyCode.equals("D0160")) 
+				)   {
+						alikecodepresent = true;
+					}
+		*/			
+		if ( 
+			 (tpCodes.equals("D0150") || tpCodes.equals("D0120") || tpCodes.equals("D0145") || tpCodes.equals("D0140") || tpCodes.equals("D0160"))  
+		     && (historyCode.equals("D0150") || historyCode.equals("D0120") || historyCode.equals("D0145") || historyCode.equals("D0140")|| historyCode.equals("D0160")) 
+			)   {
+					alikecodepresent = true;
+				}
+		if ( 
+				 (tpCodes.equals("D0210") || tpCodes.equals("D0330") )  
+			     && (historyCode.equals("D0210") || historyCode.equals("D0330") ) 
+				)   {
+						alikecodepresent = true;
+					}
+
+		return alikecodepresent;
+	}
+
 	public static boolean checkforAlikeCodes(String tpCodes, String historyCode) {
 		boolean alikecodepresent = false;
 		// 2 C D1206 and D1208
@@ -541,8 +756,6 @@ public class FreqencyUtils {
 						Constants.rule_log_debug, bw);
 				RuleEngineLogger.generateLogs(clazz, "CurrentYear:" + CurrentYear,
 						Constants.rule_log_debug, bw);
-				RuleEngineLogger.generateLogs(clazz, "CurrentYear:" + CurrentYear,
-						Constants.rule_log_debug, bw);
 				Date[] calcy = DateUtils.getCalendarYear(FDTO.getCy());
 				RuleEngineLogger.generateLogs(clazz, "DATE RANGE: FROM -" + calcy[0],
 						Constants.rule_log_debug, bw);
@@ -555,6 +768,9 @@ public class FreqencyUtils {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 				}
+				/*present=true;//Remove after testing..
+				scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);//Remove after testing..
+				*/
 
 			} else if (FDTO.getLt() > 0) {// Life Time
 				RuleEngineLogger.generateLogs(clazz, "Life Time:" + FDTO.getLt(),
@@ -806,6 +1022,337 @@ public class FreqencyUtils {
 	}
 	
 	
+	public static List<TPValidationResponseDto>  ivfFrequencyLogicForExams(List<ServiceCodeIvfTimesFreqFieldDto> dataIVF,String tpCode
+			,String tooth,ToothHistoryDto historyD,Class<?> clazz,BufferedWriter bw,int CurrentYear,
+			Date planDate, MessageSource messageSource,Rules rule,IVFTableSheet ivf,
+			Date TP_Date,Locale locale,Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVFFinal,Set<String> fcodes,
+			Set<String> surfaces,Set<String> teethC) {
+		boolean present = false;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF) {
+			String freq = scivfTFD.getFreqency();
+
+			ServiceCodeIvfTimesFreqFieldDto scivfTFDFinal = new ServiceCodeIvfTimesFreqFieldDto(
+					tpCode, scivfTFD.getFieldName(), scivfTFD.getFreqency(), 0, 0,"");
+			scivfTFDFinal.setTooth(tooth);
+			scivfTFDFinal.setSurface(historyD.getSurfaceTooth());
+			scivfTFDFinal.setDos(historyD.getHistoryDos());
+			RuleEngineLogger.generateLogs(clazz,
+					"HISTORY CODE- " + historyD.getHistoryCode(),
+					Constants.rule_log_debug, bw);
+			RuleEngineLogger.generateLogs(clazz,
+					"HISTORY DOS- " + historyD.getHistoryDos(),
+					Constants.rule_log_debug, bw);
+
+			RuleEngineLogger.generateLogs(clazz, "Frequency- " + freq,
+					Constants.rule_log_debug, bw);
+			if (historyD.getHistoryDos().equals("") || freq.equalsIgnoreCase("") || freq.equalsIgnoreCase("NF") || freq.equalsIgnoreCase("no frequency"))
+				continue;
+			//System.out.println("DDDDDDDDDDDDDD-"+freq);
+			FreqencyDto FDTO = FreqencyUtils.parseFrequecy(freq);
+			Date[] datesFIS = DateUtils.getFiscalYear(FDTO.getFy());
+			int ti = FDTO.getTimes();
+			scivfTFDFinal.setTimes(ti);
+			RuleEngineLogger.generateLogs(clazz, "Tooth Number-" + tooth,
+					Constants.rule_log_debug, bw);
+
+			Date dos = null;
+			try {
+				dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(historyD.getHistoryDos());
+				RuleEngineLogger.generateLogs(clazz,
+						"History DOS-" + historyD.getHistoryDos(),
+						Constants.rule_log_debug, bw);
+			} catch (ParseException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			RuleEngineLogger.generateLogs(clazz, "TIMES:" + ti,
+					Constants.rule_log_debug, bw);
+			if (FDTO.getFy() > 0) {// Fiscal Year
+				// isFiscalpresent=true;
+				RuleEngineLogger.generateLogs(clazz, "Fiscal Year:" + FDTO.getFy(),
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz,
+						"Fiscal Year:" + datesFIS[0] + "-" + datesFIS[1],
+						Constants.rule_log_debug, bw);
+				boolean fiscal = DateUtils.isDatesBetweenDates(datesFIS[0], datesFIS[1],
+						dos);
+				RuleEngineLogger.generateLogs(clazz, "Fiscal Year:" + fiscal,
+						Constants.rule_log_debug, bw);
+				if (fiscal) {
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+					// expCount = expCount + 1;
+				}
+			} else if (FDTO.getCy() > 0) {// Calendar Year
+				RuleEngineLogger.generateLogs(clazz, "Calendar Year:" + FDTO.getCy(),
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "CurrentYear:" + CurrentYear,
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "CurrentYear:" + CurrentYear,
+						Constants.rule_log_debug, bw);
+				Date[] calcy = DateUtils.getCalendarYear(FDTO.getCy());
+				RuleEngineLogger.generateLogs(clazz, "DATE RANGE: FROM -" + calcy[0],
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "DATE RANGE: TO -" + calcy[1],
+						Constants.rule_log_debug, bw);
+
+				// isCalPresent=true;
+				// CurrentYear
+				if (DateUtils.isDatesBetweenDates(calcy[0], calcy[1], dos)) {
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+				}
+
+			} else if (FDTO.getLt() > 0) {// Life Time
+				RuleEngineLogger.generateLogs(clazz, "Life Time:" + FDTO.getLt(),
+						Constants.rule_log_debug, bw);
+				// isLifeTimePresent=true;
+				present = true;
+				scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+
+			} else if (FDTO.getPy() > 0) {// Plan Year
+				RuleEngineLogger.generateLogs(clazz, "Plan Year:" + FDTO.getPy(),
+						Constants.rule_log_debug, bw);
+				// isPlanYearPresent=true;
+				Calendar calendar = new GregorianCalendar();
+				if (planDate==null) {
+					dList.add(
+							new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule57.error.messagepl",
+											new Object[] { ivf.getPlanEffectiveDate()}, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
+					return dList;
+				}
+				Date nextDate = DateUtils.getNextYear(planDate);
+				// calendar.set(calendar.get(Calendar.YEAR)+1,calendar.get(Calendar.MONTH),
+				// calendar.get(Calendar.DATE)+1);
+				calendar.setTime(dos);
+				boolean fiscal = DateUtils.isDatesBetweenDates(planDate, nextDate, dos);
+				if (fiscal) {
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+				}
+			} else if (FDTO.getCalendarMonth() > 0) {// Calendar Months Done (cal.mo)
+				RuleEngineLogger.generateLogs(clazz,
+						"Calendar Months:" + FDTO.getCalendarMonth(),
+						Constants.rule_log_debug, bw);
+				// (1X6cal.mo) Plan Date 1 Jan - 31 JAN --> jan-june and july-Dec. two
+				// phase..
+				if (planDate==null) {
+					dList.add(
+							new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule57.error.messagepl",
+											new Object[] { ivf.getPlanEffectiveDate()}, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
+					return dList;
+				}
+				for (int x = 0; x <= 11;) {
+
+					x = x + FDTO.getCalendarMonth();
+					int initMonth = x - FDTO.getCalendarMonth();
+					int endMonth = (x - 1);
+
+					Calendar calendar = new GregorianCalendar();
+					calendar.setTime(planDate);
+					calendar.set(calendar.get(Calendar.YEAR),
+							calendar.get(Calendar.MONTH) + initMonth,
+							calendar.get(Calendar.DATE));
+					initMonth = calendar.get(Calendar.MONTH);
+
+					calendar = new GregorianCalendar();
+					calendar.setTime(planDate);
+					calendar.set(calendar.get(Calendar.YEAR),
+							calendar.get(Calendar.MONTH) + endMonth,
+							calendar.get(Calendar.DATE));
+					endMonth = calendar.get(Calendar.MONTH);
+
+					RuleEngineLogger
+							.generateLogs(clazz,
+									"Initial Calendar Month for Plan Date is:"
+											+ (initMonth + 1),
+									Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz,
+							"End Month for Plan Date is:" + (endMonth + 1),
+							Constants.rule_log_debug, bw);
+
+					calendar = new GregorianCalendar();
+					calendar.setTime(dos);
+					int dosmonth = calendar.get(Calendar.MONTH);
+
+					calendar = new GregorianCalendar();
+					calendar.setTime(TP_Date);
+					int tpmonth = calendar.get(Calendar.MONTH);
+
+					RuleEngineLogger.generateLogs(clazz,
+							"Month for DOS is:" + (dosmonth + 1),
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz,
+							"Month for TP is:" + (tpmonth + 1),
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz,
+							" IS Month for DOS-(" + (dosmonth + 1)
+									+ ") is between Initial Calendar Month:("
+									+ (initMonth + 1) + ") and End Month for Plan("
+									+ (endMonth + 1) + ")==>"
+									+ (initMonth <= dosmonth && dosmonth >= endMonth),
+							Constants.rule_log_debug, bw);
+
+					RuleEngineLogger.generateLogs(clazz,
+							" IS Month for TP-(" + (tpmonth + 1)
+									+ ") is between Initial Calendar Month:("
+									+ (initMonth + 1) + ") and End Month for Plan("
+									+ (endMonth + 1) + ")==>"
+									+ (initMonth <= tpmonth && tpmonth >= endMonth),
+							Constants.rule_log_debug, bw);
+
+					if ((initMonth <= dosmonth && dosmonth >= endMonth)
+							&& (initMonth <= tpmonth && tpmonth >= endMonth)) {
+						present = true;
+						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+					}
+				}
+
+			} else if (FDTO.getDays() > 0) {// Months & Days (1x6Mo_1D)
+
+				RuleEngineLogger.generateLogs(clazz, " Days:" + FDTO.getDays(),
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "Months :" + FDTO.getMonths(),
+						Constants.rule_log_debug, bw);
+				//
+				if (planDate==null) {
+					dList.add(
+							new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule57.error.messagepl",
+											new Object[] { ivf.getPlanEffectiveDate()}, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
+					return dList;
+				}
+				if (dos.compareTo(planDate) < 0) {
+					RuleEngineLogger.generateLogs(clazz,
+							" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
+							Constants.rule_log_debug, bw);
+
+					// continue;
+				}
+				Calendar nextAvailbleDate = new GregorianCalendar();
+				nextAvailbleDate.setTime(dos);
+				nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+						nextAvailbleDate.get(Calendar.MONTH) + FDTO.getMonths(),
+						nextAvailbleDate.get(Calendar.DATE));
+
+				nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+						nextAvailbleDate.get(Calendar.MONTH),
+						nextAvailbleDate.get(Calendar.DATE) + FDTO.getDays());
+				//
+				RuleEngineLogger.generateLogs(clazz,
+						"NEXT DATE OF SERVICE AVIALBLE :" + nextAvailbleDate.getTime(),
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "Current Date :" + TP_Date,
+						Constants.rule_log_debug, bw);
+
+				// 1 June Dec 12 -->6 Months
+				// 1 Dec Dec 12
+				if (TP_Date.compareTo(nextAvailbleDate.getTime()) <= 0) {
+					RuleEngineLogger.generateLogs(clazz, " INCREASE COUNT BY 1-",
+							Constants.rule_log_debug, bw);
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+				}
+
+			} else if (FDTO.getOnlyDays() > 0) {// Days
+				RuleEngineLogger.generateLogs(clazz, "ONLY DAYS :" + FDTO.getOnlyDays(),
+						Constants.rule_log_debug, bw);
+				if (planDate==null) {
+					dList.add(
+							new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule57.error.messagepl",
+											new Object[] { ivf.getPlanEffectiveDate()}, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
+					return dList;
+				}
+				if (dos.compareTo(planDate) < 0) {
+					RuleEngineLogger.generateLogs(clazz,
+							" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
+							Constants.rule_log_debug, bw);
+
+					// continue;
+				}
+				Calendar nextAvailbleDate = new GregorianCalendar();
+				nextAvailbleDate.setTime(dos);
+				nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+						nextAvailbleDate.get(Calendar.MONTH),
+						nextAvailbleDate.get(Calendar.DATE) + FDTO.getOnlyDays());
+				//
+				RuleEngineLogger.generateLogs(clazz,
+						"NEXT DATE OF SERVICE AVIALBLE :" + nextAvailbleDate.getTime(),
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "Current Date :" + TP_Date,
+						Constants.rule_log_debug, bw);
+
+				// 1 June Dec 12 -->6 Months
+				// 1 Dec Dec 12
+				if (TP_Date.compareTo(nextAvailbleDate.getTime()) <= 0) {
+					RuleEngineLogger.generateLogs(clazz, " INCREASE COUNT BY 1-",
+							Constants.rule_log_debug, bw);
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+				}
+
+			} else if (FDTO.getMonths() > 0) {// Months
+				RuleEngineLogger.generateLogs(clazz, "MONTHS :" + FDTO.getMonths(),
+						Constants.rule_log_debug, bw);
+				if (planDate==null) {
+					dList.add(
+							new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule57.error.messagepl",
+											new Object[] { ivf.getPlanEffectiveDate()}, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));	
+					return dList;
+				}
+				if (dos.compareTo(planDate) < 0) {
+					RuleEngineLogger.generateLogs(clazz,
+							" HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
+							Constants.rule_log_debug, bw);
+
+					// continue;
+				}
+				Calendar nextAvailbleDate = new GregorianCalendar();
+				nextAvailbleDate.setTime(dos);
+				nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR),
+						nextAvailbleDate.get(Calendar.MONTH) + FDTO.getMonths(),
+						nextAvailbleDate.get(Calendar.DATE));
+				RuleEngineLogger.generateLogs(clazz,
+						"NEXT DATE OF SERVICE AVIALBLE :" + nextAvailbleDate.getTime(),
+						Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "Current Date :" + TP_Date,
+						Constants.rule_log_debug, bw);
+
+				// 1 JUne Dec 12 -->6 Months
+				// 1 Dec Dec 12
+				if (TP_Date.compareTo(nextAvailbleDate.getTime()) <= 0) {
+					RuleEngineLogger.generateLogs(clazz, " INCREASE COUNT BY 1-",
+							Constants.rule_log_debug, bw);
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+				}
+			}
+
+			////
+			if (present) {
+				List<ServiceCodeIvfTimesFreqFieldDto> ln = mapFlIVFFinal.get(tooth);
+				if (ln == null) {
+					ln = new ArrayList<>();
+					ln.add(scivfTFDFinal);
+					mapFlIVFFinal.put(tooth, ln);
+				} else {
+					ln.add(scivfTFDFinal);
+				}
+			}
+		}
+		return dList;
+	}
+
 	public static String checkForteehIntext(String siteName,String text,String teeth) {
 		
 		text=text.trim().toLowerCase().replaceAll("01","1")
@@ -881,7 +1428,7 @@ public class FreqencyUtils {
 	 */
 	}
 	
-	public static String convertFrequecyDentaString(String siteName,String text) {
+	public static String convertFrequecyDentaString(String siteName,String text,String frequenCYFYPY) {
 		
 		text=text.trim().toLowerCase();
 		String convert="";
@@ -959,8 +1506,8 @@ public class FreqencyUtils {
 			  //  System.out.println(matcher.group(2));
 			    String gp=matcher.group(2);
 			    gp = gp.trim().replaceAll("[a-z]","").trim();
-			    if (gp.equals(""))convert="1CY";
-			    else  convert=gp+"CY";
+			    if (gp.equals(""))convert="1"+frequenCYFYPY;
+			    else  convert=gp+""+frequenCYFYPY;
 			}else {
 				convert=matcher.group(0).trim();
 			}
@@ -973,8 +1520,8 @@ public class FreqencyUtils {
 			  //  System.out.println(matcher.group(2));
 			    String gp=matcher.group(2);
 			    gp = gp.trim().replaceAll("[a-z]","").trim();
-			    if (gp.equals(""))convert="1CY";
-			    else  convert=gp+"CY";
+			    if (gp.equals(""))convert="1"+frequenCYFYPY;
+			    else  convert=gp+""+frequenCYFYPY;
 			}else {
 				convert=matcher.group(0).trim();
 			}
@@ -987,12 +1534,25 @@ public class FreqencyUtils {
 			  //  System.out.println(matcher.group(2));
 			    String gp=matcher.group(2);
 			    gp = gp.trim().replaceAll("[a-z]","").trim();
-			    if (gp.equals(""))convert="1CY";
-			    else  convert=gp+"CY";
+			    if (gp.equals(""))convert="1"+frequenCYFYPY;
+			    else  convert=gp+""+frequenCYFYPY;
 			}else {
 				convert=matcher.group(0).trim();
 			}
 			
+		}else if (text.contains("benefit period")) {
+			String regex = "(.*?)within(.*?)benefit period(.*?)";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(text);
+			if(matcher.matches() && matcher.groupCount()>=3) {
+			  //  System.out.println(matcher.group(2));
+			    String gp=matcher.group(2);
+			    gp = gp.trim().replaceAll("[a-z]","").trim();
+			    if (gp.equals(""))convert="1"+frequenCYFYPY;
+			    else  convert=gp+""+frequenCYFYPY;
+			}else {
+				convert=matcher.group(0).trim();
+			}
 		}else if (text.contains("month period")) {
 			String regex = "(.*?)within(.*?)month period(.*?)";
 			Pattern pattern = Pattern.compile(regex);
@@ -1053,6 +1613,7 @@ public class FreqencyUtils {
 		//System.out.println("CCCCC----"+convert1+convert+convert2);
 		
 		String fi=convert1+convert+convert2+"----"+text;
+		//System.out.println("FI-->"+convert1+"<--->"+convert+"<--->"+convert2+"<--->"+text);
 		if (fi.length()>23) fi=fi.substring(0,23);
 		return fi;
 		//1 : Once per tooth per 60 months consisting of codes:
@@ -1227,13 +1788,15 @@ public class FreqencyUtils {
 			
 			
 			////
-			System.out.println(convertFrequecyDentaString("", "Benefit is limited to two fluoride procedures within a calendar year"));
-			System.out.println(convertFrequecyDentaString("", "Benefit is limited to any 100 oral evaluation procedures within the contract period. Comprehensive evaluations are limited to once per provider."));
-		System.out.println(convertFrequecyDentaString("", "Benefit is limited to one crown procedure per tooth within a 5 year period."));
-			System.out.println(convertFrequecyDentaString("", "Benefit is limited to 13 periapical films per date of service"));
-			System.out.println("77777777777777777");
+			System.out.println(convertFrequecyDentaString("", "Benefit is limited to two fluoride procedures within a calendar year","CY"));
+			System.out.println(convertFrequecyDentaString("", "Benefit is limited to any 100 oral evaluation procedures within the contract period. Comprehensive evaluations are limited to once per provider.","CY"));
+		System.out.println(convertFrequecyDentaString("", "Benefit is limited to one crown procedure per tooth within a 5 year period.","CY"));
+			System.out.println(convertFrequecyDentaString("", "Benefit is limited to 13 periapical films per date of service","CY"));
 		
-			System.out.println(convertFrequecyDentaString("", "benefit is based on professional determination"));
+			System.out.println(convertFrequecyDentaString("", "benefit is based on professional determination","CY"));
+			System.out.println("77777777777777777");
+			System.out.println(convertFrequecyDentaString("", "Benefit is limited to two of any oral evaluation procedure within a Benefit Period.","PY"));
+			System.out.println(convertFrequecyDentaString("", "An interim partial denture is covered only to replace extracted anterior permanent teeth during the healing period. If provided for other circumstances, the patient is responsible for the cost. Delta Dental considers the fee for an interim partial denture to include the fee for all teeth and clasps. Benefit is limited to once per arch within a 5 year period.","PY"));
 				convertFrequecyUCCIString("1 Per 12 M"
 					+ "onths | 2 Per 122 Months ~ Per Office ");
 			convertFrequecyUCCIString("2 Per 122 Months ~ Per Office ");

@@ -121,7 +121,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 
 		// https://connectsso.dentaquest.com/authsso/providersso/SSOProviderLogin.aspx?TYPE=33554433&REALMOID=06-6a4c193d-7520-4f3d-b194-83367a3ef454&GUID=&SMAUTHREASON=0&METHOD=POST&SMAGENTNAME=-SM-imZolSjcs1FQR%2fH0k3NSK1Uvx4zWgziEWSOuwqcKGG1C%2bW%2fQdG3dRa7BVqGyOpNh&TARGET=-SM-https%3a%2f%2fconnectsso%2edentaquest%2ecom%2fprovideraccessv2%2findex%2ehtml
 		// Dental@6743 offshorebfd for 739438815 04/11/2020 Beaumont
-		det.setPassword("Dental@6747");// // Devine%1245976
+		det.setPassword("Dental@6757");// // Devine%1245976
 		det.setUserName("Offshorebfd"); // Devin13458
 		det.setLocationProvider("");
 		Office f = new Office();

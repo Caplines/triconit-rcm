@@ -78,6 +78,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
+import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanPatient;
@@ -325,6 +326,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				Map<String, List<EagleSoftFeeShedule>> esfeess= null;
+				Map<String, List<Perio>> perios= null;
 				
 				
 				String ivs[] = null;
@@ -526,6 +528,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							
 							espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 									new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
+							perios=(Map<String, List<Perio>>) (Map<String, ?>) dbAccesService.getPerioDataForPatients(ivfMap, esDB, bw);
 							
 							mvpVapList=tvd.getAllMVPVAP();
 							if (espatients != null && espatients.size() > 0) {
@@ -650,7 +653,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						
 						espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 								new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
-						
+						perios = (Map<String, List<Perio>>) (Map<String, ?>) dbAccesService.getPerioDataForPatients(ivfMapPat, esDB, bw);
 						mvpVapList=tvd.getAllMVPVAP();
 						if (espatients != null && espatients.size() > 0) {
 							esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,bw);
@@ -770,993 +773,21 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_4 "Coverage Book"
 							List<TPValidationResponseDto> dtoRL = new ArrayList<>();
-
-							rule = getRulesFromList(rules, Constants.RULE_ID_4);
-							String feeKey = "-1";
-							if (espatients != null && espatients.get(patKey) != null
-									&& espatients.get(patKey).size() > 0)
-								feeKey = ((EagleSoftPatient) espatients.get(patKey).get(0)).getFeeScheduleId();
-							if (esfeess != null && espatients != null && espatients.get(patKey).size() > 0) {
-								dtoRL = rb.Rule4_B(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
-										esfeess.get(feeKey), espatients.get(patKey), bw,type);
-							} else {
-								if (esfeess == null)
-									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-											messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
-											Constants.FAIL,"","",""));
-								else if (espatients == null)
-									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
-											.getMessage("rule.patient.notfound", new Object[] { "Patient ID-"
-													+ ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getPatientId() },
-													locale),
-											Constants.FAIL,"","",""));
-								else
-									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-											messageSource.getMessage("rule.patient.notfound",
-													new Object[] { "Some Issue in Fee Sheet" }, locale),
-											Constants.FAIL,"","",""));
-
-							}
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_4,
-									Constants.rule_log_debug, bw);
-
-							// END
-
-							// RULE_ID_5 "Remaining Deductible, Remaining Balance and Benefit Max as per IV
-							// form"
-							if (type==Constants.userType_TR) {
-							rule = getRulesFromList(rules, Constants.RULE_ID_5);
-							dtoRL = new ArrayList<>();
-							if (espatients != null) {
-								dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),
-										bw,type,dtod.getInsType());
-								if (dtoRL != null) {
-									list.addAll(dtoRL);
-									for (TPValidationResponseDto t : dtoRL) {
-										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-												t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-										// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-									}
-								}
-							} else {
-								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule.patient.notfound", new Object[] { "" }, locale),
-										Constants.FAIL,"","",""));
-
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_5,
-									Constants.rule_log_debug, bw);
-							// END Remaining Deductible, Remaining Balance and Benefit Max as per IV
-						    }
-							// RULE_ID_6 "Percentage Coverage Check"
-							rule = getRulesFromList(rules, Constants.RULE_ID_6);
-
-							dtoRL = new ArrayList<>();
-							if (espatients != null && esempmaster != null) {
-								dtoRL = rb.Rule6(ivfMap.get(ivx).get(0), messageSource, rule,
-										esempmaster.get(empMasterKey), espatients.get(patKey), bw, type);
-								if (dtoRL != null) {
-									list.addAll(dtoRL);
-									for (TPValidationResponseDto t : dtoRL) {
-										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-												t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-										// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-									}
-								}
-							} else if (espatients == null) {
-								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule.patient.notfound", new Object[] { "" }, locale),
-										Constants.FAIL,"","",""));
-								list.addAll(dtoRL);
-
-							} else {
-								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
-										.getMessage("rule.employer.notfound", new Object[] { empMasterKey }, locale),
-										Constants.FAIL,"","",""));
-								list.addAll(dtoRL);
-
-							}
-
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_6,
-									Constants.rule_log_debug, bw);
-							// END "Percentage Coverage Check"
-
-							// RULE_ID_7 "Alert
-							if (type==Constants.userType_TR) {
-							rule = getRulesFromList(rules, Constants.RULE_ID_7);
-							dtoRL = rb.Rule7(ivfMap.get(ivx).get(0), messageSource, rule, bw);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_7,
-									Constants.rule_log_debug, bw);
-
-							// END Alert
-						    }
-							// RULE_ID_19 Downgrading
-
-							rule = getRulesFromList(rules, Constants.RULE_ID_19);
-							dtoRL = new ArrayList<>();
-							if (esfeess != null && espatients != null) {
-								dtoRL = rb.Rule19(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
-										esfeess.get(feeKey), espatients.get(patKey), bw,type);
-
-								if (dtoRL != null) {
-									list.addAll(dtoRL);
-									for (TPValidationResponseDto t : dtoRL) {
-										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-												t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-										// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-									}
-								}
-
-							} else {
-
-								RuleEngineLogger.generateLogs(clazz, Constants.RULE_ID_19 + "-rule.fee.notfound ",
-										Constants.rule_log_debug, bw);
-
-								if (esfeess == null)
-									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-											messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
-											Constants.FAIL,"","",""));
-								if (espatients == null)
-									dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-											messageSource.getMessage("rule.patient.notfound",
-													new Object[] { new Object[] {
-															"Patient ID-" + ((IVFTableSheet) (ivfMap.get(ivx).get(0)))
-																	.getPatientId() } },
-													locale),
-											Constants.FAIL,"","",""));
-
-								if (dtoRL != null) {
-									list.addAll(dtoRL);
-									for (TPValidationResponseDto t : dtoRL) {
-										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-												t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-										// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-									}
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_19,
-									Constants.rule_log_debug, bw);
-							// END Downgrading
-
-							// RULE_ID_21 "// Frequency Limitations
-							rule = getRulesFromList(rules, Constants.RULE_ID_21);
-							dtoRL = rb.Rule21(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_21,
-									Constants.rule_log_debug, bw);
-
-							// END Frequency Limitations
-
-							// RULE_ID_8 "Age Limits
-							rule = getRulesFromList(rules, Constants.RULE_ID_8);
-							dtoRL = rb.Rule8(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
-
-							
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_8,
-									Constants.rule_log_debug, bw);
-
-							// END Age Limits
-
-							// RULE_ID_18 "Missing Tooth Clause
-							rule = getRulesFromList(rules, Constants.RULE_ID_18);
-							dtoRL = rb.Rule18(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_18,
-									Constants.rule_log_debug, bw);
-
-							// END Missing Tooth Clause
-
-							// RULE_ID_17 " Bundling - Fillings
-							rule = getRulesFromList(rules, Constants.RULE_ID_17);
-							if (esfeess!=null)
-							dtoRL = rb.Rule17(tListReduced, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
-							else {
-								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
-										Constants.FAIL,"","",""));
-							}
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_17,
-									Constants.rule_log_debug, bw);
-
-							// END
-
-							// RULE_ID_16 " Bundling - X-Rays
-							rule = getRulesFromList(rules, Constants.RULE_ID_16);
-							dtoRL = rb.Rule16(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_16,
-									Constants.rule_log_debug, bw);
-
-							// END Bundling - X-Rays
-
-							// RULE_ID_15 " SRP Quads Per Day
-							rule = getRulesFromList(rules, Constants.RULE_ID_15);
-							dtoRL = rb.Rule15(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_15,
-									Constants.rule_log_debug, bw);
-
-							// END SRP Quads Per Day
-
-							// RULE_ID_14 "Sealants
-							rule = getRulesFromList(rules, Constants.RULE_ID_14);
-							dtoRL = rb.Rule14(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw, type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_14,
-									Constants.rule_log_debug, bw);
-
-							// END Sealants
-
-							// RULE_ID_9 "Filling Codes based on Tooth No.
-
-							rule = getRulesFromList(rules, Constants.RULE_ID_9);
-							dtoRL = rb.Rule9(tListReduced, messageSource, rule, mappings, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_9,
-									Constants.rule_log_debug, bw);
-
-							// END "Filling Codes based on Tooth No.
-
-							// RULE_ID_10 "Pre Auth
-							rule = getRulesFromList(rules, Constants.RULE_ID_10);
-							dtoRL = rb.Rule10(tListReduced,ansL, messageSource, rule, mappings, bw,qhList,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_10,
-									Constants.rule_log_debug, bw);
-
-							// EN Pre Auth
-
-							// RULE_ID_11 "Waiting Period.
-							rule = getRulesFromList(rules, Constants.RULE_ID_11);
-							dtoRL = rb.Rule11(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_11,
-									Constants.rule_log_debug, bw);
-
-							// END
-
-							// RULE_ID_13 "Build-Ups & Crown Same Day
-							rule = getRulesFromList(rules, Constants.RULE_ID_13);
-							dtoRL = rb.Rule13(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_13,
-									Constants.rule_log_debug, bw);
-
-							// END "Build-Ups & Crown Same Day
-
-							// RULE_ID_22 "CRA
-							rule = getRulesFromList(rules, Constants.RULE_ID_22);
-							dtoRL = rb.Rule22(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_22,
-									Constants.rule_log_debug, bw);
-
-							// END "CRA
-
-							// RULE_ID_23 "Xray Bundling
-							rule = getRulesFromList(rules, Constants.RULE_ID_23);
-							dtoRL = rb.Rule23(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_23,
-									Constants.rule_log_debug, bw);
-
-							// END "Xray Bundling
-
-							//  Filling Bundling 
-							rule = getRulesFromList(rules, Constants.RULE_ID_24);
-							if (esfeess!=null)
-							dtoRL = rb.Rule24(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
-							else {
-								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
-										Constants.FAIL,"","",""));
-							}
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_24,
-									Constants.rule_log_debug, bw);
-
-							// END  Filling Bundling
-                           /*NOW USED NOW							
-							// DQ Fillings (Provider Same)
-							rule = getRulesFromList(rules, Constants.RULE_ID_51);
-							dtoRL = rb.Rule51(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_51,
-									Constants.rule_log_debug, bw);
-								
-							//END  DQ Fillings (Provider Same)
-							// DQ Fillings (Provider Different)
-							rule = getRulesFromList(rules, Constants.RULE_ID_52);
-							dtoRL = rb.Rule52(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_52,
-									Constants.rule_log_debug, bw);
-								
-							//END  DQ Fillings (Provider Different)
-                            */
-							// DQ Fillings
-							rule = getRulesFromList(rules, Constants.RULE_ID_53);
-							if (esfeess!=null)
-							dtoRL = rb.Rule53(tListReduced, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
-							else {
-								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
-										Constants.FAIL,"","",""));
-							}
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_53,
-									Constants.rule_log_debug, bw);
-								
-							//END  DQ Fillings
-                             //
-							//  Crown Bundling with Fillings 
-							rule = getRulesFromList(rules, Constants.RULE_ID_25);
-							if (esfeess!=null)
-							dtoRL = rb.Rule25(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
-							else {
-								dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
-										Constants.FAIL,"","",""));
-							}
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_25,
-									Constants.rule_log_debug, bw);
-
-							// END  Crown Bundling with Fillings
-							
-							//  Filling and Sealant Not Covered
-							rule = getRulesFromList(rules, Constants.RULE_ID_26);
-							dtoRL = rb.Rule26(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_26,
-									Constants.rule_log_debug, bw);
-
-							// END  Filling and Sealant Not Covered
-
-							//  Sealant Not Covered
-							rule = getRulesFromList(rules, Constants.RULE_ID_27);
-							dtoRL = rb.Rule27(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_27,
-									Constants.rule_log_debug, bw);
-
-							// END  Sealant Not Covered
-							
-							//  Restoration Not Covered
-							rule = getRulesFromList(rules, Constants.RULE_ID_28);
-							dtoRL = rb.Rule28(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_28,
-									Constants.rule_log_debug, bw);
-
-							// END  Restoration Not Covered
-
-							//  Exams Limitation
-							rule = getRulesFromList(rules, Constants.RULE_ID_29);
-							dtoRL = rb.Rule29(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw, type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_29,
-									Constants.rule_log_debug, bw);
-
-							// END  Exams Limitation
-							
-							//  Cleaning Limitation
-							rule = getRulesFromList(rules, Constants.RULE_ID_30);
-							dtoRL = rb.Rule30(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_30,
-									Constants.rule_log_debug, bw);
-
-							// END  Cleaning Limitation
-
-							//  Perio Maintainance Clause
-							rule = getRulesFromList(rules, Constants.RULE_ID_31);
-							dtoRL = rb.Rule31(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_31,
-									Constants.rule_log_debug, bw);
-
-							// END  Perio Maintainance Clause
-							
-							//  SRP Limitation
-							rule = getRulesFromList(rules, Constants.RULE_ID_32);
-							dtoRL = rb.Rule32(tListReduced,messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_32,
-									Constants.rule_log_debug, bw);
-
-							// END  SRP Limitation
-
-							//  Root Canal Clause
-							rule = getRulesFromList(rules, Constants.RULE_ID_33);
-							dtoRL = rb.Rule33(tListReduced,messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_33,
-									Constants.rule_log_debug, bw);
-
-							// END  Root Canal Clause
-
-							//  D2954 Clause
-							rule = getRulesFromList(rules, Constants.RULE_ID_34);
-							dtoRL = rb.Rule34(tListReduced,messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_34,
-									Constants.rule_log_debug, bw);
-
-							// END  D2954 Clause
-
-							//  Bone Graft Rule
-							rule = getRulesFromList(rules, Constants.RULE_ID_35);
-							dtoRL = rb.Rule35(tListReduced,messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_35,
-									Constants.rule_log_debug, bw);
-
-							// END  Bone Graft Rule
-
-							//  Immediate Denture
-							rule = getRulesFromList(rules, Constants.RULE_ID_36);
-							dtoRL = rb.Rule36(tListReduced,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_36,
-									Constants.rule_log_debug, bw);
-
-							// END  Immediate Denture
-
-							//  Extraction Limitation
-							rule = getRulesFromList(rules, Constants.RULE_ID_37);
-							dtoRL = rb.Rule37(tListReduced,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
-
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_37,
-									Constants.rule_log_debug, bw);
-
-							// END  Extraction Limitation
-
-							// Medicaid Provider Limitation for D0150,D0210,D0330
-							rule = getRulesFromList(rules, Constants.RULE_ID_38);
-							if (espatientsHis != null && espatientsHis.get(patKey) != null
-									&& espatientsHis.get(patKey).size() > 0) {
-								dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tListReduced ,espatientsHis.get(patKey),messageSource, rule, bw,type);
-
-								
-							   	
-							}else {
-								dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tListReduced ,null,messageSource, rule, bw,type);
-								
-							}
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_38,
-									Constants.rule_log_debug, bw);
-								
-							//END Medicaid Provider Limitation for D0150,D0210,D0330
-							
-							//Age Limitation Prophylaxis
-							rule = getRulesFromList(rules, Constants.RULE_ID_39);
-							dtoRL = rb.Rule39(ivfMap.get(ivx).get(0),tListReduced ,messageSource, rule, bw,type);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_39,
-									Constants.rule_log_debug, bw);
-								
-							//END Age Limitation Prophylaxis
-							
-							//Space Maintainer-Billateral
-							rule = getRulesFromList(rules, Constants.RULE_ID_40);
-							dtoRL = rb.Rule40(tListReduced ,messageSource, rule, bw, type);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_40,
-									Constants.rule_log_debug, bw);
-								
-							//END Space Maintainer-Billateral
-
-							//MVP VAP
-							if (type==Constants.userType_TR){
-							rule = getRulesFromList(rules, Constants.RULE_ID_41);
-							dtoRL = rb.Rule41(tListReduced,mvpVapList ,messageSource, rule, bw);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_41,
-									Constants.rule_log_debug, bw);
-							}	
-							//END MVP VAP
-
-							//Duplicate TP Codes
-							rule = getRulesFromList(rules, Constants.RULE_ID_42);
-							dtoRL = rb.Rule42(tListReduced ,messageSource, rule, bw,type);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_42,
-									Constants.rule_log_debug, bw);
-								
-							//END Duplicate TP Codes
-
-							//Bone Graft (User Input)
 							/*
-							rule = getRulesFromList(rules, Constants.RULE_ID_43);
-							dtoRL = rb.Rule43(tList,ansL ,messageSource, rule, bw);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_43,
-									Constants.rule_log_debug, bw);
-								
-							//END Bone Graft (User Input)
-							*/
-							//Signed Consent Requirements (User Input) //Forms Required
-							rule = getRulesFromList(rules, Constants.RULE_ID_44);
-							dtoRL = rb.Rule44(ansL ,messageSource, rule, bw,qhList,type);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_44,
-									Constants.rule_log_debug, bw);
-								
-							//END Signed Consent Requirements (User Input) //Forms Required
-							
-							//Ortho (User Input)
-							/*
-							rule = getRulesFromList(rules, Constants.RULE_ID_45);
-							dtoRL = rb.Rule45(tList,ansL ,messageSource, rule, bw);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_45,
-									Constants.rule_log_debug, bw);
-								
-							//END Ortho (User Input)
-                            */
-							//Pre-Authorization (User Input)
-							rule = getRulesFromList(rules, Constants.RULE_ID_46);
-							dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tListReduced,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_46,
-									Constants.rule_log_debug, bw);
-								
-							//END Pre-Authorization (User Input)
-							
-							//Provider Change (User Input)
-							rule = getRulesFromList(rules, Constants.RULE_ID_47);
-							dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tListReduced,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_47,
-									Constants.rule_log_debug, bw);
-								
-							//END Provider Change (User Input)
-							
-							//Exam limitation for CHIP
-							rule = getRulesFromList(rules, Constants.RULE_ID_48);
-							dtoRL = rb.Rule48(ivfMap.get(ivx).get(0),tListReduced ,messageSource, rule, bw,type);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_48,
-									Constants.rule_log_debug, bw);
-								
-							//END Exam limitation for CHIP
-							
-							//Sealant limitation in CHIP
-							rule = getRulesFromList(rules, Constants.RULE_ID_49);
-							dtoRL = rb.Rule49(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw, type);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_49,
-									Constants.rule_log_debug, bw);
-								
-							//END Sealant limitation in CHIP
-							
-							// Major Service Form Requirements (User Input)
-							rule = getRulesFromList(rules, Constants.RULE_ID_50);
-							dtoRL = rb.Rule50(tList,mappings,ansL ,messageSource, rule, bw,qhList);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_50,
-									Constants.rule_log_debug, bw);
-								
-							//END  Major Service Form Requirements (User Input)
-							
-							// FMX/Pano Rule
-							
-							rule = getRulesFromList(rules, Constants.RULE_ID_54);
-							dtoRL = rb.Rule54(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_54,
-									Constants.rule_log_debug, bw);
-							
-							//END FMX/Pano Rule
-							
-							// Perio Depth Checker
-							rule = getRulesFromList(rules, Constants.RULE_ID_55);
-							dtoRL = rb.Rule55(tList,ansL ,messageSource, rule, bw);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_55,
-									Constants.rule_log_debug, bw);
-								
-							//END Perio Depth Checker
-							
-							// Exception Rule 
-							
-							rule = getRulesFromList(rules, Constants.RULE_ID_56);
-							dtoRL = rb.Rule56(tList,ivfMap.get(ivx).get(0),exceptionData ,messageSource, rule, bw);
-							if (dtoRL != null) {
-								list.addAll(dtoRL);
-								for (TPValidationResponseDto t : dtoRL) {
-									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-								}
-							}
-							
-							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_56,
-									Constants.rule_log_debug, bw);
-							
-							//END Exception Rule 
+							if ( ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()==Constants.IV_ORAL_SURGERY_FORM_NAME_ID)
+							validdateRulesTPOS(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
+									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
+									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData);
+							else validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
+									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
+									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData);
+							*/		  
+							validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
+									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
+									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData);
 						}
 
+						
 					} else {
 						rule = getRulesFromList(rules, Constants.RULE_ID_2);
 						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1863,7 +894,1125 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		return returnMap;
 	}
 
-	@Override
+  private void validdateRulesTPGeneral(Map<String, List<EagleSoftPatient>> espatients,
+		  List<Rules> rules,Rules rule,List<TPValidationResponseDto> dtoRL,
+		  String patKey, String ivx, Map<String, List<EagleSoftFeeShedule>> esfeess, List<Object> tListReduced,
+		  Map<String, List<Object>> ivfMap,  Map<String, List<EagleSoftEmployerMaster>> esempmaster,
+		  String empMasterKey,
+		  Map<String, List<Perio>> perios,List<Mappings> mappings,RuleBook rb,List<TPValidationResponseDto> list,TPValidationResponseDto dtoR,TreatmentPlanValidationDto dtod,
+		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
+		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData) {
+	  
+		rule = getRulesFromList(rules, Constants.RULE_ID_4);
+		String feeKey = "-1";
+		if (espatients != null && espatients.get(patKey) != null
+				&& espatients.get(patKey).size() > 0)
+			feeKey = ((EagleSoftPatient) espatients.get(patKey).get(0)).getFeeScheduleId();
+		if (esfeess != null && espatients != null && espatients.get(patKey).size() > 0) {
+			dtoRL = rb.Rule4_B(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
+					esfeess.get(feeKey), espatients.get(patKey), bw,type);
+		} else {
+			if (esfeess == null)
+				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+						Constants.FAIL,"","",""));
+			else if (espatients == null)
+				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
+						.getMessage("rule.patient.notfound", new Object[] { "Patient ID-"
+								+ ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getPatientId() },
+								locale),
+						Constants.FAIL,"","",""));
+			else
+				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.patient.notfound",
+								new Object[] { "Some Issue in Fee Sheet" }, locale),
+						Constants.FAIL,"","",""));
+
+		}
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_4,
+				Constants.rule_log_debug, bw);
+
+		// END
+
+		// RULE_ID_5 "Remaining Deductible, Remaining Balance and Benefit Max as per IV
+		// form"
+		if (type==Constants.userType_TR) {
+		rule = getRulesFromList(rules, Constants.RULE_ID_5);
+		dtoRL = new ArrayList<>();
+		if (espatients != null) {
+			dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),
+					bw,type,dtod.getInsType());
+			if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+			}
+		} else {
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.patient.notfound", new Object[] { "" }, locale),
+					Constants.FAIL,"","",""));
+
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_5,
+				Constants.rule_log_debug, bw);
+		// END Remaining Deductible, Remaining Balance and Benefit Max as per IV
+	    }
+		// RULE_ID_6 "Percentage Coverage Check"
+		rule = getRulesFromList(rules, Constants.RULE_ID_6);
+
+		dtoRL = new ArrayList<>();
+		if (espatients != null && esempmaster != null) {
+			dtoRL = rb.Rule6(ivfMap.get(ivx).get(0), messageSource, rule,
+					esempmaster.get(empMasterKey), espatients.get(patKey), bw, type);
+			if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+			}
+		} else if (espatients == null) {
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.patient.notfound", new Object[] { "" }, locale),
+					Constants.FAIL,"","",""));
+			list.addAll(dtoRL);
+
+		} else {
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
+					.getMessage("rule.employer.notfound", new Object[] { empMasterKey }, locale),
+					Constants.FAIL,"","",""));
+			list.addAll(dtoRL);
+
+		}
+
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_6,
+				Constants.rule_log_debug, bw);
+		// END "Percentage Coverage Check"
+
+		// RULE_ID_7 "Alert
+		if (type==Constants.userType_TR) {
+		rule = getRulesFromList(rules, Constants.RULE_ID_7);
+		dtoRL = rb.Rule7(ivfMap.get(ivx).get(0),tListReduced,esempmaster,empMasterKey, messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_7,
+				Constants.rule_log_debug, bw);
+
+		// END Alert
+	    }
+		// RULE_ID_19 Downgrading
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_19);
+		dtoRL = new ArrayList<>();
+		if (esfeess != null && espatients != null) {
+			dtoRL = rb.Rule19(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
+					esfeess.get(feeKey), espatients.get(patKey), bw,type);
+
+			if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+			}
+
+		} else {
+
+			RuleEngineLogger.generateLogs(clazz, Constants.RULE_ID_19 + "-rule.fee.notfound ",
+					Constants.rule_log_debug, bw);
+
+			if (esfeess == null)
+				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+						Constants.FAIL,"","",""));
+			if (espatients == null)
+				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.patient.notfound",
+								new Object[] { new Object[] {
+										"Patient ID-" + ((IVFTableSheet) (ivfMap.get(ivx).get(0)))
+												.getPatientId() } },
+								locale),
+						Constants.FAIL,"","",""));
+
+			if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_19,
+				Constants.rule_log_debug, bw);
+		// END Downgrading
+
+		// RULE_ID_21 "// Frequency Limitations
+		rule = getRulesFromList(rules, Constants.RULE_ID_21);
+		dtoRL = rb.Rule21(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_21,
+				Constants.rule_log_debug, bw);
+
+		// END Frequency Limitations
+
+		// RULE_ID_57 "// Exam Frequency Limitation
+		rule = getRulesFromList(rules, Constants.RULE_ID_57);
+		dtoRL = rb.Rule57(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_57,
+				Constants.rule_log_debug, bw);
+
+		// END Exam Frequency Limitation
+		
+		// RULE_ID_8 "Age Limits
+		rule = getRulesFromList(rules, Constants.RULE_ID_8);
+		dtoRL = rb.Rule8(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+
+		
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_8,
+				Constants.rule_log_debug, bw);
+
+		// END Age Limits
+
+		// RULE_ID_18 "Missing Tooth Clause
+		rule = getRulesFromList(rules, Constants.RULE_ID_18);
+		dtoRL = rb.Rule18(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_18,
+				Constants.rule_log_debug, bw);
+
+		// END Missing Tooth Clause
+
+		// RULE_ID_17 " Bundling - Fillings
+		rule = getRulesFromList(rules, Constants.RULE_ID_17);
+		if (esfeess!=null)
+		dtoRL = rb.Rule17(tListReduced, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
+		else {
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+					Constants.FAIL,"","",""));
+		}
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_17,
+				Constants.rule_log_debug, bw);
+
+		// END
+
+		// RULE_ID_16 " Bundling - X-Rays
+		rule = getRulesFromList(rules, Constants.RULE_ID_16);
+		dtoRL = rb.Rule16(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_16,
+				Constants.rule_log_debug, bw);
+
+		// END Bundling - X-Rays
+
+		// RULE_ID_15 " SRP Quads Per Day
+		rule = getRulesFromList(rules, Constants.RULE_ID_15);
+		dtoRL = rb.Rule15(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_15,
+				Constants.rule_log_debug, bw);
+
+		// END SRP Quads Per Day
+
+		// RULE_ID_14 "Sealants
+		rule = getRulesFromList(rules, Constants.RULE_ID_14);
+		dtoRL = rb.Rule14(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw, type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_14,
+				Constants.rule_log_debug, bw);
+
+		// END Sealants
+
+		// RULE_ID_9 "Filling Codes based on Tooth No.
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_9);
+		dtoRL = rb.Rule9(tListReduced, messageSource, rule, mappings, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_9,
+				Constants.rule_log_debug, bw);
+
+		// END "Filling Codes based on Tooth No.
+
+		// RULE_ID_10 "Pre Auth
+		rule = getRulesFromList(rules, Constants.RULE_ID_10);
+		dtoRL = rb.Rule10(tListReduced,ansL, messageSource, rule, mappings, bw,qhList,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_10,
+				Constants.rule_log_debug, bw);
+
+		// EN Pre Auth
+
+		// RULE_ID_11 "Waiting Period.
+		rule = getRulesFromList(rules, Constants.RULE_ID_11);
+		dtoRL = rb.Rule11(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_11,
+				Constants.rule_log_debug, bw);
+
+		// END
+
+		// RULE_ID_13 "Build-Ups & Crown Same Day
+		rule = getRulesFromList(rules, Constants.RULE_ID_13);
+		dtoRL = rb.Rule13(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_13,
+				Constants.rule_log_debug, bw);
+
+		// END "Build-Ups & Crown Same Day
+
+		// RULE_ID_22 "CRA
+		rule = getRulesFromList(rules, Constants.RULE_ID_22);
+		dtoRL = rb.Rule22(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_22,
+				Constants.rule_log_debug, bw);
+
+		// END "CRA
+
+		// RULE_ID_23 "Xray Bundling
+		rule = getRulesFromList(rules, Constants.RULE_ID_23);
+		dtoRL = rb.Rule23(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_23,
+				Constants.rule_log_debug, bw);
+
+		// END "Xray Bundling
+
+		//  Filling Bundling 
+		rule = getRulesFromList(rules, Constants.RULE_ID_24);
+		if (esfeess!=null)
+		dtoRL = rb.Rule24(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
+		else {
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+					Constants.FAIL,"","",""));
+		}
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_24,
+				Constants.rule_log_debug, bw);
+
+		// END  Filling Bundling
+     /*NOW USED NOW							
+		// DQ Fillings (Provider Same)
+		rule = getRulesFromList(rules, Constants.RULE_ID_51);
+		dtoRL = rb.Rule51(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_51,
+				Constants.rule_log_debug, bw);
+			
+		//END  DQ Fillings (Provider Same)
+		// DQ Fillings (Provider Different)
+		rule = getRulesFromList(rules, Constants.RULE_ID_52);
+		dtoRL = rb.Rule52(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_52,
+				Constants.rule_log_debug, bw);
+			
+		//END  DQ Fillings (Provider Different)
+      */
+		// DQ Fillings
+		rule = getRulesFromList(rules, Constants.RULE_ID_53);
+		if (esfeess!=null)
+		dtoRL = rb.Rule53(tListReduced, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
+		else {
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+					Constants.FAIL,"","",""));
+		}
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_53,
+				Constants.rule_log_debug, bw);
+			
+		//END  DQ Fillings
+       //
+		//  Crown Bundling with Fillings 
+		rule = getRulesFromList(rules, Constants.RULE_ID_25);
+		if (esfeess!=null)
+		dtoRL = rb.Rule25(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule,esfeess.get(feeKey), bw,type);
+		else {
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+					Constants.FAIL,"","",""));
+		}
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_25,
+				Constants.rule_log_debug, bw);
+
+		// END  Crown Bundling with Fillings
+		
+		//  Filling and Sealant Not Covered
+		rule = getRulesFromList(rules, Constants.RULE_ID_26);
+		dtoRL = rb.Rule26(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_26,
+				Constants.rule_log_debug, bw);
+
+		// END  Filling and Sealant Not Covered
+
+		//  Sealant Not Covered
+		rule = getRulesFromList(rules, Constants.RULE_ID_27);
+		dtoRL = rb.Rule27(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_27,
+				Constants.rule_log_debug, bw);
+
+		// END  Sealant Not Covered
+		
+		//  Restoration Not Covered
+		rule = getRulesFromList(rules, Constants.RULE_ID_28);
+		dtoRL = rb.Rule28(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_28,
+				Constants.rule_log_debug, bw);
+
+		// END  Restoration Not Covered
+
+		//  Exams Limitation
+		rule = getRulesFromList(rules, Constants.RULE_ID_29);
+		dtoRL = rb.Rule29(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw, type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_29,
+				Constants.rule_log_debug, bw);
+
+		// END  Exams Limitation
+		
+		//  Cleaning Limitation
+		rule = getRulesFromList(rules, Constants.RULE_ID_30);
+		dtoRL = rb.Rule30(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_30,
+				Constants.rule_log_debug, bw);
+
+		// END  Cleaning Limitation
+
+		//  Perio Maintainance Clause
+		rule = getRulesFromList(rules, Constants.RULE_ID_31);
+		dtoRL = rb.Rule31(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_31,
+				Constants.rule_log_debug, bw);
+
+		// END  Perio Maintainance Clause
+		
+		//  SRP Limitation
+		rule = getRulesFromList(rules, Constants.RULE_ID_32);
+		dtoRL = rb.Rule32(tListReduced,messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_32,
+				Constants.rule_log_debug, bw);
+
+		// END  SRP Limitation
+
+		//  Root Canal Clause
+		rule = getRulesFromList(rules, Constants.RULE_ID_33);
+		dtoRL = rb.Rule33(tListReduced,messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_33,
+				Constants.rule_log_debug, bw);
+
+		// END  Root Canal Clause
+
+		//  D2954 Clause
+		rule = getRulesFromList(rules, Constants.RULE_ID_34);
+		dtoRL = rb.Rule34(tListReduced,messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_34,
+				Constants.rule_log_debug, bw);
+
+		// END  D2954 Clause
+
+		//  Bone Graft Rule
+		rule = getRulesFromList(rules, Constants.RULE_ID_35);
+		dtoRL = rb.Rule35(tListReduced,messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_35,
+				Constants.rule_log_debug, bw);
+
+		// END  Bone Graft Rule
+
+		//  Immediate Denture
+		rule = getRulesFromList(rules, Constants.RULE_ID_36);
+		dtoRL = rb.Rule36(tListReduced,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_36,
+				Constants.rule_log_debug, bw);
+
+		// END  Immediate Denture
+
+		//  Extraction Limitation
+		rule = getRulesFromList(rules, Constants.RULE_ID_37);
+		dtoRL = rb.Rule37(tListReduced,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_37,
+				Constants.rule_log_debug, bw);
+
+		// END  Extraction Limitation
+
+		// Medicaid Provider Limitation for D0150,D0210,D0330
+		rule = getRulesFromList(rules, Constants.RULE_ID_38);
+		if (espatientsHis != null && espatientsHis.get(patKey) != null
+				&& espatientsHis.get(patKey).size() > 0) {
+			dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tListReduced ,espatientsHis.get(patKey),messageSource, rule, bw,type);
+
+			
+		   	
+		}else {
+			dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tListReduced ,null,messageSource, rule, bw,type);
+			
+		}
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_38,
+				Constants.rule_log_debug, bw);
+			
+		//END Medicaid Provider Limitation for D0150,D0210,D0330
+		
+		//Age Limitation Prophylaxis
+		rule = getRulesFromList(rules, Constants.RULE_ID_39);
+		dtoRL = rb.Rule39(ivfMap.get(ivx).get(0),tListReduced ,messageSource, rule, bw,type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_39,
+				Constants.rule_log_debug, bw);
+			
+		//END Age Limitation Prophylaxis
+		
+		//Space Maintainer-Billateral
+		rule = getRulesFromList(rules, Constants.RULE_ID_40);
+		dtoRL = rb.Rule40(tListReduced ,messageSource, rule, bw, type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_40,
+				Constants.rule_log_debug, bw);
+			
+		//END Space Maintainer-Billateral
+
+		//MVP VAP
+		if (type==Constants.userType_TR){
+		rule = getRulesFromList(rules, Constants.RULE_ID_41);
+		dtoRL = rb.Rule41(tListReduced,mvpVapList ,messageSource, rule, bw);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_41,
+				Constants.rule_log_debug, bw);
+		}	
+		//END MVP VAP
+
+		//Duplicate TP Codes
+		rule = getRulesFromList(rules, Constants.RULE_ID_42);
+		dtoRL = rb.Rule42(tListReduced ,messageSource, rule, bw,type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_42,
+				Constants.rule_log_debug, bw);
+			
+		//END Duplicate TP Codes
+
+		//Bone Graft (User Input)
+		/*
+		rule = getRulesFromList(rules, Constants.RULE_ID_43);
+		dtoRL = rb.Rule43(tList,ansL ,messageSource, rule, bw);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_43,
+				Constants.rule_log_debug, bw);
+			
+		//END Bone Graft (User Input)
+		*/
+		//Signed Consent Requirements (User Input) //Forms Required
+		rule = getRulesFromList(rules, Constants.RULE_ID_44);
+		dtoRL = rb.Rule44(ansL ,messageSource, rule, bw,qhList,type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_44,
+				Constants.rule_log_debug, bw);
+			
+		//END Signed Consent Requirements (User Input) //Forms Required
+		
+		//Ortho (User Input)
+		/*
+		rule = getRulesFromList(rules, Constants.RULE_ID_45);
+		dtoRL = rb.Rule45(tList,ansL ,messageSource, rule, bw);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_45,
+				Constants.rule_log_debug, bw);
+			
+		//END Ortho (User Input)
+      */
+		//Pre-Authorization (User Input)
+		rule = getRulesFromList(rules, Constants.RULE_ID_46);
+		dtoRL = rb.Rule46(ivfMap.get(ivx).get(0),tListReduced,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_46,
+				Constants.rule_log_debug, bw);
+			
+		//END Pre-Authorization (User Input)
+		
+		//Provider Change (User Input)
+		rule = getRulesFromList(rules, Constants.RULE_ID_47);
+		dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tListReduced,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_47,
+				Constants.rule_log_debug, bw);
+			
+		//END Provider Change (User Input)
+		
+		//Exam limitation for CHIP
+		rule = getRulesFromList(rules, Constants.RULE_ID_48);
+		dtoRL = rb.Rule48(ivfMap.get(ivx).get(0),tListReduced ,messageSource, rule, bw,type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_48,
+				Constants.rule_log_debug, bw);
+			
+		//END Exam limitation for CHIP
+		
+		//Sealant limitation in CHIP
+		rule = getRulesFromList(rules, Constants.RULE_ID_49);
+		dtoRL = rb.Rule49(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw, type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_49,
+				Constants.rule_log_debug, bw);
+			
+		//END Sealant limitation in CHIP
+		
+		// Major Service Form Requirements (User Input)
+		rule = getRulesFromList(rules, Constants.RULE_ID_50);
+		dtoRL = rb.Rule50(tList,mappings,ansL ,messageSource, rule, bw,qhList);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_50,
+				Constants.rule_log_debug, bw);
+			
+		//END  Major Service Form Requirements (User Input)
+		
+		// FMX/Pano Rule
+		
+		rule = getRulesFromList(rules, Constants.RULE_ID_54);
+		dtoRL = rb.Rule54(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_54,
+				Constants.rule_log_debug, bw);
+		
+		//END FMX/Pano Rule
+		
+		// Perio Depth Checker
+		rule = getRulesFromList(rules, Constants.RULE_ID_55);
+		dtoRL = rb.Rule55(tList,ansL,perios,patKey ,messageSource, rule, bw);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_55,
+				Constants.rule_log_debug, bw);
+			
+		//END Perio Depth Checker
+		
+		// Exception Rule 
+		
+		rule = getRulesFromList(rules, Constants.RULE_ID_56);
+		dtoRL = rb.Rule56(tList,ivfMap.get(ivx).get(0),exceptionData ,messageSource, rule, bw);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_56,
+				Constants.rule_log_debug, bw);
+		
+		//END Exception Rule 
+		
+		// RULE_ID_58 "// Exam Frequency Limitation (D0145)
+		rule = getRulesFromList(rules, Constants.RULE_ID_58);
+		dtoRL = rb.Rule58(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_58,
+				Constants.rule_log_debug, bw);
+
+		// END Exam Frequency Limitation (D0145)
+		
+		// RULE_ID_59 "// BWX Age Limitation
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_59);
+		dtoRL = rb.Rule59(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_59,
+				Constants.rule_log_debug, bw);
+
+		// END BWX Age Limitation
+		
+		// RULE_ID_60 "// Exams Age Limitation
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_60);
+		dtoRL = rb.Rule60(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_60,
+				Constants.rule_log_debug, bw);
+
+		// END Exams Age Limitation
+
+  }
+	
+  private void validdateRulesTPOS(Map<String, List<EagleSoftPatient>> espatients,
+		  List<Rules> rules,Rules rule,List<TPValidationResponseDto> dtoRL,
+		  String patKey, String ivx, Map<String, List<EagleSoftFeeShedule>> esfeess, List<Object> tListReduced,
+		  Map<String, List<Object>> ivfMap,  Map<String, List<EagleSoftEmployerMaster>> esempmaster,
+		  String empMasterKey,
+		  Map<String, List<Perio>> perios,List<Mappings> mappings,RuleBook rb,List<TPValidationResponseDto> list,TPValidationResponseDto dtoR,TreatmentPlanValidationDto dtod,
+		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
+		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData) {
+	  
+		String feeKey = "-1";
+		if (espatients != null && espatients.get(patKey) != null
+				&& espatients.get(patKey).size() > 0)
+			feeKey = ((EagleSoftPatient) espatients.get(patKey).get(0)).getFeeScheduleId();
+
+		
+
+		// RULE_ID_6 "Percentage Coverage Check"
+		rule = getRulesFromList(rules, Constants.RULE_ID_6);
+
+		dtoRL = new ArrayList<>();
+		if (espatients != null && esempmaster != null) {
+			dtoRL = rb.Rule6(ivfMap.get(ivx).get(0), messageSource, rule,
+					esempmaster.get(empMasterKey), espatients.get(patKey), bw, type);
+			if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+			}
+		} else if (espatients == null) {
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.patient.notfound", new Object[] { "" }, locale),
+					Constants.FAIL,"","",""));
+			list.addAll(dtoRL);
+
+		} else {
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
+					.getMessage("rule.employer.notfound", new Object[] { empMasterKey }, locale),
+					Constants.FAIL,"","",""));
+			list.addAll(dtoRL);
+
+		}
+
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_6,
+				Constants.rule_log_debug, bw);
+		// END "Percentage Coverage Check"
+
+
+  }
+
+  @Override
 	public Map<String, List<TPValidationResponseDto>> saveDisplayUserInputsOnly(TreatmentPlanValidationDto dtod) {
 		dbAccesService.setUpSSLCertificates();
 		Map<String, List<TPValidationResponseDto>> returnMap = null;
@@ -2295,7 +2444,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//String[] p=env.getActiveProfiles();
 		//int xx=0;
 		//if (xx==0) return ;
-		
+		/*
+		System.out.println("-----saveReportsList---");
+		System.out.println(tp.getId());
+		System.out.println(list);
+		for (TPValidationResponseDto d : list) {
+			System.out.println(d.getMessage());
+		}
+		System.out.println("-----saveReportsList END---");
+		*/
 		if (SAVE_REPORT_DATA.equalsIgnoreCase("false")) return;//Not need for report in Dev env.
 		//if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
 		try {

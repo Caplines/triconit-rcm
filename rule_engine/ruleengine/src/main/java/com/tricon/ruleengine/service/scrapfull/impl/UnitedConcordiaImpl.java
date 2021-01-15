@@ -558,21 +558,25 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setPlanAssignmentofBenefits(fetchCordinationBenefit("Coordination and Other Benefits", driver,
 				"Assignment Of Benefits", true, true, false));// 131 mand
 
+		 Map<String, List<UnitedConLimitationDto>> map= fetchBenefitByProcedureMap("Restorations", driver, new String[] {benefitProcCopy, benefitProAppliedtoded, benefitProcCopy, 
+				                   benefitProcLimitation,benefitProcLimitationSentenceAlternateBenefitProvision});
+		 
 		dtemp.setBasicPercentage(fetchBenefitByProcedure("Restorations", new String[] { "D2391", "D2392", "D2393" },
-				driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 5
+				driver, benefitProcCopy,  false, false, temp.getGradePay(),map));// 5
 		
 		dtemp.setBasicSubjectDeductible(fetchBenefitByProcedure("Restorations", null, driver, benefitProAppliedtoded,
-				false, true, false, temp.getGradePay()));// 6
+				 true, false, temp.getGradePay(),map));// 6
 		
 		dtemp.setPostCompositesD2391Percentage(fetchBenefitByProcedure("Restorations", new String[] {"D2391"}, driver, benefitProcCopy,
-				false, true, true, temp.getGradePay()));// 78
+				 true, true, temp.getGradePay(),map));// 78
 		
 		dtemp.setPostCompositesD2391FL(fetchBenefitByProcedure("Restorations", new String[] {"D2391"}, driver, benefitProcLimitation,
-				false, true, true, temp.getGradePay()));// 79
+				 true, true, temp.getGradePay(),map));// 79
 		
 		dtemp.setPosteriorCompositesD2391Downgrade(fetchBenefitByProcedure("Restorations", new String[] {"D2391"}, driver, benefitProcLimitationSentenceAlternateBenefitProvision,
-				false, true, true, temp.getGradePay()));// 80
+				 true, true, temp.getGradePay(),map));// 80
 
+		/*
 		dtemp.setMajorPercentage(fetchBenefitByProcedure("Dentures, Denture Adjustments, Denture Repairs, Relining",
 				null, driver, benefitProcCopy, false, false, false, temp.getGradePay()));// 7
 
@@ -833,7 +837,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		
 		dtemp.setBridges2(fetchBenefitByProcedure("Fixed Prosthetics & Fixed Partial Denture Retainers",
 				new String[] {"D6245","D6740"}, driver, benefitProcCopy, false, true, true, temp.getGradePay()));// 103  ask puneet
-		
+		*/
 		
 		
 		
@@ -1016,7 +1020,325 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		return value;
 	}
 
+	private Map<String, List<UnitedConLimitationDto>> fetchBenefitByProcedureMap(String name, WebDriver driver,String[] types
+			 ) throws InterruptedException {
+		System.out.println("fetchBenefitByProcedure-" + name);
+
+		Map<String, List<UnitedConLimitationDto>> dataMap = new HashMap<>();
+		// WebElement togggle = null;
+		//Thread.sleep(3000);
+		try {
+				WebElement servicesGroup= driver.findElement(By.id("servicesGroup"));
+				WebElement formElement = servicesGroup.findElements(By.tagName("form")).get(1);
+				//System.out.println("6");
+				List<WebElement> maintables = formElement.findElements(By.tagName("table"));
+				//System.out.println("7");
+				for (WebElement maintable : maintables) {
+					if (maintable.getText() != null && maintable.getText().startsWith(name)) {
+						//System.out.println("8");
+						maintable.findElements(By.tagName("span")).get(0).click();
+						//System.out.println("9");
+						Thread.sleep(3000);
+						break;
+					}
+				}
+			
+			//System.out.println("10");
+			servicesGroup= driver.findElement(By.id("servicesGroup"));
+			formElement = servicesGroup.findElements(By.tagName("form")).get(1);
+			//System.out.println("11");
+			maintables = formElement.findElements(By.tagName("table"));
+			//System.out.println("12");
+			//Thread.sleep(1000);
+			for (WebElement maintable : maintables) {
+				if (maintable.getAttribute("id") != null
+						&& maintable.getAttribute("id").equals("benefitDetailAllServiceProceduresList")
+						&& !maintable.getAttribute("class").contains(" hidden")) {
+
+						Thread.sleep(3000);
+					//System.out.println("13");
+					List<WebElement> trs = maintable.findElements(By.tagName("tr"));
+					trs.remove(0);// remove th row
+					for (WebElement tr : trs) {
+						//System.out.println("14");
+						String code = tr.findElements(By.tagName("td")).get(0).getText().trim();// code
+						//System.out.println("CODE-"+code);
+						
+							
+						//}
+						try {
+							//System.out.println("15");
+							UnitedConLimitationDto dto = new UnitedConLimitationDto();
+							// String vm="";
+							if (tr.findElements(By.tagName("td")).get(2).getText().equals("Not Covered")) {
+								dto.setCopay(0);//may change when testing happens
+								dto.setLimitation("Not Covered");
+								dto.setAppliedtoDed("");
+								if (dataMap.get(code) == null) {
+									List<UnitedConLimitationDto> li = new ArrayList<>();
+									li.add(dto);
+									dataMap.put(code, li);
+								} else {
+									List<UnitedConLimitationDto> li = dataMap.get(code);
+									li.add(dto);
+									dataMap.put(code, li);
+
+								}
+
+								continue;
+							}
+							for(String type:types) {
+							if (benefitProcCopy.equals(type)) {
+								//System.out.println("16");
+								try {
+									dto.setCopay(Integer.parseInt(tr.findElements(By.tagName("td")).get(4).getText()
+											.trim().replace("%", "")));// Co Pay
+									// System.out.println("COPAY-"+dto.getCopay());
+								} catch (Exception p) {
+									continue;
+								}
+							}
+							if (benefitProAppliedtoded.equals(type)) {
+								//System.out.println("17");
+								try {
+									dto.setAppliedtoDed(tr.findElements(By.tagName("td")).get(6).getText().trim());// Applied
+																													// to
+																													// Deductible
+									// System.out.println("setAppliedtoDed-"+dto.getAppliedtoDed());
+								} catch (Exception p) {
+									continue;
+								}
+							}
+
+							String limitation = tr.findElements(By.tagName("td")).get(5).getText().trim()
+									.replace(" | More...", "").trim();// limitation
+							// System.out.println("limitation-"+limitation);
+							dto.setLimitation(limitation);
+							if (dataMap.get(code) == null) {
+								List<UnitedConLimitationDto> li = new ArrayList<>();
+								li.add(dto);
+								dataMap.put(code, li);
+							} else {
+								List<UnitedConLimitationDto> li = dataMap.get(code);
+								li.add(dto);
+								dataMap.put(code, li);
+
+							 }
+							}
+
+						} catch (Exception n) {
+							n.printStackTrace();
+							UnitedConLimitationDto dto = new UnitedConLimitationDto();
+							dto.setCopay(-1);
+							List<UnitedConLimitationDto> li = new ArrayList<>();
+							li.add(dto);
+							dataMap.put(code, li);
+						}
+					}
+
+					break;
+				}
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		return dataMap;
+	   }	
+
 	private String fetchBenefitByProcedure(String name, String[] codes, WebDriver driver, String type,
+				boolean mandatory, boolean findInCodesOnly, String gradePay,Map<String, List<UnitedConLimitationDto>> dataMap) {
+			int coPay = -1;
+			String limit = "-1";
+			boolean found = false;
+			String value = Constants.SCRAPPING_NOT_FOUND;
+			if (mandatory)
+				value = value + ". " + Constants.SCRAPPING_MANDATORY_WARNING;
+			else
+				value = "";
+			System.out.println("SIZE----"+dataMap.size());
+			try {
+			for (Map.Entry<String, List<UnitedConLimitationDto>> entry : dataMap.entrySet()) {
+				// List<UnitedConLimitationDto> li=entry.getValue();
+               
+                
+				if (benefitProAppliedtoded.equals(type)) {
+					for (UnitedConLimitationDto dto : entry.getValue()) {
+						if (dto.getAppliedtoDed().equalsIgnoreCase("yes")) {
+							value = "Yes";
+							found = true;
+							break;
+						}
+
+					}
+				}
+				
+				
+				if (benefitProAppliedtoded.equals(type) && found) {
+					break;
+				}
+				if (benefitProcCopy.equals(type) || benefitProcLimitation.equals(type) || benefitProcLimitationSentence.equals(type)
+						|| benefitProcLimitationSentencePermanentMolar.equals(type) || benefitProcLimitationSentencePrimayMolar.equals(type)
+						|| benefitProcLimitationSentenceCombinationRoutine.equals(type) || benefitProcLimitationSentenceAlternateBenefitProvision.equals(type)) {
+					if (codes != null) {
+						for (String cd : codes) {
+							// System.out.println("KEY--"+entry.getKey()+"-");
+							// System.out.println("cd--"+cd+"-");
+
+							if (entry.getKey().equals(cd)) {
+								int size = entry.getValue().size();
+								boolean checkForGrade = false;// multiple records are not
+								if (size > 1)
+									checkForGrade = true;
+								for (UnitedConLimitationDto dto : entry.getValue()) {
+
+									if (checkForGrade && !gradePay.equals("")
+											&& gradePay.contains(dto.getLimitation())) {
+										found = true;
+										coPay = dto.getCopay();
+										limit=dto.getLimitation();
+										System.out.println("CODE 1-" + entry.getKey());
+										break;
+									} else if (gradePay.equals("")) {
+										found = true;
+										coPay = dto.getCopay();
+										limit=dto.getLimitation();
+										System.out.println("CODE-2 -" + entry.getKey());
+										break;
+									} else if (!checkForGrade) {
+										found = true;
+										coPay = dto.getCopay();
+										limit=dto.getLimitation();
+										System.out.println("CODE- 3-" + entry.getKey());
+										break;
+									}
+
+								}
+							}
+						}
+					} // codes!= null
+					//if (codes==null) {
+					if (!found && !findInCodesOnly) {
+						for (UnitedConLimitationDto dto : entry.getValue()) {
+							// System.out.println("cccc-"+dto.getCopay());
+							// System.out.println("cccc-"+entry.getKey());
+							//limit=dto.getLimitation();
+							if (!gradePay.equals("") && gradePay.contains(dto.getLimitation())) {
+								if (coPay < dto.getCopay()) {
+									coPay = dto.getCopay();
+									System.out.println("CODE 4 -" + entry.getKey());
+								}
+							} else if (gradePay.equals("")) {
+								if (coPay < dto.getCopay()) {
+									coPay = dto.getCopay();
+									System.out.println("CODE 5 -" + entry.getKey());
+								}
+							}
+
+						}
+					}
+					//}
+					if (benefitProcCopy.equals(type) && found) {
+						break;
+					}
+					if (benefitProcLimitation.equals(type) && found) {
+						break;
+					}
+					if (benefitProcLimitationSentence.equals(type) && found) {
+						break;
+					}
+
+				} // co pay
+			}
+			if (benefitProcCopy.equals(type)) {
+				if (coPay == -1)
+					value = "";
+				else
+					value = coPay + "";
+			}
+			if (benefitProcLimitation.equals(type)) {
+				if (limit.equals("-1"))
+					value = "";
+				else {
+					
+					//value =FreqencyUtils.convertFrequecyUCCIString(limit);
+					value = limit + "";
+				}
+			}
+			if (benefitProcLimitationSentence.equals(type)) {
+				if (limit.equals("-1"))
+					value = "99";
+				else {
+					if (limit.contains("Under") && limit.contains("Years Of Age")) {
+						value =limit.split("Under")[1].split("Years Of Age")[0].trim();
+					    /*try {
+					    	Integer.parseInt(value);
+					    }catch(Exception p) {
+					    	value="99";
+					    }*/
+						//value="14";//Under 14 Years Of Age
+					}
+					
+					else value = "99";
+				}
+			}
+			if (benefitProcLimitationSentenceCombinationRoutine.equals(type)) {
+				if (limit.equals("-1"))
+					value = "No";
+				else {
+					if (limit.contains("In Combination with Routine Cleanings")) value="Yes";
+					else value = "No";
+				}
+			}
+			if (benefitProcLimitationSentenceAlternateBenefitProvision.equals(type)) {
+				if (limit.equals("-1"))
+					value = "No";
+				else {
+					if (limit.contains("Alternate Benefit Provision")) value="Yes";
+					else value = "No";
+				}
+			}
+			if (benefitProcLimitationSentencePermanentMolar.equals(type)) {
+				if (limit.equals("-1"))
+					value = "No";
+				else {
+					if (limit.contains("Permanent") && limit.contains("Molars")) value="Yes";
+					else value = "No";
+				}
+			}
+			if (benefitProcLimitationSentencePrimayMolar.equals(type)) {
+				if (limit.equals("-1"))
+					value = "No";
+				else {
+					if (limit.contains("Primary") && limit.contains("Molars")) value="Yes";
+					else value = "No";
+				}
+			}
+			if (benefitProAppliedtoded.equals(type)) {
+				if (value.equals("") || mandatory)
+					value = "No";
+
+			}
+			
+			
+			if (findInCodesOnly) {
+				/*
+				 * formElement = driver.findElement(By.id("j_id_jm")); maintables =
+				 * formElement.findElements(By.tagName("table")); for (WebElement maintable :
+				 * maintables) { if (maintable.getText() != null &&
+				 * maintable.getText().startsWith(name)) {
+				 * maintable.findElements(By.tagName("span")).get(0).click();
+				 * Thread.sleep(1000); break; } }
+				 */
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return value + " " + Constants.SCRAPPING_ISSUE_FETCHING;
+		}
+		System.out.println("value--" + value);
+		return value;
+	}
+
+	private String fetchBenefitByProcedureOld(String name, String[] codes, WebDriver driver, String type,
 			boolean mandatory, boolean subsectionOPen, boolean findInCodesOnly, String gradePay) throws InterruptedException {
 		System.out.println("fetchBenefitByProcedure-" + name);
 
@@ -1057,9 +1379,9 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 						&& maintable.getAttribute("id").equals("benefitDetailAllServiceProceduresList")
 						&& !maintable.getAttribute("class").contains(" hidden")) {
 
-					if (!subsectionOPen) {//IF any issue Remove this condition and directly put Thread Sleep.
+					//if (!subsectionOPen) {//IF any issue Remove this condition and directly put Thread Sleep.
 						Thread.sleep(3000);
-					}
+					//}
 					//System.out.println("13");
 					List<WebElement> trs = maintable.findElements(By.tagName("tr"));
 					trs.remove(0);// remove th row

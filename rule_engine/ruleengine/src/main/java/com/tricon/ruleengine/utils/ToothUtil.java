@@ -429,11 +429,53 @@ public class ToothUtil {
 
 	}
 
-    public static void main(String a []) {
+    //For rule Perio Depth
+	public static boolean getToothPerioDepth(String depth1,String depth2,String depth3,String depth4,
+			String depth5,String depth6,String depth7,String depth8, BufferedWriter bw) {
+		boolean checkDepth=false;
+		if (bw!=null) {RuleEngineLogger.generateLogs(clazz,
+				" tooth depth-" + depth1+"-"+depth2+"-"+"-"+depth3+"-"+"-"+depth4+"-"+"-"+depth5+"-"+"-"+depth6+"-"+"-"+depth7+"-"+"-"+depth8,
+				Constants.rule_log_debug, bw);
+		  }
+		try {
+		if (depth1!=null && !depth1.equals("")) {
+			if (checkDepth5(depth1,bw) || checkDepth5(depth2,bw) || checkDepth5(depth3,bw) || checkDepth5(depth4,bw) ||
+				checkDepth5(depth5,bw) || checkDepth5(depth6,bw) || checkDepth5(depth7,bw) || checkDepth5(depth8,bw)) {
+				checkDepth=true;	
+			}
+		}
+		}catch(Exception n) {
+			if (bw!=null)RuleEngineLogger.generateLogs(clazz,
+					" tooth depth issue -" ,
+					Constants.rule_log_debug, bw);
+		}
+		return checkDepth;
+
+	}
+	
+	//For rule Perio Depth
+	private static  boolean checkDepth5(String depth,BufferedWriter bw ) {
+		String[] ds=depth.split(",");
+		boolean checkDepth=false;
+		try {
+		for(String d:ds) {
+			if (Integer.parseInt(d)>4) {
+				checkDepth=true;
+			} 
+		}
+		}catch (Exception e) {
+			if (bw!=null)RuleEngineLogger.generateLogs(clazz,
+					" tooth depth issue -" ,
+					Constants.rule_log_debug, bw);
+		}
+		return checkDepth;
+	}
+
+	public static void main(String a []) {
     	String aa ="D3420";
     	System.out.println(commonSurfaceLogic("", "b"));
     	System.out.println(diffSurfaceLogic("","b"));
-    	
+    	System.out.println(getToothPerioDepth("3,4,3,1","1","2","5","","","","",null));
     	
     }
 
