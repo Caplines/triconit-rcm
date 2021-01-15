@@ -109,6 +109,7 @@ dateOptions: DatepickerOptions = {
 							this.scrap.username=result.data.data.userName;
 							this.scrap.password=result.data.data.password;
 							this.scrap.locationProvider=result.data.data.locationProvider;
+							this.scrap.location=result.data.data.location;
 							this.showLoading=false;
 							this.pd=true;
 							if (result.data.data.sid==3) this.lp=true;

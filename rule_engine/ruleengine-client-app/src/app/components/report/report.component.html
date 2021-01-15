@@ -886,9 +886,17 @@
 						<td>CY/FY: <span class="newff">{{reportDataInd.policy6}}</span></td>
 					</tr>
 					<tr>
+						<td>Employer's Name: <span class="newff">{{reportDataInd.basicInfo10}}</span></td>
+						<td>Group Number: <span class="newff">{{reportDataInd.basicInfo14}}</span></td>
+						<td>Insurance Name: <span class="newff">{{reportDataInd.basicInfo3}}</span></td>
+						<td>Insurance Telephone: <span class="newff">{{reportDataInd.basicInfo7}}</span></td>
+						<td>Insurance Address: <span class="newff">{{reportDataInd.basicInfo20}}</span></td>
+					</tr>
+					<tr>
 						<td>Fee Schedule: <span class="newff">{{reportDataInd.policy4}}</span></td>
 						<td>Dependents covered upto age?: <span class="newff">{{reportDataInd.policy11}}</span></td>
 						<td>Coordination of benefits: <span class="newff">{{reportDataInd.corrdOfBenefits}}</span></td>
+						<td>Payor ID: <span class="newff">{{reportDataInd.basicInfo18}}</span></td>
 					</tr>
 					<tr>
 						<td>What is allowable amount for D7210: <span class="newff">{{reportDataInd.whatAmountD7210}}</span></td>
@@ -918,17 +926,31 @@
 				<table class="table table-bordered table-striped">
 					<tr>
 						<td>D7210(%): <span class="newff">{{reportDataInd.d7210}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7210fr}}</span></td>
 						<td>D7220(%): <span class="newff">{{reportDataInd.d7220}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7220fr}}</span></td>
 						<td>D7230(%): <span class="newff">{{reportDataInd.d7230}}</span></td>
-						<td>D7240(%): <span class="newff">{{reportDataInd.d7240}}</span></td>
-						<td>D7250(%): <span class="newff">{{reportDataInd.d7250}}</span></td>
-						<td>D7310(%): <span class="newff">{{reportDataInd.d7310}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7230fr}}</span></td>
 					</tr>
 					<tr>
-						<td>D7311%): <span class="newff">{{reportDataInd.d7311}}</span></td>
+						<td>D7240(%): <span class="newff">{{reportDataInd.d7240}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7240fr}}</span></td>
+						<td>D7250(%): <span class="newff">{{reportDataInd.d7250}}</span></td>
+						<td>Frequency(%): <span class="newff">{{reportDataInd.d7250fr}}</span></td>
+						<td>D7310(%): <span class="newff">{{reportDataInd.d7310}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7310fr}}</span></td>
+					</tr>
+					<tr>
+						<td>D7311(%): <span class="newff">{{reportDataInd.d7311}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7311fr}}</span></td>
 						<td>D7320(%): <span class="newff">{{reportDataInd.d7320}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7320fr}}</span></td>
 						<td>D7321(%): <span class="newff">{{reportDataInd.d7321}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7321fr}}</span></td>
+					</tr>
+					<tr>
 						<td>D7473(%): <span class="newff">{{reportDataInd.d7473}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7473fr}}</span></td>
 					</tr>
 				</table>
 
@@ -938,9 +960,15 @@
 				<table class="table table-bordered table-striped">
 					<tr>
 						<td>D9230(%): <span class="newff">{{reportDataInd.sedations1}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.sedations1fr}}</span></td>
 						<td>D9248(%): <span class="newff">{{reportDataInd.sedations3}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.sedations3fr}}</span></td>
 						<td>D9239(%): <span class="newff">{{reportDataInd.d9239}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d9239fr}}</span></td>
+					</tr>
+					<tr>
 						<td>D9243(%): <span class="newff">{{reportDataInd.sedations2}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.sedations2fr}}</span></td>
 					</tr>
 				</table>
 
@@ -950,9 +978,15 @@
 				<table class="table table-bordered table-striped">
 					<tr>
 						<td>D4263(%): <span class="newff">{{reportDataInd.d4263}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d4263fr}}</span></td>
 						<td>D4264(%): <span class="newff">{{reportDataInd.d4264}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d4264fr}}</span></td>
 						<td>D6104(%): <span class="newff">{{reportDataInd.d6104}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d6104fr}}</span></td>
+					</tr>
+					<tr>
 						<td>D7953(%): <span class="newff">{{reportDataInd.d7953}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7953fr}}</span></td>
 					</tr>
 				</table>
 
@@ -962,11 +996,19 @@
 				<table class="table table-bordered table-striped">
 					<tr>
 						<td>D3310(%): <span class="newff">{{reportDataInd.d3310}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d3310fr}}</span></td>
 						<td>D3320(%): <span class="newff">{{reportDataInd.d3320}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d3320fr}}</span></td>
 						<td>D3330(%): <span class="newff">{{reportDataInd.d3330}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d3330Freq}}</span></td>
+					</tr>
+					<tr>
 						<td>D3346(%): <span class="newff">{{reportDataInd.d3346}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d3346fr}}</span></td>
 						<td>D3347(%): <span class="newff">{{reportDataInd.d3347}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d3347fr}}</span></td>
 						<td>D3348(%): <span class="newff">{{reportDataInd.d3348}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d3348fr}}</span></td>
 					</tr>
 				</table>
 
@@ -976,9 +1018,15 @@
 				<table class="table table-bordered table-striped">
 					<tr>
 						<td>D6010(%): <span class="newff">{{reportDataInd.implants1}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.implants5}}</span></td>
 						<td>D6057(%): <span class="newff">{{reportDataInd.implants2}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.implants6}}</span></td>
 						<td>D6058(%): <span class="newff">{{reportDataInd.d6058}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d6058fr}}</span></td>
+					</tr>
+					<tr>
 						<td>D6190(%): <span class="newff">{{reportDataInd.implants3}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.implants8}}</span></td>
 					</tr>
 				</table>
 
@@ -986,20 +1034,32 @@
 					<p style="text-align: center">Perio:</p>
 				</span>
 				<table class="table table-bordered table-striped">
-					<tr>
+                    <tr>
 						<td>D4249(%): <span class="newff">{{reportDataInd.oral1}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.oral1fr}}</span></td>
 						<td>D7951(%): <span class="newff">{{reportDataInd.d7951}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7951fr}}</span></td>
 						<td>D9310(%): <span class="newff">{{reportDataInd.posterior8}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.posterior9}}</span></td>
+					</tr>
+                    <tr>
 						<td>D4266(%): <span class="newff">{{reportDataInd.d4266}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d4266fr}}</span></td>
 						<td>D4267(%): <span class="newff">{{reportDataInd.d4267}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d4267fr}}</span></td>
 						<td>D4341(%): <span class="newff">{{reportDataInd.perio1}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.perio1fr}}</span></td>
 					</tr>
-					<tr>
+                    <tr>
 						<td>D4273(%): <span class="newff">{{reportDataInd.d4273}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d4273fr}}</span></td>
 						<td>D6065(%): <span class="newff">{{reportDataInd.implants4}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.implants7}}</span></td>
 						<td>D7251(%): <span class="newff">{{reportDataInd.d7251}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d7251fr}}</span></td>
 					</tr>
-				</table>
+                    
+ 				</table>
 
 				<span>
 					<p style="text-align: center">Guidelines for IV Sedation:</p>
