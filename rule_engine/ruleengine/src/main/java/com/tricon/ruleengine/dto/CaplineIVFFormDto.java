@@ -15,6 +15,8 @@ public class CaplineIVFFormDto {
 
 	private String createdDate;
 	private String status;
+	private String gradePay;
+	
 	
 	//password extra layer check
 	private int patDid;
@@ -624,6 +626,28 @@ public class CaplineIVFFormDto {
     private String perio1fr;
     private String d4273fr;
     private String d7251fr;
+	private String d7472;
+    private String d7472fr;
+	private String d7280;
+	private String d7280fr;
+	private String d7282;
+	private String d7282fr;
+	private String d7283;
+	private String d7283fr;
+	private String d7952;
+	private String d7952fr;
+	private String d7285;
+	private String d7285fr;
+	private String d6114;
+	private String d6114fr;
+	private String d5860;
+	private String d5860fr;
+	private String d5110;
+	private String d5110fr;
+	private String d5130;
+	private String d5130fr;
+	private String d0140;
+
 	
     private Integer ivFormTypeId;
 	
@@ -2773,6 +2797,185 @@ public class CaplineIVFFormDto {
 
 	public void setD7251fr(String d7251fr) {
 		this.d7251fr = d7251fr;
+	}
+	
+	
+	
+
+	public String getD7472() {
+		return d7472;
+	}
+
+	public void setD7472(String d7472) {
+		this.d7472 = d7472;
+	}
+
+	public String getD7472fr() {
+		return d7472fr;
+	}
+
+	public void setD7472fr(String d7472fr) {
+		this.d7472fr = d7472fr;
+	}
+
+	public String getD7280() {
+		return d7280;
+	}
+
+	public void setD7280(String d7280) {
+		this.d7280 = d7280;
+	}
+
+	public String getD7280fr() {
+		return d7280fr;
+	}
+
+	public void setD7280fr(String d7280fr) {
+		this.d7280fr = d7280fr;
+	}
+
+	public String getD7282() {
+		return d7282;
+	}
+
+	public void setD7282(String d7282) {
+		this.d7282 = d7282;
+	}
+
+	public String getD7282fr() {
+		return d7282fr;
+	}
+
+	public void setD7282fr(String d7282fr) {
+		this.d7282fr = d7282fr;
+	}
+
+	public String getD7283() {
+		return d7283;
+	}
+
+	public void setD7283(String d7283) {
+		this.d7283 = d7283;
+	}
+
+	public String getD7283fr() {
+		return d7283fr;
+	}
+
+	public void setD7283fr(String d7283fr) {
+		this.d7283fr = d7283fr;
+	}
+
+	public String getD7952() {
+		return d7952;
+	}
+
+	public void setD7952(String d7952) {
+		this.d7952 = d7952;
+	}
+
+	public String getD7952fr() {
+		return d7952fr;
+	}
+
+	public void setD7952fr(String d7952fr) {
+		this.d7952fr = d7952fr;
+	}
+
+	public String getD7285() {
+		return d7285;
+	}
+
+	public void setD7285(String d7285) {
+		this.d7285 = d7285;
+	}
+
+	public String getD7285fr() {
+		return d7285fr;
+	}
+
+	public void setD7285fr(String d7285fr) {
+		this.d7285fr = d7285fr;
+	}
+
+	public String getD6114() {
+		return d6114;
+	}
+
+	public void setD6114(String d6114) {
+		this.d6114 = d6114;
+	}
+
+	public String getD6114fr() {
+		return d6114fr;
+	}
+
+	public void setD6114fr(String d6114fr) {
+		this.d6114fr = d6114fr;
+	}
+
+	public String getD5860() {
+		return d5860;
+	}
+
+	public void setD5860(String d5860) {
+		this.d5860 = d5860;
+	}
+
+	public String getD5860fr() {
+		return d5860fr;
+	}
+
+	public void setD5860fr(String d5860fr) {
+		this.d5860fr = d5860fr;
+	}
+
+	public String getD5110() {
+		return d5110;
+	}
+
+	public void setD5110(String d5110) {
+		this.d5110 = d5110;
+	}
+
+	public String getD5110fr() {
+		return d5110fr;
+	}
+
+	public void setD5110fr(String d5110fr) {
+		this.d5110fr = d5110fr;
+	}
+
+	public String getD5130() {
+		return d5130;
+	}
+
+	public void setD5130(String d5130) {
+		this.d5130 = d5130;
+	}
+
+	public String getD5130fr() {
+		return d5130fr;
+	}
+
+	public void setD5130fr(String d5130fr) {
+		this.d5130fr = d5130fr;
+	}
+
+	public String getD0140() {
+		return d0140;
+	}
+
+	public void setD0140(String d0140) {
+		this.d0140 = d0140;
+	}
+
+	public String getGradePay() {
+		return gradePay;
+	}
+
+	public void setGradePay(String gradePay) {
+		this.gradePay = gradePay;
 	}
 
 

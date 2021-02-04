@@ -434,16 +434,16 @@ public class ToothUtil {
 			String depth5,String depth6,String depth7,String depth8, BufferedWriter bw) {
 		boolean checkDepth=false;
 		if (bw!=null) {RuleEngineLogger.generateLogs(clazz,
-				" tooth depth-" + depth1+"-"+depth2+"-"+"-"+depth3+"-"+"-"+depth4+"-"+"-"+depth5+"-"+"-"+depth6+"-"+"-"+depth7+"-"+"-"+depth8,
+				" tooth depth->" + depth1+"-"+depth2+"-"+"-"+depth3+"-"+"-"+depth4+"-"+"-"+depth5+"-"+"-"+depth6+"-"+"-"+depth7+"-"+"-"+depth8,
 				Constants.rule_log_debug, bw);
 		  }
 		try {
-		if (depth1!=null && !depth1.equals("")) {
+		//if (depth1!=null && !depth1.equals("")) {
 			if (checkDepth5(depth1,bw) || checkDepth5(depth2,bw) || checkDepth5(depth3,bw) || checkDepth5(depth4,bw) ||
 				checkDepth5(depth5,bw) || checkDepth5(depth6,bw) || checkDepth5(depth7,bw) || checkDepth5(depth8,bw)) {
 				checkDepth=true;	
 			}
-		}
+		//}
 		}catch(Exception n) {
 			if (bw!=null)RuleEngineLogger.generateLogs(clazz,
 					" tooth depth issue -" ,
@@ -455,6 +455,9 @@ public class ToothUtil {
 	
 	//For rule Perio Depth
 	private static  boolean checkDepth5(String depth,BufferedWriter bw ) {
+		if (depth==null ) return false;
+		if (depth.trim().equals("") ) return false;
+		
 		String[] ds=depth.split(",");
 		boolean checkDepth=false;
 		try {

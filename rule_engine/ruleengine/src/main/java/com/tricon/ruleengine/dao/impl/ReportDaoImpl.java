@@ -184,6 +184,8 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		
 		}catch (Exception e) {
 			e.printStackTrace();
+		}finally {
+			closeSession(session);
 		}
 		
 		return list;

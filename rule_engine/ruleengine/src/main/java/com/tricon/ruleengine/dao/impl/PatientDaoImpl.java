@@ -302,7 +302,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			if (!temp) {
 				tableName="_temp";
 				extraInClause=(dto!=null && dto.getWebsiteNameDB()!=null && !dto.getWebsiteNameDB().equals("")? " and p.website_name = '"+dto.getWebsiteNameDB()+"' ":" ");
-				status=", p.status as status ";
+				status=", p.status as status,p.grade_pay as gradePay ";
 				fromClause=" from patient_detail"+tableName+" pd right join  patient"+tableName+" p on pd.patient_id=p.id left join patient_detail"+tableName+"2 pd2 on pd2.patient_detail_id=pd.id where " + 
 				          "	 p.office_id='"+off.getUuid()+"' " ;
 			}
@@ -382,7 +382,11 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " d4263fr as d4263fr,d4264fr as d4264fr,d6104fr as d6104fr,d7953fr as d7953fr,"
 					+ " d3310fr as d3310fr,d3320fr as d3320fr,d3346fr as d3346fr,d3347fr as d3347fr,"
 					+ " d3348fr as d3348fr,d6058fr as d6058fr,oral1fr as oral1fr,d7951fr as d7951fr,"
-					+ " d4266fr as d4266fr,d4267fr as d4267fr,perio1fr as perio1fr,d4273fr as d4273fr,d7251fr as d7251fr "
+					+ " d4266fr as d4266fr,d4267fr as d4267fr,perio1fr as perio1fr,d4273fr as d4273fr,d7251fr as d7251fr, "
+					+ " d7472 as d7472, d7472fr as d7472fr,d7280 as d7280,d7280fr as d7280fr,d7282 as d7282,d7282fr as d7282fr,"
+					+ " d7283 as d7283,d7283fr as d7283fr,d7952 as d7952,d7952fr as d7952fr,d7285 as d7285,d7285fr as d7285fr,"
+					+ " d6114 as d6114,d6114fr as d6114fr,d5860 as d5860,d5860fr as d5860fr, d5110 as d5110,d5110fr as d5110fr,"
+					+ " d5130 as d5130,d5130fr as d5130fr,d0140 as d0140"
 					//+ " as  " //add new Columns here
 					
 					+ fromClause

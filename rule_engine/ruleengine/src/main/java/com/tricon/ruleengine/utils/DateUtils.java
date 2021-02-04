@@ -175,8 +175,8 @@ public class DateUtils {
 		String cyYearFrom = "";
 		String cyYearTo = "";
 
-		cyYearFrom = "01/01/" + (CurrentYear);
-		cyYearTo = "12/31/" + (CurrentYear + times-1);
+		cyYearFrom = "01/01/" + (CurrentYear-times+1);//old code "01/01/" + (CurrentYear)
+		cyYearTo = "12/31/" + (CurrentYear);//old "12/31/" + (CurrentYear + times-1)
 		System.out.println(cyYearFrom);
 		System.out.println(cyYearTo);
 

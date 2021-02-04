@@ -94,6 +94,8 @@ public class Constants {
 	public static final String RULE_ID_58="Exam Frequency Limitation (D0145)";
 	public static final String RULE_ID_59="BWX Age Limitation";
 	public static final String RULE_ID_60="Exams Age Limitation";
+	public static final String RULE_ID_61="Humana Exception";
+	public static final String RULE_ID_62="FCL Dental Exception";
 	
 	
 	/*
@@ -163,6 +165,10 @@ public class Constants {
 	public static String insurance_Dentaquest="dentaquest";
 	public static String insurance_Mcna="mcna";
 	public static String insurance_PPO="ppo";
+	public static String insurance_Medicare="medicare";
+	public static String insurance_Delta_Dental="delta dental";
+	public static String insurance_BCBS="bcbs";
+	public static String insurance_Humana="humana";
 	public static String insurance_Chip="chip";
 	public static double insurance_Medicaid_max_fee=70.64;
 	public static int history_codes_size=60;

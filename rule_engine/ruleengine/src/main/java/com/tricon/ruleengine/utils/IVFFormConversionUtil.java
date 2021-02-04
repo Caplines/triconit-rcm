@@ -331,7 +331,27 @@ public class IVFFormConversionUtil {
 		pd2.setD4273fr(d.getD4273fr());
 		pd2.setD7251fr(d.getD7251fr());
 
-		
+		pd2.setD7472(d.getD7472());
+		pd2.setD7472fr(d.getD7472fr());
+		pd2.setD7280(d.getD7280());
+		pd2.setD7280fr(d.getD7280fr());
+		pd2.setD7282(d.getD7282());
+		pd2.setD7282fr(d.getD7282fr());
+		pd2.setD7283(d.getD7283());
+		pd2.setD7283fr(d.getD7283fr());
+		pd2.setD7952(d.getD7952());
+		pd2.setD7952fr(d.getD7952fr());
+		pd2.setD7285(d.getD7285());
+		pd2.setD7285fr(d.getD7285fr());
+		pd2.setD6114(d.getD6114());
+		pd2.setD6114fr(d.getD6114fr());
+		pd2.setD5860(d.getD5860());
+		pd2.setD5860fr(d.getD5860fr());
+		pd2.setD5110(d.getD5110());
+		pd2.setD5110fr(d.getD5110fr());
+		pd2.setD5130(d.getD5130());
+		pd2.setD5130fr(d.getD5130fr());
+		pd2.setD0140(d.getD0140());
 		pd2.setIvSedation(d.getIvSedation());
 
 		pd.setPatientDetails2(pd2);
@@ -645,6 +665,30 @@ public class IVFFormConversionUtil {
 				pd.setD4267(d.getD4267());
 				pd.setD4273(d.getD4273());
 				pd.setD7251(d.getD7251());
+				
+				pd.setD7472(d.getD7472());
+				pd.setD7472fr(d.getD7472fr());
+				pd.setD7280(d.getD7280());
+				pd.setD7280fr(d.getD7280fr());
+				pd.setD7282(d.getD7282());
+				pd.setD7282fr(d.getD7282fr());
+				pd.setD7283(d.getD7283());
+				pd.setD7283fr(d.getD7283fr());
+				pd.setD7952(d.getD7952());
+				pd.setD7952fr(d.getD7952fr());
+				pd.setD7285(d.getD7285());
+				pd.setD7285fr(d.getD7285fr());
+				pd.setD6114(d.getD6114());
+				pd.setD6114fr(d.getD6114fr());
+				pd.setD5860(d.getD5860());
+				pd.setD5860fr(d.getD5860fr());
+				pd.setD5110(d.getD5110());
+				pd.setD5110fr(d.getD5110fr());
+				pd.setD5130(d.getD5130());
+				pd.setD5130fr(d.getD5130fr());
+				pd.setD0140(d.getD0140());
+
+				
 				pd.setIvSedation(d.getIvSedation());
 
 
@@ -1052,7 +1096,28 @@ public class IVFFormConversionUtil {
 		pd2.setPerio1fr(d.getPerio1fr());
 		pd2.setD4273fr(d.getD4273fr());
 		pd2.setD7251fr(d.getD7251fr());
-
+		
+		pd2.setD7472(d.getD7472());
+		pd2.setD7472fr(d.getD7472fr());
+		pd2.setD7280(d.getD7280());
+		pd2.setD7280fr(d.getD7280fr());
+		pd2.setD7282(d.getD7282());
+		pd2.setD7282fr(d.getD7282fr());
+		pd2.setD7283(d.getD7283());
+		pd2.setD7283fr(d.getD7283fr());
+		pd2.setD7952(d.getD7952());
+		pd2.setD7952fr(d.getD7952fr());
+		pd2.setD7285(d.getD7285());
+		pd2.setD7285fr(d.getD7285fr());
+		pd2.setD6114(d.getD6114());
+		pd2.setD6114fr(d.getD6114fr());
+		pd2.setD5860(d.getD5860());
+		pd2.setD5860fr(d.getD5860fr());
+		pd2.setD5110(d.getD5110());
+		pd2.setD5110fr(d.getD5110fr());
+		pd2.setD5130(d.getD5130());
+		pd2.setD5130fr(d.getD5130fr());
+		pd2.setD0140(d.getD0140());
 		pd2.setIvSedation(d.getIvSedation());
 
 		pd.setPatientDetails2(pd2);

@@ -795,9 +795,9 @@ border-collapse: collapse;
 						   <span class="sub-heading"><xsl:value-of select="perioMnt1"/></span>
 						 </td>
                         <td  class="withds colourfreq">
-                           <span class="main-heading-1">Frequency</span>
+                           <span class="main-heading-1"></span>
 						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="posterior2"/></span>
+                        <td> <span class="sub-heading"></span>
                         </td>
                         <td class="withds">
                          <span class="main-heading-1">Minor:<br/>(D7111<br/>,D7140)</span>
@@ -1012,7 +1012,7 @@ border-collapse: collapse;
                            <span class="main-heading-1">Frequency</span>
 						</td>
 						<td>
-						   <span class="sub-heading"><xsl:value-of select="d2391Freq"/></span>
+						   <span class="sub-heading"><xsl:value-of select="posterior2"/></span>
 						 </td>
                         <td  class="withds colourfreq">
                            <span class="main-heading-1">Frequency</span>

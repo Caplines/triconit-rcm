@@ -651,6 +651,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setTaxId(taxId);
 		dtemp.setsRPD4341QuadsPerDay("2");
 		dtemp.setsRPD4341DaysBwTreatment("1");
+		dtemp.setcOBStatus("No");
 		List<WebElement> cards = driver.findElements(By.className("card-content"));
 		int x1=0;
 		int ct=0;
@@ -1444,7 +1445,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		try {
 			String url = "https://www.dnoaconnect.com/members/" + temp.getReferenceId() + "/procedureBenefits/"
 					+ code.substring(1);
-			navigatetoUrl(driver, url, 4000);
+			navigatetoUrl(driver, url, 5000);
 			data = driver.getPageSource();
 			// System.out.println("data");
 			// System.out.println(data);

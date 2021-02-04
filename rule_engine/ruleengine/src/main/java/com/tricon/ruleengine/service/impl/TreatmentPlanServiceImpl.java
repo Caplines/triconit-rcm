@@ -1958,6 +1958,43 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		// END Exams Age Limitation
 
+		
+		// RULE_ID_61 "// Humana Exception
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_61);
+		dtoRL = rb.Rule61(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_61,
+				Constants.rule_log_debug, bw);
+
+		// END Humana Exception
+		
+		// RULE_ID_62 "// CL Dental Exception
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_62);
+		dtoRL = rb.Rule62(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule,esempmaster.get(empMasterKey), bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_62,
+				Constants.rule_log_debug, bw);
+
+		// END CL Dental Exception
+		
   }
 	
   private void validdateRulesTPOS(Map<String, List<EagleSoftPatient>> espatients,

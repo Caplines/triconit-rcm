@@ -277,7 +277,7 @@
 							     <span [innerHTML]="data.createdDate"></span></ng-container>
 						       </td>
 							<td><a href="javascript:void(0)"
-								(click)="showDetailsDataF(data)"> Details </a></td>
+								(click)="showDetailsDataF(data)"> Details </a><span>{{data.gradePay}}</span></td>
 							<td>
 							<ng-container *ngIf="report.reportType=='ivfRDBMS'">
 							    <a href="javascript:void(0)"

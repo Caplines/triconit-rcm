@@ -110,7 +110,8 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		// "Dentaquest",0+""));//
 		// cc.add(new MCNADentaSheet("","","","", "", "739438815", "04/11/2020",
 		// "Dentaquest",0+""));//
-		cc.add(new MCNADentaSheet("", "", "", "", "", "731539564", "2/17/2019", "Dentaquest", 0 + ""));//
+		//cc.add(new MCNADentaSheet("", "", "", "", "", "731539564", "2/17/2019", "Dentaquest", 0 + ""));//
+		cc.add(new MCNADentaSheet("", "", "", "", "", "524686301", "08/14/2004", "Dentaquest", 0 + ""));//
 
 		// Ryleigh Britt 2013/06/20
 		mapData = new HashMap<>();
@@ -121,8 +122,8 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 
 		// https://connectsso.dentaquest.com/authsso/providersso/SSOProviderLogin.aspx?TYPE=33554433&REALMOID=06-6a4c193d-7520-4f3d-b194-83367a3ef454&GUID=&SMAUTHREASON=0&METHOD=POST&SMAGENTNAME=-SM-imZolSjcs1FQR%2fH0k3NSK1Uvx4zWgziEWSOuwqcKGG1C%2bW%2fQdG3dRa7BVqGyOpNh&TARGET=-SM-https%3a%2f%2fconnectsso%2edentaquest%2ecom%2fprovideraccessv2%2findex%2ehtml
 		// Dental@6743 offshorebfd for 739438815 04/11/2020 Beaumont
-		det.setPassword("Dental@6757");// // Devine%1245976
-		det.setUserName("Offshorebfd"); // Devin13458
+		det.setPassword("Smilepoint@2019");// // Devine%1245976
+		det.setUserName("Cdental05"); // Devin13458
 		det.setLocationProvider("");
 		Office f = new Office();
 		f.setName("Jasper");
@@ -314,11 +315,11 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 					.findElements(By.xpath(ori));
 			for (WebElement w : wList) {
 
-				if (locationProvider.equals("")) {
+				if (location.equals("")) {
 					w.click();
 				} else {
 					String nm = w.getText();
-					if (nm.replaceAll(" ", "").equalsIgnoreCase(locationProvider.replaceAll(" ", ""))) {
+					if (nm.replaceAll(" ", "").equalsIgnoreCase(location.replaceAll(" ", ""))) {
 						w.click();
 						break;
 					}
