@@ -911,6 +911,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setCkD230("No");
 		dtemp.setCkD330("No");
 		dtemp.setCkD274("No");
+		dtemp.setPosteriorCompositesD2391Downgrade("No");//Email 10 Feb 2021
+		dtemp.setCrownsD2750D2740Downgrade("Yes");////Email 10 Feb 2021
 		
 		for(PatientHistoryTemp ht:hisSet) {
 			if (ht.getHistoryCode()!=null && ht.getHistoryCode().equalsIgnoreCase("D0120")) dtemp.setCkD0120("Yes");

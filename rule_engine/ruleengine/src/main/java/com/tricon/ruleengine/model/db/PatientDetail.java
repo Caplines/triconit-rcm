@@ -247,13 +247,13 @@ public class PatientDetail extends BaseAudit implements Serializable {
 	@Column(name = "den_5225_per", length = 20)
 	private String den5225Per;// den5225
 
-	@Column(name = "den_f_5225_fr", length = 20)
+	@Column(name = "den_f_5225_fr", length = 50)
 	private String denf5225FR;// denf5225
 
 	@Column(name = "den_5226_per", length = 20)
 	private String den5226Per;// den5226
 
-	@Column(name = "den_f_5226_fr", length = 20)
+	@Column(name = "den_f_5226_fr", length = 50)
 	private String denf5226Fr;// denf5226
 
 	// END
@@ -264,7 +264,7 @@ public class PatientDetail extends BaseAudit implements Serializable {
 	@Column(name = "bridges1", length = 20)
 	private String bridges1;// bridges1
 
-	@Column(name = "bridges2", length = 20)
+	@Column(name = "bridges2", length = 50)
 	private String bridges2;// bridges2
 
 	@Column(name = "will_downgrade_applicable", length = 20)
