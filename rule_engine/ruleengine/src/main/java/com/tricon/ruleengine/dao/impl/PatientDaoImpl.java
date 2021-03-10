@@ -386,7 +386,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					+ " d7472 as d7472, d7472fr as d7472fr,d7280 as d7280,d7280fr as d7280fr,d7282 as d7282,d7282fr as d7282fr,"
 					+ " d7283 as d7283,d7283fr as d7283fr,d7952 as d7952,d7952fr as d7952fr,d7285 as d7285,d7285fr as d7285fr,"
 					+ " d6114 as d6114,d6114fr as d6114fr,d5860 as d5860,d5860fr as d5860fr, d5110 as d5110,d5110fr as d5110fr,"
-					+ " d5130 as d5130,d5130fr as d5130fr,d0140 as d0140"
+					+ " d5130 as d5130,d5130fr as d5130fr,d0140 as d0140,s_remarks as sRemarks,m_policy as mPolicy ,m_mip as mMIP,es_bcbs as esBcbs,obtain_mpn as obtainMPN "
 					//+ " as  " //add new Columns here
 					
 					+ fromClause

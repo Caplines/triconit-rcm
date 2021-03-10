@@ -24,10 +24,15 @@ public class ScrappingFullDataDetailDto {
 	private boolean locationProvider;
 	private boolean memberId;
 	private boolean gradePay;
+	private boolean  otp;
+	private String  otpValue;
+	
 	
 	private boolean subscribersFirstName;
 	private boolean subscribersLastName;
 	private boolean subscribersDob;
+	
+	private String processId;
 	
 	
 	
@@ -168,7 +173,27 @@ public class ScrappingFullDataDetailDto {
 	public void setSubscribersDob(boolean subscribersDob) {
 		this.subscribersDob = subscribersDob;
 	}
- 
+	
+	public String getProcessId() {
+		return processId;
+	}
+	public void setProcessId(String processId) {
+		this.processId = processId;
+	}
+	public boolean isOtp() {
+		return otp;
+	}
+	public void setOtp(boolean otp) {
+		this.otp = otp;
+	}
+	
+	public String getOtpValue() {
+		return otpValue;
+	}
+	public void setOtpValue(String otpValue) {
+		this.otpValue = otpValue;
+	}
+
 	
 	
 }

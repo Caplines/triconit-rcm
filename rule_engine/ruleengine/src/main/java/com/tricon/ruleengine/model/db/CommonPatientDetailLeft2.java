@@ -287,6 +287,22 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "d0140", length = 30)
 	private String d0140;
 
+	@Column(name = "s_remarks", length = 50)
+	private String sRemarks;
+
+	@Column(name = "m_policy", length = 10)
+	private String mPolicy;//Not used now
+
+	@Column(name = "m_mip", length = 30)
+	private String mMIP;//Not used now
+
+
+	@Column(name = "es_bcbs", length = 30)
+	private String esBcbs;
+
+	@Column(name = "obtain_mpn", length = 30)
+	private String obtainMPN;
+
 	public String getNpi() {
 		return npi;
 	}
@@ -1007,8 +1023,47 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 		this.d0140 = d0140;
 	}
 
+	public String getsRemarks() {
+		return sRemarks;
+	}
+
+	public void setsRemarks(String sRemarks) {
+		this.sRemarks = sRemarks;
+	}
+
+	public String getmPolicy() {
+		return mPolicy;
+	}
+
+	public void setmPolicy(String mPolicy) {
+		this.mPolicy = mPolicy;
+	}
+
+	public String getmMIP() {
+		return mMIP;
+	}
+
+	public void setmMIP(String mMIP) {
+		this.mMIP = mMIP;
+	}
+
 	
-	
+	public String getEsBcbs() {
+		return esBcbs;
+	}
+
+	public void setEsBcbs(String esBcbs) {
+		this.esBcbs = esBcbs;
+	}
+
+	public String getObtainMPN() {
+		return obtainMPN;
+	}
+
+	public void setObtainMPN(String obtainMPN) {
+		this.obtainMPN = obtainMPN;
+	}
+
 
 }
 

@@ -592,13 +592,15 @@ public class DateUtils {
 			
 			Date cd=Constants.SIMPLE_DATE_FORMAT.parse(Constants.SIMPLE_DATE_FORMAT.format(new Date()));
 			Date eDate=Constants.SIMPLE_DATE_FORMAT.parse("12/08/2020");
-			System.out.println("**********************");
 			System.out.println(calculateAgeInMonths(DateUtils.calculateAgeYMD("2020-11-29", true)));
 			if(waitingPeroidCheck( cd,eDate)) {
 				System.out.println("No");
 			}else {
 				System.out.println("yes");
 			}
+			System.out.println("**********************");
+			
+			System.out.println(DateUtils.calculateAgeYMD("2020-2-9", true)[0]);
 			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

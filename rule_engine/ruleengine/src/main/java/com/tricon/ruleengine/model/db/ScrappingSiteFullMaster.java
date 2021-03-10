@@ -67,6 +67,8 @@ public class ScrappingSiteFullMaster extends BaseAudit implements Serializable{
 	@Column(name = "subscribers_dob")
 	private boolean subscribersDob;
 
+	@Column(name = "otp")
+	private boolean otp;
 
 	public int getId() {
 		return id;
@@ -178,6 +180,14 @@ public class ScrappingSiteFullMaster extends BaseAudit implements Serializable{
 
 	public void setSubscribersDob(boolean subscribersDob) {
 		this.subscribersDob = subscribersDob;
+	}
+
+	public boolean isOtp() {
+		return otp;
+	}
+
+	public void setOtp(boolean otp) {
+		this.otp = otp;
 	}
 
 	

@@ -353,7 +353,13 @@ public class IVFFormConversionUtil {
 		pd2.setD5130fr(d.getD5130fr());
 		pd2.setD0140(d.getD0140());
 		pd2.setIvSedation(d.getIvSedation());
-
+		pd2.setsRemarks(d.getsRemarks());
+		pd2.setmPolicy(d.getmPolicy());
+		pd2.setmMIP(d.getmMIP());
+		pd2.setEsBcbs(d.getEsBcbs());
+		pd2.setObtainMPN(d.getObtainMPN());
+		
+		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();
 		p2Set.add(pd2);
@@ -687,10 +693,13 @@ public class IVFFormConversionUtil {
 				pd.setD5130(d.getD5130());
 				pd.setD5130fr(d.getD5130fr());
 				pd.setD0140(d.getD0140());
-
-				
 				pd.setIvSedation(d.getIvSedation());
-
+	
+				pd.setsRemarks(d.getsRemarks());
+				pd.setmPolicy(d.getmPolicy());
+				pd.setmMIP(d.getmMIP());
+				pd.setEsBcbs(d.getEsBcbs());
+				pd.setObtainMPN(d.getObtainMPN());
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -1119,7 +1128,11 @@ public class IVFFormConversionUtil {
 		pd2.setD5130fr(d.getD5130fr());
 		pd2.setD0140(d.getD0140());
 		pd2.setIvSedation(d.getIvSedation());
-
+		pd2.setsRemarks(d.getsRemarks());
+		pd2.setmPolicy(d.getmPolicy());
+		pd2.setmMIP(d.getmMIP());
+		pd2.setEsBcbs(d.getEsBcbs());
+		pd2.setObtainMPN(d.getObtainMPN());
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();
 		p2Set.add(pd2);

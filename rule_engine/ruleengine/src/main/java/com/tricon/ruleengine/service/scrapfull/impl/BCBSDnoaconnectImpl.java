@@ -1701,16 +1701,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smile123");
-		dto.setUserName("rockdale001");
+		dto.setPassword("Smilepoint212");
+		dto.setUserName("Lavaca4545");
 		dto.setSiteName("BCBS");
        
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("12/10/1980");
-		psc.setFirstName("CRYSTAL");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
-		psc.setLastName("SIMMONS");
-		psc.setMemberId("924652459");
+		psc.setDob("01/02/1965");
+		psc.setFirstName("CARLOS");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
+		psc.setLastName("CHAVANA");
+		psc.setMemberId("829837419");
 		psc.setSsnNumber("");
 
 		l.add(psc);

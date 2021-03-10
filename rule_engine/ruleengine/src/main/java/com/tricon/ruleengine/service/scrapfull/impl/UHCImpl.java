@@ -18,8 +18,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.tricon.ruleengine.dao.PatientDao;
@@ -42,7 +44,7 @@ import com.tricon.ruleengine.utils.DateUtils;
 import com.tricon.ruleengine.utils.FreqencyUtils;
 import com.tricon.ruleengine.utils.MessageUtil;
 
-public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<Boolean> {
+public class UHCImpl extends BasefullScrapImpl implements Callable<Boolean> {
 
 	// document :
 	// https://docs.google.com/spreadsheets/d/1-3PVTrzgSl0n3OEY7Qt0JZ_WDK7twIQWU3Hk7UjSdBM/edit#gid=1557872290
@@ -64,11 +66,13 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 	private static String benefitProcLimitationSentencePermanentMolar="Permanent & Molars";
 	private static String benefitProcLimitationSentenceCombinationRoutine="In Combination with Routine Cleanings";
 	private static String benefitProcLimitationSentenceAlternateBenefitProvision="Alternate Benefit Provision";
+	private static String driverName="UHC_";
+	
 	
 	// private static String referenceId;
 	// private static String procedureData;
 
-	public UnitedConcordiaImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
+	public UHCImpl(PatientDao patDao, ScrapingFullDataDoa dataDoa,
 			ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user, Office office,
 			int processId, String taxId,IVFormType ivFormType, String driverLocation) {
 
@@ -90,6 +94,41 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		// store parameter for later user
 	}
 
+	public UHCImpl(ScrappingFullDataDetailDto dto, User user, Office office,
+			int processId, String taxId,IVFormType ivFormType, String driverLocation) {
+
+		this.dto = dto;
+		this.office = office;
+		siteName = dto.getSiteName();
+		this.user = user;
+		this.driverLocation = driverLocation;
+		this.processId = processId;
+		this.taxId = taxId;
+        this.ivFormType=ivFormType;
+		// store parameter for later user
+	}
+
+	public boolean getOTPAfterCall() {
+
+		WebDriver driver = getBrowserDriver();
+		boolean success=false;
+		try {
+		success= loginToSiteUHC(dto,driver);
+		if (success) {
+		HashMap<String, WebDriver> map=UCHWebDriverReference.UCHDRIVERMAP;
+		map.put(driverName+processId, driver);
+		}else {
+			driver.close();
+			driver.quit();	
+		}
+		}catch(Exception ex) {
+			
+		}
+		return success;
+		// store parameter for later user
+	}
+
+	
 	public String scrapSite(ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user,
 			Office office) {
 		// WebDriver driver = null;
@@ -113,9 +152,24 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 						public void run() {
 							String s = "0";
 							System.out.println("Thread Running");
-							WebDriver driver = getBrowserDriver();// new HtmlUnitDriver(true);// getBrowserDriver();
+							WebDriver driver = UCHWebDriverReference.UCHDRIVERMAP.get(driverName+processId);// new HtmlUnitDriver(true);// getBrowserDriver();
 							try {
-								boolean navigate = loginToSiteUnitedCon(dto, driver);
+								if (driver==null) {
+									driver = getBrowserDriver();
+									try {
+										if (loginToSiteUHC(dto,driver)) {
+										HashMap<String, WebDriver> map=UCHWebDriverReference.UCHDRIVERMAP;
+										map.put(driverName+processId, driver);
+										Thread.sleep(60000);
+										}else {
+											driver.close();
+											driver.quit();	
+										}
+										}catch(Exception ex) {
+											
+										}
+								}
+								boolean navigate = loginToSiteWithOTP(dto.getOtpValue(), driver);
 								boolean issueNo = navigatetoMainSite(driver, navigate);
 								System.out.println("issueNo"+issueNo);
 								 System.out.println("MEM 4-"
@@ -483,9 +537,6 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setTaxId(taxId); //137
 		dtemp.setInsAddress("P.O. Box 69451. Harrisburg, PA 17106"); //142
 		dtemp.setPayerId("CX007");//143
-		dtemp.setPlanType("PPO");
-		dtemp.setsRPD4341QuadsPerDay("2");//As per chat 6 March 2021 Anjali
-		dtemp.setsRPD4341DaysBwTreatment("1");//As per chat 6 March 2021 Anjali
 		
 		Date cd= new Date();
 		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(cd));//147 and 97
@@ -501,8 +552,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 	   WebElement accums=driver.findElement(By.className("accums"));
 	   List<WebElement> acc= accums.findElements(By.className("panel-default"));
 	   for(WebElement ac:acc) {
-		   if (ac.getText().contains("PROGRAM DOLLAR MAX") || ac.getText().startsWith("Deductibles") ) {
-			  if (ac.getText().contains("No deductible applied to the current")) {
+		   if (ac.getText().contains("PROGRAM DOLLAR MAX")  ) {
+			  if (ac.getText().contains("No maximum applied to the current")) {
 				  dtemp.setPlanAnnualMaxRemaining("999999");
 				  
 			  }else {
@@ -517,7 +568,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				  
 			  }
 		   }
-		   if (ac.getText().contains("PROGRAM DOLLAR DED") || ac.getText().startsWith("Maximums")  ) {
+		   if (ac.getText().contains("PROGRAM DOLLAR DED")  ) {
 				  if (ac.getText().contains("No maximum applied to the current")) {
 					   dtemp.setPlanIndividualDeductibleRemaining("-1");//Means we need to put Plan_IndividualDeductible
 				  }else {
@@ -652,11 +703,6 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setEndoSubjectDeductible(fetchBenefitByProcedure(headingName,
 				null, driver, benefitProAppliedtoded, true,  false, temp.getGradePay(),map));// 10 mand
 
-		dtemp.setD3330(fetchBenefitByProcedure(headingName,
-				new String[] {"D3330"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map));// 156
-
-		dtemp.setD3330Freq(fetchBenefitByProcedure(headingName,
-				new String[] {"D3330"}, driver, benefitProAppliedtoded, false,  true, temp.getGradePay(),map));// 157
 		
 		//
 		headingName="Surgical Periodontal Services";
@@ -728,12 +774,6 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setExamsD0150FL(fetchBenefitByProcedure(headingName,
 				new String[] {"D0150"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 27
 
-		dtemp.setPedo1(fetchBenefitByProcedure(headingName,
-				new String[] {"D0160"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map));// 148
-		
-		dtemp.setD0160Freq(fetchBenefitByProcedure(headingName,
-				new String[] {"D0160"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 149
-
 		
 		headingName="X-rays";
 		map= fetchBenefitByProcedureMap(headingName, driver, new String[] {benefitProcCopy, benefitProAppliedtoded, benefitProcCopy, 
@@ -760,11 +800,6 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setFmxPer(fetchBenefitByProcedure(headingName,
 				new String[] {"D0210"}, driver, benefitProcCopy, false, false, temp.getGradePay(),map));// 120  Look For other codes also
 		
-		dtemp.setPano1(fetchBenefitByProcedure(headingName,
-				new String[] {"D0330"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map));// 152
-
-		dtemp.setD0330Freq(fetchBenefitByProcedure(headingName,
-				new String[] {"D0330"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 153
 
 		dtemp.setCrownsD2750D2740PaysPrepSeatDate("Seat Date");// 18
 		
@@ -800,13 +835,6 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 
 		dtemp.setBuildUpsD2950FL(fetchBenefitByProcedure(headingName,
 				new String[] {"D2950"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 88
-		
-		
-		dtemp.setPedo2(fetchBenefitByProcedure(headingName,
-				new String[] {"D2934"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map));// 150
-
-		dtemp.setsSCD2930FL(fetchBenefitByProcedure(headingName,
-				new String[] {"D2934"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 151
 		
 
 		
@@ -865,11 +893,6 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setGingivitisD4346FL(fetchBenefitByProcedure(headingName,
 				new String[] {"D4346"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 56
 
-		dtemp.setD4381(fetchBenefitByProcedure(headingName,
-				new String[] {"D4381"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map));// 154
-
-		dtemp.setD4381Freq(fetchBenefitByProcedure(headingName,
-				new String[] {"D4381"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 155
 
 		
 		headingName="Adjunctive Services";
@@ -981,25 +1004,11 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		map= fetchBenefitByProcedureMap(headingName, driver, new String[] {benefitProcCopy, benefitProAppliedtoded, benefitProcCopy, 
                 benefitProcLimitation,benefitProcLimitationSentenceAlternateBenefitProvision});
 		
-		String b1=fetchBenefitByProcedure(headingName,
-				new String[] {"D6245"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map);
-       String b2=fetchBenefitByProcedure(headingName,
-				new String[] {"D6740"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map);//102 Check Logic once...
-       if (!b1.equals(b2)){
-    	  // dtemp.setBridges1(bridges1);
-       }
-    			
-		b1=fetchBenefitByProcedure(headingName,
-				new String[] {"D6245"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map);
+		dtemp.setBridges1(fetchBenefitByProcedure(headingName,
+				new String[] {"D6245","D6740"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map));// 102 Check Logic onces
 		
-		b2=fetchBenefitByProcedure(headingName,
-				new String[] {"D6740"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map);//103
-		if (!b1.equals(b2)){
-			// dtemp.setBridges2(bridges2); /Check for lenght also
-	       }
-		
-		
-		
+		dtemp.setBridges2(fetchBenefitByProcedure(headingName,
+				new String[] {"D6245","D6740"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map));// 103 Check Logic onces
 
 		System.out.println("RRRR");
 		/* 
@@ -1038,7 +1047,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 					dtemp.setPlanTermedDate(s1[2] + "-" + (s1[0].length() == 2 ? s1[0] : "0" + s1[0]) + "-"
 							+ (s1[1].length() == 2 ? s1[1] : "0" + s1[1]));// 145
 					}catch(Exception c) {
-						dtemp.setPlanTermedDate("");// 145 Just put blank
+						dtemp.setPlanTermedDate(Constants.SIMPLE_DATE_FORMAT_IVF.format(cd));// 145
 					}
 					
 				} catch (Exception e) {
@@ -1925,76 +1934,148 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		return true;
 	}
 
-	public boolean loginToSiteUnitedCon(ScrappingFullDataDetailDto dto, WebDriver driver)
+	public boolean loginToSiteUHC(ScrappingFullDataDetailDto dto, WebDriver driver)
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
 
 		boolean navigate = true;
-		// driver.Window.Maximize();
+		driver.manage().window().maximize();
 		driver.get(dto.getSiteUrl());
-		Thread.sleep(1000);// Need to keep this number high for Linux issue.
-		// System.out.println(driver.getPageSource());
+		driver.get("https://healthid.optum.com/tb/app/index.html?TARGET=https%3A%2F%2Fdbp.optum.com%2Fcontent%2Fdental-benefits-provider%2Fen%2Fsecure%2Fpostloginhomescreen.html&relyingAppId=DBP92444#/login");
+		Thread.sleep(4000);// Need to keep this number high for Linux issue.
+		List<WebElement> inss=driver.findElements(By.tagName("input"));		
 		try {
-			driver.findElement(By.id("covid19Modal")).findElement(By.tagName("button")).click();
-			Thread.sleep(4000);
-		} catch (Exception e) {
-		}
+			
+			/*for(WebElement ins:inss) {
+				System.out.println(ins.getAttribute("value"));
+				if (ins.getAttribute("value")!=null && ins.getAttribute("value").equals("LOG IN")) {
+					//ins.findElement(By.tagName("a"))..gclick();
+					ins.click();
+					Thread.sleep(4000);
+					break;
+				}
+			}*/
 
-		try {
-			driver.findElement(By.id("onetrust-accept-btn-handler")).click();
-			Thread.sleep(7000);
-		} catch (Exception e) {
-		}
-		try {
+			Thread.sleep(8000);
+			/*
+			WebElement userNameElement = driver.findElement(By.id("userNameId_input"));
+			new Actions(driver).moveToElement(userNameElement).click().perform();
+			userNameElement.click();
+			
+			WebElement pw = driver.findElement(By.id("passwdId_input"));
+			new Actions(driver).moveToElement(pw).click().perform();
+			userNameElement.click();
+            */
+			JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+			
+			String v="$('#userNameId_input').val('caladental03');" + 
+					 "$('#passwdId_input').val('Dental@098766');"+
+					 "const customEvent = document.createEvent('Event');" + 
+					" customEvent.initEvent('change', true, true);" + 
+					" $('#userNameId_input')[0].dispatchEvent(customEvent);"+
+			         "const customEvent1 = document.createEvent('Event');" +
+					" customEvent1.initEvent('change', true, true);" + 
+					" $('#passwdId_input')[0].dispatchEvent(customEvent1);"+
+			        " $('#SignIn').click();alert(1);";
+			jsExecutor.executeScript(v);
+			Thread.sleep(10000);
+			/*
+	         JavascriptExecutor jsExecutorP = (JavascriptExecutor) driver;
+				
+				String vp="const customEvent = document.createEvent('Event');" + 
+						" customEvent.initEvent('change', true, true);" + 
+						" $('#passwdId_input')[0].dispatchEvent(customEvent)";
+				jsExecutorP.executeScript(vp);
+				Thread.sleep(5000);	
+				 JavascriptExecutor jsExecutorS = (JavascriptExecutor) driver;	
+				 String vS=" $('#SignIn').click()";
+				 jsExecutorS.executeScript(vS);
+		     */		 
+			/*
+			WebElement loginButonElement1 = driver
+					.findElement(By.id("SignIn"));
 
-			// Layout issue...
-			WebElement userNameElement = driver.findElement(By.id("signinForm:username"));
-			userNameElement.sendKeys(dto.getUserName());
-			WebElement passwordElement = driver.findElement(By.id("signinForm:password"));
+			loginButonElement1.click();
+			Thread.sleep(10000);
 
+			
+			WebElement userNameElement = driver.findElement(By.id("userNameId_input"));
+			new Actions(driver).moveToElement(userNameElement).click().perform();
+			userNameElement.click();
+			Thread.sleep(1000);
+			userNameElement.sendKeys(dto.getUserName()+ Keys.TAB);
+			//new Actions(driver).keyDown(userNameElement,Keys.DECIMAL);
+			JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+			
+			String v="const customEvent = document.createEvent('Event');" + 
+					" customEvent.initEvent('change', true, true);" + 
+					" $('#userNameId_input')[0].dispatchEvent(customEvent)";
+			jsExecutor.executeScript(v);
+			Thread.sleep(1000);
+
+			WebElement passwordElement = driver.findElement(By.id("passwdId_input"));
+			passwordElement.click();
+			new Actions(driver).moveToElement(passwordElement).click().perform();
+			
+			Thread.sleep(1000);
 			passwordElement.sendKeys(dto.getPassword());
+			jsExecutor = (JavascriptExecutor) driver;
+			
+			jsExecutor.executeScript("$(arguments[0]).change();", passwordElement);
+			String v1="const customEvent = document.createEvent('Event');" + 
+					" customEvent.initEvent('change', true, true);" + 
+					" $('#passwdId_input')[0].dispatchEvent(customEvent)";
+			jsExecutor.executeScript(v1);
+			Thread.sleep(1000);
+
 			WebElement loginButonElement = driver
-					.findElement(By.xpath("/html/body/div[2]/div[1]/div/div[2]/div[1]/form/div[3]/a"));
+					.findElement(By.id("SignIn"));
+
+			loginButonElement.click();
+			*/
+			Thread.sleep(5000);// Need to keep this number high for Linux issue.
+			try {
+				WebElement p = driver.findElement(By.id("errorMessage-description"));
+				if (p != null && p.getText().contains("The Optum ID or password that you entered") ) {
+					navigate = false;
+				}
+			} catch (Exception p) {
+				p.printStackTrace();
+				navigate=false;
+				/// navigate = false;
+			}
+		} catch (Exception newLogic) {
+			newLogic.printStackTrace();
+			navigate=false;
+		}
+		System.out.println("navigate-"+navigate);
+		return navigate;
+	}
+
+	public boolean loginToSiteWithOTP(String otp, WebDriver driver)
+			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
+
+		boolean navigate = true;
+		Thread.sleep(4000);// Need to keep this number high for Linux issue.
+		try {
+			WebElement optValue = driver.findElement(By.id("verifyAuthPasscodeInput"));
+			optValue.sendKeys(otp);
+			WebElement loginButonElement = driver
+					.findElement(By.id("verifyAuthSubmitButton"));
 
 			loginButonElement.click();
 			Thread.sleep(5000);// Need to keep this number high for Linux issue.
 			try {
-				WebElement p = driver.findElement(By.id("signinFormError:username"));
-				if (p != null) {
+				WebElement p = driver.findElement(By.id("oneTimePassword.value.errors"));
+				if (p != null && p.getText().contains("We cannot verify the code you entered. Try entering it again, or click") ) {
 					navigate = false;
 				}
 			} catch (Exception p) {
 				/// navigate = false;
 			}
 		} catch (Exception newLogic) {
-
-			List<WebElement> li = driver.findElements(By.tagName("button"));
-			for (WebElement l : li) {
-				if (l.getText().trim().contains("Sign In / Create Account")) {
-					l.click();
-					Thread.sleep(4000);
-					break;
-
-				}
-			}
-
-			WebElement userNameElement = driver.findElement(By.id("signinFormModal:username"));
-			userNameElement.sendKeys(dto.getUserName());
-			WebElement passwordElement = driver.findElement(By.id("signinFormModal:password"));
-
-			passwordElement.sendKeys(dto.getPassword());
-			WebElement loginButonElement = driver.findElement(By.id("signinFormModal:submit"));
-
-			loginButonElement.click();
-			Thread.sleep(5000);// Need to keep this number high for Linux issue.
-			try {
-				driver.findElement(By.id("signinFormError"));
-				navigate = false;
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-
+		 
 		}
-		 System.out.println("navigate-"+navigate);
+		System.out.println("navigate-"+navigate);
 		return navigate;
 	}
 
@@ -2030,23 +2111,23 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		// ScrappingSiteDetails d= new ScrappingSiteDetails();
 		ScrappingSiteDetailsFull f = new ScrappingSiteDetailsFull();
 		ScrappingSiteFull fu = new ScrappingSiteFull();
-		fu.setSiteName("United");
+		fu.setSiteName("UHC");
 		f.setScrappingSite(fu);
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smile#56789");
-		dto.setUserName("caladent02");
-		dto.setSiteName("United Concordia");
+		dto.setPassword("Dental@098766");
+		dto.setUserName("caladental03");//caladental03
+		dto.setSiteName("UHC");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("10/12/2000");//03/15/1973
+		psc.setDob("03/24/2014");//03/15/1973
 		/** For Ddental456/Insurance@745 we have  126229918001  DOB-05/14/1958*/
 		
 		psc.setFirstName("");
 		psc.setLastName("");
-		psc.setMemberId("128031536001");//129521395001
+		psc.setMemberId("01342901100");//129521395001
 		psc.setSsnNumber("");
 		psc.setGradePay("E1");
 
@@ -2061,8 +2142,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		 * dto.setDto(l);
 		 */
 
-		dto.setSiteUrl("https://www.unitedconcordia.com/dental-insurance/dentist/");
-		UnitedConcordiaImpl i = new UnitedConcordiaImpl(null, null, null, dto, null, null, 1, "",null,
+		dto.setSiteUrl("https://dbp.optum.com/content/dental-benefits-provider/en.html");
+		UHCImpl i = new UHCImpl(null, null, null, dto, null, null, 1, "",null,
 				"D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
 		i.setProps("9500");
 		// i.scrappingSiteDetails = f;
@@ -2077,3 +2158,4 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 	}
 
 }
+

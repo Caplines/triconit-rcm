@@ -648,6 +648,12 @@ public class CaplineIVFFormDto {
 	private String d5130fr;
 	private String d0140;
 
+	private String sRemarks;
+	private String mPolicy;
+	private String mMIP;
+	
+	private String esBcbs;
+	private String obtainMPN;
 	
     private Integer ivFormTypeId;
 	
@@ -2976,6 +2982,46 @@ public class CaplineIVFFormDto {
 
 	public void setGradePay(String gradePay) {
 		this.gradePay = gradePay;
+	}
+
+	public String getsRemarks() {
+		return sRemarks;
+	}
+
+	public void setsRemarks(String sRemarks) {
+		this.sRemarks = sRemarks;
+	}
+
+	public String getmPolicy() {
+		return mPolicy;
+	}
+
+	public void setmPolicy(String mPolicy) {
+		this.mPolicy = mPolicy;
+	}
+
+	public String getmMIP() {
+		return mMIP;
+	}
+
+	public void setmMIP(String mMIP) {
+		this.mMIP = mMIP;
+	}
+
+	public String getEsBcbs() {
+		return esBcbs;
+	}
+
+	public void setEsBcbs(String esBcbs) {
+		this.esBcbs = esBcbs;
+	}
+
+	public String getObtainMPN() {
+		return obtainMPN;
+	}
+
+	public void setObtainMPN(String obtainMPN) {
+		this.obtainMPN = obtainMPN;
 	}
 
 

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -98,7 +99,8 @@ public class FreqencyUtils {
 		String code = "";
 		String surface = "";
 
-		List<String> dos = new ArrayList<>();
+		Set<String> dos = new HashSet<>();
+		Set<String> codehistory = new HashSet<>();
 		String fr = "";
 		String fl = "";
 		if (li != null) {
@@ -106,6 +108,8 @@ public class FreqencyUtils {
 				if (s.getServiceCode().equals(serviceCode)) {
 					count = count + s.getCount();
 					dos.add(s.getDos());
+					if (s.getServiceCodeHis()!=null)codehistory.add(s.getServiceCodeHis());
+					else codehistory.add("");
 					fl = s.getFieldName();
 					code = s.getServiceCode();
 					tooth = s.getTooth();
@@ -122,7 +126,7 @@ public class FreqencyUtils {
 		}
 		if (!surface.equals(""))
 			surface = "(" + surface + ")";
-		return new Object[] { count, tooth, String.join(",", dos), fl, times, code, fr, surface };
+		return new Object[] { count, tooth, String.join(",", dos), fl, times, code, fr, surface,String.join(",", codehistory) };
 	}
 
 	/*
@@ -137,15 +141,18 @@ public class FreqencyUtils {
 	 * } return mess; }
 	 */
 	public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1, List<ServiceCodeIvfTimesFreqFieldDto> l2,
-			String s1, String s2, String tooth,int currentCount) {
+			String s1, String s2, String tooth,int currentCount,boolean humana) {
 		int ct = currentCount;
 		int ti = 0;
 		int actualmax = -1;
 		Object[] mess = null;
-		String code = "";
-		Object c1[] = FreqencyUtils.getCountTimeServiceCode(l1, s1,0);
+		Set<String> code = new HashSet<>();
+		Set<String> codeH = new HashSet<>();
+        Object c1[] = FreqencyUtils.getCountTimeServiceCode(l1, s1,0);
 		if (!((String) c1[5]).equals("")) {
-			code = code + (String) c1[5];
+			code.add((String) c1[5]);
+			codeH.add((String) c1[5]);
+			
 		}
 		ct = ct + (Integer) c1[0];
 		ti = ti + (Integer) c1[4];
@@ -153,33 +160,35 @@ public class FreqencyUtils {
 			actualmax = ti;
 		Object[] c2 = FreqencyUtils.getCountTimeServiceCode(l2, s2,0);
 		if (!((String) c2[5]).equals("")) {
-			code = code + (String) c2[5];
+			code.add((String) c2[5]);
+			codeH.add((String) c2[5]);
 		}
 		ct = ct + (Integer) c2[0];
 		ti = ti + (Integer) c2[4];// Times: 2 Actual Max=2
 		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
 			actualmax = ti;/// Set to minimum value
 		if ((actualmax > 0) && (ct > 0 && ct > actualmax)) {
-			String dos = "";
+			Set<String> dos = new HashSet<>();
 			String fl = "";
 			String fr = "";
 			String sur = "";
 			if (l1 != null) {
-				dos = dos + " " + (String) c1[2];
+				dos.add((String) c1[2]);
 				fl = fl + " " + (String) c1[3];
 				fr = fr + " " + (String) c1[6];
 				sur = sur + " " + (String) c1[7];
 			}
 			if (l2 != null) {
-				dos = dos + " " + (String) c2[2];
+				dos.add((String) c2[2]);
 				fl = fl + " " + (String) c2[3];
 				fr = fr + " " + (String) c2[6];
 				sur = sur + " " + (String) c2[7];
 			}
 			if (!sur.equals(""))
 				sur = "(" + sur + ")";
-			mess = new Object[] { code, tooth, dos, actualmax, fr, sur };
-
+			//mess = new Object[] { code, tooth, dos, actualmax, fr, sur };
+			if (humana)mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,String.join(",", codeH) };
+			else mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,"" };
 		}
 		return mess;
 	}
@@ -559,6 +568,149 @@ public class FreqencyUtils {
 		return mess;
 	}
 
+
+	/**
+	 * 
+	 * @param l1
+	 * @param l2
+	 * @param l3
+	 * @param l4
+	 * @param l5
+	 * @param l6
+	 * @param l7
+	 * @param l8
+	 * @param s1
+	 * @param s2
+	 * @param s3
+	 * @param s4
+	 * @param s5
+	 * @param s6
+	 * @param s7
+	 * @param s8
+	 * @param tooth
+	 * @param currentCount is count in treatment plan
+	 * @return
+	 */
+	public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1, List<ServiceCodeIvfTimesFreqFieldDto> l2,
+			List<ServiceCodeIvfTimesFreqFieldDto> l3, List<ServiceCodeIvfTimesFreqFieldDto> l4,
+			List<ServiceCodeIvfTimesFreqFieldDto> l5,String s1, String s2,
+			String s3, String s4, String s5, String tooth,int currentCount,boolean humana) {
+		int ct = currentCount;
+		int ti = 0;
+		int actualmax = -1;
+		Object[] mess = null;
+		Set<String> code = new HashSet<>();
+		Set<String> codeH = new HashSet<>();
+		Object c1[] = FreqencyUtils.getCountTimeServiceCode(l1, s1,0);
+		if (!((String) c1[5]).equals("")) {
+			code.add((String) c1[5]);
+			codeH.add((String) c1[8]);
+			
+		}
+
+		ct = ct + (Integer) c1[0];
+		ti = (Integer) c1[4];
+		if (ti > 0)
+			actualmax = ti;
+
+		Object[] c2 = FreqencyUtils.getCountTimeServiceCode(l2, s2,0);
+		if (!((String) c2[5]).equals("")) {
+			code.add((String) c2[5]);
+			codeH.add((String) c2[8]);
+		}
+
+		ct = ct + (Integer) c2[0];
+		ti = (Integer) c2[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c3 = FreqencyUtils.getCountTimeServiceCode(l3, s3,0);
+		if (!((String) c3[5]).equals("")) {
+			code.add((String) c3[5]);
+			codeH.add((String) c3[8]);
+		}
+		ct = ct + (Integer) c3[0];
+		ti = (Integer) c3[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c4 = FreqencyUtils.getCountTimeServiceCode(l4, s4,0);
+		if (!((String) c4[5]).equals("")) {
+			code.add((String) c4[5]);
+			codeH.add((String) c4[8]);
+		}
+
+		ct = ct + (Integer) c4[0];
+		ti = (Integer) c4[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c5 = FreqencyUtils.getCountTimeServiceCode(l5, s5,0);
+		if (!((String) c5[5]).equals("")) {
+			code.add((String) c5[5]);
+			codeH.add((String) c5[8]);
+		}
+
+		ct = ct + (Integer) c5[0];
+		ti = (Integer) c5[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+		
+		if ((actualmax > 0) && (ct > 0 && ct > actualmax)) {
+			Set<String> dos = new HashSet<>();
+			
+			String fl = "";
+			String fr = "";
+			String sur = "";
+
+			if (l1 != null) {
+				dos.add((String) c1[2]);
+				fl = fl + " " + (String) c1[3];
+				fr = fr + " " + (String) c1[6];
+				sur = sur + " " + (String) c1[7];
+
+			}
+			if (l2 != null) {
+				dos.add((String) c2[2]);
+				fl = fl + " " + (String) c2[3];
+				fr = fr + " " + (String) c2[6];
+				sur = sur + " " + (String) c2[7];
+
+			}
+			if (l3 != null) {
+				dos.add((String) c3[2]);
+				fl = fl + " " + (String) c3[3];
+				fr = fr + " " + (String) c3[6];
+				sur = sur + " " + (String) c3[7];
+
+			}
+			if (l4 != null) {
+				dos.add((String) c4[2]);
+				fl = fl + " " + (String) c4[3];
+				fr = fr + " " + (String) c4[6];
+				sur = sur + " " + (String) c4[7];
+
+			}
+			if (l5 != null) {
+				dos.add((String) c5[2]);
+				fl = fl + " " + (String) c5[3];
+				fr = fr + " " + (String) c5[6];
+				sur = sur + " " + (String) c5[7];
+
+			}
+			// 3124 code ,TOOTH,DOS, TIMES
+			if (!sur.equals(""))
+				sur = "(" + sur + ")";
+			if (humana)mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,String.join(",", codeH) };
+			else mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,"" };
+
+		}
+		return mess;
+	}
+	
 	/**
 	 * 
 	 * @param l1
@@ -584,16 +736,21 @@ public class FreqencyUtils {
 	public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1, List<ServiceCodeIvfTimesFreqFieldDto> l2,
 			List<ServiceCodeIvfTimesFreqFieldDto> l3, List<ServiceCodeIvfTimesFreqFieldDto> l4,
 			List<ServiceCodeIvfTimesFreqFieldDto> l5, List<ServiceCodeIvfTimesFreqFieldDto> l6,List<ServiceCodeIvfTimesFreqFieldDto> l7,
-			List<ServiceCodeIvfTimesFreqFieldDto> l8,String s1, String s2,
-			String s3, String s4, String s5, String s6, String s7, String s8, String tooth,int currentCount) {
+			List<ServiceCodeIvfTimesFreqFieldDto> l8,List<ServiceCodeIvfTimesFreqFieldDto> l9,List<ServiceCodeIvfTimesFreqFieldDto> l10,
+			List<ServiceCodeIvfTimesFreqFieldDto> l11,List<ServiceCodeIvfTimesFreqFieldDto> l12,
+			String s1, String s2,
+			String s3, String s4, String s5, String s6, String s7, String s8,String s9,String s10,String s11,String s12, String tooth,int currentCount,boolean humana) {
 		int ct = currentCount;
 		int ti = 0;
 		int actualmax = -1;
 		Object[] mess = null;
-		String code = "";
+		Set<String> code = new HashSet<>();
+		Set<String> codeH = new HashSet<>();
 		Object c1[] = FreqencyUtils.getCountTimeServiceCode(l1, s1,0);
 		if (!((String) c1[5]).equals("")) {
-			code = code + (String) c1[5];
+			code.add((String) c1[5]);
+			codeH.add((String) c1[8]);
+			
 		}
 
 		ct = ct + (Integer) c1[0];
@@ -603,7 +760,8 @@ public class FreqencyUtils {
 
 		Object[] c2 = FreqencyUtils.getCountTimeServiceCode(l2, s2,0);
 		if (!((String) c2[5]).equals("")) {
-			code = code + (String) c2[5];
+			code.add((String) c2[5]);
+			codeH.add((String) c2[8]);
 		}
 
 		ct = ct + (Integer) c2[0];
@@ -613,7 +771,8 @@ public class FreqencyUtils {
 
 		Object[] c3 = FreqencyUtils.getCountTimeServiceCode(l3, s3,0);
 		if (!((String) c3[5]).equals("")) {
-			code = code + (String) c3[5];
+			code.add((String) c3[5]);
+			codeH.add((String) c3[8]);
 		}
 		ct = ct + (Integer) c3[0];
 		ti = (Integer) c3[4];
@@ -622,7 +781,8 @@ public class FreqencyUtils {
 
 		Object[] c4 = FreqencyUtils.getCountTimeServiceCode(l4, s4,0);
 		if (!((String) c4[5]).equals("")) {
-			code = code + (String) c4[5];
+			code.add((String) c4[5]);
+			codeH.add((String) c4[8]);
 		}
 
 		ct = ct + (Integer) c4[0];
@@ -632,7 +792,8 @@ public class FreqencyUtils {
 
 		Object[] c5 = FreqencyUtils.getCountTimeServiceCode(l5, s5,0);
 		if (!((String) c5[5]).equals("")) {
-			code = code + (String) c5[5];
+			code.add((String) c5[5]);
+			codeH.add((String) c5[8]);
 		}
 
 		ct = ct + (Integer) c5[0];
@@ -642,7 +803,8 @@ public class FreqencyUtils {
 
 		Object[] c6 = FreqencyUtils.getCountTimeServiceCode(l6, s6,0);
 		if (!((String) c6[5]).equals("")) {
-			code = code + (String) c6[5];
+			code.add((String) c6[5]);
+			codeH.add((String) c6[8]);
 		}
 
 		ct = ct + (Integer) c6[0];
@@ -652,7 +814,8 @@ public class FreqencyUtils {
 		
 		Object[] c7 = FreqencyUtils.getCountTimeServiceCode(l7, s7,0);
 		if (!((String) c7[5]).equals("")) {
-			code = code + (String) c7[5];
+			code.add((String) c7[5]);
+			codeH.add((String) c7[8]);
 		}
 
 		ct = ct + (Integer) c7[0];
@@ -662,7 +825,9 @@ public class FreqencyUtils {
 		
 		Object[] c8 = FreqencyUtils.getCountTimeServiceCode(l8, s8,0);
 		if (!((String) c8[5]).equals("")) {
-			code = code + (String) c8[5];
+			code.add((String) c8[5]);
+			codeH.add((String) c8[8]);
+			
 		}
 
 		ct = ct + (Integer) c8[0];
@@ -670,73 +835,152 @@ public class FreqencyUtils {
 		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
 			actualmax = ti;/// Set to minimum value
 		
+		Object[] c9 = FreqencyUtils.getCountTimeServiceCode(l9, s9,0);
+		if (!((String) c9[5]).equals("")) {
+			code.add((String) c9[5]);
+			codeH.add((String) c9[8]);
+			
+		}
+
+		ct = ct + (Integer) c9[0];
+		ti = (Integer) c9[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c10 = FreqencyUtils.getCountTimeServiceCode(l10, s10,0);
+		if (!((String) c10[5]).equals("")) {
+			code.add((String) c10[5]);
+			codeH.add((String) c10[8]);
+			
+		}
+
+		ct = ct + (Integer) c10[0];
+		ti = (Integer) c10[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+		
+		Object[] c11 = FreqencyUtils.getCountTimeServiceCode(l11, s11,0);
+		if (!((String) c11[5]).equals("")) {
+			code.add((String) c11[5]);
+			codeH.add((String) c11[8]);
+			
+		}
+
+		ct = ct + (Integer) c11[0];
+		ti = (Integer) c11[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c12 = FreqencyUtils.getCountTimeServiceCode(l12, s12,0);
+		if (!((String) c12[5]).equals("")) {
+			code.add((String) c12[5]);
+			codeH.add((String) c12[8]);
+			
+		}
+
+		ct = ct + (Integer) c12[0];
+		ti = (Integer) c12[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		
 		if ((actualmax > 0) && (ct > 0 && ct > actualmax)) {
-			String dos = "";
+			Set<String> dos = new HashSet<>();
+			
 			String fl = "";
 			String fr = "";
 			String sur = "";
 
 			if (l1 != null) {
-				dos = dos + " " + (String) c1[2];
+				dos.add((String) c1[2]);
 				fl = fl + " " + (String) c1[3];
 				fr = fr + " " + (String) c1[6];
 				sur = sur + " " + (String) c1[7];
 
 			}
 			if (l2 != null) {
-				dos = dos + " " + (String) c2[2];
+				dos.add((String) c2[2]);
 				fl = fl + " " + (String) c2[3];
 				fr = fr + " " + (String) c2[6];
 				sur = sur + " " + (String) c2[7];
 
 			}
 			if (l3 != null) {
-				dos = dos + " " + (String) c3[2];
+				dos.add((String) c3[2]);
 				fl = fl + " " + (String) c3[3];
 				fr = fr + " " + (String) c3[6];
 				sur = sur + " " + (String) c3[7];
 
 			}
 			if (l4 != null) {
-				dos = dos + " " + (String) c4[2];
+				dos.add((String) c4[2]);
 				fl = fl + " " + (String) c4[3];
 				fr = fr + " " + (String) c4[6];
 				sur = sur + " " + (String) c4[7];
 
 			}
 			if (l5 != null) {
-				dos = dos + " " + (String) c5[2];
+				dos.add((String) c5[2]);
 				fl = fl + " " + (String) c5[3];
 				fr = fr + " " + (String) c5[6];
 				sur = sur + " " + (String) c5[7];
 
 			}
 			if (l6 != null) {
-				dos = dos + " " + (String) c6[2];
+				dos.add((String) c6[2]);
 				fl = fl + " " + (String) c6[3];
 				fr = fr + " " + (String) c6[6];
 				sur = sur + " " + (String) c6[7];
 
 			}
 			if (l7 != null) {
-				dos = dos + " " + (String) c7[2];
+				dos.add((String) c7[2]);
 				fl = fl + " " + (String) c7[3];
 				fr = fr + " " + (String) c7[6];
 				sur = sur + " " + (String) c7[7];
 
 			}
 			if (l8 != null) {
-				dos = dos + " " + (String) c8[2];
+				dos.add((String) c8[2]);
 				fl = fl + " " + (String) c8[3];
 				fr = fr + " " + (String) c8[6];
 				sur = sur + " " + (String) c8[7];
+
+			}
+			if (l9 != null) {
+				dos.add((String) c9[2]);
+				fl = fl + " " + (String) c9[3];
+				fr = fr + " " + (String) c9[6];
+				sur = sur + " " + (String) c9[7];
+
+			}
+			if (l10 != null) {
+				dos.add((String) c10[2]);
+				fl = fl + " " + (String) c10[3];
+				fr = fr + " " + (String) c10[6];
+				sur = sur + " " + (String) c10[7];
+
+			}
+			if (l11 != null) {
+				dos.add((String) c11[2]);
+				fl = fl + " " + (String) c11[3];
+				fr = fr + " " + (String) c11[6];
+				sur = sur + " " + (String) c11[7];
+
+			}
+			if (l12 != null) {
+				dos.add((String) c12[2]);
+				fl = fl + " " + (String) c12[3];
+				fr = fr + " " + (String) c12[6];
+				sur = sur + " " + (String) c12[7];
 
 			}
 
 			// 3124 code ,TOOTH,DOS, TIMES
 			if (!sur.equals(""))
 				sur = "(" + sur + ")";
-			mess = new Object[] { code, tooth, dos, actualmax, fr, sur };
+			if (humana)mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,String.join(",", codeH) };
+			else mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,"" };
 
 		}
 		return mess;
@@ -775,17 +1019,19 @@ public class FreqencyUtils {
 		 * alikecodepresent = true; }
 		 */
 		if ((tpCodes.equals("D2391") || tpCodes.equals("D2392") || tpCodes.equals("D2393") || tpCodes.equals("D2394")
-				|| tpCodes.equals("D2330") || tpCodes.equals("D2331") || tpCodes.equals("D2332")|| tpCodes.equals("D2335"))
+				|| tpCodes.equals("D2330") || tpCodes.equals("D2331") || tpCodes.equals("D2332")|| tpCodes.equals("D2335") 
+				|| tpCodes.equals("D2140") || tpCodes.equals("D2150") || tpCodes.equals("D2160")|| tpCodes.equals("D2161"))
 				&& (historyCode.equals("D2391") || historyCode.equals("D2392") || historyCode.equals("D2393") || historyCode.equals("D2394") 
-					|| historyCode.equals("D2330") || historyCode.equals("D2331") || historyCode.equals("D2332") || historyCode.equals("D2335"))) {
+					|| historyCode.equals("D2330") || historyCode.equals("D2331") || historyCode.equals("D2332") || historyCode.equals("D2335")
+					|| historyCode.equals("D2140") || historyCode.equals("D2150") || historyCode.equals("D2160")|| historyCode.equals("D2161"))) {
 			alikecodepresent = true;
 		}
 		if ((tpCodes.equals("D7210") || tpCodes.equals("D7140"))
 				&& (historyCode.equals("D7210") || historyCode.equals("D7140"))) {
 			alikecodepresent = true;
 		}
-		if ((tpCodes.equals("D2740") || tpCodes.equals("D2750"))
-				&& (historyCode.equals("D2740") || historyCode.equals("D2750"))) {
+		if ((tpCodes.equals("D2740") || tpCodes.equals("D2750") || tpCodes.equals("D6740") || tpCodes.equals("D6245") || tpCodes.equals("D2790"))
+				&& (historyCode.equals("D2740") || historyCode.equals("D2750") || historyCode.equals("D6740") || historyCode.equals("D6245") || historyCode.equals("D2790"))) {
 			alikecodepresent = true;
 		}
 
@@ -944,6 +1190,7 @@ public class FreqencyUtils {
 
 			ServiceCodeIvfTimesFreqFieldDto scivfTFDFinal = new ServiceCodeIvfTimesFreqFieldDto(tpCode,
 					scivfTFD.getFieldName(), scivfTFD.getFreqency(), 0, 0, "");
+			if (historyD!=null) scivfTFDFinal.setServiceCodeHis(historyD.getHistoryCode());
 			scivfTFDFinal.setTooth(tooth);
 			scivfTFDFinal.setSurface(historyD.getSurfaceTooth());
 			scivfTFDFinal.setDos(historyD.getHistoryDos());
@@ -1867,6 +2114,18 @@ public class FreqencyUtils {
 		// For grade pay -- Endodontic Procedures
 		try {
 			text = text.trim().toLowerCase();
+			if (text.contains("in network")) return "No Frequency";
+            //("1 Per Tooth ~ Per 5 Years ~ Age 18 And Older | Age 18 And Older | More...");//18 and older 18 and
+			if (text.contains("age") && text.contains(" and older")) {
+			String regexAge = "(.*?)age(.*?)and older(.*?)";
+			Pattern patternAge = Pattern.compile(regexAge);
+			Matcher matcherAge = patternAge.matcher(text);
+			if (matcherAge.matches() && matcherAge.groupCount() >= 2) {
+				//System.out.println("DD="+"age "+matcherAge.group(2).trim()+" and older"); 
+				
+				text = text.replaceAll("age "+matcherAge.group(2).trim()+" and older", "");
+			}
+			}
 			String convert = "";
 			System.out.println("TTT:" + text);
 			text = text.replaceAll("~", "");
@@ -1894,6 +2153,7 @@ public class FreqencyUtils {
 			if (text.contains("|")) {
 				try {
 				String[] convert1=text.split("\\|");
+				System.out.println(convert1.length);
 				if (convert1.length>1 && convert1[0].trim().equalsIgnoreCase(convert1[1].trim())) {
 					text=convert1[0];
 				}
@@ -2029,7 +2289,8 @@ public class FreqencyUtils {
 				}
 			}
 			if (convert.length() > 40)
-				convert = convert.substring(0, 39);		
+				convert = convert.substring(0, 39);	
+			convert=convert.replaceAll("\\|", "");
 			System.out.println("Con-" + convert);
 			return convert;
 		} catch (Exception e) {
@@ -2060,6 +2321,8 @@ public class FreqencyUtils {
 				"An interim partial denture is covered only to replace extracted anterior permanent teeth during the healing period. If provided for other circumstances, the patient is responsible for the cost. Delta Dental considers the fee for an interim partial denture to include the fee for all teeth and clasps. Benefit is limited to once per arch within a 5 year period.",
 				"PY"));
 		*/
+		convertFrequecyUCCIString("1 Per Tooth ~ Per 5 Years ~ Age 18 And Older | Age 18 And Older | More...");//18 and older 18 and
+		convertFrequecyUCCIString("1 Per Tooth ~ Per 5 Years ~ Age 18 And Older | Age 18 And Older | More...");
 		convertFrequecyUCCIString("1 per 12 months ~ per dentist | 1 per 12 months ~ per dentist");
 		convertFrequecyUCCIString("1 per tooth ~ per lifetime ~ under 15 years of age");
 		convertFrequecyUCCIString("1 per tooth ~ per lifetime ~ under 15 years of age");

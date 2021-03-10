@@ -62,6 +62,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 	private static String MAX_VAL="_MAXVAL_";
 	private static String MIN_MAX_VAL="_MIN_MAX_VAL_";
 	private static String MIN_MAX_VAL_SPLIT="--SPSPSP--";
+	private static String CLEAR_ID="";
 	
 	
 	// private static String counterLink = "";
@@ -95,6 +96,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 	public String scrapSite(ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user,
 			Office office) {
 		setProps(scrappingSiteDetails.getProxyPort());
+		 System.out.println("888888888888 -Start " + new Date());
 		try {
 
 			System.out.println("MEM 3-" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
@@ -114,7 +116,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								 System.out.println("MEM 4-"
 								 + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 								PatientTemp d = parsePage(driver, data, siteName, issueNo, office);
-								 System.out.println("888888888888 -END " + d);
+								 System.out.println(new Date());
+									 System.out.println("888888888888 -END " + d);
 								if (d != null) {
 									// Update the Data in Database
 									s = updateDatainDB(d, office, user) + "";
@@ -3386,13 +3389,23 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		String[] info = new String[6];
 		info[5] = "";// Used for comment
 		if (clear) {
+			if (CLEAR_ID.equals("")) {					
 			List<WebElement> el = driver.findElements(By.tagName("a"));
 			for (WebElement e : el) {
 				if (e.getText() != null && e.getText().equals("Clear All")) {
+					//CLEAR_ID=e.getAttribute("id");//Apply this logic latter if needed
 					e.click();
 					Thread.sleep(6000);
 					break;
 				}
+			 }
+			}
+			else {
+				Thread.sleep(2000);
+				System.out.println("CLEAR_ID--"+CLEAR_ID);
+				WebElement e =driver.findElement(By.id(CLEAR_ID));
+				e.click();
+				Thread.sleep(5000);
 			}
 		}
 		try {
@@ -3955,8 +3968,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
 		psc.setDob("09/29/1951");// 03/20/1992 12/26/1988
-		psc.setFirstName("55Linda1");// Heather Griffith - Dean Dornak Ellen Keck
-		psc.setLastName("1Williams");
+		psc.setFirstName("Linda");// Heather Griffith - Dean Dornak Ellen Keck
+		psc.setLastName("Williams");
 		psc.setMemberId("120385015801");// 1125727908.. 632307605
 		psc.setSsnNumber("120385015801");
 		psc.setSubscribersFirstName("Katlynne");

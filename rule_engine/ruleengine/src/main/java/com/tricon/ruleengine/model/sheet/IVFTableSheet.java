@@ -314,8 +314,33 @@ public class IVFTableSheet {
 	private String d5130;
 	private String d5130fr;
 	private String d0140;
+	
+	private String sRemarks;
+	private String mPolicy;
+	private String mMIP;
+	private String esBcbs;
+	private String obtainMPN;
 
-    private int ivFormTypeId;//Used to distinguish between types of IV's 
+
+    public String getsRemarks() {
+		return sRemarks;
+	}
+	public void setsRemarks(String sRemarks) {
+		this.sRemarks = sRemarks;
+	}
+	public String getmPolicy() {
+		return mPolicy;
+	}
+	public void setmPolicy(String mPolicy) {
+		this.mPolicy = mPolicy;
+	}
+	public String getmMIP() {
+		return mMIP;
+	}
+	public void setmMIP(String mMIP) {
+		this.mMIP = mMIP;
+	}
+	private int ivFormTypeId;//Used to distinguish between types of IV's 
 	private String statusDump;// Used for Dump sheets only MC
 	
 	
@@ -2176,6 +2201,18 @@ public class IVFTableSheet {
 	}
 	public void setD0140(String d0140) {
 		this.d0140 = d0140;
+	}
+	public String getEsBcbs() {
+		return esBcbs;
+	}
+	public void setEsBcbs(String esBcbs) {
+		this.esBcbs = esBcbs;
+	}
+	public String getObtainMPN() {
+		return obtainMPN;
+	}
+	public void setObtainMPN(String obtainMPN) {
+		this.obtainMPN = obtainMPN;
 	}
 	
 		

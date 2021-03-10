@@ -40,6 +40,7 @@ import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.ScrappingFullDataService;
 import com.tricon.ruleengine.service.scrapfull.impl.BCBSDnoaconnectImpl;
 import com.tricon.ruleengine.service.scrapfull.impl.DeltaDentalServiceImpl;
+import com.tricon.ruleengine.service.scrapfull.impl.UHCImpl;
 import com.tricon.ruleengine.service.scrapfull.impl.UnitedConcordiaImpl;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
@@ -175,13 +176,17 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 			full.setUpdatedBy(user);
 //			full.setGoogleSheetId(dto.getSheetId());
 //			full.setGoogleSubId(dto.getSheetSubId());
+			boolean updateScrappingDetailsById=true;
+			if (dto.getSiteName().equals("UHC") && dto.getProcessId()!=null) {
+				updateScrappingDetailsById=false;//OTP/SMS  comes into picture.
+			}
 			full.setPassword(dto.getPassword());
 			full.setUserName(dto.getUserName());
 			if (!full.isRunning()) { 
 				continueParsing = true;
 			}
 			full.setRunning(true);
-			dataDoa.updateScrappingDetailsById(full);
+			if (updateScrappingDetailsById) dataDoa.updateScrappingDetailsById(full);
 		}
 		
 		//start the parsing....
@@ -194,14 +199,35 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		}
 		//increase the count
 		manage.setProcessCount(manage.getProcessCount()+dto.getDto().size());
+		
+		
 		dataDoa.increasecrapCount(manage);
+
+		boolean createProcess=true;
+		int processId=0;
+		if (dto.getSiteName().equals("UHC") && dto.getProcessId()!=null) {
+			createProcess=false;//OTP/SMS  comes into picture.
+		}
+        if (createProcess) {
 		ScrappingFullDataManagmentProcess manageP=  new ScrappingFullDataManagmentProcess();
 		manageP.setCount(dto.getDto().size());
 		manageP.setStatus(""); 
 		manageP.setCreatedBy(user);
 		manageP.setCreatedDate(new Date());
-		int x=(int) dataDoa.createScrappingSiteManagementProcess(manageP);
-		exMess=continueParsing?("Started-"+x):manage.getProcessCount()+" Scrap Procedures Already Running.\n Please wait till it finishes.";
+		
+
+		processId=(int) dataDoa.createScrappingSiteManagementProcess(manageP);
+        }else {//DHC OTP LOGIC... (on second call we need OTP with Process ID)
+        	//update count..
+         	ScrappingFullDataManagmentProcess manageP = dataDoa
+					.getScrappingFullDataManagmentDataProcess(Integer.parseInt(dto.getProcessId()));
+			manageP.setStatus("");
+			manageP.setCount(dto.getDto().size());
+			manageP.setUpdatedBy(user);
+			manageP.setUpdatedDate(new Date());
+			dataDoa.updateScrappingFullDataManagmentProcess(manageP);
+        }
+		exMess=continueParsing?("Started-"+processId):manage.getProcessCount()+" Scrap Procedures Already Running.\n Please wait till it finishes.";//not used now..
 		String taxId= dataDoa.getTaxmapping(off, "PPO");
 		try {
 			//update Status in Google Sheet about running a status
@@ -226,12 +252,22 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 					 /*map.put(ConstantsScrapping.SCRAPPING_INIT + dto.getSheetId() + ConstantsScrapping.NAME_Separator
 								+ dto.getSheetSubId(), null);*/
 					 System.out.println("';"+env.getProperty("google.chorme.driver"));
-					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,fType,env.getProperty("google.chorme.driver")));
+					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off,processId,taxId,fType,env.getProperty("google.chorme.driver")));
 				  } else if (dto.getSiteName().equals("BCBS")) {
-					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,fType,env.getProperty("google.chorme.driver")));
+					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off,processId,taxId,fType,env.getProperty("google.chorme.driver")));
 					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
 				  }else if (dto.getSiteName().equals("United Concordia")) {
-					  service.submit(new UnitedConcordiaImpl(patDao,dataDoa ,full,dto,user,off,x,taxId,fType,env.getProperty("google.chorme.driver")));
+					  service.submit(new UnitedConcordiaImpl(patDao,dataDoa ,full,dto,user,off,processId,taxId,fType,env.getProperty("google.chorme.driver")));
+					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
+				  }else if (dto.getSiteName().equals("UHC")) {
+					  /*if (dto.getProcessId()!=null)
+					       service.submit(new UHCImpl(dto,user,off,processId,taxId,fType,env.getProperty("google.chorme.driver")));
+					  else {
+						  UHCImpl u=  new UHCImpl(dto,user,off,processId,taxId,fType,env.getProperty("google.chorme.driver"));
+						  if (!u.getOTPAfterCall()) {
+							  exMess="false";
+						  }
+					  }*/
 					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
 				  }
 				 

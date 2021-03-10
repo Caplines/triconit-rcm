@@ -96,6 +96,13 @@ public class Constants {
 	public static final String RULE_ID_60="Exams Age Limitation";
 	public static final String RULE_ID_61="Humana Exception";
 	public static final String RULE_ID_62="FCL Dental Exception";
+	public static final String RULE_ID_63="Service not Covered (Chip)";
+	public static final String RULE_ID_64="IntraOral Periapical";
+	public static final String RULE_ID_65="Nitrous Oxide";
+	public static final String RULE_ID_66="COB Primary";
+	public static final String RULE_ID_67="Percentage coverage check";//Only for OS FORM..
+	
+	
 	
 	
 	/*

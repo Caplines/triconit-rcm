@@ -148,6 +148,37 @@ public class ScrappingController {
 
 	}
 
+	
+	
+	@CrossOrigin
+	@PostMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/validateparsefulldataOTP", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> validateparsefulldataOTP(@RequestBody ScrappingFullDataDetailDto dto)  {
+		 String data=null;
+		try {
+			
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String res ="";//fullService.findRunningStatus(dto);//no need for now uncomment if server has issue
+			if (res.equals("")) {
+				data=fullService.parseFullDataAndSaveDetails(dto, authentication.getName());
+				//data="Started";
+			}else  data= "One Scrap Procedure Already Running for "+dto.getSiteName()+".\n Please wait till it finishes.";;
+				
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", data));
+
+	}
+	
+	
+	
+	
 	@CrossOrigin
 	@PostMapping
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")

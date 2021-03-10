@@ -57,6 +57,7 @@ import com.tricon.ruleengine.model.db.GoogleSheets;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.MVPandVAP;
 import com.tricon.ruleengine.model.db.Mappings;
+import com.tricon.ruleengine.model.db.OSIVFormCodes;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.OneDriveApp;
 import com.tricon.ruleengine.model.db.OneDriveFile;
@@ -86,6 +87,7 @@ import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.EagleSoftDBService;
+import com.tricon.ruleengine.service.OSIVFormCodesService;
 import com.tricon.ruleengine.service.SharePointService;
 import com.tricon.ruleengine.service.TreatmentPlanService;
 import com.tricon.ruleengine.service.UserInputService;
@@ -168,6 +170,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	@Autowired
 	IVformTypeDao iVformTypeDao;
 	
+	@Autowired
+	OSIVFormCodesService oSIVFormCodesService;
+
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
     private UserDetailsService userDetailsService;
@@ -323,7 +328,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Map<String, List<Object>> tMap=null;
 				Map<String, List<Object>> tMapReduced=null;
 				List<ExceptionDataDto> exceptionData=null;
-				
+				List<OSIVFormCodes> oSCodes=null;
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				Map<String, List<EagleSoftFeeShedule>> esfeess= null;
 				Map<String, List<Perio>> perios= null;
@@ -451,6 +456,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}
 						if (type==Constants.userType_TR) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
 						if (type==Constants.userType_CL) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getClaimData(trids, esDB,bw);
+						
 						//Phase 3 add new Query
 						tMapReduced=tMap;
 						tMap=createCommonDataObject(tMap,authentication,false,null);//create Common Object
@@ -773,12 +779,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							// RULE_ID_4 "Coverage Book"
 							List<TPValidationResponseDto> dtoRL = new ArrayList<>();
+							
 							/*
-							if ( ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()==Constants.IV_ORAL_SURGERY_FORM_NAME_ID)
+							if ( ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()==Constants.IV_ORAL_SURGERY_FORM_NAME_ID){
+							oSCodes=oSIVFormCodesService.getAllActiveOSIVCodes();
 							validdateRulesTPOS(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
-									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData);
-							else validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
+									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,oSCodes);
+							}else validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
 									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData);
 							*/		  
@@ -1335,7 +1343,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Constants.rule_log_debug, bw);
 
 		// END  Filling Bundling
-     /*NOW USED NOW							
+     /*NOT USED NOW							
 		// DQ Fillings (Provider Same)
 		rule = getRulesFromList(rules, Constants.RULE_ID_51);
 		dtoRL = rb.Rule51(tList, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw);
@@ -1980,7 +1988,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		// RULE_ID_62 "// CL Dental Exception
 
 		rule = getRulesFromList(rules, Constants.RULE_ID_62);
-		dtoRL = rb.Rule62(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule,esempmaster.get(empMasterKey), bw,type);
+		dtoRL = rb.Rule62(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule,esempmaster,empMasterKey, bw,type);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
@@ -1995,6 +2003,81 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		// END CL Dental Exception
 		
+
+ 		// RULE_ID_63 "// Service not Covered (Chip)
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_63);
+		dtoRL = rb.Rule63(ivfMap.get(ivx).get(0),tListReduced, messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_63,
+				Constants.rule_log_debug, bw);
+
+		// END Service not Covered (Chip)
+		
+		// RULE_ID_64 "// IntraOral Periapical
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_64);
+		dtoRL = rb.Rule64( ivfMap.get(ivx).get(0),tListReduced, messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_64,
+				Constants.rule_log_debug, bw);
+
+		// END IntraOral Periapical
+		
+		// RULE_ID_65 "// Nitrous Oxide
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_65);
+		dtoRL = rb.Rule65(ivfMap.get(ivx).get(0),tListReduced, messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_65,
+				Constants.rule_log_debug, bw);
+
+		// END Nitrous Oxide
+		
+		// RULE_ID_66"// COB Primary
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_66);
+		dtoRL = rb.Rule66(ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_66,
+				Constants.rule_log_debug, bw);
+
+		// END COB Primary
+
+  
+  
   }
 	
   private void validdateRulesTPOS(Map<String, List<EagleSoftPatient>> espatients,
@@ -2004,7 +2087,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  String empMasterKey,
 		  Map<String, List<Perio>> perios,List<Mappings> mappings,RuleBook rb,List<TPValidationResponseDto> list,TPValidationResponseDto dtoR,TreatmentPlanValidationDto dtod,
 		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
-		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData) {
+		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<OSIVFormCodes> oSCodes) {
 	  
 		String feeKey = "-1";
 		if (espatients != null && espatients.get(patKey) != null

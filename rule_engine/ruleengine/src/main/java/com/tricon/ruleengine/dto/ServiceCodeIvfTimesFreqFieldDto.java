@@ -10,6 +10,8 @@ public class ServiceCodeIvfTimesFreqFieldDto {
 	String tooth;
 	String dos;
 	String surface;
+	String serviceCodeHis;//Used in humana
+	
 	
 	
 	
@@ -88,6 +90,14 @@ public class ServiceCodeIvfTimesFreqFieldDto {
 
 	public void setSurface(String surface) {
 		this.surface = surface;
+	}
+
+	public String getServiceCodeHis() {
+		return serviceCodeHis;
+	}
+
+	public void setServiceCodeHis(String serviceCodeHis) {
+		this.serviceCodeHis = serviceCodeHis;
 	}
 	
 	
