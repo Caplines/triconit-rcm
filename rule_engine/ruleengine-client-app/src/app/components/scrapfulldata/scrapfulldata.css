@@ -90,3 +90,7 @@ table#data-scroll-t tr:nth-child(odd) {
 .deletebut .glyphicon-remove {
 	color:red;
 }
+
+.cl-red{
+	color:red;
+}

@@ -11,5 +11,7 @@ export class ScrapFullDataModel extends ScrapFullPatientDataModel{
     //sheetSubId:string="";
     siteName:string="";
     siteUrl:string="";
+    otpValue:string="";
+    processId:string=null;
     dto = new Array() as Array<ScrapFullPatientDataModel>;
 }

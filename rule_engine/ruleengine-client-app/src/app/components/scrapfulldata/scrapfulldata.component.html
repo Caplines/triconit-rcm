@@ -100,6 +100,8 @@
 							</div>	
 							<div *ngIf="f2.submitted && !userName.valid" class="error-msg">
 								Site Login User Name is required</div>
+							<div *ngIf="calledOTPGeneration && scrap.userName==''" class="error-msg cl-red">
+								User Name  is required</div>	
 						</div>
 						</div>
 						<div class="form-horizontal">
@@ -115,9 +117,34 @@
 						    </div>		 
 								 <div *ngIf="f2.submitted && !password.valid" class="error-msg">
 								Site Password User Name is required</div>
+								<div *ngIf="calledOTPGeneration && scrap.password==''" class="error-msg cl-red">
+								Site Password  is required</div>
+								
 							<input type="hidden" [(ngModel)]="scrap.siteDetailId" name="siteDetailId"/>
 							<input type="hidden" [(ngModel)]="scrap.siteId" name="siteId"/>
 							<input type="hidden" [(ngModel)]="scrap.officeId" name="officeId"/>
+						</div>
+						</div>
+						<div *ngIf="scrap.otp" class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !otpValue.valid }">
+							<label class="col-sm-3 control-label" for="password">OTP</label>
+							<div class="col-sm-6" >
+							 <input type="text"
+								class="login-signup-form-field form-control" 
+								name="otpValue" id="otpValue"
+								[(ngModel)]="scrap.otpValue" #otpValue="ngModel"
+								 required placeholder="OTP..."/>
+						    </div>
+						    <div class="col-sm-3" >
+							 <input type="button"  [disabled]="otpValidated" 
+								name="otpValue" id="otpValue" value="Generate OTP" (click)="generateOTP()"
+								/>
+						    </div>		 
+								 <div *ngIf="otpValidated && scrap.otpValue==''" class="error-msg cl-red">
+								Check SMS For OTP</div>
+								<div *ngIf="!otpValidated && scrap.otpValue && !calledOTPGeneration" class="error-msg cl-red">
+								OTP not generated</div>
 						</div>
 						</div>
 						<div class="form-horizontal">

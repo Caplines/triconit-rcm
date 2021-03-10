@@ -58,10 +58,13 @@ export class ScrapFullDataComponent implements OnInit {
   showLoadingPA: boolean = false;
   showLoadingPAA:boolean =false;
   displayResultV:boolean =false;
+  otpValidated:boolean =false;
+  calledOTPGeneration = false;	
   rdata:any=[];	
   linkData:string="";
   rowCounter:number=1;
-  timerRef:any;	
+  timerRef:any;
+  
   dateOptions: DatepickerOptions = {
 		minYear: 1850,
 		maxYear: 2030,  
@@ -128,6 +131,7 @@ export class ScrapFullDataComponent implements OnInit {
 						this.scrap.officeId=this.offid;
 						this.rowCounter=1;
 						this.createBlankRow(0);
+						this.otpValidated=false;
 					}
 				 }
 				);
@@ -267,8 +271,12 @@ export class ScrapFullDataComponent implements OnInit {
 		   dt.subscribersFirstName=="" && dt.subscribersLastName=="" && dt.subscribersDob==""
 		    )){
 			 ax.push(dt);
+			 
+			 if (this.site.name=='UHC' && !this.calledOTPGeneration){
+				 return false;
+			 }
 			 //console.log(this.site.name);
-			 if (this.site.name=='BCBS'){
+			 if (this.site.name=='BCBS' || this.site.name=='UHC'){
 				 
 				 if(dt.dob==""){
 					 document.getElementById("patd"+x).setAttribute("style", "border-color: red;");
@@ -335,7 +343,7 @@ export class ScrapFullDataComponent implements OnInit {
 		 
 	   }//for
 	   if (ax.length==0){
-		   if (this.site.name=='BCBS'){
+		   if (this.site.name=='BCBS' || this.site.name=='UHC'){
 		    if (document.getElementById("patd"+0))document.getElementById("patd"+0).setAttribute("style", "border-color: red;");
 		    if (document.getElementById("patss"+0))document.getElementById("patss"+0).setAttribute("style", "border-color: red;");
 		    if (document.getElementById("patmem"+0))document.getElementById("patmem"+0).setAttribute("style", "border-color: red;");
@@ -396,6 +404,47 @@ export class ScrapFullDataComponent implements OnInit {
 	  this.rdata=d;
 	  
 
+	  
+  }
+  
+  generateOTP(){
+	  let ths=this;
+	  console.log(this.scrap);
+	  ths.scrap.processId=null;
+	  ths.otpValidated=false;
+	  if (!ths.scrap.otpValue){
+		  ths.scrap.otpValue="";
+		 // return ;
+	  }
+	  if (ths.scrap.password=='' || ths.scrap.userName==''){
+		  ths.calledOTPGeneration=true;
+		  return ;
+	  }else{
+		  ths.calledOTPGeneration=false;
+	  }
+		  ths.scrap.siteName=this.site.name;
+		  ths.scrap.siteUrl=this.site.url;
+		  ths.otpValidated=true;
+		  
+		  //ths.otpValidated=false;
+		  //ths.calledOTPGeneration=true;
+		  
+		  ths.applicationService.postData(this.scrap,"/validateparsefulldataOTP",
+					(result)=>{
+						  if (result.status == 'OK') {
+							  console.log(result.data);
+							  if (result.data.indexOf('Started')<0){
+								  alert(result.data);
+								  ths.otpValidated=false;
+								  ths.calledOTPGeneration=true;
+							  }else{
+								  ths.scrap.processId=result.data.split("Started-")[1];
+							  }
+							  
+						}
+					 }
+					);
+					
 	  
   }
   
