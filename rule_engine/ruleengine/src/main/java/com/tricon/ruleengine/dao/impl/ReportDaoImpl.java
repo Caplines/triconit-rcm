@@ -53,17 +53,19 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				criteria.createAlias("createdBy", "cr");
 				
 				*/
-			 String x="rep.treatement_plan_id as treatement_plan_id";
+			 String x="rep.treatement_plan_id as treatement_plan_id,rd.tx_plan_date as dos";
 			 String t="reports as rep, report_detail as rd";
 			 String z="rep.treatement_plan_id";
+			 String batchrest=" rep.treatement_plan_id <>'"+Constants.prebatchmode+"' ";
 			 
 			 if (dto.getmType()!=null && dto.getmType().equals("c")) {
-				 x="rep.claim_id as treatement_plan_id";
+				 x="rep.claim_id as treatement_plan_id,rd.date_of_service as dos";
 				 t="reports_claim as rep, report_claim_detail as rd";
 				 z="rep.claim_id";
-			 }
+				 batchrest=" rep.claim_id <>'"+Constants.prebatchmode+"' ";
+			 }// 
 			 String queryString="SELECT DATE_FORMAT(rep.created_date,'%m/%d/%Y %T') as rep_create_date,rep.created_by as rep_created_by, "+
-					 " CONCAT( first_name ,' ' ,last_name ) as name "
+					 " CONCAT( first_name ,' ' ,last_name ) as name ,CAST(COALESCE(rd.message_type, -200) as UNSIGNED) as messageType "
 			 		+ ", DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as rd_created_date," + 
 			 		"us.email as email,offi.name as office_name,rep.group_run as rep_group_run,rd.group_run as rd_group_run, " + 
 			 		x+",rep.patient_dob as dob,"
@@ -120,6 +122,32 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 							" )  and rd.created_by='"+dto.getEmployerName() +"'" ;
 				 
 				 
+						 
+			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.ruledatasheet.toString())) {
+				 if (dto.getReportField1()==null) dto.setReportField1("");
+				 if (dto.getReportField2()==null) dto.setReportField2("");
+				  
+				 if (!dto.getReportField1().equals("") && !dto.getReportField2().equals("")) {
+				 queryString= queryString+	"  and (" + 
+							"  (rd.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"                 or" + 
+							"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							//"                 or" + 
+							//"  (rep.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							//"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							//"                 or" + 
+							//"  (rep.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							//"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							//"" + 
+							" )  " ;//and rd.created_by='"+dto.getEmployerName() +"'" ;
+					 }
+					 if (!dto.getPatientId().equals("")) {
+						 queryString= queryString + "and  rep.patient_id='"+dto.getPatientId()+"'";
+					 }
+				 
+					 queryString= queryString + " and " +batchrest;
 						 
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.IvfId.toString())) {
 				 queryString= queryString + "and  rep.ivf_form_id='"+dto.getReportField1()+"'";

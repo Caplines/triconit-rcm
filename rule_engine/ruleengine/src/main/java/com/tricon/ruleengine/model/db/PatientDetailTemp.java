@@ -264,7 +264,7 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	@Column(name = "bridges1", length = 20)
 	private String bridges1;// bridges1
 
-	@Column(name = "bridges2", length = 20)
+	@Column(name = "bridges2", length = 50)
 	private String bridges2;// bridges2
 
 	@Column(name = "will_downgrade_applicable", length = 20)

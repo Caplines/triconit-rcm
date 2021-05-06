@@ -151,7 +151,7 @@ public class FreqencyUtils {
         Object c1[] = FreqencyUtils.getCountTimeServiceCode(l1, s1,0);
 		if (!((String) c1[5]).equals("")) {
 			code.add((String) c1[5]);
-			codeH.add((String) c1[5]);
+			codeH.add((String) c1[8]);
 			
 		}
 		ct = ct + (Integer) c1[0];
@@ -161,7 +161,7 @@ public class FreqencyUtils {
 		Object[] c2 = FreqencyUtils.getCountTimeServiceCode(l2, s2,0);
 		if (!((String) c2[5]).equals("")) {
 			code.add((String) c2[5]);
-			codeH.add((String) c2[5]);
+			codeH.add((String) c2[8]);
 		}
 		ct = ct + (Integer) c2[0];
 		ti = ti + (Integer) c2[4];// Times: 2 Actual Max=2
@@ -1774,7 +1774,7 @@ public class FreqencyUtils {
 		convert = convert.replace("thrice", "3");
 		convert = convert.replace("times", "");
 
-		convert = convert.replace("months", "MO");
+		convert = convert.replace("months", "Mo");
 		// convert=convert.replace(" years ", "CY");
 
 		convert = convert.replace(" per tooth per ", "x");
@@ -2115,6 +2115,7 @@ public class FreqencyUtils {
 		try {
 			text = text.trim().toLowerCase();
 			if (text.contains("in network")) return "No Frequency";
+			text=text.replace("per same group", "");
             //("1 Per Tooth ~ Per 5 Years ~ Age 18 And Older | Age 18 And Older | More...");//18 and older 18 and
 			if (text.contains("age") && text.contains(" and older")) {
 			String regexAge = "(.*?)age(.*?)and older(.*?)";
@@ -2321,6 +2322,8 @@ public class FreqencyUtils {
 				"An interim partial denture is covered only to replace extracted anterior permanent teeth during the healing period. If provided for other circumstances, the patient is responsible for the cost. Delta Dental considers the fee for an interim partial denture to include the fee for all teeth and clasps. Benefit is limited to once per arch within a 5 year period.",
 				"PY"));
 		*/
+		convertFrequecyUCCIString("1 Per 12 Months ~ Per Dentist | More...");
+		convertFrequecyUCCIString("1 per 5 years ~ per same group");
 		convertFrequecyUCCIString("1 Per Tooth ~ Per 5 Years ~ Age 18 And Older | Age 18 And Older | More...");//18 and older 18 and
 		convertFrequecyUCCIString("1 Per Tooth ~ Per 5 Years ~ Age 18 And Older | Age 18 And Older | More...");
 		convertFrequecyUCCIString("1 per 12 months ~ per dentist | 1 per 12 months ~ per dentist");
@@ -2408,6 +2411,7 @@ public class FreqencyUtils {
 					scivfTFD.getFieldName(), scivfTFD.getFreqency(), 0, 0, "");
 			scivfTFDFinal.setDos(historyD.getHistoryDos());
 			scivfTFDFinal.setTooth(historyD.getHistoryTooth());
+			scivfTFDFinal.setServiceCodeHis(historyD.getHistoryCode());
 			RuleEngineLogger.generateLogs(clazz, "HISTORY CODE- " + historyD.getHistoryCode(), Constants.rule_log_debug,
 					bw);
 			RuleEngineLogger.generateLogs(clazz, "HISTORY DOS- " + historyD.getHistoryDos(), Constants.rule_log_debug,

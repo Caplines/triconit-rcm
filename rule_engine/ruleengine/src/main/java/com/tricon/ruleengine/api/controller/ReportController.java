@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,8 +29,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tricon.ruleengine.dao.OfficeDao;
+import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
+import com.tricon.ruleengine.dto.DigitizationRuleEngineResult;
 import com.tricon.ruleengine.dto.EnhancedReportDto;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.ReportDto;
@@ -64,6 +67,15 @@ public class ReportController {
 
 	@Autowired
 	CaplineIVFGoogleFormService civf;
+	
+	@Autowired
+	TreatmentValidationDao tvd;
+
+	@Value("${google.credential.folder}")
+	private String CREDENTIALS_FOLDER;
+
+	@Value("${google.client.secret}")
+	private String CLIENT_SECRET_DIR;
 
 	@CrossOrigin
 	@RequestMapping(value = "/report", method = RequestMethod.POST)
@@ -110,7 +122,19 @@ public class ReportController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			 }
-		} else {
+		}else if (dto.getReportType().equals("ruledatasheet")) {
+			   try {
+				   List<DigitizationRuleEngineResult> finalData= reportService.getReportsForGoogleSheet(dto);
+				   String p = "Check Google sheet for Data";
+					if (finalData.size()<=1)  p="No Data Found.";
+					o=p;
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					 }
+				
+		}
+		else {
 			o = prepareData(dto, "TR. ID-");
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", o));
@@ -156,7 +180,18 @@ public class ReportController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			 }
-		} else {
+		}else if (dto.getReportType().equals("ruledatasheet")) {
+			   try {
+				   List<DigitizationRuleEngineResult> finalData= reportService.getReportsForGoogleSheet(dto);
+				   String p = "Check Google sheet for Data";
+					if (finalData.size()<=1)  p="No Data Found.";
+					o=p;
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					 }
+				
+		}else {
 			o = prepareData(dto, "CL. ID-");
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", o));

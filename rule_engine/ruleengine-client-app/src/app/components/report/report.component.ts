@@ -56,7 +56,7 @@ export class ReportComponent implements OnInit {
 	showParam: any = {
 		TreatmentId: false, IvfId: false, Date: false, PatientName: false,
 		ivfRDBMS: false, DateFromTo: false, UserName: false, DateFromToUserName: false,
-		ivfRDBMSWebsiteParse:false
+		ivfRDBMSWebsiteParse:false,ruledatasheet:false
 	}
 
 	constructor(public applicationService: ApplicationService, public router: Router, private datePipe: DatePipe, private route: ActivatedRoute) {
@@ -148,6 +148,17 @@ export class ReportComponent implements OnInit {
 				submit = true;
 			}
 		}
+		if (this.report.reportType == 'ruledatasheet') {
+			if (rep.sheetTabId == '') {
+				submit = false;
+
+			} else {
+				//this.report.reportField1 = this.datePipe.transform(this.report.reportField1, 'MM/dd/yyyy');
+				//this.report.reportField2 = this.datePipe.transform(this.report.reportField2, 'MM/dd/yyyy');
+				submit = true;
+			}
+		}
+        console.log("submit",submit);
 		if (this.report.reportType == 'DateFromToUserName') {
 			if (rep.employerName == '' || rep.reportField1 == '' || rep.reportField2 == '' || rep.officeId == '') {
 				submit = false;
@@ -168,6 +179,14 @@ export class ReportComponent implements OnInit {
 				this.showLoading = false;
 				if (result.status === 'OK') {
 					this.reportData = result.data;
+					
+					if (this.report.reportType === 'ruledatasheet' ){
+						
+						this.showDetailsData=false;
+						this.showReportData = true;
+						return ;
+					}
+					
                    if (this.report.reportType === 'ivfRDBMS' || this.report.reportType === 'ivfRDBMSWebsiteParse') {
                 	   if (this.report.reportType === 'ivfRDBMSWebsiteParse'){
                 		   this.reportData= this.convertLocalTime(this.reportData);

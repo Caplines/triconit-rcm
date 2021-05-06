@@ -303,8 +303,12 @@ public class RuleBook {
 			codes.add("D0145");
 			codes.add("D0120");
 			
+			RuleEngineLogger.generateLogs(clazz, " IVF FORM ID -" + ivf.getIvFormTypeId()	, Constants.rule_log_debug, bw);
+
 			
 			String pcName="";
+			
+			
 			
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
@@ -343,7 +347,7 @@ public class RuleBook {
 			//Phase 2 change - end
 			if (espatients != null && espatients.get(0) != null) {
 				EagleSoftPatient pat = espatients.get(0);
-
+				if (ivf.getIvFormTypeId() != Constants.IV_ORAL_SURGERY_FORM_NAME_ID) {
 				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null
 						&& (ivf.getPlanCoverageBook().equals("") || ivf.getPlanCoverageBook().equalsIgnoreCase("none"))
 						&& (pat.getCovBookHeaderName().equals("")
@@ -365,7 +369,8 @@ public class RuleBook {
 									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName(),ER_MSG }, locale),
 							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					pass = false;
-				}
+				 }
+                }
 				RuleEngineLogger.generateLogs(
 						clazz, "Plan Fee Schedule Name-" + ivf.getPlanFeeScheduleName()
 								+ " :: Patient Fee Schedule Name-" + pat.getFeeScheduleName(),
@@ -478,7 +483,10 @@ public class RuleBook {
 						Constants.rule_log_debug, bw);
 				RuleEngineLogger.generateLogs(clazz, "CovBookHeaderName-" + pat.getCovBookHeaderName(),
 						Constants.rule_log_debug, bw);
-
+				RuleEngineLogger.generateLogs(clazz, "IVF ID-" + ivf.getIvFormTypeId(),
+						Constants.rule_log_debug, bw);
+				 
+				if (ivf.getIvFormTypeId() != Constants.IV_ORAL_SURGERY_FORM_NAME_ID) {
 				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null
 						&& (ivf.getPlanCoverageBook().equals("") || ivf.getPlanCoverageBook().equalsIgnoreCase("none"))
 						&& (pat.getCovBookHeaderName().equals("")
@@ -498,6 +506,7 @@ public class RuleBook {
 									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName(),ER_MSG }, locale),
 							Constants.FAIL,"","",""));
 					pass = false;
+				}
 				}
 				RuleEngineLogger.generateLogs(
 						clazz, "Plan Fee Schedule Name-" + ivf.getPlanFeeScheduleName()
@@ -8342,6 +8351,8 @@ public class RuleBook {
 								 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule38.error.message", new Object[] { codes,phis.getServiceCode(), TP_CL }, locale),
 											Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+								 
+								 
 							 }
 						 }
 					 }
@@ -8433,9 +8444,13 @@ public class RuleBook {
 										            RuleEngineLogger.generateLogs(clazz,
 															"RULE FAILS-" + TP_DATE+" DOS history- "+dto.getHistoryDos(),
 															Constants.rule_log_debug, bw);
+													// dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+													//			messageSource.getMessage("rule38.error.message", new Object[] { codes,dto.getHistoryCode(), TP_CL}, locale),
+													//			Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 													 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-																messageSource.getMessage("rule38.error.message", new Object[] { codes,dto.getHistoryCode(), TP_CL}, locale),
+																messageSource.getMessage("rule38.error.message3", new Object[] { dto.getHistoryCode(), "",dto.getHistoryDos(),"","","",String.join(",", fcodes)}, locale),
 																Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+
 										           }
 												} catch (ParseException e2) {
 													// TODO Auto-generated catch block
@@ -10118,7 +10133,7 @@ public class RuleBook {
 					 }
 					//Alike codes
 					if (D0210C != null || D0330C != null ) {
-						Object[] m = FreqencyUtils.getError(D0210C, D0330C, "D0210", "D0330", thKEY,tpCountCode,false);
+						Object[] m = FreqencyUtils.getError(D0210C, D0330C, "D0210", "D0330", thKEY,tpCountCode,true);
 						if (m != null) {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
@@ -10972,9 +10987,9 @@ public class RuleBook {
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			RuleEngineLogger.generateLogs(clazz, "COBStatus-"+ivf.getcOBStatus() ,
 					Constants.rule_log_debug, bw);
-			if (ivf.getcOBStatus()!=null && !ivf.getcOBStatus().trim().equalsIgnoreCase("Primary")) {
-				pass=false;
-			}else if (ivf.getcOBStatus()==null) {
+			String cob=ivf.getcOBStatus();
+			if (cob==null) cob="";
+			if (cob.trim().equalsIgnoreCase("Secondary")) {
 				pass=false;
 			}
           if (pass) {
@@ -10996,6 +11011,7 @@ public class RuleBook {
 
 	}
 	
+	// Percentage coverage check (os)
 	public List<TPValidationResponseDto> Rule67(Object ivfSheet,List<Object> tpList,List<OSIVFormCodes> oSCodes, List<EagleSoftFeeShedule> esfeess ,MessageSource messageSource, Rules rule,
 			List<EagleSoftEmployerMaster> esempmaster, List<EagleSoftPatient> espatients, BufferedWriter bw,int userType) {
 
@@ -11008,6 +11024,8 @@ public class RuleBook {
 			TP_CL=Constants.CL;
 		}
 		List<TPValidationResponseDto> li = new ArrayList<>();
+		List<TPValidationResponseDto> li1 = new ArrayList<>();
+		
 		Set<String> missing_codeF = new HashSet<String>();
 		Set<String> missing_codeIV = new HashSet<String>();
 		Set<String> fcodes=new HashSet<>();
@@ -11020,10 +11038,66 @@ public class RuleBook {
 				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "TP Code:-"+tp.getServiceCode(),
 						Constants.rule_log_debug, bw);
+				
 				surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 				teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 				fcodes.add(tp.getServiceCode());
+				String c=tp.getServiceCode();
+				c= c.replaceFirst("D", "");
+				try {
+					Integer.parseInt(c);
+					if (!tp.getServiceCode().startsWith("D")) continue;
+				}catch(Exception n) {
+					continue;
+				}
+				
 				boolean inForm=false;
+				
+				for(OSIVFormCodes oSCode:oSCodes) {
+					//Method percM=c2.getMethod(oSCode.getGetName());
+						if (tp.getServiceCode().equalsIgnoreCase(oSCode.getCode())){
+						inForm=true;
+                        
+                       //
+						Collection<EagleSoftFeeShedule> ruleGen = Collections2.filter(esfeess,
+								name -> name.getFeesServiceCode().equals(tp.getServiceCode()));
+				
+						
+						if (ruleGen != null) {
+							for (EagleSoftFeeShedule fs : ruleGen) {
+								RuleEngineLogger.generateLogs(clazz,
+										" FS FEE -" + fs.getFeesFee() + " :: Treatment Plan-(Claim) Fee-" + tp.getFee()+" EST Insurance->"+tp.getEstInsurance()
+										+"TP CODE- "+tp.getServiceCode(),
+										Constants.rule_log_debug, bw);
+								
+								try {
+									
+								if (Double.parseDouble(tp.getFee().replace("$", ""))!=Double.parseDouble(fs.getFeesFee().replace("$", ""))) {
+									pass=false;
+									li1.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+												"rule67.error.message4", new Object[] {tp.getServiceCode() ,tp.getFee(),fs.getFeesFee(),tp.getTooth()}, locale),Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+									boolean ct=false;
+									  for(TPValidationResponseDto l:li1) {
+										if ( l.getServiceCode().equals(tp.getServiceCode())) {
+											  ct=true;
+											 // break;
+										  }
+									  }
+									  if (ct) continue;
+								
+								}
+								}catch(Exception p) {
+									
+								}
+						
+							}
+						
+						}
+				   }else {
+				           	   
+				   }
+				}		
+				
 				for(OSIVFormCodes oSCode:oSCodes) {
 					Method percM=c2.getMethod(oSCode.getGetName());
 					String perc=(String) percM.invoke(ivf);
@@ -11039,29 +11113,39 @@ public class RuleBook {
 										" FS FEE -" + fs.getFeesFee() + " :: Treatment Plan-(Claim) Fee-" + tp.getFee()+" EST Insurance->"+tp.getEstInsurance()
 										+"TP CODE- "+tp.getServiceCode(),
 										Constants.rule_log_debug, bw);
+								
+								
 								Double precInIV=0d;
 								try {
 									precInIV=Double.parseDouble(perc);
 									RuleEngineLogger.generateLogs(clazz,
-											"  FEES CALC." + Double.parseDouble(fs.getFeesFee()) * precInIV+" EST-"+Double.parseDouble(tp.getEstInsurance()),
+											"  FEES CALC." + (Double.parseDouble(tp.getFee()) * precInIV)/100+" EST-"+Double.parseDouble(tp.getEstInsurance()),
 											Constants.rule_log_debug, bw);
 									
 									
 								}catch(Exception n) {
 									
 								}
-								if (Double.parseDouble(fs.getFeesFee()) * precInIV!=Double.parseDouble(tp.getEstInsurance())) {
+								if ((Double.parseDouble(tp.getFee()) * precInIV)/100!=Double.parseDouble(tp.getEstInsurance())) {
 								  pass=false;
+								  boolean ct=false;
+								  for(TPValidationResponseDto l:li) {
+									if ( l.getServiceCode().equals(tp.getServiceCode())) {
+										  ct=true;
+										  //break;
+									  }
+								  }
+								  if (ct) continue;
 								  RuleEngineLogger.generateLogs(clazz,
 											"  Fee not matched",
 											Constants.rule_log_debug, bw);
 								  li.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 											"rule67.error.message3", new Object[] {tp.getServiceCode() ,tp.getEstInsurance(),
-													precInIV,fs.getFeesFee(),tp.getFee(),Double.parseDouble(fs.getFeesFee()) * precInIV}, locale),Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+													precInIV,fs.getFeesFee(),tp.getFee(),(Double.parseDouble(tp.getFee()) * precInIV)/100,tp.getTooth()}, locale),Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 									
 								  
 								}
-															}
+							}
 						} else {
 							RuleEngineLogger.generateLogs(clazz,
 									" Treatment Plan(Claim) Service code is mssing in  Fee Schedule-" + tp.getServiceCode(),
@@ -11107,6 +11191,7 @@ public class RuleBook {
 					Constants.FAIL,"","",""));
 
 		}
+        li.addAll(li1);
 		return li;
 
 	}

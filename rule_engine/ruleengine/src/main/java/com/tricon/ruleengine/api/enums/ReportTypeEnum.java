@@ -12,7 +12,8 @@ public class ReportTypeEnum {
         Date,
         DateFromTo,
         UserName,
-        DateFromToUserName;
+        DateFromToUserName,
+        ruledatasheet;
     }
  
     /*

@@ -47,6 +47,10 @@ public class ReportDetail extends BaseAudit implements java.io.Serializable {
 	private int messageType;
 	@Column(name = "insurance_type")
 	private String insuranceType;
+	
+	@Column(name = "tx_plan_date", length = 45)
+	private String txPlanDate;
+
 
 	public ReportDetail() {
 	}
@@ -124,6 +128,14 @@ public class ReportDetail extends BaseAudit implements java.io.Serializable {
 
 	public void setInsuranceType(String insuranceType) {
 		this.insuranceType = insuranceType;
+	}
+
+	public String getTxPlanDate() {
+		return txPlanDate;
+	}
+
+	public void setTxPlanDate(String txPlanDate) {
+		this.txPlanDate = txPlanDate;
 	}
 
 	

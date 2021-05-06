@@ -102,6 +102,28 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		return saveAllData (pat,office,date,user,ivf,false,iVFormType);
 	}
 	
+	@Override
+	public Object[] saveIVFFormCheck(CaplineIVFFormDto d,Office office,boolean ivf,IVFormType iVFormType) throws Exception {
+
+		// copy value to DB Object
+		/*
+		 * As there is no logged-IN user Authentication authentication =
+		 * SecurityContextHolder.getContext().getAuthentication(); User user = null; if
+		 * (authentication != null) { user =
+		 * userDao.findUserByUsername(authentication.getName()); //
+		 * Hibernate.initialize(user.getOffice()); } else { user =
+		 * userDao.findUserByEmail(""); }
+		 */
+		Date date = new Date();
+		User user = userDao.findUserByUsername(amdinUserName);
+		Patient pat=null;
+		//if (iVFormType.getName().equals(Constants.IV_GENERAL_FORM_NAME))
+		 pat = IVFFormConversionUtil.copyValueToPatientFROMIVOSGoogle(d, office, date,iVFormType);
+		//else if (iVFormType.getName().equals(Constants.IV_ORAL_SURGERY_FORM_NAME)) 
+		//	pat = IVFFormConversionUtil.copyValueToPatientFROMOSGoogle(d, office, date,iVFormType);
+		return checkExistingIV (pat,office,date,user,ivf,false,iVFormType);
+	}
+
 	public Object[] saveAllData (Patient pat, Office office, Date date,User user,boolean ivf,boolean onlyInsert,IVFormType iVFormType) {
 		
 		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office,pat);
@@ -308,6 +330,58 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
            ob[1]=exceptionAsString;
 		}
 		ob[0]=r;
+		return ob;
+		
+	}
+
+	public Object[] checkExistingIV (Patient pat, Office office, Date date,User user,boolean ivf,boolean onlyInsert,IVFormType iVFormType) {
+		
+		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office,pat);
+		Object[] ob= new Object[2];
+		ob[0]="Success";
+		
+		Integer r = 0;
+		String generalDate="";
+		String insuranceName="";
+		String employerName="";
+		int ivFormTypeId=0;
+		if (pat.getPatientDetails()!=null && pat.getPatientDetails().size()>0) {
+			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
+			PatientDetail x = iter.next();
+			generalDate =x.getGeneralDateIVwasDone();
+			insuranceName = x.getInsName();
+			employerName = x.getEmployerName();
+			ivFormTypeId=x.getiVFormType().getId();
+		}
+		try {
+			if (patd == null) {
+				ob[0]="Success";
+				       
+			} else {
+				//delete old history logic
+				for (PatientDetail pd : patd.getPatientDetails()) {
+					if (pd.getGeneralDateIVwasDone().equals(generalDate) && pd.getiVFormType().getId()==ivFormTypeId  
+								&& pd.getEmployerName().toLowerCase().trim().equals(employerName.toLowerCase().trim())
+								&& pd.getInsName().toLowerCase().trim().equals(insuranceName.toLowerCase().trim())
+								) {	
+						ob[0]="No Success-"+pd.getId();
+						r=pd.getId();
+						
+						break;
+					}
+					
+				
+				
+				}//End
+					}
+		} catch (Exception c) {
+			StringWriter sw = new StringWriter();
+            c.printStackTrace(new java.io.PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+           c.printStackTrace();
+           ob[0]=exceptionAsString;
+		}
+		ob[1]=r;
 		return ob;
 		
 	}

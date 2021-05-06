@@ -1,6 +1,7 @@
 package com.tricon.ruleengine.dao.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -16,8 +17,7 @@ public class OSIVFormCodesDaoImpl extends BaseDaoImpl implements OSIVFormCodesDa
 	public List<OSIVFormCodes> getAllActiveOSIVCodes() {
 		// TODO Auto-generated method stub
 		
-		getEntitiesByColumnName(OSIVFormCodes.class, "active", 1);
-		return null;
+		return (List<OSIVFormCodes>) (List<?>) getEntitiesByColumnName(OSIVFormCodes.class, "active", 1);
 	}
 
 }

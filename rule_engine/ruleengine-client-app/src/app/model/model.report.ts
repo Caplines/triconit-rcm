@@ -8,5 +8,7 @@ export class ReportModel {
   patientName:string="";
   dob:string="";
   ivformTypeId: any="";
+  patientId:any="";
+  sheetTabId:any="";
 
 }

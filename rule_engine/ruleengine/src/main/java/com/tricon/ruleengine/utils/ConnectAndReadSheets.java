@@ -30,18 +30,27 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.AppendDimensionRequest;
+import com.google.api.services.sheets.v4.model.BatchClearValuesRequest;
+import com.google.api.services.sheets.v4.model.BatchClearValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.CellData;
+import com.google.api.services.sheets.v4.model.CellFormat;
+import com.google.api.services.sheets.v4.model.Color;
 import com.google.api.services.sheets.v4.model.ExtendedValue;
 import com.google.api.services.sheets.v4.model.GridCoordinate;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.RowData;
+import com.google.api.services.sheets.v4.model.TextFormat;
 import com.google.api.services.sheets.v4.model.UpdateCellsRequest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.common.collect.Collections2;
+import com.tricon.ruleengine.api.enums.HighLevelReportMessageStatusEnum;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
+import com.tricon.ruleengine.dto.DigitizationRuleEngineResult;
 import com.tricon.ruleengine.dto.ExceptionDataDto;
+import com.tricon.ruleengine.dto.ReportDto;
+import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
 import com.tricon.ruleengine.dto.scrapping.FullWebsiteScrapDto;
@@ -425,6 +434,271 @@ public class ConnectAndReadSheets {
 	}
 
 	
+	private static String convertRowToRange(int n) {
+		String r="";
+		if (n==0) r= "A";     //26 52
+		else if (n==1) r= "B";//27 53
+		else if (n==2) r= "C";//28 54
+		else if (n==3) r= "D";//29 55
+		else if (n==4) r= "E";//30 56
+		else if (n==5) r= "F";//31 57
+		else if (n==6) r= "G";//32 58
+		else if (n==7) r= "H";//33 59
+		else if (n==8) r= "I";//34 60
+		else if (n==9) r= "J";//35 61
+		else if (n==10) r= "K";//36 62
+		else if (n==11) r= "L";//37 63
+		else if (n==12) r= "M";//38 64
+		else if (n==13) r= "N";//39 65
+		else if (n==14) r= "O";//40 66
+		else if (n==15) r= "P";//41 67
+		else if (n==16) r= "Q";//42 68
+		else if (n==17) r= "R";//43 69 
+		else if (n==18) r= "S";//44 70 
+		else if (n==19) r= "T";//45 71
+		else if (n==20) r= "U";//46 72
+		else if (n==21) r= "V";//47 73
+		else if (n==22) r= "W";//48 74
+		else if (n==23) r= "X";//49 75
+		else if (n==24) r= "Y";//50 76
+		else if (n==25) r= "Z";//51 77
+		else if (n>=26 && n<=51) {
+			
+			
+			r=r+convertRowToRange(0);
+			//r=r+convertRowToRange(n-26); //51-26 =>25
+			r=r+convertRowToRange(n-(26*(0+1)));
+		} else if (n>=52 && n<=77) {
+			
+			r=r+convertRowToRange(1); //77 BZ  77-26-26=>25
+			r=r+convertRowToRange(n-(26*(1+1)));
+		}else if (n>=78 && n<=103) {
+			
+			r=r+convertRowToRange(2); //77 BZ  77-26-26=>25
+			//r=r+convertRowToRange(n-26-26-26);
+			r=r+convertRowToRange(n-(26*(2+1)));
+		}else if (n>=78 && n<=103) {
+			
+			r=r+convertRowToRange(3); //77 BZ  77-26-26=>25
+			//r=r+convertRowToRange(n-26-26-26-26);
+			r=r+convertRowToRange(n-(26*(3+1)));
+		}	
+		return r;
+		
+	}
+	
+	public static void main(String [] a) throws IOException {
+		
+		
+		updateGoogleReportsDigitationSheet("1PSzfq1J7ajKWwM9Y7uUsLQ2hPWB0_f8mMs16IF9R69Q", "Patient ID Wise Search",2006499654, "E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files", null);
+	}
+	
+	private static Color getSheetColorByType(int mType) {
+		
+		
+		if (mType==HighLevelReportMessageStatusEnum.FAIL.getStatus()) return new Color().setRed(1f).setGreen(0f).setBlue(0f);
+		else if (mType==HighLevelReportMessageStatusEnum.PASS.getStatus()) return new Color().setRed(0f).setGreen(1f).setBlue(0f);
+		else if (mType==HighLevelReportMessageStatusEnum.ALERT.getStatus()) return new Color().setRed(0f).setGreen(0f).setBlue(1f);
+		else if (mType==4) return new Color().setRed(0f).setGreen(0f).setBlue(102f);//Blue Heading..
+		else if (mType==5) return new Color().setRed(1f).setGreen(1f).setBlue(1f);//white
+		else if (mType==6) return new Color().setRed(0f).setGreen(102f).setBlue(0f);//Green Heading..
+		else if (mType==7) return new Color().setRed(0f).setGreen(102f).setBlue(0f);//Not run/found..
+		
+		
+		
+		else return new Color().setRed(0f).setGreen(0f).setBlue(0f);
+	}
+	
+	public static ReportDto readGoogleReportsDigitationSheet(String spreadsheetId, String sheetName,int sheetSubId, 
+			String clientDir, String clientFolder,ReportDto dto) throws IOException {
+		
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		//List<Request> requests = new ArrayList<>();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		
+		List<List<Object>> values = response.getValues();
+		//Map<String, List<Object>> map = null;
+		ListIterator li = values.listIterator();
+		//IVFTableSheet vif = null;
+		
+		
+       
+       while (li.hasNext()) {
+			ArrayList<String> obj =  (ArrayList<String>) li.next();
+			
+			int x = -1;
+			
+			if (sheetSubId==Constants.Digitization_of_RE_Results_TP|| sheetSubId==Constants.Digitization_of_RE_Results_Cl) {
+				obj.get(++x);//Office
+				dto.setOffficeName(obj.get(++x));
+				obj.get(++x);//From
+				dto.setReportField1(obj.get(++x));
+				obj.get(++x);//To
+				dto.setReportField2(obj.get(++x));//F
+					
+			}else {
+				obj.get(++x);//Type of Validation
+				String q=obj.get(++x);
+				if (q.equalsIgnoreCase("Claim Validation")) dto.setmType("c");
+				else dto.setmType("v");
+				obj.get(++x);
+				dto.setOffficeName(obj.get(++x));//D
+				obj.get(++x);//Patient Id
+				dto.setPatientId(obj.get(++x));//Patient Id F
+				
+				
+			}
+			break;
+		}
+
+		
+	     return dto;
+	}
+
+	public static List<ExceptionDataDto> updateGoogleReportsDigitationSheet(String spreadsheetId, String sheetName,int sheetSubId, 
+			String clientDir, String clientFolder,List<DigitizationRuleEngineResult> dataList) throws IOException {
+		updateGoogleReportSheet(spreadsheetId,sheetName,sheetSubId, 
+				clientDir, clientFolder,dataList);
+		
+	     return null;
+	}
+
+	private static List<ExceptionDataDto> updateGoogleReportSheet(String spreadsheetId, String sheetName,int sheetSubId, 
+			String clientDir, String clientFolder,List<DigitizationRuleEngineResult> dataList) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+         try {
+		//List<Request> requests = new ArrayList<>();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		
+		List<List<Object>> values = response.getValues();
+		ListIterator li = values.listIterator();
+        int rowCounter=-1;
+       
+        List<String> rangesClear = new ArrayList<>();
+		while (li.hasNext()) {
+			ArrayList<String> obj1 = (ArrayList<String>) li.next();
+			rowCounter++;
+			if(rowCounter<=2) {
+				continue;
+			}
+			ListIterator obj = obj1.listIterator();
+			int c=0;
+			while(obj.hasNext()) {
+				obj.next();
+				String p=convertRowToRange(c)+(rowCounter+1);
+				///System.out.println("-----------------------------"+"'"+sheetName+"'!"+p);
+				rangesClear.add("'"+sheetName+"'!"+p);
+				c++;
+                  				
+			}
+			
+			
+			
+		}
+		
+		if (rangesClear.size()>0) {
+			
+		BatchClearValuesRequest requestBody = new BatchClearValuesRequest();
+	    requestBody.setRanges(rangesClear);
+	    Sheets.Spreadsheets.Values.BatchClear request =
+	    		service.spreadsheets().values().batchClear(spreadsheetId, requestBody);
+	     BatchClearValuesResponse response1 = request.execute();
+		}
+	     int initRow=2;
+	     int initCol=0;
+	     int max =100;
+	     int ctMax =0;
+	     
+	     List<Request> requestsT = new ArrayList<>();
+	    for(DigitizationRuleEngineResult res:dataList) {
+    		List<CellData> cellValues = new ArrayList<>();
+	    	/*res.getId();
+	    	res.getName();
+	    	res.getRunDate();
+	    	res.getOfficeName();*/
+    		CellFormat f=null;
+    		if (initRow==2) {
+    			
+    			 f=	new CellFormat().setBackgroundColor(getSheetColorByType(4));
+    			 //new TextFormat().setForegroundColor(foregroundColor)Red(1f).setGreen(0f).setBlue(0f);
+    			
+    		}else {
+    			f=	new CellFormat().setBackgroundColor(getSheetColorByType(5));
+    		}
+    		cellValues.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(res.getPatientId())).setUserEnteredFormat(f));
+    		
+    		cellValues.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(res.getDocumentId())).setUserEnteredFormat(f));
+    	    
+    		cellValues.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(res.getDos())).setUserEnteredFormat(f));
+
+    		cellValues.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(res.getRunDate())).setUserEnteredFormat(f));
+    		
+    		cellValues.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(res.getId())).setUserEnteredFormat(f));
+    		//System.out.println("dataList.size()dataList.size()----->>"+res.getPatientId());
+    		
+    		Map<Integer,List<String[]>>  m=res.getRuleMap();
+    		if (m!=null) {
+	    	for (Map.Entry<Integer, List<String[]>> entry : m.entrySet()) {
+	    		//System.out.println("9999999----->>"+res.getPatientId());
+	    		List<String[]> eL=entry.getValue();
+	    		String x="";
+	    		int ms=0; 
+	    		for (String[] e:eL) {
+	    			//x=x+"\n"+e[1];
+	    			x=x+e[1];
+	    			//System.out.println("9999999----->>"+x);
+	    			//System.out.println("9999999----->>"+e[0]);
+	    			
+	    			ms=Integer.parseInt(e[0]);
+		    			
+	    		}
+	    		
+	    		cellValues.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(x)).
+        	    		setUserEnteredFormat(new CellFormat().setBackgroundColor(getSheetColorByType(ms))));
+	    		//initCol++;
+	     	 }
+    		}	  
+    		
+    		requestsT.add(new Request()
+					.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(sheetSubId).setRowIndex(initRow)//)
+							 .setColumnIndex(initCol))
+							.setRows(Arrays.asList(new RowData().setValues(cellValues)))
+							.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+    		
+    		initRow++;
+    		ctMax++;
+    		if (ctMax==max) {
+    			ctMax=0;
+    			BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requestsT);
+    		    BatchUpdateSpreadsheetResponse r= service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+    		    requestsT.clear();
+    		}
+    		
+	    }
+	    
+	    //System.out.println("dataList.size()dataList.size()-----------"+dataList.size());
+	    if (dataList.size()==1) {
+	    	List<CellData> cellValues = new ArrayList<>();
+	    	cellValues.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue("No data found..")));
+	    	requestsT.add(new Request()
+					.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(sheetSubId).setRowIndex(3)//)
+							 .setColumnIndex(initCol))
+							.setRows(Arrays.asList(new RowData().setValues(cellValues)))
+							.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+	    }
+	    
+	    BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requestsT);
+	    BatchUpdateSpreadsheetResponse r= service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+		System.out.println(r.getSpreadsheetId());
+	
+         }catch(Exception e) {
+        	 e.printStackTrace();
+         }
+	        return null;
+	}
 	/*
 	 * Not used Now public static List<Object> readTPSheetData(ValueRange
 	 * range,String treatmentPlanId) {

@@ -95,6 +95,34 @@ public class CaplineIVFGoogleFormController {
 
 	}
 
+	@CrossOrigin
+	@PostMapping
+	@RequestMapping(value = "/savedatatoreCheck")
+	public ResponseEntity<Object> checkFromAleardySubmittedIV(@RequestBody CaplineIVFFormDto dto,
+			HttpServletRequest request) {
+		//
+
+		Object [] ob=null;
+	    Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+		Office office = od.getOfficeByName(dto.getBasicInfo1(),cmp.getUuid());
+		try {
+			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
+			if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
+				ob = civf.saveIVFFormCheck(dto, office,true,iVformTypeDao.getIVFormTypeByName(Constants.IV_GENERAL_FORM_NAME));
+			}else {
+				//i = civf.saveIVFFormData(dto, office);
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String mess = ""+ob[0];
+				
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", mess));
+
+	}
+
 	@RequestMapping(value = "/savedatatoreos")
 	public ResponseEntity<Object> saveOSFromGoogleForm(@RequestBody CaplineIVFFormDto dto,
 			HttpServletRequest request) {

@@ -12,6 +12,11 @@ public class ReportDto {
 	private String generalDateRun;
 	private String dob;
 	private String ivformTypeId;
+	private String patientId;
+	private String offficeName;
+	private int sheetTabId;
+	
+	
 	
 	
 	
@@ -75,6 +80,27 @@ public class ReportDto {
 	public void setIvformTypeId(String ivformTypeId) {
 		this.ivformTypeId = ivformTypeId;
 	}
+	public String getPatientId() {
+		return patientId;
+	}
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+	public String getOffficeName() {
+		return offficeName;
+	}
+	public void setOffficeName(String offficeName) {
+		this.offficeName = offficeName;
+	}
+	public int getSheetTabId() {
+		return sheetTabId;
+	}
+	public void setSheetTabId(int sheetTabId) {
+		this.sheetTabId = sheetTabId;
+	}
+	
+	
+	
 	
 	
 	

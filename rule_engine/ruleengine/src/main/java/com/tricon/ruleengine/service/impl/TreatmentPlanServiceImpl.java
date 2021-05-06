@@ -780,7 +780,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// RULE_ID_4 "Coverage Book"
 							List<TPValidationResponseDto> dtoRL = new ArrayList<>();
 							
-							/*
+							
+							
 							if ( ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()==Constants.IV_ORAL_SURGERY_FORM_NAME_ID){
 							oSCodes=oSIVFormCodesService.getAllActiveOSIVCodes();
 							validdateRulesTPOS(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
@@ -789,10 +790,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							}else validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
 									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData);
-							*/		  
+							
+							/*
 							validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
 									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData);
+						   */
 						}
 
 						
@@ -2095,14 +2098,80 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			feeKey = ((EagleSoftPatient) espatients.get(patKey).get(0)).getFeeScheduleId();
 
 		
+		
+		// RULE_ID_5 "Remaining Deductible, Remaining Balance and Benefit Max as per IV
+		// form"
+		if (type==Constants.userType_TR) {
+				rule = getRulesFromList(rules, Constants.RULE_ID_5);
+				dtoRL = new ArrayList<>();
+				if (espatients != null) {
+					dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),
+							bw,type,dtod.getInsType());
+					if (dtoRL != null) {
+						list.addAll(dtoRL);
+						for (TPValidationResponseDto t : dtoRL) {
+							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+									t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+						}
+					}
+		} else {
+					dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule.patient.notfound", new Object[] { "" }, locale),
+							Constants.FAIL,"","",""));
 
-		// RULE_ID_6 "Percentage Coverage Check"
-		rule = getRulesFromList(rules, Constants.RULE_ID_6);
+				}
+				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_5,
+						Constants.rule_log_debug, bw);
+				// END Remaining Deductible, Remaining Balance and Benefit Max as per IV
+		}
+		
+
+		rule = getRulesFromList(rules, Constants.RULE_ID_4);
+		if (espatients != null && espatients.get(patKey) != null
+				&& espatients.get(patKey).size() > 0)
+			feeKey = ((EagleSoftPatient) espatients.get(patKey).get(0)).getFeeScheduleId();
+		if (esfeess != null && espatients != null && espatients.get(patKey).size() > 0) {
+			dtoRL = rb.Rule4_B(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
+					esfeess.get(feeKey), espatients.get(patKey), bw,type);
+		} else {
+			if (esfeess == null)
+				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
+						Constants.FAIL,"","",""));
+			else if (espatients == null)
+				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
+						.getMessage("rule.patient.notfound", new Object[] { "Patient ID-"
+								+ ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getPatientId() },
+								locale),
+						Constants.FAIL,"","",""));
+			else
+				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.patient.notfound",
+								new Object[] { "Some Issue in Fee Sheet" }, locale),
+						Constants.FAIL,"","",""));
+
+		}
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}		
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_4,
+				Constants.rule_log_debug, bw);
+
+		
+		
+		// RULE_ID_67 "Percentage coverage check (os)"
+		rule = getRulesFromList(rules, Constants.RULE_ID_67);
 
 		dtoRL = new ArrayList<>();
 		if (espatients != null && esempmaster != null) {
-			dtoRL = rb.Rule6(ivfMap.get(ivx).get(0), messageSource, rule,
-					esempmaster.get(empMasterKey), espatients.get(patKey), bw, type);
+			dtoRL=rb.Rule67(ivfMap.get(ivx).get(0), tListReduced, oSCodes, esfeess.get(feeKey), messageSource, rule, esempmaster.get(empMasterKey), espatients.get(patKey), bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -2125,7 +2194,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		}
 
-		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_6,
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_67,
 				Constants.rule_log_debug, bw);
 		// END "Percentage Coverage Check"
 
@@ -2588,6 +2657,10 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				user = userDao.findUserByEmail(email);
 			}
 
+			String dt="";
+			if (tp.getCdDetails()!=null) {
+				dt =tp.getCdDetails().getDateLastUpdated();
+			}
 			if (userType==Constants.userType_TR){
 			Reports reports = null;
 			reports = tvd.getReportsByTPIdIVFIDAndOffice(tp.getId(), ivfSheet.getUniqueID().split("_")[1], off);
@@ -2632,6 +2705,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rd.setReportType(HighLevelReportTypeEnum.TXPLAN.getType());
 				rd.setMessageType(MessageUtil.getReportMessageType(d.getMessage()));
 				rd.setInsuranceType(insuranceType);
+				rd.setTxPlanDate(dt);
+				
 				tvd.saveReportDestail(rd);
 			}
 			}else {
@@ -2678,6 +2753,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rd.setReportType(HighLevelReportTypeEnum.CLAIM.getType());
 						rd.setMessageType(MessageUtil.getReportMessageType(d.getMessage()));
 						rd.setInsuranceType(insuranceType);
+						rd.setDateOfService(dt);
 						tvd.saveReportDestail(rd);
 					}
 
@@ -3375,6 +3451,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 						if (espatients != null && espatients.size() > 0) {
 							// RULE_ID_4 "Coverage Book"
+							if ( ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()!=Constants.IV_ORAL_SURGERY_FORM_NAME_ID){//Only for general form
 
 							rule = getRulesFromList(rules, Constants.RULE_ID_4);
 
@@ -3391,6 +3468,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							}
 
 							// END
+						   }
 							// RULE_ID_5 "Remaining Deductible, Remaining Balance and Benefit Max as per IV
 							// form"
 							if (type==Constants.userType_TR) {
@@ -3406,6 +3484,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							}
 							}
 							// END
+							if ( ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()!=Constants.IV_ORAL_SURGERY_FORM_NAME_ID){//Only for general form
 							// RULE_ID_6 "Percentage Coverage Check"
 							if (esempmaster != null) {
 								rule = getRulesFromList(rules, Constants.RULE_ID_6);
@@ -3426,6 +3505,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								// Not need to save report.. here
 							}
 							// END
+							
+						  }
 
 						} else {
 							dtoRL = rb.patientNotFound((IVFTableSheet) ivfMap.get(ivx).get(0), messageSource);

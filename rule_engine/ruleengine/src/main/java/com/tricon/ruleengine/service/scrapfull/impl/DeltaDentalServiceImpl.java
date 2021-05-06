@@ -1822,6 +1822,12 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								if (tds.size() == 0)
 									tds = tr.findElements(By.className(className));
 								dtemp.setMissingToothClause(tds.get(0).getText().replace("$", "").replace(",", ""));// 16
+							    if (dtemp.getMissingToothClause().contains("not a benefit of the program")) {
+							    	dtemp.setMissingToothClause("No");
+							    }
+							    if (dtemp.getMissingToothClause().length()>50) {
+							    	dtemp.setMissingToothClause(dtemp.getMissingToothClause().substring(0,48));
+							    }
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -3962,19 +3968,19 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Billing1204");
-		dto.setUserName("jfclaims14");
+		dto.setPassword("Smilepoint@1230");
+		dto.setUserName("VictoriaNCD");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("09/29/1951");// 03/20/1992 12/26/1988
-		psc.setFirstName("Linda");// Heather Griffith - Dean Dornak Ellen Keck
-		psc.setLastName("Williams");
-		psc.setMemberId("120385015801");// 1125727908.. 632307605
-		psc.setSsnNumber("120385015801");
-		psc.setSubscribersFirstName("Katlynne");
-		psc.setSubscribersLastName("Theriot");
-		psc.setSubscribersDob("09/10/1991");
+		psc.setDob("02/23/1999");// 03/20/1992 12/26/1988
+		psc.setFirstName("Annabelle");// Heather Griffith - Dean Dornak Ellen Keck
+		psc.setLastName("Ayres");
+		psc.setMemberId("120387978601");// 1125727908.. 632307605
+		psc.setSsnNumber("120387978601");
+		psc.setSubscribersFirstName("Annabelle");
+		psc.setSubscribersLastName("Ayres");
+		psc.setSubscribersDob("02/23/1999");
 
 		l.add(psc);
 		// dto.setPassword("Smile123");

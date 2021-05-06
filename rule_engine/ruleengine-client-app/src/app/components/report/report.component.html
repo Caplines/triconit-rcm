@@ -24,6 +24,8 @@
 						<li><a href="javascript:void(0)"
 							(click)="reportParam('DateFromToUserName',$event)">User Name (Date Range)</a></li>	
 						<li><a href="javascript:void(0)"
+							(click)="reportParam('ruledatasheet',$event)">Digitization of RE Results - (Google Sheet)</a></li>
+						<li><a href="javascript:void(0)"
 							(click)="reportParam('ivfRDBMS',$event)">IVF RDBMS</a></li>
 						<li><a href="javascript:void(0)"
 							(click)="reportParam('ivfRDBMSWebsiteParse',$event)">IVF RDBMS (Website Parsed Data) </a></li> 
@@ -120,6 +122,42 @@
 									class="error-msg">Please select valid Date To and from Date.</div>
 									
 							</div>
+							<div *ngIf="showParam.ruledatasheet" class="date-dropdown">
+							
+							<select
+										class="login-signup-form-field form-control" name="sheetTabId"
+										id="sheetTabId" [(ngModel)]="report.sheetTabId">
+										<option value="">Report type..</option>
+										<option value="0">Tx. Plan Validation</option>
+										<option value="634516941">Claim Validation</option>
+										<option value="2006499654">Patient Wise Report</option>
+										
+										
+							</select>
+							<div *ngIf="f.submitted && report.sheetTabId=='' "
+									class="error-msg">Please select Report Name.</div>
+								<!-- 	
+									
+								<input type="text" class="login-signup-form-field form-control"
+									name="patientId" id="patientId"
+									[(ngModel)]="report.patientId" #patientId="ngModel"
+									placeholder="Patient Id..." />
+								
+								<div *ngIf="f.submitted && (report.patientId=='' && report.reportField1=='' && report.reportField2=='')"
+									class="error-msg">Please enter Patient ID.</div>
+								
+								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id ="datepicker1"
+									 [options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
+
+								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id ="datepicker2"
+									 [options]="dateOptions2"></ng-datepicker>
+								
+								<div *ngIf="f.submitted && (report.patientId=='' && report.reportField1=='' && report.reportField2=='') || 
+								              (report.reportField1=='' && report.reportField2!='') || (report.reportField1!='' && report.reportField2=='') "
+									class="error-msg">Please select valid Date To and from Date.</div>
+								 -->
+									
+							</div>
 							<div *ngIf="showParam.PatientName">
 								<input type="text" class="login-signup-form-field form-control"
 									name="reportField1" id="reportField1"
@@ -185,7 +223,7 @@
 							</div>
 						
 
-						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }" *ngIf="!showParam.ruledatasheet">
 							<label class="sr-only" for="officeId">Office Name</label> <select
 								class="login-signup-form-field form-control" name="officeId"
 								id="officeId" [(ngModel)]="report.officeId">
@@ -218,7 +256,10 @@
 				<a href="javascript:void(0)" (click)="showReportData=false;"> Go
 					Back </a>
 			</div>
-			<ng-container *ngIf="report.reportType!='ivfRDBMS' && report.reportType!='ivfRDBMSWebsiteParse'">
+			<ng-container *ngIf="report.reportType=='ruledatasheet'">
+			<div><h3>{{reportData}}</h3></div>
+			</ng-container>
+			<ng-container *ngIf="report.reportType!='ivfRDBMS' && report.reportType!='ivfRDBMSWebsiteParse' && report.reportType!='ruledatasheet'">
 			<div *ngFor="let key of arrayOfKeys" class="table-container">
 				<h3>{{key}}</h3>
 				<table class="table table-bordered table-striped">
@@ -346,8 +387,8 @@
 					</tr>
 					<tr>
 						<td>Special remarks for Office: <span class="newff">{{reportDataInd.sRemarks}}</span></td>
-						<td>Medical Policy of the member: <span class="newff">{{reportDataInd.mPolicy}}</span></td>
-						<td>Member ID of Medical Policy: <span class="newff">{{reportDataInd.mMIP}}</span></td>
+						<td>Updated Prim Ins in ES as BCBS Federal: <span class="newff">{{reportDataInd.esBcbs}}</span></td>
+						<td>Need to obtain Medical Policy No: <span class="newff">{{reportDataInd.obtainMPN}}</span></td>
 						<td></td>
 					</tr>
 

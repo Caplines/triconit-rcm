@@ -489,7 +489,7 @@ public class IVFFormConversionUtil {
 		pd.setFMDD4355Percentage(d.getPerioMnt4());
 		pd.setGeneralBenefitsVerifiedBy(d.getBenefits());
 
-		pd.setGeneralDateIVwasDone(d.getDate());//// need to vertify
+		pd.setGeneralDateIVwasDone(d.getDate());//// need to verify
 
 		pd.setGingivitisD4346FL(d.getPerioMnt7());
 		pd.setGingivitisD4346Percentage(d.getPerioMnt6());

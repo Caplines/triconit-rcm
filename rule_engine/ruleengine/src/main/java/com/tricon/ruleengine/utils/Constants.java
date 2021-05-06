@@ -100,7 +100,7 @@ public class Constants {
 	public static final String RULE_ID_64="IntraOral Periapical";
 	public static final String RULE_ID_65="Nitrous Oxide";
 	public static final String RULE_ID_66="COB Primary";
-	public static final String RULE_ID_67="Percentage coverage check";//Only for OS FORM..
+	public static final String RULE_ID_67="Percentage coverage check(OS)";//Only for OS FORM..
 	
 	
 	
@@ -127,6 +127,12 @@ public class Constants {
    public static final String PASS = "PASS";
    public static final String DEBUG = "DEBUG";
    public static final String EXTI_ENGINE = "EXIT";
+   
+   public static final String Digitization_of_RE_Results_SpreadSheeId= "1PSzfq1J7ajKWwM9Y7uUsLQ2hPWB0_f8mMs16IF9R69Q";
+   public static final int Digitization_of_RE_Results_TP= 0;
+   public static final int Digitization_of_RE_Results_Cl = 634516941;
+   public static final int Digitization_of_RE_Results_pat = 2006499654;
+   
    
    public static final String NotApplicable = "Not Applicable";
    public static final String ALERT = "Alert";
@@ -342,6 +348,10 @@ public class Constants {
 	public static int IV_GENERAL_FORM_NAME_ID=1;
 	public static String IV_ORAL_SURGERY_FORM_NAME="Oral Surgery form";
 	public static int IV_ORAL_SURGERY_FORM_NAME_ID=2;
+	
+	
+	public static String OfficeNeedToTakeInfo_o="OfficeNeedToTakeInfo";
+	public static String OfficeNeedToTakeInfo_r="Office Need To Take Info";
 	
 	
 	

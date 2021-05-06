@@ -14,6 +14,7 @@ public interface CaplineIVFGoogleFormService {
 	
 	
 	public Object[] saveIVFFormData(CaplineIVFFormDto d,Office office,boolean ivf,IVFormType iVFormType) throws Exception;
+	public Object[] saveIVFFormCheck(CaplineIVFFormDto d,Office office,boolean ivf,IVFormType iVFormType) throws Exception;
 	public Object  searchIVFData(CaplineIVFQueryFormDto d,Office office) throws Exception;
 	public Object  searchIVFDataForGoogleSheet(CaplineIVFQueryFormDto d,Office office) throws Exception;
 	

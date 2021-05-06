@@ -2,6 +2,7 @@ package com.tricon.ruleengine.service;
 
 import java.util.List;
 
+import com.tricon.ruleengine.dto.DigitizationRuleEngineResult;
 import com.tricon.ruleengine.dto.EnhancedReportDto;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
@@ -17,4 +18,6 @@ public interface ReportService {
 	
 	public RuleReportResponseDto getRuleReport(RuleReportDto dto);
 	
+	public  List<DigitizationRuleEngineResult> getReportsForGoogleSheet(ReportDto dto);
+
 }

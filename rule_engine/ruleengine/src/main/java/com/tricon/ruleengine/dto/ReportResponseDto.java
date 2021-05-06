@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.dto;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 public class ReportResponseDto {
@@ -20,8 +21,17 @@ public class ReportResponseDto {
 	private String rule_name;
 	private String patient_id;
 	private String name;
+    private BigInteger  messageType;
+    private String dos;
+    
 	
 
+	public String getDos() {
+		return dos;
+	}
+	public void setDos(String dos) {
+		this.dos = dos;
+	}
 	public String getRep_created_by() {
 		return rep_created_by;
 	}
@@ -121,6 +131,12 @@ public class ReportResponseDto {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public BigInteger getMessageType() {
+		return messageType;
+	}
+	public void setMessageType(BigInteger messageType) {
+		this.messageType = messageType;
 	}
 
 	

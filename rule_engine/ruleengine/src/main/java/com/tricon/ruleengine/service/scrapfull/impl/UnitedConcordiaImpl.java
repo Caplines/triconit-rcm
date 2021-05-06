@@ -487,6 +487,16 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setsRPD4341QuadsPerDay("2");//As per chat 6 March 2021 Anjali
 		dtemp.setsRPD4341DaysBwTreatment("1");//As per chat 6 March 2021 Anjali
 		
+		try {
+		WebElement ac= driver.findElement(By.className("memberStatusLabel"));
+		if (ac.getText().contains("INACTIVE")) {
+			temp.setStatus(Constants.PATIENT_NOT_ACTIVE);
+			return;
+		}
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		 
 		Date cd= new Date();
 		dtemp.setGeneralDateIVwasDone(Constants.SIMPLE_DATE_FORMAT_IVF.format(cd));//147 and 97
 
@@ -656,7 +666,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				new String[] {"D3330"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map));// 156
 
 		dtemp.setD3330Freq(fetchBenefitByProcedure(headingName,
-				new String[] {"D3330"}, driver, benefitProAppliedtoded, false,  true, temp.getGradePay(),map));// 157
+				new String[] {"D3330"}, driver, benefitProcLimitation, false,  true, temp.getGradePay(),map));// 157
 		
 		//
 		headingName="Surgical Periodontal Services";
@@ -721,6 +731,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		
 		dtemp.setExamsD0140FL(fetchBenefitByProcedure(headingName,
 				new String[] {"D0140"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 25
+		
+		System.out.println("D0140"+dtemp.getExamsD0140FL());
 		
 		dtemp.seteExamsD0145FL(fetchBenefitByProcedure(headingName,
 				new String[] {"D0145"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 26
@@ -977,26 +989,45 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				null, driver, benefitProAppliedtoded, false, false, temp.getGradePay(),map));// 93	
 
 		
-		headingName="Fixed Prosthetics & Fixed Partial Denture Retainers";
+		headingName="Fixed Prosthetics";
+		
 		map= fetchBenefitByProcedureMap(headingName, driver, new String[] {benefitProcCopy, benefitProAppliedtoded, benefitProcCopy, 
                 benefitProcLimitation,benefitProcLimitationSentenceAlternateBenefitProvision});
 		
 		String b1=fetchBenefitByProcedure(headingName,
 				new String[] {"D6245"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map);
-       String b2=fetchBenefitByProcedure(headingName,
+		
+		String b11=fetchBenefitByProcedure(headingName,
+				new String[] {"D6245"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map);
+
+		headingName="Fixed Partial Denture Retainers";
+		map= fetchBenefitByProcedureMap(headingName, driver, new String[] {benefitProcCopy, benefitProAppliedtoded, benefitProcCopy, 
+                benefitProcLimitation,benefitProcLimitationSentenceAlternateBenefitProvision});
+
+		String b2=fetchBenefitByProcedure(headingName,
 				new String[] {"D6740"}, driver, benefitProcCopy, false, true, temp.getGradePay(),map);//102 Check Logic once...
-       if (!b1.equals(b2)){
-    	  // dtemp.setBridges1(bridges1);
+       
+		String b22=fetchBenefitByProcedure(headingName,
+				new String[] {"D6740"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map);//103
+       
+		String[] vals=pickLessOftwoNumber(b1, b2, "D6245", "D6740");
+       dtemp.setBridges1(vals[0]);
+       if (!vals[1].equals("")) {
+    	   if (dtemp.getComments()==null) dtemp.setComments("");
+    	   dtemp.setComments(dtemp.getComments()+" "+ vals[1]);
+              
        }
     			
-		b1=fetchBenefitByProcedure(headingName,
-				new String[] {"D6245"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map);
 		
-		b2=fetchBenefitByProcedure(headingName,
-				new String[] {"D6740"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map);//103
-		if (!b1.equals(b2)){
-			// dtemp.setBridges2(bridges2); /Check for lenght also
-	       }
+		vals =pickNotEqualsValues(b11, b22, "D6245", "D6740");
+		
+		dtemp.setBridges2(vals[0]); 
+		System.out.println("setBridges2--"+vals[0]);
+		if (!vals[1].equals("")) {
+	    	   if (dtemp.getComments()==null) dtemp.setComments("");
+	    	   dtemp.setComments(dtemp.getComments()+" "+ vals[1]);
+	              
+	     }
 		
 		
 		
@@ -1030,11 +1061,12 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 				try {
 					WebElement ce = div.findElements(By.tagName("div")).get(2);
 					String s[] = ce.getText().split(" - ")[0].split("/");
+					
 					dtemp.setPlanEffectiveDate(s[2] + "-" + (s[0].length() == 2 ? s[0] : "0" + s[0]) + "-"
 							+ (s[1].length() == 2 ? s[1] : "0" + s[1]));// 146
 
 					try {
-					String s1[]=ce.getText().split(" - ")[1].split("/");
+					String s1[]=(ce.getText().split(" - ")[1]).substring(0, 10)  .split("/");
 					dtemp.setPlanTermedDate(s1[2] + "-" + (s1[0].length() == 2 ? s1[0] : "0" + s1[0]) + "-"
 							+ (s1[1].length() == 2 ? s1[1] : "0" + s1[1]));// 145
 					}catch(Exception c) {
@@ -1330,7 +1362,76 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 			// TODO: handle exception
 		}
 		return dataMap;
-	   }	
+	   }
+	
+	
+	private String[] pickLessOftwoNumber(String b1,String b2,String c1,String c2) {
+		String[] data=new String[2];
+		data[0]=data[1]="";
+		if (b1==null) b1="";
+		if (b2==null) b2="";
+		
+	       if (!b1.equals(b2)){
+	   		   float f1=-1;
+			   float f2=-1;
+	   	       try {
+	    		   f1=Float.parseFloat(b1);
+	    		}catch (Exception e) {
+				// TODO: handle exception
+			    }
+	    	   try {
+	    		   f2=Float.parseFloat(b2);
+	    	   }catch (Exception e) {
+				// TODO: handle exception
+			   }
+	    	   //take less value and not -1
+	    	   if (f2<f1) {
+	    	            if (f2==-1) {
+	    	            	data[0]=f1+"";
+	    	            }else if (f1==-1) {
+	    	            	data[0]=f2+"";
+	    	            }else {
+	    	            	data[0] =f2+"";
+	    	            	data[1] =c1+"  "+f1+"\n";
+	    	            	data[1] =data[1]+ c2+"  "+f2+"\n";
+	    	            }
+	    	   }else {
+	    		     if (f1==-1) {
+	    		    	 data[0]=f2+"";
+	 	            }else if (f2==-1) {
+	 	            	data[0]=f1+"";
+	 	            }else {
+	 	            	data[0]=f1+"";
+	 	            	data[1] =c2+" "+f2+"\n";
+	 	            	data[1] =data[1]+ c1+"  "+f1+"\n";
+	 	            }
+	    	   }
+	    	   
+	    	  // dtemp.setBridges1(bridges1);
+	       }else {
+	    	   data[0]=b1;
+	       }
+        return data;
+	}
+
+	private String[] pickNotEqualsValues(String b1,String b2,String c1,String c2) {
+		String[] data=new String[2];
+		data[0]=data[1]="";
+		if (b1==null) b1="";
+		if (b2==null) b2="";
+	       if (!b1.equals(b2)){
+	   		   
+	    	 	data[0]=b1+"";
+	         	data[1]=c2+b2+"\n";
+	         	data[1]=data[1]+c2+b2+"\n";
+			    	   
+	    	   
+	    	  // dtemp.setBridges1(bridges1);
+	       }else {
+	    	   data[0]=b1;
+	       }
+        return data;
+	}
 
 	/**
 	 * 
@@ -2035,20 +2136,20 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smile#56789");
-		dto.setUserName("caladent02");
+		dto.setPassword("Sintonsmile#2415");
+		dto.setUserName("Sintonfd01");
 		dto.setSiteName("United Concordia");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("10/12/2000");//03/15/1973
+		psc.setDob("04/29/2002");//03/15/1973
 		/** For Ddental456/Insurance@745 we have  126229918001  DOB-05/14/1958*/
 		
 		psc.setFirstName("");
 		psc.setLastName("");
-		psc.setMemberId("128031536001");//129521395001
+		psc.setMemberId("128372920001");//129521395001
 		psc.setSsnNumber("");
-		psc.setGradePay("E1");
+		psc.setGradePay("");
 
 		l.add(psc);
 		// dto.setPassword("Smile123");

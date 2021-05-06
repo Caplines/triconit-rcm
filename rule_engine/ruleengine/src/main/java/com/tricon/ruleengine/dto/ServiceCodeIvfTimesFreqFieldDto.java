@@ -10,7 +10,7 @@ public class ServiceCodeIvfTimesFreqFieldDto {
 	String tooth;
 	String dos;
 	String surface;
-	String serviceCodeHis;//Used in humana
+	String serviceCodeHis;//Used in humana and FMX Pano
 	
 	
 	

@@ -1,7 +1,10 @@
 package com.tricon.ruleengine.service.impl;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,9 +21,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 //import org.openqa.selenium.support.ui.ExpectedConditions;
 
-
+import com.google.common.collect.Collections2;
+import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
 import com.tricon.ruleengine.dto.scrapping.HistoryDto;
+import com.tricon.ruleengine.model.db.IVFDefaultValue;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
@@ -68,6 +73,10 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		  try {
 			 if (updateSheet) ConnectAndReadSheets.updateSheetMCNADenta(scrappingSiteDetails.getGoogleSheetId(),
 					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)r,scrappingSiteDetails.getRowCount(),"NO","M");
+			 
+			 //Create Default Data...
+			 //CODE DONE IN main method
+			 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -347,6 +356,9 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 	public static void main(String [] stg) throws Exception {
 		
 		ScrappingSiteDetails det=null;  
+		
+		
+		
 		Map<String, List<Object>> mapData=null;
 		List<Object> cc = new ArrayList<>();
 		cc.add(new MCNADentaSheet("","","","", "", "615286147", "11/26/2012", "mcna",0+""));//
@@ -366,8 +378,49 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		//det.setOffice("Devine");
 		//det.set
 		MCNAEligibilityScrappingServiceImpl x=new MCNAEligibilityScrappingServiceImpl(det, "E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files", mapData, true);
-		x.scrapSite( det, mapData);
+		//x.scrapSite( det, mapData);
 		
+		
+		
+		try {
+			
+		List<IVFDefaultValue> values = new ArrayList<>();
+		IVFDefaultValue v= new IVFDefaultValue();
+		v.setFieldName("basicInfo1");
+		v.setDefaultValue("dd");
+		values.add(v);
+		v= new IVFDefaultValue();
+		v.setFieldName("basicInfo2");
+		v.setDefaultValue("888");
+		values.add(v);
+		
+		CaplineIVFFormDto caplineIVFFormDto= new CaplineIVFFormDto();
+		
+		for (Field field : caplineIVFFormDto.getClass().getDeclaredFields()) {
+		    field.setAccessible(true); // You might want to set modifier to public first.
+		    //Object value = field.get(caplineIVFFormDto); 
+		        Collection<IVFDefaultValue> pritd1 = Collections2.filter(values,
+						cd ->  cd.getFieldName().equals(field.getName()));
+		        if (pritd1!=null && pritd1.size()==1) {
+		        	System.out.println(field.getName());
+		        	IVFDefaultValue first = pritd1.iterator().next();
+		        	try {
+		        	x.invokeSetter(caplineIVFFormDto, field.getName(), first.getDefaultValue());
+		        	}catch(Exception y) {
+		        		y.printStackTrace();
+		        		
+		        	}
+		        }
+		    
+		}
+		
+		System.out.println("99--"+caplineIVFFormDto.getBasicInfo1());
+		System.out.println("99--"+caplineIVFFormDto.getBasicInfo2());
+		 
+         
+		 }catch(Exception p) {
+			 p.printStackTrace();
+		 }
 	}
 
 }
