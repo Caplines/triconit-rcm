@@ -242,7 +242,29 @@ border-collapse: collapse;
                             
                         </td>
                     </tr>
-					
+					<tr>
+                        <td  class="withds">
+                          <span class="main-heading-1">Special remarks for Office:</span>
+						</td>
+                        <td  colspan="4">						
+						  <span class="sub-heading"><xsl:value-of select="sRemarks"/></span>
+                            
+                        </td>
+						<td  class="withds">
+                          <span class="main-heading-1">Updated Prim Ins in ES as BCBS Fedral:</span>
+						</td>
+						<td  colspan="2">						
+						  <span class="sub-heading"><xsl:value-of select="esBcbs"/></span>
+                            
+                        </td>
+						<td  class="withds">
+                          <span class="main-heading-1">Need to obtain Medical Policy No:</span>
+						</td>
+						<td  colspan="1">						
+						  <span class="sub-heading"><xsl:value-of select="obtainMPN"/></span>
+                            
+                        </td>
+                    </tr>
                     
                 </tbody>
             </table>
