@@ -348,7 +348,7 @@ border-collapse: collapse;
                            <span class="main-heading-1">Waiting Period Duration:</span>
 						 </td>
                         <td> <span class="sub-heading"><xsl:value-of select="waitingPeriodDuration"/></span>
-                        </td
+                        </td>
                         <td colspan="2">
                          
                          </td>
