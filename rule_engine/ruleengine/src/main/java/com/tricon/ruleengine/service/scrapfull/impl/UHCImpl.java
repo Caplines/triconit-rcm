@@ -118,8 +118,8 @@ public class UHCImpl extends BasefullScrapImpl implements Callable<Boolean> {
 		HashMap<String, WebDriver> map=UCHWebDriverReference.UCHDRIVERMAP;
 		map.put(driverName+processId, driver);
 		}else {
-			driver.close();
-			driver.quit();	
+			//driver.close();
+			//driver.quit();	
 		}
 		}catch(Exception ex) {
 			
@@ -162,8 +162,8 @@ public class UHCImpl extends BasefullScrapImpl implements Callable<Boolean> {
 										map.put(driverName+processId, driver);
 										Thread.sleep(60000);
 										}else {
-											driver.close();
-											driver.quit();	
+											//driver.close();
+											//driver.quit();	
 										}
 										}catch(Exception ex) {
 											
@@ -184,8 +184,8 @@ public class UHCImpl extends BasefullScrapImpl implements Callable<Boolean> {
 							} catch (Exception dri) {
 
 							} finally {
-								driver.close();
-								driver.quit();
+								//driver.close();
+								//driver.quit();
 								scrappingSiteDetails.setRunning(false);
 								System.out.println("EE DATE =+"+new Date());
 								ScrappingFullDataManagment manage = dataDoa.getScrappingFullDataManagmentData();
@@ -1928,7 +1928,7 @@ public class UHCImpl extends BasefullScrapImpl implements Callable<Boolean> {
 
 		if (!navigate)
 			return navigate;
-		driver.get("https://www.unitedconcordia.com/tuctpi/subscriber.xhtml");
+		//driver.get("https://www.unitedconcordia.com/tuctpi/subscriber.xhtml");
 		Thread.sleep(10000);
 
 		return true;
@@ -1940,9 +1940,10 @@ public class UHCImpl extends BasefullScrapImpl implements Callable<Boolean> {
 		boolean navigate = true;
 		driver.manage().window().maximize();
 		driver.get(dto.getSiteUrl());
-		driver.get("https://healthid.optum.com/tb/app/index.html?TARGET=https%3A%2F%2Fdbp.optum.com%2Fcontent%2Fdental-benefits-provider%2Fen%2Fsecure%2Fpostloginhomescreen.html&relyingAppId=DBP92444#/login");
-		Thread.sleep(4000);// Need to keep this number high for Linux issue.
-		List<WebElement> inss=driver.findElements(By.tagName("input"));		
+		driver.get("https://healthid.optum.com/tb/app/index.html?TYPE=33554432&REALMOID=06-df61a7c4-b8fd-48b8-9085-537a2cadd83f&GUID=0&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-kflS%2btxP7qHu7CTFDp0Pr%2bhWIEpMcOhsXxzAyg0D3qiYV8Gh%2bChjj1VklA055i6n&TARGET=-SM-%2ftb%2fapp%2fsecure%2fhome%2edo%3frelyingAppAlias%3dDBP#/login");
+		Thread.sleep(8000);// Need to keep this number high for Linux issue.
+		//driver.navigate().refresh();
+		//List<WebElement> inss=driver.findElements(By.tagName("input"));		
 		try {
 			
 			/*for(WebElement ins:inss) {
@@ -1965,17 +1966,23 @@ public class UHCImpl extends BasefullScrapImpl implements Callable<Boolean> {
 			new Actions(driver).moveToElement(pw).click().perform();
 			userNameElement.click();
             */
+			//JavascriptExecutor jsExecutor1 = (JavascriptExecutor) driver;
+			
+			//String v1="$('#SignIn').click();";
+			//jsExecutor1.executeScript(v1);
+
 			JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 			
-			String v="$('#userNameId_input').val('caladental03');" + 
-					 "$('#passwdId_input').val('Dental@098766');"+
+			String v="$('#userNameId_input').val('caladental03');$('#USER').val('caladental03');" + 
+					 "$('#passwdId_input').val('Dental@098766');$('#PASSWORD').val('Dental@098766');"+
 					 "const customEvent = document.createEvent('Event');" + 
 					" customEvent.initEvent('change', true, true);" + 
 					" $('#userNameId_input')[0].dispatchEvent(customEvent);"+
 			         "const customEvent1 = document.createEvent('Event');" +
 					" customEvent1.initEvent('change', true, true);" + 
-					" $('#passwdId_input')[0].dispatchEvent(customEvent1);"+
-			        " $('#SignIn').click();alert(1);";
+					" $('#passwdId_input')[0].dispatchEvent(customEvent1);"
+					+ "$('#userNameId_input').keyup();$('#passwdId_input').keyup();"+
+			        " document.getElementById('signInForm').submit();";
 			jsExecutor.executeScript(v);
 			Thread.sleep(10000);
 			/*

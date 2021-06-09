@@ -102,6 +102,20 @@ public class Constants {
 	public static final String RULE_ID_66="COB Primary";
 	public static final String RULE_ID_67="Percentage coverage check(OS)";//Only for OS FORM..
 	
+	//68 to 73c is common in error_en.properties
+	public static final String RULE_ID_68="Sealant Eligibility Frequency";//Only Sealants .. 
+	public static final String RULE_ID_69="Sealant Eligibility( Tooth Eligible)";//Only Sealants .. 
+	public static final String RULE_ID_70="Sealant Eligibility( Tooth not Eligible)";//Only Sealants .. 
+	public static final String RULE_ID_71="Sealant Eligibility( Tooth not Eligible Age)";//Only Sealants .. 
+	public static final String RULE_ID_72="Sealant Eligibility( Tooth not Eligible Freq)";//Only Sealants .. 
+	public static final String RULE_ID_73="Sealant Eligibility( patient)";//Only Sealants .. 
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -199,6 +213,7 @@ public class Constants {
 	
 	
 	public static String prebatchmode="PREBATCHMODE";
+	public static String sealanthmode="SEALANTMODE";
 	
 	
 	public static NumberFormat formatter = new DecimalFormat("#0.00");

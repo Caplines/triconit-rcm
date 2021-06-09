@@ -659,6 +659,7 @@ public class CaplineIVFFormDto {
 	
     private Integer ivFormTypeId;
 	
+    private String waitingPeriodDuration;
     //END
     
     public String getFill1() {
@@ -3029,6 +3030,14 @@ public class CaplineIVFFormDto {
 
 
 	
+	public String getWaitingPeriodDuration() {
+		return waitingPeriodDuration;
+	}
+
+	public void setWaitingPeriodDuration(String waitingPeriodDuration) {
+		this.waitingPeriodDuration = waitingPeriodDuration;
+	}
+
 	private String commonReplaceMent(String d) {
 		
 		if (d!=null) {

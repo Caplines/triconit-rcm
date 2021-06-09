@@ -181,7 +181,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	
 	static Class<?> clazz = TreatmentPlanServiceImpl.class;
 
-	private Object[] logFileToAppendData(String officeName) {
+	public Object[] logFileToAppendData(String officeName) {
 
 		BufferedWriter bw = null;
 		FileWriter fw = null;
@@ -2567,7 +2567,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		return returnMap;
 	}
 
-	private Rules getRulesFromList(List<Rules> rules, String name) {
+	public Rules getRulesFromList(List<Rules> rules, String name) {
 		Rules r = null;
 		Collection<Rules> ruleGen = Collections2.filter(rules, rule -> rule.getShortName().equals(name));
 		for (Rules rule : ruleGen) {
@@ -2628,7 +2628,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 * rd.setGroupRun(reports.getGroupRun()); rd.setCreatedBy(user);
 	 * rd.setReports(reports); tvd.saveReportDestail(rd); // }
 	 */
-	private void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
+	public void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType,IVFormType iVFormType) {
 		//String[] p=env.getActiveProfiles();
 		//int xx=0;
@@ -2702,6 +2702,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rd.setRules(getRulesFromListByid(rules, d.getRuleId()));
 				rd.setCreatedBy(user);
 				rd.setReports(reports);
+				rd.setIvDate("");
+				try {
+				  if (ivfSheet.getGeneralDateIVwasDone()!=null && !ivfSheet.getGeneralDateIVwasDone().equals("")){
+					rd.setIvDate(Constants.SIMPLE_DATE_FORMAT.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivfSheet.getGeneralDateIVwasDone())));
+				  }
+                }finally{
+					
+				}
 				rd.setReportType(HighLevelReportTypeEnum.TXPLAN.getType());
 				rd.setMessageType(MessageUtil.getReportMessageType(d.getMessage()));
 				rd.setInsuranceType(insuranceType);
@@ -2748,6 +2756,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rd.setGroupRun(reports.getGroupRun());
 						rd.setErrorMessage(d.getMessage());
 						rd.setRules(getRulesFromListByid(rules, d.getRuleId()));
+						rd.setIvDate("");
+						try {
+						if (ivfSheet.getGeneralDateIVwasDone()!=null && !ivfSheet.getGeneralDateIVwasDone().equals("")){
+							rd.setIvDate(Constants.SIMPLE_DATE_FORMAT.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivfSheet.getGeneralDateIVwasDone())));
+						 }
+						}finally{
+							
+						}
 						rd.setCreatedBy(user);
 						rd.setReports(reports);
 						rd.setReportType(HighLevelReportTypeEnum.CLAIM.getType());
@@ -3024,8 +3040,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//
 	}
 	
-	private void saveReportsListBatch(Authentication authentication, List<Rules> rules, IVFTableSheet ivfSheet,
-			List<TPValidationResponseDto> list, Office off,IVFormType iVFormType) {
+	public void saveReportsListBatch(Authentication authentication, List<Rules> rules, IVFTableSheet ivfSheet,
+			List<TPValidationResponseDto> list, Office off,IVFormType iVFormType,String mode) {
 		
 		//String[] p=env.getActiveProfiles();
 		//if (p[0].equalsIgnoreCase("dev")) return;//Not need for report in Dev env.
@@ -3045,7 +3061,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			}
 
 			Reports reports = null;
-			reports = tvd.getReportsByTPIdIVFIDAndOffice(Constants.prebatchmode, ivfSheet.getUniqueID().split("_")[1],
+			reports = tvd.getReportsByTPIdIVFIDAndOffice(mode, ivfSheet.getUniqueID().split("_")[1],
 					off);
 
 			// reports =
@@ -3059,7 +3075,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				reports = new Reports();
 				reports.setiVFormType(iVFormType);
 				reports.setCreatedBy(user);
-				reports.setTreatementPlanId(Constants.prebatchmode);
+				reports.setTreatementPlanId(mode);
 				reports.setGroupRun(1);
 				if (ivfSheet != null) {
 					reports.setPatientName(ivfSheet.getPatientName());
@@ -3090,6 +3106,14 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rd.setGroupRun(reports.getGroupRun());
 				rd.setErrorMessage(d.getMessage());
 				rd.setRules(getRulesFromListByid(rules, d.getRuleId()));
+				rd.setIvDate("");
+				try {
+				if (ivfSheet.getGeneralDateIVwasDone()!=null && !ivfSheet.getGeneralDateIVwasDone().equals("")){
+					rd.setIvDate(Constants.SIMPLE_DATE_FORMAT.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivfSheet.getGeneralDateIVwasDone())));
+				}
+				}finally{
+					
+				}
 				rd.setCreatedBy(user);
 				rd.setReports(reports);
 				rd.setReportType(HighLevelReportTypeEnum.BATCH.getType());
@@ -3523,7 +3547,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 				if (ivfMap != null && ivfMap.get(ivx) != null)
 					saveReportsListBatch(authentication, rules, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list, off,
-							iVformTypeDao.getIVFormTypeById(((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()));
+							iVformTypeDao.getIVFormTypeById(((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()),Constants.prebatchmode);
 				// else
 				// saveReportsListBatch(authentication, rules, null, list,off);
 				if (returnMap == null)

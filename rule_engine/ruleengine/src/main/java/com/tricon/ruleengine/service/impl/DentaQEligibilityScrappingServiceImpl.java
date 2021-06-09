@@ -16,11 +16,16 @@ import org.openqa.selenium.htmlunit.HtmlUnitWebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
+import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
 import com.tricon.ruleengine.dto.scrapping.HistoryDto;
+import com.tricon.ruleengine.model.db.IVFDefaultValue;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
+import com.tricon.ruleengine.model.db.SealantEligibilityRule;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
+import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.ConstantsScrapping;
@@ -36,7 +41,16 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 	private String siteType = "";
 	private String officeName;
 	private int attempt = 0;
+	
+	private List<IVFDefaultValue> iVFDefaultValues;
+	private List<SealantEligibilityRule> sealantEligibilityRules;
+	
+	private CaplineIVFGoogleFormService caplineIVFGoogleFormService;
 
+	private IVFormType iVFormType;
+	
+	private Office office;
+	
 	public ScrappingSiteDetails getScrappingSiteDetails() {
 		return scrappingSiteDetails;
 	}
@@ -47,7 +61,8 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 
 	DentaQEligibilityScrappingServiceImpl(ScrappingSiteDetails scrappingSiteDetails, String CLIENT_SECRET_DIR,
 			String CREDENTIALS_FOLDER, Map<String, List<Object>> mapData, boolean updateSheet, String siteType,
-			String officeName, String driverLocation) {
+			String officeName, String driverLocation,List<IVFDefaultValue>iVFDefaultValues,List<SealantEligibilityRule> sealantEligibilityRules,
+    		CaplineIVFGoogleFormService caplineIVFGoogleFormService,IVFormType iVFormType,Office office) {
 		this.scrappingSiteDetails = scrappingSiteDetails;
 		this.CLIENT_SECRET_DIR = CLIENT_SECRET_DIR;
 		this.CREDENTIALS_FOLDER = CREDENTIALS_FOLDER;
@@ -56,6 +71,11 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		this.siteType = siteType;
 		this.officeName = officeName;
 		this.driverLocation = driverLocation;
+		this.sealantEligibilityRules=sealantEligibilityRules;
+		this.iVFDefaultValues=iVFDefaultValues;
+		this.caplineIVFGoogleFormService=caplineIVFGoogleFormService;
+		this.iVFormType=iVFormType;
+		this.office=office;
 		// store parameter for later user
 	}
 
@@ -73,6 +93,16 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			// ")[1].split(",")[0]) ;
 			if (e.getMessage().contains("Attempting to write column: "))
 				appendSheet(r);
+		}
+		
+		//Create Default Data...
+		 //CODE DONE IN main method          ***********************************************************8
+		 //CaplineIVFFormDto caplineIVFFormDto= new CaplineIVFFormDto();
+		try {
+			//this.caplineIVFGoogleFormService.saveIVFFormData(caplineIVFFormDto, office, false, iVFormType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return r;
@@ -132,7 +162,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		// det.set
 		DentaQEligibilityScrappingServiceImpl x = new DentaQEligibilityScrappingServiceImpl(det,
 				"E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files", mapData, true, "new",
-				f.getName(), "D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe");
+				f.getName(), "D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe",null,null,null,null,null);
 		x.scrapSite(det, mapData);
 
 	}

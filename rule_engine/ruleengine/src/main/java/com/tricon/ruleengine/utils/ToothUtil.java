@@ -7,9 +7,16 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Collections2;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
@@ -474,11 +481,103 @@ public class ToothUtil {
 		return checkDepth;
 	}
 
-	public static void main(String a []) {
+	
+   public static Set<String> findMissingTeethFromAll(Set<String> teeth){
+		
+		String teethALL="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,29,30,31,32,"
+				     + "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T";
+		String[] teethALLArr= teethALL.split(",");
+		Set<String> teethArrList= new TreeSet<> (Arrays.asList(teethALLArr));
+		if (teeth==null || teeth.size()==0)  {
+			return new TreeSet<> (Arrays.asList(teethALLArr));
+		}
+		teethArrList.removeAll(teeth);
+		return new TreeSet<> (new ArrayList<>(teethArrList));
+		
+	}
+
+   public static String sortTeeth(Set<String> teeth){
+		
+	  // List<String> aList = teeth.stream().collect(Collectors.toList());
+	   List<Integer> num= new ArrayList<>();
+	   List<String> str= new ArrayList<>();
+	   
+	   Iterator<String> iter = teeth.iterator();
+	   while (iter.hasNext()){
+	        String next = iter.next();
+	        try {
+	        	num.add(Integer.parseInt(next));
+	        }catch(Exception n) {
+	        	str.add(next);
+	        }
+	        
+	    }
+	   
+	   Collections.sort(num, new Comparator<Integer>() {
+	        @Override
+	        public int compare(Integer h1, Integer h2) {
+	        	
+	        	if (h1.intValue()==h2.intValue()) return 0;
+	        	else if (h1.intValue()>h2.intValue()) return 1;
+	        	else  return -1;
+	        }
+	    });
+	   /*
+	   Collections.sort(str, new Comparator<String>() {
+	        @Override
+	        public int compare(String h1, String h2) {
+	        	
+	        	if (h1.equals(h2)) return 0;
+	        	else if (h1.charAt(0)>h2.intValue()) return 1;
+	        	else  return -1;
+	        }
+	    });
+	   */
+	   List<String> numC =num.stream()
+		       .map(String::valueOf)
+		       .collect(Collectors.toList());
+		       
+			   //numC.addAll(str);
+		//	   System.out.println("777");
+			//   System.out.println(String.join(",", numC));
+			  // System.out.println("888");
+			   numC.addAll(str);		   
+			   //System.out.println(String.join(",", numC));
+	   Set<String> y=  numC.stream().collect(Collectors.toSet());
+	   //System.out.println(String.join(",", y));
+	   return String.join(",", numC);
+		 
+	   //return teeth.stream().collect(Collectors.toSet());
+    }
+   
+   public static void main(String a []) {
     	String aa ="D3420";
-    	System.out.println(commonSurfaceLogic("", "b"));
-    	System.out.println(diffSurfaceLogic("","b"));
-    	System.out.println(getToothPerioDepth("3,4,3,1","1","2","5","","","","",null));
+    	//System.out.println(commonSurfaceLogic("", "b"));
+    	//System.out.println(diffSurfaceLogic("","b"));
+    	//System.out.println(getToothPerioDepth("3,4,3,1","1","2","5","","","","",null));
+    	String teethALL="1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,19,20,21,22,23,24,25,26,27,28,29,29,30,31,32,"
+			     + "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T";
+    	Set<String> y=findMissingTeethFromAll(null);
+    	
+    	System.out.println(String.join(",", y));
+    	System.out.println("------------------------");
+    	Set<String> sss= new TreeSet<>();
+    	//sss.add("1");
+        //sss.add("22");
+    	//sss.add("4");
+    	//sss.add("11");
+    	sss.add("13");
+    	//sss.add("14");
+    	//sss.add("15");
+    	//sss.add("21");
+    	sss.add("C");
+    	sss.add("D");
+    	sss.add("A");
+    	
+    	
+    	
+    	sortTeeth(sss);
+    	
     	
     }
 

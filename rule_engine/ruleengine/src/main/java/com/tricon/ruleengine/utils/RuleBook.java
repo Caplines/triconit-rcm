@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,10 +34,12 @@ import com.tricon.ruleengine.dto.ServiceCodeIvfTimesFreqFieldDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.model.db.IVFDefaultValue;
 import com.tricon.ruleengine.model.db.MVPandVAP;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.OSIVFormCodes;
 import com.tricon.ruleengine.model.db.Rules;
+import com.tricon.ruleengine.model.db.SealantEligibilityRule;
 import com.tricon.ruleengine.model.db.UserInputRuleQuestionHeader;
 import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
@@ -11526,6 +11529,389 @@ public class RuleBook {
 		}
 		return d;
 
+	}
+
+	
+	//Sealant Eligibility
+	/**
+	 * 
+	 * @param ivfSheet
+	 * @param sealantEligibilityRules
+	 * @param messageSource
+	 * @param rule
+	 * @param bw
+	 * @param iv - > for IV from database or from Portal
+	 * @return
+	 */
+	public Object[] Rule68(Object ivfSheet, List<SealantEligibilityRule> sealantEligibilityRules,
+			 MessageSource messageSource,
+			Rules rule, BufferedWriter bw,boolean iv) {
+		Set<TPValidationResponseDto> dList = new HashSet<>();
+    	Set<String> fcodes=new TreeSet<>();
+    	Set<String> surfaces=new TreeSet<>();
+    	Set<String> teethC=new TreeSet<>();
+	   	Set<String> teethCovered=new TreeSet<>();
+	   	Set<String> teethCoveredAge=new TreeSet<>();
+	   	//Set<String> teethCoveredFreq=new HashSet<>();
+	   	Set<String> teethNotCovered=new TreeSet<>();
+	   	Set<String> teethNotCoveredAge=new TreeSet<>();
+		Set<String> teethNotCoveredFreq=new TreeSet<>();
+		Set<String> teethAllCovered=new TreeSet<>();
+		Set<String> teethAllCoveredTmp=new TreeSet<>();
+		   	
+	   	
+		boolean pass=true;
+        try {
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		//IVFTableSheet ivfPortal = (IVFTableSheet) ivfFromPortal;
+		String dob = ivf.getPatientDOB();
+		int[] age = DateUtils.calculateAgeYMD(dob, true);
+		//age[0]=5;
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_68,
+				Constants.rule_log_debug, bw);
+		
+	   	for(SealantEligibilityRule ser:sealantEligibilityRules) {
+				
+		  if (iv){
+	   		     if (ser.getInsuranceName().toLowerCase().equals(ivf.getInsName().toLowerCase())){
+	   		    	teethCovered.add(ser.getCoveredToothNo());
+				}
+		  }else {
+			  if (ser.getPlanName().toLowerCase().equals(ivf.getPlanType().toLowerCase())){
+				  teethCovered.add(ser.getCoveredToothNo());
+				}
+		  }
+	    }
+        
+	   	//Now teeth not covered
+	   	teethNotCovered=ToothUtil.findMissingTeethFromAll(teethCovered);
+	   	//
+	   	
+	   	for(SealantEligibilityRule ser:sealantEligibilityRules) {
+			
+			if (iv) {
+			    if (ser.getInsuranceName().toLowerCase().equals(ivf.getInsName().toLowerCase())){
+				if (ser.getFromAge()<=age[0] &&  ser.getToAge()>age[0]) {
+					teethCoveredAge.add(ser.getCoveredToothNo());
+				}
+			   }
+			}else {
+				if (ser.getPlanName().toLowerCase().equals(ivf.getPlanType().toLowerCase())){
+					if (age[0]>=ser.getFromAge() &&  age[0]<ser.getToAge()) {
+						teethCoveredAge.add(ser.getCoveredToothNo());
+					}
+				   }
+				
+			}
+	    }
+	   	//not covered
+	   	teethCoveredAge.addAll(teethNotCovered);
+	   	teethNotCoveredAge=ToothUtil.findMissingTeethFromAll(teethCoveredAge);
+	   	
+	   	
+		Set<String> allnotCovered= new TreeSet<>();
+		allnotCovered.addAll(teethNotCovered);
+		allnotCovered.addAll(teethNotCoveredAge);
+		Map<String,List<ToothHistoryDto>> map= new HashMap<>();
+		
+	   	//
+		
+		teethAllCoveredTmp=ToothUtil.findMissingTeethFromAll(allnotCovered);        	
+		//use this teethAllCoveredTmp in Frequency Logic
+		Class<?> c2;
+			int caseNo=0;
+			c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
+			if (ivf.getiVFHistorySheetList().size()==0) {
+				//Sealant is Eligible
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule68.pass.message1", new Object[] { }, locale), Constants.PASS,"","",""));
+			}else {
+				caseNo=0;
+				//case =1;
+				
+				for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+					String hc = "getHistoryCode";
+					String hd = "getHistoryDOS";
+					String ht = "getHistoryTooth";
+					String hs = "getHistorySurface";
+					Method hcm = c2.getMethod(hc);
+					Method htm = c2.getMethod(ht);
+					Method hdm = c2.getMethod(hd);
+					//Method hss = c2.getMethod(hs);	
+					String code = (String) hcm.invoke(hisShee);
+					String dt = (String) hdm.invoke(hisShee);
+					String th = (String) htm.invoke(hisShee);
+					
+					
+					if (code.equals("")) continue ;
+					if (dt.equals("")) continue ;
+					if (teethAllCoveredTmp.contains(th)){
+						if (map.containsKey(th)){
+							ToothHistoryDto x= new ToothHistoryDto();
+							x.setHistoryCode(code);
+							x.setHistoryDos(dt);
+							//x.setSurfaceTooth(surfaceTooth);
+							x.setHistoryTooth(th);
+							map.get(th).add(x);
+						}else {
+							ToothHistoryDto x= new ToothHistoryDto();
+							x.setHistoryCode(code);
+							x.setHistoryDos(dt);
+							//x.setSurfaceTooth(surfaceTooth);
+							x.setHistoryTooth(th);
+							List<ToothHistoryDto> l=new ArrayList<>();
+							l.add(x);
+							map.put(th, l);
+						}
+					}
+					
+				}
+				//case 1 Sealant not Eligible => If ANY code found other than D0XXX or D1351 or D1352 THEN Sealant is NOT Eligible
+				for (Map.Entry<String, List<ToothHistoryDto>> entry : map.entrySet()) {
+					
+					List<ToothHistoryDto> l =entry.getValue();
+					for(ToothHistoryDto d:l) {
+						String code=d.getHistoryCode();
+						if (!(code.toLowerCase().startsWith("d0") || code.equalsIgnoreCase("D1351") || code.equalsIgnoreCase("D1352"))) {
+							caseNo=0;
+							pass=false;
+							teethNotCoveredFreq.add(d.getHistoryTooth());
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule68.error.message2", new Object[] {code,d.getHistoryDos(),d.getHistoryTooth() }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
+							}	      			
+						}
+				}
+				//case 2  If all codes found are D0XXX THEN Sealant is Eligible .
+				for (Map.Entry<String, List<ToothHistoryDto>> entry : map.entrySet()) {
+					
+					List<ToothHistoryDto> l =entry.getValue();
+					for(ToothHistoryDto d:l) {
+						String code=d.getHistoryCode();
+						if (!code.toLowerCase().startsWith("d0")) {
+							caseNo=0;
+							pass=false;
+							teethNotCoveredFreq.add(d.getHistoryTooth());
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule68.error.message2", new Object[] {code,d.getHistoryDos(),d.getHistoryTooth() }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
+							}	      			
+						}
+				}	
+				// If all codes found are D1351 or D1352 THEN check when D1351/D1352 were done
+				Set<String> cD1351D1352= new TreeSet<>();
+				for (Map.Entry<String, List<ToothHistoryDto>> entry : map.entrySet()) {
+					boolean checkformon=true;
+									List<ToothHistoryDto> l =entry.getValue();
+									for(ToothHistoryDto d:l) {
+										String code=d.getHistoryCode();
+										if (!(code.contains("D1351") || code.contains("D1352"))) {
+											checkformon=false;
+											
+											}	      			
+									}
+									if (checkformon) cD1351D1352.add(entry.getKey());
+			    }
+				for(String t:cD1351D1352) {
+					List<ToothHistoryDto> l= map.get(t);
+					for(ToothHistoryDto d:l) {
+						String code=d.getHistoryCode();
+						if (DateUtils.checkforXm(Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos()),36)) {
+							 
+							  pass=false;
+							  teethNotCoveredFreq.add(d.getHistoryTooth());
+							  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+											messageSource.getMessage("rule68.error.message3", new Object[] {code,d.getHistoryDos(),d.getHistoryTooth() }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
+							 }
+						}
+				}
+				
+               /*
+				//System.out.println("dddd-"+ivf.getiVFHistorySheetList().size());
+				for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+					String hc = "getHistoryCode";
+					String hd = "getHistoryDOS";
+					String ht = "getHistoryTooth";
+					String hs = "getHistorySurface";
+					Method hcm = c2.getMethod(hc);
+					Method htm = c2.getMethod(ht);
+					Method hdm = c2.getMethod(hd);
+					Method hss = c2.getMethod(hs);	
+					String code = (String) hcm.invoke(hisShee);
+					String dt = (String) hdm.invoke(hisShee);
+					String th = (String) htm.invoke(hisShee);
+					
+					if (code.equals("")) continue ;
+					if (dt.equals("")) continue ;
+					//case 1 Sealant not Eligible .
+					if (!(code.toLowerCase().startsWith("d0") || code.equalsIgnoreCase("D1351") || code.equalsIgnoreCase("D1352"))) {
+						caseNo=0;
+						pass=false;
+						if (th!=null && !th.equals("")) teethNotCoveredFreq.add(th);
+						
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule68.error.message2", new Object[] {code,dt,th }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
+						}
+					
+				}
+				*/
+				/*
+				if (caseNo==0) {
+					//If all codes found are D0XXX THEN Sealant is Eligible
+					boolean elg=true;
+					for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+						String hc = "getHistoryCode";
+						String hd = "getHistoryDOS";
+						String ht = "getHistoryTooth";
+						String hs = "getHistorySurface";
+						Method hcm = c2.getMethod(hc);
+						Method htm = c2.getMethod(ht);
+						Method hdm = c2.getMethod(hd);
+						Method hss = c2.getMethod(hs);	
+						String code = (String) hcm.invoke(hisShee);
+						String dt = (String) hdm.invoke(hisShee);
+						String th = (String) htm.invoke(hisShee);
+						if (code.equals("")) continue ;
+						if (code.equals("")) continue ;
+						if (th.equals("")) continue ;
+						//case 2 Sealant Eligible .
+						if (!code.toLowerCase().startsWith("d0")) {
+							//caseNo=2;
+							elg=false;
+							//if (th!=null && !th.equals(""))teethNotCoveredFreq.add(th);
+							//not eligible 
+						}else {
+							
+							
+						}
+						
+					}
+					if (!elg) {
+						caseNo=0;
+						//add all teeth as not Eligible
+						for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+							String hc = "getHistoryCode";
+							String hd = "getHistoryDOS";
+							String ht = "getHistoryTooth";
+							String hs = "getHistorySurface";
+							Method hcm = c2.getMethod(hc);
+							Method htm = c2.getMethod(ht);
+							Method hdm = c2.getMethod(hd);
+							Method hss = c2.getMethod(hs);	
+							String code = (String) hcm.invoke(hisShee);
+							String dt = (String) hdm.invoke(hisShee);
+							String th = (String) htm.invoke(hisShee);
+							if (code.equals("")) continue ;
+							if (code.equals("")) continue ;
+							if (th.equals("")) continue ;
+							//case 2 Sealant Eligible .
+							teethNotCoveredFreq.add(th);
+							
+						}
+						
+					}
+				}//if caseNo==0 end
+				*/
+			/*	
+			   if (caseNo==0) {
+				  for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+					String hc = "getHistoryCode";
+					String hd = "getHistoryDOS";
+					String ht = "getHistoryTooth";
+					String hs = "getHistorySurface";
+					Method hcm = c2.getMethod(hc);
+					Method htm = c2.getMethod(ht);
+					Method hdm = c2.getMethod(hd);
+					Method hss = c2.getMethod(hs);	
+					String code = (String) hcm.invoke(hisShee);
+					String dt = (String) hdm.invoke(hisShee);
+					String th = (String) htm.invoke(hisShee);
+					if (code.equals("")) continue ;
+					if (dt.equals("")) continue ;
+					//case 3 Sealant Eligible .
+					if (!(code.equalsIgnoreCase("D1351") || code.equalsIgnoreCase("D1352"))) {
+						caseNo=3;
+						//teethNotCoveredFreq.add(th);
+						//If all codes found are D1351 or D1352
+					}
+					
+				}
+				if (caseNo==3) {
+					//caseNo=3;
+					for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
+						String hc = "getHistoryCode";
+						String hd = "getHistoryDOS";
+						String ht = "getHistoryTooth";
+						String hs = "getHistorySurface";
+						Method hcm = c2.getMethod(hc);
+						Method htm = c2.getMethod(ht);
+						Method hdm = c2.getMethod(hd);
+						Method hss = c2.getMethod(hs);	
+						String code = (String) hcm.invoke(hisShee);
+						String dt = (String) hdm.invoke(hisShee);
+						String th = (String) htm.invoke(hisShee);
+						if (code.equals("")) continue ;
+						if (dt.equals("")) continue ;
+						//case 3 Sealant Eligible .
+							if (DateUtils.checkforXm(Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt),36)) {
+								 
+							  pass=false;
+							  if (th!=null && !th.equals("")) teethNotCoveredFreq.add(th);
+							  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+											messageSource.getMessage("rule68.error.message3", new Object[] {code,dt,th }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
+							 }
+							
+						
+						
+					}
+				}
+			 }//if end case ==0
+			 */
+			 if (dList.size()==0) {
+				//Sealant is Eligible
+				 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule68.pass.message1", new Object[] { }, locale), Constants.PASS,"","",""));
+			   }
+			}// else 
+
+			
+		/*Now tooth covered
+			Suppose : Tooth # Eligible for Sealant for sealant is 1..10
+			then  Tooth not # Eligible for Sealant --> 11-32,A,T  --->AA
+			--------------------------------------------------
+			Suppose : Tooth # Eligible for Sealant for sealant AGE is 5..10
+			then  Tooth not # Eligible for Sealant for sealant AGE--> 1..4.11..32..A..T -->BB
+			-------
+			Suppose : Tooth # Eligible for Sealant for sealant Freq is 5..10
+			then  Tooth not # Eligible for Sealant for sealant Freq--> 1..4.11..32..A..T-->>CC
+			--------
+			Now Finally :
+			TOOTH for Sealant eligible are those that are not in AA,BB,CC			
+		*/
+		
+		
+		//
+		teethNotCoveredFreq.removeAll(teethNotCovered);
+		teethNotCoveredFreq.removeAll(teethNotCoveredAge);
+		
+		
+		allnotCovered.addAll(teethNotCoveredFreq);
+		teethAllCovered=ToothUtil.findMissingTeethFromAll(allnotCovered);
+		
+		
+		//teethAllCovered=ToothUtil.sortTeeth(teethAllCovered); 
+		//teethNotCovered=ToothUtil.sortTeeth(teethNotCovered); 
+		//teethNotCoveredAge=ToothUtil.sortTeeth(teethNotCoveredAge); 
+		//teethNotCoveredFreq=ToothUtil.sortTeeth(teethNotCoveredFreq); 
+		
+		
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+			return new Object[] {null,null,null,null,dList};
+		}
+		return new Object[] {ToothUtil.sortTeeth(teethAllCovered),ToothUtil.sortTeeth(teethNotCovered),
+				ToothUtil.sortTeeth(teethNotCoveredAge),ToothUtil.sortTeeth(teethNotCoveredFreq),dList};
 	}
 
 	/*

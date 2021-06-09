@@ -51,6 +51,8 @@ public class ReportDetail extends BaseAudit implements java.io.Serializable {
 	@Column(name = "tx_plan_date", length = 45)
 	private String txPlanDate;
 
+	@Column(name = "iv_date", length = 45)
+	private String ivDate;
 
 	public ReportDetail() {
 	}
@@ -136,6 +138,14 @@ public class ReportDetail extends BaseAudit implements java.io.Serializable {
 
 	public void setTxPlanDate(String txPlanDate) {
 		this.txPlanDate = txPlanDate;
+	}
+
+	public String getIvDate() {
+		return ivDate;
+	}
+
+	public void setIvDate(String ivDate) {
+		this.ivDate = ivDate;
 	}
 
 	

@@ -2,32 +2,19 @@ package com.tricon.ruleengine.dto;
 
 import java.util.List;
 
-public class ScrappingInputDto {
-	
+public class SealantInputDto {
+
 	private String officeId;
 	private int scrapType;
-	private boolean isdataFromUi;
 	private List<ScrappingUserDataInputDto> listUd;
 	private boolean onlyDisplay;
-	private String username;
+	private String userName;
 	private String password;
-	private String start;
-	private String end;
 	private String locationProvider;
 	private String location;
 	private boolean saveDataInRdbms;
 	private boolean runRules;
-	
-	public String getLocation() {
-		return location;
-	}
-	public void setLocation(String location) {
-		this.location = location;
-	}
-	private String siteType;
-	
-	
-	
+	private int sid;
 	
 	public String getOfficeId() {
 		return officeId;
@@ -35,19 +22,11 @@ public class ScrappingInputDto {
 	public void setOfficeId(String officeId) {
 		this.officeId = officeId;
 	}
-
-	
 	public int getScrapType() {
 		return scrapType;
 	}
 	public void setScrapType(int scrapType) {
 		this.scrapType = scrapType;
-	}
-	public boolean isIsdataFromUi() {
-		return isdataFromUi;
-	}
-	public void setIsdataFromUi(boolean isdataFromUi) {
-		this.isdataFromUi = isdataFromUi;
 	}
 	public List<ScrappingUserDataInputDto> getListUd() {
 		return listUd;
@@ -61,11 +40,12 @@ public class ScrappingInputDto {
 	public void setOnlyDisplay(boolean onlyDisplay) {
 		this.onlyDisplay = onlyDisplay;
 	}
-	public String getUsername() {
-		return username;
+	
+	public String getUserName() {
+		return userName;
 	}
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	public String getPassword() {
 		return password;
@@ -73,30 +53,17 @@ public class ScrappingInputDto {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getStart() {
-		return start;
-	}
-	public void setStart(String start) {
-		this.start = start;
-	}
-	public String getEnd() {
-		return end;
-	}
-	public void setEnd(String end) {
-		this.end = end;
-	}
 	public String getLocationProvider() {
 		return locationProvider;
 	}
 	public void setLocationProvider(String locationProvider) {
 		this.locationProvider = locationProvider;
 	}
-	
-	public String getSiteType() {
-		return siteType;
+	public String getLocation() {
+		return location;
 	}
-	public void setSiteType(String siteType) {
-		this.siteType = siteType;
+	public void setLocation(String location) {
+		this.location = location;
 	}
 	public boolean isSaveDataInRdbms() {
 		return saveDataInRdbms;
@@ -110,8 +77,14 @@ public class ScrappingInputDto {
 	public void setRunRules(boolean runRules) {
 		this.runRules = runRules;
 	}
-	
-	
-	
+	public int getSid() {
+		return sid;
+	}
+	public void setSid(int sid) {
+		this.sid = sid;
+	}
 
+	
+	
+	
 }

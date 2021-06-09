@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import com.tricon.ruleengine.dto.ScrappingInputDto;
 import com.tricon.ruleengine.dto.ScrappingSiteDetailsDto;
+import com.tricon.ruleengine.dto.SealantInputDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 
@@ -21,5 +22,7 @@ public interface ScrappingService {
 	
 	
 	public ScrappingSiteDetailsDto getScrappingSiteDetailsDetailSDto(int scrapType, String officeUUid);
+	
+	public Map<String,List<?>> runSealantRule(SealantInputDto dto) throws InterruptedException, ExecutionException;
 
 }

@@ -15,6 +15,8 @@ public class ReportDto {
 	private String patientId;
 	private String offficeName;
 	private int sheetTabId;
+	private String ivDate;
+	
 	
 	
 	
@@ -97,6 +99,12 @@ public class ReportDto {
 	}
 	public void setSheetTabId(int sheetTabId) {
 		this.sheetTabId = sheetTabId;
+	}
+	public String getIvDate() {
+		return ivDate;
+	}
+	public void setIvDate(String ivDate) {
+		this.ivDate = ivDate;
 	}
 	
 	

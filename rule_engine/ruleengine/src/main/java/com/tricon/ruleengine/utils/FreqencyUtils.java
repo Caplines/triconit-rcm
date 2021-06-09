@@ -2147,7 +2147,7 @@ public class FreqencyUtils {
 			text = text.replace("all other pay grades | ", "");
 			text = text.replace("in combination with cleanings", "");
 			text = text.replace("no alternate benefit", "");
-			text = text.replace("per inpatient or short procedure unit", "");
+			text = text.replace("per inpatient or short procedure unit", "xLT");
 			text = text.replace("bitewings four films", "");
 			text = text.replace("-", "");
 			
@@ -2173,7 +2173,7 @@ public class FreqencyUtils {
 			if (text.contains("per") && text.contains("months")) {
 				String pDent = "";
 				if (text.contains("per dentist")) {
-					pDent = "xprovider";
+					pDent = "xProvider";
 				}
 				String temp[] = text.split(" ");
 				int count = 0;
@@ -2236,8 +2236,9 @@ public class FreqencyUtils {
 			} else if (text.contains("calendar year")) {
 				convert = text.replaceAll("[a-zA-Z]", "").trim() + "xCY";
 
-			} else if (text.contains("per consultant")) {
-				convert = text.split("per consultant")[0].trim()+"XProvider";
+			}else if (text.contains("per consultant")) {
+				convert = text.split("per consultant")[0].trim()+"xprovider";
+				if (text.contains("xLT")) convert=convert+"xLT"; 
 
 			} else if (text.contains("per") && text.contains("years")) {
 
@@ -2292,6 +2293,13 @@ public class FreqencyUtils {
 			if (convert.length() > 40)
 				convert = convert.substring(0, 39);	
 			convert=convert.replaceAll("\\|", "");
+			convert=convert.replaceAll("per-Tooth", "tooth");
+			convert=convert.replaceAll("Per-Tooth", "tooth");
+			convert=convert.replaceAll("1xtoothxLT","1xLT");
+			
+			convert=convert.replaceAll("1xtoothx3CY", "1x3CY");
+			convert=convert.replaceAll("1toothx", "1xtoothx");
+			convert=convert.replaceAll("1xProviderx12Mo","1XProviderX12Mo");
 			System.out.println("Con-" + convert);
 			return convert;
 		} catch (Exception e) {
@@ -2322,6 +2330,8 @@ public class FreqencyUtils {
 				"An interim partial denture is covered only to replace extracted anterior permanent teeth during the healing period. If provided for other circumstances, the patient is responsible for the cost. Delta Dental considers the fee for an interim partial denture to include the fee for all teeth and clasps. Benefit is limited to once per arch within a 5 year period.",
 				"PY"));
 		*/
+		convertFrequecyUCCIString("1 Per Tooth ~ Per 5 Years");
+		/*
 		convertFrequecyUCCIString("1 Per 12 Months ~ Per Dentist | More...");
 		convertFrequecyUCCIString("1 per 5 years ~ per same group");
 		convertFrequecyUCCIString("1 Per Tooth ~ Per 5 Years ~ Age 18 And Older | Age 18 And Older | More...");//18 and older 18 and
@@ -2395,7 +2405,7 @@ public class FreqencyUtils {
 		convertFrequecyUCCIString("1 Per Tooth ~ Per 5 Years");
 		convertFrequecyUCCIString("1 Per 12 Months ~ Per Dentist");
 		convertFrequecyUCCIString("3 Per 12 Months | 2 Per 12 Months ~ Per Office");
-
+       */
 	}
 
 	public static List<TPValidationResponseDto> panoFMXFrequencyLogic(List<ServiceCodeIvfTimesFreqFieldDto> dataIVF,

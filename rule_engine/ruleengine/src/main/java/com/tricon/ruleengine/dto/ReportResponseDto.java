@@ -23,6 +23,8 @@ public class ReportResponseDto {
 	private String name;
     private BigInteger  messageType;
     private String dos;
+    private String iv_date;
+    
     
 	
 
@@ -138,9 +140,13 @@ public class ReportResponseDto {
 	public void setMessageType(BigInteger messageType) {
 		this.messageType = messageType;
 	}
+	public String getIv_date() {
+		return iv_date;
+	}
+	public void setIv_date(String iv_date) {
+		this.iv_date = iv_date;
+	}
 
-	
-	
 	
 
 }

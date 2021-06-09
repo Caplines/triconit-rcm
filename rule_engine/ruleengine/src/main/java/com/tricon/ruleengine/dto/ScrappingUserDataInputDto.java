@@ -7,6 +7,8 @@ public class ScrappingUserDataInputDto {
 	private String subscriberId;
 	private String dob;
 	private String insuranceName;
+	private String patientId;
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -37,6 +39,14 @@ public class ScrappingUserDataInputDto {
 	public void setInsuranceName(String insuranceName) {
 		this.insuranceName = insuranceName;
 	}
+	public String getPatientId() {
+		return patientId;
+	}
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
+	
+	
 	
 }

@@ -17,8 +17,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.util.Strings;
 import org.apache.poi.ss.usermodel.DateUtil;
 
 import com.itextpdf.text.log.SysoCounter;
@@ -274,6 +277,24 @@ public class DateUtils {
 		
 	}
 	
+	public static boolean checkforXm(Date date,int months) {
+		
+		//Calendar calendarC = new GregorianCalendar();
+		//calendarC.setTime(new Date());
+		//
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(date);
+		calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH)+months, calendar.get(Calendar.DATE));
+		Date date12m=calendar.getTime();
+		//System.out.println(date12m);
+		//isDatesBetweenDates(a, b, d)
+		if (date.compareTo(date12m)>0 ){
+			return true;
+		}else{
+			return false;
+		}
+		
+	}
 	
 	/*
 	 * This method is used to Extract latest IVF ID from Map of IVF's
@@ -600,7 +621,17 @@ public class DateUtils {
 			}
 			System.out.println("**********************");
 			
-			System.out.println(DateUtils.calculateAgeYMD("2020-2-9", true)[0]);
+			System.out.println(DateUtils.calculateAgeYMD("2007-09-20", true)[0]);
+			
+			Set<String> s = new TreeSet<String>();
+			s.add("B");
+			s.add("C");
+			s.add("31");
+			s.add("A");
+			s.add("1");
+			s.add("R");
+			System.out.println(String.join(",", s));
+			
 			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

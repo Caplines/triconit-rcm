@@ -302,6 +302,10 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	@Column(name = "obtain_mpn", length = 30)
 	private String obtainMPN;
+	
+	@Column(name = "waiting_period_duration", length = 30)
+	private String waitingPeriodDuration;
+	
 
 	public String getNpi() {
 		return npi;
@@ -1062,6 +1066,14 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setObtainMPN(String obtainMPN) {
 		this.obtainMPN = obtainMPN;
+	}
+
+	public String getWaitingPeriodDuration() {
+		return waitingPeriodDuration;
+	}
+
+	public void setWaitingPeriodDuration(String waitingPeriodDuration) {
+		this.waitingPeriodDuration = waitingPeriodDuration;
 	}
 
 

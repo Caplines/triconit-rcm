@@ -148,6 +148,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/googleESReport",
                  "/ivf",
                  "/dumpOldIVFData",
+                 "/sealant",
                 "/ivfbatch",
                 "/ivfbatchpre",
                 "/report",

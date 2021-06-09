@@ -1,6 +1,8 @@
 package com.tricon.ruleengine.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.tricon.ruleengine.dto.DigitizationRuleEngineResult;
 import com.tricon.ruleengine.dto.EnhancedReportDto;
@@ -8,6 +10,7 @@ import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.RuleReportDto;
 import com.tricon.ruleengine.dto.RuleReportResponseDto;
+import com.tricon.ruleengine.dto.TPValidationResponseDto;
 
 public interface ReportService {
 
@@ -19,5 +22,12 @@ public interface ReportService {
 	public RuleReportResponseDto getRuleReport(RuleReportDto dto);
 	
 	public  List<DigitizationRuleEngineResult> getReportsForGoogleSheet(ReportDto dto);
+	
+	public  Map<String,List<ReportResponseDto>> getReportsForSealant(ReportDto dto,boolean pdf);
+	
+	public Object[] generateSealntPDF(ReportDto dto);
+	
+	public Object[] generateSealntPDByUIData(HashMap<String,List<TPValidationResponseDto>> rdto);
+	
 
 }

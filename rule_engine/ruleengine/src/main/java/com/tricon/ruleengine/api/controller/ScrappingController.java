@@ -25,6 +25,7 @@ import com.tricon.ruleengine.dto.OnlyId;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingInputDto;
 import com.tricon.ruleengine.dto.ScrappingSiteDetailsDto;
+import com.tricon.ruleengine.dto.SealantInputDto;
 import com.tricon.ruleengine.dto.scrapping.ScrapFullDataResultDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.service.ScrappingFullDataService;
@@ -57,6 +58,33 @@ public class ScrappingController {
 		Map<String, List<?>> map=null;
 		try {
 			map = sService.scrapSite(dto);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", map));
+
+	}
+
+	@CrossOrigin
+	@PostMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/runsealantRules", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> runSealantRules(@RequestBody SealantInputDto dto)  {
+     //@RequestBody ScrappingInputDto do
+		//ScrappingInputDto dto=new ScrappingInputDto();
+		// dto.setTreatmentPlanId("22095");
+		//dto.setOfficeId("be2c3847-aaae-11e8-8544-8c16451459cd");
+		//dto.setSiteId(1);
+		
+		
+		Map<String, List<?>> map=null;
+		try {
+			map = sService.runSealantRule(dto);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

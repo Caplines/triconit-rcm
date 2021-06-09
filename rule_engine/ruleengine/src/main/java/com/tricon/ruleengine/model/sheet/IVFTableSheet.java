@@ -320,6 +320,7 @@ public class IVFTableSheet {
 	private String mMIP;
 	private String esBcbs;
 	private String obtainMPN;
+	private String waitingPeriodDuration;
 
 
     public String getsRemarks() {
@@ -2213,6 +2214,12 @@ public class IVFTableSheet {
 	}
 	public void setObtainMPN(String obtainMPN) {
 		this.obtainMPN = obtainMPN;
+	}
+	public String getWaitingPeriodDuration() {
+		return waitingPeriodDuration;
+	}
+	public void setWaitingPeriodDuration(String waitingPeriodDuration) {
+		this.waitingPeriodDuration = waitingPeriodDuration;
 	}
 	
 		

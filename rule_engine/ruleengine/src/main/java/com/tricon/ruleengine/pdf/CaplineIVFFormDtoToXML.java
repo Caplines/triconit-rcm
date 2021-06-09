@@ -5,11 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 import javax.xml.bind.JAXBContext;  
 import javax.xml.bind.Marshaller;
@@ -21,8 +19,6 @@ import javax.xml.transform.stream.StreamSource;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
-import com.tricon.ruleengine.dto.ToothHistoryDto;
-import com.tricon.ruleengine.utils.Constants; 
 
 public class CaplineIVFFormDtoToXML {
 	
@@ -38,6 +34,18 @@ public class CaplineIVFFormDtoToXML {
 		
 	}
 	
+	public  String convertToXML(SelantPdfMainDto dto, String dir ) throws Exception{
+		String filePath=dir+new Date().getTime()+".xml";
+		JAXBContext contextObj = JAXBContext.newInstance(SelantPdfMainDto.class);
+
+		Marshaller marshallerObj = contextObj.createMarshaller();
+		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		return 	filePath;
+
+		
+	}
+
 	public byte[] createHtml(String xmlPath, String xslPath)
 		    throws IOException, TransformerException {
 		    ByteArrayOutputStream baos = new ByteArrayOutputStream();

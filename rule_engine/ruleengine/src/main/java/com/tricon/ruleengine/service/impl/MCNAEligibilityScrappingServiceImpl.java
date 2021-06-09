@@ -26,9 +26,12 @@ import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
 import com.tricon.ruleengine.dto.scrapping.HistoryDto;
 import com.tricon.ruleengine.model.db.IVFDefaultValue;
+import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
+import com.tricon.ruleengine.model.db.SealantEligibilityRule;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
+import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
 import com.tricon.ruleengine.utils.ConstantsScrapping;
@@ -45,6 +48,14 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 	private int  ctALL=0;
 	private int attempt =0;
 	
+	private List<IVFDefaultValue> iVFDefaultValues;
+	private List<SealantEligibilityRule> sealantEligibilityRules;
+	
+	private CaplineIVFGoogleFormService caplineIVFGoogleFormService;
+	
+	private IVFormType iVFormType;
+	
+	private Office office;
 
 	public ScrappingSiteDetails getScrappingSiteDetails() {
 		return scrappingSiteDetails;
@@ -57,12 +68,19 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 
 
 	MCNAEligibilityScrappingServiceImpl(ScrappingSiteDetails scrappingSiteDetails,
-    		String	CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER,Map<String, List<Object>> mapData,boolean updateSheet) {
+    		String	CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER,Map<String, List<Object>> mapData,boolean updateSheet,
+    		List<IVFDefaultValue>iVFDefaultValues,List<SealantEligibilityRule> sealantEligibilityRules,
+    		CaplineIVFGoogleFormService caplineIVFGoogleFormService,IVFormType iVFormType,Office office) {
 		this.scrappingSiteDetails=scrappingSiteDetails;
 		this.CLIENT_SECRET_DIR=CLIENT_SECRET_DIR;
 		this.CREDENTIALS_FOLDER=CREDENTIALS_FOLDER;
 		this.mapData=mapData;
 		this.updateSheet=updateSheet;
+		this.sealantEligibilityRules=sealantEligibilityRules;
+		this.iVFDefaultValues=iVFDefaultValues;
+		this.caplineIVFGoogleFormService=caplineIVFGoogleFormService;
+		this.iVFormType=iVFormType;
+		this.office=office;
 	       // store parameter for later user
 	   }
 	
@@ -75,7 +93,14 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 					  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<EligibilityDto>)r,scrappingSiteDetails.getRowCount(),"NO","M");
 			 
 			 //Create Default Data...
-			 //CODE DONE IN main method
+			 //CODE DONE IN main method          ***********************************************************8
+			 //CaplineIVFFormDto caplineIVFFormDto= new CaplineIVFFormDto();
+			try {
+				//this.caplineIVFGoogleFormService.saveIVFFormData(caplineIVFFormDto, office, false, iVFormType);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -377,7 +402,8 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		det.setOffice(f);
 		//det.setOffice("Devine");
 		//det.set
-		MCNAEligibilityScrappingServiceImpl x=new MCNAEligibilityScrappingServiceImpl(det, "E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files", mapData, true);
+		MCNAEligibilityScrappingServiceImpl x=new MCNAEligibilityScrappingServiceImpl(det, "E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files",
+				mapData, true,null,null,null,null,null);
 		//x.scrapSite( det, mapData);
 		
 		

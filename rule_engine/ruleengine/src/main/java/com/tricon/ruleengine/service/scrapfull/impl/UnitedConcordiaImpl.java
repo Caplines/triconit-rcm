@@ -486,7 +486,8 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setPlanType("PPO");
 		dtemp.setsRPD4341QuadsPerDay("2");//As per chat 6 March 2021 Anjali
 		dtemp.setsRPD4341DaysBwTreatment("1");//As per chat 6 March 2021 Anjali
-		
+		dtemp.setClaimFillingLimit("12");
+		dtemp.setWillDowngradeApplicable("Yes");
 		try {
 		WebElement ac= driver.findElement(By.className("memberStatusLabel"));
 		if (ac.getText().contains("INACTIVE")) {
@@ -594,6 +595,9 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		
 		dtemp.setPlanAssignmentofBenefits(fetchCordinationBenefit("Coordination and Other Benefits", driver,
 				"Assignment Of Benefits", true, true, false));// 131 mand
+
+		dtemp.setPlanDependentsCoveredtoAge(fetchCordinationBenefit("Coordination and Other Benefits", driver,
+				"Age-related Benefits Cease | Student Dependent ~ Age", true, true, false));// 131 mand
 
 		
 		String headingName="Restorations";
@@ -778,7 +782,7 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setD0330Freq(fetchBenefitByProcedure(headingName,
 				new String[] {"D0330"}, driver, benefitProcLimitation, false, true, temp.getGradePay(),map));// 153
 
-		dtemp.setCrownsD2750D2740PaysPrepSeatDate("Seat Date");// 18
+		dtemp.setCrownsD2750D2740PaysPrepSeatDate("Seat");// 18
 		
 		headingName="Miscellaneous Services";
 		map= fetchBenefitByProcedureMap(headingName, driver, new String[] {benefitProcCopy, benefitProAppliedtoded, benefitProcCopy, 
@@ -835,11 +839,11 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 		dtemp.setSealantsD1351AgeLimit(fetchBenefitByProcedure(headingName,
 				new String[] {"D1351"}, driver, benefitProcLimitationSentence, false, true, temp.getGradePay(),map));// 39
 		
-		dtemp.setSealantsD1351AgeLimit(fetchBenefitByProcedure(headingName,
+		dtemp.setSealantsD1351PrimaryMolarsCovered(fetchBenefitByProcedure(headingName,
 				new String[] {"D1351"}, driver, benefitProcLimitationSentencePrimayMolar, false, true, temp.getGradePay(),map));// 40
 
 		//41
-		dtemp.setSealantsD1351AgeLimit(fetchBenefitByProcedure(headingName,
+		dtemp.setSealantsD1351PermanentMolarsCovered(fetchBenefitByProcedure(headingName,
 				new String[] {"D1351"}, driver, benefitProcLimitationSentencePermanentMolar, false, true, temp.getGradePay(),map));// 42
 
 		
@@ -1219,10 +1223,21 @@ public class UnitedConcordiaImpl extends BasefullScrapImpl implements Callable<B
 			List<WebElement> trs = tab.findElements(By.tagName("tr"));
 			value = "No";
 			for (WebElement tr : trs) {
+				if (type.equals("Age-related Benefits Cease | Student Dependent ~ Age")) {
+					if (tr.getText() != null && tr.getText().startsWith(type)) {
+						System.out.println(tr.getText());
+						try {
+							value =tr.getText().replaceAll("[^0-9]+", "");
+						}catch(Exception num){
+							
+						}
+					}	
+				}else {
 				if (tr.getText() != null && tr.getText().startsWith(type) && tr.getText().contains("Will Apply")) {
 					System.out.println(tr.getText());
 					value = "Yes";
 					// Assignment Of Benefits
+				}
 				}
 			}
 

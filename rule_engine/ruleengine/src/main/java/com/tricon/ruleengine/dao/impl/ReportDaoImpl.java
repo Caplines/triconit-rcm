@@ -56,13 +56,13 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 String x="rep.treatement_plan_id as treatement_plan_id,rd.tx_plan_date as dos";
 			 String t="reports as rep, report_detail as rd";
 			 String z="rep.treatement_plan_id";
-			 String batchrest=" rep.treatement_plan_id <>'"+Constants.prebatchmode+"' ";
+			 String batchrest=" rep.treatement_plan_id not in ('"+Constants.prebatchmode+"','"+Constants.sealanthmode+"') ";
 			 
 			 if (dto.getmType()!=null && dto.getmType().equals("c")) {
 				 x="rep.claim_id as treatement_plan_id,rd.date_of_service as dos";
 				 t="reports_claim as rep, report_claim_detail as rd";
 				 z="rep.claim_id";
-				 batchrest=" rep.claim_id <>'"+Constants.prebatchmode+"' ";
+				 batchrest=" rep.claim_id not in ('"+Constants.prebatchmode+"','"+Constants.sealanthmode+"') ";
 			 }// 
 			 String queryString="SELECT DATE_FORMAT(rep.created_date,'%m/%d/%Y %T') as rep_create_date,rep.created_by as rep_created_by, "+
 					 " CONCAT( first_name ,' ' ,last_name ) as name ,CAST(COALESCE(rd.message_type, -200) as UNSIGNED) as messageType "
@@ -441,6 +441,84 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 		
 		return list;
 		
+	}
+
+	@Override
+	public List<ReportResponseDto> getReportsForSealant(ReportDto dto) {
+
+		Session session=null;
+		List<ReportResponseDto>  list=null;
+		
+		try {
+			 session=getSession();
+			 
+			String reportDateLogic="";
+			String reportDateLogicQ="";
+			if (dto.getIvDate()==null) dto.setIvDate("");
+			if (dto.getReportField1()==null) dto.setReportField1("");
+			if (dto.getReportField2()==null) dto.setReportField2("");
+			if (!dto.getReportField1().equals("") && !dto.getReportField2().equals("")) {
+				reportDateLogicQ= reportDateLogicQ+	"  and (" + 
+							"  (rd.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"                 or" + 
+							"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							" )  " ;//and rd.created_by='"+dto.getEmployerName() +"'" ;
+			
+				reportDateLogic=" ,report_detail rd   ";
+						 
+			 }
+			if (!dto.getIvDate().equals("")) {
+				reportDateLogic=" ,report_detail rd   ";
+				reportDateLogicQ= reportDateLogicQ+	"  and rd.iv_date='"+dto.getIvDate()+"' ";	
+			}
+			
+			String queryString = "select rd.iv_date as iv_date,DATE_FORMAT(a.updated_date,'%m/%d/%Y %T') as rep_create_date,a.created_by as rep_created_by, "
+					+ "CONCAT( first_name ,' ' ,last_name ) as name ,CAST(COALESCE(rd.message_type, -200) as UNSIGNED) as messageType "
+					+ "	, DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as rd_created_date,"
+					+ "		us.email as email,offi.name as office_name,rep_group_run as rep_group_run,rd.group_run as rd_group_run, "
+					+ "	patient_dob as dob,"
+					+ "	patient_name as patient_name,patient_id as patient_id,ivf_form_id as ivf_form_id,"
+					+ "	rd.rule_id as rule_id,rd.error_message as error_message,rl.name as rule_name" + " from ("
+					+ "SELECT max(r.group_run) as rep_group_run,r.id,patient_id,ivf_form_id,office_id,patient_dob,patient_name "
+					+ ",r.created_date,r.created_by,r.updated_date "
+					+ " FROM reports r "+reportDateLogic+" where  treatement_plan_id='"+Constants.sealanthmode+"'" +reportDateLogicQ;
+			
+					
+			queryString= queryString+	" and patient_id in ("+dto.getPatientId()+")  group by patient_id ) a, report_detail rd, "
+					+ "rules as rl,user as us ,office as offi "
+					+ " where a.office_id='"+dto.getOfficeId()+"' and  a.rep_group_run=rd.group_run and a.id=rd.report_id and rl.id=rd.rule_id"
+					+ " and us.uuid=rd.created_by and offi.uuid=a.office_id ";
+			 	 if (dto.getReportField1()==null) dto.setReportField1("");
+				 if (dto.getReportField2()==null) dto.setReportField2("");
+				  
+				 if (!dto.getReportField1().equals("") && !dto.getReportField2().equals("")) {
+				 /*queryString= queryString+	"  and (" + 
+							"  (rd.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"                 or" + 
+							"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							" )  " ;//and rd.created_by='"+dto.getEmployerName() +"'" ;
+					 }*/
+				 
+						 
+			  }
+			 	
+			 System.out.println(queryString);
+			 list=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(ReportResponseDto.class)). list();
+			 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			closeSession(session);
+
+		}
+		
+		return list;
+
 	}
 
 	

@@ -358,7 +358,7 @@ public class IVFFormConversionUtil {
 		pd2.setmMIP(d.getmMIP());
 		pd2.setEsBcbs(d.getEsBcbs());
 		pd2.setObtainMPN(d.getObtainMPN());
-		
+		pd2.setWaitingPeriodDuration(d.getWaitingPeriodDuration());
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();
@@ -700,6 +700,7 @@ public class IVFFormConversionUtil {
 				pd.setmMIP(d.getmMIP());
 				pd.setEsBcbs(d.getEsBcbs());
 				pd.setObtainMPN(d.getObtainMPN());
+				pd.setWaitingPeriodDuration(d.getWaitingPeriodDuration());
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -1133,6 +1134,7 @@ public class IVFFormConversionUtil {
 		pd2.setmMIP(d.getmMIP());
 		pd2.setEsBcbs(d.getEsBcbs());
 		pd2.setObtainMPN(d.getObtainMPN());
+		pd2.setWaitingPeriodDuration(d.getWaitingPeriodDuration());
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();
 		p2Set.add(pd2);

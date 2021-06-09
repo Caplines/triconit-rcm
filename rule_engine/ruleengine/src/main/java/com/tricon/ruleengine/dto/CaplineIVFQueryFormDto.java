@@ -27,7 +27,7 @@ public class CaplineIVFQueryFormDto {
 	
 	private String ivformTypeId;
 	
-	
+	private String forSelantData;
 	
 	
 	public String getClause() {
@@ -149,6 +149,12 @@ public class CaplineIVFQueryFormDto {
 	}
 	public void setIvformTypeId(String ivformTypeId) {
 		this.ivformTypeId = ivformTypeId;
+	}
+	public String getForSelantData() {
+		return forSelantData;
+	}
+	public void setForSelantData(String forSelantData) {
+		this.forSelantData = forSelantData;
 	}
 	
 	

@@ -5,9 +5,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,7 +41,10 @@ import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.RuleReportDto;
+import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.pdf.SelantPdfMainDto;
+import com.tricon.ruleengine.pdf.SelantPdfPatDto;
 import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.service.IVformTypeService;
@@ -129,6 +135,14 @@ public class ReportController {
 					if (finalData.size()<=1)  p="No Data Found.";
 					o=p;
 					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					 }
+				
+		}else if (dto.getReportType().equals("sealantElig")) {
+			   try {
+				    o= reportService.getReportsForSealant(dto,false);
+				   } catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					 }
@@ -283,6 +297,46 @@ public class ReportController {
 
 	}
 
+	@PostMapping
+	@RequestMapping(value = "/genereatePdfSealant")
+	public void generatePDFSealant(@RequestBody ReportDto rdto, HttpServletResponse response) throws IOException {
+		//
+	 Object[] obj=null; 
+	 
+	  obj = reportService.generateSealntPDF(rdto);
+		if (obj != null && obj[1]!=null) {
+			ByteArrayOutputStream o =(ByteArrayOutputStream)  obj[1];
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+"sealant_rep"+ ".pdf"));
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
+			InputStream in = new ByteArrayInputStream(o.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			o.close();
+		}
+    
+	}
+
+	@PostMapping
+	@RequestMapping(value = "/genereatePdfSealantUI")
+	public void generatePDFSealant(@RequestBody HashMap<String,List<TPValidationResponseDto>> rdto, HttpServletResponse response) throws IOException {
+		//
+	 Object[] obj=null; 
+	 
+	  obj = reportService.generateSealntPDByUIData(rdto);
+		if (obj != null && obj[1]!=null) {
+			ByteArrayOutputStream o =(ByteArrayOutputStream)  obj[1];
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+"sealant_rep"+ ".pdf"));
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
+			InputStream in = new ByteArrayInputStream(o.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			o.close();
+		}
+    
+	}
+	
 	@PostMapping
 	@RequestMapping(value = "/fillupgsheet")
 	public void fillupGheet(@RequestBody ReportDto rdto, HttpServletResponse response) throws IOException {
