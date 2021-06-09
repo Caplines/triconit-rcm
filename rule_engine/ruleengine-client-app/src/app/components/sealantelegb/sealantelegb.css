@@ -1,11 +1,36 @@
-.colorred
-{
-	color:#ff0000;
+.form-control.inner-inp-2 {height: 38px;
+    margin: 0;
+    padding: 0 10px;
+    vertical-align: middle;
+    background: #ffffff;
+    border: 1px solid #dadada;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 38px;
+    color: #888;
+    border-radius: 4px;
+    box-shadow: none;
+    transition: all .3s;}
+    
+    .form-horizontal .control-label {    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    }
+   
+    /*
+    #data-scroll{
+	  border: 1px solid black;
+	  background-color: lightblue;
+	  width: 100%;
+	  height: 210px;
+	  overflow-y: scroll;
+   }*/
+ #data-scroll {
+  display: inline-block;
+  height: 210px;
+  overflow: auto
 }
-.newff{
-	color:#0000ff;
-}
-
 
 table#data-scroll-t th, table#data-scroll-tre th{
   position: -webkit-sticky;
@@ -103,4 +128,28 @@ table#data-scroll-t1 tr,table#data-scroll-t1re tr {
 
 table#data-scroll-t1 tr:nth-child(odd) {
   background-color: #BBDEFB;
+}
+
+.heightdef{
+	height:30px!important;
+	border:none!important;
+	width:100%!important;
+}   
+   
+.dobpp .ngx-datepicker-calendar-container{
+	Z-index:9999;
+}   
+
+.deletebut {
+    margin-top: -35px;
+    position: absolute;
+    margin-left: 5px;
+}
+
+.deletebut .glyphicon-remove {
+	color:red;
+}
+
+.cl-red{
+	color:red;
 }

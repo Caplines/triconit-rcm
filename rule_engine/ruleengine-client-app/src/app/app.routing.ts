@@ -18,6 +18,8 @@ import {EnReportsComponent} from "./components/enhanced_reports/enreports.compon
 import {ScrapComponent} from "./components/scrap/scrap.component";
 import {ScrapFullDataComponent} from "./components/scrapfulldata/scrapfulldata.component";
 import {IVFDumpComponent} from "./components/ivfdump/ivfdump.component";
+import {SealantelegbComponent} from "./components/sealantelegb/sealantelegb.component";
+
 
 
 import {UrlPermission} from "./urlPermission/url.permission";
@@ -128,6 +130,11 @@ const appRoutes: Routes = [
 			    offs: OfficeResolve
 		  },
 		  loadChildren: './module/rule_report.module#RuleReportAppModule' },
+{ path: 'sealant',
+		  resolve: {
+			    offs: OfficeResolve
+		  },
+		  loadChildren: './module/selants_ele.module#SealantelegbAppModule' },		  
   // otherwise redirect to profile
   { path: '**', redirectTo: '/login' }
   

@@ -8,7 +8,7 @@ export class UrlLoggedInCheck implements CanActivate {
   constructor(private router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-	 console.log(111); 
+	 //console.log(111); 
     if (localStorage.getItem('currentUser')) {
     	let ut =Utils.fetchUserTypeFromLocalStorage(); 
         if (ut=='1')this.router.navigate(['/ivf']);

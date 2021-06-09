@@ -28,7 +28,9 @@
 						<li><a href="javascript:void(0)"
 							(click)="reportParam('ivfRDBMS',$event)">IVF RDBMS</a></li>
 						<li><a href="javascript:void(0)"
-							(click)="reportParam('ivfRDBMSWebsiteParse',$event)">IVF RDBMS (Website Parsed Data) </a></li> 
+							(click)="reportParam('ivfRDBMSWebsiteParse',$event)">IVF RDBMS (Website Parsed Data) </a></li>
+						<li><a href="javascript:void(0)"
+							(click)="reportParam('sealantElig',$event)">Sealant Eligibility</a></li>  
 					</ul>
 				</div>
 				<!-- <div class="form-top">
@@ -121,6 +123,35 @@
 								<div *ngIf="f.submitted && ( report.reportField1=='' || report.reportField2==''|| report.employerName=='')"
 									class="error-msg">Please select valid Date To and from Date.</div>
 									
+							</div>
+							<div *ngIf="showParam.sealantElig" class="date-dropdown">
+								<input type="text" class="login-signup-form-field form-control"
+									name="patientId" id="patientId"
+									[(ngModel)]="report.patientId" #patientId="ngModel"
+									placeholder="Patient Id for (multiple  use comma separated value (1,2,3))..." required />
+								<div *ngIf="f.submitted && !patientId.valid"
+									class="error-msg">Please enter Patient Ids.</div>
+									
+							</div>
+							<div *ngIf="showParam.sealantElig " class="date-dropdown">
+								<!-- <input type="text" name="datePicker" [(ngModel)]="report.reportField1" (click)="datePicker.toggle()" />
+                                     <ng-datepicke r name="datePicker" [headless]="true" #datePicker [(ngModel)]="report.reportField1" [options]="dateOptions"></ng-datepicker>
+                                    -->
+								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id ="datepicker1"
+									 [options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
+
+								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id ="datepicker2"
+									[options]="dateOptions2"></ng-datepicker>
+								
+								<div *ngIf="f.submitted &&  (( report.reportField1!='' && report.reportField2=='') ||
+								        (report.reportField1=='' && report.reportField2!=''))"
+									class="error-msg">Please select valid Date To and from Date.</div>
+									
+							</div>
+							<div *ngIf="showParam.sealantElig" class="date-dropdown">
+								<ng-datepicker [(ngModel)]="report.ivDate" name="datepicker3" id ="datepicker3"
+									 [options]="dateOptions3" class="ngx-start-date"></ng-datepicker>
+								
 							</div>
 							<div *ngIf="showParam.ruledatasheet" class="date-dropdown">
 							
@@ -259,7 +290,8 @@
 			<ng-container *ngIf="report.reportType=='ruledatasheet'">
 			<div><h3>{{reportData}}</h3></div>
 			</ng-container>
-			<ng-container *ngIf="report.reportType!='ivfRDBMS' && report.reportType!='ivfRDBMSWebsiteParse' && report.reportType!='ruledatasheet'">
+			<ng-container *ngIf="report.reportType!='ivfRDBMS' && report.reportType!='ivfRDBMSWebsiteParse' 
+			   && report.reportType!='ruledatasheet' && report.reportType!='sealantElig'">
 			<div *ngFor="let key of arrayOfKeys" class="table-container">
 				<h3>{{key}}</h3>
 				<table class="table table-bordered table-striped">
@@ -279,6 +311,86 @@
 					</tbody>
 				</table>
 			</div>
+			</ng-container>
+			<ng-container *ngIf="report.reportType=='sealantElig'">
+										<div class="form-horizontal">
+						<div>
+							<div class="form-horizontal">
+								<div class="form-group">
+									<div class="col-sm-12">
+										<table id="data-scroll-t">
+											<tr>
+												<th class="data-scroll-thdtre">Office Name</th>
+												<th class="data-scroll-thdtre">Patient ID</th>
+												<th class="data-scroll-thdtre">Patient Name</th>
+												<th class="data-scroll-thdtre">IV Date</th>
+												<th class="data-scroll-thdtre">Tooth # Eligible</th>
+												<th colspan="3" class="data-scroll-thdtre">Tooth # Not
+													Eligible for Sealants</th>
+											</tr>
+											<tr>
+												<th class="data-scroll-thdtre">
+												<span style="cursor: pointer;text-decoration: underline" (click)="downloadPdfSeal()">Download PDF</span>
+												<div *ngIf="showLoadingPDFS" class="loader"></div></th>
+												<th class="data-scroll-thdtre"></th>
+												<th class="data-scroll-thdtre"></th>
+												<th class="data-scroll-thdtre"></th>
+												<th class="data-scroll-thdtre">for Sealant</th>
+												<th class="data-scroll-thdtre">Tooth Not Covered</th>
+												<th class="data-scroll-thdtre">Age Limitation</th>
+												<th class="data-scroll-thdtre">Frequency Limitation</th>
+
+											</tr>
+											<tr *ngFor="let q1 of rdata let ind = index">
+												<td class="data-scroll-thdtre"><span [innerHTML]="q1.o"></span></td>
+												<td class="data-scroll-thdtre"><span
+													[innerHTML]="q1.pid"></span></td>
+												<td class="data-scroll-thdtre"><span
+													[innerHTML]="q1.pn"></span></td>
+												<td class="data-scroll-thdtre"><span
+													[innerHTML]="q1.ivDone"></span></td>
+												<td class="data-scroll-thdtre"><span
+													style="word-break: break-word;" [innerHTML]="q1.te"></span></td>
+												<td class="data-scroll-thdtre"><span
+													style="word-break: break-word;" [innerHTML]="q1.tne"></span></td>
+												<td class="data-scroll-thdtre"><span
+													style="word-break: break-word;" [innerHTML]="q1.tnea"></span></td>
+												<td class="data-scroll-thdtre"><span
+													style="word-break: break-word;" [innerHTML]="q1.tnef"></span></td>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</div>
+
+
+
+
+							<div class="form-group">
+								<div class="col-sm-12">
+									<table id="data-scroll-t1">
+										<tr>
+											<th class="data-scroll-thdtre">Office Name</th>
+											<th class="data-scroll-thdtre">Patient ID</th>
+											<th class="data-scroll-thdtre">Patient Name</th>
+											<th class="data-scroll-thdtre">Error Message</th>
+										</tr>
+										<tr *ngFor="let q1 of rdata1 let ind = index">
+											<td class="data-scroll-thdtre"><span [innerHTML]="q1.o"></span></td>
+											<td class="data-scroll-thdtre"><span
+												[innerHTML]="q1.pid"></span></td>
+											<td class="data-scroll-thdtre"><span [innerHTML]="q1.pn"></span></td>
+											<td class="data-scroll-thdtre"><span
+												style="word-break: break-word;" [innerHTML]="q1.mess"></span></td>
+										</tr>
+									</table>
+								</div>
+							</div>
+
+                             </div>
+
+
+						</div>
 			</ng-container>
 			<ng-container *ngIf="report.reportType=='ivfRDBMS' || report.reportType=='ivfRDBMSWebsiteParse'">
 			<div class="table-container">
@@ -962,7 +1074,10 @@
 						<td>Out of Network Benefits: <span class="newff">{{reportDataInd.radio1}}</span></td>
 						<td>Do you file OS under medical first? <span class="newff">{{reportDataInd.radio2}}</span></td>
 					</tr>
-
+                      <tr>
+						<td>Waiting Period Duration <span class="newff">{{reportDataInd.waitingPeriodDuration}}</span></td>
+						
+					</tr>
 				</table>
 
 

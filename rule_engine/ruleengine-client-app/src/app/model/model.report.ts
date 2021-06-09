@@ -10,5 +10,5 @@ export class ReportModel {
   ivformTypeId: any="";
   patientId:any="";
   sheetTabId:any="";
-
+  ivDate: any="";
 }

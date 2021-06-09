@@ -26,7 +26,11 @@ export class ReportComponent implements OnInit {
 	showReportForm: boolean = false;
 	showReportData: boolean = false;
 	showDetailsData: boolean = false;
+    showLoadingPDFS:boolean = false;
 	reportDataInd: any;
+    rdata1=[];
+    rdata=[];
+    
 	// claim and Treatment Text
 	hd1: string = "";
 	// hd2:string="";
@@ -53,10 +57,17 @@ export class ReportComponent implements OnInit {
 		maxDate: new Date(Date.now()),
 		useEmptyBarTitle: false
 	};
+    dateOptions3: DatepickerOptions = {
+    		displayFormat: 'MM/DD/YYYY',
+    		placeholder: 'Click to select a IV date',
+    		fieldId: 'datePicker2',
+    		maxDate: new Date(Date.now()),
+    		useEmptyBarTitle: false
+    	};
 	showParam: any = {
 		TreatmentId: false, IvfId: false, Date: false, PatientName: false,
 		ivfRDBMS: false, DateFromTo: false, UserName: false, DateFromToUserName: false,
-		ivfRDBMSWebsiteParse:false,ruledatasheet:false
+		ivfRDBMSWebsiteParse:false,ruledatasheet:false,sealantElig:false
 	}
 
 	constructor(public applicationService: ApplicationService, public router: Router, private datePipe: DatePipe, private route: ActivatedRoute) {
@@ -75,6 +86,7 @@ export class ReportComponent implements OnInit {
 		this.dateOptions.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
 		this.dateOptions1.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
 		this.dateOptions2.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
+		this.dateOptions3.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
 	}
 
 	reportParam(value,e) {
@@ -105,8 +117,26 @@ export class ReportComponent implements OnInit {
 
 	runReport() {
 		let rep = this.report;
+		this.rdata1=[];
+		this.rdata=[];
+		this.showLoadingPDFS= false;
 		let submit: boolean = false;
 		submit = rep.officeId && rep.reportField1;
+		if (this.report.reportType == 'sealantElig'){
+			if (rep.patientId == '' && rep.officeId == '') {
+				submit = false;
+				
+				
+			} else {
+				submit = true;
+				if (this.report.reportField1 !='')this.report.reportField1 = this.datePipe.transform(this.report.reportField1, 'MM/dd/yyyy');
+				if (this.report.reportField2 !='')this.report.reportField2 = this.datePipe.transform(this.report.reportField2, 'MM/dd/yyyy');
+				if (this.report.ivDate !='')this.report.ivDate = this.datePipe.transform(this.report.ivDate, 'MM/dd/yyyy');
+				if (!rep.officeId) {
+					submit = false;
+				}
+			}
+		}
 		if (this.report.reportType == 'ivfRDBMS') {
 			if (rep.reportField1 == '' && rep.employerName == '' && rep.generalDateRun == '' && rep.patientName == '' && rep.officeId == '') {
 				submit = false;
@@ -158,7 +188,7 @@ export class ReportComponent implements OnInit {
 				submit = true;
 			}
 		}
-        console.log("submit",submit);
+        //console.log("submit",submit);
 		if (this.report.reportType == 'DateFromToUserName') {
 			if (rep.employerName == '' || rep.reportField1 == '' || rep.reportField2 == '' || rep.officeId == '') {
 				submit = false;
@@ -193,6 +223,9 @@ export class ReportComponent implements OnInit {
                        }
 						this.arrayOfKeys = this.reportData;
 						//console.log("v",this.arrayOfKeys);
+					} else if (this.report.reportType === 'sealantElig'){
+						this.parseData(result.data);
+
 					} else {
 						this.arrayOfKeys = Object.keys(this.reportData);
 
@@ -254,7 +287,7 @@ export class ReportComponent implements OnInit {
 	downloadPDF(data) {
 
 
-		this.applicationService.downloadIVFPDF({ "reportField1": data.patDid, "officeId": this.report.officeId,"ivformTypeId":data.ivFormTypeId }, (result) => {
+		this.applicationService.downloadIVFPDF({ "reportField1": data.patDid, "officeId": this.report.officeId,"ivformTypeId":data.ivFormTypeId },"/genereatePdf", (result) => {
 			this.showLoading = false;
 			if (result.status == '200') {
 				//const filename = result.headers.get('filename');
@@ -312,5 +345,102 @@ export class ReportComponent implements OnInit {
 	 }
 		return rpdata;
 	}
+	
+	
+parseData(d){
+		  let ths=this;
+		  let rep = ths.report;
+		  let p=rep.patientId.split(",");
+		  p.forEach((j,v)=>{
+			  let o={};
+			  let o1={};
+			  //o['o']=oName;
+			  //o['pid']=j.patientId;
+			  //o1['o']=oName;
+			  //o1['pid']=j.patientId;
+			  o1['mess']="";
+			 // console.log(d[j]);
+			  if (typeof d[j]!='undefined'){
+			  d[j].forEach((y,z)=>{
+				if (y.rule_id==69){
+					o['o']=y.office_name;
+					o['pid']=j.patient_id;
+					o['pn']=y.name;
+					o['ivDone']=y.iv_date;
+					o['te']=y.error_message;
+				}
+				if (y.rule_id==70){
+					o['o']=y.office_name;
+					o['pn']=y.patient_name;
+					o['ivDone']=y.iv_date;
+					o['pid']=j.patient_id;
+					o['tne']=y.error_message;
+				}
+				if (y.rule_id==71){
+					o['o']=y.office_name;
+					o['pn']=y.patient_name;
+					o['pid']=j.patient_id;
+					o['ivDone']=y.iv_date;
+					o['tnea']=y.error_message;
+				}
+				if (y.rule_id==72){
+					o['o']=y.office_name;
+					o['pn']=y.patient_name;
+					o['pid']=j.patient_id;
+					o['ivDone']=y.iv_date;
+					o['tnef']=y.error_message;
+				}
+				if (y.rule_id==73){
+					o1['o']=y.office_name;
+					o1['pid']=j.patient_id;
+					o1['mess']=y.error_message;
+				}
+				if (y.rule_id==68){
+					o1['o']=y.office_name;
+					o1['mess']=o1['mess']+y.error_message+"</br>";
+					o1['pn']=y.patient_name;
+					o1['pid']=j.patient_id;
+					o['ivDone']=y.iv_date;
+					
+				}
+			});
+		  }else{
+			 // ths.rdata.push({"o":'Data not found'})
+		  }
+			  if (typeof o['pn']!='undefined')ths.rdata.push(o);
+			  ths.rdata1.push(o1);
+		  });
+		  
+	  }
+	  
+downloadPdfSeal(){
+		  
+		  if (this.showLoadingPDFS) return; 
+		  let ths=this;
+		  let rep = ths.report;
+		  //ths.displayResultV=true;
+		  let p=rep.patientId.split(",");
+		  let x="";
+		  let cm="";
+		   for (let dt of p){
+			   x=x+cm+dt.trim();
+			   cm=",";
+		   }
+		  if (cm=="") return;
+		  this.showLoadingPDFS= true; 
+		  this.applicationService.downloadIVFPDF({"officeId":this.report.officeId,"patientId":x},"/genereatePdfSealant", (result) => {
+				this.showLoading = false;
+				this.showLoadingPDFS= false; 
+				if (result.status == '200') {
+					//const filename = result.headers.get('filename');
+					//console.log(result);
+					// this.downloadFile(result.body);
+					this.saveBolbData(result.body, "selant" + ".pdf");
+				}
+			});
+		}
+	  
+	 
+
 
 }

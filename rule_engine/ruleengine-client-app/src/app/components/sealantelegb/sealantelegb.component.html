@@ -1,0 +1,314 @@
+
+<div class="inner-bg">
+	<div *ngIf="!showScrapMain" class="container">
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Sealant Eligibility</h3>
+						<div *ngIf="showLoading" class="loader"
+							style="margin-left: 221px;"></div>
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form"
+						(ngSubmit)="f.form.valid && fetchDetails()" #f="ngForm" novalidate>
+                       <!-- 
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="siteId">Site Name</label> <select
+								(change)="setSite($event.target.value)" name="siteId"
+								[(ngModel)]="siteIn"
+								class="login-signup-form-field form-control" id="siteId">
+								<option value="">Site Name..</option>
+								<option *ngFor="let s of sites" [value]="s.id">{{s.name}}</option>
+							</select>
+							<div *ngIf="f.submitted && siteIn==''" class="error-msg">
+								Site Name is required</div>
+						</div>
+                       -->
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="officeId">Office Name</label> <select
+								name="officeId" [(ngModel)]="offid"
+								class="login-signup-form-field form-control" id="officeId">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+							<div *ngIf="f.submitted && offid==''" class="error-msg">The
+								Office Name is required</div>
+						</div>
+
+						<p>
+							<button [disabled]="showLoading" type="submit" class="btn">Fetch
+								Site Details</button>
+						</p>
+						<div *ngIf="showLoadingD" class="loader"></div>
+
+
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div *ngIf="showScrapMain" class="container">
+		<div class="row">
+			<div class="col-sm-12 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Sealant Eligibility</h3>
+						<a href="javascript:void(0)" (click)="goBack()">Go Back</a>
+
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form2"
+						(ngSubmit)="f2.form.valid && parseSite()" #f2="ngForm" novalidate>
+						<div class="form-horizontal">
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="sietName">Office
+									Name</label>
+								<div class="col-sm-9">
+									<input type="text" class="login-signup-form-field form-control"
+										name="oName" id="oName" [(ngModel)]="oName" #siteO="ngModel"
+										readonly />
+								</div>
+							</div>
+							<!-- 
+							<div class="form-group"
+								[ngClass]="{ 'has-error': f2.submitted && !siteName.valid }">
+								<label class="col-sm-3 control-label" for="sietName">Site
+									Name</label>
+								<div class="col-sm-9">
+									<input type="text" class="login-signup-form-field form-control"
+										name="siteName" id="siteName" [(ngModel)]="site.full"
+										#siteName="ngModel" placeholder="Site Name.." required
+										readonly />
+								</div>
+							</div>
+							 -->
+						</div>
+						<div class="form-horizontal">
+							<div class="form-group"
+								[ngClass]="{ 'has-error': f2.submitted && !userName.valid }">
+								<label class="col-sm-3 control-label" for="userName">Site
+									Login User Name</label>
+								<div class="col-sm-9">
+									<input type="text" class="login-signup-form-field form-control"
+										name="userName" id="userName" readonly
+										[(ngModel)]="scrap.userName" #userName="ngModel" required
+										placeholder="Site Login User Name..." />
+								</div>
+								<div *ngIf="f2.submitted && !userName.valid" class="error-msg">
+									Site Login User Name is required</div>
+								<div *ngIf="calledOTPGeneration && scrap.userName==''"
+									class="error-msg cl-red">User Name is required</div>
+							</div>
+						</div>
+						<div class="form-horizontal">
+							<div class="form-group"
+								[ngClass]="{ 'has-error': f2.submitted && !password.valid }">
+								<label class="col-sm-3 control-label" for="password">Site
+									Password</label>
+								<div class="col-sm-9">
+									<input type="text" class="login-signup-form-field form-control"
+										name="password" id="password" readonly
+										[(ngModel)]="scrap.password" #password="ngModel" required
+										placeholder="Site Password..." />
+								</div>
+								<div *ngIf="f2.submitted && !password.valid" class="error-msg">
+									Site Password User Name is required</div>
+								<div *ngIf="scrap.password==''" class="error-msg cl-red">
+									Site Password is required</div>
+
+								<input type="hidden" [(ngModel)]="scrap.siteDetailId"
+									name="siteDetailId" /> <input type="hidden"
+									[(ngModel)]="scrap.siteId" name="siteId" /> <input
+									type="hidden" [(ngModel)]="scrap.officeId" name="officeId" />
+							</div>
+						</div>
+						<div class="form-horizontal" *ngIf="scrap.siteId == '3'">
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="locationProvider">Location
+									and Provider</label>
+								<div class="col-sm-9">
+									<input type="text" class="login-signup-form-field form-control"
+										name="locationProvider" id="locationProvider" readonly
+										[(ngModel)]="scrap.locationProvider"
+										#locationProvider="ngModel" required
+										placeholder="Location Provider..." />
+								</div>
+							</div>
+						</div>
+						<div class="form-horizontal" *ngIf="scrap.siteId == '3'">
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="location">Provider</label>
+								<div class="col-sm-9">
+									<input type="text" class="login-signup-form-field form-control"
+										name="location" id="location" readonly
+										[(ngModel)]="scrap.location" #locationProvider="ngModel"
+										required placeholder="Location..." />
+								</div>
+							</div>
+						</div>
+						<div class="form-horizontal">
+							<div class="form-group">
+								<div class="col-sm-12" id="data-scroll">
+
+									<table id="data-scroll-t">
+										<tr id="data-scroll-tr1"></tr>
+										<tr *ngFor="let q of scrap.listUd; let ind = index">
+											<ng-container>
+											<td class="data-scroll-thd"><input type="number"
+												class="login-signup-form-field form-control"
+												name="pati{{ind}}" id="pati{{ind}}"
+												[(ngModel)]="q.patientId" /></td>
+											</ng-container>
+											<ng-container>
+											<td class="data-scroll-thd"><input type="text"
+												class="login-signup-form-field form-control"
+												name="patf{{ind}}" id="patf{{ind}}"
+												[(ngModel)]="q.firstName" /></td>
+											</ng-container>
+											<ng-container>
+											<td class="data-scroll-thd"><input type="text"
+												class="login-signup-form-field form-control"
+												name="patl{{ind}}" id="patl{{ind}}" [(ngModel)]="q.lastName" />
+											</td>
+											</ng-container>
+											<ng-container>
+
+
+											<td class="data-scroll-thd dobpp"><input type="text"
+												class="login-signup-form-field form-control"
+												name="patd{{ind}}" id="patd{{ind}}" [(ngModel)]="q.dob"
+												placeholder="MM/DD/YYYY" /> <!-- 	
+							   <ng-datepicker [(ngModel)]="q.dob"
+									name="patd{{ind}}" id="patd{{ind}}" class="login-signup-form-field form-control" 
+									[options]="dateOptions"></ng-datepicker>
+								
+							    <div class="deletebut">
+							    <a href="javascript:void(0)" (click)="removeText(ind)"><span class="glyphicon glyphicon-remove"></span></a>
+							     </div>		
+								--></td>
+											</ng-container>
+											<ng-container>
+											<td class="data-scroll-thd"><input type="text"
+												class="login-signup-form-field form-control"
+												name="paten{{ind}}" id="paten{{ind}}"
+												[(ngModel)]="q.subscriberId" /></td>
+											</ng-container>
+
+
+
+
+
+										</tr>
+									</table>
+									<a href="javascript:void(0)" (click)="createBlankRow(1)"
+										class="btn">Add Patient </a>
+								</div>
+							</div>
+						</div>
+						<p>
+							<button [disabled]="showLoadingP" type="submit" class="btn">Run
+								Tool</button>
+						</p>
+						<div *ngIf="showLoadingPA" class="loader"></div>
+						<div *ngIf="showLoadingPAA"></div>
+						<div *ngIf="displayResultV">
+							<div class="form-horizontal">
+								<div class="form-group">
+								 <div class="col-sm-12">
+                                           Eligibility Completed for following Patients (with Insurance name as {{insName}}) 
+							     </div>
+									<div class="col-sm-12">
+										<table id="data-scroll-t">
+											<tr>
+												<th class="data-scroll-thdtre">Office Name</th>
+												<th class="data-scroll-thdtre">Patient ID</th>
+												<th class="data-scroll-thdtre">Patient Name</th>
+												<th class="data-scroll-thdtre">IV Date</th>
+												<th class="data-scroll-thdtre">Tooth # Eligible</th>
+												<th colspan="3" class="data-scroll-thdtre">Tooth # Not
+													Eligible for Sealants</th>
+											</tr>
+											<tr>
+												<th class="data-scroll-thdtre">
+												<span style="cursor: pointer;text-decoration: underline" (click)="downloadPdf()">Download PDF</span>
+												<div *ngIf="showLoadingPDF" class="loader"></div></th>
+												<th class="data-scroll-thdtre"></th>
+												<th class="data-scroll-thdtre"></th>
+												<th class="data-scroll-thdtre"></th>
+												<th class="data-scroll-thdtre">for Sealant</th>
+												<th class="data-scroll-thdtre">Tooth Not Covered</th>
+												<th class="data-scroll-thdtre">Age Limitation</th>
+												<th class="data-scroll-thdtre">Frequency Limitation</th>
+
+											</tr>
+											<tr *ngFor="let q1 of rdata let ind = index">
+												<td class="data-scroll-thdtre"><span [innerHTML]="q1.o"></span></td>
+												<td class="data-scroll-thdtre"><span
+													[innerHTML]="q1.pid"></span></td>
+												<td class="data-scroll-thdtre"><span
+													[innerHTML]="q1.pn"></span></td>
+												<td class="data-scroll-thdtre"><span
+													[innerHTML]="q1.ivDone"></span></td>
+												<td class="data-scroll-thdtre"><span
+													style="word-break: break-word;" [innerHTML]="q1.te"></span></td>
+												<td class="data-scroll-thdtre"><span
+													style="word-break: break-word;" [innerHTML]="q1.tne"></span></td>
+												<td class="data-scroll-thdtre"><span
+													style="word-break: break-word;" [innerHTML]="q1.tnea"></span></td>
+												<td class="data-scroll-thdtre"><span
+													style="word-break: break-word;" [innerHTML]="q1.tnef"></span></td>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</div>
+
+
+
+
+							<div class="form-group">
+							  <div class="col-sm-12">
+                                           Eligibility could not be completed for following Patients
+							  </div>
+								<div class="col-sm-12">
+									<table id="data-scroll-t1">
+										<tr>
+											<th class="data-scroll-thdtre">Office Name</th>
+											<th class="data-scroll-thdtre">Patient ID</th>
+											<th class="data-scroll-thdtre">Patient Name</th>
+											<th class="data-scroll-thdtre">Error Message</th>
+										</tr>
+										<tr *ngFor="let q1 of rdata1 let ind = index">
+											<td class="data-scroll-thdtre"><span [innerHTML]="q1.o"></span></td>
+											<td class="data-scroll-thdtre"><span
+												[innerHTML]="q1.pid"></span></td>
+											<td class="data-scroll-thdtre"><span [innerHTML]="q1.pn"></span></td>
+											<td class="data-scroll-thdtre"><span
+												style="word-break: break-word;" [innerHTML]="q1.mess"></span></td>
+										</tr>
+									</table>
+								</div>
+							</div>
+
+
+
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+
+
+</div>

@@ -82,6 +82,9 @@ export class ApplicationService {
               callback((<any>data));
           },
           error => {
+        	  if (error.status==401){
+        		  this.router.navigate(['/logout']);
+        	  } 
               callback(error);
               // this.router.navigate(['/logout']);
           },
@@ -451,12 +454,12 @@ export class ApplicationService {
 	              
 	  }
 	  
-	  downloadIVFPDF(dataS:any, callback) {
+	  downloadIVFPDF(dataS:any,path, callback) {
 		  let headers = new HttpHeaders();
 		    headers = headers.append('Accept', 'application/pdf; charset=utf-8');
 			this.generateRefreshToken().pipe(switchMap(data => {
 				localStorage.setItem("token", (<any>data).token);
-				return  this.http.post(environment.API_URL+'/genereatePdf',dataS,{
+				return  this.http.post(environment.API_URL+path,dataS,{
 					 headers: headers,
 				      observe: 'response',
 				      responseType: 'arraybuffer'
