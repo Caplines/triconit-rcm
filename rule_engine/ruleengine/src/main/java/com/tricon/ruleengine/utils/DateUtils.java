@@ -277,6 +277,7 @@ public class DateUtils {
 		
 	}
 	
+	/*
 	public static boolean checkforXm(Date date,int months) {
 		
 		//Calendar calendarC = new GregorianCalendar();
@@ -295,7 +296,27 @@ public class DateUtils {
 		}
 		
 	}
-	
+	*/
+	public static boolean checkforXmSealant(Date date,int months) {
+		
+		//Calendar calendarC = new GregorianCalendar();
+		Date dos= new Date();
+		//calendarC.setTime(new Date());
+		//
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(dos);
+		calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH)-months, calendar.get(Calendar.DATE));
+		Date date12m=calendar.getTime();
+		//isDatesBetweenDates(a, b, d)
+		if (date.compareTo(date12m)>=0 ){
+			return false;
+		}else{
+			return true;
+		}
+		
+		
+	}
+
 	/*
 	 * This method is used to Extract latest IVF ID from Map of IVF's
 	 */
@@ -621,18 +642,8 @@ public class DateUtils {
 			}
 			System.out.println("**********************");
 			
-			System.out.println(DateUtils.calculateAgeYMD("2007-09-20", true)[0]);
-			
-			Set<String> s = new TreeSet<String>();
-			s.add("B");
-			s.add("C");
-			s.add("31");
-			s.add("A");
-			s.add("1");
-			s.add("R");
-			System.out.println(String.join(",", s));
-			
-			
+			 SimpleDateFormat sdf1= new SimpleDateFormat("dd/MM/yyyy");	
+          System.out.println(checkforXmSealant(sdf1.parse("10/10/2016"), 36));			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

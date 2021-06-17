@@ -11683,19 +11683,28 @@ public class RuleBook {
 				}
 				//case 2  If all codes found are D0XXX THEN Sealant is Eligible .
 				for (Map.Entry<String, List<ToothHistoryDto>> entry : map.entrySet()) {
-					
+					boolean allDO=true;
 					List<ToothHistoryDto> l =entry.getValue();
 					for(ToothHistoryDto d:l) {
 						String code=d.getHistoryCode();
 						if (!code.toLowerCase().startsWith("d0")) {
 							caseNo=0;
+							allDO=false;
+							}	      			
+				     }
+					if (allDO) {
+						for(ToothHistoryDto d:l) {
 							pass=false;
+							String code=d.getHistoryCode();
 							teethNotCoveredFreq.add(d.getHistoryTooth());
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule68.error.message2", new Object[] {code,d.getHistoryDos(),d.getHistoryTooth() }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
-							}	      			
+							
 						}
-				}	
+					}
+				}
+				
+				
 				// If all codes found are D1351 or D1352 THEN check when D1351/D1352 were done
 				Set<String> cD1351D1352= new TreeSet<>();
 				for (Map.Entry<String, List<ToothHistoryDto>> entry : map.entrySet()) {
@@ -11714,7 +11723,7 @@ public class RuleBook {
 					List<ToothHistoryDto> l= map.get(t);
 					for(ToothHistoryDto d:l) {
 						String code=d.getHistoryCode();
-						if (DateUtils.checkforXm(Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos()),36)) {
+						if (!DateUtils.checkforXmSealant(Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos()),36)) {
 							 
 							  pass=false;
 							  teethNotCoveredFreq.add(d.getHistoryTooth());
