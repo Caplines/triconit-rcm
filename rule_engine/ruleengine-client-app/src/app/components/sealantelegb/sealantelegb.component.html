@@ -171,12 +171,12 @@
 											<td class="data-scroll-thd"><input type="text"
 												class="login-signup-form-field form-control"
 												name="patf{{ind}}" id="patf{{ind}}"
-												[(ngModel)]="q.firstName" /></td>
+												[(ngModel)]="q.firstName" readonly="readonly"/></td>
 											</ng-container>
 											<ng-container>
 											<td class="data-scroll-thd"><input type="text"
 												class="login-signup-form-field form-control"
-												name="patl{{ind}}" id="patl{{ind}}" [(ngModel)]="q.lastName" />
+												name="patl{{ind}}" id="patl{{ind}}" [(ngModel)]="q.lastName" readonly="readonly"/>
 											</td>
 											</ng-container>
 											<ng-container>
@@ -185,7 +185,7 @@
 											<td class="data-scroll-thd dobpp"><input type="text"
 												class="login-signup-form-field form-control"
 												name="patd{{ind}}" id="patd{{ind}}" [(ngModel)]="q.dob"
-												placeholder="MM/DD/YYYY" /> <!-- 	
+												placeholder="MM/DD/YYYY" readonly="readonly"/> <!-- 	
 							   <ng-datepicker [(ngModel)]="q.dob"
 									name="patd{{ind}}" id="patd{{ind}}" class="login-signup-form-field form-control" 
 									[options]="dateOptions"></ng-datepicker>
@@ -199,7 +199,7 @@
 											<td class="data-scroll-thd"><input type="text"
 												class="login-signup-form-field form-control"
 												name="paten{{ind}}" id="paten{{ind}}"
-												[(ngModel)]="q.subscriberId" /></td>
+												[(ngModel)]="q.subscriberId" readonly="readonly"/></td>
 											</ng-container>
 
 
@@ -223,9 +223,14 @@
 							<div class="form-horizontal">
 								<div class="form-group">
 								 <div class="col-sm-12">
+								       <div style="height:60px">
                                            Eligibility Completed for following Patients (with Insurance name as {{insName}}) 
-							     </div>
-									<div class="col-sm-12">
+                                           <button class="btn" (click)="downloadPdf()" style="width:20%" type="button">Download PDF
+								           </button>
+								           <div *ngIf="showLoadingPDF" class="loader" style="display:inline-block;"></div>
+                                        </div>
+                                  </div>  
+									<div class="col-sm-12" *ngIf="rdata.length>0">
 										<table id="data-scroll-t">
 											<tr>
 												<th class="data-scroll-thdtre">Office Name</th>
@@ -238,8 +243,7 @@
 											</tr>
 											<tr>
 												<th class="data-scroll-thdtre">
-												<span style="cursor: pointer;text-decoration: underline" (click)="downloadPdf()">Download PDF</span>
-												<div *ngIf="showLoadingPDF" class="loader"></div></th>
+												</th>
 												<th class="data-scroll-thdtre"></th>
 												<th class="data-scroll-thdtre"></th>
 												<th class="data-scroll-thdtre"></th>
@@ -274,7 +278,7 @@
 
 
 
-							<div class="form-group">
+							<div class="form-group" *ngIf="rdata1.length>0">
 							  <div class="col-sm-12">
                                            Eligibility could not be completed for following Patients
 							  </div>
