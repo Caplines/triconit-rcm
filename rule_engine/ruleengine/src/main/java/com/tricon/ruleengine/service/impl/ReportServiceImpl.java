@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -549,6 +550,7 @@ public class ReportServiceImpl implements ReportService {
 		Object[] obj=new Object[2];
 		 try {
 			 SelantPdfMainDto mainDto= new SelantPdfMainDto();
+			 mainDto.setcDate(Constants.SIMPLE_DATE_FORMAT.format(new Date()));
 				Map<String,SelantPdfPatDto> mpdf= new HashMap<>();
 				Map<String,SelantPdfPatDto> mpdf68= new HashMap<>();
 				Map<String,SelantPdfPatDto> mpdf73= new HashMap<>();
@@ -633,8 +635,8 @@ public class ReportServiceImpl implements ReportService {
 				
 				if (l73.size()==0) {
 					SelantPdfPatDto d= new SelantPdfPatDto();
-					d.setTe("No Patient found");
-					l73.add(d);
+					//d.setTe("No Patient found");
+					//l73.add(d);
 					
 				}
 				mainDto.setDto73(l73);

@@ -216,36 +216,29 @@ export class SealantelegbComponent implements OnInit {
 	  let ax:any=[];
 	  let x=0;
 	   for (let dt of dtoo){
-		   dt.firstName= dt.firstName.trim();
+		   /*dt.firstName= dt.firstName.trim();
 		   dt.lastName=dt.lastName.trim();
 		   dt.patientId=dt.patientId;//.trim();
 		   dt.dob=dt.dob.trim?dt.dob.trim():dt.dob;
 		   if (!dt.dob.trim) dt.dob = ths.datePipe.transform(dt.dob, 'MM/dd/yyyy');
-		   dt.subscriberId=dt.subscriberId.trim();
+		   dt.subscriberId=dt.subscriberId.trim();*/
 		   
 		    if (document.getElementById("pati"+x))document.getElementById("pati"+x).setAttribute("style", "border-color: ;");
-		    if (document.getElementById("patf"+x))document.getElementById("patf"+x).setAttribute("style", "border-color: ;");
+		   /* if (document.getElementById("patf"+x))document.getElementById("patf"+x).setAttribute("style", "border-color: ;");
 		    if (document.getElementById("patl"+x))document.getElementById("patl"+x).setAttribute("style", "border-color: ;");
 		    if (document.getElementById("patd"+x))document.getElementById("patd"+x).setAttribute("style", "border-color: ;");
-		    if (document.getElementById("paten"+x))document.getElementById("paten"+x).setAttribute("style", "border-color: ;");
-		 if(!(dt.firstName=="" && dt.lastName=="" &&
+		    if (document.getElementById("paten"+x))document.getElementById("paten"+x).setAttribute("style", "border-color: ;")*/
+		 /*if(!(dt.firstName=="" && dt.lastName=="" &&
 		   dt.patientId=="" && dt.dob=="" &&
-		   dt.subscriberId=="" 
+		   dt.subscriberId=="" */
+		 if(!(  dt.patientId==""	   
 		    )){
 			 ax.push(dt);
 			 
-			 
-			 //console.log(this.site.name);
-			 	 
-				 if(dt.dob==""){
+			/*	 if(dt.dob==""){
 					 document.getElementById("patd"+x).setAttribute("style", "border-color: red;");
 					 ret =false;
-				 }
-				 
-			 
-			 //console.log("--"+this.site.name+"--");
-             
-            
+				 }*/
 			 
 		 }
 		 
@@ -328,7 +321,7 @@ export class SealantelegbComponent implements OnInit {
 		  else if (o1['ruleId']!=68) ths.rdata1.push(o1);
 	  });
 	  //console.log()
-	  if (ths.rdata1.length==0) ths.rdata1.push({mess:'<b style="color:red" class="error-message-api">No Patient Found</b>'}); 
+	  //if (ths.rdata1.length==0) ths.rdata1.push({mess:'<b style="color:red" class="error-message-api">No Patient Found</b>'}); 
   }
   
   downloadPdf(){
@@ -355,7 +348,7 @@ export class SealantelegbComponent implements OnInit {
 				//const filename = result.headers.get('filename');
 				//console.log(result);
 				// this.downloadFile(result.body);
-				this.saveBolbData(result.body, "selant" + ".pdf");
+				this.saveBolbData(result.body, "Sealant Report - "+this.oName+" - "+this.convertDate(new Date().toDateString()) + ".pdf");
 			}
 		});
 	}
@@ -372,5 +365,21 @@ export class SealantelegbComponent implements OnInit {
 		window.URL.revokeObjectURL(url);
 
 	}
+  
+  formatDate(date, format) {
+	    const map = {
+	        mm: date.getMonth() + 1,
+	        dd: date.getDate(),
+	        yy: date.getFullYear().toString().slice(-2),
+	        yyyy: date.getFullYear()
+	    }
+
+	    return format.replace(/mm|dd|yy|yyy|yyyy/gi, matched => map[matched])
+	}
     
+  convertDate(inputFormat) {
+	  function pad(s) { return (s < 10) ? '0' + s : s; }
+	  var d = new Date(inputFormat)
+	  return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-')
+	}
 }

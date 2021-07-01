@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType (XmlAccessType.FIELD)
 public class SelantPdfMainDto {
 	
+
+	String cDate;
 	
     @XmlElementWrapper
     @XmlElement(name="dto2") 
@@ -48,8 +50,14 @@ public class SelantPdfMainDto {
 	public void setDto73(List<SelantPdfPatDto> dto73) {
 		this.dto73 = dto73;
 	}
-    
-    
-    
 
+	public String getcDate() {
+		return cDate;
+	}
+
+	public void setcDate(String cDate) {
+		this.cDate = cDate;
+	}
+    
+ 
 }

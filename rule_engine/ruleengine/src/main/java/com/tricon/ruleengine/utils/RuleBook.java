@@ -11613,20 +11613,20 @@ public class RuleBook {
 		allnotCovered.addAll(teethNotCovered);
 		allnotCovered.addAll(teethNotCoveredAge);
 		Map<String,List<ToothHistoryDto>> map= new HashMap<>();
-		
+		Map<String,Boolean> mapSealantE= new HashMap<>();
 	   	//
 		
 		teethAllCoveredTmp=ToothUtil.findMissingTeethFromAll(allnotCovered);        	
 		//use this teethAllCoveredTmp in Frequency Logic
 		Class<?> c2;
-			int caseNo=0;
+			//int caseNo=0;
 			c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
 			if (ivf.getiVFHistorySheetList().size()==0) {
 				//Sealant is Eligible
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule68.pass.message1", new Object[] { }, locale), Constants.PASS,"","",""));
 			}else {
-				caseNo=0;
+				//caseNo=0;
 				//case =1;
 				
 				for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
@@ -11640,7 +11640,7 @@ public class RuleBook {
 					//Method hss = c2.getMethod(hs);	
 					String code = (String) hcm.invoke(hisShee);
 					String dt = (String) hdm.invoke(hisShee);
-					String th = (String) htm.invoke(hisShee);
+					String th = ((String) htm.invoke(hisShee)).toUpperCase();
 					
 					
 					if (code.equals("")) continue ;
@@ -11653,6 +11653,7 @@ public class RuleBook {
 							//x.setSurfaceTooth(surfaceTooth);
 							x.setHistoryTooth(th);
 							map.get(th).add(x);
+							mapSealantE.put(th,false);
 						}else {
 							ToothHistoryDto x= new ToothHistoryDto();
 							x.setHistoryCode(code);
@@ -11662,6 +11663,7 @@ public class RuleBook {
 							List<ToothHistoryDto> l=new ArrayList<>();
 							l.add(x);
 							map.put(th, l);
+							mapSealantE.put(th,false);
 						}
 					}
 					
@@ -11673,8 +11675,9 @@ public class RuleBook {
 					for(ToothHistoryDto d:l) {
 						String code=d.getHistoryCode();
 						if (!(code.toLowerCase().startsWith("d0") || code.equalsIgnoreCase("D1351") || code.equalsIgnoreCase("D1352"))) {
-							caseNo=0;
+							///caseNo=0;
 							pass=false;
+							mapSealantE.put(entry.getKey(),true);
 							teethNotCoveredFreq.add(d.getHistoryTooth());
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule68.error.message2", new Object[] {code,d.getHistoryDos(),d.getHistoryTooth() }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
@@ -11682,17 +11685,21 @@ public class RuleBook {
 						}
 				}
 				//case 2  If all codes found are D0XXX THEN Sealant is Eligible .
+				//D0230 D131
 				for (Map.Entry<String, List<ToothHistoryDto>> entry : map.entrySet()) {
+					if (mapSealantE.get(entry.getKey()).booleanValue()==true) continue;
 					boolean allDO=true;
 					List<ToothHistoryDto> l =entry.getValue();
 					for(ToothHistoryDto d:l) {
 						String code=d.getHistoryCode();
 						if (!code.toLowerCase().startsWith("d0")) {
-							caseNo=0;
+							//caseNo=0;
 							allDO=false;
 							}	      			
 				     }
 					if (allDO) {
+						mapSealantE.put(entry.getKey(),true);
+						/*
 						for(ToothHistoryDto d:l) {
 							pass=false;
 							String code=d.getHistoryCode();
@@ -11700,7 +11707,9 @@ public class RuleBook {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule68.error.message2", new Object[] {code,d.getHistoryDos(),d.getHistoryTooth() }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
 							
-						}
+						}*/
+					}else {
+						
 					}
 				}
 				
@@ -11708,12 +11717,13 @@ public class RuleBook {
 				// If all codes found are D1351 or D1352 THEN check when D1351/D1352 were done
 				Set<String> cD1351D1352= new TreeSet<>();
 				for (Map.Entry<String, List<ToothHistoryDto>> entry : map.entrySet()) {
-					boolean checkformon=true;
+					if (mapSealantE.get(entry.getKey()).booleanValue()==true) continue; 
+					boolean checkformon=false;
 									List<ToothHistoryDto> l =entry.getValue();
 									for(ToothHistoryDto d:l) {
 										String code=d.getHistoryCode();
-										if (!(code.contains("D1351") || code.contains("D1352"))) {
-											checkformon=false;
+										if (code.contains("D1351") || code.contains("D1352")) {
+											checkformon=true;
 											
 											}	      			
 									}
@@ -11721,8 +11731,10 @@ public class RuleBook {
 			    }
 				for(String t:cD1351D1352) {
 					List<ToothHistoryDto> l= map.get(t);
+					
 					for(ToothHistoryDto d:l) {
 						String code=d.getHistoryCode();
+						if (!(code.contains("D1351") || code.contains("D1352"))) continue;
 						if (!DateUtils.checkforXmSealant(Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos()),36)) {
 							 
 							  pass=false;
