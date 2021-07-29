@@ -46,6 +46,9 @@ public class ESTable extends BaseInfoAudit implements Serializable {
 	@Column(name = "static_table", nullable = false)
 	private int staticTable;
 
+	@Column(name = "iteration_count", nullable = false)
+	private int iterationCount;
+
 	@Column(name = "records_inserted_last_iteration", nullable = false)
 	private int recordsInsertedLastIteration;
 }

@@ -19,10 +19,12 @@ public class PrepairESDataFromFromResultSet {
 		System.out.println("clazz.getName()-->"+clazz.getClass().getName());
 		System.out.println(clazz.equals(PayType.class));
 		
-		if (clazz.getName().equals("Chairs"))
+		if (clazz.equals(Chairs.class))
 			return createChairData(rs);
-		if (clazz.equals(PayType.class))
+		else if (clazz.equals(PayType.class))
 			return createPayTypeData(rs);
+		else if (clazz.equals(Patient.class))
+			return createPatientData(rs);
 		return null;
 	}
 
@@ -89,7 +91,7 @@ public class PrepairESDataFromFromResultSet {
 		try {
 		while (rs.next()) {
 			p= new Patient();
-			p.setPatientId(rs.getInt("patient_id"));
+			p.setPatientId(rs.getString("patient_id"));
 			p.setFirstName(rs.getString("first_name"));
 			p.setLastName(rs.getString("last_name"));
 			p.setSalutation(rs.getString("salutation"));
@@ -104,8 +106,8 @@ public class PrepairESDataFromFromResultSet {
 			p.setStatus(rs.getString("status"));
 			p.setSex(rs.getString("sex"));
 			p.setMaritalStatus(rs.getString("marital_status"));
-			p.setReponsiblePartyStatus(rs.getString("reponsible_party_status"));
-			p.setReponsibleParty(rs.getString("reponsible_party"));
+			p.setResponsiblePartyStatus(rs.getString("responsible_party_status"));
+			p.setResponsibleParty(rs.getString("responsible_party"));
 			p.setSocialSecurity(rs.getString("social_security"));
 			p.setBirthDate(rs.getDate("birth_date"));
 			p.setNotes(rs.getString("notes"));
@@ -113,7 +115,7 @@ public class PrepairESDataFromFromResultSet {
 			p.setPreferredHygienist(rs.getString("preferred_hygienist"));
 			p.setRecallFrequency(rs.getInt("recall_frequency"));
 			p.setCleaningTime(rs.getInt("cleaning_time"));
-			p.setReceiveCalls(rs.getString("receive_calls"));
+			p.setReceiveReCalls(rs.getString("receive_recalls"));
 			p.setDiscountId(rs.getInt("discount_id"));
 			p.setCurrentBal(rs.getInt("current_bal"));
 			p.setThirtyDay(rs.getInt("thirty_day"));
@@ -122,7 +124,7 @@ public class PrepairESDataFromFromResultSet {
 			p.setContractBalance(rs.getInt("contract_balance"));
 			p.setEstimatedInsurance(rs.getInt("estimated_insurance"));
 			p.setFirstVisitDate(rs.getDate("first_visit_date"));
-			p.setLastSeenDate(rs.getDate("last_seen_date"));
+			p.setLastDateSeen(rs.getDate("last_date_seen"));
 			p.setCancelledAppointments(rs.getInt("cancelled_appointments"));
 			p.setChargesMtd(rs.getInt("charges_mtd"));
 			p.setCollectionsMtd(rs.getInt("collections_mtd"));
@@ -134,7 +136,7 @@ public class PrepairESDataFromFromResultSet {
 			p.setPrimEmployerId(rs.getInt("prim_employer_id"));////
 			p.setPrimOutstandingBalance(rs.getInt("prim_outstanding_balance"));
 			p.setPrimBenefitsRemaining(rs.getInt("prim_benefits_remaining"));
-			p.setPrimRemaininigDeductible(rs.getInt("prim_remaininig_deductible"));
+			p.setPrimRemainingDeductible(rs.getInt("prim_remaining_deductible"));
 			p.setSecResponsibleId(rs.getString("sec_responsible_id"));
 			p.setSecRelationship(rs.getString("sec_relationship"));
 			p.setSecEmployerId(rs.getInt("sec_employer_id"));
@@ -156,7 +158,7 @@ public class PrepairESDataFromFromResultSet {
 			p.setPatientStatus(rs.getString("policy_holder_status"));
 			p.setNextRecallDate(rs.getDate("next_recall_date"));
 			p.setLastRecallDate(rs.getDate("last_recall_date"));
-			p.setYtVisits(rs.getInt("yt_visits"));
+			p.setYtdVisits(rs.getInt("ytd_visits"));
 			p.setNextPreventiveApptTime(rs.getTime("next_preventive_appt_time"));
 			p.setNextRegularApptTime(rs.getTime("next_regular_appt_time"));
 			p.setSchool(rs.getString("school"));
@@ -167,7 +169,7 @@ public class PrepairESDataFromFromResultSet {
 			p.setMedicaidId(rs.getString("medicaid_id"));
 			p.setDeathIndicator(rs.getString("death_indicator"));
 			p.setSignatureOnFile(rs.getString("signature_on_file"));
-			p.setReleaseIntoOnFile(rs.getString("release_into_on_file"));
+			p.setReleaseInfoOnFile(rs.getString("release_info_on_file"));
 			p.setCarrierId(rs.getString("carrier_id"));
 			p.setEpsdtFlag(rs.getString("epsdt_flag"));
 			p.setPatientImageId(rs.getInt("patient_image_id"));
@@ -190,28 +192,28 @@ public class PrepairESDataFromFromResultSet {
 			p.setLastHistoryExam(rs.getDate("last_history_exam"));
 			p.setLastBitewings(rs.getDate("last_bitewings"));
 			p.setLastFullMouth(rs.getDate("last_full_mouth"));
-			p.setTeethStatus(rs.getString("teethStatus"));
-			p.setRecallBatch(rs.getInt("recallBatch"));
+			p.setTeethStatus(rs.getString("teeth_status"));
+			p.setRecallBatch(rs.getInt("recall_batch"));
 			p.setLastPanoDate(rs.getDate("last_pano_date"));
 			p.setPharmacyId(rs.getInt("pharmacy_id"));
 			p.setNeitherAppointments(rs.getInt("neither_appointments"));
 			p.setPreMed(rs.getString("pre_med"));
 			p.setRxId(rs.getString("rx_id"));
-			p.setMissingTeeth(rs.getInt("missing_teeth"));
+			p.setMissingTeeth(rs.getString("missing_teeth"));
 			p.setReceiveEmail(rs.getString("receive_email"));
 			p.setChartId(rs.getString("chart_id"));
 			p.setCellPhone(rs.getString("cell_phone"));
 			p.setPagerPhone(rs.getString("pager_phone"));
 			p.setDriversLicense(rs.getString("drivers_license"));
-			p.setHippaPrivPract(rs.getString("hippa_priv_pract"));
+			p.setHipaaPrivPract(rs.getString("hipaa_priv_pract"));
 			p.setHipaaAuthorization(rs.getString("hipaa_authorization"));
-			p.setHippaPrivPractDate(rs.getDate("hippa_priv_pract_date"));
+			p.setHipaaPrivPractDate(rs.getDate("hipaa_priv_pract_date"));
 			p.setHipaaAuthorizationDate(rs.getDate("hipaa_authorization_date"));
 			p.setHipaaConsent(rs.getString("hipaa_consent"));
 			p.setHipaaConsentDate(rs.getDate("hipaa_consent_date"));
 			p.setPrimMemberId(rs.getString("prim_member_id"));
 			p.setSecMemberId(rs.getString("sec_member_id"));
-			p.setDailyChanges(rs.getInt("daily_changes"));
+			p.setDailyCharges(rs.getInt("daily_charges"));
 			p.setDailyCollections(rs.getInt("daily_collections"));
 			p.setOrthoPatient(rs.getString("ortho_patient"));
 			p.setOrthoMonthsOfTx(rs.getInt("ortho_months_of_tx")); 
@@ -235,7 +237,7 @@ public class PrepairESDataFromFromResultSet {
 		    p.setSecurityAnswerTwo(rs.getString("security_answer_two"));
 		    p.setSecurityAnswerThree(rs.getString("security_answer_three"));
 		    p.setRegistrationVerified(rs.getBoolean("registration_verified"));
-		    p.setDophinID(rs.getString("DophinID"));
+		    p.setDolphinID(rs.getString("DolphinID"));
 		    p.setPasswordSalt(rs.getString("password_salt"));
 		    p.setEncryptedSocialSecurity(rs.getString("encrypted_social_security"));
 		    p.setLastMedicalHistory(rs.getDate("last_medical_history"));

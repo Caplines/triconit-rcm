@@ -16,9 +16,9 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "patient")
+@Table(name = "es_data_replica_patient")
 @EqualsAndHashCode(callSuper = true)
-public  class Patient extends CommonPatient implements Serializable {
+public  class PatientReplica extends CommonPatient implements Serializable {
 
 	/**
 	 * 
@@ -31,7 +31,7 @@ public  class Patient extends CommonPatient implements Serializable {
 	private int id;
 	
 
-	public Patient() {
+	public PatientReplica() {
 		super();
 	}
 

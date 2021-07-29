@@ -1,11 +1,13 @@
 package com.tricon.esdatareplication.dao.repdb;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.tricon.esdatareplication.entity.repdb.Patient;
+import com.tricon.esdatareplication.entity.repdb.PayType;
 
 public interface PatientRepository
 
@@ -14,5 +16,9 @@ public interface PatientRepository
 	
 	@Query("SELECT DISTINCT c.id FROM Patient c")
 	public List<Integer> findLastNames();
+
+	public List<Patient> findByPatientIdIn(Set<String> patientId);
+	
+	public List<Patient> findByMovedToCloud(int i);
 
 }

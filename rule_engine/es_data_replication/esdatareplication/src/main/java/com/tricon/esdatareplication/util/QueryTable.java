@@ -16,25 +16,29 @@ public class QueryTable {
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				Chairs.class),
 
-		ES_CHAIRS_COUNT("chairs", " count(*) from chairs ", " ", false, false, null),
+		ES_CHAIRS_COUNT("chairs", " count(*) from chairs ", " ", false, false, Chairs.class),
 
 		ES_PAYTYPE("paytype", "paytype_id,sequence,description,prompt,display_on_payment_screen,currency_type,"
 				+ "include_on_deposit_yn," + "central_id,system_required" + " from paytype order by paytype_id asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				PayType.class),
 
-		ES_PAYTYPE_COUNT("paytype", " count(*) from paytype ", " ", false, false, null),
+		ES_PAYTYPE_COUNT("paytype", " count(*) from paytype ", " ", false, false, PayType.class),
 
-		ES_PATIENT_FIRST("patient", Constants.PATIENTS_COLUMNS + " from patient order by date_entered asc",
+		ES_PATIENT("patient", Constants.PATIENTS_COLUMNS + " from patient order by date_entered asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				Patient.class),
 
-		ES_PATIENT_FIRST_COUNT("patient", " count(*) from patient ", " ", false, false, null),
+		ES_PATIENT_COUNT("patient", " count(*) from patient ", " ", false, false, Patient.class),
 
-		ES_PATIENT_NEXT("patient", Constants.PATIENTS_COLUMNS + " from patient where " + Constants.QUERY_DATE_CLAUSE_REP
-				+ " order by patient_id asc", "", true, true, Patient.class),
+		ES_PATIENT_NEXT("patient",
+				Constants.PATIENTS_COLUMNS + " from patient where " + Constants.QUERY_WHERE_CLAUSE_REP
+						+ " order by patient_id asc",
+				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
+				Patient.class),
 
-		ES_PATIENT_NEXT_COUNT("patient", " count(*) from patient where date_entered > ", " ", false, false, null);
+		ES_PATIENT_NEXT_COUNT("patient", " count(*) from patient  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ",
+				true, false, Patient.class);
 
 		private final String tableName;
 		private final String query;

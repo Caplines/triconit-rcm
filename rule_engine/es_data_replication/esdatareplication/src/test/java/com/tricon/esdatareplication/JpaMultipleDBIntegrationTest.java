@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tricon.esdatareplication.dao.repdb.PatientRepository;
 import com.tricon.esdatareplication.dao.ruleenginedb.PatientRepositoryRe;
 import com.tricon.esdatareplication.entity.repdb.Patient;
+import com.tricon.esdatareplication.entity.ruleenginedb.PatientReplica;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -32,7 +33,7 @@ public class JpaMultipleDBIntegrationTest {
     //@Transactional("repDbTransactionManager")
     public void whenCreatingPatient_thenCreated() {
         Patient pat = new Patient();
-        pat.setId(1);
+        //pat.setId(1);
         //pat = patientRepository.save(pat);
        //List<Integer> x=patientRepository.findLastNames();
      //System.out.println(x.size()+"--"+x.get(0)+"-");
@@ -52,18 +53,18 @@ public class JpaMultipleDBIntegrationTest {
     @Test
     //@Transactional("ruleEngineTransactionManager") //if we need roll back then use transactional annotation
     public void whenCreatingPatient_thenCreated1() {
-        com.tricon.esdatareplication.entity.ruleenginedb.Patient pat = new com.tricon.esdatareplication.entity.ruleenginedb.Patient();
+        PatientReplica pat = new PatientReplica();
         //pat.setId1(1);
         pat = patientRepositoryre.save(pat);
-        com.tricon.esdatareplication.entity.ruleenginedb.Patient pat1 = new com.tricon.esdatareplication.entity.ruleenginedb.Patient();
-        com.tricon.esdatareplication.entity.ruleenginedb.Patient pat2 = new com.tricon.esdatareplication.entity.ruleenginedb.Patient();
-        com.tricon.esdatareplication.entity.ruleenginedb.Patient pat3 = new com.tricon.esdatareplication.entity.ruleenginedb.Patient();
+        PatientReplica pat1 = new PatientReplica();
+        PatientReplica pat2 = new PatientReplica();
+        PatientReplica pat3 = new PatientReplica();
 
-        List<com.tricon.esdatareplication.entity.ruleenginedb.Patient> pats = Arrays.asList(pat1, pat2, pat3);
-        List<com.tricon.esdatareplication.entity.ruleenginedb.Patient> ps=patientRepositoryre.saveAll(pats);
+        List<PatientReplica> pats = Arrays.asList(pat1, pat2, pat3);
+        List<PatientReplica> ps=patientRepositoryre.saveAll(pats);
         System.out.println(ps.size());
         
-        assertNotNull(patientRepository.findById(pat.getId()));
+        //assertNotNull(patientRepository.findById(pat.getId()));
         
     }
  

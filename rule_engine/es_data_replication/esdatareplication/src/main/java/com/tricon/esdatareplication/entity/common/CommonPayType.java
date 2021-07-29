@@ -13,6 +13,11 @@ import lombok.EqualsAndHashCode;
 public class CommonPayType extends CommonCloudColumn{
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8265978139516272306L;
+
 	@Column(name = "paytype_id", unique = true, nullable = false)
 	private int payTypId;
 	

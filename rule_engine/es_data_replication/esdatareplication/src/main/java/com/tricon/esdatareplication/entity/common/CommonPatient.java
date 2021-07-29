@@ -6,7 +6,6 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
-import com.tricon.esdatareplication.entity.repdb.Chairs;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,8 +15,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CommonPatient extends CommonCloudColumn{
 	
-	@Column(name = "patient_id", length = 50)
-	Integer patientId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1990940111528929546L;
+
+	@Column(name = "patient_id", length = 50,unique=true)
+	String patientId;
 	
 	@Column(name = "first_name", length = 50)
 	String firstName;
@@ -63,11 +67,11 @@ public class CommonPatient extends CommonCloudColumn{
 	@Column(name = "marital_status", length = 50)
 	String maritalStatus;
 	
-	@Column(name = "reponsible_party_status", length = 50)
-	String reponsiblePartyStatus;
+	@Column(name = "responsible_party_status", length = 50)
+	String responsiblePartyStatus;
 	
-	@Column(name = "reponsible_party", length = 50)
-	String reponsibleParty;
+	@Column(name = "responsible_party", length = 50)
+	String responsibleParty;
 	
 	
 	@Column(name = "social_security", length = 50)
@@ -95,8 +99,8 @@ public class CommonPatient extends CommonCloudColumn{
 	int cleaningTime;
     
     
-    @Column(name = "receive_calls", length = 50)
-	String receiveCalls;
+    @Column(name = "receive_recalls", length = 50)
+	String receiveReCalls;
     
     @Column(name = "discount_id", length = 50)
 	int discountId;
@@ -122,8 +126,8 @@ public class CommonPatient extends CommonCloudColumn{
     @Column(name = "first_visit_date")
     Date firstVisitDate;
     
-    @Column(name = "last_seen_date", length = 50)
-    Date lastSeenDate;
+    @Column(name = "last_date_date", length = 50)
+    Date lastDateSeen;
 
     
 	@Column(name = "cancelled_appointments", length = 50)
@@ -161,8 +165,8 @@ public class CommonPatient extends CommonCloudColumn{
 	@Column(name = "prim_benefits_remaining", length = 50)
 	int primBenefitsRemaining;
 	
-	@Column(name = "prim_remaininig_deductible", length = 50)
-	int primRemaininigDeductible;
+	@Column(name = "prim_remaining_deductible", length = 50)
+	int primRemainingDeductible;
 
 	
 	@Column(name = "sec_responsible_id", length = 50)
@@ -229,8 +233,8 @@ public class CommonPatient extends CommonCloudColumn{
 	@Column(name = "last_recall_date")
 	Date lastRecallDate;
 	
-	@Column(name = "yt_visits", length = 50)
-	int ytVisits;
+	@Column(name = "ytd_visits", length = 50)
+	int ytdVisits;
 	
 	@Column(name = "next_preventive_appt_time", length = 50)
 	Time nextPreventiveApptTime;
@@ -262,8 +266,8 @@ public class CommonPatient extends CommonCloudColumn{
 	@Column(name = "signature_on_file", length = 50)
 	String signatureOnFile;
 	
-	@Column(name = "release_into_on_file", length = 50)
-	String releaseIntoOnFile;
+	@Column(name = "release_info_on_file", length = 50)
+	String releaseInfoOnFile;
 	
 	@Column(name = "carrier_id", length = 50)
 	String carrierId;
@@ -335,11 +339,11 @@ public class CommonPatient extends CommonCloudColumn{
 	Date lastFullMouth;
 	
 	
-	@Column(name = "teethStatus", length = 50)
+	@Column(name = "teeth_status", length = 50)
 	String teethStatus;
 	
 	
-	@Column(name = "recallBatch", length = 50)
+	@Column(name = "recall_batch", length = 50)
 	int recallBatch;
 	
 	
@@ -358,8 +362,8 @@ public class CommonPatient extends CommonCloudColumn{
 	@Column(name = "rx_id", length = 50)
 	String rxId;
 	
-	@Column(name = "missing_teeth", length = 50)
-	int missingTeeth;
+	@Column(name = "missing_teeth", length = 60)
+	String missingTeeth;
 	
 	@Column(name = "receive_email", length = 50)
 	String receiveEmail;
@@ -378,14 +382,14 @@ public class CommonPatient extends CommonCloudColumn{
 	@Column(name = "drivers_license", length = 50)
 	String driversLicense;
 	
-	@Column(name = "hippa_priv_pract", length = 50)
-	String hippaPrivPract;
+	@Column(name = "hipaa_priv_pract", length = 50)
+	String hipaaPrivPract;
 	
 	@Column(name = "hipaa_authorization", length = 50)
 	String hipaaAuthorization;
 	
-	@Column(name = "hippa_priv_pract_date")
-	Date hippaPrivPractDate;
+	@Column(name = "hipaa_priv_pract_date")
+	Date hipaaPrivPractDate;
 	
 	@Column(name = "hipaa_authorization_date")
 	Date hipaaAuthorizationDate;
@@ -404,8 +408,8 @@ public class CommonPatient extends CommonCloudColumn{
 	@Column(name = "sec_member_id", length = 50)
 	String secMemberId;
 	
-	@Column(name = "daily_changes", length = 50)
-	int dailyChanges;
+	@Column(name = "daily_charges", length = 50)
+	int dailyCharges;
 	
 	@Column(name = "daily_collections", length = 50)
 	int dailyCollections;
@@ -461,30 +465,30 @@ public class CommonPatient extends CommonCloudColumn{
 	String securityQuestionOne;
 	
 	
-	@Column(name = "security_question_two", length = 50)
+	@Column(name = "security_question_two", length = 256)
 	String securityQuestionTwo;
 	
 	
-	@Column(name = "security_question_three", length = 50)
+	@Column(name = "security_question_three", length = 256)
 	String securityQuestionThree;
 	
 	
-	@Column(name = "security_answer_one", length = 50)
+	@Column(name = "security_answer_one", length = 256)
 	String securityAnswerOne;
 	
 	
-	@Column(name = "security_answer_two", length = 50)
+	@Column(name = "security_answer_two", length = 256)
 	String securityAnswerTwo;
 	
 	
-	@Column(name = "security_answer_three", length = 50)
+	@Column(name = "security_answer_three", length = 256)
 	String securityAnswerThree;
 	
-	@Column(name = "registration_verified ", length = 50)
+	@Column(name = "registration_verified ", length = 256)
 	boolean registrationVerified; 
 	
-	@Column(name = "DophinID", length = 50)
-	String DophinID;
+	@Column(name = "DolphinID", length = 50)
+	String DolphinID;
 	
 	
 	@Column(name = "password_salt", length = 150)

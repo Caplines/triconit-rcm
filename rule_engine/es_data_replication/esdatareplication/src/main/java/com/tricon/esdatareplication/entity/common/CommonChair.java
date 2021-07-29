@@ -11,6 +11,11 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CommonChair extends CommonCloudColumn {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3702399230848008151L;
+
 	@Column(name = "patient_id", length = 50)
 	Integer patientId;
 
@@ -40,5 +45,6 @@ public class CommonChair extends CommonCloudColumn {
 
 	@Column(name = "practice_id", length = 50)
 	Integer practiceId;
+
 
 }
