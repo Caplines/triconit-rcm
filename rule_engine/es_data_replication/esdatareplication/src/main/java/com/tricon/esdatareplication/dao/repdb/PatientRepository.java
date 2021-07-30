@@ -5,9 +5,7 @@ import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import com.tricon.esdatareplication.entity.repdb.Patient;
-import com.tricon.esdatareplication.entity.repdb.PayType;
 
 public interface PatientRepository
 

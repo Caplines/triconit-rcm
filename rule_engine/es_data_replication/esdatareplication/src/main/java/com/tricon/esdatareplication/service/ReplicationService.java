@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,24 +18,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.tricon.esdatareplication.eaglesoft.ESConnection;
-import com.tricon.esdatareplication.eaglesoft.PrepairESDataFromFromResultSet;
-import com.tricon.esdatareplication.entity.repdb.Chairs;
-import com.tricon.esdatareplication.entity.repdb.ESTable;
-import com.tricon.esdatareplication.entity.repdb.Office;
-import com.tricon.esdatareplication.entity.repdb.PayType;
-import com.tricon.esdatareplication.entity.ruleenginedb.PatientReplica;
-import com.tricon.esdatareplication.entity.ruleenginedb.PayTypeReplica;
-import com.tricon.esdatareplication.entity.repdb.Patient;
-import com.tricon.esdatareplication.util.Constants;
-import com.tricon.esdatareplication.util.QueryEnum;
-import com.tricon.esdatareplication.util.QueryTable;
 import com.tricon.esdatareplication.dao.repdb.ESTableRepository;
 import com.tricon.esdatareplication.dao.repdb.OfficeRepository;
 import com.tricon.esdatareplication.dao.repdb.PatientRepository;
 import com.tricon.esdatareplication.dao.repdb.PayTypeRepository;
 import com.tricon.esdatareplication.dao.ruleenginedb.PatientRepositoryRe;
 import com.tricon.esdatareplication.dao.ruleenginedb.PayTypeRepositoryRe;
+import com.tricon.esdatareplication.eaglesoft.ESConnection;
+import com.tricon.esdatareplication.eaglesoft.PrepairESDataFromFromResultSet;
+import com.tricon.esdatareplication.entity.repdb.ESTable;
+import com.tricon.esdatareplication.entity.repdb.Office;
+import com.tricon.esdatareplication.entity.repdb.Patient;
+import com.tricon.esdatareplication.entity.repdb.PayType;
+import com.tricon.esdatareplication.entity.ruleenginedb.PatientReplica;
+import com.tricon.esdatareplication.entity.ruleenginedb.PayTypeReplica;
+import com.tricon.esdatareplication.util.Constants;
+import com.tricon.esdatareplication.util.DataStatus;
+import com.tricon.esdatareplication.util.QueryTable;
 
 @Service
 @Transactional("ruleEngineTransactionManager")
@@ -67,17 +64,12 @@ public class ReplicationService {
 	@Autowired
 	private OfficeRepository officeRepository;
 
-	public static void main(String d[]) {
-
-		QueryTable.QueryEnum w = QueryTable.QueryEnum.valueOf("ES_CHAIRS");
-		System.out.println(w.getTableName());
-	}
-
 	@Transactional(rollbackFor = NullPointerException.class, transactionManager = "ruleEngineTransactionManager")
 	public void startReplication(BufferedWriter bw) {
 
 		// Fetch all tables names to be fetched from ES
 		fetchDataFromLocalESToLocalDB(bw);
+		// Push data to Cloud
 		pushDataFromLocalESToColudDB(bw);
 
 	}
@@ -85,10 +77,10 @@ public class ReplicationService {
 	public void pushDataFromLocalESToColudDB(BufferedWriter bw) {
 		Office office = officeRepository.findById(1).get();
 		System.out.println("pushDataFromLocalESToColudDB");
-		List<ESTable> estables = estableRepository.findByCodeWritten(1);
+		List<ESTable> estables = estableRepository.findByCodeWritten(DataStatus.StatusEnum.CODE_WRITTEN_STATUS.YES);
 		estables.forEach(es -> {
 			if (es.getTableName().equals("paytype")) {
-				List<PayType> p = payTypeRepository.findByMovedToCloud(0);
+				List<PayType> p = payTypeRepository.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 				List<PayTypeReplica> repList = new ArrayList<>();
 				p.forEach(x -> {
 					x.setOfficeId(office.getUuid());
@@ -99,27 +91,31 @@ public class ReplicationService {
 				// new repository for cloud.. and save data...
 				payTypeRepositoryRe.saveAll(repList);
 				p.forEach(x -> {
-					x.setMovedToCloud(1);
+
+					x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				});
 				payTypeRepository.saveAll(p);
+				es.setRecordsInsertedLastIteration(p.size());
+				estableRepository.save(es);
 
 			} else if (es.getTableName().equals("patient")) {
-				List<Patient> p = patientRepository.findByMovedToCloud(0);
+				List<Patient> p = patientRepository.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 				List<PatientReplica> repList = new ArrayList<>();
 				p.forEach(x -> {
 					x.setOfficeId(office.getUuid());
 					PatientReplica rep = new PatientReplica();
 					BeanUtils.copyProperties(x, rep);
-					rep.setMovedToCloud(1);
+					rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 					repList.add(rep);
 				});
 				// new repository for cloud.. and save data...
 				patientRepositoryre.saveAll(repList);
 				p.forEach(x -> {
-					x.setMovedToCloud(1);
+					x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				});
 				patientRepository.saveAll(p);
-
+				es.setRecordsInsertedLastIteration(p.size());
+				estableRepository.save(es);
 			}
 		});
 
@@ -130,11 +126,13 @@ public class ReplicationService {
 		// Fetch all tables names to be fetched from ES
 
 		Date currentDate = new Date();
-		List<ESTable> estables = estableRepository.findByCodeWrittenAndUploadedToLocal(1, 0);
+		List<ESTable> estables = estableRepository.findByCodeWrittenAndUploadedToLocal(
+				DataStatus.StatusEnum.CODE_WRITTEN_STATUS.YES, DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO);
 		for (ESTable table : estables) {
 			int countRecord = 0;
 			int totalCount = 0;
-			if ((table.getStaticTable() == 1 && table.getUploadedToLocal() == 0)
+			if ((table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.YES
+					&& table.getUploadedToLocal() == DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO)
 					|| (table.getStaticTable() == 0 && table.getUpdatedDate() == null)) {
 				QueryTable.QueryEnum tab = QueryTable.QueryEnum.valueOf("ES_" + table.getTableName().toUpperCase());
 				QueryTable.QueryEnum tabC = QueryTable.QueryEnum
@@ -149,8 +147,8 @@ public class ReplicationService {
 					List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate());
 					countRecord = countRecord + list.size();
 					if (list.size() == 0) {
-						if (table.getStaticTable() == 1)
-							table.setUploadedToLocal(1);
+						if (table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.YES)
+							table.setUploadedToLocal(DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.YES);
 						table.setIterationCount(table.getIterationCount() + 1);
 						table.setRecordsInsertedLastIteration(countRecord);
 						estableRepository.save(table);
@@ -161,7 +159,7 @@ public class ReplicationService {
 					start = start + top;
 					// patientRepository.saveAll(entities);
 				}
-			} else if (table.getStaticTable() == 0 && table.getUpdatedDate() != null) {
+			} else if (table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.NO && table.getUpdatedDate() != null) {
 				QueryTable.QueryEnum tab = QueryTable.QueryEnum
 						.valueOf("ES_" + table.getTableName().toUpperCase() + "_NEXT");
 				// Fetch Data From ES and see if that is in the Local DB or not
@@ -177,8 +175,8 @@ public class ReplicationService {
 				System.out.println("totalCount totalCount-8888?>" + totalCount);
 				if (totalCount == 0) {
 					System.out.println("totalCount totalCount-?>" + totalCount);
-					if (table.getStaticTable() == 1)
-						table.setUploadedToLocal(1);
+					if (table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.YES)
+						table.setUploadedToLocal(DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.YES);
 					table.setIterationCount(table.getIterationCount() + 1);
 					table.setRecordsInsertedLastIteration(countRecord);
 					estableRepository.save(table);
@@ -218,7 +216,7 @@ public class ReplicationService {
 
 		// Using Date ..
 
-		PatientReplica pat = new PatientReplica();
+		// PatientReplica pat = new PatientReplica();
 		// pat.setId1(1);
 		try {
 			/*
@@ -340,10 +338,7 @@ public class ReplicationService {
 				}
 				patIdInDB.removeAll(patIdInES);// Patient id that are there in Local DB we need to update.
 				if (patIdInDB.size() > 0) {
-
-					// inDB
 					patIdInDB.forEach(id -> {
-
 						Patient p = ((List<Patient>) data).stream().filter(dp -> id.equals(dp.getPatientId())).findAny()
 								.orElse(null);
 
@@ -360,7 +355,6 @@ public class ReplicationService {
 	}
 
 	private String createWhereClause(QueryTable.QueryEnum tab, Date cDate, Date lastDateofCrawling) {
-		String where = "";
 		if (tab.isWhereClause() && tab.getClazz().equals(Patient.class)) {
 
 			return " date_entered BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"

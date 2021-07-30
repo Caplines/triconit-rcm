@@ -39,9 +39,7 @@ public class Constants {
 			"DolphinID,password_salt,encrypted_social_security,last_medical_history"; 
 	
 	public static final SimpleDateFormat SimpleDateformatForEsQuery= new SimpleDateFormat("yyyy-MM-dd");
-	
 			
 	
-	//public static int FETCHED_ROW_COUNT_FROM_DB=100;
 	
 }

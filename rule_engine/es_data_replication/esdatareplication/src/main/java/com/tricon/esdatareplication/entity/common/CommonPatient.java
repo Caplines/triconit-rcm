@@ -81,7 +81,7 @@ public class CommonPatient extends CommonCloudColumn{
 	Date birthDate;
 	
 	
-	@Column(name = "notes", length = 50, columnDefinition="text")
+	@Column(name = "notes",  columnDefinition="text")
 	String notes;
 	
 	
