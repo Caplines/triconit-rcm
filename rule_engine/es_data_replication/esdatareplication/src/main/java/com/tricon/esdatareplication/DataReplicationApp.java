@@ -11,6 +11,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * Spring batch .. Spring scheduling /..Spring JPA .. Pipeline
  * https://www.baeldung.com/spring-data-jpa-multiple-databases
  * https://springframework.guru/how-to-configure-multiple-data-sources-in-a-spring-boot-application/
+ * How to add new Table
+ * 1.Create Common* Entity Class
+ * 2. Add it in es_table
+ * 3 in  QueryTable add in Query
+ * 4 PrepairESDataFromFromResultSet Create Query to fetch data from ES
+ * 5.ReplicationService -->
+ *  a) createWhereClause 
+ *  b) saveDataToLocalDB
+ *  c) pushDataFromLocalESToColudDB
+ *  d)
  */
 @SpringBootApplication
 @EnableScheduling

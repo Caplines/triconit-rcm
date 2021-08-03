@@ -9,29 +9,29 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.tricon.esdatareplication.entity.common.CommonPlannedServices;
-import com.tricon.esdatareplication.entity.common.CommonProviders;
+import com.tricon.esdatareplication.entity.common.CommonChair;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "es_data_replica_providers")
+@Table(name = "chairs")
 @EqualsAndHashCode(callSuper = true)
-public class ProvidersReplica extends CommonProviders implements Serializable{
-	
+
+public class ChairsReplica extends CommonChair implements Serializable{
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1915313012301375487L;
+	private static final long serialVersionUID = -2684402369765957523L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	private int id;
-
-	public ProvidersReplica() {
+	
+	public ChairsReplica() {
 		super();
 	}
 

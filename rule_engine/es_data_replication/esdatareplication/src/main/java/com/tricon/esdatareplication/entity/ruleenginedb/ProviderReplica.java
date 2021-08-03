@@ -1,4 +1,4 @@
-package com.tricon.esdatareplication.entity.repdb;
+package com.tricon.esdatareplication.entity.ruleenginedb;
 
 import java.io.Serializable;
 
@@ -9,28 +9,28 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.tricon.esdatareplication.entity.common.CommonAppointment;
-import com.tricon.esdatareplication.util.Constants;
+import com.tricon.esdatareplication.entity.common.CommonProviders;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = Constants.TABLE_APPOINTMENT)
+@Table(name = "es_data_replica_provider")
 @EqualsAndHashCode(callSuper = true)
-public class Appointment extends CommonAppointment implements Serializable {
+public class ProviderReplica extends CommonProviders implements Serializable{
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2310809895169377302L;
-	
+	private static final long serialVersionUID = -1915313012301375487L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	private int id;
 
-	public Appointment() {
+	public ProviderReplica() {
 		super();
 	}
 

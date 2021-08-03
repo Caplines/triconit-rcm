@@ -52,7 +52,7 @@ public class CommonProviders extends CommonCloudColumn {
 	Date birth_date;
 
 	@Column(name = "hire_date",nullable = true)
-	Date hire_date;
+	Date hireDate;
 
 	@Column(name = "social_security", length = 50, nullable = true)
 	String socialSecurity;
@@ -133,7 +133,7 @@ public class CommonProviders extends CommonCloudColumn {
 	String medicaidLocator;
 
 	@Column(name = "medicaid_group",length=50, nullable = true)
-	String medicaid_group;
+	String medicaidGroup;
 
 	@Column(name = "association",length=50, nullable = true)
 	String association;
@@ -173,7 +173,7 @@ public class CommonProviders extends CommonCloudColumn {
 
 	
 	@Column(name = "other_id",length=50, nullable = true)
-	String other_id;
+	String otherId;
 
 	@Column(name = "billing_entity",length=50, nullable = true)
 	String billingEntity;
@@ -245,13 +245,13 @@ public class CommonProviders extends CommonCloudColumn {
 	String otherId3;
 
 	@Column(name = "other_id_4",length=50, nullable = true)
-	String other_id_4;
+	String otherId4;
 
 	@Column(name = "other_id_5",length=50, nullable = true)
-	String other_id_5;
+	String otherId5;
 
 	@Column(name = "access_lab",length=50, nullable = true)
-	String access_lab;
+	String accessLab;
 
 	@Column(name = "national_prov_id",length=50, nullable = true)
 	String nationalProvId;
@@ -383,8 +383,8 @@ public class CommonProviders extends CommonCloudColumn {
 	@Column(name = "security_profile",length=50, nullable = true)
 	Integer securityProfile;
 
-	@Column(name = "universalId",length=50, nullable = true)
-	String universal_id;
+	@Column(name = "universal_id",length=50, nullable = true)
+	String universalId;
 
 	@Column(name = "provider_color",length=50, nullable = true)
 	Integer providerColor;
@@ -399,7 +399,7 @@ public class CommonProviders extends CommonCloudColumn {
 	String ClinicianPassword;
 	
 	@Column(name = "last_logon",nullable = true)
-	Date last_logon;
+	Date lastLogon;
 
 	@Column(name = "encrypted_social_security",length=150, nullable = true)
 	String encryptedSocialSecurity;

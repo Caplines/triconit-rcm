@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.tricon.esdatareplication.entity.common.CommonsTreatmentPlanItems;
 import com.tricon.esdatareplication.entity.common.CommonsTreatmentPlans;
 
 import lombok.Data;
