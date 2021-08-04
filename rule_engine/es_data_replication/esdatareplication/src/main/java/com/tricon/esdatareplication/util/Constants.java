@@ -23,6 +23,7 @@ public class Constants {
 	public static final String TABLE_TREATMENT_PLAN_ITEMS="treatment_plan_items";//10
 	public static final String TABLE_TREATMENT_PLANS="treatment_plans";//11
 	public static final String TABLE_PROVIDER="provider";//12
+	public static final String TABLE_REPLICA_IN_CLOUD="es_data_replica_";
 	
 	
 	

@@ -21,9 +21,17 @@ import com.tricon.esdatareplication.eaglesoft.PrepairESDataFromFromResultSet;
 import com.tricon.esdatareplication.entity.repdb.Appointment;
 import com.tricon.esdatareplication.entity.repdb.Chairs;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
+import com.tricon.esdatareplication.entity.repdb.Employer;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.Patient;
 import com.tricon.esdatareplication.entity.repdb.PayType;
+import com.tricon.esdatareplication.entity.repdb.PaymentProvider;
+import com.tricon.esdatareplication.entity.repdb.PlannedServices;
+import com.tricon.esdatareplication.entity.repdb.Provider;
+import com.tricon.esdatareplication.entity.repdb.Transactions;
+import com.tricon.esdatareplication.entity.repdb.TransactionsDetail;
+import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
+import com.tricon.esdatareplication.entity.repdb.TreatmentPlans;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 import com.tricon.esdatareplication.util.QueryTable;
@@ -48,6 +56,31 @@ public class ReplicationService {
 
 	@Autowired
 	ChairsTableService chairsTableService;
+	
+	@Autowired
+	TransactionsTableService transactionsTableService;
+	
+	@Autowired
+	TransactionsDetailTableService transactionsDetailTableService;
+	
+
+	@Autowired
+    PaymentProviderTableService paymentProviderTableService;
+	
+	@Autowired
+	PlannedServicesTableService plannedServicesTableService;
+	
+	@Autowired
+	TreatmentPlanItemsTableService treatmentPlanItemsTableService;
+	
+	@Autowired
+	TreatmentPlansTableService treatmentPlansTableService;
+	
+	@Autowired
+	EmployerTableService employerTableService;
+	
+	@Autowired
+	ProviderTableService providerTableService;
 	
 	@Autowired
 	PrepairESDataFromFromResultSet prepairESDataFromFromResultSet;
@@ -88,7 +121,35 @@ public class ReplicationService {
 			} else if (es.getTableName().equals(Constants.TABLE_APPOINTMENT)) {
 				es=appointmentTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
-			}
+			} else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS)) {
+				es=transactionsTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				estableRepository.save(es);
+			}else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
+					es=transactionsDetailTableService.pushDataFromLocalESToColudDB(bw, office, es);
+					estableRepository.save(es);
+			}else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
+				es=transactionsDetailTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				estableRepository.save(es);
+		    }else if (es.getTableName().equals(Constants.TABLE_PAYMENT_PROVIDER)) {
+				es=paymentProviderTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				estableRepository.save(es);
+		    }else if (es.getTableName().equals(Constants.TABLE_PLANNED_SERVICES)) {
+				es=plannedServicesTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				estableRepository.save(es);
+		    }else if (es.getTableName().equals(Constants.TABLE_TREATMENT_PLAN_ITEMS)) {
+				es=treatmentPlanItemsTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				estableRepository.save(es);
+		    }else if (es.getTableName().equals(Constants.TABLE_TREATMENT_PLANS)) {
+				es=treatmentPlansTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				estableRepository.save(es);
+		    }else if (es.getTableName().equals(Constants.TABLE_EMPLOYER)) {
+				es=employerTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				estableRepository.save(es);
+		    }else if (es.getTableName().equals(Constants.TABLE_PROVIDER)) {
+				es=providerTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				estableRepository.save(es);
+		    }
+//
 		});
 
 	}
@@ -286,7 +347,6 @@ public class ReplicationService {
 		System.out.println("saveDataToLocalDB");
 		System.out.println(tab.getTableName());
 
-		// if (tab.getClazz().equals(Chairs.class))
 		if ((tab.getClazz().equals(PayType.class))) {
 			payTypeTableService.saveDataToLocalDB(data);
 		} else if ((tab.getClazz().equals(Chairs.class))) {
@@ -295,6 +355,22 @@ public class ReplicationService {
 			patientTableService.saveDataToLocalDB(data, checkExisting);
 		} else if ((tab.getClazz().equals(Appointment.class))) {
 			appointmentTableService.saveDataToLocalDB(data, checkExisting);
+		} else if ((tab.getClazz().equals(Transactions.class))) {
+			transactionsTableService.saveDataToLocalDB(data, checkExisting);
+		} else if ((tab.getClazz().equals(TransactionsDetail.class))) {
+			transactionsDetailTableService.saveDataToLocalDB(data, checkExisting);
+		} else if ((tab.getClazz().equals(PaymentProvider.class))) {
+			paymentProviderTableService.saveDataToLocalDB(data, checkExisting);
+		} else if ((tab.getClazz().equals(PlannedServices.class))) {
+			plannedServicesTableService.saveDataToLocalDB(data, checkExisting);
+		}else if ((tab.getClazz().equals(TreatmentPlanItems.class))) {
+			treatmentPlanItemsTableService.saveDataToLocalDB(data, checkExisting);
+		}else if ((tab.getClazz().equals(TreatmentPlans.class))) {
+			treatmentPlansTableService.saveDataToLocalDB(data, checkExisting);
+		}else if ((tab.getClazz().equals(Employer.class))) {
+			employerTableService.saveDataToLocalDB(data, checkExisting);
+		}else if ((tab.getClazz().equals(Provider.class))) {
+			providerTableService.saveDataToLocalDB(data, checkExisting);
 		}
 	}
 

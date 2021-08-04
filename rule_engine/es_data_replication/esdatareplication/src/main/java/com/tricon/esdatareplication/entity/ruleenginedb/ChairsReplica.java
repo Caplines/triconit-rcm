@@ -10,13 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonChair;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "chairs")
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_CHAIRS)
 @EqualsAndHashCode(callSuper = true)
 
 public class ChairsReplica extends CommonChair implements Serializable{

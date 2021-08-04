@@ -11,13 +11,14 @@ import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonPaymentProvider;
 import com.tricon.esdatareplication.entity.repdb.PaymentProvider;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "es_data_replica_payment_provider")
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_PROVIDER)
 @EqualsAndHashCode(callSuper = true)
 public class PaymentProviderReplica  extends CommonPaymentProvider implements Serializable{
 	

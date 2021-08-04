@@ -10,13 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonsTreatmentPlans;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "es_data_replica_treatment_plans")
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_TREATMENT_PLANS)
 @EqualsAndHashCode(callSuper = true)
 public class TreatmentPlansReplica extends CommonsTreatmentPlans  implements Serializable{
 	/**

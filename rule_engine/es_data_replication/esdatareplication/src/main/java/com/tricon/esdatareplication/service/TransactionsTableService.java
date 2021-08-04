@@ -10,39 +10,39 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tricon.esdatareplication.dao.repdb.AppointmentRepository;
-import com.tricon.esdatareplication.dao.ruleenginedb.AppointmentRepositoryRe;
-import com.tricon.esdatareplication.entity.repdb.Appointment;
+import com.tricon.esdatareplication.dao.repdb.TransactionsRepository;
+import com.tricon.esdatareplication.dao.ruleenginedb.TransactionsRepositoryRe;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
-import com.tricon.esdatareplication.entity.ruleenginedb.AppointmentReplica;
+import com.tricon.esdatareplication.entity.repdb.Transactions;
+import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.DataStatus;
 
 @Service
-public class AppointmentTableService {
+public class TransactionsTableService {
 
 	@Autowired
-	private AppointmentRepository appointmentRepository;
+	private TransactionsRepository transactionsRepository;
 
 	@Autowired
-	private AppointmentRepositoryRe appointmentRepositoryRe;
+	private TransactionsRepositoryRe transactionsRepositoryRe;
 
 	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
-		List<Appointment> p = appointmentRepository.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
-		List<AppointmentReplica> repList = new ArrayList<>();
+		List<Transactions> p = transactionsRepository.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+		List<TransactionsReplica> repList = new ArrayList<>();
 		p.forEach(x -> {
 			x.setOfficeId(office.getUuid());
-			AppointmentReplica rep = new AppointmentReplica();
+			TransactionsReplica rep = new TransactionsReplica();
 			BeanUtils.copyProperties(x, rep);
 			rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 			repList.add(rep);
 		});
 		// new repository for cloud.. and save data...
-		appointmentRepositoryRe.saveAll(repList);
+		transactionsRepositoryRe.saveAll(repList);
 		p.forEach(x -> {
 			x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 		});
-		appointmentRepository.saveAll(p);
+		transactionsRepository.saveAll(p);
 		es.setRecordsInsertedLastIteration(p.size());
 		return es;
 
@@ -51,39 +51,40 @@ public class AppointmentTableService {
 	public void saveDataToLocalDB(List<?> data, boolean checkExisting) {
 		
 		if (!checkExisting)
-			appointmentRepository.saveAll((List<Appointment>) data);
+			transactionsRepository.saveAll((List<Transactions>) data);
 		else {
 			//
-			Set<String> apptIdInES = new HashSet<>();
-			Set<String> apptIdInDB = new HashSet<>();
-			((List<Appointment>) data).stream().map(Appointment::getAppointmentId).forEach(apptIdInES::add);
+			Set<Integer> apptIdInES = new HashSet<>();
+			Set<Integer> apptIdInDB = new HashSet<>();
+			((List<Transactions>) data).stream().map(Transactions::getTranNum).forEach(apptIdInES::add);
 			// or
 			// d2.forEach(a -> patIds.add(a.getPatientId()));
-			List<Appointment> inDB = appointmentRepository.findByAppointmentIdIn(apptIdInES);
-			inDB.stream().map(Appointment::getAppointmentId).forEach(apptIdInDB::add);
+			List<Transactions> inDB = transactionsRepository.findByTranNumIn(apptIdInES);
+			inDB.stream().map(Transactions::getTranNum).forEach(apptIdInDB::add);
 
 			apptIdInES.removeAll(apptIdInDB);// Patientid that are not in Local DB
 			if (apptIdInES.size() > 0) {
 				apptIdInES.forEach(id -> {
-					appointmentRepository.save(((List<Appointment>) data).stream().filter(p -> id.equals(p.getAppointmentId()))
+					transactionsRepository.save(((List<Transactions>) data).stream().filter(p -> id.equals(p.getTranNum()))
 							.findAny().orElse(null));
 				});
 			}
 			apptIdInDB.removeAll(apptIdInES);// Patient id that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
 				apptIdInDB.forEach(id -> {
-					Appointment p = ((List<Appointment>) data).stream().filter(dp -> id.equals(dp.getAppointmentId())).findAny()
+					Transactions p = ((List<Transactions>) data).stream().filter(dp -> id.equals(dp.getTranNum())).findAny()
 							.orElse(null);
 
-					Appointment old = inDB.stream().filter(ind -> id.equals(ind.getAppointmentId())).findAny().orElse(null);
+					Transactions old = inDB.stream().filter(ind -> id.equals(ind.getTranNum())).findAny().orElse(null);
 					p.setId(old.getId());
 					p.setMovedToCloud(0);
 					p.setCreatedDate(old.getCreatedDate());
-					appointmentRepository.save(p);
+					transactionsRepository.save(p);
 				});
 			}
 		}
 
 		
 	}
+
 }

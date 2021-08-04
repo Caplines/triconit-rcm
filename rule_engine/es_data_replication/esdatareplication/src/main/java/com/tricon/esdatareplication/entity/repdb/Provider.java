@@ -11,13 +11,14 @@ import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonPlannedServices;
 import com.tricon.esdatareplication.entity.common.CommonProviders;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "provider")
+@Table(name = Constants.TABLE_PROVIDER)
 @EqualsAndHashCode(callSuper = true)
 public class Provider  extends CommonProviders implements Serializable{
 	

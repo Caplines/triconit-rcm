@@ -10,13 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonPayType;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "paytype")
+@Table(name = Constants.TABLE_PAYTYPE)
 @EqualsAndHashCode(callSuper = true)
 public class PayType extends CommonPayType implements Serializable {
 

@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  *  b) saveDataToLocalDB
  *  c) pushDataFromLocalESToColudDB
  *  d)
+ *  6 Create new Service for each table
  */
 @SpringBootApplication
 @EnableScheduling

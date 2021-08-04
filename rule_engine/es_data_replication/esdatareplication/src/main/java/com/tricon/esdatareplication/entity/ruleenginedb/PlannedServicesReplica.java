@@ -11,13 +11,14 @@ import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonPlannedServices;
 import com.tricon.esdatareplication.entity.repdb.PlannedServices;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "es_data_replica_planned_services")
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_PLANNED_SERVICES)
 @EqualsAndHashCode(callSuper = true)
 public class PlannedServicesReplica  extends CommonPlannedServices implements Serializable{
 	

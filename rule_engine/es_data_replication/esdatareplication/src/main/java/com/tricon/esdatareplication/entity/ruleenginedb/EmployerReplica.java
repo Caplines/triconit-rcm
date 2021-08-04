@@ -10,13 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonEmployer;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "es_data_replica_employer")
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_EMPLOYER)
 @EqualsAndHashCode(callSuper = true)
 public class EmployerReplica extends CommonEmployer implements Serializable{
 	/**

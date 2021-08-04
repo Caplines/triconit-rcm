@@ -1,0 +1,16 @@
+package com.tricon.esdatareplication.dao.repdb;
+
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.tricon.esdatareplication.entity.repdb.PlannedServices; 
+
+public interface PlannedServicesRepository extends JpaRepository<PlannedServices, Integer> {
+
+	public List<PlannedServices> findByApptGroupIn(Set<Integer> apptGroup);
+
+	public List<PlannedServices> findByMovedToCloud(int i);
+
+}

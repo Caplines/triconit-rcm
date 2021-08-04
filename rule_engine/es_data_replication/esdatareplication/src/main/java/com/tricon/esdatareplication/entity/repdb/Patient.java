@@ -10,13 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonPatient;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "patient")
+@Table(name = Constants.TABLE_PATIENT)
 @EqualsAndHashCode(callSuper = true)
 public  class Patient extends CommonPatient implements Serializable {
 

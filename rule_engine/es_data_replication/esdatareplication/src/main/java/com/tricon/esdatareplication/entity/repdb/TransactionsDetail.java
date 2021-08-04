@@ -11,13 +11,14 @@ import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonTransactions;
 import com.tricon.esdatareplication.entity.common.CommonTransactionsDetail;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "transaction_detail")
+@Table(name = Constants.TABLE_TRANSACTIONS_DETAIL)
 @EqualsAndHashCode(callSuper = true)
 public class TransactionsDetail extends CommonTransactionsDetail implements Serializable{
 

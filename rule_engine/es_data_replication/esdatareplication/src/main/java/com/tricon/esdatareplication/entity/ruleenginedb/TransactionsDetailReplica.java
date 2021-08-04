@@ -10,13 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonTransactionsDetail;
+import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "es_data_replica_transaction_detail")
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_TRANSACTIONS_DETAIL)
 @EqualsAndHashCode(callSuper = true)
 public class TransactionsDetailReplica extends CommonTransactionsDetail implements Serializable{
 
