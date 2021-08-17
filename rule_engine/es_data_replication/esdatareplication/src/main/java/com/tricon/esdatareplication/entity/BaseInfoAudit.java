@@ -30,10 +30,10 @@ public class BaseInfoAudit implements Serializable{
 	 */
 	private static final long serialVersionUID = 6568741041468827742L;
 	
-	@UpdateTimestamp
-	@Column(name = "updated_date", nullable = true)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date updatedDate;
 	
+	@UpdateTimestamp
+	@Column(name = "last_run_date", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lastRunDate;
 
 }

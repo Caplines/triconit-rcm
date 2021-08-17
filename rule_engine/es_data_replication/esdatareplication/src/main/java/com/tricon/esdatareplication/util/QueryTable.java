@@ -22,7 +22,7 @@ public class QueryTable {
 	public enum QueryEnum {
 
 		ES_CHAIRS(Constants.TABLE_CHAIRS,
-				"chair_num,chair_name,sun_temp_id," + "mon_temp_id,tue_temp_id,wed_temp_id,thu_temp_id,"
+				"chair_num,chair_name,sun_temp_id,mon_temp_id,tue_temp_id,wed_temp_id,thu_temp_id,"
 						+ "fri_temp_id,sat_temp_id,practice_id" + " from " + Constants.TABLE_CHAIRS
 						+ " order by chair_num asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
@@ -71,7 +71,7 @@ public class QueryTable {
 		 */
 
 		ES_APPOINTMENT(Constants.TABLE_APPOINTMENT,
-				Constants.PATIENTS_COLUMNS + " from " + Constants.TABLE_APPOINTMENT + " order by appointment_id asc ",
+				Constants.APPOINTMENT_COLUMNS + " from " + Constants.TABLE_APPOINTMENT + " order by appointment_id asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				Appointment.class),
 
@@ -215,7 +215,7 @@ public class QueryTable {
 				TreatmentPlanItems.class),
 
 		ES_TABLE_TREATMENT_PLAN_ITEMS_NEXT(Constants.TABLE_TREATMENT_PLAN_ITEMS,
-				Constants.PLANNEDSERVICE_COLUMNS + " from " + Constants.TABLE_PLANNED_SERVICES + " where "
+				Constants.PLANNEDSERVICE_COLUMNS + " from " + Constants.TABLE_TREATMENT_PLAN_ITEMS + " where "
 						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by treatment_plan_id asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				TreatmentPlanItems.class),

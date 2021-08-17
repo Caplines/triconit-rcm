@@ -29,7 +29,7 @@ public  class PatientReplica extends CommonPatient implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
-	private int id;
+	private Integer id;
 	
 
 	public PatientReplica() {

@@ -21,7 +21,7 @@ public class AppLogger {
 		FileWriter fw = null;
 		try {
 
-			File file = new File(CustomPropFileCache.cache.get("1").getLogLocation() + "/"
+			File file = new File(CustomPropFileCache.cache.get(Constants.CACHE_NAME_FOR_PROP).getLogLocation() + "/"
 					+ Constants.SDF_LOG_FILE.format(new Date()) + ".txt");
 			if (!file.exists()) {
 				file.createNewFile();
@@ -38,12 +38,12 @@ public class AppLogger {
 		return new Object[] { bw, fw };
 	}
 
-	public void appendStream(String data, BufferedWriter bw) {
+	public void appendStream(String data, BufferedWriter bw,boolean newLine) {
 		if (data != null && bw != null)
 
 			try {
 				bw.write(data);
-				bw.write("\r\n");
+				if (newLine)bw.write("\r\n");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -55,7 +55,7 @@ public class AppLogger {
 		if (datas != null && bw != null)
 			for (String data : datas) {
 
-				appendStream(data, bw);
+				appendStream(data, bw,true);
 
 			}
 

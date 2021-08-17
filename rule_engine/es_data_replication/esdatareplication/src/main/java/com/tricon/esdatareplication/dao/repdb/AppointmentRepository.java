@@ -10,7 +10,7 @@ public interface AppointmentRepository
 
 		extends JpaRepository<Appointment, Integer> {
 
-	public List<Appointment> findByAppointmentIdIn(Set<String> apointmentId);
+	public List<Appointment> findByAppointmentIdIn(Set<Integer> apointmentId);
 
 	public List<Appointment> findByMovedToCloud(int i);
 

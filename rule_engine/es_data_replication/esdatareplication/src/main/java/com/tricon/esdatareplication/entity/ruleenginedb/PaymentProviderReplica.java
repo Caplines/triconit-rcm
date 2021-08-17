@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.tricon.esdatareplication.entity.common.CommonPaymentProvider;
-import com.tricon.esdatareplication.entity.repdb.PaymentProvider;
 import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;

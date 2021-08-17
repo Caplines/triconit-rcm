@@ -9,6 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.tricon.esdatareplication.entity.BaseInfoAudit;
 
@@ -51,4 +55,13 @@ public class ESTable extends BaseInfoAudit implements Serializable {
 
 	@Column(name = "records_inserted_last_iteration", nullable = false)
 	private int recordsInsertedLastIteration;
+
+	@Column(name = "last_isssue_detail", nullable = true, columnDefinition="text")
+	private String lastIssueDetail;
+	
+	@Column(name = "updated_date", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updatedDate;
+
+
 }

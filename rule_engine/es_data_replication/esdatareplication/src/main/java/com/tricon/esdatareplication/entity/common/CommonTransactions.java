@@ -19,7 +19,7 @@ public class CommonTransactions extends CommonCloudColumn {
 	 */
 	private static final long serialVersionUID = -7483499943910321403L;
 
-	@Column(name = "tran_num",length=50,nullable=false)//	1	integer	No
+	@Column(name = "tran_num",length=50,nullable=false, unique= true)//	1	integer	No
 	Integer tranNum;
 
 	@Column	(name="user_id",length=50,nullable=false)//	No

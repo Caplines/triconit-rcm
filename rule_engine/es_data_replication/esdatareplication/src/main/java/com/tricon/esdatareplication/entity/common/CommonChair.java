@@ -16,11 +16,11 @@ public class CommonChair extends CommonCloudColumn {
 	 */
 	private static final long serialVersionUID = 3702399230848008151L;
 
-	@Column(name = "patient_id", length = 50)
-	Integer patientId;
-
 	@Column(name = "chair_name", length = 50)
 	String chairName;
+
+	@Column(name = "chair_num",unique=true, length = 50)
+	Integer chairNum;
 
 	@Column(name = "sun_temp_id", length = 50)
 	Integer sunTempId;

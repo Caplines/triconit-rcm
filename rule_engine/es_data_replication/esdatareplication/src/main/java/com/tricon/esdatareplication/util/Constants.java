@@ -10,23 +10,20 @@ public class Constants {
 	public static final String QUERY_START_REP = "START__REP__";
 
 	public static final String QUERY_WHERE_CLAUSE_REP = "WHERE__REP__";
-	
-	public static final String TABLE_PATIENT="patient";//1
-	public static final String TABLE_CHAIRS="chairs";//2
-	public static final String TABLE_APPOINTMENT="appointment";//3
-	public static final String TABLE_PAYTYPE="paytype";//4
-	public static final String TABLE_EMPLOYER="employer";//5
-	public static final String TABLE_TRANSACTIONS="transactions";//6
-	public static final String TABLE_TRANSACTIONS_DETAIL="transactions_detail";//7
-	public static final String TABLE_PAYMENT_PROVIDER="payment_provider";//8
-	public static final String TABLE_PLANNED_SERVICES="planned_services";//9
-	public static final String TABLE_TREATMENT_PLAN_ITEMS="treatment_plan_items";//10
-	public static final String TABLE_TREATMENT_PLANS="treatment_plans";//11
-	public static final String TABLE_PROVIDER="provider";//12
-	public static final String TABLE_REPLICA_IN_CLOUD="es_data_replica_";
-	
-	
-	
+
+	public static final String TABLE_PATIENT = "patient";// 1
+	public static final String TABLE_CHAIRS = "chairs";// 2
+	public static final String TABLE_APPOINTMENT = "appointment";// 3
+	public static final String TABLE_PAYTYPE = "paytype";// 4
+	public static final String TABLE_EMPLOYER = "employer";// 5
+	public static final String TABLE_TRANSACTIONS = "transactions";// 6
+	public static final String TABLE_TRANSACTIONS_DETAIL = "transactions_detail";// 7
+	public static final String TABLE_PAYMENT_PROVIDER = "payment_provider";// 8
+	public static final String TABLE_PLANNED_SERVICES = "planned_services";// 9
+	public static final String TABLE_TREATMENT_PLAN_ITEMS = "treatment_plan_items";// 10
+	public static final String TABLE_TREATMENT_PLANS = "treatment_plans";// 11
+	public static final String TABLE_PROVIDER = "provider";// 12
+	public static final String TABLE_REPLICA_IN_CLOUD = "es_data_replica_";
 
 	public static final String PATIENTS_COLUMNS = "patient_id,first_name,last_name,salutation,address_1,address_2,city,state,zipcode,home_phone,"
 			+ "work_phone,ext,status,sex,marital_status,responsible_party_status,responsible_party,social_security,"
@@ -75,15 +72,15 @@ public class Constants {
 			+ "daily_amount_received,bill_standard_fee," + "do_not_track_yn,show_tax_on_ins_claim_yn,"
 			+ "secondary_form_id,id_treating_dentist," + "trojan_mc,Managed_care,division_section_no,"
 			+ "id_facility_by,adjustment_type ";
-	
+
 	public static final String PAYMENTPROVIDER_COLUMNS = "tran_num,provider_id,amount,practiceId,prod_provider_id ";
-	
+
 	public static final String PLANNEDSERVICE_COLUMNS = "appt_group,appt_id,completion_date,created_from_upgrade,"
 			+ "date_planned,description,fee,lab_code,lab_code2,"
 			+ "lab_fee,lab_fee2,line_number,old_tooth,patient_id,pre_fee,procedure_type_codes,"
 			+ "provider_id,sequence,service_code,sort_order,"
 			+ "standard_fee_id,status,status_date,surface,tooth,unusual_remarks ";
-	
+
 	public static final String PROVIDER_COLUMNS = "provider_id,first_name,last_name,address_1,"
 			+ "address_2,city,state,zipcode,phone,sex,birth_date,"
 			+ "hire_date,social_security,status,collections_go_to," + "provider_on_insurance,federal_tax_id,license,"
@@ -95,12 +92,12 @@ public class Constants {
 			+ "use_practice_address,practice_id,bank_account,access_appointments,access_patients,access_contacts,access_provider,access_tx_plan,access_payment_plan,access_mass_updates,site_id,voice_id,email,access_prescriptions,operatory_access,access_medical,access_timeclock,access_timeclock_management,"
 			+ "timesheet_password,other_id_2,other_id_3,other_id_4,other_id_5,access_lab,national_prov_id,Other_id_6,Other_id_7,Other_id_8,Other_id_9,Other_id_10,Other_id_11,Other_id_12,Other_id_13,Other_id_14,Other_id_15,Other_id_16,Other_id_17,Other_id_18,Other_id_19,Other_id_20,Other_id_21,daily_wo_statements,daily_charges,daily_collections,daily_new_patients,daily_other_debits,"
 			+ "daily_other_credits,view_docs,add_docs,edit_docs,delete_docs,pass_prompt_1,pass_answer_1,pass_prompt_2,pass_answer_2,pass_prompt_3,pass_answer_3,tc_pass_prompt_1,tc_pass_answer_1,tc_pass_prompt_2,tc_pass_answer_2,tc_pass_prompt_3,tc_pass_answer_3,standard_fee_id,access_site,access_intellicare,security_profile,universal_id,provider_color,last_detail_id,ClinicianUserName,ClinicianPassword,last_logon,encrypted_social_security";
-	
+
 	public static final String TRANSACTIONS_COLUMNS = "tran_num,user_id,type,tran_date,patient_id,resp_party_id,amount,service_code,paytype_id,sequence,"
 			+ "provider_id,collections_go_to,statement_num,old_tooth,surface,fee,discount_surcharge,tax,description,defective,impacts,status,adjustment_type,"
 			+ "claim_id,est_primary,est_secondary,paid_primary,paid_secondary,provider_practice_id,patient_practice_id,bulk_payment_num,aging_date,tooth,"
 			+ "lab_fee,lab_fee2,lab_code,lab_code2,pre_fee,standard_fee_id,practice_id,procedure_type_codes,balance";
-	
+
 	public static final String TRANSACTIONSDETAILS_COLUMNS = "detail_id,tran_num,user_id,date_entered,provider_id,collections_go_to,"
 			+ "patient_id,amount,provider_practice_id,patient_practice_id,applied_to,status,status_modifier,posneg ";
 	public static final String TREATEMENTPLANITEMS_COLUMNS = "treatment_plan_id,patient_id,line_number,est_primary,est_secondary,approved_by_insurance,"
@@ -109,5 +106,24 @@ public class Constants {
 			+ "date_last_updated,last_updated_by,notes";
 
 	public static final SimpleDateFormat SimpleDateformatForEsQuery = new SimpleDateFormat("yyyy-MM-dd");
+
+	public static final String CACHE_NAME_FOR_PROP = "__CACHE__";
+	// Log messages
+	public static final String START_PROCESS = "-Start Process-";
+	public static final String END_PROCESS = "- Start Process-";
+	public static final String START_PROCESS_TIME = "Start Time";
+	public static final String END_PROCESS_TIME = "End Time";
+	public static final String PROCESS_STATUS = "Process Status";
+	public static final String PROCESS_EXCEPTION = "Process Exception";
+	public static final String SECOND_TIME_TABLE_DATA_PULL = "Table updation Process";
+	public static final String FIRST_TIME_TABLE_DATA_PULL = "Data pulled from table for first time";
+	public static final String RECORDS_UPDATED_IN_TABLE = "Records updated in table";
+	public static final String RECORDS_INSERTED_IN_TABLE = "New Count of records entered in table";
+	public static final String RECORDS_UPDATED_IN_TABLE_CLOUD = "Records updated in table";
+	public static final String ERROR_IN_PUSHING_TO_CLOUD= "Error in Pushing to cloud:";
+	
+	
+	
+	
 
 }

@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
 public class CommonTransactionsDetail extends CommonCloudColumn {
-	
+
 	/**
 	 * Checked
 	 */

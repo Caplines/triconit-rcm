@@ -11,7 +11,7 @@ import com.tricon.esdatareplication.dto.PropFileDto;
 
 public class CustomPropFileCache {
 
-	final private static String PROPERTIES_FILE_PATH = "c:/es_rep/repconfig.properties";
+	final private static String PROPERTIES_FILE_PATH = "c:/es/config.properties";
 	final static Properties properties = new Properties();
 
 	public static Map<String, PropFileDto> cache = new HashMap<>(); // GLOBAL VARIABLE
@@ -22,10 +22,10 @@ public class CustomPropFileCache {
 		try (InputStream inputStream = new FileInputStream(PROPERTIES_FILE_PATH)) {
 
 			properties.load(inputStream);
-			f.setEsDbuser(properties.getProperty("es.dbuser"));
-			f.setEsDbPass(properties.getProperty("es.dbpassword"));
+			f.setEsDbuser(properties.getProperty("dbuser"));
+			f.setEsDbPass(properties.getProperty("dbpassword"));
 			f.setLogLocation(properties.getProperty("log.location"));
-			cache.put("1", f);
+			cache.put(Constants.CACHE_NAME_FOR_PROP, f);
 
 		} catch (IOException e) {
 			e.printStackTrace();

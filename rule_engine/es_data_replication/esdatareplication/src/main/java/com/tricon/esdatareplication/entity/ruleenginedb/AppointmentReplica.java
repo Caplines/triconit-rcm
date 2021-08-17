@@ -29,7 +29,7 @@ public class AppointmentReplica extends CommonAppointment implements Serializabl
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
-	private int id;
+	private Integer id;
 
 	public AppointmentReplica() {
 		super();

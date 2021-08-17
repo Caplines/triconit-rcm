@@ -12,5 +12,7 @@ public interface PlannedServicesRepository extends JpaRepository<PlannedServices
 	public List<PlannedServices> findByApptGroupIn(Set<Integer> apptGroup);
 
 	public List<PlannedServices> findByMovedToCloud(int i);
+	
+	public List<PlannedServices> findByLineNumberIn(Set<Integer> lineNumber);
 
 }

@@ -11,6 +11,9 @@ public interface AppointmentRepositoryRe
 
 		extends JpaRepository<AppointmentReplica, Integer> {
 
+	
+	public List<AppointmentReplica> findByAppointmentIdInAndOfficeId(Set<Integer> apointmentId,String officeuuid);
+	
 	public List<AppointmentReplica> findByPatientIdIn(Set<String> patientId);
 
 	public List<AppointmentReplica> findByMovedToCloud(int i);

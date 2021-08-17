@@ -36,6 +36,23 @@ public class PrepairESDataFromFromResultSet {
 			return createPatientData(rs);
 		else if (clazz.equals(Appointment.class))
 			return createAppointmentData(rs);
+		else if (clazz.equals(Transactions.class))
+			return createTransactionsData(rs);
+		else if (clazz.equals(TransactionsDetail.class))
+			return createTransactionsDetailData(rs);
+		else if (clazz.equals(PaymentProvider.class))
+			return createPaymentProviderData(rs);
+		else if (clazz.equals(PlannedServices.class))
+			return createPlannedServicesData(rs);
+		else if (clazz.equals(TreatmentPlans.class))
+			return createTreatmentPlansData(rs);
+		else if (clazz.equals(TreatmentPlanItems.class))
+			return createTreatmentPlanItemsData(rs);
+		else if (clazz.equals(Employer.class))
+			return createEmployerData(rs);
+		else if (clazz.equals(Provider.class))
+			return createProviderData(rs);
+		
 		return null;
 	}
 
@@ -47,7 +64,8 @@ public class PrepairESDataFromFromResultSet {
 			while (rs.next()) {
 				chairs = new Chairs();
 				// chairs.
-				chairs.setPatientId(rs.getInt("patient_id"));
+				//chairs.setPatientId(rs.getInt("patient_id"));
+				chairs.setChairNum(rs.getInt("chair_num"));
 				chairs.setChairName(rs.getString("chair_name"));
 				chairs.setSunTempId(rs.getInt("sun_temp_id"));
 				chairs.setMonTempId(rs.getInt("mon_temp_id"));
@@ -76,7 +94,7 @@ public class PrepairESDataFromFromResultSet {
 			while (rs.next()) {
 				payType = new PayType();
 				// chairs.
-				payType.setPayTypId(rs.getInt("paytype_id"));
+				payType.setPayTypeId(rs.getInt("paytype_id"));
 				payType.setSequence(rs.getInt("sequence"));
 				payType.setDescription(rs.getString("description"));
 				payType.setPrompt(rs.getString("prompt"));
@@ -344,6 +362,7 @@ public class PrepairESDataFromFromResultSet {
 				p.setPracticeId(rs.getInt("practice_id"));
 				p.setProcedureTypeCodes(rs.getString("procedure_type_codes"));
 				p.setBalance(rs.getDouble("balance"));
+				cList.add(p);
 			}
 		} catch (Exception n) {
 			n.printStackTrace();
@@ -408,7 +427,7 @@ public class PrepairESDataFromFromResultSet {
 		return cList;
 	}
 
-	private List<Provider> createProvidersData(ResultSet rs) {
+	private List<Provider> createProviderData(ResultSet rs) {
 
 		List<Provider> cList = new ArrayList<>();
 		Provider p = null;
@@ -559,6 +578,7 @@ public class PrepairESDataFromFromResultSet {
 		PlannedServices p = null;
 		try {
 			while (rs.next()) {
+				p= new PlannedServices();
 				p.setApptGroup(rs.getInt("appt_group"));
 				p.setApptId(rs.getInt("appt_id"));
 				p.setCompletionDate(rs.getDate("completion_date"));
@@ -702,7 +722,7 @@ public class PrepairESDataFromFromResultSet {
 		try {
 			while (rs.next()) {
 				p = new Appointment();
-				p.setAppointmentId(rs.getString("appointment_id"));
+				p.setAppointmentId(rs.getInt("appointment_id"));
 				p.setDescription(rs.getString("description"));
 				p.setAlldayEvent(rs.getBoolean("allday_event"));
 				p.setStartTime(rs.getDate("start_time"));

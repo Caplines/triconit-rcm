@@ -17,7 +17,7 @@ public class ReplicationDBTask {
 
 	@Autowired
 	AppLogger appLogger;
-	
+
 	@Autowired
 	ReplicationService replicationService;
 
@@ -26,14 +26,15 @@ public class ReplicationDBTask {
 	@Scheduled(cron = "${scheduler.startcron}")
 	public void runReplication() {
 
-		Object[] o= appLogger.createNewLogFile();
-		appLogger.appendStream("Logger Started",(BufferedWriter) o[0]);
-		appLogger.closeBuffer((BufferedWriter) o[0], (FileWriter) o[1]);
-		log.info("Replication", "Started");
-		replicationService.startReplication((BufferedWriter) o[0]);
-		
-		
-		
-		
+		Object[] o = appLogger.createNewLogFile();
+		try {
+			appLogger.appendStream("Logger Started", (BufferedWriter) o[0], true);
+			log.info("Replication", "Started");
+			replicationService.startReplication((BufferedWriter) o[0]);
+		} finally {
+			appLogger.closeBuffer((BufferedWriter) o[0], (FileWriter) o[1]);
+
+		}
+
 	}
 }

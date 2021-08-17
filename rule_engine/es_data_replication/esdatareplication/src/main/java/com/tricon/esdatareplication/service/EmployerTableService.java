@@ -48,7 +48,7 @@ public class EmployerTableService {
 
 	}
 
-	public void saveDataToLocalDB(List<?> data, boolean checkExisting) {
+	public void saveDataToLocalDB(BufferedWriter bw,List<?> data, boolean checkExisting) {
 
 		if (!checkExisting)
 			employerRespository.saveAll((List<Employer>) data);
