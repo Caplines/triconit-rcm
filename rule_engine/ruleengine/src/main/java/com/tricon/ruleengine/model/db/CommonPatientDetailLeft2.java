@@ -306,6 +306,14 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "waiting_period_duration", length = 30)
 	private String waitingPeriodDuration;
 	
+	@Column(name = "d0350", length = 30)
+	private String d0350;
+
+	@Column(name = "d1330", length = 30)
+	private String d1330;
+
+	@Column(name = "d2930", length = 30)
+	private String d2930;
 
 	public String getNpi() {
 		return npi;
@@ -1076,6 +1084,31 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 		this.waitingPeriodDuration = waitingPeriodDuration;
 	}
 
+	public String getD0350() {
+		return d0350;
+	}
 
+	public void setD0350(String d0350) {
+		this.d0350 = d0350;
+	}
+
+	public String getD1330() {
+		return d1330;
+	}
+
+	public void setD1330(String d1330) {
+		this.d1330 = d1330;
+	}
+
+	public String getD2930() {
+		return d2930;
+	}
+
+	public void setD2930(String d2930) {
+		this.d2930 = d2930;
+	}
+
+
+	
 }
 

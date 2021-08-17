@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
@@ -14,6 +16,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
+import org.springframework.orm.hibernate5.HibernateSystemException;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.PatientDao;
@@ -112,10 +115,11 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " d7472 as d7472, d7472fr as d7472fr,d7280 as d7280,d7280fr as d7280fr,d7282 as d7282,d7282fr as d7282fr,"
 			+ " d7283 as d7283,d7283fr as d7283fr,d7952 as d7952,d7952fr as d7952fr,d7285 as d7285,d7285fr as d7285fr,"
 			+ " d6114 as d6114,d6114fr as d6114fr,d5860 as d5860,d5860fr as d5860fr, d5110 as d5110,d5110fr as d5110fr,"
-			+ " d5130 as d5130,d5130fr as d5130fr,d0140 as d0140,s_remarks as sRemarks,m_policy as mPolicy ,m_mip as mMIP,es_bcbs as esBcbs,obtain_mpn as obtainMPN,waiting_period_duration as waitingPeriodDuration ";
+			+ " d5130 as d5130,d5130fr as d5130fr,d0140 as d0140,s_remarks as sRemarks,m_policy as mPolicy ,m_mip as mMIP,es_bcbs as esBcbs,obtain_mpn as obtainMPN,waiting_period_duration as waitingPeriodDuration, "
+			+ " d0350 as d0350,d1330 as d1330,d2930 as d2930 ";
 	
 	@Override
-	public Patient checkforPatientWithIdAndOffice(String patientid, Office off,Patient patH) {
+	public Patient checkforPatientWithIdAndOffice(String patientid, Office off,Patient patH,boolean chekcforException) {
 
 		Session session = getSession();
 		Patient pat = null;
@@ -137,13 +141,47 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			}
             */
 			pat = (Patient) criteria.uniqueResult();
-			
-		} finally {
+		}catch(HibernateException e){
+			closeSession(session);
+			if (chekcforException && e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")) {
+				
+				pat =checkForDuplicatePatDetials2(patientid,off,patH,false,e.getMessage().split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0].split("More than one row with the given identifier was found: ")[1]);
+			}
+		}catch(Exception e){
+		}
+		finally {
 			closeSession(session);
 		}
 		return pat;
 	}
 
+	private Patient checkForDuplicatePatDetials2(String patientid, Office off,Patient patH,boolean chekcforException,String patDetailId) {
+		Session session = getSession();
+
+		try {
+			String q="select id from patient_detail_2  where patient_detail_id="+patDetailId;
+			List<Integer>pats = session.createSQLQuery(q).list();
+			int id=-100;
+			
+		if (pats.size()==2) {
+		for(Integer two:pats) {
+			id= two.intValue();
+			break;
+		}
+		String query="delete from patient_detail_2 where id="+id;
+		session.createSQLQuery(query).executeUpdate();
+		closeSession(session);
+		return checkforPatientWithIdAndOffice(patientid,off,patH,false) ;
+		}else return null;
+		}catch(Exception n) {
+			n.printStackTrace();
+		}finally {
+			closeSession(session);
+		}
+	   return null;	
+		
+	}
+	
 	@Override
 	public PatientHistory getPatientHistory(String patientid, Office off) {
 		// TODO Auto-generated method stub

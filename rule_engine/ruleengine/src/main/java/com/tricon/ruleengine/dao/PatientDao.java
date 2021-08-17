@@ -17,7 +17,7 @@ import com.tricon.ruleengine.model.db.User;
 public interface PatientDao {
 	
 	
-	public Patient checkforPatientWithIdAndOffice(String patientid, Office off, Patient pat);
+	public Patient checkforPatientWithIdAndOffice(String patientid, Office off, Patient pat,boolean checkforException);
 	public PatientHistory getPatientHistory(String patientid, Office off);
 	public PatientDetail getPatientDetails(String patientid, Office off);
 	

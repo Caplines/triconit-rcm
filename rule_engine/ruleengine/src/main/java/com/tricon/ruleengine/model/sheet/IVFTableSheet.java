@@ -321,6 +321,9 @@ public class IVFTableSheet {
 	private String esBcbs;
 	private String obtainMPN;
 	private String waitingPeriodDuration;
+	private String d0350;
+	private String d1330;
+	private String d2930;
 
 
     public String getsRemarks() {
@@ -2220,6 +2223,24 @@ public class IVFTableSheet {
 	}
 	public void setWaitingPeriodDuration(String waitingPeriodDuration) {
 		this.waitingPeriodDuration = waitingPeriodDuration;
+	}
+	public String getD0350() {
+		return d0350;
+	}
+	public void setD0350(String d0350) {
+		this.d0350 = d0350;
+	}
+	public String getD1330() {
+		return d1330;
+	}
+	public void setD1330(String d1330) {
+		this.d1330 = d1330;
+	}
+	public String getD2930() {
+		return d2930;
+	}
+	public void setD2930(String d2930) {
+		this.d2930 = d2930;
 	}
 	
 		

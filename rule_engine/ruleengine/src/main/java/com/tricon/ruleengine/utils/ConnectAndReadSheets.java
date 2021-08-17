@@ -211,7 +211,7 @@ public class ConnectAndReadSheets {
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(sh.getStatusDump())));
 				requests.add(new Request()
 						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(sh.getRowCounter()+1)
-								.setColumnIndex(174))
+								.setColumnIndex(177))
 								.setRows(Arrays.asList(new RowData().setValues(values)))
 								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
 			}
@@ -1277,6 +1277,21 @@ public class ConnectAndReadSheets {
 					}
 					try {
 						vif.setFreqD2934(obj.get(++x));//Freq D2934
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD0350(obj.get(++x));//D0350 Percent
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD1330(obj.get(++x));//D1330 Percent
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD2930(obj.get(++x));//D2930 Percent
 					}catch (Exception e) {
 						continue;
 					}

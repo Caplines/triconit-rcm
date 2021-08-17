@@ -2193,11 +2193,29 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			list.addAll(dtoRL);
 
 		}
-
+		
+      
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_67,
 				Constants.rule_log_debug, bw);
 		// END "Percentage Coverage Check"
+		
+		// RULE_ID_77 "Waiting Period Checks(OS)"
+		
+		rule = getRulesFromList(rules, Constants.RULE_ID_74);
+		dtoRL = rb.Rule74(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
 
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_74,
+				Constants.rule_log_debug, bw);
+        
+		// END "Waiting Period Checks(OS)"
 
   }
 

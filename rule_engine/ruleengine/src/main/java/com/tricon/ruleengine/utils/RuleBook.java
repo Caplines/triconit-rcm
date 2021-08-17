@@ -2876,6 +2876,206 @@ public class RuleBook {
 
 	}
 
+	// Waiting Period Checks(os) 
+	public List<TPValidationResponseDto> Rule74(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
+			Rules rule, List<Mappings> mappings, BufferedWriter bw,int userType) {
+
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_74,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		String eff = ivf.getPlanEffectiveDate();
+		String waitb = ivf.getBasicWaitingPeriod();
+		String waitPd = ivf.getWaitingPeriodDuration();
+		if (waitPd==null) waitPd="";
+		String inv=Constants.invalidStr_TP;
+		//boolean insZero=true;
+		if (userType==Constants.userType_CL) {
+			//insZero=false;
+			inv=Constants.invalidStr_Cl;
+		}
+        Set<String> issueCodes= new HashSet<>();
+		RuleEngineLogger.generateLogs(clazz, "getPlanEffectiveDate-" + eff, Constants.rule_log_debug, bw);
+		RuleEngineLogger.generateLogs(clazz, "getBasicWaitingPeriod-" + waitb, Constants.rule_log_debug, bw);
+		RuleEngineLogger.generateLogs(clazz, "getWaitingPeriodDuration-" + waitPd, Constants.rule_log_debug, bw);
+		//waitb = waitb.toLowerCase().replace("mo", "");
+		waitPd = waitPd.toLowerCase().replace("mo", "").trim();
+        
+		Date effD = null;
+		Date dos = null;
+		List<TPValidationResponseDto> d = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
+		try {
+			if (tpList == null) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						Constants.errorMessOPen + inv + Constants.errorMessClose,
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				return d;
+			}
+			boolean pass = true;
+			try {
+				DateUtils.CheckForStringInDate(eff);
+				effD = Constants.SIMPLE_DATE_FORMAT_IVF.parse(eff);
+				if (!waitPd.trim().equalsIgnoreCase("") && !waitPd.trim().equalsIgnoreCase("no"))
+					Integer.parseInt(waitPd);
+
+			} catch (RuleEngineDateException e) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule1.error.message.date", new Object[] { eff }, locale),
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				return d;
+			} catch (Exception e) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.error.message",
+								new Object[] { "(" + waitb + ")(" + waitPd + ")(" + effD + ")" }, locale),
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				return d;
+			}
+			for (Object obj : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
+						Constants.rule_log_debug, bw);
+					
+				//if (insZero && (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+				//	||	tp.getEstInsurance().equals("0.0"))) continue;
+
+				try {
+					DateUtils.CheckForStringInDate(tp.getCdDetails().getDateLastUpdated());
+					dos = Constants.SIMPLE_DATE_FORMAT.parse(tp.getCdDetails().getDateLastUpdated());
+				} catch (RuleEngineDateException e) {
+					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule1.error.message.date",
+									new Object[] { tp.getCdDetails().getDateLastUpdated() }, locale),
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+					return d;
+				} catch (ParseException e) {
+					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule1.error.message.date",
+									new Object[] { tp.getCdDetails().getDateLastUpdated() }, locale),
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+					return d;
+				}
+				//Mappings map = getMappingFromListWaiting(mappings, tp.getServiceCode());
+				//RuleEngineLogger.generateLogs(clazz, "Service Code check in Mapping -" + tp.getServiceCode(),
+				//		Constants.rule_log_debug, bw);
+
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
+					int wt = 0;
+					if (waitb.equalsIgnoreCase("no")|| waitb.equalsIgnoreCase("na") ) {
+						continue;
+					}
+					wt = Integer.parseInt(waitPd);
+					RuleEngineLogger.generateLogs(clazz, "DOS " + dos, Constants.rule_log_debug, bw);
+
+					Calendar nextAvailbleDate = new GregorianCalendar();
+					nextAvailbleDate.setTime(effD);
+					nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR), nextAvailbleDate.get(Calendar.MONTH) + wt,
+							nextAvailbleDate.get(Calendar.DATE));
+					RuleEngineLogger.generateLogs(clazz, "Next Date Available-" + nextAvailbleDate.getTime(),
+							Constants.rule_log_debug, bw);
+
+					RuleEngineLogger.generateLogs(clazz, "WAIT -" + wt, Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "LAST UPDATED DATE-- " + dos, Constants.rule_log_debug, bw);
+					Date x = nextAvailbleDate.getTime();
+					if (x.compareTo(dos) >= 0) {
+						
+						pass = false;
+						if (!tp.getServiceCode().equalsIgnoreCase("D0140"))issueCodes.add(tp.getServiceCode().toUpperCase());
+						/*d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule74.error.message",
+										new Object[] { waitb, waitPd, tp.getServiceCode(), eff, dos }, locale),
+								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));*/
+					}
+
+				
+			}
+			if (!pass) {
+				//check all IVF CODES
+				
+				addCodeinSet(ivf.getD7210(),"D7210", issueCodes);
+				addCodeinSet(ivf.getD7220(),"D7220", issueCodes);
+				addCodeinSet(ivf.getD7230(),"D7230", issueCodes);
+				addCodeinSet(ivf.getD7240(),"D7240", issueCodes);
+				addCodeinSet(ivf.getD7250(),"D7250", issueCodes);
+				addCodeinSet(ivf.getD7310(),"D7310", issueCodes);
+				addCodeinSet(ivf.getD7311(),"D7311", issueCodes);
+				addCodeinSet(ivf.getD7320(),"D7320", issueCodes);
+				addCodeinSet(ivf.getD7321(),"D7321", issueCodes);
+				addCodeinSet(ivf.getD7473(),"D7473", issueCodes);
+				addCodeinSet(ivf.getD7472(),"D7472", issueCodes);
+				addCodeinSet(ivf.getD7280(),"D7280", issueCodes);
+				addCodeinSet(ivf.getD7282(),"D7282", issueCodes);
+				addCodeinSet(ivf.getD7283(),"D7283", issueCodes);
+				addCodeinSet(ivf.getD7285(),"D7285", issueCodes);
+				addCodeinSet(ivf.getD7952(),"D7952", issueCodes);
+				addCodeinSet(ivf.getNitrousD9230Percentage(),"D9230", issueCodes);
+				addCodeinSet(ivf.getiVSedationD9248Percentage(),"D9248", issueCodes);
+				addCodeinSet(ivf.getD9239(),"D9239", issueCodes);
+				addCodeinSet(ivf.getiVSedationD9243Percentage(),"D9243", issueCodes);
+				addCodeinSet(ivf.getD4263(),"D4263", issueCodes);
+				addCodeinSet(ivf.getD4264(),"D4264", issueCodes);
+				addCodeinSet(ivf.getD6104(),"D6104", issueCodes);
+				addCodeinSet(ivf.getD7953(),"D7953", issueCodes);
+				addCodeinSet(ivf.getD3310(),"D3310", issueCodes);
+				addCodeinSet(ivf.getD3320(),"D3320", issueCodes);
+				addCodeinSet(ivf.getD3330(),"D3330", issueCodes);
+				addCodeinSet(ivf.getD3346(),"D3346", issueCodes);
+				addCodeinSet(ivf.getD3347(),"D3347", issueCodes);
+				addCodeinSet(ivf.getD3348(),"D3348", issueCodes);
+				addCodeinSet(ivf.getImplantCoverageD6010Percentage(),"D6010", issueCodes);
+				addCodeinSet(ivf.getImplantCoverageD6057Percentage(),"D6057", issueCodes);
+				addCodeinSet(ivf.getD6058(),"D6058", issueCodes);
+				addCodeinSet(ivf.getImplantCoverageD6190Percentage(),"D6190", issueCodes);
+				addCodeinSet(ivf.getD6114(),"D6114", issueCodes);
+				addCodeinSet(ivf.getCrownLengthD4249Percentage(),"D4249", issueCodes);
+				addCodeinSet(ivf.getD7951(),"D7951", issueCodes);
+				addCodeinSet(ivf.getD9310Percentage(),"D9310", issueCodes);
+				addCodeinSet(ivf.getD4266(),"D4266", issueCodes);
+				addCodeinSet(ivf.getD4267(),"D4267", issueCodes);
+				addCodeinSet(ivf.getsRPD4341Percentage(),"D4341", issueCodes);
+				addCodeinSet(ivf.getD4273(),"D4273", issueCodes);
+				addCodeinSet(ivf.getImplantSupportedPorcCeramicD6065Percentage(),"D6065", issueCodes);
+				addCodeinSet(ivf.getD7251(),"D7251", issueCodes);
+				addCodeinSet(ivf.getD5110(),"D5110", issueCodes);
+				addCodeinSet(ivf.getD5130(),"D5130", issueCodes);
+				addCodeinSet(ivf.getD5860(),"D5860", issueCodes);
+				
+				if (issueCodes.size()>0) {
+					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+				
+						messageSource.getMessage("rule74.error.message",
+								new Object[] { waitPd, String.join(", ", issueCodes), eff }, locale),
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				}
+				else {
+					pass=true;
+				}
+				
+			}
+			if (pass)
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), 
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+		} catch (Exception x) {
+
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+
+		}
+		return d;
+
+	}
+
+	private void addCodeinSet(String v,String key,Set<String> set) {
+		
+		if (v!=null) set.add(key);
+		
+	}
 	// Missing Tooth Clause
 	public List<TPValidationResponseDto> Rule18(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
 			Rules rule, List<Mappings> mappings, BufferedWriter bw,int userType) {
@@ -3571,6 +3771,28 @@ public class RuleBook {
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("P2391", dL);
+			
+			//Email Princy 21 June 2021
+			addInMapForFrequencyLimiation("D2140", "PostComposites_D2391_FL", ivf.getPostCompositesD2391FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D2150", "PostComposites_D2391_FL", ivf.getPostCompositesD2391FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D2160", "PostComposites_D2391_FL", ivf.getPostCompositesD2391FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D2161", "PostComposites_D2391_FL", ivf.getPostCompositesD2391FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D2791", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D2792", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D2751", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D2752", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6240", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6241", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6242", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6750", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6751", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6752", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6740", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6245", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6791", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D6792", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D2790", "Crowns_D2750_D2740_FL", ivf.getCrownsD2750D2740FL(), mapFlIVF);
+			
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2392", "PostComposites_D2391_FL",
 					ivf.getPostCompositesD2391FL(), 0, 0,"");
@@ -3944,6 +4166,29 @@ public class RuleBook {
 					List<ServiceCodeIvfTimesFreqFieldDto> D5110 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D5130 = null;
 					
+					List<ServiceCodeIvfTimesFreqFieldDto> D2140 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D2150 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D2160 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D2161 = null;
+					
+					List<ServiceCodeIvfTimesFreqFieldDto> D2740 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D2750 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D2791 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D2792 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D2751 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D2752 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6240 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6241 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6242 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6750 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6751 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6752 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6740 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6245 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6791 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D6792 = null;
+					List<ServiceCodeIvfTimesFreqFieldDto> D2790 = null;
+					
 					
 					List<ServiceCodeIvfTimesFreqFieldDto> RestC12 = null;
 
@@ -4060,7 +4305,94 @@ public class RuleBook {
 							if (D5130 == null)
 								D5130 = new ArrayList<>();
 							D5130.add(d);
+						} else if (d.getServiceCode().equals("D2140")) {
+							if (D2140 == null)
+								D2140 = new ArrayList<>();
+							D2140.add(d);
+						} else if (d.getServiceCode().equals("D2150")) {
+							if (D2150 == null)
+								D2150 = new ArrayList<>();
+							D2150.add(d);
+						} else if (d.getServiceCode().equals("D2160")) {
+							if (D2160 == null)
+								D2160 = new ArrayList<>();
+							D2160.add(d);
+						} else if (d.getServiceCode().equals("D2740")) {
+							if (D2740 == null)
+								D2740 = new ArrayList<>();
+							D2740.add(d);
+						} else if (d.getServiceCode().equals("D2750")) {
+							if (D2750 == null)
+								D2750 = new ArrayList<>();
+							D2750.add(d);
+						} else if (d.getServiceCode().equals("D2161")) {
+							if (D2161 == null)
+								D2161 = new ArrayList<>();
+							D2161.add(d);
+						} else if (d.getServiceCode().equals("D2791")) {
+							if (D2791 == null)
+								D2791 = new ArrayList<>();
+							D2791.add(d);
+						} else if (d.getServiceCode().equals("D2792")) {
+							if (D2792 == null)
+								D2792 = new ArrayList<>();
+							D2792.add(d);
+						} else if (d.getServiceCode().equals("D2751")) {
+							if (D2751 == null)
+								D2751 = new ArrayList<>();
+							D2751.add(d);
+						} else if (d.getServiceCode().equals("D2752")) {
+							if (D2752 == null)
+								D2752 = new ArrayList<>();
+							D2752.add(d);
+						} else if (d.getServiceCode().equals("D6240")) {
+							if (D6240 == null)
+								D6240 = new ArrayList<>();
+							D6240.add(d);
+						} else if (d.getServiceCode().equals("D6241")) {
+							if (D6241 == null)
+								D6241 = new ArrayList<>();
+							D6241.add(d);
+						} else if (d.getServiceCode().equals("D6242")) {
+							if (D6242 == null)
+								D6242 = new ArrayList<>();
+							D6242.add(d);
+						} else if (d.getServiceCode().equals("D6750")) {
+							if (D6750 == null)
+								D6750 = new ArrayList<>();
+							D6750.add(d);
+						} else if (d.getServiceCode().equals("D6751")) {
+							if (D6751 == null)
+								D6751 = new ArrayList<>();
+							D6751.add(d);
+						} else if (d.getServiceCode().equals("D6752")) {
+							if (D6752 == null)
+								D6752 = new ArrayList<>();
+							D6752.add(d);
+						} else if (d.getServiceCode().equals("D6740")) {
+							if (D6740 == null)
+								D6740 = new ArrayList<>();
+							D6740.add(d);
+						} else if (d.getServiceCode().equals("D6245")) {
+							if (D6245 == null)
+								D6245 = new ArrayList<>();
+							D6245.add(d);
+						}if (d.getServiceCode().equals("D6791")) {
+							if (D6791 == null)
+								D6791 = new ArrayList<>();
+							D6791.add(d);
+						} else if (d.getServiceCode().equals("D6792")) {
+							if (D6792 == null)
+								D6792 = new ArrayList<>();
+							D6792.add(d);
+						} else if (d.getServiceCode().equals("D2790")) {
+							if (D2790 == null)
+								D2790 = new ArrayList<>();
+							D2790.add(d);
 						}
+						
+						
+						
 					} // For Loop d:li
 						// Alike code
 					if (D1206 != null && D1208 != null) {
@@ -4117,9 +4449,12 @@ public class RuleBook {
 						}
 					}
 
-					//
-					if (D2391 != null || M2391 != null || P2391 != null) {
-						Object[] m = FreqencyUtils.getError(D2391, M2391, P2391, "D2391", "M2391", "P2391", tooth);
+					//https://docs.google.com/document/d/1SwZG-VVuarmDucBx4h9xG-dt-El8V6Dghj3aBojLtDU/edit#
+					if (D2391 != null || M2391 != null || P2391 != null  || D2140 !=null ||
+						D2150 != null || D2160 != null || D2161 != null ||	
+						D2392 != null || D2393 != null || D2394!=null) {
+						Object[] m = FreqencyUtils.getError(D2391, M2391, P2391,D2140,D2150,D2160,D2161,D2392,D2393,D2394, "D2391", "M2391", "P2391",
+								"D2140","D2150","D2160","D2161","D2392","D2393","D2394", tooth,0,false);
 						if (m != null) {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
@@ -4130,8 +4465,11 @@ public class RuleBook {
 						}
 					}
 
-					if (D2392 != null || M2392 != null || P2392 != null) {
-						Object[] m = FreqencyUtils.getError(D2392, M2392, P2392, "D2392", "M2392", "P2392", tooth);
+					if (D2392 != null || M2392 != null || P2392 != null  || D2140 !=null ||
+						D2150 != null || D2160 != null || D2161 != null ||	D2391 !=null ||
+						D2393 != null || D2394!=null) {
+						Object[] m = FreqencyUtils.getError(D2392, M2392, P2392,D2140,D2150,D2160,D2161,D2391,D2393,D2394, "D2392", "M2392", "P2392",
+								"D2140","D2150","D2160","D2161","D2391","D2393","D2394",tooth,0,false);
 						if (m != null) {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
@@ -4141,8 +4479,11 @@ public class RuleBook {
 
 						}
 					}
-					if (D2393 != null || M2393 != null || P2393 != null) {
-						Object[] m = FreqencyUtils.getError(D2393, M2393, P2393, "D2393", "M2393", "P2393", tooth);
+					if (D2393 != null || M2393 != null || P2393 != null  || D2140 !=null ||
+							D2150 != null || D2160 != null || D2161 != null ||	D2391 !=null ||
+							D2392 != null || D2394!=null) {
+						Object[] m = FreqencyUtils.getError(D2393, M2393, P2393,D2140,D2150,D2160,D2161,D2391,D2392,D2394, "D2393", "M2393", "P2393",
+								"D2140","D2150","D2160","D2161","D2391","D2392","D2394",tooth,0,false);
 						if (m != null) {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
@@ -4152,8 +4493,11 @@ public class RuleBook {
 
 						}
 					}
-					if (D2394 != null || M2394 != null || P2394 != null) {
-						Object[] m = FreqencyUtils.getError(D2394, M2394, P2394, "D2394", "M2394", "P2394", tooth);
+					if (D2394 != null || M2394 != null || P2394 != null  || D2140 !=null ||
+							D2150 != null || D2160 != null || D2161 != null ||	D2391 !=null ||
+							D2392 != null || D2393 != null) {
+						Object[] m = FreqencyUtils.getError(D2394, M2394, P2394,D2140,D2150,D2160,D2161,D2391,D2392,D2393, "D2394", "M2394", "P2394",
+								"D2140","D2150","D2160","D2161","D2391","D2392","D2393",tooth,0,false);
 						if (m != null) {
 							pass = false;
 							FreqencyUtils.addToFailedSet(failedCodeSet, m);
@@ -4171,6 +4515,24 @@ public class RuleBook {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule21.error.message", m, locale),
 									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+						}
+					}
+					
+					if (D2740 != null || D2750 != null || D2791!=null ||  D2792 != null  || D2751 !=null ||
+							D2752 != null || D6240 != null || D6241 != null ||	D6242 !=null ||
+							D6750 != null || D6751 != null || D6752 != null ||  D6740 != null || 
+							D6245 != null || D6791 != null || D6792 != null || D2790 != null ) {
+						Object[] m = FreqencyUtils.getError(D2740, D2750, D2791, D2792,D2751,D2752,D6240,D6241,D6242
+								,D6750,D6751,D6752,D6740,D6245,D6791,D6792,D2790,"D2740", "D2750", "D2791", "D2792","D2751",
+								"D2752","D6240","D6241","D6242"
+								,"D6750","D6751","D6752","D6740","D6245","D6791","D6792","D2790",tooth,0,false);
+						if (m != null) {
+							pass = false;
+							FreqencyUtils.addToFailedSet(failedCodeSet, m);
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule21.error.message", m, locale), 
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+
 						}
 					}
 					// if (pass) {
@@ -11569,12 +11931,16 @@ public class RuleBook {
 		//age[0]=5;
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_68,
 				Constants.rule_log_debug, bw);
-		
+		boolean checkfor36monthlogic=true;
 	   	for(SealantEligibilityRule ser:sealantEligibilityRules) {
 				
 		  if (iv){
 	   		     if (ser.getInsuranceName().toLowerCase().equals(ivf.getInsName().toLowerCase())){
 	   		    	teethCovered.add(ser.getCoveredToothNo());
+	   		    	if (ser.getInsuranceName().equalsIgnoreCase("DentaQuest - Chip") || ser.getInsuranceName().equalsIgnoreCase("MCNA - CHIP")
+	   		    		||ser.getInsuranceName().equalsIgnoreCase("United Healthcare - Chip")) {
+	   		    		checkfor36monthlogic=false;
+	   		    	}
 				}
 		  }else {
 			  if (ser.getPlanName().toLowerCase().equals(ivf.getPlanType().toLowerCase())){
@@ -11715,6 +12081,7 @@ public class RuleBook {
 				
 				
 				// If all codes found are D1351 or D1352 THEN check when D1351/D1352 were done
+				//as per telephonic call--> is insurance has chip in end then no need to check for 36 month jsit make not eligible..
 				Set<String> cD1351D1352= new TreeSet<>();
 				for (Map.Entry<String, List<ToothHistoryDto>> entry : map.entrySet()) {
 					if (mapSealantE.get(entry.getKey()).booleanValue()==true) continue; 
@@ -11735,7 +12102,11 @@ public class RuleBook {
 					for(ToothHistoryDto d:l) {
 						String code=d.getHistoryCode();
 						if (!(code.contains("D1351") || code.contains("D1352"))) continue;
-						if (!DateUtils.checkforXmSealant(Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos()),36)) {
+						if (!checkfor36monthlogic) {
+							  teethNotCoveredFreq.add(d.getHistoryTooth());
+								
+						}
+						else if (!DateUtils.checkforXmSealant(Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos()),36)) {
 							 
 							  pass=false;
 							  teethNotCoveredFreq.add(d.getHistoryTooth());
@@ -11744,148 +12115,7 @@ public class RuleBook {
 							 }
 						}
 				}
-				
-               /*
-				//System.out.println("dddd-"+ivf.getiVFHistorySheetList().size());
-				for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
-					String hc = "getHistoryCode";
-					String hd = "getHistoryDOS";
-					String ht = "getHistoryTooth";
-					String hs = "getHistorySurface";
-					Method hcm = c2.getMethod(hc);
-					Method htm = c2.getMethod(ht);
-					Method hdm = c2.getMethod(hd);
-					Method hss = c2.getMethod(hs);	
-					String code = (String) hcm.invoke(hisShee);
-					String dt = (String) hdm.invoke(hisShee);
-					String th = (String) htm.invoke(hisShee);
-					
-					if (code.equals("")) continue ;
-					if (dt.equals("")) continue ;
-					//case 1 Sealant not Eligible .
-					if (!(code.toLowerCase().startsWith("d0") || code.equalsIgnoreCase("D1351") || code.equalsIgnoreCase("D1352"))) {
-						caseNo=0;
-						pass=false;
-						if (th!=null && !th.equals("")) teethNotCoveredFreq.add(th);
-						
-						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule68.error.message2", new Object[] {code,dt,th }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
-						}
-					
-				}
-				*/
-				/*
-				if (caseNo==0) {
-					//If all codes found are D0XXX THEN Sealant is Eligible
-					boolean elg=true;
-					for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
-						String hc = "getHistoryCode";
-						String hd = "getHistoryDOS";
-						String ht = "getHistoryTooth";
-						String hs = "getHistorySurface";
-						Method hcm = c2.getMethod(hc);
-						Method htm = c2.getMethod(ht);
-						Method hdm = c2.getMethod(hd);
-						Method hss = c2.getMethod(hs);	
-						String code = (String) hcm.invoke(hisShee);
-						String dt = (String) hdm.invoke(hisShee);
-						String th = (String) htm.invoke(hisShee);
-						if (code.equals("")) continue ;
-						if (code.equals("")) continue ;
-						if (th.equals("")) continue ;
-						//case 2 Sealant Eligible .
-						if (!code.toLowerCase().startsWith("d0")) {
-							//caseNo=2;
-							elg=false;
-							//if (th!=null && !th.equals(""))teethNotCoveredFreq.add(th);
-							//not eligible 
-						}else {
-							
-							
-						}
-						
-					}
-					if (!elg) {
-						caseNo=0;
-						//add all teeth as not Eligible
-						for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
-							String hc = "getHistoryCode";
-							String hd = "getHistoryDOS";
-							String ht = "getHistoryTooth";
-							String hs = "getHistorySurface";
-							Method hcm = c2.getMethod(hc);
-							Method htm = c2.getMethod(ht);
-							Method hdm = c2.getMethod(hd);
-							Method hss = c2.getMethod(hs);	
-							String code = (String) hcm.invoke(hisShee);
-							String dt = (String) hdm.invoke(hisShee);
-							String th = (String) htm.invoke(hisShee);
-							if (code.equals("")) continue ;
-							if (code.equals("")) continue ;
-							if (th.equals("")) continue ;
-							//case 2 Sealant Eligible .
-							teethNotCoveredFreq.add(th);
-							
-						}
-						
-					}
-				}//if caseNo==0 end
-				*/
-			/*	
-			   if (caseNo==0) {
-				  for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
-					String hc = "getHistoryCode";
-					String hd = "getHistoryDOS";
-					String ht = "getHistoryTooth";
-					String hs = "getHistorySurface";
-					Method hcm = c2.getMethod(hc);
-					Method htm = c2.getMethod(ht);
-					Method hdm = c2.getMethod(hd);
-					Method hss = c2.getMethod(hs);	
-					String code = (String) hcm.invoke(hisShee);
-					String dt = (String) hdm.invoke(hisShee);
-					String th = (String) htm.invoke(hisShee);
-					if (code.equals("")) continue ;
-					if (dt.equals("")) continue ;
-					//case 3 Sealant Eligible .
-					if (!(code.equalsIgnoreCase("D1351") || code.equalsIgnoreCase("D1352"))) {
-						caseNo=3;
-						//teethNotCoveredFreq.add(th);
-						//If all codes found are D1351 or D1352
-					}
-					
-				}
-				if (caseNo==3) {
-					//caseNo=3;
-					for (IVFHistorySheet hisShee: ivf.getiVFHistorySheetList()) {
-						String hc = "getHistoryCode";
-						String hd = "getHistoryDOS";
-						String ht = "getHistoryTooth";
-						String hs = "getHistorySurface";
-						Method hcm = c2.getMethod(hc);
-						Method htm = c2.getMethod(ht);
-						Method hdm = c2.getMethod(hd);
-						Method hss = c2.getMethod(hs);	
-						String code = (String) hcm.invoke(hisShee);
-						String dt = (String) hdm.invoke(hisShee);
-						String th = (String) htm.invoke(hisShee);
-						if (code.equals("")) continue ;
-						if (dt.equals("")) continue ;
-						//case 3 Sealant Eligible .
-							if (DateUtils.checkforXm(Constants.SIMPLE_DATE_FORMAT_IVF.parse(dt),36)) {
-								 
-							  pass=false;
-							  if (th!=null && !th.equals("")) teethNotCoveredFreq.add(th);
-							  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-											messageSource.getMessage("rule68.error.message3", new Object[] {code,dt,th }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
-							 }
-							
-						
-						
-					}
-				}
-			 }//if end case ==0
-			 */
+			
 			 if (dList.size()==0) {
 				//Sealant is Eligible
 				 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -12075,5 +12305,14 @@ public class RuleBook {
 						+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
 				locale), Constants.FAIL,"","",""));
 		return dList;
+	}
+	
+	private void addInMapForFrequencyLimiation(String code,String frequencyName,String frequency,Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVF) {
+		ServiceCodeIvfTimesFreqFieldDto scivftff = new ServiceCodeIvfTimesFreqFieldDto(code, frequencyName,
+				frequency, 0, 0,"");
+		List<ServiceCodeIvfTimesFreqFieldDto> dL = new ArrayList<>();
+		dL.add(scivftff);
+		mapFlIVF.put(code, dL);
+		
 	}
 }

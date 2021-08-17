@@ -196,11 +196,14 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+		finally {
 		try {
 			driver.close();
 			}catch (Exception e) {
 				// TODO: handle exception
 			}
+		
+		}
 		return eList;
 	}
 
@@ -215,6 +218,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		String id="7";//6 old 
 		
 		if (dob.equals("") ) return null;
+		if (zip==null) zip="";
 		if (subscriberId.equals("") &&  verifyLastName.equals("")) return null;
 		EligibilityDto dto= new EligibilityDto();
 		String[] dobA=dob.split("/");
@@ -386,7 +390,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		
 		Map<String, List<Object>> mapData=null;
 		List<Object> cc = new ArrayList<>();
-		cc.add(new MCNADentaSheet("","","","", "", "615286147", "11/26/2012", "mcna",0+""));//
+		cc.add(new MCNADentaSheet("","","","", "", "520549149", "01/25/2001", "mcna",0+""));//
 
 		mapData = new HashMap<>();
 		mapData.put("1", cc);
@@ -404,7 +408,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		//det.set
 		MCNAEligibilityScrappingServiceImpl x=new MCNAEligibilityScrappingServiceImpl(det, "E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files",
 				mapData, true,null,null,null,null,null);
-		//x.scrapSite( det, mapData);
+		x.scrapSite( det, mapData);
 		
 		
 		

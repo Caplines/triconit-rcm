@@ -3,6 +3,7 @@ package com.tricon.ruleengine.dto;
 import java.math.BigInteger;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -660,6 +661,10 @@ public class CaplineIVFFormDto {
     private Integer ivFormTypeId;
 	
     private String waitingPeriodDuration;
+	private String d0350;
+	private String d1330;
+	private String d2930;
+
     //END
     
     public String getFill1() {
@@ -3036,6 +3041,32 @@ public class CaplineIVFFormDto {
 
 	public void setWaitingPeriodDuration(String waitingPeriodDuration) {
 		this.waitingPeriodDuration = waitingPeriodDuration;
+	}
+
+	
+	
+	public String getD0350() {
+		return d0350;
+	}
+
+	public void setD0350(String d0350) {
+		this.d0350 = d0350;
+	}
+
+	public String getD1330() {
+		return d1330;
+	}
+
+	public void setD1330(String d1330) {
+		this.d1330 = d1330;
+	}
+
+	public String getD2930() {
+		return d2930;
+	}
+
+	public void setD2930(String d2930) {
+		this.d2930 = d2930;
 	}
 
 	private String commonReplaceMent(String d) {

@@ -986,6 +986,229 @@ public class FreqencyUtils {
 		return mess;
 	}
 
+
+	private static Object [] CustumErrorData(List<ServiceCodeIvfTimesFreqFieldDto> l,String s,int actualmax,Set<String> code,Set<String> codeH,int ct,int ti) {
+		Object c[] = FreqencyUtils.getCountTimeServiceCode(l, s,0);
+		if (!((String) c[5]).equals("")) {
+			code.add((String) c[5]);
+			codeH.add((String) c[8]);
+			
+		}
+
+		ct = ct + (Integer) c[0];
+		ti = (Integer) c[4];
+		if (ti > 0)
+			actualmax = ti;
+ 
+		 return c;
+	}
+	
+	private static void CustumErrorDataString(Set<String> dos,String fl,String fr,String sur,List<ServiceCodeIvfTimesFreqFieldDto> l,Object[] c) {
+
+		if (l != null) {
+			dos.add((String) c[2]);
+			fl = fl + " " + (String) c[3];
+			fr = fr + " " + (String) c[6];
+			sur = sur + " " + (String) c[7];
+	 }
+	}
+		
+	//currentCount ==0 for Frequency rules
+	public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1, List<ServiceCodeIvfTimesFreqFieldDto> l2,
+			List<ServiceCodeIvfTimesFreqFieldDto> l3, List<ServiceCodeIvfTimesFreqFieldDto> l4,
+			List<ServiceCodeIvfTimesFreqFieldDto> l5, List<ServiceCodeIvfTimesFreqFieldDto> l6,List<ServiceCodeIvfTimesFreqFieldDto> l7,
+			List<ServiceCodeIvfTimesFreqFieldDto> l8,List<ServiceCodeIvfTimesFreqFieldDto> l9,List<ServiceCodeIvfTimesFreqFieldDto> l10,
+			String s1, String s2,
+			String s3, String s4, String s5, String s6, String s7, String s8,String s9,String s10, String tooth,int currentCount,boolean humana) {
+		int ct = currentCount;
+		int ti = 0;
+		int actualmax = -1;
+		Object[] mess = null;
+		Set<String> code = new HashSet<>();
+		Set<String> codeH = new HashSet<>();
+		Object c1[] =CustumErrorData(l1, s1, actualmax, code, codeH, actualmax, ti);
+		Object c2[] =CustumErrorData(l2, s2 ,actualmax, code, codeH, actualmax, ti);
+		Object c3[] =CustumErrorData(l3, s3, actualmax, code, codeH, actualmax, ti);
+		Object c4[] =CustumErrorData(l4, s4, actualmax, code, codeH, actualmax, ti);
+		Object c5[] =CustumErrorData(l5, s5, actualmax, code, codeH, actualmax, ti);
+		Object c6[] =CustumErrorData(l6, s6, actualmax, code, codeH, actualmax, ti);
+		Object c7[] =CustumErrorData(l7, s7, actualmax, code, codeH, actualmax, ti);
+		Object c8[] =CustumErrorData(l8, s8, actualmax, code, codeH, actualmax, ti);
+		Object c9[] =CustumErrorData(l9, s9, actualmax, code, codeH, actualmax, ti);
+		Object c10[] =CustumErrorData(l10, s10, actualmax, code, codeH, actualmax, ti);
+		
+		
+		if ((actualmax > 0) && (ct > 0 && ct > actualmax)) {
+			Set<String> dos = new HashSet<>();
+			
+			String fl = "";
+			String fr = "";
+			String sur = "";
+
+			if (l1 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l1, c1);
+			}
+			if (l2 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l2, c2);
+
+			}
+			if (l3 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l3, c3);
+
+			}
+			if (l4 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l4, c4);
+
+			}
+			if (l5 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l5, c5);
+
+			}
+			if (l6 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l6, c6);
+
+			}
+			if (l7 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l7, c7);
+
+			}
+			if (l8 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l8, c8);
+
+			}
+			if (l9 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l9, c9);
+
+			}
+			if (l10 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l10, c10);
+
+			}
+	
+			// 3124 code ,TOOTH,DOS, TIMES
+			if (!sur.equals(""))
+				sur = "(" + sur + ")";
+			if (humana)mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,String.join(",", codeH) };
+			else mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,"" };
+
+		}
+		return mess;
+	}
+
+	public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1, List<ServiceCodeIvfTimesFreqFieldDto> l2,
+			List<ServiceCodeIvfTimesFreqFieldDto> l3, List<ServiceCodeIvfTimesFreqFieldDto> l4,
+			List<ServiceCodeIvfTimesFreqFieldDto> l5, List<ServiceCodeIvfTimesFreqFieldDto> l6,List<ServiceCodeIvfTimesFreqFieldDto> l7,
+			List<ServiceCodeIvfTimesFreqFieldDto> l8,List<ServiceCodeIvfTimesFreqFieldDto> l9,List<ServiceCodeIvfTimesFreqFieldDto> l10,
+			List<ServiceCodeIvfTimesFreqFieldDto> l11,List<ServiceCodeIvfTimesFreqFieldDto> l12,List<ServiceCodeIvfTimesFreqFieldDto> l13,
+			List<ServiceCodeIvfTimesFreqFieldDto> l14,List<ServiceCodeIvfTimesFreqFieldDto> l15,List<ServiceCodeIvfTimesFreqFieldDto> l16,
+			List<ServiceCodeIvfTimesFreqFieldDto> l17,
+			String s1, String s2,
+			String s3, String s4, String s5, String s6, String s7, String s8,String s9,String s10,String s11,String s12,
+			String s13,String s14,String s15,String s16,String s17,
+			String tooth,int currentCount,boolean humana) {
+		int ct = currentCount;
+		int ti = 0;
+		int actualmax = -1;
+		Object[] mess = null;
+		Set<String> code = new HashSet<>();
+		Set<String> codeH = new HashSet<>();
+		Object c1[] =CustumErrorData(l1, s1, actualmax, code, codeH, actualmax, ti);
+		Object c2[] =CustumErrorData(l2, s2 ,actualmax, code, codeH, actualmax, ti);
+		Object c3[] =CustumErrorData(l3, s3, actualmax, code, codeH, actualmax, ti);
+		Object c4[] =CustumErrorData(l4, s4, actualmax, code, codeH, actualmax, ti);
+		Object c5[] =CustumErrorData(l5, s5, actualmax, code, codeH, actualmax, ti);
+		Object c6[] =CustumErrorData(l6, s6, actualmax, code, codeH, actualmax, ti);
+		Object c7[] =CustumErrorData(l7, s7, actualmax, code, codeH, actualmax, ti);
+		Object c8[] =CustumErrorData(l8, s8, actualmax, code, codeH, actualmax, ti);
+		Object c9[] =CustumErrorData(l9, s9, actualmax, code, codeH, actualmax, ti);
+		Object c10[] =CustumErrorData(l10, s10, actualmax, code, codeH, actualmax, ti);
+		Object c11[] =CustumErrorData(l11, s11, actualmax, code, codeH, actualmax, ti);
+		Object c12[] =CustumErrorData(l12, s12, actualmax, code, codeH, actualmax, ti);
+		Object c13[] =CustumErrorData(l13, s13, actualmax, code, codeH, actualmax, ti);
+		Object c14[] =CustumErrorData(l14, s14, actualmax, code, codeH, actualmax, ti);
+		Object c15[] =CustumErrorData(l15, s15, actualmax, code, codeH, actualmax, ti);
+		Object c16[] =CustumErrorData(l16, s16, actualmax, code, codeH, actualmax, ti);
+		Object c17[] =CustumErrorData(l17, s17, actualmax, code, codeH, actualmax, ti);
+		
+		
+		if ((actualmax > 0) && (ct > 0 && ct > actualmax)) {
+			Set<String> dos = new HashSet<>();
+			
+			String fl = "";
+			String fr = "";
+			String sur = "";
+
+			if (l1 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l1, c1);
+			}
+			if (l2 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l2, c2);
+
+			}
+			if (l3 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l3, c3);
+
+			}
+			if (l4 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l4, c4);
+
+			}
+			if (l5 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l5, c5);
+
+			}
+			if (l6 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l6, c6);
+
+			}
+			if (l7 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l7, c7);
+
+			}
+			if (l8 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l8, c8);
+
+			}
+			if (l9 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l9, c9);
+
+			}
+			if (l10 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l10, c10);
+
+			}
+			if (l11 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l11, c11);
+			}
+			if (l12 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l12, c12);
+			}
+			if (l13 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l13, c13);
+			}
+			if (l14 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l14, c14);
+			}
+			if (l15 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l15, c15);
+			}
+			if (l16 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l16, c16);
+			}
+			if (l17 != null) {
+				CustumErrorDataString(dos, fl, fr, sur, l17, c17);
+			}
+	
+			// 3124 code ,TOOTH,DOS, TIMES
+			if (!sur.equals(""))
+				sur = "(" + sur + ")";
+			if (humana)mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,String.join(",", codeH) };
+			else mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,"" };
+
+		}
+		return mess;
+	}
+	
 	public static boolean checkforAlikeCodesNew1(String tpCodes, String historyCode) {
 		boolean alikecodepresent = false;
 		/*
