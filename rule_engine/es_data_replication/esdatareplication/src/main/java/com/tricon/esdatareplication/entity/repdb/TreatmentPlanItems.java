@@ -8,8 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
-import com.tricon.esdatareplication.entity.common.CommonTransactionsDetail;
 import com.tricon.esdatareplication.entity.common.CommonsTreatmentPlanItems;
 import com.tricon.esdatareplication.util.Constants;
 
@@ -18,7 +18,10 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = Constants.TABLE_TREATMENT_PLAN_ITEMS)
+@Table(name = Constants.TABLE_TREATMENT_PLAN_ITEMS , uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"line_number","patient_id","treatment_plan_id"})
+		})
+
 @EqualsAndHashCode(callSuper = true)
 public class TreatmentPlanItems extends CommonsTreatmentPlanItems implements Serializable{
 

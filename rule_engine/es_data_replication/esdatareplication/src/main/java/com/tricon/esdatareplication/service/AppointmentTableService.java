@@ -40,8 +40,6 @@ public class AppointmentTableService  extends CommonTableService{
 	@Autowired
 	private ESTableRepository estableRepository;
 
-	//@Autowired
-	//CommonTableService commonTableService;
 
 	@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
 	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
@@ -133,7 +131,7 @@ public class AppointmentTableService  extends CommonTableService{
 				List<Appointment> inDB = appointmentRepository.findByAppointmentIdIn(apptIdInES);
 				inDB.stream().map(Appointment::getAppointmentId).forEach(apptIdInDB::add);
 
-				apptIdInES.removeAll(apptIdInDB);// Patientid that are not in Local DB
+				apptIdInES.removeAll(apptIdInDB);// AppointmentId that are not in Local DB
 				if (apptIdInES.size() > 0) {
 					apptIdInES.forEach(id -> {
 						appointmentRepository.save(((List<Appointment>) data).stream()

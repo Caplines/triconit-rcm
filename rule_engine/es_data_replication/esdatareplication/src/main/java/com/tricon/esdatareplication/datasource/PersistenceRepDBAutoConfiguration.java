@@ -68,7 +68,7 @@ public class PersistenceRepDBAutoConfiguration {
         properties.put("spring.jpa.properties.hibernate.order_updates","true");	
 
         properties.put("hibernate.generate_statistic","true");
-        properties.put("hibernate.jdbc.batch_size","4");
+        properties.put("hibernate.jdbc.batch_size","50");
         properties.put("hibernate.order_inserts","true");
         properties.put("hibernate.order_updates","true");	
         

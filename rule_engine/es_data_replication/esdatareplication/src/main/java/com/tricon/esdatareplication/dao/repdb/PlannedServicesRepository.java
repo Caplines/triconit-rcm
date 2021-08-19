@@ -5,11 +5,15 @@ import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tricon.esdatareplication.entity.repdb.PlannedServices; 
+import com.tricon.esdatareplication.entity.repdb.PlannedServices;
 
 public interface PlannedServicesRepository extends JpaRepository<PlannedServices, Integer> {
 
 	public List<PlannedServices> findByApptGroupIn(Set<Integer> apptGroup);
+	
+	public List<PlannedServices> findByPatientIdInAndLineNumberInOrderByDatePlanned(Set<String> patientids,
+			 Set<Integer> linenumber);
+	
 
 	public List<PlannedServices> findByMovedToCloud(int i);
 	

@@ -74,7 +74,7 @@ public class PersistenceRuleEngineDBAutoConfiguration {
         properties.put("hibernate.show_sql", "true");
         properties.put("hibernate.hbm2ddl.auto", "update");
         
-        properties.put("hibernate.jdbc.batch_size","4");
+        properties.put("hibernate.jdbc.batch_size","50");
         properties.put("hibernate.order_inserts","true");
         properties.put("hibernate.order_updates","true");
         properties.put("hibernate.generate_statistics","false");

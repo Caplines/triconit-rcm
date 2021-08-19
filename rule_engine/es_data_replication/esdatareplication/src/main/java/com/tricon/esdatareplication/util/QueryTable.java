@@ -122,13 +122,13 @@ public class QueryTable {
 		 * Transactions Detail Start
 		 */
 
-		ES_TABLE_TRANSACTIONS_DETAIL(Constants.TABLE_TRANSACTIONS_DETAIL,
+		ES_TRANSACTIONS_DETAIL(Constants.TABLE_TRANSACTIONS_DETAIL,
 				Constants.TRANSACTIONSDETAILS_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS_DETAIL
 						+ " order by detail_id asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				TransactionsDetail.class),
 
-		ES_TABLE_TRANSACTIONS_DETAIL_COUNT(Constants.TABLE_TRANSACTIONS_DETAIL,
+		ES_TRANSACTIONS_DETAIL_COUNT(Constants.TABLE_TRANSACTIONS_DETAIL,
 				" count(*) from " + Constants.TABLE_TRANSACTIONS_DETAIL + " ", " ", false, false,
 				TransactionsDetail.class),
 
@@ -138,7 +138,7 @@ public class QueryTable {
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				TransactionsDetail.class),
 
-		ES_TABLE_TRANSACTIONS_DETAIL_NEXT_COUNT(Constants.TABLE_TRANSACTIONS_DETAIL,
+		ES_TRANSACTIONS_DETAIL_NEXT_COUNT(Constants.TABLE_TRANSACTIONS_DETAIL,
 				" count(*) from " + Constants.TABLE_TRANSACTIONS_DETAIL + "  where " + Constants.QUERY_WHERE_CLAUSE_REP,
 				" ", true, false, TransactionsDetail.class),
 
@@ -150,22 +150,22 @@ public class QueryTable {
 		 * Payment Provider Start
 		 */
 
-		ES_TABLE_PAYMENT_PROVIDER_DETAIL(Constants.TABLE_PAYMENT_PROVIDER,
+		ES_PAYMENT_PROVIDER_DETAIL(Constants.TABLE_PAYMENT_PROVIDER,
 				Constants.PAYMENTPROVIDER_COLUMNS + " from " + Constants.TABLE_PAYMENT_PROVIDER
 						+ " order by tran_num asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				PaymentProvider.class),
 
-		ES_TABLE_PAYMENT_PROVIDER_COUNT(Constants.TABLE_PAYMENT_PROVIDER,
+		ES_PAYMENT_PROVIDER_COUNT(Constants.TABLE_PAYMENT_PROVIDER,
 				" count(*) from " + Constants.TABLE_PAYMENT_PROVIDER + " ", " ", false, false, PaymentProvider.class),
 
-		ES_TABLE_PAYMENT_PROVIDER_NEXT(Constants.TABLE_PAYMENT_PROVIDER,
+		ES_PAYMENT_PROVIDER_NEXT(Constants.TABLE_PAYMENT_PROVIDER,
 				Constants.PAYMENTPROVIDER_COLUMNS + " from " + Constants.TABLE_PAYMENT_PROVIDER + " where "
 						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by tran_num asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				PaymentProvider.class),
 
-		ES_TABLE_PAYMENT_PROVIDER_NEXT_COUNT(Constants.TABLE_PAYMENT_PROVIDER,
+		ES_PAYMENT_PROVIDER_NEXT_COUNT(Constants.TABLE_PAYMENT_PROVIDER,
 				" count(*) from " + Constants.TABLE_PAYMENT_PROVIDER + "  where " + Constants.QUERY_WHERE_CLAUSE_REP,
 				" ", true, false, PaymentProvider.class),
 
@@ -177,22 +177,22 @@ public class QueryTable {
 		 * Planned Services Start
 		 */
 
-		ES_TABLE_PLANNED_SERVICES(Constants.TABLE_PLANNED_SERVICES,
+		ES_PLANNED_SERVICES(Constants.TABLE_PLANNED_SERVICES,
 				Constants.PLANNEDSERVICE_COLUMNS + " from " + Constants.TABLE_PLANNED_SERVICES
-						+ " order by date_planned asc ",
+						+ " order by date_planned,line_number,patient_id asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				PlannedServices.class),
 
-		ES_TABLE_PLANNED_SERVICES_COUNT(Constants.TABLE_PLANNED_SERVICES,
+		ES_PLANNED_SERVICES_COUNT(Constants.TABLE_PLANNED_SERVICES,
 				" count(*) from " + Constants.TABLE_PLANNED_SERVICES + " ", " ", false, false, PlannedServices.class),
 
-		ES_TABLE_PLANNED_SERVICES_NEXT(Constants.TABLE_PLANNED_SERVICES,
+		ES_PLANNED_SERVICES_NEXT(Constants.TABLE_PLANNED_SERVICES,
 				Constants.PLANNEDSERVICE_COLUMNS + " from " + Constants.TABLE_PLANNED_SERVICES + " where "
-						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by date_planned asc",
+						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by date_planned,line_number,patient_id ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				PlannedServices.class),
 
-		ES_TABLE_PLANNED_SERVICES_NEXT_COUNT(Constants.TABLE_PLANNED_SERVICES,
+		ES_PLANNED_SERVICES_NEXT_COUNT(Constants.TABLE_PLANNED_SERVICES,
 				" count(*) from " + Constants.TABLE_PLANNED_SERVICES + "  where " + Constants.QUERY_WHERE_CLAUSE_REP,
 				" ", true, false, PlannedServices.class),
 
@@ -204,23 +204,23 @@ public class QueryTable {
 		 * Treatment Plan Items Start
 		 */
 
-		ES_TABLE_TREATMENT_PLAN_ITEMS(Constants.TABLE_TREATMENT_PLAN_ITEMS,
-				Constants.PLANNEDSERVICE_COLUMNS + " from " + Constants.TABLE_TREATMENT_PLAN_ITEMS
+		ES_TREATMENT_PLAN_ITEMS(Constants.TABLE_TREATMENT_PLAN_ITEMS,
+				Constants.TREATEMENTPLANITEMS_COLUMNS + " from " + Constants.TABLE_TREATMENT_PLAN_ITEMS
 						+ " order by treatment_plan_id asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				TreatmentPlanItems.class),
 
-		ES_TABLE_TREATMENT_PLAN_ITEMS_COUNT(Constants.TABLE_TREATMENT_PLAN_ITEMS,
+		ES_TREATMENT_PLAN_ITEMS_COUNT(Constants.TABLE_TREATMENT_PLAN_ITEMS,
 				" count(*) from " + Constants.TABLE_TREATMENT_PLAN_ITEMS + " ", " ", false, false,
 				TreatmentPlanItems.class),
 
-		ES_TABLE_TREATMENT_PLAN_ITEMS_NEXT(Constants.TABLE_TREATMENT_PLAN_ITEMS,
-				Constants.PLANNEDSERVICE_COLUMNS + " from " + Constants.TABLE_TREATMENT_PLAN_ITEMS + " where "
+		ES_TREATMENT_PLAN_ITEMS_NEXT(Constants.TABLE_TREATMENT_PLAN_ITEMS,
+				Constants.TREATEMENTPLANITEMS_COLUMNS + " from " + Constants.TABLE_TREATMENT_PLAN_ITEMS + " where "
 						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by treatment_plan_id asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				TreatmentPlanItems.class),
 
-		ES_TABLE_TREATMENT_PLAN_ITEMS_NEXT_COUNT(Constants.TABLE_TREATMENT_PLAN_ITEMS, " count(*) from "
+		ES_TREATMENT_PLAN_ITEMS_NEXT_COUNT(Constants.TABLE_TREATMENT_PLAN_ITEMS, " count(*) from "
 				+ Constants.TABLE_TREATMENT_PLAN_ITEMS + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ", true,
 				false, TreatmentPlanItems.class),
 
@@ -233,23 +233,23 @@ public class QueryTable {
 		 * Treatment Plans Start
 		 */
 
-		ES_TABLE_TREATMENT_PLANS(Constants.TABLE_TREATMENT_PLANS,
+		ES_TREATMENT_PLANS(Constants.TABLE_TREATMENT_PLANS,
 				Constants.TREATEMENTPLANS_COLUMNS + " from " + Constants.TABLE_TREATMENT_PLANS
 						+ " order by treatment_plan_id asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				TreatmentPlans.class),
 
-		ES_TABLE_TREATMENT_PLANS_COUNT(Constants.TABLE_TREATMENT_PLANS,
+		ES_TREATMENT_PLANS_COUNT(Constants.TABLE_TREATMENT_PLANS,
 				" count(*) from " + Constants.TABLE_TREATMENT_PLANS + " ", " ", false, false,
 				TreatmentPlans.class),
 
-		ES_TABLE_TREATMENT_PLANS_NEXT(Constants.TABLE_TREATMENT_PLANS,
+		ES_TREATMENT_PLANS_NEXT(Constants.TABLE_TREATMENT_PLANS,
 				Constants.TREATEMENTPLANS_COLUMNS + " from " + Constants.TABLE_TREATMENT_PLANS + " where "
 						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by date_entered asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				TreatmentPlans.class),
 
-		ES_TABLE_TREATMENT_PLANS_NEXT_COUNT(Constants.TABLE_TREATMENT_PLANS, " count(*) from "
+		ES_TREATMENT_PLANS_NEXT_COUNT(Constants.TABLE_TREATMENT_PLANS, " count(*) from "
 				+ Constants.TABLE_TREATMENT_PLANS + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ", true,
 				false, TreatmentPlans.class),
 
@@ -261,23 +261,23 @@ public class QueryTable {
 		 * Provider Start
 		 */
 
-		ES_TABLE_PROVIDER(Constants.TABLE_PROVIDER,
+		ES_PROVIDER(Constants.TABLE_PROVIDER,
 				Constants.PROVIDER_COLUMNS + " from " + Constants.TABLE_PROVIDER
 						+ " order by provider_id asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				Provider.class),
 
-		ES_TABLE_PROVIDER_COUNT(Constants.TABLE_PROVIDER,
+		ES_PROVIDER_COUNT(Constants.TABLE_PROVIDER,
 				" count(*) from " + Constants.TABLE_PROVIDER + " ", " ", false, false,
 				Provider.class),
 
-		ES_TABLE_PROVIDER_NEXT(Constants.TABLE_PROVIDER,
+		ES_PROVIDER_NEXT(Constants.TABLE_PROVIDER,
 				Constants.PROVIDER_COLUMNS + " from " + Constants.TABLE_PROVIDER + " where "
 						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by provider_id asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				Provider.class),
 
-		ES_TABLE_PROVIDER_NEXT_COUNT(Constants.TABLE_PROVIDER, " count(*) from "
+		ES_PROVIDER_NEXT_COUNT(Constants.TABLE_PROVIDER, " count(*) from "
 				+ Constants.TABLE_PROVIDER + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ", true,
 				false, Provider.class),
 
@@ -290,23 +290,23 @@ public class QueryTable {
 		 * Employer Start
 		 */
 
-		ES_TABLE_EMPLOYER(Constants.TABLE_EMPLOYER,
+		ES_EMPLOYER(Constants.TABLE_EMPLOYER,
 				Constants.EMPLOYER_COLUMNS + " from " + Constants.TABLE_EMPLOYER
 						+ " order by employer_id asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				Employer.class),
 
-		ES_TABLE_EMPLOYER_COUNT(Constants.TABLE_EMPLOYER,
+		ES_EMPLOYER_COUNT(Constants.TABLE_EMPLOYER,
 				" count(*) from " + Constants.TABLE_EMPLOYER + " ", " ", false, false,
 				Employer.class),
 
-		ES_TABLE_EMPLOYER_NEXT(Constants.TABLE_EMPLOYER,
+		ES_EMPLOYER_NEXT(Constants.TABLE_EMPLOYER,
 				Constants.EMPLOYER_COLUMNS + " from " + Constants.TABLE_EMPLOYER + " where "
 						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by employer_id asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				Employer.class),
 
-		ES_TABLE_EMPLOYER_NEXT_COUNT(Constants.TABLE_EMPLOYER, " count(*) from "
+		ES_EMPLOYER_NEXT_COUNT(Constants.TABLE_EMPLOYER, " count(*) from "
 				+ Constants.TABLE_EMPLOYER + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ", true,
 				false, Employer.class);
 

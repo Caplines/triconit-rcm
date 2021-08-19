@@ -33,7 +33,7 @@ public class TransactionsTableService extends CommonTableService {
 
 	@Autowired
 	private TransactionsRepositoryRe transactionsRepositoryRe;
-	
+		
 	@Autowired
 	private ESTableRepository estableRepository;
 

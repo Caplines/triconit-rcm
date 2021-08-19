@@ -8,9 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.tricon.esdatareplication.entity.common.CommonPlannedServices;
-import com.tricon.esdatareplication.entity.repdb.PlannedServices;
 import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
@@ -18,10 +18,11 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_PLANNED_SERVICES)
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_PLANNED_SERVICES, uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"line_number","patient_id"})})
 @EqualsAndHashCode(callSuper = true)
-public class PlannedServicesReplica  extends CommonPlannedServices implements Serializable{
-	
+public class PlannedServicesReplica extends CommonPlannedServices implements Serializable {
+
 	/**
 	 * 
 	 */
@@ -30,7 +31,7 @@ public class PlannedServicesReplica  extends CommonPlannedServices implements Se
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
-	private int id;
+	private Integer id;
 
 	public PlannedServicesReplica() {
 		super();

@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,12 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tricon.esdatareplication.dao.repdb.ESTableRepository;
 import com.tricon.esdatareplication.dao.repdb.ProviderRepository;
 import com.tricon.esdatareplication.dao.ruleenginedb.ProviderRepositoryRe;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
+import com.tricon.esdatareplication.entity.repdb.Patient;
 import com.tricon.esdatareplication.entity.repdb.Provider;
 import com.tricon.esdatareplication.entity.ruleenginedb.ProviderReplica;
+import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 
@@ -30,14 +34,17 @@ public class ProviderTableService extends CommonTableService {
 
 	@Autowired
 	private ProviderRepositoryRe providerRepositoryRe;
+	
+	@Autowired
+	private ESTableRepository estableRepository;
 
 	@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
 	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
 		try {
-			List<Provider> p = providerRepository.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+			List<Provider> pL = providerRepository.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 			List<ProviderReplica> repList = new ArrayList<>();
 			StringBuilder bu = new StringBuilder();
-			p.forEach(x -> {
+			pL.forEach(x -> {
 				x.setOfficeId(office.getUuid());
 				ProviderReplica rep = new ProviderReplica();
 				BeanUtils.copyProperties(x, rep);
@@ -46,23 +53,60 @@ public class ProviderTableService extends CommonTableService {
 				repList.add(rep);
 			});
 			// new repository for cloud.. and save data...
-			providerRepositoryRe.saveAll(repList);
-			appendLoggerToWriter(ProviderReplica.class, bw,
-					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-			appendLoggerToWriter(ProviderReplica.class, bw, bu.toString(), true);
+			Set<Integer> apptIdInES = new HashSet<>();
+			Set<Integer> apptIdInDB = new HashSet<>();
+			((List<ProviderReplica>) repList).stream().map(ProviderReplica::getProviderId).forEach(apptIdInES::add);
+			// or
+			// d2.forEach(a -> patIds.add(a.getPatientId()));
+			List<ProviderReplica> inDB = providerRepositoryRe.findByProviderIdInAndOfficeId(apptIdInES,office.getUuid());
+			inDB.stream().map(ProviderReplica::getProviderId).forEach(apptIdInDB::add);
+			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
+			if (apptIdInES.size() > 0) {
+				
+				apptIdInES.forEach(id -> {
+					ProviderReplica q=((List<ProviderReplica>) repList).stream()
+					.filter(p -> id.intValue()==p.getProviderId().intValue()).findAny().orElse(null);
+					q.setId(null);
+					providerRepositoryRe.save(q);
+				});
+			}
+			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
+			if (apptIdInDB.size() > 0) {
+				apptIdInDB.forEach(id -> {
+					ProviderReplica p = ((List<ProviderReplica>) repList).stream().filter(dp -> id.intValue()==dp.getProviderId().intValue())
+							.findAny().orElse(null);
 
-			p.forEach(x -> {
+					ProviderReplica old = inDB.stream().filter(ind -> id.intValue()==ind.getProviderId().intValue()).findAny()
+							.orElse(null);
+					if (p!=null && old!=null) {
+						if (old!=null) {
+							p.setId(old.getId());
+							p.setCreatedDate(old.getCreatedDate());
+						}
+					    p.setMovedToCloud(1);
+					    
+					    providerRepositoryRe.save(p);
+					}
+				});
+
+			}
+			appendLoggerToWriter(TransactionsReplica.class, bw,
+					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
+			appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
+			pL.forEach(x -> {
 				x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 			});
-			providerRepository.saveAll(p);
-			es.setRecordsInsertedLastIteration(p.size());
+			providerRepository.saveAll(pL);
+			es.setRecordsInsertedLastIteration(pL.size());
+			es.setUpdatedDate(new Date());
+			estableRepository.save(es);
 		} catch (Exception ex) {
 			es.setRecordsInsertedLastIteration(0);
 			StringWriter errors = new StringWriter();
 			ex.printStackTrace(new PrintWriter(errors));
 			es.setLastIssueDetail(errors.toString());
-			appendLoggerToWriter(Provider.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
-			appenErrorToWriter(Provider.class, bw, ex);
+			appendLoggerToWriter(Patient.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+			appenErrorToWriter(Patient.class, bw, ex);
 		}
 		return es;
 

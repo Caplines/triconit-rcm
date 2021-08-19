@@ -11,8 +11,8 @@ import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsDetailReplic
 public interface TransactionsDetailRepositoryRe extends JpaRepository<TransactionsDetailReplica, Integer> {
 	
 	
-public List<TransactionsDetailReplica> findByDetailIdInAndOfficeId(Set<Integer> detailId,String officeuuid);
-	
+	public List<TransactionsDetailReplica> findByDetailIdInAndOfficeId(Set<Integer> detailId, String officeuuid);
+
 	public List<TransactionsDetailReplica> findByPatientIdIn(Set<String> patientId);
 
 	public List<TransactionsDetailReplica> findByMovedToCloud(int i);
