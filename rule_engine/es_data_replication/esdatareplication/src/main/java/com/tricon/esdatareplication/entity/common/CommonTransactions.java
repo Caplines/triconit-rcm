@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,6 +31,7 @@ public class CommonTransactions extends CommonCloudColumn {
 	String type;
 
 	@Column	(name="tran_date",length=50,nullable=false)//	4	date	No
+	@Temporal(TemporalType.DATE)
 	Date tranDate;
 
 	@Column	(name="patient_id",length=50)//	5	char(5)	Yes
@@ -113,6 +116,7 @@ public class CommonTransactions extends CommonCloudColumn {
 	Integer bulkPaymentNum;
 
 	@Column	(name="aging_date",length=50)//	32	date	Yes
+	@Temporal(TemporalType.DATE)
 	Date agingDate;
 
 	@Column	(name="tooth",length=50)//	33	char(10)	Yes

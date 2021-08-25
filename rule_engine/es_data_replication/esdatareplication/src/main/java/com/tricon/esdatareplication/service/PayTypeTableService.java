@@ -71,6 +71,7 @@ public class PayTypeTableService {
 
 	}
 
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
 	public void saveDataToLocalDB(BufferedWriter bw, List<?> data) {
 		try {
 			payTypeRepository.saveAll((List<PayType>) data);

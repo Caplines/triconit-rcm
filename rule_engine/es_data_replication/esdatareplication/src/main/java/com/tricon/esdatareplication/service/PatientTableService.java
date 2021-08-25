@@ -116,6 +116,7 @@ public class PatientTableService extends CommonTableService{
 		return es;
 	}
 
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager") 
 	public void saveDataToLocalDB(BufferedWriter bw,List<?> data, boolean checkExisting) {
 		try {
 		if (!checkExisting) {
@@ -136,23 +137,31 @@ public class PatientTableService extends CommonTableService{
             //  new Records..
 			
 			if (patIdInES.size() > 0) {
+				List<Patient> l= new ArrayList<>();
 				patIdInES.forEach(id -> {
-					patientRepository.save(((List<Patient>) data).stream().filter(p -> id.equals(p.getPatientId()))
-							.findAny().orElse(null));
+					Patient q =((List<Patient>) data).stream().filter(p -> id.equals(p.getPatientId()))
+							.findAny().orElse(null);
+					q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+					q.setId(null);
+                   l.add(q);
 				});
+				if (l.size()>0)patientRepository.saveAll(l);
 			}
 			patIdInDB.removeAll(patIdInES);// Patient id that are there in Local DB we need to update.
 			if (patIdInDB.size() > 0) {
+				List<Patient> l= new ArrayList<>();
 				patIdInDB.forEach(id -> {
 					Patient p = ((List<Patient>) data).stream().filter(dp -> id.equals(dp.getPatientId())).findAny()
 							.orElse(null);
 
 					Patient old = inDB.stream().filter(ind -> id.equals(ind.getPatientId())).findAny().orElse(null);
 					p.setId(old.getId());
-					p.setMovedToCloud(0);
+					p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 					p.setCreatedDate(old.getCreatedDate());
-					patientRepository.save(p);
+					
+					l.add(p);
 				});
+				if (l.size()>0)patientRepository.saveAll(l);
 			}
 			logAfterFirstTimeDataEntryToTable(Patient.class, bw, patIdInES.size(), patIdInDB.size(),
 					String.join(",", patIdInES), String.join(",", patIdInDB));

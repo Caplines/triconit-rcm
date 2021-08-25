@@ -9,7 +9,7 @@ import com.tricon.esdatareplication.entity.repdb.PaymentProvider;
 
 public interface PaymentProviderRepository extends JpaRepository<PaymentProvider, Integer> {
 
-	public List<PaymentProvider> findByTranNumIn(Set<Integer> tranNum);
+	public List<PaymentProvider> findByTranNumInAndProviderIdIn(Set<Integer> tranNum,Set<String>pats);
 
 	public List<PaymentProvider> findByMovedToCloud(int i);
 

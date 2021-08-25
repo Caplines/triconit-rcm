@@ -24,10 +24,12 @@ import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.Patient;
 import com.tricon.esdatareplication.entity.repdb.PlannedServices;
 import com.tricon.esdatareplication.entity.repdb.Provider;
+import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
 import com.tricon.esdatareplication.entity.ruleenginedb.AppointmentReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.PlannedServicesReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.ProviderReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
+import com.tricon.esdatareplication.entity.ruleenginedb.TreatmentPlanItemsReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 
@@ -75,17 +77,45 @@ public class PlannedServicesTableService extends CommonTableService {
 			for(PlannedServicesReplica r:repList) {
 				apptIdInES1.add(r.getPatientId()+"-"+r.getLineNumber());
 			}
+			
 			((List<PlannedServicesReplica>) repList).stream().map(PlannedServicesReplica::getLineNumber)
 			.forEach(apptIdInESSecond::add);// check me  
 			
 			// or
 			// d2.forEach(a -> patIds.add(a.getPatientId()));
+			
+			List<PlannedServicesReplica> inDBExtra = plannedServicesRepositoryRe
+					.findByPatientIdIn(apptIdInES);
+			
+			Set<String> extraAll = new HashSet<>();
+			for (PlannedServicesReplica k : inDBExtra) {
+				extraAll.add(k.getPatientId() + "-" + k.getLineNumber());
+			}
+			
 			List<PlannedServicesReplica> inDB = plannedServicesRepositoryRe.findByPatientIdInAndOfficeIdAndLineNumberIn(apptIdInES,
 					office.getUuid(),apptIdInESSecond);
 			
 			for(PlannedServicesReplica r:inDB) {
 				apptIdInDB1.add(r.getPatientId()+"-"+r.getLineNumber());
 			}
+			
+			// Delete Data that is there in Cloud
+			// we need to delete in case TP items are deleted from local when TP is edited
+			extraAll.removeAll(apptIdInES1);
+
+			if (extraAll.size() > 0) {
+				List<PlannedServicesReplica> del = new ArrayList<>();
+				extraAll.forEach(id -> {
+					PlannedServicesReplica q = inDBExtra.stream()
+							.filter(p -> (id.split("-")[0].equals(p.getPatientId())
+									&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber().intValue()))
+							.findAny().orElse(null);
+					del.add(q);
+				});
+				if (del.size() > 0)
+					plannedServicesRepositoryRe.deleteAll(del);
+			}
+			
 			//inDB.stream().map( c => {c. }).forEach(apptIdInDB::add);
 			//inDB.stream().map( PlannedServicesReplica).forEach(apptIdInDB::add);
 			apptIdInES1.removeAll(apptIdInDB1);// Data that are not in Local DB
@@ -169,6 +199,8 @@ public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExis
 				Set<String> apptIdInES1 = new HashSet<>();
 				Set<String> apptIdInDB1 = new HashSet<>();
 				
+				
+				
 				((List<PlannedServices>) (List<PlannedServices>) data).stream().map(PlannedServices::getPatientId)
 						.forEach(apptIdInES::add);
 				
@@ -180,15 +212,44 @@ public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExis
 				
 				// or
 				// d2.forEach(a -> patIds.add(a.getPatientId()));
+				List<PlannedServices> inDBExtra = plannedServicesRepository
+						.findByPatientIdIn(apptIdInES);
+				
+				Set<String> extraAll = new HashSet<>();
+				for (PlannedServices k : inDBExtra) {
+					extraAll.add(k.getPatientId() + "-" + k.getLineNumber());
+				}
+
+				
+				
 				List<PlannedServices> inDB = plannedServicesRepository.findByPatientIdInAndLineNumberInOrderByDatePlanned(apptIdInES,
 						apptIdInESSecond);
 				
 				for(PlannedServices r:inDB) {
 					apptIdInDB1.add(r.getPatientId()+"-"+r.getLineNumber());
 				}
+				
+				// Delete Data that is there in Cloud
+				// we need to delete in case TP items are deleted from local when TP is edited
+				extraAll.removeAll(apptIdInES1);
+
+				if (extraAll.size() > 0) {
+					List<PlannedServices> del = new ArrayList<>();
+					extraAll.forEach(id -> {
+						PlannedServices q = inDBExtra.stream()
+								.filter(p -> (id.split("-")[0].equals(p.getPatientId())
+										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber().intValue()))
+								.findAny().orElse(null);
+						del.add(q);
+					});
+					if (del.size() > 0)
+						plannedServicesRepository.deleteAll(del);
+				}
+				
 				//inDB.stream().map( c => {c. }).forEach(apptIdInDB::add);
 				//inDB.stream().map( PlannedServicesReplica).forEach(apptIdInDB::add);
 				apptIdInES1.removeAll(apptIdInDB1);// Data that are not in Local DB
+				
 				if (apptIdInES1.size() > 0) {
 	                List<PlannedServices> l= new ArrayList<>();
 					apptIdInES1.forEach(id -> {
@@ -239,4 +300,64 @@ public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExis
 			appenErrorToWriter(PlannedServices.class, bw, ex);
 		}
 	}
+	
+	/**
+	 * 
+	 * @param bw
+	 * @param data
+	 * @return Treatment Plan Id that needs to be deleted.
+	 */
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
+	public List<PlannedServices> deleteRelevantDataFromLocalDB(BufferedWriter bw, List<TreatmentPlanItems> data) {
+
+		Set<Integer> apptIdInDB = new HashSet<>();
+		List<PlannedServices> inDB= new ArrayList<>();
+		try {
+			//
+			Set<Integer> apptIdInES = new HashSet<>();
+			Set<String> apptIdInES1 = new HashSet<>();
+			((List<TreatmentPlanItems>) data).stream().map(TreatmentPlanItems::getLineNumber)
+					.forEach(apptIdInES::add);
+			((List<TreatmentPlanItems>) data).stream().map(TreatmentPlanItems::getPatientId)
+			.forEach(apptIdInES1::add);
+			
+			inDB = plannedServicesRepository.findByPatientIdInAndLineNumberInOrderByDatePlanned(apptIdInES1,apptIdInES);
+			plannedServicesRepository.deleteAll(inDB);
+			
+				logDeletedFromTable(PlannedServices.class, bw, data.size(),
+					String.join(",", data.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())));
+
+		} catch (Exception ex) {
+			appenErrorToWriter(PlannedServices.class, bw, ex);
+		}
+
+		return inDB;
+
+	}
+
+	@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
+	public void deleteRelevantDataFromColudDB(BufferedWriter bw, List<PlannedServices> data, Office office) {
+
+		try {
+			//
+			Set<Integer> apptIdInES = new HashSet<>();
+			Set<String> apptIdInES1 = new HashSet<>();
+			data.stream().map(PlannedServices::getLineNumber)
+					.forEach(apptIdInES::add);
+			data.stream().map(PlannedServices::getPatientId)
+			.forEach(apptIdInES1::add);
+
+			List<PlannedServicesReplica> inDB = plannedServicesRepositoryRe
+					.findByPatientIdInAndOfficeIdAndLineNumberIn(apptIdInES1,office.getUuid(),apptIdInES);
+
+			if (data.size() > 0) {
+				plannedServicesRepositoryRe.deleteAll(inDB);
+				logDeletedFromTable(PlannedServicesReplica.class, bw, data.size(),
+						String.join(",", data.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())));
+			}
+		} catch (Exception ex) {
+			appenErrorToWriter(TreatmentPlanItems.class, bw, ex);
+		}
+	}
+
 }

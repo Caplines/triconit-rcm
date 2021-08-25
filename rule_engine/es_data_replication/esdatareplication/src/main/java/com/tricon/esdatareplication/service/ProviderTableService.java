@@ -53,8 +53,8 @@ public class ProviderTableService extends CommonTableService {
 				repList.add(rep);
 			});
 			// new repository for cloud.. and save data...
-			Set<Integer> apptIdInES = new HashSet<>();
-			Set<Integer> apptIdInDB = new HashSet<>();
+			Set<String> apptIdInES = new HashSet<>();
+			Set<String> apptIdInDB = new HashSet<>();
 			((List<ProviderReplica>) repList).stream().map(ProviderReplica::getProviderId).forEach(apptIdInES::add);
 			// or
 			// d2.forEach(a -> patIds.add(a.getPatientId()));
@@ -62,21 +62,24 @@ public class ProviderTableService extends CommonTableService {
 			inDB.stream().map(ProviderReplica::getProviderId).forEach(apptIdInDB::add);
 			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
 			if (apptIdInES.size() > 0) {
-				
+				List<ProviderReplica> l = new ArrayList<>();
 				apptIdInES.forEach(id -> {
 					ProviderReplica q=((List<ProviderReplica>) repList).stream()
-					.filter(p -> id.intValue()==p.getProviderId().intValue()).findAny().orElse(null);
+					.filter(p -> id.equals(p.getProviderId())).findAny().orElse(null);
 					q.setId(null);
-					providerRepositoryRe.save(q);
+					l.add(q);
 				});
+				if (l.size()>0)providerRepositoryRe.saveAll(l);
 			}
 			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
+				List<ProviderReplica> l = new ArrayList<>();
 				apptIdInDB.forEach(id -> {
-					ProviderReplica p = ((List<ProviderReplica>) repList).stream().filter(dp -> id.intValue()==dp.getProviderId().intValue())
+					
+					ProviderReplica p = ((List<ProviderReplica>) repList).stream().filter(dp -> id.equals(dp.getProviderId()))
 							.findAny().orElse(null);
 
-					ProviderReplica old = inDB.stream().filter(ind -> id.intValue()==ind.getProviderId().intValue()).findAny()
+					ProviderReplica old = inDB.stream().filter(ind -> id.equals(ind.getProviderId())).findAny()
 							.orElse(null);
 					if (p!=null && old!=null) {
 						if (old!=null) {
@@ -85,10 +88,10 @@ public class ProviderTableService extends CommonTableService {
 						}
 					    p.setMovedToCloud(1);
 					    
-					    providerRepositoryRe.save(p);
+					    l.add(p);
 					}
 				});
-
+				if (l.size()>0)providerRepositoryRe.saveAll(l);
 			}
 			appendLoggerToWriter(TransactionsReplica.class, bw,
 					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
@@ -112,6 +115,7 @@ public class ProviderTableService extends CommonTableService {
 
 	}
 
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
 	public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExisting) {
 		try {
 			if (!checkExisting) {
@@ -119,8 +123,8 @@ public class ProviderTableService extends CommonTableService {
 				logFirstTimeDataEntryToTable(Provider.class, bw, data.size());
 			} else {
 				//
-				Set<Integer> apptIdInES = new HashSet<>();
-				Set<Integer> apptIdInDB = new HashSet<>();
+				Set<String> apptIdInES = new HashSet<>();
+				Set<String> apptIdInDB = new HashSet<>();
 				((List<Provider>) data).stream().map(Provider::getProviderId).forEach(apptIdInES::add);
 				// or
 				// d2.forEach(a -> patIds.add(a.getPatientId()));
@@ -129,13 +133,16 @@ public class ProviderTableService extends CommonTableService {
 
 				apptIdInES.removeAll(apptIdInDB);// Patientid that are not in Local DB
 				if (apptIdInES.size() > 0) {
+					List<Provider> l = new ArrayList<>();
 					apptIdInES.forEach(id -> {
-						providerRepository.save(((List<Provider>) data).stream()
+						l.add(((List<Provider>) data).stream()
 								.filter(p -> id.equals(p.getProviderId())).findAny().orElse(null));
 					});
+					if (l.size()>0)providerRepository.saveAll(l);
 				}
 				apptIdInDB.removeAll(apptIdInES);// Patient id that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
+					List<Provider> l = new ArrayList<>();
 					apptIdInDB.forEach(id -> {
 						Provider p = ((List<Provider>) data).stream().filter(dp -> id.equals(dp.getProviderId()))
 								.findAny().orElse(null);
@@ -145,9 +152,9 @@ public class ProviderTableService extends CommonTableService {
 						p.setId(old.getId());
 						p.setMovedToCloud(0);
 						p.setCreatedDate(old.getCreatedDate());
-						providerRepository.save(p);
+						l.add(p);
 					});
-
+					if (l.size()>0) providerRepository.saveAll(l);
 				}
 
 				logAfterFirstTimeDataEntryToTable(Provider.class, bw, apptIdInES.size(), apptIdInDB.size(),

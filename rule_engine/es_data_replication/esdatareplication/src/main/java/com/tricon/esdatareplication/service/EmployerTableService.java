@@ -65,16 +65,18 @@ public class EmployerTableService extends CommonTableService{
 		inDB.stream().map(EmployerReplica::getEmployerId).forEach(apptIdInDB::add);
 		apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
 		if (apptIdInES.size() > 0) {
-			
+			List<EmployerReplica>  l = new ArrayList<>();
 			apptIdInES.forEach(id -> {
 				EmployerReplica q=((List<EmployerReplica>) repList).stream()
 				.filter(p -> id.intValue()==p.getEmployerId().intValue()).findAny().orElse(null);
 				q.setId(null);
-				employerRespositoryRe.save(q);
+				l.add(q);
 			});
+			if (l.size()>0) employerRespositoryRe.saveAll(l);
 		}
 		apptIdInDB.removeAll(apptIdInES);// EmployerId  that are there in Local DB we need to update.
 		if (apptIdInDB.size() > 0) {
+			List<EmployerReplica>  l = new ArrayList<>();
 			apptIdInDB.forEach(id -> {
 				EmployerReplica p = ((List<EmployerReplica>) repList).stream().filter(dp -> id.intValue()==dp.getEmployerId().intValue())
 						.findAny().orElse(null);
@@ -88,10 +90,10 @@ public class EmployerTableService extends CommonTableService{
 					}
 				    p.setMovedToCloud(1);
 				    
-				    employerRespositoryRe.save(p);
+				    l.add(p);
 				}
 			});
-
+			if (l.size()>0) employerRespositoryRe.saveAll(l);
 		}
 		appendLoggerToWriter(TransactionsReplica.class, bw,
 				Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
@@ -115,6 +117,7 @@ public class EmployerTableService extends CommonTableService{
 
 	}
 
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
 	public void saveDataToLocalDB(BufferedWriter bw,List<?> data, boolean checkExisting) {
 
 		if (!checkExisting)
@@ -123,21 +126,27 @@ public class EmployerTableService extends CommonTableService{
 			//
 			Set<Integer> apptIdInES = new HashSet<>();
 			Set<Integer> apptIdInDB = new HashSet<>();
-			((List<Employer>) data).stream().map(Employer::getEmployerId).forEach(apptIdInES::add);
+			if (data!=null) ((List<Employer>) data).stream().map(Employer::getEmployerId).forEach(apptIdInES::add);
 			// or
 			// d2.forEach(a -> patIds.add(a.getPatientId()));
 			List<Employer> inDB = employerRespository.findByEmployerIdIn(apptIdInES);
 			inDB.stream().map(Employer::getEmployerId).forEach(apptIdInDB::add);
 
-			apptIdInES.removeAll(apptIdInDB);// Patientid that are not in Local DB
+			apptIdInES.removeAll(apptIdInDB);// EmployerId that are not in Local DB
 			if (apptIdInES.size() > 0) {
+				List<Employer>  l = new ArrayList<>();
 				apptIdInES.forEach(id -> {
-					employerRespository.save(((List<Employer>) data).stream()
-							.filter(p -> id.equals(p.getEmployerId())).findAny().orElse(null));
+					Employer q= ((List<Employer>) data).stream()
+							.filter(p -> id.equals(p.getEmployerId())).findAny().orElse(null);
+					q.setMovedToCloud(DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO);
+					l.add(q);
 				});
+				
+				if (l.size()>0) employerRespository.saveAll(l);
 			}
 			apptIdInDB.removeAll(apptIdInES);// EmployerId that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
+				List<Employer>  l = new ArrayList<>();
 				apptIdInDB.forEach(id -> {
 					Employer p = ((List<Employer>) data).stream().filter(dp -> id.equals(dp.getEmployerId()))
 							.findAny().orElse(null);
@@ -145,10 +154,11 @@ public class EmployerTableService extends CommonTableService{
 					Employer old = inDB.stream().filter(ind -> id.equals(ind.getEmployerId())).findAny()
 							.orElse(null);
 					p.setId(old.getId());
-					p.setMovedToCloud(0);
+					p.setMovedToCloud(DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO);
 					p.setCreatedDate(old.getCreatedDate());
-					employerRespository.save(p);
+					l.add(p);
 				});
+				if (l.size()>0) employerRespository.saveAll(l);
 			}
 		}
 

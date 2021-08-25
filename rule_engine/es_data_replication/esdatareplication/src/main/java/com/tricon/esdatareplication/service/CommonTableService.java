@@ -50,6 +50,14 @@ public class CommonTableService {
 		appendLoggerToWriter(clazz, bw, "Data Ids->"+newDataIds,true);
 	}
 
+	public void logDeletedFromTable(Class<?> clazz, BufferedWriter bw, 
+			int dataCount,String oldDataIds) {
+
+		appendLoggerToWriter(clazz, bw, Constants.TABLE_DATA_DELETION_PROCESS,true);
+		appendLoggerToWriter(clazz, bw, Constants.RECORDS_UPDATED_IN_TABLE+"-"+dataCount,true);
+		appendLoggerToWriter(clazz, bw, "Data Ids->"+oldDataIds,true);
+	}
+
 	public void logPushToCloud(Class<?> clazz, BufferedWriter bw, 
 			int newDataCount,int updatedDataCount,String newDataIds,String updatedDataIds) {
 

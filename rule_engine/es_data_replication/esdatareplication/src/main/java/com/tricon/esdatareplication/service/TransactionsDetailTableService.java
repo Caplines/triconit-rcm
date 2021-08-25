@@ -65,16 +65,18 @@ public class TransactionsDetailTableService extends CommonTableService {
 			inDB.stream().map(TransactionsDetailReplica::getTranNum).forEach(apptIdInDB::add);
 			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
 			if (apptIdInES.size() > 0) {
-				
+				List<TransactionsDetailReplica> l = new ArrayList<>();
 				apptIdInES.forEach(id -> {
 					TransactionsDetailReplica q=((List<TransactionsDetailReplica>) repList).stream()
 					.filter(p -> id.intValue()==p.getTranNum().intValue()).findAny().orElse(null);
 					q.setId(null);
-					transactionsDetailRepositoryRe.save(q);
+					l.add(q);
 				});
+				 if (l.size()>0) transactionsDetailRepositoryRe.saveAll(l);	
 			}
 			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
+				List<TransactionsDetailReplica> l = new ArrayList<>();
 				apptIdInDB.forEach(id -> {
 					TransactionsDetailReplica p = ((List<TransactionsDetailReplica>) repList).stream().filter(dp -> id.intValue()==dp.getTranNum().intValue())
 							.findAny().orElse(null);
@@ -87,11 +89,10 @@ public class TransactionsDetailTableService extends CommonTableService {
 							p.setCreatedDate(old.getCreatedDate());
 						}
 					    p.setMovedToCloud(1);
-					    
-					    transactionsDetailRepositoryRe.save(p);
+					    l.add(p);
 					}
 				});
-
+              if (l.size()>0) transactionsDetailRepositoryRe.saveAll(l);
 			}
 			appendLoggerToWriter(TransactionsReplica.class, bw,
 					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
@@ -115,6 +116,7 @@ public class TransactionsDetailTableService extends CommonTableService {
 
 	}
 
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
 	public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExisting) {
        try {
 		if (!checkExisting) {
@@ -133,13 +135,16 @@ public class TransactionsDetailTableService extends CommonTableService {
 
 			apptIdInES.removeAll(apptIdInDB);// that are not in Local DB
 			if (apptIdInES.size() > 0) {
+				List<TransactionsDetail> l = new ArrayList<>();
 				apptIdInES.forEach(id -> {
-					transactionsDetailRepository.save(((List<TransactionsDetail>) data).stream()
+					l.add(((List<TransactionsDetail>) data).stream()
 							.filter(p -> id.equals(p.getDetailId())).findAny().orElse(null));
 				});
+			if (l.size()>0)	transactionsDetailRepository.saveAll(l);
 			}
 			apptIdInDB.removeAll(apptIdInES);// Patient id that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
+				List<TransactionsDetail> l = new ArrayList<>();
 				apptIdInDB.forEach(id -> {
 					TransactionsDetail p = ((List<TransactionsDetail>) data).stream()
 							.filter(dp -> id.equals(dp.getDetailId())).findAny().orElse(null);
@@ -149,8 +154,9 @@ public class TransactionsDetailTableService extends CommonTableService {
 					p.setId(old.getId());
 					p.setMovedToCloud(0);
 					p.setCreatedDate(old.getCreatedDate());
-					transactionsDetailRepository.save(p);
+					l.add(p);
 				});
+			 if (l.size()>0)	transactionsDetailRepository.saveAll(l);	
 			}
 			logAfterFirstTimeDataEntryToTable(TransactionsDetail.class, bw, apptIdInES.size(), apptIdInDB.size(),
 					String.join(",", apptIdInES.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())),

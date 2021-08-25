@@ -80,10 +80,10 @@ public class CommonEmployer extends CommonCloudColumn {
 	@Column(name = "lifetime_maximum_yn", length = 50)
 	String lifetimeMaximumYn;
 	
-	@Column(name = "yearlyDeductible", length = 50)
+	@Column(name = "yearly_deductible", length = 50)
 	Double yearlyDeductible;
 	
-	@Column(name = "lifetimeDeductible_yn", length = 50)
+	@Column(name = "lifetime_deductible_yn", length = 50)
 	String lifetimeDeductibleYn;
 	
 	@Column(name = "beginning_month", length = 50)

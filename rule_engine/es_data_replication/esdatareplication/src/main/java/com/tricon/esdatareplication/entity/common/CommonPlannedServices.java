@@ -3,6 +3,9 @@ package com.tricon.esdatareplication.entity.common;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,12 +26,14 @@ public class CommonPlannedServices extends CommonCloudColumn {
 	Integer apptId;
 		
 	@Column(name = "completion_date", length = 50, nullable = true)
+	@Temporal(TemporalType.DATE)
 	Date completionDate;
 		
 	@Column(name = "created_from_upgrade", length = 50, nullable = true)
 	String createdFromUpgrade;
 
 	@Column(name = "date_planned", length = 50, nullable = true)
+	@Temporal(TemporalType.DATE)
 	Date datePlanned;
 
 	@Column(name = "description", length = 50, nullable = true)
@@ -83,6 +88,7 @@ public class CommonPlannedServices extends CommonCloudColumn {
 	String status;
 
 	@Column(name = "status_date", nullable = false)	
+	@Temporal(TemporalType.DATE)
 	Date statusDate;
 
 	@Column(name = "surface", length = 50, nullable = false)

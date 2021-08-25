@@ -10,7 +10,7 @@ import com.tricon.esdatareplication.entity.ruleenginedb.ProviderReplica;
 public interface ProviderRepositoryRe extends JpaRepository<ProviderReplica, Integer> {
 	
 	
-	public List<ProviderReplica> findByProviderIdInAndOfficeId(Set<Integer> providerId, String officeuuid);
+	public List<ProviderReplica> findByProviderIdInAndOfficeId(Set<String> providerId, String officeuuid);
 
 	public List<ProviderReplica> findByMovedToCloud(int i);
 

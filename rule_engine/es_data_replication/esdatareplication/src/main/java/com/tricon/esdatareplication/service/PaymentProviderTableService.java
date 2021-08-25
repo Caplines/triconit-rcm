@@ -57,33 +57,59 @@ public class PaymentProviderTableService extends CommonTableService {
 			// new repository for cloud.. and save data...
 			//
 			Set<Integer> apptIdInES = new HashSet<>();
-			Set<Integer> apptIdInDB = new HashSet<>();
+			Set<String> apptIdInDB1 = new HashSet<>();
+			Set<String> apptIdInES1 = new HashSet<>();
+			Set<String> apptIdInESExtra = new HashSet<>();
+			//Set<String> apptIdInDBExtra = new HashSet<>();
+			
+			
 			((List<PaymentProviderReplica>) repList).stream().map(PaymentProviderReplica::getTranNum)
 					.forEach(apptIdInES::add);
+			((List<PaymentProviderReplica>) repList).stream().map(PaymentProviderReplica::getProviderId)
+			.forEach(apptIdInESExtra::add);
+			
+			for(PaymentProviderReplica r:(List<PaymentProviderReplica>) repList) {
+				apptIdInES1.add(r.getTranNum()+"---"+r.getProviderId());
+			}
 			// or
 			// d2.forEach(a -> patIds.add(a.getPatientId()));
-			List<PaymentProviderReplica> inDB = paymentProviderRepositoryRe.findByTranNumInAndOfficeId(apptIdInES,
+			List<PaymentProviderReplica> inDB = paymentProviderRepositoryRe.findByTranNumInAndProviderIdInAndOfficeId(apptIdInES,apptIdInESExtra,
 					office.getUuid());
-			inDB.stream().map(PaymentProviderReplica::getTranNum).forEach(apptIdInDB::add);
-			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
-			if (apptIdInES.size() > 0) {
-
-				apptIdInES.forEach(id -> {
-					PaymentProviderReplica q = ((List<PaymentProviderReplica>) repList).stream()
-							.filter(p -> id.intValue() == p.getTranNum().intValue()).findAny().orElse(null);
-					q.setId(null);
-					paymentProviderRepositoryRe.save(q);
-				});
+			//inDB.stream().map(PaymentProviderReplica::getTranNum).forEach(apptIdInDB::add);
+			for(PaymentProviderReplica r:inDB) {
+				apptIdInDB1.add(r.getTranNum()+"---"+r.getProviderId());
+				
 			}
-			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
+			apptIdInES1.removeAll(apptIdInDB1);// TranNum that are not in Local DB
+			if (apptIdInES1.size() > 0) {
+				List<PaymentProviderReplica> l= new ArrayList<>();
+				apptIdInES1.forEach(id -> {
+					PaymentProviderReplica q = ((List<PaymentProviderReplica>) repList).stream()
+							.filter(p ->Integer.parseInt(id.split("---")[0]) == p.getTranNum().intValue()
+							&& id.split("---")[1].equals(p.getProviderId())		
+									
+							).findAny().orElse(null);
+					q.setId(null);
+					l.add(q);
+				});
+				if (l.size()>0) paymentProviderRepositoryRe.saveAll(l);
+			}
+			apptIdInDB1.removeAll(apptIdInES1);// TranNum id that are there in Local DB we need to update.
 			// no unique id just a mapping table //Check latter
-			if (apptIdInDB.size() > 0) {
-				apptIdInDB.forEach(id -> {
+			if (apptIdInDB1.size() > 0) {
+				List<PaymentProviderReplica> l= new ArrayList<>();
+				apptIdInDB1.forEach(id -> {
 					PaymentProviderReplica p = ((List<PaymentProviderReplica>) repList).stream()
-							.filter(dp -> id.intValue() == dp.getTranNum().intValue()).findAny().orElse(null);
+							.filter(dp ->Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue()
+							&& id.split("---")[1].equals(dp.getProviderId())		
+									
+							).findAny().orElse(null);
 
 					PaymentProviderReplica old = inDB.stream()
-							.filter(ind -> id.intValue() == ind.getTranNum().intValue()).findAny().orElse(null);
+							.filter(dp ->Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue()
+							&& id.split("---")[1].equals(dp.getProviderId())		
+									
+							).findAny().orElse(null);
 					if (p != null && old != null) {
 						if (old != null) {
 							p.setId(old.getId());
@@ -91,14 +117,14 @@ public class PaymentProviderTableService extends CommonTableService {
 						}
 						p.setMovedToCloud(1);
 
-						paymentProviderRepositoryRe.save(p);
+						l.add(p);
 					}
 				});
-
+                 if (l.size()>0) paymentProviderRepositoryRe.saveAll(l);
 			}
-			appendLoggerToWriter(TransactionsReplica.class, bw,
+			appendLoggerToWriter(PaymentProviderReplica.class, bw,
 					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-			appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
+			appendLoggerToWriter(PaymentProviderReplica.class, bw, bu.toString(), true);
 			pL.forEach(x -> {
 				x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 			});
@@ -118,6 +144,7 @@ public class PaymentProviderTableService extends CommonTableService {
 
 	}
 
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
 	public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExisting) {
 		try {
 			if (!checkExisting) {
@@ -126,39 +153,73 @@ public class PaymentProviderTableService extends CommonTableService {
 			} else {
 				//
 				Set<Integer> apptIdInES = new HashSet<>();
-				Set<Integer> apptIdInDB = new HashSet<>();
-				((List<PaymentProvider>) data).stream().map(PaymentProvider::getTranNum).forEach(apptIdInES::add);
+				Set<String> apptIdInDB1 = new HashSet<>();
+				Set<String> apptIdInES1 = new HashSet<>();
+				Set<String> apptIdInESExtra = new HashSet<>();
+				//Set<String> apptIdInDBExtra = new HashSet<>();
+				
+				
+				((List<PaymentProvider>) data).stream().map(PaymentProvider::getTranNum)
+						.forEach(apptIdInES::add);
+				((List<PaymentProvider>) data).stream().map(PaymentProvider::getProviderId)
+				.forEach(apptIdInESExtra::add);
+				
+				for(PaymentProvider r:(List<PaymentProvider>) data) {
+					apptIdInES1.add(r.getTranNum()+"---"+r.getProviderId());
+				}
 				// or
 				// d2.forEach(a -> patIds.add(a.getPatientId()));
-				List<PaymentProvider> inDB = paymentProviderRepository.findByTranNumIn(apptIdInES);
-				inDB.stream().map(PaymentProvider::getTranNum).forEach(apptIdInDB::add);
-
-				apptIdInES.removeAll(apptIdInDB);// Patientid that are not in Local DB
-				if (apptIdInES.size() > 0) {
-					apptIdInES.forEach(id -> {
-						paymentProviderRepository.save(((List<PaymentProvider>) data).stream()
-								.filter(p -> id.equals(p.getTranNum())).findAny().orElse(null));
-					});
+				List<PaymentProvider> inDB = paymentProviderRepository.findByTranNumInAndProviderIdIn(apptIdInES,apptIdInESExtra);
+				//inDB.stream().map(PaymentProviderReplica::getTranNum).forEach(apptIdInDB::add);
+				for(PaymentProvider r:inDB) {
+					apptIdInDB1.add(r.getTranNum()+"---"+r.getProviderId());
+					
 				}
-				apptIdInDB.removeAll(apptIdInES);// Patient id that are there in Local DB we need to update.
-				if (apptIdInDB.size() > 0) {
-					apptIdInDB.forEach(id -> {
+				apptIdInES1.removeAll(apptIdInDB1);// TranNum that are not in Local DB
+				if (apptIdInES1.size() > 0) {
+                    List<PaymentProvider> l= new ArrayList<>();
+					apptIdInES1.forEach(id -> {
+						PaymentProvider q = ((List<PaymentProvider>) data).stream()
+								.filter(p ->Integer.parseInt(id.split("---")[0]) == p.getTranNum().intValue()
+								&& id.split("---")[1].equals(p.getProviderId())		
+										
+								).findAny().orElse(null);
+						q.setId(null);
+						l.add(q);
+					});
+					if (l.size()>0) paymentProviderRepository.saveAll(l);
+				}
+				apptIdInDB1.removeAll(apptIdInES1);// TranNum id that are there in Local DB we need to update.
+				// no unique id just a mapping table //Check latter
+				if (apptIdInDB1.size() > 0) {
+					List<PaymentProvider> l= new ArrayList<>();
+					apptIdInDB1.forEach(id -> {
 						PaymentProvider p = ((List<PaymentProvider>) data).stream()
-								.filter(dp -> id.equals(dp.getTranNum())).findAny().orElse(null);
+								.filter(dp ->Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue()
+								&& id.split("---")[1].equals(dp.getProviderId())		
+										
+								).findAny().orElse(null);
 
-						PaymentProvider old = inDB.stream().filter(ind -> id.equals(ind.getTranNum())).findAny()
-								.orElse(null);
-						p.setId(old.getId());
-						p.setMovedToCloud(0);
-						p.setCreatedDate(old.getCreatedDate());
-						paymentProviderRepository.save(p);
+						PaymentProvider old = inDB.stream()
+								.filter(dp ->Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue()
+								&& id.split("---")[1].equals(dp.getProviderId())		
+										
+								).findAny().orElse(null);
+						if (p != null && old != null) {
+							if (old != null) {
+								p.setId(old.getId());
+								p.setCreatedDate(old.getCreatedDate());
+							}
+							p.setMovedToCloud(0);
+
+							l.add(p);
+						}
 					});
-
+					if (l.size()>0) paymentProviderRepository.saveAll(l);
 				}
-
-				logAfterFirstTimeDataEntryToTable(PaymentProvider.class, bw, apptIdInES.size(), apptIdInDB.size(),
-						String.join(",", apptIdInES.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())),
-						String.join(",", apptIdInDB.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())));
+				logAfterFirstTimeDataEntryToTable(PaymentProvider.class, bw, apptIdInES1.size(), apptIdInDB1.size(),
+						String.join(",", apptIdInES1.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())),
+						String.join(",", apptIdInDB1.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())));
 			}
 		} catch (Exception ex) {
 			appenErrorToWriter(PaymentProvider.class, bw, ex);

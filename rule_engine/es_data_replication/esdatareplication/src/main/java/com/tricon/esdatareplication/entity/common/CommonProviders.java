@@ -4,6 +4,9 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -18,7 +21,7 @@ public class CommonProviders extends CommonCloudColumn {
 	private static final long serialVersionUID = 861120456836899889L;
 	
 	@Column(name = "provider_id", length = 50, nullable = false)
-	Integer providerId;
+	String providerId;
 	
 	@Column(name = "first_name", length = 50, nullable = true)
 	String firstName;
@@ -49,9 +52,11 @@ public class CommonProviders extends CommonCloudColumn {
 	String sex;
 
 	@Column(name = "birth_date",  nullable = true)
+	@Temporal(TemporalType.DATE)
 	Date birth_date;
 
 	@Column(name = "hire_date",nullable = true)
+	@Temporal(TemporalType.DATE)
 	Date hireDate;
 
 	@Column(name = "social_security", length = 50, nullable = true)

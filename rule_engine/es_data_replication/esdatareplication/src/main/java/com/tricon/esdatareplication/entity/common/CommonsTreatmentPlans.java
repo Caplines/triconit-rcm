@@ -4,6 +4,9 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -20,7 +23,7 @@ public class CommonsTreatmentPlans extends CommonCloudColumn {
 	Integer treatmentPlanId;
 
 	@Column(name = "patient_id", length = 50, nullable = false)
-	Integer patientId;
+	String patientId;
 
 	@Column(name = "description", length = 50, nullable = true)
 	String description;
@@ -29,12 +32,14 @@ public class CommonsTreatmentPlans extends CommonCloudColumn {
 	String status;
 
 	@Column(name = "date_entered", nullable = true)
+	@Temporal(TemporalType.DATE)
 	Date dateEntered;
 	
 	@Column(name = "user_id", length = 50, nullable = true)
 	String userId;
 
 	@Column(name = "date_last_updated", nullable = true)
+	@Temporal(TemporalType.DATE)
 	Date dateLastUpdated;
 	
 	@Column(name = "last_updated_by", nullable = true)

@@ -62,8 +62,8 @@ public class Constants {
 	public static final String EMPLOYER_COLUMNS = "employer_id,name,address_1,address_2,"
 			+ "city,state,zipcode,contact,phone1," + "phone1ext,phone2,phone2ext,fax,"
 			+ "signature_on_file_yn,group_number,group_name," + "insurance_company_id,form_id,fee_schedule,"
-			+ "maximum_coverage,lifetime_maximum_yn,yearlyDeductible,"
-			+ "lifetimeDeductible_yn,beginning_month,submit_electronically," + "m_number_submitted,y_number_submitted,"
+			+ "maximum_coverage,lifetime_maximum_yn,yearly_deductible,"
+			+ "lifetime_deductible_yn,beginning_month,submit_electronically," + "m_number_submitted,y_number_submitted,"
 			+ "m_amount_submitted,y_amount_submitted," + "m_number_received,y_number_received,"
 			+ "m_amount_received,y_amount_received," + "notes,carrier_type,receive_paper_claim,"
 			+ "estimate_insurance,provider_id_flag," + "patient_id_flag,patient_ssn_flag,"
@@ -73,7 +73,7 @@ public class Constants {
 			+ "secondary_form_id,id_treating_dentist," + "trojan_mc,Managed_care,division_section_no,"
 			+ "id_facility_by,adjustment_type ";
 
-	public static final String PAYMENTPROVIDER_COLUMNS = "tran_num,provider_id,amount,practiceId,prod_provider_id ";
+	public static final String PAYMENTPROVIDER_COLUMNS = "tran_num,provider_id,amount,practice_id,prod_provider_id ";
 
 	public static final String PLANNEDSERVICE_COLUMNS = "appt_group,appt_id,completion_date,created_from_upgrade,"
 			+ "date_planned,description,fee,lab_code,lab_code2,"
@@ -121,6 +121,7 @@ public class Constants {
 	public static final String RECORDS_INSERTED_IN_TABLE = "New Count of records entered in table";
 	public static final String RECORDS_UPDATED_IN_TABLE_CLOUD = "Records updated in table";
 	public static final String ERROR_IN_PUSHING_TO_CLOUD= "Error in Pushing to cloud:";
+	public static final String TABLE_DATA_DELETION_PROCESS = "Table records deletion Process";
 	
 	
 	

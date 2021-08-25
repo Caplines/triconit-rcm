@@ -132,7 +132,7 @@ public class QueryTable {
 				" count(*) from " + Constants.TABLE_TRANSACTIONS_DETAIL + " ", " ", false, false,
 				TransactionsDetail.class),
 
-		ES_TABLE_TRANSACTIONS_DETAIL_NEXT(Constants.TABLE_TRANSACTIONS_DETAIL,
+		ES_TRANSACTIONS_DETAIL_NEXT(Constants.TABLE_TRANSACTIONS_DETAIL,
 				Constants.TRANSACTIONSDETAILS_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS_DETAIL + " where "
 						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by detail_id asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
@@ -150,7 +150,7 @@ public class QueryTable {
 		 * Payment Provider Start
 		 */
 
-		ES_PAYMENT_PROVIDER_DETAIL(Constants.TABLE_PAYMENT_PROVIDER,
+		ES_PAYMENT_PROVIDER(Constants.TABLE_PAYMENT_PROVIDER,
 				Constants.PAYMENTPROVIDER_COLUMNS + " from " + Constants.TABLE_PAYMENT_PROVIDER
 						+ " order by tran_num asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,

@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.tricon.esdatareplication.entity.common.CommonsTreatmentPlans;
 import com.tricon.esdatareplication.util.Constants;
@@ -17,7 +18,9 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_TREATMENT_PLANS)
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_TREATMENT_PLANS,
+        uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"treatment_plan_id","patient_id"})})
 @EqualsAndHashCode(callSuper = true)
 public class TreatmentPlansReplica extends CommonsTreatmentPlans  implements Serializable{
 	/**

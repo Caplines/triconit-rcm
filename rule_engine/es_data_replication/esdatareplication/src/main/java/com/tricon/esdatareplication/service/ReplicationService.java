@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -95,13 +98,15 @@ public class ReplicationService {
 	private CommonTableService commonTableService;
 
 	// Holds the reference of patentIds inserted in DB from the second time
-	static Set<String> patientIdsFetchced = new HashSet<>();
+	//static Set<String> patientIdsFetchced = new HashSet<>();
 	static Set<Integer> employerIdsFetchced = new HashSet<>();
 	static Set<Integer> transactionsNumbersFetchced = new HashSet<>();
 	static Set<String> providerIdsFetchced = new HashSet<>();
 	static Set<Integer> lineNumbersFetchced = new HashSet<>();
 	static Set<String> patientIdsFetchcedExtra = new HashSet<>();
-	static Set<String> patientIdsFetchcedFromPlannedService = new HashSet<>();
+	//static Set<String> patientIdsFetchcedFromPlannedService = n ew HashSet<>();
+	static Set<String> patientIdsFetchedTP =  new HashSet<>();
+	static Set<Integer> treatmentPlanIdFetchedTP =new HashSet<>();
 
 	// @Transactional(rollbackFor = NullPointerException.class, transactionManager =
 	// "ruleEngineTransactionManager")
@@ -110,19 +115,56 @@ public class ReplicationService {
 		// Fetch all tables names to be fetched from ES
 		commonTableService.appendLoggerToWriter(ReplicationService.class, bw, new Date().toString(), true);
 		commonTableService.appendLoggerToWriter(ReplicationService.class, bw, "Pull From Local ES Started", true);
-		fetchDataFromLocalESToLocalDB(bw);
+		fetchDataFromLocalESToLocalDB(bw,true);
 		commonTableService.appendLoggerToWriter(ReplicationService.class, bw, "Pull From Local ES END", true);
 		// Push data to Cloud
 		pushDataFromLocalESToColudDB(bw);
 		commonTableService.appendLoggerToWriter(ReplicationService.class, bw, new Date().toString(), true);
 
-		patientIdsFetchced.clear();
+		//patientIdsFetchced.clear();
 		employerIdsFetchced.clear();
 		transactionsNumbersFetchced.clear();
 		providerIdsFetchced.clear();
 		lineNumbersFetchced.clear();
 		patientIdsFetchcedExtra.clear();
-		patientIdsFetchcedFromPlannedService.clear();
+		//patientIdsFetchcedFromPlannedService.clear();
+		patientIdsFetchedTP.clear();
+		treatmentPlanIdFetchedTP.clear();
+		
+		//Handle Deletion of Records
+		//Treatment Plans //Treatment Plan Items // Planned Services
+		deleteData(bw);
+		
+	}
+	
+	public void deleteData(BufferedWriter bw) {
+		Office office = officeRepository.findById(1).get();
+		List<ESTable> estables = estableRepository.findByCodeWrittenAndUploadedToLocal(
+				DataStatus.StatusEnum.CODE_WRITTEN_STATUS.YES, DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO);
+		Date currentDate = new Date();
+
+		int start = 1;
+		int top = batchSize;
+		List<TreatmentPlanItems> tpitems=null;
+		Set<Integer> tpIds=null; 
+		for (ESTable table : estables) {
+			QueryTable.QueryEnum tab = QueryTable.QueryEnum.valueOf("ES_" + table.getTableName().toUpperCase() + "_NEXT");
+			if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLANS)) {
+				List<?> data = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), false,false,false);
+				tpIds =treatmentPlansTableService.deleteRelevantDataFromLocalDB(bw, data);	
+				treatmentPlansTableService.deleteRelevantDataFromColudDB(bw, tpIds, office);
+			}else	if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLAN_ITEMS)) {
+				tpitems =treatmentPlanItemsTableService.deleteRelevantDataFromLocalDB(bw, tpIds);	
+				treatmentPlanItemsTableService.deleteRelevantDataFromColudDB(bw, tpitems, office);
+				
+			}else	if (table.getTableName().equals(Constants.TABLE_PLANNED_SERVICES)) {
+				List<PlannedServices> pd =plannedServicesTableService.deleteRelevantDataFromLocalDB(bw, tpitems);	
+				plannedServicesTableService.deleteRelevantDataFromColudDB(bw, pd, office);
+				
+			}
+		
+		}
+		
 	}
 
 	public void pushDataFromLocalESToColudDB(BufferedWriter bw) {
@@ -179,12 +221,13 @@ public class ReplicationService {
 
 	}
 
-	public void fetchDataFromLocalESToLocalDB(BufferedWriter bw) {
+	public void fetchDataFromLocalESToLocalDB(BufferedWriter bw,boolean updateWhere) {
 
 		// Fetch all tables names to be fetched from ES
 
 		Date currentDate = new Date();
 		ESTable establePat = null;
+		ESTable estableEmp = null;
 		List<ESTable> estables = estableRepository.findByCodeWrittenAndUploadedToLocal(
 				DataStatus.StatusEnum.CODE_WRITTEN_STATUS.YES, DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO);
 		for (ESTable table : estables) {
@@ -192,6 +235,8 @@ public class ReplicationService {
 
 			if (table.getTableName().equals(Constants.TABLE_PATIENT))
 				establePat = table;
+			if (table.getTableName().equals(Constants.TABLE_EMPLOYER))
+				estableEmp = table;
 			commonTableService.appendLoggerToWriter(bw, "*********** START *******************" + table.getTableName(),
 					true);
 			int totalCount = 0;
@@ -210,7 +255,7 @@ public class ReplicationService {
 					top = totalCount;
 				while (true) {
 					/// SELECT TOP 1 START AT 100 p.* FROM "PPM"."paytype" AS p
-					List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), false,true);
+					List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), false,true,updateWhere);
 					countRecord = countRecord + list.size();
 					if (list.size() == 0) {
 						if (table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.YES)
@@ -227,24 +272,35 @@ public class ReplicationService {
 				}
 			} else if (table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.NO
 					&& table.getUpdatedDate() != null) {
-				fetchDataFromLocalESToLocalDBNext(table, currentDate, bw, false);
+				fetchDataFromLocalESToLocalDBNext(table, currentDate, bw, false,true);
 			}
 			commonTableService.appendLoggerToWriter(bw, "*********** END *******************" + table.getTableName(),
 					true);
 		}
 		// For Extra Patients
 		if (establePat != null) {
+			
 			commonTableService.appendLoggerToWriter(bw,
 					"*********** START *******************" + establePat.getTableName(), true);
-			// fetchDataFromLocalESToLocalDBNext(establePat, currentDate, bw, true);
+			 fetchDataFromLocalESToLocalDBNext(establePat, currentDate, bw, true,true);
 			commonTableService.appendLoggerToWriter(bw,
 					"*********** END *******************" + establePat.getTableName(), true);
+			 if (estableEmp!=null) {
+			commonTableService.appendLoggerToWriter(bw,
+					"*********** START *******************" + estableEmp.getTableName(), true);
+			 fetchDataFromLocalESToLocalDBNext(estableEmp, currentDate, bw, true,true);
+			commonTableService.appendLoggerToWriter(bw,
+					"*********** END *******************" + estableEmp.getTableName(), true);
+			 }
 		}
+		
+		
+		
 
 	}
 
 	private void fetchDataFromLocalESToLocalDBNext(ESTable table, Date currentDate, BufferedWriter bw,
-			boolean extraPat) {
+			boolean extraPat,boolean updateWhere) {
 		int countRecord = 0;
 		// int totalCount = 0;
 		QueryTable.QueryEnum tab = QueryTable.QueryEnum.valueOf("ES_" + table.getTableName().toUpperCase() + "_NEXT");
@@ -275,7 +331,7 @@ public class ReplicationService {
 
 			// while (true) {
 			/// SELECT TOP 1 START AT 100 p.* FROM "PPM"."paytype" AS p
-			List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), extraPat,false);
+			List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), extraPat,false,updateWhere);
 			int size = list == null ? 0 : list.size();
 			commonTableService.appendLoggerToWriter(bw, "Count of  Records Read From ES in Current Iteration-->" + size,
 					true);
@@ -299,7 +355,7 @@ public class ReplicationService {
 	}
 
 	private List<?> fetchDataFromES(QueryTable.QueryEnum qnum, int total, int start, Date cDate,
-			Date lastDateofCrawling, boolean extraPat, boolean needTop) {
+			Date lastDateofCrawling, boolean extraPat, boolean needTop,boolean updateWhere) {
 
 		List<?> arrayList = null;
 
@@ -318,11 +374,16 @@ public class ReplicationService {
 				query = limit + " " + query;	
 			}
 			
-			if (qnum.isWhereClause() && !extraPat)
+			if (updateWhere) {
+			if (qnum.isWhereClause() && !extraPat) {
 				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP,
 						createWhereClause(qnum, cDate, lastDateofCrawling));
-			else if (qnum.isWhereClause() && extraPat) {
+			}else if (qnum.isWhereClause() && extraPat) {
 				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP, createWhereClause(qnum));
+			 }
+			}else if (qnum.isWhereClause()){//To fetch all Records no where clause ..helpful in deleting 
+				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP, "");
+				query = query.replace(" where ", "  ");
 			}
 			PreparedStatement pstmt = con.prepareStatement("select " + query);
 			System.out.println("query-" + query);
@@ -400,20 +461,20 @@ public class ReplicationService {
 		} else if ((tab.getClazz().equals(Chairs.class))) {
 			chairsTableService.saveDataToLocalDB(bw, data);
 		} else if ((tab.getClazz().equals(Patient.class))) {
-			if (checkExisting) {
-				((List<Patient>) data).stream().map(Patient::getPatientId).forEach(patientIdsFetchced::add);
+			if (checkExisting  && data!=null) {
+				//((List<Patient>) data).stream().map(Patient::getPatientId).forEach(patientIdsFetchced::add);
 				((List<Patient>) data).stream().map(Patient::getPrimEmployerId).forEach(employerIdsFetchced::add);
-
+				((List<Patient>) data).stream().map(Patient::getSecEmployerId).forEach(employerIdsFetchced::add);
 			}
 			patientTableService.saveDataToLocalDB(bw, data, checkExisting);
 		} else if ((tab.getClazz().equals(Appointment.class))) {
-			if (checkExisting) {
+			if (checkExisting  && data!=null) {
 				((List<Appointment>) data).stream().map(Appointment::getPatientId)
 						.forEach(patientIdsFetchcedExtra::add);
 			}
 			appointmentTableService.saveDataToLocalDB(bw, data, checkExisting);
 		} else if ((tab.getClazz().equals(Transactions.class))) {
-			if (checkExisting) {
+			if (checkExisting  && data!=null) {
 				((List<Transactions>) data).stream().map(Transactions::getTranNum)
 						.forEach(transactionsNumbersFetchced::add);
 				((List<Transactions>) data).stream().map(Transactions::getProviderId).forEach(providerIdsFetchced::add);
@@ -427,17 +488,28 @@ public class ReplicationService {
 			paymentProviderTableService.saveDataToLocalDB(bw, data, checkExisting);
 		} else if ((tab.getClazz().equals(PlannedServices.class))) {
 			if (checkExisting) {
-				((List<PlannedServices>) data).stream().map(PlannedServices::getLineNumber)
+			/*	((List<PlannedServices>) data).stream().map(PlannedServices::getLineNumber)
 						.forEach(lineNumbersFetchced::add);
 
 				((List<PlannedServices>) data).stream().map(PlannedServices::getPatientId)
 						.forEach(patientIdsFetchcedFromPlannedService::add);
-
+              */
 			}
 			plannedServicesTableService.saveDataToLocalDB(bw, data, checkExisting);
 		} else if ((tab.getClazz().equals(TreatmentPlanItems.class))) {
+			if (checkExisting && data!=null) {
+				((List<TreatmentPlanItems>) data).stream().map(TreatmentPlanItems::getLineNumber)
+				.forEach(lineNumbersFetchced::add);
+			}
 			treatmentPlanItemsTableService.saveDataToLocalDB(bw, data, checkExisting);
 		} else if ((tab.getClazz().equals(TreatmentPlans.class))) {
+			if (checkExisting  && data!=null ) {
+				((List<TreatmentPlans>) data).stream().map(TreatmentPlans::getPatientId)
+				.forEach(patientIdsFetchedTP::add);
+				((List<TreatmentPlans>) data).stream().map(TreatmentPlans::getTreatmentPlanId)
+				.forEach(treatmentPlanIdFetchedTP::add);
+
+			}
 			treatmentPlansTableService.saveDataToLocalDB(bw, data, checkExisting);
 		} else if ((tab.getClazz().equals(Employer.class))) {// This will need patient Id info
 			employerTableService.saveDataToLocalDB(bw, data, checkExisting);
@@ -454,6 +526,13 @@ public class ReplicationService {
 		if (tab.isWhereClause() && tab.getClazz().equals(Patient.class)) {
 
 			return " patient_id in  (" + "'" + String.join("','", patientIdsFetchcedExtra) + "')";
+
+		}else if (tab.isWhereClause() && tab.getClazz().equals(Employer.class)) {
+
+			return " employer_id in  ("
+					+ String.join(",",
+							employerIdsFetchced.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
+					+ ") ";
 
 		}
 		return "";
@@ -480,6 +559,7 @@ public class ReplicationService {
 
 			return " tran_date BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
 					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
+			
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TransactionsDetail.class)) {
 
 			/*
@@ -493,31 +573,31 @@ public class ReplicationService {
 		} else if (tab.isWhereClause() && tab.getClazz().equals(PaymentProvider.class)) {
 			return " tran_num in  (" + String.join(",",
 					transactionsNumbersFetchced.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
-					+ ")";
+					+ ") and provider_id in ('"+
+					String.join("','",
+							providerIdsFetchced.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))+
+					"')";
 
 		} else if (tab.isWhereClause() && tab.getClazz().equals(Provider.class)) {
 
-			return " provider_id in  (" + String.join(",", providerIdsFetchced) + ")";
+			return " provider_id in  ('" + String.join("','", providerIdsFetchced) + "')";
 		} else if (tab.isWhereClause() && tab.getClazz().equals(PlannedServices.class)) {
 			// See latter if we move to date_planned or patient Id
-			return " date_planned BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
-					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
-			// return " patient_id in (" + "'" + String.join("','", patientIdsFetchced) +
-			// "')";
+			//return " date_planned BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
+			//		+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
+			 
+			 return " patient_id in (" + "'" + String.join("','", patientIdsFetchedTP) +
+			       "') and line_number in (" 
+			       + String.join(",",  
+			       lineNumbersFetchced.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())) + 
+			       ")";
 			// a b c
 			// a,','b,',c
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlanItems.class)) {
-			System.out
-					.println(" line_number in  ("
-							+ String.join(",",
-									lineNumbersFetchced.stream().map(s -> String.valueOf(s))
-											.collect(Collectors.toList()))
-							+ ") and patient_id in ('" + String.join("','", patientIdsFetchcedFromPlannedService)
-							+ "')");
-			return " line_number in  ("
+			return " treatment_plan_id in  ("
 					+ String.join(",",
-							lineNumbersFetchced.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
-					+ ") and patient_id in ('" + String.join("','", patientIdsFetchcedFromPlannedService) + "')";
+							treatmentPlanIdFetchedTP.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
+					+ ") and patient_id in ('" + String.join("','", patientIdsFetchedTP) + "')";
 
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlans.class)) {
 			// check for date date_last_updated when we get data
@@ -547,22 +627,23 @@ public class ReplicationService {
 	 * OfS3YhnYrc9IuAGcMYR2ve0/edit#gid=1576780686
 	 */
 	/*
-	 * 1. Patient 1                       ......
-	 * 2. Paytype 1 Done Static           ......
-	 * 3. Chairs 1 Done Static            ......
-	 * 4. transactions                       tran
-	 * 5. transactions_detail 1              tran
-	 * 6 .payment_provider 1                 tran
-	 * 7. appointment 1                    ......
-	 * 8. planned_services 1 (verify in Service if we need Group or PatientId line
+	 * 1. Patient 1                       ......t  
+	 * 2. Paytype 1 Done Static           ......t
+	 * 3. Chairs 1 Done Static            ......t 
+	 * 4. transactions                       tran ..t
+	 * 5. transactions_detail 1              tran ..t
+	 * 6 .payment_provider 1                 tran ..t  
+	 * 7. appointment 1                    ......t
+	 * 8. planned_services 1               ...... t         TP_ID
+	 * (verify in Service if we need Group or PatientId line
 	 *                                     .......
 	 * number in ) 
-	 * 9. treatment_plan_items 1           .........
-	 * 10 treatment_plans 1 //check for date .....
-	 * date_last_updated when we get data  
+	 * 9. treatment_plan_items 1           ..... t          TP_ID
+	 * 10 treatment_plans 1 //check for date .....t         TP_ID
+	 * date_last_updated when we get data   
 	 * 11 employer 1                        ........
-	 * 12 provider 1	                     tran
+	 * 12 provider 1	                     tran ..t (Independent refer from Transactions detail)
 	 * 
 	 */
-
+    //how map date time to date use @Temporal(TemporalType.DATE)
 }

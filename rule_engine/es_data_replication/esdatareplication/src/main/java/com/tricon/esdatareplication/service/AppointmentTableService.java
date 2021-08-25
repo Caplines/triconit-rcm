@@ -115,6 +115,7 @@ public class AppointmentTableService  extends CommonTableService{
 
 	}
 
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager") 
 	public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExisting) {
 
 		try {
@@ -133,13 +134,16 @@ public class AppointmentTableService  extends CommonTableService{
 
 				apptIdInES.removeAll(apptIdInDB);// AppointmentId that are not in Local DB
 				if (apptIdInES.size() > 0) {
+					List<Appointment> l = new ArrayList<>();
 					apptIdInES.forEach(id -> {
-						appointmentRepository.save(((List<Appointment>) data).stream()
+						l.add(((List<Appointment>) data).stream()
 								.filter(p -> id.equals(p.getAppointmentId())).findAny().orElse(null));
 					});
+					appointmentRepository.saveAll(l);
 				}
 				apptIdInDB.removeAll(apptIdInES);// Patient id that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
+					List<Appointment> l = new ArrayList<>();
 					apptIdInDB.forEach(id -> {
 						Appointment p = ((List<Appointment>) data).stream()
 								.filter(dp -> id.equals(dp.getAppointmentId())).findAny().orElse(null);
@@ -149,8 +153,9 @@ public class AppointmentTableService  extends CommonTableService{
 						p.setId(old.getId());
 						p.setMovedToCloud(0);
 						p.setCreatedDate(old.getCreatedDate());
-						appointmentRepository.save(p);
+						l.add(p);
 					});
+					appointmentRepository.saveAll(l);
 				}
 				logAfterFirstTimeDataEntryToTable(Appointment.class, bw, apptIdInES.size(), apptIdInDB.size(),
 						String.join(",", apptIdInES.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())),

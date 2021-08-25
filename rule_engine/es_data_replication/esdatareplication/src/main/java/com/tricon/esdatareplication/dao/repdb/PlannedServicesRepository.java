@@ -14,7 +14,9 @@ public interface PlannedServicesRepository extends JpaRepository<PlannedServices
 	public List<PlannedServices> findByPatientIdInAndLineNumberInOrderByDatePlanned(Set<String> patientids,
 			 Set<Integer> linenumber);
 	
+	public List<PlannedServices> findByPatientIdIn(Set<String> patientids);
 
+	
 	public List<PlannedServices> findByMovedToCloud(int i);
 	
 	public List<PlannedServices> findByLineNumberIn(Set<Integer> lineNumber);

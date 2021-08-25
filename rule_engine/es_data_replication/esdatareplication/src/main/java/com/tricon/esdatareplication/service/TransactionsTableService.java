@@ -62,16 +62,18 @@ public class TransactionsTableService extends CommonTableService {
 			inDB.stream().map(TransactionsReplica::getTranNum).forEach(apptIdInDB::add);
 			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
 			if (apptIdInES.size() > 0) {
-				
+				List<TransactionsReplica> l= new ArrayList<>(); 
 				apptIdInES.forEach(id -> {
 					TransactionsReplica q=((List<TransactionsReplica>) repList).stream()
 					.filter(p -> id.intValue()==p.getTranNum().intValue()).findAny().orElse(null);
 					q.setId(null);
-					transactionsRepositoryRe.save(q);
+					l.add(q);
 				});
+			 if (l.size()>0)transactionsRepositoryRe.saveAll(l);
 			}
 			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
+				List<TransactionsReplica> l= new ArrayList<>(); 
 				apptIdInDB.forEach(id -> {
 					TransactionsReplica p = ((List<TransactionsReplica>) repList).stream().filter(dp -> id.intValue()==dp.getTranNum().intValue())
 							.findAny().orElse(null);
@@ -85,10 +87,10 @@ public class TransactionsTableService extends CommonTableService {
 						}
 					    p.setMovedToCloud(1);
 					    
-					   transactionsRepositoryRe.save(p);
+					   l.add(p);
 					}
 				});
-
+				 if (l.size()>0)transactionsRepositoryRe.saveAll(l);
 			}
 			appendLoggerToWriter(TransactionsReplica.class, bw,
 					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
@@ -112,6 +114,7 @@ public class TransactionsTableService extends CommonTableService {
 
 	}
 
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
 	public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExisting) {
 		try {
 			if (!checkExisting) {
@@ -129,13 +132,19 @@ public class TransactionsTableService extends CommonTableService {
 
 				apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
 				if (apptIdInES.size() > 0) {
+					List<Transactions> l= new ArrayList<>();
 					apptIdInES.forEach(id -> {
-						transactionsRepository.save(((List<Transactions>) data).stream()
-								.filter(p -> id.intValue()==p.getTranNum().intValue()).findAny().orElse(null));
+						Transactions q =((List<Transactions>) data).stream()
+								.filter(p -> id.intValue()==p.getTranNum().intValue()).findAny().orElse(null);
+						q.setId(null);
+						l.add(q);
 					});
+					
+					 if (l.size()>0)transactionsRepository.saveAll(l);
 				}
 				apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
+					List<Transactions> l= new ArrayList<>();
 					apptIdInDB.forEach(id -> {
 						Transactions p = ((List<Transactions>) data).stream().filter(dp -> id.equals(dp.getTranNum()))
 								.findAny().orElse(null);
@@ -145,9 +154,9 @@ public class TransactionsTableService extends CommonTableService {
 						p.setId(old.getId());
 						p.setMovedToCloud(0);
 						p.setCreatedDate(old.getCreatedDate());
-						transactionsRepository.save(p);
+						l.add(p);
 					});
-
+					 if (l.size()>0)transactionsRepository.saveAll(l);
 				}
 
 				logAfterFirstTimeDataEntryToTable(Transactions.class, bw, apptIdInES.size(), apptIdInDB.size(),

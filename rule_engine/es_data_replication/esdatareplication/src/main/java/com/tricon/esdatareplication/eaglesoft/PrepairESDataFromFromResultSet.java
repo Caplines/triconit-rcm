@@ -379,7 +379,7 @@ public class PrepairESDataFromFromResultSet {
 			while (rs.next()) {
 				p= new TreatmentPlans();
 				p.setTreatmentPlanId(rs.getInt("treatment_plan_id"));
-				p.setPatientId(rs.getInt("patient_id"));
+				p.setPatientId(rs.getString("patient_id"));
 				p.setDescription(rs.getString("description"));
 				p.setStatus(rs.getString("status"));
 				p.setDateEntered(rs.getDate("date_entered"));
@@ -434,7 +434,7 @@ public class PrepairESDataFromFromResultSet {
 		try {
 			while (rs.next()) {
                 p= new Provider();
-				p.setProviderId(rs.getInt("provider_id"));
+				p.setProviderId(rs.getString("provider_id"));
 				p.setFirstName(rs.getString("first_name"));
 				p.setLastName(rs.getString("last_name"));
 				p.setAddress1(rs.getString("address_1"));
@@ -625,7 +625,7 @@ public class PrepairESDataFromFromResultSet {
 				p.setTranNum(rs.getInt("tran_num"));
 				p.setProviderId(rs.getString("provider_id"));
 				p.setAmount(rs.getDouble("amount"));
-				p.setPracticeId(rs.getInt("practiceId"));
+				p.setPracticeId(rs.getInt("practice_id"));
 				p.setProdProviderId(rs.getString("prod_provider_id"));
 				p.setMovedToCloud(0);
 				cList.add(p);
@@ -666,8 +666,8 @@ public class PrepairESDataFromFromResultSet {
 				p.setFeeSchedule(rs.getInt("fee_schedule"));
 				p.setMaximumCoverage(rs.getDouble("maximum_coverage"));
 				p.setLifetimeMaximumYn(rs.getString("lifetime_maximum_yn"));
-				p.setYearlyDeductible(rs.getDouble("yearlyDeductible"));
-				p.setLifetimeDeductibleYn(rs.getString("lifetimeDeductible_yn"));
+				p.setYearlyDeductible(rs.getDouble("yearly_deductible"));
+				p.setLifetimeDeductibleYn(rs.getString("lifetime_deductible_yn"));
 				p.setBeginningMonth(rs.getInt("beginning_month"));
 				p.setSubmitElectronically(rs.getString("submit_electronically"));
 				p.setMNumberSubmitted(rs.getInt("m_number_submitted"));

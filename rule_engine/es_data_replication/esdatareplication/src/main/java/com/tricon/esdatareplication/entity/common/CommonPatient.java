@@ -5,7 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -78,6 +79,7 @@ public class CommonPatient extends CommonCloudColumn{
 	String socialSecurity;
 	
 	@Column(name = "birth_date")
+	@Temporal(TemporalType.DATE)
 	Date birthDate;
 	
 	
@@ -124,9 +126,11 @@ public class CommonPatient extends CommonCloudColumn{
     int estimatedInsurance;
     
     @Column(name = "first_visit_date")
+    @Temporal(TemporalType.DATE)
     Date firstVisitDate;
     
     @Column(name = "last_date_date", length = 50)
+    @Temporal(TemporalType.DATE)
     Date lastDateSeen;
 
     
@@ -194,15 +198,19 @@ public class CommonPatient extends CommonCloudColumn{
 	String prefersAmpm;
 	
 	@Column(name = "last_regular_appointment")
+	@Temporal(TemporalType.DATE)
 	Date lastRegularAppointment;
 	
-	@Column(name = "next_regular_appointment")	
+	@Column(name = "next_regular_appointment")
+	@Temporal(TemporalType.DATE)
 	Date nextRegularAppointment;	
 	
 	@Column(name = "last_preventive_appointment")
+	@Temporal(TemporalType.DATE)
 	Date lastPreventiveAppointment;
 	
 	@Column(name = "next_preventive_appointment")
+	@Temporal(TemporalType.DATE)
 	Date nextPreventiveAppointment;
 	
 	
@@ -228,9 +236,11 @@ public class CommonPatient extends CommonCloudColumn{
 	String policyHolderStatus;
 	
 	@Column(name = "next_recall_date")
+	@Temporal(TemporalType.DATE)
 	Date nextRecallDate;
 	
 	@Column(name = "last_recall_date")
+	@Temporal(TemporalType.DATE)
 	Date lastRecallDate;
 	
 	@Column(name = "ytd_visits", length = 50)
@@ -292,50 +302,65 @@ public class CommonPatient extends CommonCloudColumn{
 	String emailAddress;
 	
 	@Column(name = "date_entered")
+	@Temporal(TemporalType.DATE)
 	Date dateEntered;
 	
 	@Column(name = "last_soft_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastSoftExam;
 	
 	@Column(name = "last_restorative_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastRestorativeExam;
 	
 	@Column(name = "last_tmj_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastTmjExam;
 	
 	@Column(name = "last_occl_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastOcclExam;
 
 	@Column(name = "last_intraoral_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastIntraoralExam;
 	
 	@Column(name = "last_radiography_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastRadiographyExam;
 	
 	
 	@Column(name = "last_cosmetic_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastCosmeticExam;
 	
 	@Column(name = "last_head_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastHeadExam;
 	
 	@Column(name = "last_habits_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastHabitsExam;
 	
 	@Column(name = "last_general_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastGeneralExam;
 	
 	@Column(name = "last_cancer_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastCancerExam;
 	
 	
 	@Column(name = "last_history_exam")
+	@Temporal(TemporalType.DATE)
 	Date lastHistoryExam;
 	
 	@Column(name = "last_bitewings")
+	@Temporal(TemporalType.DATE)
 	Date lastBitewings;
 	
 	@Column(name = "last_full_mouth")
+	@Temporal(TemporalType.DATE)
 	Date lastFullMouth;
 	
 	
@@ -348,6 +373,7 @@ public class CommonPatient extends CommonCloudColumn{
 	
 	
 	@Column(name = "last_pano_date")
+	@Temporal(TemporalType.DATE)
 	Date lastPanoDate;
 	
 	@Column(name = "pharmacy_id", length = 50)
@@ -389,9 +415,11 @@ public class CommonPatient extends CommonCloudColumn{
 	String hipaaAuthorization;
 	
 	@Column(name = "hipaa_priv_pract_date")
+	@Temporal(TemporalType.DATE)
 	Date hipaaPrivPractDate;
 	
 	@Column(name = "hipaa_authorization_date")
+	@Temporal(TemporalType.DATE)
 	Date hipaaAuthorizationDate;
 	
 	@Column(name = "hipaa_consent", length = 50)
@@ -399,6 +427,7 @@ public class CommonPatient extends CommonCloudColumn{
 	
 	
 	@Column(name = "hipaa_consent_date")
+	@Temporal(TemporalType.DATE)
 	Date hipaaConsentDate;
 	
 	@Column(name = "prim_member_id", length = 50)
@@ -421,6 +450,7 @@ public class CommonPatient extends CommonCloudColumn{
 	int orthoMonthsOfTx;
 	
 	@Column(name = "ortho_date_started")
+	@Temporal(TemporalType.DATE)
 	Date orthoDateStarted;
 	
 	@Column(name = "ortho_ins_bill_freq", length = 50)
@@ -499,6 +529,7 @@ public class CommonPatient extends CommonCloudColumn{
 	String encryptedSocialSecurity;
 	
 	@Column(name = "last_medical_history")
+	@Temporal(TemporalType.DATE)
 	Date lastMedicalHistory;
 
 	

@@ -25,7 +25,7 @@ public class CommonPaymentProvider extends CommonCloudColumn {
 	@Column(name = "amount", length = 50)
 	Double amount;
 
-	@Column(name = "practiceId", length = 50)
+	@Column(name = "practice_id", length = 50)
 	Integer practiceId;
 
 	@Column(name = "prod_provider_id", length = 50)

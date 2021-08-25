@@ -9,7 +9,7 @@ import com.tricon.esdatareplication.entity.repdb.Provider;
 
 public interface ProviderRepository extends JpaRepository<Provider, Integer> {
 
-	public List<Provider> findByProviderIdIn(Set<Integer> providerId);
+	public List<Provider> findByProviderIdIn(Set<String> providerId);
 
 	public List<Provider> findByMovedToCloud(int i);
 
