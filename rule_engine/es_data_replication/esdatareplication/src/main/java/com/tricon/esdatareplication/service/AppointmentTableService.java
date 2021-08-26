@@ -22,7 +22,6 @@ import com.tricon.esdatareplication.entity.repdb.Appointment;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.Patient;
-import com.tricon.esdatareplication.entity.repdb.Transactions;
 import com.tricon.esdatareplication.entity.ruleenginedb.AppointmentReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.Constants;
@@ -65,16 +64,18 @@ public class AppointmentTableService  extends CommonTableService{
 			inDB.stream().map(AppointmentReplica::getAppointmentId).forEach(apptIdInDB::add);
 			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
 			if (apptIdInES.size() > 0) {
-				
+				List<AppointmentReplica> l = new ArrayList<>();
 				apptIdInES.forEach(id -> {
 					AppointmentReplica q=((List<AppointmentReplica>) repList).stream()
 					.filter(p -> id.intValue()==p.getAppointmentId().intValue()).findAny().orElse(null);
 					q.setId(null);
-					appointmentRepositoryRe.save(q);
+					l.add(q);
 				});
+				appointmentRepositoryRe.saveAll(l);
 			}
 			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
+				List<AppointmentReplica> l = new ArrayList<>();
 				apptIdInDB.forEach(id -> {
 					AppointmentReplica p = ((List<AppointmentReplica>) repList).stream().filter(dp -> id.intValue()==dp.getAppointmentId().intValue())
 							.findAny().orElse(null);
@@ -86,12 +87,12 @@ public class AppointmentTableService  extends CommonTableService{
 							p.setId(old.getId());
 							p.setCreatedDate(old.getCreatedDate());
 						}
-					    p.setMovedToCloud(1);
+					    p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 					    
-					    appointmentRepositoryRe.save(p);
+					    l.add(p);
 					}
 				});
-
+				appointmentRepositoryRe.saveAll(l);
 			}
 			appendLoggerToWriter(TransactionsReplica.class, bw,
 					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
@@ -136,8 +137,11 @@ public class AppointmentTableService  extends CommonTableService{
 				if (apptIdInES.size() > 0) {
 					List<Appointment> l = new ArrayList<>();
 					apptIdInES.forEach(id -> {
-						l.add(((List<Appointment>) data).stream()
-								.filter(p -> id.equals(p.getAppointmentId())).findAny().orElse(null));
+						Appointment q =((List<Appointment>) data).stream()
+								.filter(p -> id.equals(p.getAppointmentId())).findAny().orElse(null);
+						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+						q.setId(null);
+						l.add(q);
 					});
 					appointmentRepository.saveAll(l);
 				}
@@ -151,7 +155,7 @@ public class AppointmentTableService  extends CommonTableService{
 						Appointment old = inDB.stream().filter(ind -> id.equals(ind.getAppointmentId())).findAny()
 								.orElse(null);
 						p.setId(old.getId());
-						p.setMovedToCloud(0);
+						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						p.setCreatedDate(old.getCreatedDate());
 						l.add(p);
 					});

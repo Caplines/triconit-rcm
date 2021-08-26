@@ -88,7 +88,7 @@ public class EmployerTableService extends CommonTableService{
 						p.setId(old.getId());
 						p.setCreatedDate(old.getCreatedDate());
 					}
-				    p.setMovedToCloud(1);
+				    p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				    
 				    l.add(p);
 				}
@@ -139,6 +139,7 @@ public class EmployerTableService extends CommonTableService{
 					Employer q= ((List<Employer>) data).stream()
 							.filter(p -> id.equals(p.getEmployerId())).findAny().orElse(null);
 					q.setMovedToCloud(DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO);
+					q.setId(null);
 					l.add(q);
 				});
 				

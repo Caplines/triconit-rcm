@@ -92,7 +92,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 							p.setId(old.getId());
 							p.setCreatedDate(old.getCreatedDate());
 						}
-						p.setMovedToCloud(1);
+						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 
 						treatmentPlansRepositoryRe.save(p);
 					}
@@ -144,6 +144,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 						TreatmentPlans q= ((List<TreatmentPlans>) data).stream().filter(p -> id.equals(p.getTreatmentPlanId()))
 								.findAny().orElse(null);
 						q.setId(null);
+						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						l.add(q);
 					});
 					if (l.size() > 0)
@@ -159,7 +160,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 						TreatmentPlans old = inDB.stream().filter(ind -> id.equals(ind.getTreatmentPlanId())).findAny()
 								.orElse(null);
 						p.setId(old.getId());
-						p.setMovedToCloud(0);
+						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						p.setCreatedDate(old.getCreatedDate());
 						l.add(p);
 					});
@@ -207,8 +208,8 @@ public class TreatmentPlansTableService extends CommonTableService {
 				if (del.size() > 0)
 					treatmentPlansRepository.deleteAll(del);
 			}
-			logDeletedFromTable(TreatmentPlanItems.class, bw, data.size(),
-					String.join(",", data.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())));
+			logDeletedFromTable(TreatmentPlanItems.class, bw, apptIdInDB.size(),
+					String.join(",", apptIdInDB.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())));
 
 		} catch (Exception ex) {
 			appenErrorToWriter(TreatmentPlanItems.class, bw, ex);

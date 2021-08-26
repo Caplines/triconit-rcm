@@ -71,7 +71,7 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 					.forEach(apptIdInEPat::add);
 			// or
 			List<TreatmentPlanItemsReplica> inDBExtra = treatmentPlanItemsRepositoryRe
-					.findByTreatmentPlanIdInAndPatientIdInAndOfficeId(apptIdInES, apptIdInEPat, office.getUuid());
+					.findByTreatmentPlanIdInAndPatientIdInAndLineNumberInAndOfficeId(apptIdInES, apptIdInEPat,apptIdInESLI, office.getUuid());
 			Set<String> extraAll = new HashSet<>();
 			for (TreatmentPlanItemsReplica k : inDBExtra) {
 				extraAll.add(k.getTreatmentPlanId() + "-" + k.getPatientId() + "-" + k.getLineNumber());
@@ -92,9 +92,9 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 			for (TreatmentPlanItemsReplica c : inDB) {
 				apptIdInDB1.add(c.getTreatmentPlanId() + "-" + c.getPatientId() + "-" + c.getLineNumber());
 			}
-			System.out.println("removeAll");
-			System.out.println(String.join(",", extraAll));
-			System.out.println(String.join(",", apptIdInES1));
+			//System.out.println("removeAll");
+			//System.out.println(String.join(",", extraAll));
+			//System.out.println(String.join(",", apptIdInES1));
 
 			// Delete Data that is there in Cloud
 			// we need to delete in case TP items are deleted from local when TP is edited
@@ -150,7 +150,7 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 							p.setId(old.getId());
 							p.setCreatedDate(old.getCreatedDate());
 						}
-						p.setMovedToCloud(1);
+						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 
 						l.add(p);
 					}
@@ -196,13 +196,16 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 
 				Set<String> apptIdInEPat = new HashSet<>();
 
+				if (data !=null ) {
 				((List<TreatmentPlanItems>) data).stream().map(TreatmentPlanItems::getTreatmentPlanId)
 						.forEach(apptIdInES::add);
 				((List<TreatmentPlanItems>) data).stream().map(TreatmentPlanItems::getLineNumber)
 						.forEach(apptIdInESLI::add);
 				((List<TreatmentPlanItems>) data).stream().map(TreatmentPlanItems::getPatientId)
 						.forEach(apptIdInEPat::add);
+				}
 				// or
+				
 				// d2.forEach(a -> patIds.add(a.getPatientId()));
 				List<TreatmentPlanItems> inDBExtra = treatmentPlanItemsRepository
 						.findByTreatmentPlanIdInAndPatientIdIn(apptIdInES, apptIdInEPat);
@@ -218,6 +221,7 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 				Set<String> apptIdInDB1 = new HashSet<>();
 				Set<String> apptIdInES1 = new HashSet<>();
 
+				if (data!=null) {
 				// inDB.stream().map(TreatmentPlanItemsReplica::getTreatmentPlanId).forEach(apptIdInDB::add);
 				for (TreatmentPlanItems c : (List<TreatmentPlanItems>) data) {
 					apptIdInES1.add(c.getTreatmentPlanId() + "-" + c.getPatientId() + "-" + c.getLineNumber());
@@ -225,7 +229,7 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 				for (TreatmentPlanItems c : inDB) {
 					apptIdInDB1.add(c.getTreatmentPlanId() + "-" + c.getPatientId() + "-" + c.getLineNumber());
 				}
-
+				}
 				// Delete Data that is there in Cloud
 				// we need to delete in case TP items are deleted from local when TP is edited
 				extraAll.removeAll(apptIdInES1);
@@ -248,7 +252,6 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 
 				apptIdInES1.removeAll(apptIdInDB1);// Data that are not in Local DB
 				if (apptIdInES1.size() > 0) {
-					System.out.println("8888");
 					List<TreatmentPlanItems> l = new ArrayList<>();
 					apptIdInES1.forEach(id -> {
 						TreatmentPlanItems q = ((List<TreatmentPlanItems>) (List<TreatmentPlanItems>) data).stream()
@@ -257,6 +260,7 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 										&& Integer.parseInt(id.split("-")[2]) == p.getLineNumber().intValue()))
 								.findAny().orElse(null);
 						q.setId(null);
+						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						l.add(q);
 					});
 					if (l.size() > 0)
@@ -282,7 +286,7 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 								p.setId(old.getId());
 								p.setCreatedDate(old.getCreatedDate());
 							}
-							p.setMovedToCloud(0);
+							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 							l.add(p);
 						}
 					});

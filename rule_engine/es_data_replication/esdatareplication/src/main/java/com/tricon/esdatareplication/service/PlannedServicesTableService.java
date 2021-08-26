@@ -152,7 +152,7 @@ public class PlannedServicesTableService extends CommonTableService {
 							p.setId(old.getId());
 							p.setCreatedDate(old.getCreatedDate());
 						}
-						p.setMovedToCloud(1);
+						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 
 						l.add(p);
 					}
@@ -200,7 +200,7 @@ public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExis
 				Set<String> apptIdInDB1 = new HashSet<>();
 				
 				
-				
+				if ( data!=null ) {
 				((List<PlannedServices>) (List<PlannedServices>) data).stream().map(PlannedServices::getPatientId)
 						.forEach(apptIdInES::add);
 				
@@ -209,7 +209,7 @@ public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExis
 				}
 				((List<PlannedServices>) (List<PlannedServices>) data).stream().map(PlannedServices::getLineNumber)
 				.forEach(apptIdInESSecond::add);// check me  
-				
+				 }
 				// or
 				// d2.forEach(a -> patIds.add(a.getPatientId()));
 				List<PlannedServices> inDBExtra = plannedServicesRepository
@@ -259,6 +259,7 @@ public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExis
 										      )
 										).findAny().orElse(null);
 						q.setId(null);
+						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						l.add(q);
 					});
 	               if (l.size()>0) plannedServicesRepository.saveAll(l);
@@ -283,7 +284,7 @@ public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExis
 								p.setId(old.getId());
 								p.setCreatedDate(old.getCreatedDate());
 							}
-							p.setMovedToCloud(0);
+							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 							//if (p.getId()==1) p.setMovedToCloud(111);
 							//else p.setMovedToCloud(22);
                             //System.out.println("--->"+p.getApptGroup()+"-"+p.getDatePlanned()+"-->>"+p.getId());  
@@ -310,7 +311,7 @@ public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExis
 	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
 	public List<PlannedServices> deleteRelevantDataFromLocalDB(BufferedWriter bw, List<TreatmentPlanItems> data) {
 
-		Set<Integer> apptIdInDB = new HashSet<>();
+		//Set<Integer> apptIdInDB = new HashSet<>();
 		List<PlannedServices> inDB= new ArrayList<>();
 		try {
 			//

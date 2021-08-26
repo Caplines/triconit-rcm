@@ -50,7 +50,7 @@ public class TransactionsDetailTableService extends CommonTableService {
 				x.setOfficeId(office.getUuid());
 				TransactionsDetailReplica rep = new TransactionsDetailReplica();
 				BeanUtils.copyProperties(x, rep);
-				bu.append(rep.getTranNum() + ",");
+				bu.append(rep.getDetailId() + ",");
 				rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				repList.add(rep);
 			});
@@ -58,27 +58,27 @@ public class TransactionsDetailTableService extends CommonTableService {
 			//
 			Set<Integer> apptIdInES = new HashSet<>();
 			Set<Integer> apptIdInDB = new HashSet<>();
-			((List<TransactionsDetailReplica>) repList).stream().map(TransactionsDetailReplica::getTranNum).forEach(apptIdInES::add);
+			((List<TransactionsDetailReplica>) repList).stream().map(TransactionsDetailReplica::getDetailId).forEach(apptIdInES::add);
 			// or
 			// d2.forEach(a -> patIds.add(a.getPatientId()));
 			List<TransactionsDetailReplica> inDB = transactionsDetailRepositoryRe.findByDetailIdInAndOfficeId(apptIdInES,office.getUuid());
-			inDB.stream().map(TransactionsDetailReplica::getTranNum).forEach(apptIdInDB::add);
-			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
+			inDB.stream().map(TransactionsDetailReplica::getDetailId).forEach(apptIdInDB::add);
+			apptIdInES.removeAll(apptIdInDB);// Detail Id that are not in Local DB
 			if (apptIdInES.size() > 0) {
 				List<TransactionsDetailReplica> l = new ArrayList<>();
 				apptIdInES.forEach(id -> {
 					TransactionsDetailReplica q=((List<TransactionsDetailReplica>) repList).stream()
-					.filter(p -> id.intValue()==p.getTranNum().intValue()).findAny().orElse(null);
+					.filter(p -> id.intValue()==p.getDetailId().intValue()).findAny().orElse(null);
 					q.setId(null);
 					l.add(q);
 				});
 				 if (l.size()>0) transactionsDetailRepositoryRe.saveAll(l);	
 			}
-			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
+			apptIdInDB.removeAll(apptIdInES);// Detail id that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
 				List<TransactionsDetailReplica> l = new ArrayList<>();
 				apptIdInDB.forEach(id -> {
-					TransactionsDetailReplica p = ((List<TransactionsDetailReplica>) repList).stream().filter(dp -> id.intValue()==dp.getTranNum().intValue())
+					TransactionsDetailReplica p = ((List<TransactionsDetailReplica>) repList).stream().filter(dp -> id.intValue()==dp.getDetailId().intValue())
 							.findAny().orElse(null);
 
 					TransactionsDetailReplica old = inDB.stream().filter(ind -> id.intValue()==ind.getDetailId().intValue()).findAny()
@@ -88,7 +88,7 @@ public class TransactionsDetailTableService extends CommonTableService {
 							p.setId(old.getId());
 							p.setCreatedDate(old.getCreatedDate());
 						}
-					    p.setMovedToCloud(1);
+					    p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 					    l.add(p);
 					}
 				});
@@ -137,8 +137,11 @@ public class TransactionsDetailTableService extends CommonTableService {
 			if (apptIdInES.size() > 0) {
 				List<TransactionsDetail> l = new ArrayList<>();
 				apptIdInES.forEach(id -> {
-					l.add(((List<TransactionsDetail>) data).stream()
-							.filter(p -> id.equals(p.getDetailId())).findAny().orElse(null));
+					TransactionsDetail	q =((List<TransactionsDetail>) data).stream()
+					.filter(p -> id.equals(p.getDetailId())).findAny().orElse(null);
+					q.setId(null);
+					q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+					l.add(q);
 				});
 			if (l.size()>0)	transactionsDetailRepository.saveAll(l);
 			}
@@ -152,7 +155,7 @@ public class TransactionsDetailTableService extends CommonTableService {
 					TransactionsDetail old = inDB.stream().filter(ind -> id.equals(ind.getDetailId())).findAny()
 							.orElse(null);
 					p.setId(old.getId());
-					p.setMovedToCloud(0);
+					p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 					p.setCreatedDate(old.getCreatedDate());
 					l.add(p);
 				});

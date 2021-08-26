@@ -86,7 +86,7 @@ public class ProviderTableService extends CommonTableService {
 							p.setId(old.getId());
 							p.setCreatedDate(old.getCreatedDate());
 						}
-					    p.setMovedToCloud(1);
+					    p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 					    
 					    l.add(p);
 					}
@@ -135,8 +135,11 @@ public class ProviderTableService extends CommonTableService {
 				if (apptIdInES.size() > 0) {
 					List<Provider> l = new ArrayList<>();
 					apptIdInES.forEach(id -> {
-						l.add(((List<Provider>) data).stream()
-								.filter(p -> id.equals(p.getProviderId())).findAny().orElse(null));
+						Provider q =((List<Provider>) data).stream()
+								.filter(p -> id.equals(p.getProviderId())).findAny().orElse(null);
+						q.setId(null);
+						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+						l.add(q);
 					});
 					if (l.size()>0)providerRepository.saveAll(l);
 				}
@@ -150,7 +153,7 @@ public class ProviderTableService extends CommonTableService {
 						Provider old = inDB.stream().filter(ind -> id.equals(ind.getProviderId())).findAny()
 								.orElse(null);
 						p.setId(old.getId());
-						p.setMovedToCloud(0);
+						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						p.setCreatedDate(old.getCreatedDate());
 						l.add(p);
 					});

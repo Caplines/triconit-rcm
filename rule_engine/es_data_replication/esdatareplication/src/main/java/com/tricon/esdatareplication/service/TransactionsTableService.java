@@ -85,7 +85,7 @@ public class TransactionsTableService extends CommonTableService {
 							p.setId(old.getId());
 							p.setCreatedDate(old.getCreatedDate());
 						}
-					    p.setMovedToCloud(1);
+					    p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 					    
 					   l.add(p);
 					}
@@ -137,6 +137,7 @@ public class TransactionsTableService extends CommonTableService {
 						Transactions q =((List<Transactions>) data).stream()
 								.filter(p -> id.intValue()==p.getTranNum().intValue()).findAny().orElse(null);
 						q.setId(null);
+						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						l.add(q);
 					});
 					
@@ -152,7 +153,7 @@ public class TransactionsTableService extends CommonTableService {
 						Transactions old = inDB.stream().filter(ind -> id.intValue()==ind.getTranNum().intValue()).findAny()
 								.orElse(null);
 						p.setId(old.getId());
-						p.setMovedToCloud(0);
+						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						p.setCreatedDate(old.getCreatedDate());
 						l.add(p);
 					});

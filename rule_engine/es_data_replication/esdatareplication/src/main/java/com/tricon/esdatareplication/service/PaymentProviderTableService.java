@@ -115,7 +115,7 @@ public class PaymentProviderTableService extends CommonTableService {
 							p.setId(old.getId());
 							p.setCreatedDate(old.getCreatedDate());
 						}
-						p.setMovedToCloud(1);
+						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 
 						l.add(p);
 					}
@@ -158,7 +158,7 @@ public class PaymentProviderTableService extends CommonTableService {
 				Set<String> apptIdInESExtra = new HashSet<>();
 				//Set<String> apptIdInDBExtra = new HashSet<>();
 				
-				
+				if (data!=null) {
 				((List<PaymentProvider>) data).stream().map(PaymentProvider::getTranNum)
 						.forEach(apptIdInES::add);
 				((List<PaymentProvider>) data).stream().map(PaymentProvider::getProviderId)
@@ -166,6 +166,7 @@ public class PaymentProviderTableService extends CommonTableService {
 				
 				for(PaymentProvider r:(List<PaymentProvider>) data) {
 					apptIdInES1.add(r.getTranNum()+"---"+r.getProviderId());
+				}
 				}
 				// or
 				// d2.forEach(a -> patIds.add(a.getPatientId()));
@@ -185,6 +186,7 @@ public class PaymentProviderTableService extends CommonTableService {
 										
 								).findAny().orElse(null);
 						q.setId(null);
+						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						l.add(q);
 					});
 					if (l.size()>0) paymentProviderRepository.saveAll(l);
@@ -210,7 +212,7 @@ public class PaymentProviderTableService extends CommonTableService {
 								p.setId(old.getId());
 								p.setCreatedDate(old.getCreatedDate());
 							}
-							p.setMovedToCloud(0);
+							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 
 							l.add(p);
 						}

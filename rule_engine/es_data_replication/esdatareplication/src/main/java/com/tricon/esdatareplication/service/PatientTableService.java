@@ -70,15 +70,18 @@ public class PatientTableService extends CommonTableService{
         //  new Records..
 		
 		if (patIdInES.size() > 0) {
+			List<PatientReplica> l = new ArrayList<>();
 			patIdInES.forEach(id -> {
 				PatientReplica q=((List<PatientReplica>) repList).stream().filter(p -> id.equals(p.getPatientId()))
 						.findAny().orElse(null);
 				q.setId(null);
-				patientRepositoryre.save(q);
+				l.add(q);
 			});
+			patientRepositoryre.saveAll(l);
 		}
 		patIdInDB.removeAll(patIdInES);// Patient id that are there in Local DB we need to update.
 		if (patIdInDB.size() > 0) {
+			List<PatientReplica> l = new ArrayList<>();
 			patIdInDB.forEach(id -> {
 				PatientReplica p = ((List<PatientReplica>) repList).stream().filter(dp -> id.equals(dp.getPatientId())).findAny()
 						.orElse(null);
@@ -86,11 +89,12 @@ public class PatientTableService extends CommonTableService{
 				PatientReplica old = inDB.stream().filter(ind -> id.equals(ind.getPatientId())).findAny().orElse(null);
 				if (p!=null && old!=null) {
 				p.setId(old.getId());
-				p.setMovedToCloud(1);
+				p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				p.setCreatedDate(old.getCreatedDate());
-				patientRepositoryre.save(p);
+				l.add(p);
 				}
 			});
+			patientRepositoryre.saveAll(l);
 		}
 		
 		//
