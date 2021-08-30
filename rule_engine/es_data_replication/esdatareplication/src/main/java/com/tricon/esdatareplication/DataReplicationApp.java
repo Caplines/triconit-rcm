@@ -29,7 +29,7 @@ public class DataReplicationApp
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        System.out.println( "Data Relpication App Starting!" );
         SpringApplication.run(DataReplicationApp.class);
         
     }
