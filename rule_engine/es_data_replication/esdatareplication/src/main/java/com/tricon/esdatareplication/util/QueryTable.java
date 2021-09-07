@@ -45,7 +45,7 @@ public class QueryTable {
 		 * Patient Start
 		 */
 		ES_PATIENT(Constants.TABLE_PATIENT,
-				Constants.PATIENTS_COLUMNS + " from " + Constants.TABLE_PATIENT + " order by date_entered asc ",
+				Constants.PATIENTS_COLUMNS + " from " + Constants.TABLE_PATIENT + " order by date_entered,patient_id asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				Patient.class),
 
@@ -80,7 +80,7 @@ public class QueryTable {
 
 		ES_APPOINTMENT_NEXT(Constants.TABLE_APPOINTMENT,
 				Constants.APPOINTMENT_COLUMNS + " from " + Constants.TABLE_APPOINTMENT + " where "
-						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by start_time asc",
+						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by start_time,appointment_id asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				Appointment.class),
 
@@ -97,7 +97,7 @@ public class QueryTable {
 		 */
 
 		ES_TRANSACTIONS(Constants.TABLE_TRANSACTIONS,
-				Constants.TRANSACTIONS_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS + " order by tran_date asc ",
+				Constants.TRANSACTIONS_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS + " order by tran_date,tran_num asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				Transactions.class),
 
@@ -106,7 +106,7 @@ public class QueryTable {
 
 		ES_TRANSACTIONS_NEXT(Constants.TABLE_TRANSACTIONS,
 				Constants.TRANSACTIONS_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS + " where "
-						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by tran_date asc",
+						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by tran_date,tran_num asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				Transactions.class),
 
@@ -245,7 +245,7 @@ public class QueryTable {
 
 		ES_TREATMENT_PLANS_NEXT(Constants.TABLE_TREATMENT_PLANS,
 				Constants.TREATEMENTPLANS_COLUMNS + " from " + Constants.TABLE_TREATMENT_PLANS + " where "
-						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by date_entered asc",
+						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by date_entered,treatment_plan_id asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				TreatmentPlans.class),
 

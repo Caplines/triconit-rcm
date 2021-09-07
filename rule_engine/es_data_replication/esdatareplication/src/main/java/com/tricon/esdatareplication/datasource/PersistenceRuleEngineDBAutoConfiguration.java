@@ -100,8 +100,8 @@ public class PersistenceRuleEngineDBAutoConfiguration {
         em.setJpaVendorAdapter(vendorAdapter);
         final HashMap<String, Object> properties = new HashMap<String, Object>();
         //hard code not from configuration... 
-		//properties.put("hibernate.hbm2ddl.auto", hibernateHbm2ddlAuto);
-		properties.put("hibernate.hbm2ddl.auto","validate");
+		properties.put("hibernate.hbm2ddl.auto", hibernateHbm2ddlAuto);
+		//properties.put("hibernate.hbm2ddl.auto","validate");
 		properties.put("hibernate.generate_statistic", hibernateGenerateStatistic);
 
 		properties.put("spring.jpa.properties.hibernate.generate_statistic", springJpaPropertiesHibernateGenerateStatistic);
