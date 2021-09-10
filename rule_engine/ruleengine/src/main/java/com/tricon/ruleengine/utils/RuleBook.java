@@ -797,7 +797,11 @@ public class RuleBook {
 
 				RuleEngineLogger.generateLogs(clazz, "ES EMP NAME-" + ep.getEmployerName(), Constants.rule_log_debug,
 						bw);
-				//NOTE IN REPLACE ALL it's not a space ..never remove it
+				RuleEngineLogger.generateLogs(clazz, "ES Gruop Number-" + ep.getGroupNumber(), Constants.rule_log_debug,
+						bw);
+				RuleEngineLogger.generateLogs(clazz, "ES Insurance NAME-" + ep.getInsuranceName(), Constants.rule_log_debug,
+						bw);
+				//NOTE IN REPLACE ALL it's not a space ..never remove iti
 				if (!(ivf.getEmployerName().trim().replaceAll(" ","").equalsIgnoreCase(ep.getEmployerName().trim().replaceAll(" ","")))) {
 
 					pass = false;
@@ -808,7 +812,26 @@ public class RuleBook {
 					namecheck = false;
 
 				}
+				if (!(ivf.getInsName().trim().replaceAll(" ","").equalsIgnoreCase(ep.getInsuranceName().trim().replaceAll(" ","")))) {
 
+					pass = false;
+					li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule6.error.message_4",
+									new Object[] { ep.getInsuranceName(), ivf.getInsName() }, locale),
+							Constants.FAIL,"","",""));
+					namecheck = false;
+
+				}
+				if (!(ivf.getGroup().trim().replaceAll(" ","").equalsIgnoreCase(ep.getGroupNumber().trim().replaceAll(" ","")))) {
+
+					pass = false;
+					li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule6.error.message_5",
+									new Object[] { ep.getInsuranceName(), ivf.getInsName() }, locale),
+							Constants.FAIL,"","",""));
+					namecheck = false;
+
+				}
 				//
 				if (namecheck) {
 					for (Rule6Dto d6 : druleList) {
@@ -3056,6 +3079,75 @@ public class RuleBook {
 				}
 				
 			}
+			if (pass)
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), 
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+		} catch (Exception x) {
+
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+
+		}
+		return d;
+
+	}
+
+	// Bridge Clause
+	public List<TPValidationResponseDto> Rule75(List<Object> tpList, MessageSource messageSource,
+			Rules rule, BufferedWriter bw,int userType) {
+
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_75,
+				Constants.rule_log_debug, bw);
+
+		String inv=Constants.invalidStr_TP;
+		//boolean insZero=true;
+		if (userType==Constants.userType_CL) {
+			//insZero=false;
+			inv=Constants.invalidStr_Cl;
+		}
+		List<TPValidationResponseDto> d = new ArrayList<>();
+		Set<String> fcodes=new HashSet<>();
+		Set<String> surfaces=new HashSet<>();
+		Set<String> teethC=new HashSet<>();
+		try {
+			if (tpList == null) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						Constants.errorMessOPen + inv + Constants.errorMessClose,
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				return d;
+			}
+			boolean pass = true;
+            boolean D6245_D6240=false;
+            boolean D6740_D6750=false;
+			for (Object obj : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				fcodes.add(tp.getServiceCode());
+				surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+				teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+				RuleEngineLogger.generateLogs(clazz, "Service Code-"+tp.getServiceCode(),
+						Constants.rule_log_debug, bw);
+				if (tp.getServiceCode().equalsIgnoreCase("D6245") || tp.getServiceCode().equalsIgnoreCase("D6240")) {
+					D6245_D6240=true;
+				}
+				if (tp.getServiceCode().equalsIgnoreCase("D6740") || tp.getServiceCode().equalsIgnoreCase("D6750")) {
+					D6740_D6750=true;
+				}
+				
+			}
+			if(D6245_D6240 && !D6740_D6750) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule75.error.message1", new Object[] {}, locale), 
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				pass=false;
+			}else if (D6740_D6750 && !D6245_D6240) {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule75.error.message2", new Object[] {}, locale), 
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				pass=false;
+			}
+			
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), 

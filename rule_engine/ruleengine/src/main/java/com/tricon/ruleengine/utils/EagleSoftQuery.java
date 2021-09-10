@@ -54,8 +54,10 @@ public class EagleSoftQuery {
 			+ " pat.sec_remaining_deductible as sec_remaining_deductible, emp.employer_id as employer_id,"
 			+ " emp.name as employer_name, fs.fee_id as feescheduleid,"
 			+ " fs.name as feeschedulename,cov.book_id as covbookheaderid,"
-			+ " cov.name as covbookheadername"
-			+ " from  patient pat , employer emp left outer join cov_book_header  cov on cov.book_id=emp.book_id Left outer join  fee_schedule  fs on fs.fee_id=emp.fee_schedule  where ";
+			+ " cov.name as covbookheadername,ins.name as insurancename,emp.group_number as employergroupnumber "
+			+ " from  patient pat , employer emp left outer join cov_book_header  cov on cov.book_id=emp.book_id Left outer join  fee_schedule  fs on fs.fee_id=emp.fee_schedule "
+			+ " left outer join insurance_company ins on ins.insurance_company_id=emp.insurance_company_id "
+			+ " where ";
 
 	public final static String  patient_query_pri=patient_query 
 			+ " pat.patient_id  in ("+contstant_REP+") and pat.prim_employer_id=emp.employer_id  ";
@@ -63,17 +65,17 @@ public class EagleSoftQuery {
 	public final static String  patient_query_sec=patient_query
 			+" pat.patient_id  in ("+contstant_REP+") and pat.sec_employer_id=emp.employer_id  ";
 
-	public final static int  patient_query_CL_COUNT=20;
+	public final static int  patient_query_CL_COUNT=22;
 
 	public final static String  employeemaster_query="select emp.employer_id as employerid,emp.name as employername,"
 			+ " emp.group_number as employergroupnumber,emp.maximum_coverage as employermaximumcoverage,"
 			+ " ser.service_type_id as servicetypeid,ser.description as servicetypedescription,ben.percentage  as percentage "
-			+ ",ben.deductible_applies as deductibleapplies  "
-			+ "  from employer emp , benefits ben ,service_type ser where emp.employer_id in ("+contstant_REP+") and ben.employer_id=emp.employer_id"
+			+ ",ben.deductible_applies as deductibleapplies,ins.name as insurancename "
+			+ "  from employer emp left outer join insurance_company ins on ins.insurance_company_id=emp.insurance_company_id, benefits ben ,service_type ser where emp.employer_id in ("+contstant_REP+") and ben.employer_id=emp.employer_id"
 		    + " and ben.service_type_id=ser.service_type_id ";
 
 
-	public final static int  employeemaster_query_CL_COUNT=8;
+	public final static int  employeemaster_query_CL_COUNT=9;
 
 	public final static String  feeShedule_query=" select fe.fee_id as feeid, fs.name as name,"
 			+ " fe.service_code as feeservicecode , fe.fee  as feesfee from "

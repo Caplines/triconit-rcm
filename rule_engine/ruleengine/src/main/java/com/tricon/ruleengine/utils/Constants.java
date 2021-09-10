@@ -111,6 +111,7 @@ public class Constants {
 	public static final String RULE_ID_73="Sealant Eligibility( patient)";//Only Sealants .. 
 	
 	public static final String RULE_ID_74="Waiting Period Checks(OS)";//Only for OS FORM..
+	public static final String RULE_ID_75="Bridge Clause";
 	
 	
 	

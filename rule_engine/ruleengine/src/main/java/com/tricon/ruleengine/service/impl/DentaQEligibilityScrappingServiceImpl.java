@@ -13,10 +13,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitWebElement;
-import org.openqa.selenium.support.ui.Select;
-import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
+//import org.openqa.selenium.support.ui.Select;
+//import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
-import com.tricon.ruleengine.dto.CaplineIVFFormDto;
+//import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.scrapping.EligibilityDto;
 import com.tricon.ruleengine.dto.scrapping.HistoryDto;
 import com.tricon.ruleengine.model.db.IVFDefaultValue;
@@ -250,11 +250,13 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			e.printStackTrace();
 			// TODO: handle exception
 		}
+		finally {
 		try {
 			driver.close();
-		} catch (Exception e) {
+		 } catch (Exception e) {
 			e.printStackTrace();
 			// TODO: handle exception
+		 }
 		}
 		return eList;
 

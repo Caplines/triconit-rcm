@@ -11,6 +11,8 @@ public class EagleSoftEmployerMaster {
 	//private String serviceTypeServiceCode;
 	private String percentage;
 	private String deductibleApplies;
+	private String insuranceName;
+	
 	public String getEmployerId() {
 		return employerId;
 	}
@@ -59,6 +61,12 @@ public class EagleSoftEmployerMaster {
 	}
 	public void setDeductibleApplies(String deductibleApplies) {
 		this.deductibleApplies = deductibleApplies;
+	}
+	public String getInsuranceName() {
+		return insuranceName;
+	}
+	public void setInsuranceName(String insuranceName) {
+		this.insuranceName = insuranceName;
 	}
 	
 	

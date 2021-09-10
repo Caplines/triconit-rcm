@@ -24,6 +24,7 @@ public class CommonRedirectController {
 	//public static final Logger logger = LoggerFactory.getLogger(CommonRedirectController.class);
 
 	// request method Forward Login Page
+	/*
 	@CrossOrigin
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public void loginForward(HttpServletRequest request, HttpServletResponse response)
@@ -99,19 +100,26 @@ public class CommonRedirectController {
 
 		forwardRedirect(request, response);
 	}
-
-	@CrossOrigin
-	@RequestMapping(value={ "/ivfclaimid", "/ivfcl","/ivfclbatch","/reportcl","/enreportscl","/usersettings",
+*/
+	//@CrossOrigin
+	@RequestMapping(value={ "/ivfclaimid", "/ivfcl","/ivfclbatch","/reportcl","/enreportscl","/usersettings","/scrap","/enreports",
+			"/userinput",",diagnosticcheck","/ivf", "/ivfbatch","/ivfbatchpre","/report","/ivftreatmentplan",
+			"/login","/register","/logout","/profile",
 			"/dumpOldIVFData","/scrapfulldata","/extIVF","/rulereport","/sealant" }, method = RequestMethod.GET)
 	public void ivfClaimIdForward(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+	System.out.println("IP ---> "+request.getServerName());
+	System.out.println("Scheme-->"+request.getScheme());
 		forwardRedirect(request, response);
 	}
 	private void forwardRedirect(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		
+		//request.getServerName();
+		//request.getScheme();//http
+		//response.sendRedirect("https://caplineruleengine.com"); 
 		request.getRequestDispatcher("/").forward(request, response);
 	}
+
 	
 	@CrossOrigin
 	//@ResponseBody

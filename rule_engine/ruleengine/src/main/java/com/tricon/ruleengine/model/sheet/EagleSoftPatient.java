@@ -26,6 +26,16 @@ public class EagleSoftPatient {
 	private String feeScheduleName;//R
 	private String covBookHeaderId;//S
 	private String covBookHeaderName;//T
+	
+	private String insuranceName;
+	private String groupNumber;
+	
+	public String getInsuranceName() {
+		return insuranceName;
+	}
+	public void setInsuranceName(String insuranceName) {
+		this.insuranceName = insuranceName;
+	}
 	public String getPatientId() {
 		return patientId;
 	}
@@ -146,7 +156,14 @@ public class EagleSoftPatient {
 	public void setCovBookHeaderName(String covBookHeaderName) {
 		this.covBookHeaderName = covBookHeaderName;
 	}
+	public String getGroupNumber() {
+		return groupNumber;
+	}
+	public void setGroupNumber(String groupNumber) {
+		this.groupNumber = groupNumber;
+	}
 	
-    	
+    
+	
 	
 }

@@ -2074,6 +2074,26 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 			}
 		}
+		
+		// RULE_ID_75 "Bridge Clause"
+		
+		rule = getRulesFromList(rules, Constants.RULE_ID_75);
+		dtoRL = rb.Rule75(tListReduced, messageSource, rule, bw,type);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_75,
+				Constants.rule_log_debug, bw);
+        
+		// END "Bridge Clause"
+
+		
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_66,
 				Constants.rule_log_debug, bw);
 
@@ -2216,6 +2236,24 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Constants.rule_log_debug, bw);
         
 		// END "Waiting Period Checks(OS)"
+
+		// RULE_ID_75 "Bridge Clause"
+		
+				rule = getRulesFromList(rules, Constants.RULE_ID_75);
+				dtoRL = rb.Rule75(tListReduced, messageSource, rule, bw,type);
+
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+								t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+				}
+				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_75,
+						Constants.rule_log_debug, bw);
+		        
+		// END "Bridge Clause"
 
   }
 
@@ -3572,11 +3610,16 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					returnMap = new HashMap<String, List<TPValidationResponseDto>>();
 				//int a = ivfMap.get(ivx).size();
 				
-				if (ivfMap.get(ivx) != null && ivfMap.get(ivx).size() > 0)
+				if (ivfMap.get(ivx) != null && ivfMap.get(ivx).size() > 0) {
+					IVFTableSheet k=((IVFTableSheet) ivfMap.get(ivx).get(0));
 					returnMap.put(" IV.id - " + ivx + " Of.Name -  " + off.getName() + " PT.id - "
-							+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientId() + " Pt.Name - "
-							+ ((IVFTableSheet) ivfMap.get(ivx).get(0)).getPatientName()+", Ins. Type- "+iType, list);
-
+							+ k.getPatientId() + " Pt.Name - "
+							+ k.getPatientName()+", Ins. Type- "+iType
+							+ ", Group number- "+k.getGroup()
+							+ ", Insurance name- "+k.getInsName()
+							+ ", Employer's Name- "+k.getEmployerName()
+							, list);
+				}
 				else if (ivx == null) {
 					returnMap.put("IVF ID " + Constants.notFound + " - " + ivx, list);
 				} else

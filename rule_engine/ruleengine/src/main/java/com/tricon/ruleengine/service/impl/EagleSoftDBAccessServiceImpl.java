@@ -137,7 +137,8 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 							pat.setFeeScheduleName(des.get(17));
 							pat.setCovBookHeaderId(des.get(18));
 							pat.setCovBookHeaderName(des.get(19));
-
+							pat.setInsuranceName(des.get(20));
+							pat.setGroupNumber(des.get(21));
 							//
 							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
 								if (entry.getValue() != null) {
@@ -231,7 +232,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
 							}
 							emp.setDeductibleApplies(des.get(7));
-
+							emp.setInsuranceName(des.get(8));
 							//
 							for (Map.Entry<String, List<EagleSoftPatient>> entry2 : espatients.entrySet()) {
 								if (entry.getValue() != null) {
