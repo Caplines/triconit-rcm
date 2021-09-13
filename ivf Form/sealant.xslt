@@ -17,7 +17,15 @@
  box-sizing:border-box;
  line-height:2px;
 }
-.br1px{ border: 1px solid #000;word-break:break-all;width:20px;}
+.br1px{ border-left: 1px solid #000;word-break:break-all;width:20px;border-bottom:1px solid #000;border-top:1px solid #000;}
+.br21px{ border-left: 1px solid #000;word-break:break-all;width:20px;border-top:1px solid #000;}
+.br31px{ border-left: 1px solid #000;word-break:break-all;width:20px;border-bottom:1px solid #000;}
+.br41px{ border-left: 1px solid #000;word-break:break-all;width:20px;border-bottom:1px solid #000;}
+
+
+.br2px{ border-right: 1px solid #000;}
+
+.grid-item {
 .grid-item {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -28,7 +36,7 @@
   float:left;
   box-sizing:border-box;
 }
-.main-heading-1 {font-family:helvetica;font-weight:regular;font-size:13px}
+.main-heading-1 {font-family:helvetica;font-weight:regular;font-size:13px;}
 .main-heading-11 {font-family:helvetica;font-weight:regular;font-size:11px}
 .sub-heading {font-family:helvetica;font-size:13px;}
 .sub-heading1 {font-family:helvetica;font-size:9px;}
@@ -75,8 +83,8 @@ border-collapse: collapse;
 /*.last-r-border tr td:last-child, .last-r-border tr th:last-child {border-right:1px solid #000;}*/
      
 	 </style>
-			<title>PDF - IVF Form</title>
-			<meta name="description" content="PDF - IVF Form" />
+			<title>Sealant Eligibility Report</title>
+			<meta name="description" content="Sealant Eligibility Report" />
 			
 		</head>
 		
@@ -88,61 +96,75 @@ border-collapse: collapse;
         <div id="page_1">
 		   
 		    <span> 
-		    <p  style="text-align: center" class="colourmagenta"><b>Sealant Eligibility Report</b></p>
+			<p  style="text-align: right" class="colourmagenta"><b><xsl:value-of select="cDate"/> </b></p>
+		    <p  style="text-align: center" class=""><b>Sealant Eligibility Report </b></p>
             </span>
 			<br/>
 			
 			<span> 
-		   
-            <p  style="text-align: center" class="colourmagenta"><b>Eligibility Completed for following Patients</b></p>
+		    <xsl:if test="dto/dto2">
+            <p  style="text-align: center" class=""><b>Eligibility Completed for following Patients</b></p>
+			</xsl:if>
             </span>
-           
-            <table style="width:90%" cellspacing="0" cellpadding="0">
+            <xsl:if test="dto/dto2">
+            <table style="width:100%" cellspacing="0" cellpadding="0">
 			<tr style="border:1px solid">
-                     <th style="background-color:blue;width:8%">
-                         <span class="main-heading-1"><b>Office Name</b></span>
+                      <th style="background-color:#0b5394;width:8%"  class="br21px">
+                         <span class="main-heading-1" style="color: white;"><b>Office</b></span>
 					 </th>
-                    <th style="background-color:blue;width:8%">
-                         <span class="main-heading-1"><b>Patient ID</b></span>
+                    <th style="background-color:#0b5394;width:8%"  class="br21px">
+                         <span class="main-heading-1" style="color: white;"><b>Patient</b></span>
 					 </th>
-                    <th style="background-color:blue;width:15%">
-                         <span class="main-heading-1"><b>Patient Name</b></span>
+                    <th style="background-color:#0b5394;width:15%"  class="br21px">
+                         <span class="main-heading-1" style="color: white;"><b>Patient</b></span>
 					 </th>
-                    <th style="background-color:blue;width:10%">
-                         <span class="main-heading-1"><b>IV Date</b></span>
+                    <th style="background-color:#0b5394;width:10%"  class="br21px">
+                         <span class="main-heading-1" style="color: white;"><b>IV</b></span>
 					 </th>
-                    <th style="background-color:green;width:15%">
-                         <span class="main-heading-1"><b>Tooth # Eligible for Sealant</b></span>
+                    <th style="background-color:#38761d;width:17%"  class="br21px">
+                         <span class="main-heading-1" style="color: white;"><b>Tooth # Eligible</b></span>
 					 </th>
-                      <th colspan="3" style="background-color:maroon;">
-                         <span class="main-heading-1"><b>Tooth # Not Eligible for Sealants</b></span>
+                      <th colspan="3" style="background-color:#660000;"  class="br21px">
+                         <span class="main-heading-1" style="color: white;"><b>Tooth # Not Eligible for Sealants</b></span>
 					 </th>
             </tr>
 			<tr>
-                     <th colspan="4" style="background-color:blue;">
-                     </th>
-					 <th style="background-color:green;">
-                     </th>
-                      <th style="background-color:red;">
-                         <span class="main-heading-1"><b>Tooth Not Covered</b></span>
+                     
+					 <th style="background-color:#0b5394;width:8%"  class="br31px">
+                         <span class="main-heading-1" style="color: white;"><b>Name</b></span>
 					 </th>
-					 <th style="background-color:red;">
-                         <span class="main-heading-1"><b>Age Limitation</b></span>
+                    <th style="background-color:#0b5394;width:8%"  class="br31px">
+                         <span class="main-heading-1" style="color: white;"><b>ID</b></span>
 					 </th>
-					 <th style="background-color:red;">
+                    <th style="background-color:#0b5394;width:15%"  class="br31px">
+                         <span class="main-heading-1" style="color: white;"><b>Name</b></span>
+					 </th>
+                    <th style="background-color:#0b5394;width:10%"  class="br31px">
+                         <span class="main-heading-1" style="color: white;"><b>Date</b></span>
+					 </th>
+					 <th style="background-color:#38761d;width:17%"  class="br31px">
+                         <span class="main-heading-1" style="color: white;"><b>for Sealant</b></span>
+					 </th>
+					 <th style="background-color:#f4cccc;"  class="br1px">
+                         <span class="main-heading-1" ><b>Tooth Not Covered</b></span>
+					 </th>
+					 <th style="background-color:#f4cccc;"  class="br1px">
+                         <span class="main-heading-1" ><b>Age Limitation</b></span>
+					 </th>
+					 <th style="background-color:#f4cccc;"  class="br1px br2px">
                          <span class="main-heading-1"><b>Frequency Limitation</b></span>
 					 </th>
             </tr>
 			<xsl:for-each select="dto/dto2">
 				<tr >
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="fName"/></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="patientId"/></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="name"/></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="ivDate"/></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="te"/></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="tne"/></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="tnea"/></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="tnef"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="fName"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="patientId"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="name"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="ivDate"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="te"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="tne"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="tnea"/></span></td>
+				<td class="br1px br2px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="tnef"/></span></td>
 				</tr>
 				</xsl:for-each>
 			
@@ -152,24 +174,27 @@ border-collapse: collapse;
             
         	<br/>
 			<br/>
+			</xsl:if>
 			
+			<xsl:if test="dto73/dto73">
 			<span>
-			<p  style="text-align: center" class="colourmagenta"><b>Eligibility could not be completed for following Patients:</b></p>
+			<p  style="text-align: center" class=""><b>Eligibility could not be completed for following Patients:</b></p>
             </span>
-           
-            <table style="width:90%" cellspacing="0" cellpadding="0">
+            </xsl:if>
+			<xsl:if test="dto73/dto73">
+            <table style="width:90%" cellspacing="0" cellpadding="0" >
 			<tr style="border:1px solid">
-                     <th style="background-color:blue;width:8%">
-                         <span class="main-heading-1"><b>Office Name</b></span>
+                     <th style="background-color:#0b5394;width:8%">
+                         <span class="main-heading-1" style="color: white;"><b>Office Name</b></span>
 					 </th>
-                    <th style="background-color:blue;width:8%">
-                         <span class="main-heading-1"><b>Patient ID</b></span>
+                    <th style="background-color:#0b5394;width:8%">
+                         <span class="main-heading-1" style="color: white;"><b>Patient ID</b></span>
 					 </th>
-                    <th style="background-color:blue;width:15%">
-                         <span class="main-heading-1"><b>Patient Name</b></span>
+                    <th style="background-color:#0b5394;width:15%">
+                         <span class="main-heading-1" style="color: white;"><b>Patient Name</b></span>
 					 </th>
-                    <th style="background-color:red;width:10%">
-                         <span class="main-heading-1"><b>Error Message</b></span>
+                    <th style="background-color:#660000;width:10%">
+                         <span class="main-heading-1" style="color: white;"><b>Error Message</b></span>
 					 </th>
                     
             </tr>
@@ -179,20 +204,20 @@ border-collapse: collapse;
 				<td class="br1px"><span class="sub-heading"><xsl:value-of select="fName"/></span></td>
 				<td class="br1px"><span class="sub-heading"><xsl:value-of select="patientId"/></span></td>
 				<td class="br1px"><span class="sub-heading"><xsl:value-of select="name"/></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="te" disable-output-escaping="yes"/></span></td>
+				<td class="br1px br2px"><span class="sub-heading"><xsl:value-of select="te" disable-output-escaping="yes"/></span></td>
 				</tr>
 		    </xsl:for-each>
 			<xsl:for-each select="dto73/dto73">
 				<tr >
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="fName"/></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="patientId"/></span></td>
-				<td class="br1px"><span class="sub-heading"></span></td>
-				<td class="br1px"><span class="sub-heading"><xsl:value-of select="te"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="fName"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="patientId"/></span></td>
+				<td class="br1px"><span class="sub-heading" style="padding-left:2px"></span></td>
+				<td class="br1px br2px"><span class="sub-heading" style="padding-left:2px"><xsl:value-of select="te"/></span></td>
 				</tr>
 		    </xsl:for-each>
             </table>
 
-			
+			</xsl:if>
 			
 			
 			

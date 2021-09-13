@@ -28,10 +28,10 @@
   float:left;
   box-sizing:border-box;
 }
-.main-heading-1 {font-family:helvetica;font-weight:regular;font-size:13px}
-.main-heading-11 {font-family:helvetica;font-weight:regular;font-size:11px}
-.sub-heading {font-family:helvetica;font-size:9px;}
-.sub-heading1 {font-family:helvetica;font-size:9px;}
+.main-heading-1 {font-family:helvetica;font-weight:regular;font-size:10px}
+.main-heading-11 {font-family:helvetica;font-weight:regular;font-size:10px}
+.sub-heading {font-family:helvetica;font-size:12px;}
+.sub-heading1 {font-family:helvetica;font-size:10px;}
 .withds {width:8%}
 .withdlastsections {width:15%}
 .sub-headinglastsections1 {width:15%;font-family:helvetica;font-size:9px;}
@@ -214,12 +214,25 @@ border-collapse: collapse;
 						<td>
 						   <span class="sub-heading"><xsl:value-of select="basicInfo14"/></span>
 						 </td>
-                        <td>
+						 
+						 <xsl:choose>
+							  <xsl:when test="basicInfo15 = 'Secondary' ">
+								<td style="color:white;background-color:red">
+                           <span class="main-heading-1">COB Status:</span>
+						       </td>
+							   <td style="color:white;background-color:red"> <span class="sub-heading"><xsl:value-of select="basicInfo15"/></span>
+                              </td>
+							  </xsl:when>
+							  <xsl:otherwise>
+						<td>
                            <span class="main-heading-1">COB Status:</span>
 						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="basicInfo15"/></span>
+						 <td> <span class="sub-heading"><xsl:value-of select="basicInfo15"/></span>
                         </td>
-                        <td>
+							  </xsl:otherwise>
+						</xsl:choose>
+						 
+						<td>
                          <span class="main-heading-1">Patient ID:</span>
                          </td>
                         <td>						 
@@ -600,15 +613,15 @@ border-collapse: collapse;
 						   <span class="sub-heading"><xsl:value-of select="xrays2"/></span>
 						 </td>
                         <td  class="withds">
-                           <span class="main-heading-1"></span>
+                           <span class="main-heading-1">D0350%</span>
 						 </td>
-                        <td> <span class="sub-heading"></span>
+                        <td> <span class="sub-heading"><xsl:value-of select="d0350"/></span>
                         </td>
                         <td>
-                         <span class="main-heading-1"></span>
+                         <span class="main-heading-1">D1330%</span>
                          </td>
                         <td>						 
-						 <span class="sub-heading"></span>
+						 <span class="sub-heading"><xsl:value-of select="d1330"/></span>
                         </td>
 						<td class="withds">
                          <span class="main-heading-1"></span>
@@ -1168,10 +1181,10 @@ border-collapse: collapse;
 						   <span class="sub-heading" ><xsl:value-of select="posterior11"/> </span>
                         </td>
                         <td class="withds">
-                           <span class="main-heading-1">Immediate<br/> (D5130/D5140)</span>
+                           <!--<span class="main-heading-1">Immediate<br/> (D5130/D5140)</span>-->
 						</td>
 						<td>
-						   <span class="sub-heading"><xsl:value-of select="dentures2"/></span>
+						    <!--<span class="sub-heading"><xsl:value-of select="dentures2"/></span>-->
 						 </td>
                         <td  class="withds colourfreq">
                            <span class="main-heading-1">Implants<br/> Fr D6010 </span>
@@ -1264,10 +1277,10 @@ border-collapse: collapse;
 						   <span class="sub-heading" ><xsl:value-of select="posterior4"/> </span>
                         </td>
                         <td class="withds">
-                           <span class="main-heading-1">Interim<br/> Partial<br/>(D5820)</span>
+                          <!-- <span class="main-heading-1">Interim<br/> Partial<br/>(D5820)</span>-->
 						</td>
 						<td>
-						   <span class="sub-heading"><xsl:value-of select="dentures4"/></span>
+						  <!-- <span class="sub-heading"><xsl:value-of select="dentures4"/></span>-->
 						 </td>
                         <td  class="withds">
                            <span class="main-heading-1">Implants<br/>(D6190)</span>
@@ -1406,11 +1419,11 @@ border-collapse: collapse;
                         <td rowspan="1">						 
 						 <span class="sub-heading"><xsl:value-of select="ssc1"/></span>
                         </td>
-						 <td class="withds">						 
-						 <span class="sub-heading"></span>
-                        </td>
-						 <td class="withds">						 
-						 <span class="sub-heading"></span>
+						 <td rowspan="1" class="">
+                         <span class="main-heading-1">D2930%</span>
+                         </td>
+                        <td rowspan="1">						 
+						 <span class="sub-heading"><xsl:value-of select="d2930"/></span>
                         </td>
            </tr>
 		   <tr>

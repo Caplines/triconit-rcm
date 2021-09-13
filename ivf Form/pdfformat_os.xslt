@@ -28,10 +28,10 @@
   float:left;
   box-sizing:border-box;
 }
-.main-heading-1 {font-family:helvetica;font-weight:regular;font-size:13px}
-.main-heading-11 {font-family:helvetica;font-weight:regular;font-size:11px}
-.sub-heading {font-family:helvetica;font-size:9px;}
-.sub-heading1 {font-family:helvetica;font-size:9px;}
+.main-heading-1 {font-family:helvetica;font-weight:regular;font-size:10px}
+.main-heading-11 {font-family:helvetica;font-weight:regular;font-size:10px}
+.sub-heading {font-family:helvetica;font-size:12px;}
+.sub-heading1 {font-family:helvetica;font-size:10px;}
 .withds {width:8%}
 .withdlastsections {width:15%}
 .sub-headinglastsections1 {width:15%;font-family:helvetica;font-size:9px;}
@@ -344,10 +344,11 @@ border-collapse: collapse;
 						 </td>
                         <td> <span class="sub-heading"><xsl:value-of select="policy10"/></span>
                         </td>
-                        <td>
-                           <span class="main-heading-1">Waiting Period Duration:</span>
-						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="waitingPeriodDuration"/></span>
+                        <td class="withds">
+                           <span class="main-heading-1">Is there a MTC?</span> 
+						</td>
+                        <td>						
+						   <span class="sub-heading" ><xsl:value-of select="radio3"/> </span>
                         </td>
                         <td colspan="2">
                          
@@ -357,12 +358,6 @@ border-collapse: collapse;
                     </tr>
 
 					<tr>
-                        <td class="withds">
-                           <span class="main-heading-1">Is there a MTC?</span> 
-						</td>
-                        <td>						
-						   <span class="sub-heading" ><xsl:value-of select="radio3"/> </span>
-                        </td>
                         <td class="withds">
                            <span class="main-heading-1">Eligible for D3330?</span>
 						</td>
@@ -374,6 +369,11 @@ border-collapse: collapse;
 						 </td>
                         <td> <span class="sub-heading"><xsl:value-of select="radio5"/></span>
                         </td>
+						<td>
+                           <span class="main-heading-1">Waiting Period Duration:</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="waitingPeriodDuration"/></span>
+						</td>
                         <td>
                          <span class="main-heading-1">Out of Network Benefits:</span>
                          </td>
