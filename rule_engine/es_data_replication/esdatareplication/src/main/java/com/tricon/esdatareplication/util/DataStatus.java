@@ -7,8 +7,10 @@ public class DataStatus {
 	public enum StatusEnum {
 
 		DATA_CLOUD_STATUS(1, 0),
+		DATA_CLOUD_STATUS_DEL(2, 0),
 		CODE_WRITTEN_STATUS(1, 0),
 		LOCAL_DATA_UPLOADED(1, 0),
+		
 		STATIC_TABLE(1,0);
 		public final int YES;
 		public final int NO;

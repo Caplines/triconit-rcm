@@ -47,7 +47,7 @@ public class ChairsTableService {
 				repList.add(rep);
 			});
 			// new repository for cloud.. and save data...
-			chairsRepositoryRe.saveAll(repList);
+			chairsRepositoryRe.saveAllAndFlush(repList);
 			p.forEach(x -> {
 
 				x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);

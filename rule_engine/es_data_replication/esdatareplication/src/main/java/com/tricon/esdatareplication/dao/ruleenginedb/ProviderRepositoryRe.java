@@ -12,6 +12,6 @@ public interface ProviderRepositoryRe extends JpaRepository<ProviderReplica, Int
 	
 	public List<ProviderReplica> findByProviderIdInAndOfficeId(Set<String> providerId, String officeuuid);
 
-	public List<ProviderReplica> findByMovedToCloud(int i);
+	//public List<ProviderReplica> findByMovedToCloud(int i);
 
 }

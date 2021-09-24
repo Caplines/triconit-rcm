@@ -11,7 +11,7 @@ public interface EmployerRespositoryRe extends JpaRepository<EmployerReplica, In
 	
 	public List<EmployerReplica> findByEmployerIdInAndOfficeId(Set<Integer> employerId, String officeuuid);
 
-	public List<EmployerReplica> findByMovedToCloud(int i);
+	//public List<EmployerReplica> findByMovedToCloud(int i);
 
 	
 

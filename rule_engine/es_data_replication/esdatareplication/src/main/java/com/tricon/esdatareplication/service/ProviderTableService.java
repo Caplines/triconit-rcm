@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,11 +40,20 @@ public class ProviderTableService extends CommonTableService {
 	
 	@Autowired
 	private ESTableRepository estableRepository;
-
-	@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
+	
+	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
+	private int batchSize;
+	
+	//@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
 	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
+		int localCt = 0;
 		try {
-			List<Provider> pL = providerRepository.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+			//Long count = patientRepository.countByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+			//long totalPages = Double.valueOf(Math.ceil(count / (float) batchSize)).longValue();
+			while(true) {
+				Pageable prepairPage = PageRequest.of(0, batchSize);// 0,50
+			List<Provider> pL = providerRepository.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO,prepairPage);
+			if (pL.size()==0) break;
 			List<ProviderReplica> repList = new ArrayList<>();
 			StringBuilder bu = new StringBuilder();
 			pL.forEach(x -> {
@@ -69,7 +81,7 @@ public class ProviderTableService extends CommonTableService {
 					q.setId(null);
 					l.add(q);
 				});
-				if (l.size()>0)providerRepositoryRe.saveAll(l);
+				if (l.size()>0)providerRepositoryRe.saveAllAndFlush(l);
 			}
 			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
@@ -91,7 +103,7 @@ public class ProviderTableService extends CommonTableService {
 					    l.add(p);
 					}
 				});
-				if (l.size()>0)providerRepositoryRe.saveAll(l);
+				if (l.size()>0)providerRepositoryRe.saveAllAndFlush(l);
 			}
 			appendLoggerToWriter(TransactionsReplica.class, bw,
 					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
@@ -100,8 +112,10 @@ public class ProviderTableService extends CommonTableService {
 				x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 			});
 			providerRepository.saveAll(pL);
-			es.setRecordsInsertedLastIteration(pL.size());
-			es.setUpdatedDate(new Date());
+			localCt = localCt + pL.size();
+			}
+			es.setRecordsInsertedLastIteration(localCt);
+			//es.setUpdatedDate(new Date());
 			estableRepository.save(es);
 		} catch (Exception ex) {
 			es.setRecordsInsertedLastIteration(0);

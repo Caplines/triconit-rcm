@@ -34,7 +34,7 @@ public class PayTypeTableService {
 	@Autowired
 	CommonTableService commonTableService;
 
-	@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
+	//@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
 	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
 		List<PayType> p = payTypeRepository.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 		List<PayTypeReplica> repList = new ArrayList<>();
@@ -48,7 +48,7 @@ public class PayTypeTableService {
 				repList.add(rep);
 			});
 			// new repository for cloud.. and save data...
-			payTypeRepositoryRe.saveAll(repList);
+			payTypeRepositoryRe.saveAllAndFlush(repList);
 			commonTableService.appendLoggerToWriter(PayTypeReplica.class, bw,
 					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
 			commonTableService.appendLoggerToWriter(PayTypeReplica.class, bw, bu.toString(), true);

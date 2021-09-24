@@ -43,7 +43,7 @@ import com.tricon.esdatareplication.util.DataStatus;
 import com.tricon.esdatareplication.util.QueryTable;
 
 @Service
-@Transactional("ruleEngineTransactionManager")
+// @Transactional("ruleEngineTransactionManager")
 public class ReplicationService {
 
 	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
@@ -133,7 +133,7 @@ public class ReplicationService {
 		
 		//Handle Deletion of Records
 		//Treatment Plans //Treatment Plan Items // Planned Services
-		deleteData(bw);
+		//deleteData(bw); //not needed for now..
 		
 	}
 	
@@ -151,8 +151,8 @@ public class ReplicationService {
 			QueryTable.QueryEnum tab = QueryTable.QueryEnum.valueOf("ES_" + table.getTableName().toUpperCase() + "_NEXT");
 			if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLANS)) {
 				List<?> data = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), false,false,false);
-				tpIds =treatmentPlansTableService.deleteRelevantDataFromLocalDB(bw, data);	
-				treatmentPlansTableService.deleteRelevantDataFromColudDB(bw, tpIds, office);
+				tpIds =treatmentPlansTableService.deleteRelevantDataFromLocalDB(bw, data);//no deletion happens	
+				treatmentPlansTableService.deleteRelevantDataFromColudDB(bw, tpIds, office);//no deletion happens	
 			}else	if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLAN_ITEMS)) {
 				tpitems =treatmentPlanItemsTableService.deleteRelevantDataFromLocalDB(bw, tpIds);	
 				treatmentPlanItemsTableService.deleteRelevantDataFromColudDB(bw, tpitems, office);
@@ -225,12 +225,13 @@ public class ReplicationService {
 
 		// Fetch all tables names to be fetched from ES
 
-		Date currentDate = new Date();
+		//Date currentDate = new Date();
 		ESTable establePat = null;
 		ESTable estableEmp = null;
 		List<ESTable> estables = estableRepository.findByCodeWrittenAndUploadedToLocal(
 				DataStatus.StatusEnum.CODE_WRITTEN_STATUS.YES, DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO);
 		for (ESTable table : estables) {
+			Date currentDate = new Date();
 			int countRecord = 0;
 
 			if (table.getTableName().equals(Constants.TABLE_PATIENT))
@@ -262,6 +263,8 @@ public class ReplicationService {
 							table.setUploadedToLocal(DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.YES);
 						table.setIterationCount(table.getIterationCount() + 1);
 						table.setRecordsInsertedLastIteration(countRecord);
+						table.setUpdatedDate(currentDate);
+						
 						estableRepository.save(table);
 						break;
 					}
@@ -279,7 +282,7 @@ public class ReplicationService {
 		}
 		// For Extra Patients
 		if (establePat != null) {
-			
+			Date currentDate = new Date();
 			commonTableService.appendLoggerToWriter(bw,
 					"*********** START *******************" + establePat.getTableName(), true);
 			 fetchDataFromLocalESToLocalDBNext(establePat, currentDate, bw, true,true);
@@ -333,7 +336,7 @@ public class ReplicationService {
 			/// SELECT TOP 1 START AT 100 p.* FROM "PPM"."paytype" AS p
 			List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), extraPat,false,updateWhere);
 			int size = list == null ? 0 : list.size();
-			commonTableService.appendLoggerToWriter(bw, "Count of  Records Read From ES in Current Iteration-->" + size,
+			commonTableService.appendLoggerToWriter(bw, "Count of  Records Read From ES in Current Iteration "+tab.getTableName()+"-->" + size,
 					true);
 			countRecord = countRecord + size;
 			// System.out.println("SSSSSSSSSSSS-?>" + size);
@@ -343,6 +346,7 @@ public class ReplicationService {
 			// System.out.println("SSSSSSSSSSSS-?>SAVE");
 			table.setIterationCount(table.getIterationCount() + 1);
 			table.setRecordsInsertedLastIteration(countRecord);
+			table.setUpdatedDate(currentDate);
 			estableRepository.save(table);
 			// break;
 			// }

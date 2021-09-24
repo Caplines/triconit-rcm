@@ -13,9 +13,9 @@ public interface TransactionsDetailRepositoryRe extends JpaRepository<Transactio
 	
 	public List<TransactionsDetailReplica> findByDetailIdInAndOfficeId(Set<Integer> detailId, String officeuuid);
 
-	public List<TransactionsDetailReplica> findByPatientIdIn(Set<String> patientId);
+	public List<TransactionsDetailReplica> findByPatientIdInAndOfficeId(Set<String> patientId,String officeuuid);
 
-	public List<TransactionsDetailReplica> findByMovedToCloud(int i);
+	//public List<TransactionsDetailReplica> findByMovedToCloud(int i);
 	//public List<TransactionsDetailReplica> findByTranNumIn(Set<Integer> tranNum);
 
 }

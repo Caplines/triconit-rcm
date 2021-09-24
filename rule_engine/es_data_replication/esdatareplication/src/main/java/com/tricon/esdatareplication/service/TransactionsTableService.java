@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,74 +36,94 @@ public class TransactionsTableService extends CommonTableService {
 
 	@Autowired
 	private TransactionsRepositoryRe transactionsRepositoryRe;
-		
+
 	@Autowired
 	private ESTableRepository estableRepository;
 
-	@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
-	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
-		try {
-			List<Transactions> pL = transactionsRepository
-					.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
-			List<TransactionsReplica> repList = new ArrayList<>();
-			StringBuilder bu = new StringBuilder();
-			pL.forEach(x -> {
-				x.setOfficeId(office.getUuid());
-				TransactionsReplica rep = new TransactionsReplica();
-				BeanUtils.copyProperties(x, rep);
-				bu.append(rep.getTranNum() + ",");
-				rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-				repList.add(rep);
-			});
-			//
-			Set<Integer> apptIdInES = new HashSet<>();
-			Set<Integer> apptIdInDB = new HashSet<>();
-			((List<TransactionsReplica>) repList).stream().map(TransactionsReplica::getTranNum).forEach(apptIdInES::add);
-			// or
-			// d2.forEach(a -> patIds.add(a.getPatientId()));
-			List<TransactionsReplica> inDB = transactionsRepositoryRe.findByTranNumInAndOfficeId(apptIdInES,office.getUuid());
-			inDB.stream().map(TransactionsReplica::getTranNum).forEach(apptIdInDB::add);
-			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
-			if (apptIdInES.size() > 0) {
-				List<TransactionsReplica> l= new ArrayList<>(); 
-				apptIdInES.forEach(id -> {
-					TransactionsReplica q=((List<TransactionsReplica>) repList).stream()
-					.filter(p -> id.intValue()==p.getTranNum().intValue()).findAny().orElse(null);
-					q.setId(null);
-					l.add(q);
-				});
-			 if (l.size()>0)transactionsRepositoryRe.saveAll(l);
-			}
-			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
-			if (apptIdInDB.size() > 0) {
-				List<TransactionsReplica> l= new ArrayList<>(); 
-				apptIdInDB.forEach(id -> {
-					TransactionsReplica p = ((List<TransactionsReplica>) repList).stream().filter(dp -> id.intValue()==dp.getTranNum().intValue())
-							.findAny().orElse(null);
+	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
+	private int batchSize;
 
-					TransactionsReplica old = inDB.stream().filter(ind -> id.intValue()==ind.getTranNum().intValue()).findAny()
-							.orElse(null);
-					if (p!=null && old!=null) {
-						if (old!=null) {
-							p.setId(old.getId());
-							p.setCreatedDate(old.getCreatedDate());
-						}
-					    p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-					    
-					   l.add(p);
-					}
+	//@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
+	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
+		int localCt = 0;
+		try {
+			// Long count =
+			// patientRepository.countByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+			// long totalPages = Double.valueOf(Math.ceil(count / (float)
+			// batchSize)).longValue();
+			while (true) {
+				Pageable prepairPage = PageRequest.of(0, batchSize);// 0,50
+				List<Transactions> pL = transactionsRepository
+						.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO, prepairPage);
+				if (pL.size() == 0)
+					break;
+				List<TransactionsReplica> repList = new ArrayList<>();
+				StringBuilder bu = new StringBuilder();
+				pL.forEach(x -> {
+					x.setOfficeId(office.getUuid());
+					TransactionsReplica rep = new TransactionsReplica();
+					BeanUtils.copyProperties(x, rep);
+					bu.append(rep.getTranNum() + ",");
+					rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+					repList.add(rep);
 				});
-				 if (l.size()>0)transactionsRepositoryRe.saveAll(l);
+				//
+				Set<Integer> apptIdInES = new HashSet<>();
+				Set<Integer> apptIdInDB = new HashSet<>();
+				((List<TransactionsReplica>) repList).stream().map(TransactionsReplica::getTranNum)
+						.forEach(apptIdInES::add);
+				// or
+				// d2.forEach(a -> patIds.add(a.getPatientId()));
+				List<TransactionsReplica> inDB = transactionsRepositoryRe.findByTranNumInAndOfficeId(apptIdInES,
+						office.getUuid());
+				inDB.stream().map(TransactionsReplica::getTranNum).forEach(apptIdInDB::add);
+				apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
+				if (apptIdInES.size() > 0) {
+					List<TransactionsReplica> l = new ArrayList<>();
+					apptIdInES.forEach(id -> {
+						TransactionsReplica q = ((List<TransactionsReplica>) repList).stream()
+								.filter(p -> id.intValue() == p.getTranNum().intValue()).findAny().orElse(null);
+						q.setId(null);
+						l.add(q);
+					});
+					if (l.size() > 0)
+						transactionsRepositoryRe.saveAllAndFlush(l);
+				}
+				apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
+				if (apptIdInDB.size() > 0) {
+					List<TransactionsReplica> l = new ArrayList<>();
+					apptIdInDB.forEach(id -> {
+						TransactionsReplica p = ((List<TransactionsReplica>) repList).stream()
+								.filter(dp -> id.intValue() == dp.getTranNum().intValue()).findAny().orElse(null);
+
+						TransactionsReplica old = inDB.stream()
+								.filter(ind -> id.intValue() == ind.getTranNum().intValue()).findAny().orElse(null);
+						if (p != null && old != null) {
+							if (old != null) {
+								p.setId(old.getId());
+								p.setCreatedDate(old.getCreatedDate());
+							}
+							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+
+							l.add(p);
+						}
+					});
+					if (l.size() > 0) {
+						transactionsRepositoryRe.saveAllAndFlush(l);
+						//transactionsRepositoryRe.flush();
+					}
+				}
+				appendLoggerToWriter(TransactionsReplica.class, bw,
+						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
+				appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
+				pL.forEach(x -> {
+					x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+				});
+				transactionsRepository.saveAll(pL);
+				localCt = localCt + pL.size();
 			}
-			appendLoggerToWriter(TransactionsReplica.class, bw,
-					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-			appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
-			pL.forEach(x -> {
-				x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-			});
-			transactionsRepository.saveAll(pL);
-			es.setRecordsInsertedLastIteration(pL.size());
-			es.setUpdatedDate(new Date());
+			es.setRecordsInsertedLastIteration(localCt);
+			//es.setUpdatedDate(new Date());
 			estableRepository.save(es);
 		} catch (Exception ex) {
 			es.setRecordsInsertedLastIteration(0);
@@ -132,32 +155,34 @@ public class TransactionsTableService extends CommonTableService {
 
 				apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
 				if (apptIdInES.size() > 0) {
-					List<Transactions> l= new ArrayList<>();
+					List<Transactions> l = new ArrayList<>();
 					apptIdInES.forEach(id -> {
-						Transactions q =((List<Transactions>) data).stream()
-								.filter(p -> id.intValue()==p.getTranNum().intValue()).findAny().orElse(null);
+						Transactions q = ((List<Transactions>) data).stream()
+								.filter(p -> id.intValue() == p.getTranNum().intValue()).findAny().orElse(null);
 						q.setId(null);
 						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						l.add(q);
 					});
-					
-					 if (l.size()>0)transactionsRepository.saveAll(l);
+
+					if (l.size() > 0)
+						transactionsRepository.saveAll(l);
 				}
 				apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
-					List<Transactions> l= new ArrayList<>();
+					List<Transactions> l = new ArrayList<>();
 					apptIdInDB.forEach(id -> {
 						Transactions p = ((List<Transactions>) data).stream().filter(dp -> id.equals(dp.getTranNum()))
 								.findAny().orElse(null);
 
-						Transactions old = inDB.stream().filter(ind -> id.intValue()==ind.getTranNum().intValue()).findAny()
-								.orElse(null);
+						Transactions old = inDB.stream().filter(ind -> id.intValue() == ind.getTranNum().intValue())
+								.findAny().orElse(null);
 						p.setId(old.getId());
 						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						p.setCreatedDate(old.getCreatedDate());
 						l.add(p);
 					});
-					 if (l.size()>0)transactionsRepository.saveAll(l);
+					if (l.size() > 0)
+						transactionsRepository.saveAll(l);
 				}
 
 				logAfterFirstTimeDataEntryToTable(Transactions.class, bw, apptIdInES.size(), apptIdInDB.size(),

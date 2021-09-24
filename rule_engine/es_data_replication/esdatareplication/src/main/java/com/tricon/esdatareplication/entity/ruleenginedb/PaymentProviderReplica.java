@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name = Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_PAYMENT_PROVIDER, uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "tran_num", "provider_id" }) })
+		@UniqueConstraint(columnNames = { "tran_num", "provider_id","prod_provider_id" }) })
 @EqualsAndHashCode(callSuper = true)
 public class PaymentProviderReplica extends CommonPaymentProvider implements Serializable {
 

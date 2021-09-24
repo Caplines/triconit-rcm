@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +26,6 @@ import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.PaymentProvider;
 import com.tricon.esdatareplication.entity.repdb.Transactions;
 import com.tricon.esdatareplication.entity.ruleenginedb.PaymentProviderReplica;
-import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 
@@ -39,98 +41,234 @@ public class PaymentProviderTableService extends CommonTableService {
 	@Autowired
 	private ESTableRepository estableRepository;
 
-	@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
+	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
+	private int batchSize;
+
+	// @Transactional(rollbackFor = Exception.class, transactionManager =
+	// "ruleEngineTransactionManager")
 	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
+		int localCt = 0;
 		try {
-			List<PaymentProvider> pL = paymentProviderRepository
-					.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
-			List<PaymentProviderReplica> repList = new ArrayList<>();
-			StringBuilder bu = new StringBuilder();
-			pL.forEach(x -> {
-				x.setOfficeId(office.getUuid());
-				PaymentProviderReplica rep = new PaymentProviderReplica();
-				BeanUtils.copyProperties(x, rep);
-				bu.append(rep.getTranNum() + ",");
-				rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-				repList.add(rep);
-			});
-			// new repository for cloud.. and save data...
-			//
-			Set<Integer> apptIdInES = new HashSet<>();
-			Set<String> apptIdInDB1 = new HashSet<>();
-			Set<String> apptIdInES1 = new HashSet<>();
-			Set<String> apptIdInESExtra = new HashSet<>();
-			//Set<String> apptIdInDBExtra = new HashSet<>();
-			
-			
-			((List<PaymentProviderReplica>) repList).stream().map(PaymentProviderReplica::getTranNum)
-					.forEach(apptIdInES::add);
-			((List<PaymentProviderReplica>) repList).stream().map(PaymentProviderReplica::getProviderId)
-			.forEach(apptIdInESExtra::add);
-			
-			for(PaymentProviderReplica r:(List<PaymentProviderReplica>) repList) {
-				apptIdInES1.add(r.getTranNum()+"---"+r.getProviderId());
-			}
-			// or
-			// d2.forEach(a -> patIds.add(a.getPatientId()));
-			List<PaymentProviderReplica> inDB = paymentProviderRepositoryRe.findByTranNumInAndProviderIdInAndOfficeId(apptIdInES,apptIdInESExtra,
-					office.getUuid());
-			//inDB.stream().map(PaymentProviderReplica::getTranNum).forEach(apptIdInDB::add);
-			for(PaymentProviderReplica r:inDB) {
-				apptIdInDB1.add(r.getTranNum()+"---"+r.getProviderId());
-				
-			}
-			apptIdInES1.removeAll(apptIdInDB1);// TranNum that are not in Local DB
-			if (apptIdInES1.size() > 0) {
-				List<PaymentProviderReplica> l= new ArrayList<>();
-				apptIdInES1.forEach(id -> {
-					PaymentProviderReplica q = ((List<PaymentProviderReplica>) repList).stream()
-							.filter(p ->Integer.parseInt(id.split("---")[0]) == p.getTranNum().intValue()
-							&& id.split("---")[1].equals(p.getProviderId())		
-									
-							).findAny().orElse(null);
-					q.setId(null);
-					l.add(q);
+			// Long count =
+			// patientRepository.countByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+			// long totalPages = Double.valueOf(Math.ceil(count / (float)
+			// batchSize)).longValue();
+			while (true) {
+				Pageable prepairPage = PageRequest.of(0, batchSize);// 0,50
+
+				List<PaymentProvider> pL = paymentProviderRepository
+						.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO, prepairPage);
+				if (pL.size() == 0)
+					break;
+				List<PaymentProviderReplica> repList = new ArrayList<>();
+				StringBuilder bu = new StringBuilder();
+				pL.forEach(x -> {
+					x.setOfficeId(office.getUuid());
+					PaymentProviderReplica rep = new PaymentProviderReplica();
+					BeanUtils.copyProperties(x, rep);
+					bu.append(rep.getTranNum() + ",");
+					rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+					repList.add(rep);
 				});
-				if (l.size()>0) paymentProviderRepositoryRe.saveAll(l);
-			}
-			apptIdInDB1.removeAll(apptIdInES1);// TranNum id that are there in Local DB we need to update.
-			// no unique id just a mapping table //Check latter
-			if (apptIdInDB1.size() > 0) {
-				List<PaymentProviderReplica> l= new ArrayList<>();
-				apptIdInDB1.forEach(id -> {
-					PaymentProviderReplica p = ((List<PaymentProviderReplica>) repList).stream()
-							.filter(dp ->Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue()
-							&& id.split("---")[1].equals(dp.getProviderId())		
-									
-							).findAny().orElse(null);
+				// new repository for cloud.. and save data...
+				//
+				Set<Integer> apptIdInES = new HashSet<>();
+				Set<String> apptIdInDB1 = new HashSet<>();
+				Set<String> apptIdInES1 = new HashSet<>();
+				//Set<String> apptIdInESExtra = new HashSet<>();
+				//Set<String> apptIdInESExtra1 = new HashSet<>();
+				// Set<String> apptIdInDBExtra = new HashSet<>();
+				// Case 1
+				List<PaymentProviderReplica> repList1 = ((List<PaymentProviderReplica>) repList).stream()
+						.filter(x -> x.getProdProviderId() != null && x.getProviderId() != null)
+						.collect(Collectors.toList());
+				List<PaymentProviderReplica> repList2 = ((List<PaymentProviderReplica>) repList).stream()
+						.filter(x -> x.getProdProviderId() == null || x.getProviderId() == null)
+						.collect(Collectors.toList());
 
-					PaymentProviderReplica old = inDB.stream()
-							.filter(dp ->Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue()
-							&& id.split("---")[1].equals(dp.getProviderId())		
-									
-							).findAny().orElse(null);
-					if (p != null && old != null) {
-						if (old != null) {
-							p.setId(old.getId());
-							p.setCreatedDate(old.getCreatedDate());
-						}
-						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+				((List<PaymentProviderReplica>) repList1).stream().map(PaymentProviderReplica::getTranNum)
+						.forEach(apptIdInES::add);
+				//((List<PaymentProviderReplica>) repList1).stream().map(PaymentProviderReplica::getProviderId)
+				//		.forEach(apptIdInESExtra::add);
+				///((List<PaymentProviderReplica>) repList1).stream().map(PaymentProviderReplica::getProdProviderId)
+				//		.forEach(apptIdInESExtra1::add);
 
-						l.add(p);
+				for (PaymentProviderReplica r : (List<PaymentProviderReplica>) repList) {
+					apptIdInES1.add(r.getTranNum() + "---" + r.getProviderId() + "---" + r.getProdProviderId());
+				}
+
+				List<PaymentProviderReplica> inDB = new ArrayList<>();
+				if (repList1 != null) {
+					for (PaymentProviderReplica x : repList1) {
+						List<PaymentProviderReplica> m = paymentProviderRepositoryRe
+								.findByTranNumAndProdIdAndProdProviderId(x.getTranNum(), x.getProviderId(),
+										x.getProdProviderId(), office.getUuid());
+						if (m != null)
+							inDB.addAll(m);
 					}
+				}
+				if (repList2 != null) {
+					appendLoggerToWriter(PaymentProviderReplica.class, bw, "repList2 is here :" + repList2.size(),
+							true);
+					for (PaymentProviderReplica x : repList2) {
+						if (x.getProdProviderId() == null) {
+							List<PaymentProviderReplica> m = paymentProviderRepositoryRe
+									.findByTranNumAndProdId(x.getTranNum(), x.getProviderId(), office.getUuid());
+							if (m != null)
+								inDB.addAll(m);
+						} else {
+							List<PaymentProviderReplica> m = paymentProviderRepositoryRe.findByTranNumAndProdProviderId(
+									x.getTranNum(), x.getProdProviderId(), office.getUuid());
+							if (m != null)
+								inDB.addAll(m);
+						}
+					}
+				}
+				///////////////////
+
+				// or
+				// d2.forEach(a -> patIds.add(a.getPatientId()));
+				for (PaymentProviderReplica r : inDB) {
+					apptIdInDB1.add(r.getTranNum() + "---" + r.getProviderId() + "---" + r.getProdProviderId());
+
+				}
+				apptIdInES1.removeAll(apptIdInDB1);// TranNum that are not in Local DB
+				if (apptIdInES1.size() > 0) {
+					List<PaymentProviderReplica> l = new ArrayList<>();
+					for (String x : apptIdInES1) {
+						for (PaymentProviderReplica k : repList) {
+							if (k.getProviderId() == null) {
+								k.setProviderId("null");
+							}
+							if (k.getProdProviderId() == null) {
+								k.setProdProviderId("null");
+								appendLoggerToWriter(PaymentProviderReplica.class, bw, "SET TO NULLL STR-->"+k.getTranNum(), true);
+							}
+							if (Integer.parseInt(x.split("---")[0]) == k.getTranNum().intValue()
+									&& x.split("---")[1].equals(k.getProviderId())
+									&& x.split("---")[2].equals(k.getProdProviderId())) {
+								if (k.getProviderId().equals("null"))
+									k.setProviderId(null);
+								if (k.getProdProviderId().equals("null")) {
+									k.setProdProviderId(null);
+									appendLoggerToWriter(PaymentProviderReplica.class, bw, "SET TO NULLL OBJ-->"+k.getTranNum(), true);
+								}
+								k.setId(null);
+								l.add(k);
+							}
+							if (k.getProviderId()!=null && k.getProviderId().equals("null"))
+								k.setProviderId(null);
+							if (k.getProdProviderId()!=null && k.getProdProviderId().equals("null")) {
+								k.setProdProviderId(null);
+							}
+						}
+					}
+
+					/*
+					 * List<PaymentProviderReplica> l = new ArrayList<>(); apptIdInES1.forEach(id ->
+					 * { PaymentProviderReplica q = ((List<PaymentProviderReplica>)
+					 * repList).stream() .filter(p -> Integer.parseInt(id.split("---")[0]) ==
+					 * p.getTranNum().intValue() && id.split("---")[1].equals(p.getProviderId()) &&
+					 * id.split("---")[2].equals(p.getProdProviderId())
+					 * 
+					 * ).findAny().orElse(null); q.setId(null); l.add(q); });
+					 */
+					if (l.size() > 0)
+						paymentProviderRepositoryRe.saveAllAndFlush(l);
+				}
+				apptIdInDB1.removeAll(apptIdInES1);// TranNum id that are there in Local DB we need to update.
+				// no unique id just a mapping table //Check latter
+				if (apptIdInDB1.size() > 0) {
+					List<PaymentProviderReplica> l = new ArrayList<>();
+					for (String x : apptIdInDB1) {
+						PaymentProviderReplica p = null, old = null;
+						for (PaymentProviderReplica k : repList) {
+							if (k.getProviderId() == null)
+								k.setProviderId("null");
+							if (k.getProdProviderId() == null)
+								k.setProdProviderId("null");
+							if (Integer.parseInt(x.split("---")[0]) == k.getTranNum().intValue()
+									&& x.split("---")[1].equals(k.getProviderId())
+									&& x.split("---")[2].equals(k.getProdProviderId())) {
+								if (k.getProviderId().equals("null"))
+									k.setProviderId(null);
+								if (k.getProdProviderId().equals("null"))
+									k.setProdProviderId(null);
+								p = k;
+							}
+							if (k.getProviderId()!=null && k.getProviderId().equals("null"))
+								k.setProviderId(null);
+							if (k.getProdProviderId()!=null && k.getProdProviderId().equals("null")) {
+								k.setProdProviderId(null);
+							}
+						}
+						for (PaymentProviderReplica k : inDB) {
+							if (k.getProviderId() == null)
+								k.setProviderId("null");
+							if (k.getProdProviderId() == null)
+								k.setProdProviderId("null");
+
+							if (Integer.parseInt(x.split("---")[0]) == k.getTranNum().intValue()
+									&& x.split("---")[1].equals(k.getProviderId())
+									&& x.split("---")[2].equals(k.getProdProviderId())) {
+								if (k.getProviderId().equals("null"))
+									k.setProviderId(null);
+								if (k.getProdProviderId().equals("null"))
+									k.setProdProviderId(null);
+								old = k;
+							}
+							if (k.getProviderId()!=null && k.getProviderId().equals("null"))
+								k.setProviderId(null);
+							if (k.getProdProviderId()!=null && k.getProdProviderId().equals("null")) {
+								k.setProdProviderId(null);
+							}
+						}
+						if (p != null && old != null) {
+							if (old != null) {
+								p.setId(old.getId());
+								p.setCreatedDate(old.getCreatedDate());
+							}
+							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+
+							l.add(p);
+						}
+					}
+					/*
+					 * apptIdInDB1.forEach(id -> { PaymentProviderReplica p =
+					 * ((List<PaymentProviderReplica>) repList).stream() .filter(dp ->
+					 * Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue() &&
+					 * id.split("---")[1].equals(dp.getProviderId()) &&
+					 * id.split("---")[2].equals(dp.getProdProviderId())
+					 * 
+					 * ).findAny().orElse(null);
+					 * 
+					 * PaymentProviderReplica old = inDB.stream() .filter(dp ->
+					 * Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue() &&
+					 * id.split("---")[1].equals(dp.getProviderId()) &&
+					 * id.split("---")[2].equals(dp.getProdProviderId())
+					 * 
+					 * ).findAny().orElse(null);
+					 * 
+					 * if (p != null && old != null) { if (old != null) { p.setId(old.getId());
+					 * p.setCreatedDate(old.getCreatedDate()); }
+					 * p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+					 * 
+					 * l.add(p); } });
+					 */
+					if (l.size() > 0)
+						paymentProviderRepositoryRe.saveAllAndFlush(l);
+				}
+				appendLoggerToWriter(PaymentProviderReplica.class, bw,
+						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
+				appendLoggerToWriter(PaymentProviderReplica.class, bw, bu.toString(), true);
+				pL.forEach(x -> {
+					x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				});
-                 if (l.size()>0) paymentProviderRepositoryRe.saveAll(l);
-			}
-			appendLoggerToWriter(PaymentProviderReplica.class, bw,
-					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-			appendLoggerToWriter(PaymentProviderReplica.class, bw, bu.toString(), true);
-			pL.forEach(x -> {
-				x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-			});
-			paymentProviderRepository.saveAll(pL);
-			es.setRecordsInsertedLastIteration(pL.size());
-			es.setUpdatedDate(new Date());
+				paymentProviderRepository.saveAll(pL);
+				localCt = localCt + pL.size();
+			} // while
+			es.setRecordsInsertedLastIteration(localCt);
+			//es.setUpdatedDate(new Date());
 			estableRepository.save(es);
 		} catch (Exception ex) {
 			es.setRecordsInsertedLastIteration(0);
@@ -156,57 +294,144 @@ public class PaymentProviderTableService extends CommonTableService {
 				Set<String> apptIdInDB1 = new HashSet<>();
 				Set<String> apptIdInES1 = new HashSet<>();
 				Set<String> apptIdInESExtra = new HashSet<>();
-				//Set<String> apptIdInDBExtra = new HashSet<>();
-				
+				Set<String> apptIdInESExtra1 = new HashSet<>();
+				// Set<String> apptIdInDBExtra = new HashSet<>();
+				// Case 1
 				if (data!=null) {
-				((List<PaymentProvider>) data).stream().map(PaymentProvider::getTranNum)
-						.forEach(apptIdInES::add);
-				((List<PaymentProvider>) data).stream().map(PaymentProvider::getProviderId)
-				.forEach(apptIdInESExtra::add);
-				
-				for(PaymentProvider r:(List<PaymentProvider>) data) {
-					apptIdInES1.add(r.getTranNum()+"---"+r.getProviderId());
+				List<PaymentProvider> repList1 = ((List<PaymentProvider>) data).stream()
+						.filter(x -> x.getProdProviderId() != null && x.getProviderId() != null)
+						.collect(Collectors.toList());
+				List<PaymentProvider> repList2 = ((List<PaymentProvider>) data).stream()
+						.filter(x -> x.getProdProviderId() == null || x.getProviderId() == null)
+						.collect(Collectors.toList());
+
+				((List<PaymentProvider>) repList1).stream().map(PaymentProvider::getTranNum).forEach(apptIdInES::add);
+				((List<PaymentProvider>) repList1).stream().map(PaymentProvider::getProviderId)
+						.forEach(apptIdInESExtra::add);
+				((List<PaymentProvider>) repList1).stream().map(PaymentProvider::getProdProviderId)
+						.forEach(apptIdInESExtra1::add);
+
+				for (PaymentProvider r : (List<PaymentProvider>) data) {
+					apptIdInES1.add(r.getTranNum() + "---" + r.getProviderId() + "---" + r.getProdProviderId());
 				}
+
+				List<PaymentProvider> inDB = new ArrayList<>();
+				if (repList1 != null) {
+					for (PaymentProvider x : repList1) {
+						List<PaymentProvider> m = paymentProviderRepository.findByTranNumAndProdIdAndProdProviderId(
+								x.getTranNum(), x.getProviderId(), x.getProdProviderId());
+						if (m != null)
+							inDB.addAll(m);
+					}
 				}
+				if (repList2 != null) {
+					for (PaymentProvider x : repList2) {
+						if (x.getProdProviderId() == null) {
+							List<PaymentProvider> m = paymentProviderRepository.findByTranNumAndProdId(x.getTranNum(),
+									x.getProviderId());
+							if (m != null)
+								inDB.addAll(m);
+						} else {
+							List<PaymentProvider> m = paymentProviderRepository
+									.findByTranNumAndProdProviderId(x.getTranNum(), x.getProdProviderId());
+							if (m != null)
+								inDB.addAll(m);
+						}
+					}
+				}
+				///////////////////
+
 				// or
 				// d2.forEach(a -> patIds.add(a.getPatientId()));
-				List<PaymentProvider> inDB = paymentProviderRepository.findByTranNumInAndProviderIdIn(apptIdInES,apptIdInESExtra);
-				//inDB.stream().map(PaymentProviderReplica::getTranNum).forEach(apptIdInDB::add);
-				for(PaymentProvider r:inDB) {
-					apptIdInDB1.add(r.getTranNum()+"---"+r.getProviderId());
-					
+				for (PaymentProvider r : inDB) {
+					apptIdInDB1.add(r.getTranNum() + "---" + r.getProviderId() + "---" + r.getProdProviderId());
+
 				}
 				apptIdInES1.removeAll(apptIdInDB1);// TranNum that are not in Local DB
 				if (apptIdInES1.size() > 0) {
-                    List<PaymentProvider> l= new ArrayList<>();
-					apptIdInES1.forEach(id -> {
-						PaymentProvider q = ((List<PaymentProvider>) data).stream()
-								.filter(p ->Integer.parseInt(id.split("---")[0]) == p.getTranNum().intValue()
-								&& id.split("---")[1].equals(p.getProviderId())		
-										
-								).findAny().orElse(null);
-						q.setId(null);
-						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
-						l.add(q);
-					});
-					if (l.size()>0) paymentProviderRepository.saveAll(l);
+					List<PaymentProvider> l = new ArrayList<>();
+					for (String x : apptIdInES1) {
+						for (PaymentProvider k : (List<PaymentProvider>) data) {
+							if (k.getProviderId() == null)
+								k.setProviderId("null");
+							if (k.getProdProviderId() == null)
+								k.setProdProviderId("null");
+							if (Integer.parseInt(x.split("---")[0]) == k.getTranNum().intValue()
+									&& x.split("---")[1].equals(k.getProviderId())
+									&& x.split("---")[2].equals(k.getProdProviderId())) {
+								if (k.getProviderId().equals("null"))
+									k.setProviderId(null);
+								if (k.getProdProviderId().equals("null"))
+									k.setProdProviderId(null);
+								k.setId(null);
+								l.add(k);
+							}
+							if (k.getProviderId()!=null && k.getProviderId().equals("null"))
+								k.setProviderId(null);
+							if (k.getProdProviderId()!=null && k.getProdProviderId().equals("null")) {
+								k.setProdProviderId(null);
+							}
+						}
+					}
+
+					/*
+					 * List<PaymentProviderReplica> l = new ArrayList<>(); apptIdInES1.forEach(id ->
+					 * { PaymentProviderReplica q = ((List<PaymentProviderReplica>)
+					 * repList).stream() .filter(p -> Integer.parseInt(id.split("---")[0]) ==
+					 * p.getTranNum().intValue() && id.split("---")[1].equals(p.getProviderId()) &&
+					 * id.split("---")[2].equals(p.getProdProviderId())
+					 * 
+					 * ).findAny().orElse(null); q.setId(null); l.add(q); });
+					 */
+					if (l.size() > 0)
+						paymentProviderRepository.saveAllAndFlush(l);
 				}
 				apptIdInDB1.removeAll(apptIdInES1);// TranNum id that are there in Local DB we need to update.
 				// no unique id just a mapping table //Check latter
 				if (apptIdInDB1.size() > 0) {
-					List<PaymentProvider> l= new ArrayList<>();
-					apptIdInDB1.forEach(id -> {
-						PaymentProvider p = ((List<PaymentProvider>) data).stream()
-								.filter(dp ->Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue()
-								&& id.split("---")[1].equals(dp.getProviderId())		
-										
-								).findAny().orElse(null);
-
-						PaymentProvider old = inDB.stream()
-								.filter(dp ->Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue()
-								&& id.split("---")[1].equals(dp.getProviderId())		
-										
-								).findAny().orElse(null);
+					List<PaymentProvider> l = new ArrayList<>();
+					for (String x : apptIdInDB1) {
+						PaymentProvider p = null, old = null;
+						for (PaymentProvider k : (List<PaymentProvider>) data) {
+							if (k.getProviderId() == null)
+								k.setProviderId("null");
+							if (k.getProdProviderId() == null)
+								k.setProdProviderId("null");
+							if (Integer.parseInt(x.split("---")[0]) == k.getTranNum().intValue()
+									&& x.split("---")[1].equals(k.getProviderId())
+									&& x.split("---")[2].equals(k.getProdProviderId())) {
+								if (k.getProviderId().equals("null"))
+									k.setProviderId(null);
+								if (k.getProdProviderId().equals("null"))
+									k.setProdProviderId(null);
+								p = k;
+							}
+							if (k.getProviderId()!=null && k.getProviderId().equals("null"))
+								k.setProviderId(null);
+							if (k.getProdProviderId()!=null && k.getProdProviderId().equals("null")) {
+								k.setProdProviderId(null);
+							}
+						}
+						for (PaymentProvider k : inDB) {
+							if (k.getProviderId() == null)
+								k.setProviderId("null");
+							if (k.getProdProviderId() == null)
+								k.setProdProviderId("null");
+							if (Integer.parseInt(x.split("---")[0]) == k.getTranNum().intValue()
+									&& x.split("---")[1].equals(k.getProviderId())
+									&& x.split("---")[2].equals(k.getProdProviderId())) {
+								if (k.getProviderId().equals("null"))
+									k.setProviderId(null);
+								if (k.getProdProviderId().equals("null"))
+									k.setProdProviderId(null);
+								old = k;
+							}
+							if (k.getProviderId()!=null && k.getProviderId().equals("null"))
+								k.setProviderId(null);
+							if (k.getProdProviderId()!=null && k.getProdProviderId().equals("null")) {
+								k.setProdProviderId(null);
+							}
+						}
 						if (p != null && old != null) {
 							if (old != null) {
 								p.setId(old.getId());
@@ -216,15 +441,79 @@ public class PaymentProviderTableService extends CommonTableService {
 
 							l.add(p);
 						}
-					});
-					if (l.size()>0) paymentProviderRepository.saveAll(l);
+					}
+					/*
+					 * apptIdInDB1.forEach(id -> { PaymentProviderReplica p =
+					 * ((List<PaymentProviderReplica>) repList).stream() .filter(dp ->
+					 * Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue() &&
+					 * id.split("---")[1].equals(dp.getProviderId()) &&
+					 * id.split("---")[2].equals(dp.getProdProviderId())
+					 * 
+					 * ).findAny().orElse(null);
+					 * 
+					 * PaymentProviderReplica old = inDB.stream() .filter(dp ->
+					 * Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue() &&
+					 * id.split("---")[1].equals(dp.getProviderId()) &&
+					 * id.split("---")[2].equals(dp.getProdProviderId())
+					 * 
+					 * ).findAny().orElse(null);
+					 * 
+					 * if (p != null && old != null) { if (old != null) { p.setId(old.getId());
+					 * p.setCreatedDate(old.getCreatedDate()); }
+					 * p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+					 * 
+					 * l.add(p); } });
+					 */
+					if (l.size() > 0)
+						paymentProviderRepository.saveAllAndFlush(l);
+				}
 				}
 				logAfterFirstTimeDataEntryToTable(PaymentProvider.class, bw, apptIdInES1.size(), apptIdInDB1.size(),
 						String.join(",", apptIdInES1.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())),
-						String.join(",", apptIdInDB1.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())));
+						String.join(",",
+								apptIdInDB1.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())));
+				
 			}
 		} catch (Exception ex) {
 			appenErrorToWriter(PaymentProvider.class, bw, ex);
+		}
+	}
+
+	public static void main(String aa[]) {
+
+		String a = null;
+		String b = "a" + "---" + a;
+		System.out.println(b);
+		System.out.println(b.split("---")[1].equals("null"));
+		if (a==null) {
+			a="null";
+		}
+        if (a.equals("null")) {
+        	a=null;
+        }
+        System.out.println(a);
+        String h="asa---"+a;
+        System.out.println(h);
+        String z=null;
+        System.out.println("null".equals(null));
+        
+		List<PaymentProviderReplica> repList = new ArrayList<>();
+		List<String> apptIdInES = new ArrayList<>();
+
+		String q="null";
+		System.out.println("DDDDDD");
+		System.out.println(q==null);
+		PaymentProviderReplica r = null;
+		r = new PaymentProviderReplica();
+		r.setProviderId(null);
+		repList.add(r);
+		r = new PaymentProviderReplica();
+		r.setProviderId("oo");
+		repList.add(r);
+		((List<PaymentProviderReplica>) repList).stream().map(PaymentProviderReplica::getProviderId)
+				.filter(x -> x != null).forEach(apptIdInES::add);
+		for (String ss : apptIdInES) {
+			System.out.println(ss + "ad");
 		}
 	}
 }

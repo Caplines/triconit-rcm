@@ -8,6 +8,6 @@ import com.tricon.esdatareplication.entity.ruleenginedb.ChairsReplica;
 
 public interface ChairsRepositoryRe extends JpaRepository<ChairsReplica, Integer> {
 
-	List<ChairsReplica> findByMovedToCloud(int i);
+	//List<ChairsReplica> findByMovedToCloud(int i);
 
 }

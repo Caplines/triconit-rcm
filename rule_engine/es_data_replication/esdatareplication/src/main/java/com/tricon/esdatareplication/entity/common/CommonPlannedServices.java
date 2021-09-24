@@ -84,20 +84,20 @@ public class CommonPlannedServices extends CommonCloudColumn {
 	@Column(name = "standard_fee_id", length = 50, nullable = true)	
 	Integer standardFeeId;
 		
-	@Column(name = "status", length = 50, nullable = false)	
+	@Column(name = "status", length = 50, nullable = true)	
 	String status;
 
-	@Column(name = "status_date", nullable = false)	
+	@Column(name = "status_date", nullable = true)	
 	@Temporal(TemporalType.DATE)
 	Date statusDate;
 
-	@Column(name = "surface", length = 50, nullable = false)
+	@Column(name = "surface", length = 50, nullable = true)
 	String surface;
 
-	@Column(name = "tooth", length = 50, nullable = false)
+	@Column(name = "tooth", length = 50, nullable = true)
 	String tooth;
 
-	@Column(name = "unusual_remarks", length = 150, nullable = false)	
+	@Column(name = "unusual_remarks", length = 150, nullable = true)	
 	String unusualRemarks;
 
 

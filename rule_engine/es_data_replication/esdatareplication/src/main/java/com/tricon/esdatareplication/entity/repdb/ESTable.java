@@ -63,5 +63,8 @@ public class ESTable extends BaseInfoAudit implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 
+	//@Column(name = "last_iteration_start_date", nullable = true)
+	//@Temporal(TemporalType.TIMESTAMP)
+	//private Date lastIterationStartDate;
 
 }

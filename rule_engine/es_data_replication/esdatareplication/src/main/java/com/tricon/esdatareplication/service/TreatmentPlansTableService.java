@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.ls.LSSerializer;
@@ -44,70 +47,86 @@ public class TreatmentPlansTableService extends CommonTableService {
 	@Autowired
 	private ESTableRepository estableRepository;
 
-	@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
+	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
+	private int batchSize;
+
+	//@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
 	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
+		int localCt = 0;
 		try {
-			List<TreatmentPlans> pL = treatmentPlansRepository
-					.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
-			List<TreatmentPlansReplica> repList = new ArrayList<>();
-			StringBuilder bu = new StringBuilder();
-			pL.forEach(x -> {
-				x.setOfficeId(office.getUuid());
-				TreatmentPlansReplica rep = new TreatmentPlansReplica();
-				BeanUtils.copyProperties(x, rep);
-				bu.append(rep.getTreatmentPlanId() + ",");
-				rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-				repList.add(rep);
-			});
-			// new repository for cloud.. and save data...
-			Set<Integer> apptIdInES = new HashSet<>();
-			Set<Integer> apptIdInDB = new HashSet<>();
-			((List<TreatmentPlansReplica>) repList).stream().map(TreatmentPlansReplica::getTreatmentPlanId)
-					.forEach(apptIdInES::add);
-			// or
-			// d2.forEach(a -> patIds.add(a.getPatientId()));
-			List<TreatmentPlansReplica> inDB = treatmentPlansRepositoryRe.findByTreatmentPlanIdInAndOfficeId(apptIdInES,
-					office.getUuid());
-			inDB.stream().map(TreatmentPlansReplica::getTreatmentPlanId).forEach(apptIdInDB::add);
-			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
-			if (apptIdInES.size() > 0) {
-
-				apptIdInES.forEach(id -> {
-					TreatmentPlansReplica q = ((List<TreatmentPlansReplica>) repList).stream()
-							.filter(p -> id.intValue() == p.getTreatmentPlanId().intValue()).findAny().orElse(null);
-					q.setId(null);
-					treatmentPlansRepositoryRe.save(q);
+			// Long count =
+			// patientRepository.countByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+			// long totalPages = Double.valueOf(Math.ceil(count / (float)
+			// batchSize)).longValue();
+			while (true) {
+				Pageable prepairPage = PageRequest.of(0, batchSize);// 0,50
+				List<TreatmentPlans> pL = treatmentPlansRepository
+						.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO, prepairPage);
+				if (pL.size() == 0)
+					break;
+				List<TreatmentPlansReplica> repList = new ArrayList<>();
+				StringBuilder bu = new StringBuilder();
+				pL.forEach(x -> {
+					x.setOfficeId(office.getUuid());
+					TreatmentPlansReplica rep = new TreatmentPlansReplica();
+					BeanUtils.copyProperties(x, rep);
+					bu.append(rep.getTreatmentPlanId() + ",");
+					rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+					repList.add(rep);
 				});
-			}
-			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
-			if (apptIdInDB.size() > 0) {
-				apptIdInDB.forEach(id -> {
-					TreatmentPlansReplica p = ((List<TreatmentPlansReplica>) repList).stream()
-							.filter(dp -> id.intValue() == dp.getTreatmentPlanId().intValue()).findAny().orElse(null);
+				// new repository for cloud.. and save data...
+				Set<Integer> apptIdInES = new HashSet<>();
+				Set<Integer> apptIdInDB = new HashSet<>();
+				((List<TreatmentPlansReplica>) repList).stream().map(TreatmentPlansReplica::getTreatmentPlanId)
+						.forEach(apptIdInES::add);
+				// or
+				// d2.forEach(a -> patIds.add(a.getPatientId()));
+				List<TreatmentPlansReplica> inDB = treatmentPlansRepositoryRe
+						.findByTreatmentPlanIdInAndOfficeId(apptIdInES, office.getUuid());
+				inDB.stream().map(TreatmentPlansReplica::getTreatmentPlanId).forEach(apptIdInDB::add);
+				apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
+				if (apptIdInES.size() > 0) {
 
-					TreatmentPlansReplica old = inDB.stream()
-							.filter(ind -> id.intValue() == ind.getTreatmentPlanId().intValue()).findAny().orElse(null);
-					if (p != null && old != null) {
-						if (old != null) {
-							p.setId(old.getId());
-							p.setCreatedDate(old.getCreatedDate());
+					apptIdInES.forEach(id -> {
+						TreatmentPlansReplica q = ((List<TreatmentPlansReplica>) repList).stream()
+								.filter(p -> id.intValue() == p.getTreatmentPlanId().intValue()).findAny().orElse(null);
+						q.setId(null);
+						treatmentPlansRepositoryRe.save(q);
+					});
+				}
+				apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
+				if (apptIdInDB.size() > 0) {
+					apptIdInDB.forEach(id -> {
+						TreatmentPlansReplica p = ((List<TreatmentPlansReplica>) repList).stream()
+								.filter(dp -> id.intValue() == dp.getTreatmentPlanId().intValue()).findAny()
+								.orElse(null);
+
+						TreatmentPlansReplica old = inDB.stream()
+								.filter(ind -> id.intValue() == ind.getTreatmentPlanId().intValue()).findAny()
+								.orElse(null);
+						if (p != null && old != null) {
+							if (old != null) {
+								p.setId(old.getId());
+								p.setCreatedDate(old.getCreatedDate());
+							}
+							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+
+							treatmentPlansRepositoryRe.save(p);
 						}
-						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+					});
 
-						treatmentPlansRepositoryRe.save(p);
-					}
+				}
+				appendLoggerToWriter(TransactionsReplica.class, bw,
+						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
+				appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
+				pL.forEach(x -> {
+					x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				});
-
+				treatmentPlansRepository.saveAll(pL);
+				localCt = localCt + pL.size();
 			}
-			appendLoggerToWriter(TransactionsReplica.class, bw,
-					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-			appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
-			pL.forEach(x -> {
-				x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-			});
-			treatmentPlansRepository.saveAll(pL);
-			es.setRecordsInsertedLastIteration(pL.size());
-			es.setUpdatedDate(new Date());
+			es.setRecordsInsertedLastIteration(localCt);
+			//es.setUpdatedDate(new Date());
 			estableRepository.save(es);
 		} catch (Exception ex) {
 			es.setRecordsInsertedLastIteration(0);
@@ -141,8 +160,8 @@ public class TreatmentPlansTableService extends CommonTableService {
 				if (apptIdInES.size() > 0) {
 					List<TreatmentPlans> l = new ArrayList<>();
 					apptIdInES.forEach(id -> {
-						TreatmentPlans q= ((List<TreatmentPlans>) data).stream().filter(p -> id.equals(p.getTreatmentPlanId()))
-								.findAny().orElse(null);
+						TreatmentPlans q = ((List<TreatmentPlans>) data).stream()
+								.filter(p -> id.equals(p.getTreatmentPlanId())).findAny().orElse(null);
 						q.setId(null);
 						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						l.add(q);
@@ -192,8 +211,10 @@ public class TreatmentPlansTableService extends CommonTableService {
 		try {
 			//
 			Set<Integer> apptIdInES = new HashSet<>();
-			((List<TreatmentPlans>) data).stream().map(TreatmentPlans::getTreatmentPlanId)
-					.forEach(apptIdInES::add);
+			((List<TreatmentPlans>) data).stream().map(TreatmentPlans::getTreatmentPlanId).forEach(apptIdInES::add);
+			((List<TreatmentPlans>) data).stream().map(TreatmentPlans::getTreatmentPlanId).forEach(apptIdInDB::add);
+			
+			/*no deletion happens
 			List<TreatmentPlans> inDB = treatmentPlansRepository.findAll();
 
 			inDB.stream().map(TreatmentPlans::getTreatmentPlanId).forEach(apptIdInDB::add);
@@ -201,8 +222,8 @@ public class TreatmentPlansTableService extends CommonTableService {
 			if (apptIdInDB.size() > 0) {
 				List<TreatmentPlans> del = new ArrayList<>();
 				apptIdInDB.forEach(id -> {
-					TreatmentPlans q = inDB.stream()
-							.filter(p -> (id.intValue() == p.getTreatmentPlanId().intValue())).findAny().orElse(null);
+					TreatmentPlans q = inDB.stream().filter(p -> (id.intValue() == p.getTreatmentPlanId().intValue()))
+							.findAny().orElse(null);
 					del.add(q);
 				});
 				if (del.size() > 0)
@@ -210,7 +231,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 			}
 			logDeletedFromTable(TreatmentPlanItems.class, bw, apptIdInDB.size(),
 					String.join(",", apptIdInDB.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())));
-
+              */
 		} catch (Exception ex) {
 			appenErrorToWriter(TreatmentPlanItems.class, bw, ex);
 		}
@@ -219,13 +240,13 @@ public class TreatmentPlansTableService extends CommonTableService {
 
 	}
 
-	@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
+	//@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
 	public void deleteRelevantDataFromColudDB(BufferedWriter bw, Set<Integer> data, Office office) {
-
+       /*
 		try {
 			//
-			List<TreatmentPlansReplica> inDB = treatmentPlansRepositoryRe
-					.findByTreatmentPlanIdInAndOfficeId(data, office.getUuid());
+			List<TreatmentPlansReplica> inDB = treatmentPlansRepositoryRe.findByTreatmentPlanIdInAndOfficeId(data,
+					office.getUuid());
 
 			if (data.size() > 0) {
 				treatmentPlansRepositoryRe.deleteAll(inDB);
@@ -235,7 +256,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 		} catch (Exception ex) {
 			appenErrorToWriter(TreatmentPlanItems.class, bw, ex);
 		}
-
+     */
 	}
-
+    
 }

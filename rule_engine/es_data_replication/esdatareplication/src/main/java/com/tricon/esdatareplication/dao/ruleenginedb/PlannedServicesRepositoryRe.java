@@ -12,8 +12,8 @@ public interface PlannedServicesRepositoryRe extends JpaRepository<PlannedServic
 	public List<PlannedServicesReplica> findByPatientIdInAndOfficeIdAndLineNumberIn(Set<String> patientids,
 			String officeuuid, Set<Integer> linenumber);
 
-	public List<PlannedServicesReplica> findByPatientIdIn(Set<String> patientId);
+	public List<PlannedServicesReplica> findByPatientIdInAndOfficeId(Set<String> patientId,String officeuuid);
 
-	public List<PlannedServicesReplica> findByMovedToCloud(int i);
+	//public List<PlannedServicesReplica> findByMovedToCloud(int i);
 
 }
