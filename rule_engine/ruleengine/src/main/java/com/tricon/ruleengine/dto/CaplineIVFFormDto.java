@@ -664,6 +664,9 @@ public class CaplineIVFFormDto {
 	private String d0350;
 	private String d1330;
 	private String d2930;
+    private String srpd4341;
+    private String majord72101;
+	
 
     //END
     
@@ -3067,6 +3070,23 @@ public class CaplineIVFFormDto {
 
 	public void setD2930(String d2930) {
 		this.d2930 = d2930;
+	}
+
+	
+	public String getSrpd4341() {
+		return srpd4341;
+	}
+
+	public void setSrpd4341(String srpd4341) {
+		this.srpd4341 = srpd4341;
+	}
+
+	public String getMajord72101() {
+		return majord72101;
+	}
+
+	public void setMajord72101(String majord72101) {
+		this.majord72101 = majord72101;
 	}
 
 	private String commonReplaceMent(String d) {

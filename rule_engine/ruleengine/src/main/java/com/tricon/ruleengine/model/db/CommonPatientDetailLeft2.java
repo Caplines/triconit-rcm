@@ -315,6 +315,12 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "d2930", length = 30)
 	private String d2930;
 
+	@Column(name = "srpd_4341", length = 30)
+	private String srpd4341;
+
+	@Column(name = "major_d72101", length = 30)
+	private String majord72101;
+
 	public String getNpi() {
 		return npi;
 	}
@@ -1106,6 +1112,22 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setD2930(String d2930) {
 		this.d2930 = d2930;
+	}
+
+	public String getSrpd4341() {
+		return srpd4341;
+	}
+
+	public void setSrpd4341(String srpd4341) {
+		this.srpd4341 = srpd4341;
+	}
+
+	public String getMajord72101() {
+		return majord72101;
+	}
+
+	public void setMajord72101(String majord72101) {
+		this.majord72101 = majord72101;
 	}
 
 

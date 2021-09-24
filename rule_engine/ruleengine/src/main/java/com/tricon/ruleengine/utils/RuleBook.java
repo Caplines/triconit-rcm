@@ -797,10 +797,14 @@ public class RuleBook {
 
 				RuleEngineLogger.generateLogs(clazz, "ES EMP NAME-" + ep.getEmployerName(), Constants.rule_log_debug,
 						bw);
-				RuleEngineLogger.generateLogs(clazz, "ES Gruop Number-" + ep.getGroupNumber(), Constants.rule_log_debug,
+				RuleEngineLogger.generateLogs(clazz, "ES Group Number-" + ep.getGroupNumber(), Constants.rule_log_debug,
 						bw);
 				RuleEngineLogger.generateLogs(clazz, "ES Insurance NAME-" + ep.getInsuranceName(), Constants.rule_log_debug,
 						bw);
+				
+				if (ep.getGroupNumber()==null) ep.setGroupNumber("");
+				if ( ep.getInsuranceName()==null) ep.setInsuranceName("");
+				
 				//NOTE IN REPLACE ALL it's not a space ..never remove iti
 				if (!(ivf.getEmployerName().trim().replaceAll(" ","").equalsIgnoreCase(ep.getEmployerName().trim().replaceAll(" ","")))) {
 
@@ -827,7 +831,7 @@ public class RuleBook {
 					pass = false;
 					li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule6.error.message_5",
-									new Object[] { ep.getInsuranceName(), ivf.getInsName() }, locale),
+									new Object[] { ep.getGroupNumber(), ivf.getGroup() }, locale),
 							Constants.FAIL,"","",""));
 					namecheck = false;
 

@@ -397,7 +397,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 		ScrappingSiteDetails sd = sDao.getScrappingSiteDetailsDetail(dto.getSid(), off);
 		
 		// Hibernate.initialize(st.getSiteSiteDetails());
-		RuleEngineLogger.generateLogs(clazz, "ScrappingServiceImpl 1", Constants.rule_log_debug, null);
+		RuleEngineLogger.generateLogs(clazz, "runSealantRule", Constants.rule_log_debug, null);
 		/*
 		 * Set<ScrappingSiteDetails> sdL=
 		 * st.getSiteSiteDetails();//sDao.getScrappingSiteDetailsDetail(dto.

@@ -362,6 +362,8 @@ public class IVFFormConversionUtil {
 		pd2.setD0350(d.getD0350());
 		pd2.setD1330(d.getD1330());
 		pd2.setD2930(d.getD2930());
+		pd2.setSrpd4341(d.getSrpd4341());
+		pd2.setMajord72101(d.getMajord72101());
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();
@@ -707,6 +709,8 @@ public class IVFFormConversionUtil {
 				pd.setD0350(d.getD0350());
 				pd.setD1330(d.getD1330());
 				pd.setD2930(d.getD2930());
+				pd.setSrpd4341(d.getSrpd4341());
+				pd.setMajord72101(d.getMajord72101());
 
 
 		if (off != null)
@@ -1145,7 +1149,9 @@ public class IVFFormConversionUtil {
 		pd2.setD0350(d.getD0350());
 		pd2.setD1330(d.getD1330());
 		pd2.setD2930(d.getD2930());
-
+		pd2.setSrpd4341(d.getSrpd4341());
+		pd2.setMajord72101(d.getMajord72101());
+		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();
 		p2Set.add(pd2);

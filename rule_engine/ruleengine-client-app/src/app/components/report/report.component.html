@@ -483,7 +483,8 @@
 					<tr>
 						<td>Member SSN: <span class="newff">{{reportDataInd.basicInfo13}}</span></td>
 						<td>Group #: <span class="newff">{{reportDataInd.basicInfo14}}</span></td>
-						<td>COB Status: <span class="newff">{{reportDataInd.basicInfo15}}</span></td>
+						<td style="color:white;background-color:red" *ngIf="reportDataInd.basicInfo15=='Secondary'">COB Status: <span>{{reportDataInd.basicInfo15}}</span></td>
+						<td *ngIf="reportDataInd.basicInfo15!='Secondary'">COB Status: <span class="newff">{{reportDataInd.basicInfo15}}</span></td>
 						<td>Patient ID: <span class="newff">{{reportDataInd.basicInfo21}}</span></td>
 					</tr>
 					<tr>
@@ -784,6 +785,8 @@
 				<table class="table table-bordered table-striped">
 					<tr>
 						<td>SRP(D4341)%: <span class="newff">{{reportDataInd.perio1}}</span></td>
+						<td> SRP(D4341)Basic/Major%: <span class="newff">{{reportDataInd.srpd4341}}</span></td>
+						
 						<td>Frequency: <span class="newff">{{reportDataInd.perio2}}</span></td>
 						<td>Quads Per Day: <span class="newff">{{reportDataInd.perio3}}</span></td>
 						<td>Days b/w Quad: <span class="newff">{{reportDataInd.perio4}}</span></td>
@@ -826,6 +829,7 @@
 					<tr>
 						<td>Minor(D7111,D7140): <span class="newff">{{reportDataInd.extractions1}}</span></td>
 						<td>Major (D7210,D7220, D7230,D7240): <span class="newff">{{reportDataInd.extractions2}}</span></td>
+						<td>MajorExt. Basic/Major: <span class="newff">{{reportDataInd.majord72101}}</span></td>
 					</tr>
 				</table>
 				<span>

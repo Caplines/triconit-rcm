@@ -99,13 +99,15 @@
 								<div class="col-sm-9">
 									<input type="text" class="login-signup-form-field form-control"
 										name="userName" id="userName" readonly
-										[(ngModel)]="scrap.userName" #userName="ngModel" required
+										[(ngModel)]="scrap.userName" #userName="ngModel" 
 										placeholder="Site Login User Name..." />
 								</div>
+								<!-- 
 								<div *ngIf="f2.submitted && !userName.valid" class="error-msg">
 									Site Login User Name is required</div>
 								<div *ngIf="calledOTPGeneration && scrap.userName==''"
 									class="error-msg cl-red">User Name is required</div>
+								-->
 							</div>
 						</div>
 						<div class="form-horizontal">
@@ -116,14 +118,15 @@
 								<div class="col-sm-9">
 									<input type="text" class="login-signup-form-field form-control"
 										name="password" id="password" readonly
-										[(ngModel)]="scrap.password" #password="ngModel" required
+										[(ngModel)]="scrap.password" #password="ngModel" 
 										placeholder="Site Password..." />
 								</div>
-								<div *ngIf="f2.submitted && !password.valid" class="error-msg">
+								<!-- <div *ngIf="f2.submitted && !password.valid" class="error-msg">
 									Site Password User Name is required</div>
-								<div *ngIf="scrap.password==''" class="error-msg cl-red">
+								-->
+								<!-- <div *ngIf="scrap.password==''" class="error-msg cl-red">
 									Site Password is required</div>
-
+                                 -->
 								<input type="hidden" [(ngModel)]="scrap.siteDetailId"
 									name="siteDetailId" /> <input type="hidden"
 									[(ngModel)]="scrap.siteId" name="siteId" /> <input

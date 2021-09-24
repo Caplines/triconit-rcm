@@ -116,7 +116,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " d7283 as d7283,d7283fr as d7283fr,d7952 as d7952,d7952fr as d7952fr,d7285 as d7285,d7285fr as d7285fr,"
 			+ " d6114 as d6114,d6114fr as d6114fr,d5860 as d5860,d5860fr as d5860fr, d5110 as d5110,d5110fr as d5110fr,"
 			+ " d5130 as d5130,d5130fr as d5130fr,d0140 as d0140,s_remarks as sRemarks,m_policy as mPolicy ,m_mip as mMIP,es_bcbs as esBcbs,obtain_mpn as obtainMPN,waiting_period_duration as waitingPeriodDuration, "
-			+ " d0350 as d0350,d1330 as d1330,d2930 as d2930 ";
+			+ " d0350 as d0350,d1330 as d1330,d2930 as d2930,srpd_4341 as srpd4341,major_d72101 as majord72101 ";
 	
 	@Override
 	public Patient checkforPatientWithIdAndOffice(String patientid, Office off,Patient patH,boolean chekcforException) {

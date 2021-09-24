@@ -109,9 +109,6 @@ export class ScrapFullDataComponent implements OnInit {
    fetchDetails(){
 	   if (this.siteIn!='' && this.offid!=''){
 	   this.oName = this.offices.filter(o => o.uuid === this.offid)[0].name;
-	   //console.log(this.oName);
-	   //this.rdata.push({"patientId":"qqqwqwqss","firstName":"xcxcxcxc","status":"zzzsa asdsadas dsa das dasd asdsadsa dasdasd sad sadsad sa",
-		//                "lastName":"asddAS Ss ASSASD","dob":"12/12/2001"});
 	   this.showLoadingD=true;
 	   this.showLoadingP=true;
        let d={'siteId':this.siteIn,'officeId':this.offid};

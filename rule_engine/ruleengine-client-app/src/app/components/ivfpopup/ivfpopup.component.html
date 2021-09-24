@@ -44,7 +44,8 @@
 					<span class="label label-danger" [ngClass]="{'active':activeClE}" *ngIf="ivfmData[key].countE>0" (click)="toggleResult('exit')"> EXIT: {{ivfmData[key].countE}}</span>
 					<span class="label label-info" [ngClass]="{'active':activeClA}" *ngIf="ivfmData[key].countA>0" (click)="toggleResultFAILALERT()">ALERT: {{ivfmData[key].countA}}</span>
 					</th>
-					<th>Service&nbsp;Codes</th>
+					<th *ngIf="ivfValidateName=='validateTreatmentPlanPreBatch'">Messages</th>
+					<th *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'">Service&nbsp;Codes</th>
 					<th *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'">Tooth#</th>
 					<th *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'">Surface#</th>
 					<th *ngIf="ivfValidateName!='validateTreatmentPlanPreBatch'">Messages</th>
