@@ -150,8 +150,8 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				patd = patientDao.savePatientDataWithDetailsAndHistory(pat, office, user, date);
 			} else {
 				//delete old history logic
-				if (ivf) {//this is false for DUMP
 				int oldPdid=-1;
+				if (ivf) {//this is false for DUMP
 				Set<PatientHistory> pholdset= patd.getPatientHistory();
 				for (PatientDetail pd : patd.getPatientDetails()) {
 					if (pd.getGeneralDateIVwasDone().equals(generalDate) && pd.getiVFormType().getId()==ivFormTypeId  
@@ -255,8 +255,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 								//System.out.println("Surfce"+o.getHistorySurface()+":"+n.getHistorySurface());
 								//System.out.println("DOS"+o.getHistoryDOS()+":"+n.getHistoryDOS());
 								
-								
-								if (o.getPd()!=null && o.getPd().getGeneralDateIVwasDone().equals(generalDate)) {
+								//oldPdid=0;
+								//if (o.getPd()!=null && o.getPd().getGeneralDateIVwasDone().equals(generalDate)) {
+								if (oldPdid!=-1) {
 								if (o.getHistoryCode().equals(n.getHistoryCode())
 										&& o.getHistoryTooth().equals(n.getHistoryTooth())
 										&& o.getHistorySurface().equals(n.getHistorySurface())

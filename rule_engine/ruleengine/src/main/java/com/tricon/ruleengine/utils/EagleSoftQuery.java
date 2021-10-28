@@ -54,7 +54,7 @@ public class EagleSoftQuery {
 			+ " pat.sec_remaining_deductible as sec_remaining_deductible, emp.employer_id as employer_id,"
 			+ " emp.name as employer_name, fs.fee_id as feescheduleid,"
 			+ " fs.name as feeschedulename,cov.book_id as covbookheaderid,"
-			+ " cov.name as covbookheadername,ins.name as insurancename,emp.group_number as employergroupnumber "
+			+ " cov.name as covbookheadername,ins.name as insurancename,emp.group_number as employergroupnumber,pat.sec_member_id as sec_member_id "
 			+ " from  patient pat , employer emp left outer join cov_book_header  cov on cov.book_id=emp.book_id Left outer join  fee_schedule  fs on fs.fee_id=emp.fee_schedule "
 			+ " left outer join insurance_company ins on ins.insurance_company_id=emp.insurance_company_id "
 			+ " where ";

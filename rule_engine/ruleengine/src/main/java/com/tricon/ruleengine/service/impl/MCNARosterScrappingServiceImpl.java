@@ -52,11 +52,12 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 
 
     MCNARosterScrappingServiceImpl(ScrappingSiteDetails scrappingSiteDetails,
-    		String	CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER,ScrappingInputDto dto) {
+    		String	CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER,ScrappingInputDto dto,String driverLocation) {
 		this.scrappingSiteDetails=scrappingSiteDetails;
 		this.CLIENT_SECRET_DIR=CLIENT_SECRET_DIR;
 		this.CREDENTIALS_FOLDER=CREDENTIALS_FOLDER;
 		this.dto=dto;
+		this.driverLocation=driverLocation;
 	       // store parameter for later user
 	   }
 	
@@ -223,10 +224,10 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 							// element21.findElement(By.className(className))
 							((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
 									element21);
-							element231 = driver.findElement(By.className("header"));// path("/html/body/div[8]/div/div/div/div[1]/a"));
+							//element231 = driver.findElement(By.className("header"));// path("/html/body/div[8]/div/div/div/div[1]/a"));
 							
 							// element23.click();
-							parseSubdetail(rd, element21.getAttribute("textContent"));
+							parseSubdetail(rd, element21.getAttribute("textContent"),element21);
 //							String n=null;
 //							
 //							if (name.equals("a") && ct ==15) {
@@ -313,7 +314,7 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			}
 	}
 
-	private void parseSubdetail(RosterDetails rd, String data) {
+	private void parseSubdetail(RosterDetails rd, String data,WebElement moreInfoBox) {
 		String aa[] = data.split("\\r?\\n");
 		try {
 		for (int x = 0; x < aa.length; x++) {
@@ -321,17 +322,17 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 				continue;
 			aa[x] = aa[x].replace("Subscriber ID:", "").replace("Address:", "").replace("Date of Birth:", "")
 					.replace("Telephone:", "").replaceAll("            ", "").trim();
-			if (x == 2)
+			if (x == 4)
 				rd.setSubscriberId(aa[x]);
-			else if (x == 3)
+			else if (x == 7)
 				rd.setAddress1(aa[x]);
-			else if (x == 4)
+			else if (x == 11)
 				rd.setAddress2(aa[x]);
-			else if (x == 5)
+			else if (x == 13)
 				rd.setDob(aa[x]);
-			else if (x == 6)
+			else if (x == 16)
 				rd.setTelephone(aa[x]);
-		}
+		 }
 		}catch (Exception e) {
 			// TODO: handle exception
 		}

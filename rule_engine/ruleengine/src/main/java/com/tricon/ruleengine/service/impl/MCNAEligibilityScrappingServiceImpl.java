@@ -2,7 +2,6 @@ package com.tricon.ruleengine.service.impl;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -70,7 +69,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 	MCNAEligibilityScrappingServiceImpl(ScrappingSiteDetails scrappingSiteDetails,
     		String	CLIENT_SECRET_DIR,String CREDENTIALS_FOLDER,Map<String, List<Object>> mapData,boolean updateSheet,
     		List<IVFDefaultValue>iVFDefaultValues,List<SealantEligibilityRule> sealantEligibilityRules,
-    		CaplineIVFGoogleFormService caplineIVFGoogleFormService,IVFormType iVFormType,Office office) {
+    		CaplineIVFGoogleFormService caplineIVFGoogleFormService,IVFormType iVFormType,Office office,String driverLocation) {
 		this.scrappingSiteDetails=scrappingSiteDetails;
 		this.CLIENT_SECRET_DIR=CLIENT_SECRET_DIR;
 		this.CREDENTIALS_FOLDER=CREDENTIALS_FOLDER;
@@ -81,6 +80,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		this.caplineIVFGoogleFormService=caplineIVFGoogleFormService;
 		this.iVFormType=iVFormType;
 		this.office=office;
+		this.driverLocation=driverLocation;
 	       // store parameter for later user
 	   }
 	
@@ -131,7 +131,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 
 	public List<EligibilityDto> scrapSite(ScrappingSiteDetails scrappingSiteDetails,
 			Map<String, List<Object>> mapData) {
-		WebDriver driver = new HtmlUnitDriver(true);
+		WebDriver driver = getBrowserDriver();
 		// TODO Auto-generated method stub
 		setProps(scrappingSiteDetails.getProxyPort());
 		List<EligibilityDto> eList = new ArrayList<>();
@@ -194,6 +194,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 			}
 			// scrappingSiteDetails.get
 		} catch (Exception e) {
+			e.printStackTrace();
 			// TODO: handle exception
 		}
 		finally {
@@ -407,7 +408,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		//det.setOffice("Devine");
 		//det.set
 		MCNAEligibilityScrappingServiceImpl x=new MCNAEligibilityScrappingServiceImpl(det, "E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files",
-				mapData, true,null,null,null,null,null);
+				mapData, true,null,null,null,null,null,"");
 		x.scrapSite( det, mapData);
 		
 		

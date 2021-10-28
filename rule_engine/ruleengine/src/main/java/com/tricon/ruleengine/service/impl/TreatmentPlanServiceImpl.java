@@ -3563,6 +3563,37 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								}
 							}
 							}
+							rule = getRulesFromList(rules, Constants.RULE_ID_76);
+							dtoRL = rb.Rule76(ivfMap.get(ivx).get(0),espatients.get(patKey), messageSource, rule, null);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							rule = getRulesFromList(rules, Constants.RULE_ID_77);
+							dtoRL = rb.Rule77(ivfMap.get(ivx).get(0),espatients.get(patKey), messageSource, rule, null);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							rule = getRulesFromList(rules, Constants.RULE_ID_78);
+							dtoRL = rb.Rule78(ivfMap.get(ivx).get(0),espatients.get(patKey), messageSource, rule, null);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
 							// END
 							if ( ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()!=Constants.IV_ORAL_SURGERY_FORM_NAME_ID){//Only for general form
 							// RULE_ID_6 "Percentage Coverage Check"

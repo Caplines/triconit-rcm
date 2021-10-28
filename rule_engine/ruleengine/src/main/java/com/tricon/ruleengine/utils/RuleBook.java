@@ -515,8 +515,9 @@ public class RuleBook {
 						clazz, "Plan Fee Schedule Name-" + ivf.getPlanFeeScheduleName()
 								+ " :: Patient Fee Schedule Name-" + pat.getFeeScheduleName(),
 						Constants.rule_log_debug, bw);
+				
 				if (ivf.getPlanFeeScheduleName() != null && pat.getFeeScheduleName() != null
-						&& !ivf.getPlanFeeScheduleName().trim().equalsIgnoreCase((pat.getFeeScheduleName().trim()))) {
+						&& !ivf.getPlanFeeScheduleName().replaceAll("\n", " ").trim().equalsIgnoreCase((pat.getFeeScheduleName().replaceAll("\n", " ").trim()))) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule4.error.message_3",
 									new Object[] { ivf.getPlanFeeScheduleName(), pat.getFeeScheduleName(),ER_MSG }, locale),
@@ -3167,7 +3168,151 @@ public class RuleBook {
 
 	}
 
-	private void addCodeinSet(String v,String key,Set<String> set) {
+//Patient Name
+public List<TPValidationResponseDto> Rule76(Object ivfSheet,List<EagleSoftPatient> espatients, MessageSource messageSource,
+			Rules rule, BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_76,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> d = new ArrayList<>();
+		try {
+			boolean pass = false;
+			if (espatients != null && espatients.get(0) != null) {
+				EagleSoftPatient pat = espatients.get(0);
+				pass= true;
+				pat.getLastName();
+				if (!ivf.getPatientName().replaceAll(" ", "").equalsIgnoreCase(pat.getFirstName()+pat.getLastName())) {
+					pass=false;
+					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule76.error.message", new Object[] { ivf.getPatientName(),
+									pat.getFirstName()+" "+pat.getLastName() }, locale),
+							Constants.FAIL,"","",""));
+				}
+				
+			}else {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+						"rule76.error.message_no_data",
+						new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
+								+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
+						locale), Constants.FAIL,"","",""));
+			}	
+ 			if (pass)
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), 
+						Constants.PASS,"","",""));
+		} catch (Exception x) {
+
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL,"","",""));
+
+		}
+		return d;
+
+	}
+
+//Patient DOB	
+public List<TPValidationResponseDto> Rule77(Object ivfSheet,List<EagleSoftPatient> espatients, MessageSource messageSource,
+			Rules rule, BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_77,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> d = new ArrayList<>();
+		try {
+			boolean pass = false;
+			if (espatients != null && espatients.get(0) != null) {
+				EagleSoftPatient pat = espatients.get(0);
+				pass= true;
+				String esDate= Constants.SIMPLE_DATE_FORMAT_IVF.format(Constants.SIMPLE_DATE_FORMAT.parse(pat.getBirthDate()));
+				if (!ivf.getPatientDOB().equals(esDate)) {
+					pass=false;
+					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule77.error.message", new Object[] { ivf.getPatientDOB(),
+									pat.getBirthDate() }, locale),
+							Constants.FAIL,"","",""));
+				}
+				
+			}else {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+						"rule77.error.message_no_data",
+						new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
+								+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
+						locale), Constants.FAIL,"","",""));
+			}	
+ 			if (pass)
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), 
+						Constants.PASS,"","",""));
+		} catch (Exception x) {
+
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL,"","",""));
+
+		}
+		return d;
+
+}
+
+//Member ID
+public List<TPValidationResponseDto> Rule78(Object ivfSheet,List<EagleSoftPatient> espatients, MessageSource messageSource,
+		Rules rule, BufferedWriter bw) {
+
+	RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_78,
+			Constants.rule_log_debug, bw);
+
+	IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+	List<TPValidationResponseDto> d = new ArrayList<>();
+	try {
+		boolean pass = false;
+		if (espatients != null && espatients.get(0) != null) {
+			EagleSoftPatient pat = espatients.get(0);
+			pass= false;
+			String type="";
+			if (ivf.getMemberId().equals(pat.getPrimMemberId())) {
+				type="Primary";
+			}else if (ivf.getMemberId().equals(pat.getSecMemberId())) {
+				type="Secondary";
+			}
+			if (type.equals("")) {
+				pass=false;
+				String es= "Primary Id:"+pat.getPrimMemberId()==null?"":pat.getPrimMemberId();
+				es=es+", Secondary Id: "+pat.getSecMemberId()==null?"":pat.getSecMemberId();
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule78.error.message", new Object[] { ivf.getMemberId(),
+								es }, locale),
+						Constants.FAIL,"","",""));
+			}
+			else {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule78.pass.message", new Object[] {type}, locale), 
+						Constants.PASS,"","",""));
+			}
+		}else {
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					"rule78.error.message_no_data",
+					new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
+							+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
+					locale), Constants.FAIL,"","",""));
+		}
+			//if (pass)
+			
+	} catch (Exception x) {
+
+		d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+				messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+				Constants.FAIL,"","",""));
+
+	}
+	return d;
+
+}
+
+private void addCodeinSet(String v,String key,Set<String> set) {
 		
 		if (v!=null) set.add(key);
 		
@@ -9248,6 +9393,8 @@ public class RuleBook {
 				
 				//Set<String> vapsMissing = new HashSet<>();
 				Set<String> sf= new HashSet<>();
+				Set<String> sfeeMess= new HashSet<>();
+				
 				for (Map.Entry<String, Set<MVPandVAP>> entry : mvpvapMap.entrySet()) {
 					Set<MVPandVAP> d=entry.getValue();
 					//List<String> dupList= new ArrayList<>();
@@ -9279,6 +9426,8 @@ public class RuleBook {
 								if (m.getMvp()==null ) {
 									m.setMvp("0");
 								}
+								sfeeMess.add("TP Fees for "+tp.getServiceCode()+" is "+tp.getFee() +" and MVP is "+m.getMvp());
+								//sfeeMessTP.add("</br>");
 								RuleEngineLogger.generateLogs(clazz, "THIS IS MVP FEES- "+m.getMvp(),
 			                        Constants.rule_log_debug, bw);
 								//Add Only once MVP codes
@@ -9397,7 +9546,7 @@ public class RuleBook {
 					}
 					
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule41.error.message", new Object[] {String.join(",",sf),miss}, locale),
+								messageSource.getMessage("rule41.error.message", new Object[] {String.join(",",sf),miss,String.join("</br>",sfeeMess)}, locale),
 								Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}
 			}else {

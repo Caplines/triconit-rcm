@@ -113,7 +113,11 @@ public class Constants {
 	public static final String RULE_ID_74="Waiting Period Checks(OS)";//Only for OS FORM..
 	public static final String RULE_ID_75="Bridge Clause";
 	
-	
+
+	public static final String RULE_ID_76="Patient Name";
+	public static final String RULE_ID_77="Patient DOB";
+	public static final String RULE_ID_78="Member ID";
+	//public static final String RULE_ID_79="Provider Name";	
 	
 	
 	

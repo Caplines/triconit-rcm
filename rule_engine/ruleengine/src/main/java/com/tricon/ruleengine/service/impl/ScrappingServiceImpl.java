@@ -88,6 +88,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 	@Value("${re.xslt.path}")
 	private String XSLT_PATH;
 
+	
 	@Value("${re.xslt.sealant}")
 	private String XSLT_FILE_SEAL;
 
@@ -193,7 +194,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 					ExecutorService service = Executors.newCachedThreadPool();// FixedThreadPool(1);
 
 					// Future<List<?>> rr =
-					service.submit(new MCNARosterScrappingServiceImpl(sd, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,dto));
+					service.submit(new MCNARosterScrappingServiceImpl(sd, CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,dto,env.getProperty("google.chorme.driver")));
 					map.put(ConstantsScrapping.SCRAPPING_INIT + sd.getGoogleSheetId() + ConstantsScrapping.NAME_Separator + sd.getGoogleSubId(),
 							null);
 
@@ -253,13 +254,13 @@ public class ScrappingServiceImpl implements ScrappingService {
 						if (sd.getScrappingSite().getDescription().equalsIgnoreCase(ConstantsScrapping.MCNA_ELIG)) {
 							if (update) {
 								service.submit(new MCNAEligibilityScrappingServiceImpl(sd, CLIENT_SECRET_DIR,
-										CREDENTIALS_FOLDER, mapData, update,iVFDefaultValues,sealantEligibilityRules,caplineIVFGoogleFormService,iVFormType,off));
+										CREDENTIALS_FOLDER, mapData, update,iVFDefaultValues,sealantEligibilityRules,caplineIVFGoogleFormService,iVFormType,off,env.getProperty("google.chorme.driver")));
 								map.put(ConstantsScrapping.SCRAPPING_INIT + sd.getGoogleSheetId() + ConstantsScrapping.NAME_Separator
 										+ sd.getGoogleSubId(), null);
 
 							} else {
 								Future<List<?>> rr = service.submit(new MCNAEligibilityScrappingServiceImpl(sd,
-										CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, mapData, update,iVFDefaultValues,sealantEligibilityRules,caplineIVFGoogleFormService,iVFormType,off));
+										CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, mapData, update,iVFDefaultValues,sealantEligibilityRules,caplineIVFGoogleFormService,iVFormType,off,env.getProperty("google.chorme.driver")));
 								r = rr.get();
 								map.put("Done", r);
 							}

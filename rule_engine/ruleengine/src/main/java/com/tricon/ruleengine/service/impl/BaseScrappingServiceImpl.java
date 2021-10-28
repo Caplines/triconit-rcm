@@ -23,15 +23,26 @@ public class BaseScrappingServiceImpl {
 	public void loginToSiteMCNA(ScrappingSiteDetails scrappingSiteDetails, WebDriver driver) throws InterruptedException {
 
 		driver.get(scrappingSiteDetails.getScrappingSite().getSiteUrl());
-		Thread.sleep(4000);// Need to keep this number high for Linux issue.
-		WebElement element3 = driver.findElement(By.id("loginButton"));
+		Thread.sleep(8000);// Need to keep this number high for Linux issue.
 		WebElement element = driver.findElement(By.name("loginUsername"));
 		element.sendKeys(scrappingSiteDetails.getUserName());
-		WebElement element2 = driver.findElement(By.id("loginPasswordPlain"));
+		System.out.println(driver.findElements(By.tagName("iframe")).size());
+		WebElement iframe =driver.findElements(By.tagName("iframe")).get(0);
+		System.out.println(iframe.getText());
+		//WebElement sss =iframe.findElement(By.id("recaptcha-anchor"));
+		System.out.println(driver.findElements(By.tagName("iframe")).get(1).getText());
+		System.out.println(driver.findElements(By.tagName("iframe")).get(2).getText());
+		driver.switchTo().frame(0);
+		Thread.sleep(5000);
+        driver.findElement(By.id("recaptcha-anchor")).click();
+		Thread.sleep(8000);
 
+		driver.switchTo().parentFrame();
+		WebElement element2 = driver.findElement(By.id("loginPasswordPlain"));
 		element2.sendKeys(scrappingSiteDetails.getPassword());
 		WebElement element5 = driver.findElement(By.id("loginPassword"));
 		element5.sendKeys(scrappingSiteDetails.getPassword());
+		WebElement element3 = driver.findElement(By.id("loginButton"));
 
 		element3.click();
 		Thread.sleep(4000);
