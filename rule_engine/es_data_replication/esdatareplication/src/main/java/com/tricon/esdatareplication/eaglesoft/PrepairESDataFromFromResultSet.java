@@ -723,10 +723,14 @@ public class PrepairESDataFromFromResultSet {
 			while (rs.next()) {
 				p = new Appointment();
 				p.setAppointmentId(rs.getInt("appointment_id"));
+				if (p.getAppointmentId()==3) {
+					System.out.println(p.getAppointmentId());
+					System.out.println(rs.getTimestamp("start_time"));
+				}
 				p.setDescription(rs.getString("description"));
 				p.setAlldayEvent(rs.getBoolean("allday_event"));
-				p.setStartTime(rs.getDate("start_time"));
-				p.setEndTime(rs.getDate("end_time"));
+				p.setStartTime(rs.getTimestamp("start_time"));
+				p.setEndTime(rs.getTimestamp("end_time"));
 				p.setPatientId(rs.getString("patient_id"));
 				p.setRecallId(rs.getInt("recall_id"));
 				p.setLocationId(rs.getInt("location_id"));
@@ -735,8 +739,8 @@ public class PrepairESDataFromFromResultSet {
 				p.setAppointmentTypeId(rs.getInt("appointment_type_id"));
 				p.setPrefix(rs.getString("prefix"));
 				p.setDollarsScheduled(rs.getDouble("dollars_scheduled"));
-				p.setDateAppointed(rs.getDate("date_appointed"));
-				p.setDateConfirmed(rs.getDate("date_confirmed"));
+				p.setDateAppointed(rs.getTimestamp("date_appointed"));
+				p.setDateConfirmed(rs.getTimestamp("date_confirmed"));
 				p.setAppointmentNotes(rs.getString("appointment_notes"));
 				p.setDeletionNote(rs.getString("deletion_note"));
 				p.setSoonerIfPossible(rs.getString("sooner_if_possible"));
@@ -744,9 +748,9 @@ public class PrepairESDataFromFromResultSet {
 				p.setModifiedBy(rs.getString("modified_by"));
 				p.setAppointmentName(rs.getString("appointment_name"));
 				p.setArrivalStatus(rs.getInt("arrival_status"));
-				p.setArrivalTime(rs.getDate("arrival_time"));
-				p.setInchairTime(rs.getDate("inchair_time"));
-				p.setWalkoutTime(rs.getDate("walkout_time"));
+				p.setArrivalTime(rs.getTimestamp("arrival_time"));
+				p.setInchairTime(rs.getTimestamp("inchair_time"));
+				p.setWalkoutTime(rs.getTimestamp("walkout_time"));
 				p.setConfirmationStatus(rs.getInt("confirmation_status"));
 				p.setConfirmationNote(rs.getString("confirmation_note"));
 				p.setAutoConfirmSent(rs.getInt("auto_confirm_sent"));

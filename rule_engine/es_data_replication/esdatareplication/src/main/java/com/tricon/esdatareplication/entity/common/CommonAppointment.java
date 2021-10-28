@@ -3,6 +3,9 @@ package com.tricon.esdatareplication.entity.common;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -25,9 +28,11 @@ public class CommonAppointment extends CommonCloudColumn {
 	boolean alldayEvent;
 
 	@Column(name = "start_time", length = 50, nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
 	Date startTime;
 
 	@Column(name = "end_time", length = 50, nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
 	Date endTime;
 
 	@Column(name = "patient_id", length = 50, nullable = true)
@@ -54,10 +59,12 @@ public class CommonAppointment extends CommonCloudColumn {
 	@Column(name = "dollars_scheduled", length = 50, nullable = true)	
 	Double dollarsScheduled;
 	
-	@Column(name = "date_appointed", length = 50, nullable = true)	
+	@Column(name = "date_appointed", length = 50, nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
 	Date dateAppointed;
 	
 	@Column(name = "date_confirmed", length = 50, nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
 	Date dateConfirmed;
 	
 	@Column(name = "appointment_notes",columnDefinition="text", nullable = true)
@@ -81,13 +88,16 @@ public class CommonAppointment extends CommonCloudColumn {
 	@Column(name = "arrival_status", length = 50, nullable = true)	
 	Integer arrivalStatus;
 	
-	@Column(name = "arrival_time", length = 50, nullable = true)	
+	@Column(name = "arrival_time", length = 50, nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
 	Date arrivalTime;
 	
 	@Column(name = "inchair_time", length = 50, nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
 	Date inchairTime;
 	
 	@Column(name = "walkout_time", length = 50, nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
 	Date walkoutTime;
 	
 	@Column(name = "confirmation_status", length = 50, nullable = true)	

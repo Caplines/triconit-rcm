@@ -72,7 +72,7 @@ public class ProviderTableService extends CommonTableService {
 			// d2.forEach(a -> patIds.add(a.getPatientId()));
 			List<ProviderReplica> inDB = providerRepositoryRe.findByProviderIdInAndOfficeId(apptIdInES,office.getUuid());
 			inDB.stream().map(ProviderReplica::getProviderId).forEach(apptIdInDB::add);
-			apptIdInES.removeAll(apptIdInDB);// TranNum that are not in Local DB
+			apptIdInES.removeAll(apptIdInDB);// Provider ID that are not in Local DB
 			if (apptIdInES.size() > 0) {
 				List<ProviderReplica> l = new ArrayList<>();
 				apptIdInES.forEach(id -> {
@@ -83,7 +83,7 @@ public class ProviderTableService extends CommonTableService {
 				});
 				if (l.size()>0)providerRepositoryRe.saveAllAndFlush(l);
 			}
-			apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
+			apptIdInDB.removeAll(apptIdInES);// Provider ID id that are there in Local DB we need to update.
 			if (apptIdInDB.size() > 0) {
 				List<ProviderReplica> l = new ArrayList<>();
 				apptIdInDB.forEach(id -> {
@@ -105,9 +105,9 @@ public class ProviderTableService extends CommonTableService {
 				});
 				if (l.size()>0)providerRepositoryRe.saveAllAndFlush(l);
 			}
-			appendLoggerToWriter(TransactionsReplica.class, bw,
+			appendLoggerToWriter(ProviderReplica.class, bw,
 					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-			appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
+			appendLoggerToWriter(ProviderReplica.class, bw, bu.toString(), true);
 			pL.forEach(x -> {
 				x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 			});
@@ -122,8 +122,8 @@ public class ProviderTableService extends CommonTableService {
 			StringWriter errors = new StringWriter();
 			ex.printStackTrace(new PrintWriter(errors));
 			es.setLastIssueDetail(errors.toString());
-			appendLoggerToWriter(Patient.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
-			appenErrorToWriter(Patient.class, bw, ex);
+			appendLoggerToWriter(Provider.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+			appenErrorToWriter(Provider.class, bw, ex);
 		}
 		return es;
 
@@ -145,7 +145,7 @@ public class ProviderTableService extends CommonTableService {
 				List<Provider> inDB = providerRepository.findByProviderIdIn(apptIdInES);
 				inDB.stream().map(Provider::getProviderId).forEach(apptIdInDB::add);
 
-				apptIdInES.removeAll(apptIdInDB);// Patientid that are not in Local DB
+				apptIdInES.removeAll(apptIdInDB);// Provider ID that are not in Local DB
 				if (apptIdInES.size() > 0) {
 					List<Provider> l = new ArrayList<>();
 					apptIdInES.forEach(id -> {

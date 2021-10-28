@@ -97,7 +97,7 @@ public class QueryTable {
 		 */
 
 		ES_TRANSACTIONS(Constants.TABLE_TRANSACTIONS,
-				Constants.TRANSACTIONS_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS + " order by tran_date,tran_num asc ",
+				Constants.TRANSACTIONS_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS + " order by aging_date,tran_num asc ",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				Transactions.class),
 
@@ -106,7 +106,7 @@ public class QueryTable {
 
 		ES_TRANSACTIONS_NEXT(Constants.TABLE_TRANSACTIONS,
 				Constants.TRANSACTIONS_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS + " where "
-						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by tran_date,tran_num asc",
+						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by aging_date,tran_num asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
 				Transactions.class),
 
