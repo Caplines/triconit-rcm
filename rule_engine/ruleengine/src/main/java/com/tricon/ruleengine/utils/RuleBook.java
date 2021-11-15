@@ -3182,8 +3182,7 @@ public List<TPValidationResponseDto> Rule76(Object ivfSheet,List<EagleSoftPatien
 			if (espatients != null && espatients.get(0) != null) {
 				EagleSoftPatient pat = espatients.get(0);
 				pass= true;
-				pat.getLastName();
-				if (!ivf.getPatientName().replaceAll(" ", "").equalsIgnoreCase(pat.getFirstName()+pat.getLastName())) {
+				if (!ivf.getPatientName().replaceAll(" ", "").equalsIgnoreCase((pat.getFirstName()+pat.getLastName()).replaceAll(" ", ""))) {
 					pass=false;
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule76.error.message", new Object[] { ivf.getPatientName(),
@@ -3268,10 +3267,10 @@ public List<TPValidationResponseDto> Rule78(Object ivfSheet,List<EagleSoftPatien
 	IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 	List<TPValidationResponseDto> d = new ArrayList<>();
 	try {
-		boolean pass = false;
+		//boolean pass = false;
 		if (espatients != null && espatients.get(0) != null) {
 			EagleSoftPatient pat = espatients.get(0);
-			pass= false;
+			//pass= false;
 			String type="";
 			if (ivf.getMemberId().equals(pat.getPrimMemberId())) {
 				type="Primary";
@@ -3279,7 +3278,7 @@ public List<TPValidationResponseDto> Rule78(Object ivfSheet,List<EagleSoftPatien
 				type="Secondary";
 			}
 			if (type.equals("")) {
-				pass=false;
+				//pass=false;
 				String es= "Primary Id:"+pat.getPrimMemberId()==null?"":pat.getPrimMemberId();
 				es=es+", Secondary Id: "+pat.getSecMemberId()==null?"":pat.getSecMemberId();
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),

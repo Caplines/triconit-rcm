@@ -65,7 +65,7 @@ public class EagleSoftQuery {
 	public final static String  patient_query_sec=patient_query
 			+" pat.patient_id  in ("+contstant_REP+") and pat.sec_employer_id=emp.employer_id  ";
 
-	public final static int  patient_query_CL_COUNT=22;
+	public final static int  patient_query_CL_COUNT=23;
 
 	public final static String  employeemaster_query="select emp.employer_id as employerid,emp.name as employername,"
 			+ " emp.group_number as employergroupnumber,emp.maximum_coverage as employermaximumcoverage,"

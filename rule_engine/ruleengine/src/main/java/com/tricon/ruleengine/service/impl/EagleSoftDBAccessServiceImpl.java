@@ -139,6 +139,12 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 							pat.setCovBookHeaderName(des.get(19));
 							pat.setInsuranceName(des.get(20));
 							pat.setGroupNumber(des.get(21));
+							pat.setSecMemberId(des.get(22));
+							
+							if (pat.getSecMemberId()==null) pat.setSecMemberId("");
+							if (pat.getPrimMemberId()==null) pat.setPrimMemberId("");
+							
+							
 							//
 							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
 								if (entry.getValue() != null) {

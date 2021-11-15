@@ -30,7 +30,7 @@ public class PatientDetailTemp2 extends CommonPatientDetailLeft2 implements Seri
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id")
-	private Patient patient;
+	private PatientTemp patient;
 
 	
 	@OneToOne(fetch = FetchType.LAZY)
@@ -58,12 +58,12 @@ public class PatientDetailTemp2 extends CommonPatientDetailLeft2 implements Seri
 	}
 
 
-	public Patient getPatient() {
+	public PatientTemp getPatient() {
 		return patient;
 	}
 
 
-	public void setPatient(Patient patient) {
+	public void setPatient(PatientTemp patient) {
 		this.patient = patient;
 	}
 

@@ -28,6 +28,7 @@ import com.tricon.ruleengine.dto.scrapping.DentaBenefitScrapDto;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
+import com.tricon.ruleengine.model.db.PatientDetailTemp2;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
 import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
@@ -96,7 +97,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 	public String scrapSite(ScrappingSiteDetailsFull scrappingSiteDetails, ScrappingFullDataDetailDto dto, User user,
 			Office office) {
 		setProps(scrappingSiteDetails.getProxyPort());
-		 System.out.println("888888888888 -Start " + new Date());
+		 ///System.out.println("888888888888 -Start " + new Date());
 		try {
 
 			System.out.println("MEM 3-" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
@@ -112,9 +113,9 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 							try {
 								boolean navigate = loginToSiteDelta(dto, driver);
 								boolean issueNo = navigatetoMainSite(driver, navigate);
-								 System.out.println(" DeltaDentalServiceImpl ..888888888888- STARTED...");
-								 System.out.println("MEM 4-"
-								 + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+								 //System.out.println(" DeltaDentalServiceImpl ..888888888888- STARTED...");
+								 //System.out.println("MEM 4-"
+								 //+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 								PatientTemp d = parsePage(driver, data, siteName, issueNo, office);
 								 System.out.println(new Date());
 									 System.out.println("888888888888 -END " + d);
@@ -169,7 +170,6 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 
 	@Override
 	public Boolean call() throws Exception {
-		// System.out.println("CCCCCCCCCCCCCCCCCCC");
 		scrapSite(scrappingSiteDetails, dto, user, office);
 		return true;
 	}
@@ -883,6 +883,14 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dtemp.setTaxId(taxId);// 136
 		dtemp.setsRPD4341QuadsPerDay("2");
 		dtemp.setsRPD4341DaysBwTreatment("1");
+		dtemp.setcOBStatus("No Information");
+		dtemp.setPlanNetwork("IN");
+		dtemp.setPlanPreDMandatory("No");
+		dtemp.setPlanNonDuplicateClause("No");
+		dtemp.setPlanFullTimeStudentStatus("No");
+		dtemp.setPlanAssignmentofBenefits("Yes");
+		dtemp.setCrownsD2750D2740PaysPrepSeatDate("Seat");
+		dtemp.setClaimFillingLimit("12 Months");
 		boolean skip = false;
 
 		// check for Plan Selection in some patients "This table contains column headers
@@ -1019,7 +1027,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								e.printStackTrace();
 							}
 						}
-						if (tr.getText().startsWith("NEED TO CONFIRM")) {
+						if (tr.getText().startsWith("Preventive")) {
 							try {
 								List<WebElement> tds = tr.findElements(By.tagName("td"));
 								// if (tds.size()==0) tds = tr.findElements(By.className("x26f"));
@@ -2001,6 +2009,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			majorCom="Major is between "+majorMin+"-"+majorMax+"% ";
 		}*/
 		dtemp.setMajorPercentage(majorMaxMin1.split(MIN_MAX_VAL_SPLIT)[0]);// 7
+		
 		if (!temp.isPlanTypeinSite()) {
 			if (planType.contains("PPO"))
 				planType = "Delta Dental PPO";
@@ -2013,6 +2022,15 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			}*/
 			
 			dtemp.setMajorPercentage(majorMaxMin1.split(MIN_MAX_VAL_SPLIT)[0]);// 7
+		}
+        try {
+			
+        	int a=Integer.parseInt(dtemp.getMajorPercentage());
+        	if (a>0)dtemp.setReplacementClause("Yes");
+        	else dtemp.setReplacementClause("No");
+        	
+		}catch(Exception e) {
+			dtemp.setReplacementClause("No");
 		}
 
 		String majorMaxMin2=fetchBenefitDetails(MIN_MAX_VAL, temp, driver, "", "Endodontics", "", planType, false, true);
@@ -2032,7 +2050,17 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dtemp.setpAXRaysPercentage(fetchBenefitDetails("D0220", temp, driver, "", "Diagnostic",
 				"Radiographs/Diagnostic Imaging", planType, true, true));// 15
 
-		System.out.println("Benefit search ....");
+	       try {
+				
+	        	int a=Integer.parseInt(dtemp.getpAXRaysPercentage());
+	        	if (a>0)dtemp.setxRaysBundling("Yes");
+	        	else dtemp.setxRaysBundling("No");
+	        	
+			}catch(Exception e) {
+				dtemp.setxRaysBundling("No");
+			}
+
+	       System.out.println("Benefit search ....");
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("window.scrollBy(0,400)");
 		// js.executeScript("window.scrollBy(0,-500)");
@@ -2074,14 +2102,14 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		benefitInfoMap.put("D9944", dt);// e --------add benefitContract if needed for D9944
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitLimitation });// 22
-		dt.setMandatory(new boolean[] { false });
+		dt.setTypes(new String[] { benefitContract,benefitLimitation });// 22
+		dt.setMandatory(new boolean[] { false,false });
 		dt.setAge(age);
 		benefitInfoMap.put("D2930", dt);// f
 
 		dt = new DentaBenefitScrapDto();
-		dt.setTypes(new String[] { benefitLimitation });// 23
-		dt.setMandatory(new boolean[] { false });
+		dt.setTypes(new String[] { benefitContract ,benefitLimitation });// 23
+		dt.setMandatory(new boolean[] { false,false });
 		dt.setAge(age);
 		benefitInfoMap.put("D2931", dt);// g
 
@@ -2410,7 +2438,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });
 		dt.setAge(age);
 		dt.setMandatory(new boolean[] { false,false });//
-		benefitInfoMap.put("D4381", dt);// this is 2
+		benefitInfoMap.put("D4381", dt);// this is 1
 
 		dt = new DentaBenefitScrapDto();
 		dt.setTypes(new String[] { benefitContract, benefitLimitation });
@@ -2418,6 +2446,17 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dt.setMandatory(new boolean[] { false,false });//
 		benefitInfoMap.put("D3330", dt);// this is 2
 		
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitContract });
+		dt.setAge(age);
+		dt.setMandatory(new boolean[] { false });//
+		benefitInfoMap.put("D0350", dt);// this is 3
+
+		dt = new DentaBenefitScrapDto();
+		dt.setTypes(new String[] { benefitLimitation });
+		dt.setAge(age);
+		dt.setMandatory(new boolean[] { false });//
+		benefitInfoMap.put("D1330", dt);// this is 4
 		
 		info2 = fetchBenefitSearchProcedure(benefitInfoMap, values, driver, planType, true, info, false,frequenCYFYPY);// call for
 																											// sixth 2
@@ -2442,7 +2481,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		dtemp.setNightGuardsD9944Fr(getBenefitProcedureValueFromMap("D9944", benefitLimitation, values, false));// 19
 
 		dtemp.setsSCD2930FL(getBenefitProcedureValueFromMap("D2930", benefitLimitation, values, false));// 22
-
+		
+		
 		dtemp.setsSCD2931FL(getBenefitProcedureValueFromMap("D2931", benefitLimitation, values, false));// 23
 
 		dtemp.setExamsD0120FL(getBenefitProcedureValueFromMap("D0120", benefitLimitation, values, false));// 24
@@ -2679,6 +2719,11 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		
 		dtemp.setD3330(getBenefitProcedureValueFromMap("D3330", benefitContract, values, false));//
 		dtemp.setD3330Freq(getBenefitProcedureValueFromMap("D3330", benefitLimitation, values, false));//
+
+		PatientDetailTemp2 p2 = new PatientDetailTemp2();
+		p2.setD0350(getBenefitProcedureValueFromMap("D0350", benefitContract, values, false));//
+		p2.setD1330(getBenefitProcedureValueFromMap("D1330", benefitLimitation, values, false));//
+		p2.setD2930(getBenefitProcedureValueFromMap("D2930", benefitContract, values, false));// 160
 		
 		
 		
@@ -2775,6 +2820,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		
 		System.out.println("COMMMMM---" + dtemp.getComments());
 		dtemp.setPlanType(dtemp.getPlanType().replace(planTypeSUP, ""));
+		dtemp.setPatientDetails2(p2);
 		dtemp.setAptDate("");
 
 	}

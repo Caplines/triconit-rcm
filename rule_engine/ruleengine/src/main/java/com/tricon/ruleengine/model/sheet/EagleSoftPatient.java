@@ -30,6 +30,14 @@ public class EagleSoftPatient {
 	private String insuranceName;
 	private String groupNumber;
 	
+	private String secMemberId;
+	
+	public String getSecMemberId() {
+		return secMemberId;
+	}
+	public void setSecMemberId(String secMemberId) {
+		this.secMemberId = secMemberId;
+	}
 	public String getInsuranceName() {
 		return insuranceName;
 	}

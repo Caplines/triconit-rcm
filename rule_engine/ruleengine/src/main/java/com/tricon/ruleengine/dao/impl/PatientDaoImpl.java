@@ -30,6 +30,7 @@ import com.tricon.ruleengine.model.db.Patient;
 import com.tricon.ruleengine.model.db.PatientDetail;
 import com.tricon.ruleengine.model.db.PatientDetail2;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
+import com.tricon.ruleengine.model.db.PatientDetailTemp2;
 import com.tricon.ruleengine.model.db.PatientHistory;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
 import com.tricon.ruleengine.model.db.PatientTemp;
@@ -599,9 +600,19 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			if (pat.getPatientDetails()!=null && pat.getPatientDetails().size()>0) {
 			Iterator<PatientDetailTemp> iter = pat.getPatientDetails().iterator();
 			PatientDetailTemp pd = iter.next();
+			
+			
 			pd.setCreatedBy(user);
 			int id= (Integer)session.save(pd);
 			pd.setId(id);
+			
+			PatientDetailTemp2 pd2= pd.getPatientDetails2();
+			if (pd2!=null) {
+				pd2.setPatientDetail(pd);
+				pd2.setPatient(pd.getPatient());
+				session.save(pd2);
+			
+			}
 			// Patient Detail End
 			// History start
 			for (PatientHistoryTemp phi : pat.getPatientHistory()) {

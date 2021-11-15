@@ -33,6 +33,7 @@ import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientDetailTemp;
+import com.tricon.ruleengine.model.db.PatientDetailTemp2;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
 import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.db.ScrappingFullDataManagment;
@@ -651,7 +652,14 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setTaxId(taxId);
 		dtemp.setsRPD4341QuadsPerDay("2");
 		dtemp.setsRPD4341DaysBwTreatment("1");
-		dtemp.setcOBStatus("No");
+		dtemp.setcOBStatus("No Information");
+		dtemp.setPlanNetwork("IN");
+		dtemp.setPlanPreDMandatory("No");
+		dtemp.setPlanNonDuplicateClause("No");
+		dtemp.setPlanFullTimeStudentStatus("No");
+		dtemp.setPlanAssignmentofBenefits("Yes");
+		dtemp.setCrownsD2750D2740PaysPrepSeatDate("Seat");
+
 		List<WebElement> cards = driver.findElements(By.className("card-content"));
 		int x1=0;
 		int ct=0;
@@ -876,6 +884,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				.getTEXTWaitingPeriodBCBS(fetchBenefitInformation("Crowns", driver, benefitWaitingPeriod, true, true),dtemp.getPlanEffectiveDate()));// 21 in
 																												// DOC
 
+		dtemp.setWaitingPeriod4(MessageUtil
+				.getTEXTWaitingPeriodBCBS(fetchBenefitInformation("Preventive", driver, benefitWaitingPeriod, true, true),dtemp.getPlanEffectiveDate()));// 21 in
+
+		
 		dtemp.setOrthoMax(fetchBenefitInformation("Orthodontics", driver, benefitMaximumLifeTime, false, true));// 91
 		dtemp.setOrthoRemaining(
 				fetchBenefitInformation("Orthodontics", driver, benefitMaximumLifeTimeRem, false, false));// 115
@@ -979,6 +991,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setNightGuardsD9944Fr(fetchValueByCode("D9944", temp, driver, lastrowunder2ndcolumn, false, true, true));// 121
 
 		v = fetchValueByCode("D2930", temp, driver, inNetworkCoinsurance, false, false, false);
+		PatientDetailTemp2 p2 = new PatientDetailTemp2();
+
+		p2.setD2930(v);
+
 		// It might also be missing if there is no frequency but procedure is covered"
 		if (!v.equals("0"))
 			dtemp.setsSCD2930FL(fetchValueByCode("D2930", temp, driver, lastrowunder2ndcolumn, false, true, true));// 22
@@ -1161,14 +1177,26 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				fetchValueByCode("D2391", temp, driver, inNetworkCoinsurance, true, false, false));// 78
 		dtemp.setPostCompositesD2391FL(
 				fetchValueByCode("D2391", temp, driver, lastrowunder2ndcolumn, false, true, true));// 79
+
+		dtemp.setFreqD2934(
+				fetchValueByCode("D2934", temp, driver, inNetworkCoinsurance, true, false, false));// 158
+		dtemp.setPedo2(
+				fetchValueByCode("D2934", temp, driver, lastrowunder2ndcolumn, false, true, true));// 159
+		
+		
+		p2.setD3330(
+				fetchValueByCode("D3330", temp, driver, inNetworkCoinsurance, true, false, false));// 161
+		dtemp.setD3330Freq(
+				fetchValueByCode("D3330", temp, driver, lastrowunder2ndcolumn, false, true, true));// 162
+
 		// 80
 		// 83
 		// 84
 		dtemp.setD9310Percentage(fetchValueByCode("D9310", temp, driver, inNetworkCoinsurance, true, false, false));// 85
 		dtemp.setD9310FL(fetchValueByCode("D9310", temp, driver, lastrowunder2ndcolumn, false, true, true));// 86
 
-		System.out.println("0000 dtemp.setD9310Percentage-"+dtemp.getD9310Percentage());
-		System.out.println("0000 dtemp.setD9310Percentage-"+dtemp.getD9310FL());
+		//System.out.println("0000 dtemp.setD9310Percentage-"+dtemp.getD9310Percentage());
+		//System.out.println("0000 dtemp.setD9310Percentage-"+dtemp.getD9310FL());
 		dtemp.setBuildUpsD2950Covered(
 				fetchValueByCode("D2950", temp, driver, inNetworkCoinsurance, true, false, false));// 87
 		dtemp.setBuildUpsD2950FL(fetchValueByCode("D2950", temp, driver, lastrowunder2ndcolumn, false, true, true));// 88
@@ -1207,6 +1235,9 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setD3330(fetchValueByCode("D3330", temp, driver, inNetworkCoinsurance, false, false, false));
 		dtemp.setD3330Freq(fetchValueByCode("D3330", temp, driver, lastrowunder2ndcolumn, false, true, true));
 		
+		p2.setD0350(fetchValueByCode("D0350", temp, driver, inNetworkCoinsurance, false, false, false));
+		p2.setD1330(fetchValueByCode("D1330", temp, driver, inNetworkCoinsurance, false, false, false));
+
 		// driver.close();
 		// ArrayList<String> tabs1 = new ArrayList<String> (driver.getWindowHandles());
 		// System.out.println("TAB SIZE--"+tabs1.size());
@@ -1215,7 +1246,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		// Thread.sleep(20000);
 		// 119
 		// 123 //124 //125 //126
-
+		dtemp.setPatientDetails2(p2);
+		
 		dtemp.setAptDate("");
 
 	}

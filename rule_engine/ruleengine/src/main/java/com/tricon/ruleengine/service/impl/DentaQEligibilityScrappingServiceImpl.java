@@ -253,6 +253,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		finally {
 		try {
 			driver.close();
+			driver.quit();
 		 } catch (Exception e) {
 			e.printStackTrace();
 			// TODO: handle exception
