@@ -363,7 +363,7 @@ border-collapse: collapse;
 						   <span class="sub-heading" ><xsl:value-of select="policy11"/> </span>
                         </td>
                         <td class="withds">
-                           <span class="main-heading-1">Pre-D Mandatory:</span>
+                           <span class="main-heading-1"><a style="text-decoration:none" traget="_blank" href="https://docs.google.com/spreadsheets/d/13C7ph9Hal1mDdU5nioWWX2ndof6Ls2IYbVw03uRDiVM/edit#gid=2067143248">Pre-D required: </a></span>
 						</td>
 						<td>
 						   <span class="sub-heading"><xsl:value-of select="policy12"/></span>
@@ -823,17 +823,18 @@ border-collapse: collapse;
                         <td>						
 						   <span class="sub-heading" ><xsl:value-of select="perio1"/></span>
                         </td>
+						 <td  class="withds">
+                           <span class="main-heading-1">SRP(D4341) Basic /Major</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="srpd4341"/></span>
+                        </td>
                         <td class="withds">
                            <span class="main-heading-1">D4910</span>
 						</td>
 						<td>
 						   <span class="sub-heading"><xsl:value-of select="perioMnt1"/></span>
 						 </td>
-                        <td  class="withds colourfreq">
-                           <span class="main-heading-1"></span>
-						 </td>
-                        <td> <span class="sub-heading"></span>
-                        </td>
+                       
                         <td class="withds">
                          <span class="main-heading-1">Minor:<br/>(D7111<br/>,D7140)</span>
                          </td>
@@ -860,7 +861,7 @@ border-collapse: collapse;
 						 </td>
                         <td> <span class="sub-heading"><xsl:value-of select="fillings"/></span>
                         </td>
-                        <td class="withds" rowspan="2">
+                        <td class="withds" rowspan="1">
                          <span class="main-heading-1">Major :<br/> (D7210,<br/>D7220,<br/>D7230,<br/>D7240)</span>
                          </td>
                         <td style="border:none">						 
@@ -886,7 +887,11 @@ border-collapse: collapse;
 						 </td>
                         <td> <span class="sub-heading"><xsl:value-of select="posterior3"/></span>
                         </td>
-                        
+                        <td  class="withds">
+                           <span class="main-heading-1">MajorExt. <br/> Basic/Major</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="majord72101"/></span>
+                        </td>
 						
              </tr>
 			 
@@ -1224,7 +1229,7 @@ border-collapse: collapse;
                         <td> <span class="sub-heading"><xsl:value-of select="implants2"/></span>
                         </td>
                         <td>
-                         <span class="main-heading-1">Bone Graft<br/>(D7953)<br/>Covered w.EXT</span>
+                         <span class="main-heading-1">Bone Graft<br/>(D7953)<br/>Covered w.Implants</span>
                          </td>
                         <td>						 
 						 <span class="sub-heading"><xsl:value-of select="dentures5"/></span>
