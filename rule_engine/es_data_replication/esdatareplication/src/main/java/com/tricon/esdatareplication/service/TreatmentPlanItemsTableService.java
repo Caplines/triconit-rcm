@@ -44,6 +44,9 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 
 	@Autowired
 	private ESTableRepository estableRepository;
+	
+	@Autowired 
+	private ReplicationService replicationService;
 
 	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
 	private int batchSize;
@@ -304,8 +307,17 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 										&& id.split("-")[1].equals(p.getPatientId())
 										&& Integer.parseInt(id.split("-")[2]) == p.getLineNumber().intValue()))
 								.findAny().orElse(null);
+						
+						ESTable table= new ESTable();
+						table.setTableName(Constants.TABLE_TREATMENT_PLAN_ITEMS);
+						
+						List<?> dataES= replicationService.fetchDataFromLocalDeletionES(table, q.getPatientId(),
+								q.getLineNumber(),q.getTreatmentPlanId(), bw);
+						
+						if (dataES!=null && dataES.size()>0) {
 						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
 						del.add(q);
+						}
 					});
 					if (del.size() > 0)
 						treatmentPlanItemsRepository.saveAll(del);

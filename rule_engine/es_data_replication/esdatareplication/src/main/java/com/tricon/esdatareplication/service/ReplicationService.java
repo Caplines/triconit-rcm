@@ -625,7 +625,7 @@ public class ReplicationService {
 	
 
 	private List<?> fetchDataFromESDeletion(QueryTable.QueryEnum qnum, String patientId,
-			Integer lineNumber) {
+			Integer lineNumber,Integer treatmentPlanId) {
 
 		List<?> arrayList = null;
 
@@ -635,7 +635,7 @@ public class ReplicationService {
 			String query = qnum.getQuery();
 			if (qnum.isWhereClause() ) {
 				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP,
-						createWhereClauseForDeleted(qnum, patientId, lineNumber));
+						createWhereClauseForDeleted(qnum, patientId, lineNumber,treatmentPlanId));
 			}
 			PreparedStatement pstmt = con.prepareStatement("select " + query);
 			System.out.println("query-" + query);
@@ -658,16 +658,18 @@ public class ReplicationService {
 	}
 
 	
-	public List<?> fetchDataFromLocalDeletionES(ESTable table,String patientId, Integer lineNumber, BufferedWriter bw) {
+	public List<?> fetchDataFromLocalDeletionES(ESTable table,String patientId, Integer lineNumber,
+			Integer treatmentPlanId,BufferedWriter bw) {
 		QueryTable.QueryEnum tab = QueryTable.QueryEnum.valueOf("ES_" + table.getTableName().toUpperCase() + "_NEXT");
 		{
 
-			List<?> list = fetchDataFromESDeletion(tab, patientId, lineNumber);
+			List<?> list = fetchDataFromESDeletion(tab, patientId, lineNumber,treatmentPlanId);
 			return list;
 		}
 	}
 
-	public String createWhereClauseForDeleted(QueryTable.QueryEnum tab,String patientId,Integer lineNumber) {
+	public String createWhereClauseForDeleted(QueryTable.QueryEnum tab,String patientId,Integer lineNumber
+			,Integer treatmentPlanId) {
 
 		if (tab.isWhereClause() && tab.getClazz().equals(Patient.class)) {
 
@@ -706,6 +708,8 @@ public class ReplicationService {
 			// a,','b,',c
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlanItems.class)) {
 		
+			 return "  patient_id = " + "'" + patientId +"' and line_number = "+lineNumber +" and "+
+			 " treatment_plan_id= "+treatmentPlanId+" ";
 
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlans.class)) {
 			// check for date date_last_updated when we get data
