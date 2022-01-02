@@ -314,7 +314,7 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 						List<?> dataES= replicationService.fetchDataFromLocalDeletionES(table, q.getPatientId(),
 								q.getLineNumber(),q.getTreatmentPlanId(), bw);
 						
-						if (dataES!=null && dataES.size()>0) {
+						if (dataES!=null && dataES.size()==0) {
 						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
 						del.add(q);
 						}
