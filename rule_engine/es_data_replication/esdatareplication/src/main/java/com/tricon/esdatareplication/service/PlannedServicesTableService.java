@@ -42,6 +42,9 @@ public class PlannedServicesTableService extends CommonTableService {
 
 	@Autowired
 	private ESTableRepository estableRepository;
+	
+	@Autowired
+	ReplicationService replicationService;
 
 	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
 	private int batchSize;
@@ -108,8 +111,7 @@ public class PlannedServicesTableService extends CommonTableService {
 				}
                 */ 
 				// Delete Data that is there in Cloud
-				// we need to delete in case TP items are deleted from local when TP is edited
-				extraAll.removeAll(apptIdInES1);
+                extraAll.removeAll(apptIdInES1);
 
 				if (extraAll.size() > 0) {
 					List<PlannedServicesReplica> del = new ArrayList<>();
@@ -290,8 +292,18 @@ public class PlannedServicesTableService extends CommonTableService {
 								.filter(p -> (id.split("-")[0].equals(p.getPatientId())
 										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber().intValue()))
 								.findAny().orElse(null);
-						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
-						del.add(q);
+						
+						ESTable table= new ESTable();
+						table.setTableName(Constants.TABLE_PLANNED_SERVICES);
+						
+						List<?> dataES= replicationService.fetchDataFromLocalDeletionES(table, q.getPatientId(),
+								q.getLineNumber(), bw);
+						
+						if (dataES!=null && dataES.size()>0) {
+							q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
+							del.add(q);
+						}
+						
 					});
 					if (del.size() > 0) {
 						plannedServicesRepository.saveAll(del);

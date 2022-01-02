@@ -621,6 +621,100 @@ public class ReplicationService {
 
 		return "";
 	}
+
+	
+
+	private List<?> fetchDataFromESDeletion(QueryTable.QueryEnum qnum, String patientId,
+			Integer lineNumber) {
+
+		List<?> arrayList = null;
+
+		Connection con = null;
+		try {
+			con = ESConnection.getConnection();
+			String query = qnum.getQuery();
+			if (qnum.isWhereClause() ) {
+				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP,
+						createWhereClauseForDeleted(qnum, patientId, lineNumber));
+			}
+			PreparedStatement pstmt = con.prepareStatement("select " + query);
+			System.out.println("query-" + query);
+			ResultSet rs = pstmt.executeQuery();
+			arrayList = prepairESDataFromFromResultSet.createTableData(rs, qnum.getClazz());
+
+			rs.close();
+			pstmt.close();
+		} catch (SQLException sqe) {
+			// logger.error("Unexpected exception : " + sqe.toString() + ", sqlstate = " +
+			// sqe.getSQLState());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			ESConnection.closeConnection(con);
+		}
+
+		return arrayList;
+
+	}
+
+	
+	public List<?> fetchDataFromLocalDeletionES(ESTable table,String patientId, Integer lineNumber, BufferedWriter bw) {
+		QueryTable.QueryEnum tab = QueryTable.QueryEnum.valueOf("ES_" + table.getTableName().toUpperCase() + "_NEXT");
+		{
+
+			List<?> list = fetchDataFromESDeletion(tab, patientId, lineNumber);
+			return list;
+		}
+	}
+
+	public String createWhereClauseForDeleted(QueryTable.QueryEnum tab,String patientId,Integer lineNumber) {
+
+		if (tab.isWhereClause() && tab.getClazz().equals(Patient.class)) {
+
+			
+
+		} else if (tab.isWhereClause() && tab.getClazz().equals(Appointment.class)) {
+			// TODO
+			
+		} else if (tab.isWhereClause() && tab.getClazz().equals(Employer.class)) {
+
+			
+		} else if (tab.isWhereClause() && tab.getClazz().equals(Transactions.class)) {
+
+		
+			
+		} else if (tab.isWhereClause() && tab.getClazz().equals(TransactionsDetail.class)) {
+
+			/*
+			 * in case logic changes latter; return " tran_num in  ('" + String.join(",",
+			 * transactionsNumbersFetchced.stream().map(s ->
+			 * String.valueOf(s)).collect(Collectors.toList()));
+			 */
+
+		
+		} else if (tab.isWhereClause() && tab.getClazz().equals(PaymentProvider.class)) {
+			
+		} else if (tab.isWhereClause() && tab.getClazz().equals(Provider.class)) {
+
+			
+		} else if (tab.isWhereClause() && tab.getClazz().equals(PlannedServices.class)) {
+			// See latter if we move to date_planned or patient Id
+			//return " date_planned BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
+			//		+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
+			 return "  patient_id = " + "'" + patientId +"' and line_number = "+lineNumber +" ";
+			// a b c
+			// a,','b,',c
+		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlanItems.class)) {
+		
+
+		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlans.class)) {
+			// check for date date_last_updated when we get data
+			
+		}
+
+		return "";
+	}
+
 	/*
 	 * https://drive.google.com/file/d/1PzjrseKjtzoClXaKlOKmwZRuj7bu4YB4/view?usp=
 	 * drive_web
