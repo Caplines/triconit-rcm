@@ -95,7 +95,7 @@ public class BaseScrappingServiceImpl {
 		ChromeOptions options = new ChromeOptions();
 		try {
 			// https://chromedriver.chromium.org/downloads
-			System.out.println("getBrowserDriver" + driverLocation);
+			//System.out.println("getBrowserDriver" + driverLocation);
 			System.setProperty("webdriver.chrome.driver", driverLocation);
 			// ChromeOptions options = new ChromeOptions();
 			// System.out.println("555");
@@ -142,7 +142,7 @@ public class BaseScrappingServiceImpl {
 	            PropertyDescriptor pd = new PropertyDescriptor(variableName, obj.getClass());
 	            Method getter = pd.getReadMethod();
 	            Object f = getter.invoke(obj);
-	            System.out.println(f);
+	            //System.out.println(f);
 	        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | IntrospectionException e) {
 	            e.printStackTrace();
 	        }

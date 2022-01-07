@@ -885,9 +885,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 																												// DOC
 
 		dtemp.setWaitingPeriod4(MessageUtil
-				.getTEXTWaitingPeriodBCBS(fetchBenefitInformation("Preventive", driver, benefitWaitingPeriod, true, true),dtemp.getPlanEffectiveDate()));// 21 in
+				.getTEXTWaitingPeriodBCBS(fetchBenefitInformation("Preventive", driver, benefitWaitingPeriod, false, true),dtemp.getPlanEffectiveDate()));// 21 in
 
-		
 		dtemp.setOrthoMax(fetchBenefitInformation("Orthodontics", driver, benefitMaximumLifeTime, false, true));// 91
 		dtemp.setOrthoRemaining(
 				fetchBenefitInformation("Orthodontics", driver, benefitMaximumLifeTimeRem, false, false));// 115
@@ -1733,16 +1732,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smilepoint212");
-		dto.setUserName("Lavaca4545");
+		dto.setPassword("Smilepnt36");
+		dto.setUserName("caladent02");
 		dto.setSiteName("BCBS");
        
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("01/02/1965");
-		psc.setFirstName("CARLOS");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
-		psc.setLastName("CHAVANA");
-		psc.setMemberId("829837419");
+		psc.setDob("11/17/1997");
+		psc.setFirstName("ALANA");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
+		psc.setLastName("GARCIA");
+		psc.setMemberId("847962806");
 		psc.setSsnNumber("");
 
 		l.add(psc);

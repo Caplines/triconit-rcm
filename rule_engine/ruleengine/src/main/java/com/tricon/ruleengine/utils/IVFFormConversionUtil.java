@@ -365,6 +365,19 @@ public class IVFFormConversionUtil {
 		pd2.setSrpd4341(d.getSrpd4341());
 		pd2.setMajord72101(d.getMajord72101());
 		
+		pd2.setFmxSubjectToDed(d.getFmxSubjectToDed());
+		pd2.setD7250(d.getD7250());
+		pd2.setD1510(d.getD1510());
+		pd2.setD1510Freq(d.getD1510Freq());
+		pd2.setD1516(d.getD1516());
+		pd2.setD1516Freq(d.getD1516Freq());
+		pd2.setD1517(d.getD1517());
+		pd2.setD1517Freq(d.getD1517Freq());
+		pd2.setD3220(d.getD3220());
+		pd2.setD3220Freq(d.getD3220Freq());
+		
+		
+		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();
 		p2Set.add(pd2);
@@ -711,6 +724,17 @@ public class IVFFormConversionUtil {
 				pd.setD2930(d.getD2930());
 				pd.setSrpd4341(d.getSrpd4341());
 				pd.setMajord72101(d.getMajord72101());
+                pd.setFmxSubjectToDed(d.getFmxSubjectToDed());
+				pd.setD7250(d.getD7250());
+				pd.setD1510(d.getD1510());
+				pd.setD1510Freq(d.getD1510Freq());
+				pd.setD1516(d.getD1516());
+				pd.setD1516Freq(d.getD1516Freq());
+				pd.setD1517(d.getD1517());
+				pd.setD1517Freq(d.getD1517Freq());
+				pd.setD3220(d.getD3220());
+				pd.setD3220Freq(d.getD3220Freq());
+
 
 
 		if (off != null)
@@ -1151,6 +1175,17 @@ public class IVFFormConversionUtil {
 		pd2.setD2930(d.getD2930());
 		pd2.setSrpd4341(d.getSrpd4341());
 		pd2.setMajord72101(d.getMajord72101());
+		
+		pd2.setFmxSubjectToDed(d.getFmxSubjectToDed());
+		pd2.setD1510(d.getD1510());
+		pd2.setD1510Freq(d.getD1510Freq());
+		pd2.setD1516(d.getD1516());
+		pd2.setD1516Freq(d.getD1516Freq());
+		pd2.setD1517(d.getD1517());
+		pd2.setD1517Freq(d.getD1517Freq());
+		pd2.setD3220(d.getD3220());
+		pd2.setD3220Freq(d.getD3220Freq());
+
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();

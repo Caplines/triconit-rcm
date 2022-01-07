@@ -83,6 +83,30 @@ public class DateUtils {
 		//System.out.println(p.getYears());
 		return new int[] {p.getYears(),p.getMonths(),p.getDays()};
 	}
+	public static int[] calculateAgeYMDMinusDay(String bd,boolean isIVF,int days) throws ParseException {
+		
+		Date birthDate=null;
+		
+				if (isIVF)birthDate=Constants.SIMPLE_DATE_FORMAT_IVF.parse(bd);
+				else birthDate=Constants.SIMPLE_DATE_FORMAT.parse(bd);
+		ZoneId defaultZoneId = ZoneId.systemDefault();
+		LocalDate today = LocalDate.now().minusDays(days);
+		Instant instant = birthDate.toInstant();
+
+        //2. Instant + system default time zone + toLocalDate() = LocalDate
+        LocalDate localBDate = instant.atZone(defaultZoneId).toLocalDate();
+		
+		
+		//LocalDate birthday = LocalDate.of(1960, Month.JANUARY, 1);
+		Period p = Period.between(localBDate, today);
+		 
+		//Now access the values as below
+		//System.out.println(p.getDays());ma
+		//System.out.println(p.getMonths());
+		//System.out.println(p.getYears());
+		return new int[] {p.getYears(),p.getMonths(),p.getDays()};
+	}
+
 	private static int calculateAge(Date birthDate) throws ParseException {
 		Date today = new Date();
 		Instant instant = Instant.ofEpochMilli(today.getTime());
@@ -220,17 +244,18 @@ public class DateUtils {
 	
 	public static boolean checkForAgeLimit(int[] age,int limit) {
 		
-		boolean properage=true;
+		boolean properage=false;
 		if (age.length==3) {
 			
 			//Compare Age Years
 			//years 36 limit 80
-			if (age[0]==limit && (age[1]>0  || age[2]>0)) {
+			/*if (age[0]==limit && (age[1]>0  || age[2]>0)) {
 				properage =false;
 			}else if (age[0]>limit) {
 				properage =false;
 				
-			}
+			}*/
+			if (age[0]<=limit) properage=true;
 		}
 		
 		return properage;

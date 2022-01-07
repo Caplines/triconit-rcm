@@ -1035,6 +1035,7 @@ public class RuleBook {
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		String fl = ivf.getFlourideAgeLimit();
+		//fl= ivf.getName1201110RollOverAgYe().trim();
 
 		String var = ivf.getVarnishD1206AgeLimit();
 		String sel = ivf.getSealantsD1351AgeLimit();
@@ -1057,7 +1058,7 @@ public class RuleBook {
 			int[] age = null;
 			boolean pass = true;
 			try {
-				age = DateUtils.calculateAgeYMD(dob, true);
+				age = DateUtils.calculateAgeYMDMinusDay(dob, true,1);
 				RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
 				RuleEngineLogger.generateLogs(clazz,
 						"Age- " + age[0] + " Years, " + age[1] + " Months & " + age[2] + " Days",
@@ -8250,7 +8251,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 				}
 				
 				
-				if (tp.getServiceCode().substring(0, 1).equalsIgnoreCase("D") && 
+				if (tp.getServiceCode().length()>1 && tp.getServiceCode().substring(0, 1).equalsIgnoreCase("D") && 
 				    (		
 				    		minMaxEndo[0]<= Integer.parseInt(tp.getServiceCode().substring(1,  tp.getServiceCode().length())) && 
 							minMaxEndo[1]>= Integer.parseInt(tp.getServiceCode().substring(1,  tp.getServiceCode().length()))
@@ -8306,6 +8307,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 			}
 			
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
 					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
@@ -9158,7 +9160,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 						int[] age = null;
 						String dob = ivf.getPatientDOB();
 						try {
-							age = DateUtils.calculateAgeYMD(dob, true);
+							age = DateUtils.calculateAgeYMD(dob, true);//DateUtils.calculateAgeYMDMinusDay(dob, true,1);
 							RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
 							RuleEngineLogger.generateLogs(clazz,
 									"Age- " + age[0] + " Years, " + age[1] + " Months & " + age[2] + " Days",

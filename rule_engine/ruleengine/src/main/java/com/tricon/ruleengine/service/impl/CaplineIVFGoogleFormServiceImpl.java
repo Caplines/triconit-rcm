@@ -126,7 +126,10 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 	public Object[] saveAllData (Patient pat, Office office, Date date,User user,boolean ivf,boolean onlyInsert,IVFormType iVFormType) {
 		
-		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office,pat,true);
+		Patient patd = patientDao.checkforPatientWithIdAndOfficeAndGeneralDate(pat.getPatientId(), office,pat,true,pat.getPatientDetails().iterator().next().getGeneralDateIVwasDone());
+		if (patd==null) {
+			patd = patientDao.checkforPatientWithId(pat.getPatientId(), office);
+		}
 		Object[] ob= new Object[2];
 		ob[1]="Success";
 		
@@ -337,7 +340,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 	public Object[] checkExistingIV (Patient pat, Office office, Date date,User user,boolean ivf,boolean onlyInsert,IVFormType iVFormType) {
 		
-		Patient patd = patientDao.checkforPatientWithIdAndOffice(pat.getPatientId(), office,pat,true);
+		Patient patd = patientDao.checkforPatientWithIdAndOfficeAndGeneralDate(pat.getPatientId(), office,pat,true,pat.getPatientDetails().iterator().next().getGeneralDateIVwasDone());
 		Object[] ob= new Object[2];
 		ob[0]="Success";
 		

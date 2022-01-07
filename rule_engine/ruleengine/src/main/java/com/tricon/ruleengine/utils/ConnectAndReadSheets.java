@@ -211,7 +211,7 @@ public class ConnectAndReadSheets {
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(sh.getStatusDump())));
 				requests.add(new Request()
 						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(sh.getRowCounter()+1)
-								.setColumnIndex(177))
+								.setColumnIndex(187))
 								.setRows(Arrays.asList(new RowData().setValues(values)))
 								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
 			}
@@ -1292,6 +1292,56 @@ public class ConnectAndReadSheets {
 					}
 					try {
 						vif.setD2930(obj.get(++x));//D2930 Percent
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD7250(obj.get(++x));//d7250  
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setFmxSubjectToDed(obj.get(++x));//fmxSubjectToDed
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD1510(obj.get(++x));//d1510
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD1510Freq(obj.get(++x));//d1510Freq
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD1516(obj.get(++x));//d1516
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD1516Freq(obj.get(++x));//d1516Freq
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD1517(obj.get(++x));//d1517
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD1517Freq(obj.get(++x));//d1517Freq
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD3220(obj.get(++x));//d3220
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD3220Freq(obj.get(++x));//d3220Freq
 					}catch (Exception e) {
 						continue;
 					}

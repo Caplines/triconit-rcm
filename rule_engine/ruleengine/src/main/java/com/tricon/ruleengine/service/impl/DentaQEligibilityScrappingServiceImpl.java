@@ -142,7 +142,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		// "Dentaquest",0+""));//
 		//cc.add(new MCNADentaSheet("", "", "", "", "", "731539564", "2/17/2019", "Dentaquest", 0 + ""));//
 		//cc.add(new MCNADentaSheet("", "", "", "", "", "604429287", "12/18/2002", "Dentaquest", 0 + ""));//
-		  cc.add(new MCNADentaSheet("", "", "", "", "", "523946504", "01/09/2004", "Dentaquest", 0 + ""));//
+		  cc.add(new MCNADentaSheet("", "", "", "", "", "747742189", "11/22/2019", "Dentaquest", 0 + ""));//
 		// Ryleigh Britt 2013/06/20
 		mapData = new HashMap<>();
 		mapData.put("1", cc);
@@ -152,8 +152,8 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 
 		// https://connectsso.dentaquest.com/authsso/providersso/SSOProviderLogin.aspx?TYPE=33554433&REALMOID=06-6a4c193d-7520-4f3d-b194-83367a3ef454&GUID=&SMAUTHREASON=0&METHOD=POST&SMAGENTNAME=-SM-imZolSjcs1FQR%2fH0k3NSK1Uvx4zWgziEWSOuwqcKGG1C%2bW%2fQdG3dRa7BVqGyOpNh&TARGET=-SM-https%3a%2f%2fconnectsso%2edentaquest%2ecom%2fprovideraccessv2%2findex%2ehtml
 		// Dental@6743 offshorebfd for 739438815 04/11/2020 Beaumont
-		det.setPassword("Winter2020$");// // Devine%1245976
-		det.setUserName("Beaumont321"); // Devin13458
+		det.setPassword("Potranco@999");// // Devine%1245976
+		det.setUserName("Potranco999"); // Devin13458
 		det.setLocationProvider("");
 		Office f = new Office();
 		f.setName("Jasper");
@@ -361,13 +361,15 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			}
 			}
 			// 470:111;a
-
+           try {
 			WebElement sdate = driver.findElement(By.className("0memberSearchServiceDate"));
 			if (serviceDate != null && !serviceDate.equals("")) {
 				sdate.clear();
 				sdate.sendKeys(serviceDate);
 			}
-
+           }catch(Exception s) {
+        	   s.printStackTrace();
+           }
 			WebElement element3 = driver.findElement(By.className("0memberSearchBirthdate"));
 			element3.clear();
 			element3.sendKeys(dobA[0] + "/" + dobA[1] + "/" + dobA[2]);
@@ -523,8 +525,11 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 						String t = dd.getAttribute("title");
 						if (t != null && t.equals("Provider Name"))
 							dto.setProviderName(dd.getText());
-						else if (t != null && t.equals("Provider Office"))
+						else if (t != null && t.equals("Provider Office")) {
 							dto.setProviderName(dto.getProviderName() + " " + dd.getText());
+						}else if (t != null && t.equals("Member Id Number")) {
+							dto.setProviderName(dto.getProviderName() + " : " + dd.getText());
+						}
 
 					}
 				} catch (Exception e) {
@@ -563,6 +568,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 
 				}
 
+				
 				// history
 				try {
 					JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -633,7 +639,18 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 							break;
 					}
 				} catch (Exception e) {
+					
+					
 					e.printStackTrace();
+				}
+				
+				if (dto.getHistoryList().size()==0) {
+					HistoryDto hd = new HistoryDto();
+					hd.setDos("This member does not have any past service history");// date
+					hd.setCode("");// code
+					hd.setTooth("");
+					hd.setSurface("");
+					dto.getHistoryList().add(hd);
 				}
 				driver.close();
 				driver.switchTo().window(tabs2.get(0));
@@ -731,6 +748,14 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			// TODO: handle exception
 		}
 
+		if (dto.getHistoryList().size()==0) {
+			HistoryDto hd = new HistoryDto();
+			hd.setCode("No Treatment History was found for this subscriber.");
+			hd.setDescription("");
+			hd.setTooth("");
+			hd.setDos("");
+			dto.getHistoryList().add(hd);
+		}
 		return callNext;
 
 	}
@@ -868,11 +893,27 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 						// Name.-"+wListChildTD.get(13+interventionCount).getText());
 						dto.setProviderName(wListChildTD.get(12 + interventionCount).getText());// Dentist/Office Name
 					}
+					
+					
 
 					if (wListChildTD.size() > 3) {
 						// click on Name:
 						wListChildTD.get(3).findElement(By.tagName("a")).click();
-						Thread.sleep(5000);
+						Thread.sleep(8000);
+						//Address 
+						if (dto.getProviderName()==null) dto.setProviderName("");
+						try {
+							//get Address
+							/*driver.findElement(By.className("section")).findElements(By.tagName("tr")).get(6).getText();
+							dto.setProviderName (dto.getProviderName()+" :" +driver.findElement(By.id("MEMBERXADDRESS")).getText());
+							dto.setProviderName (dto.getProviderName()+" " +driver.findElement(By.id("MEMBERXADDRESS_2")).getText());
+							dto.setProviderName (dto.getProviderName()+" " +driver.findElement(By.id("MEMBERXCITY")).getText());
+							dto.setProviderName (dto.getProviderName()+" " +driver.findElement(By.id("MEMBERXZIP_CODE")).getText());
+							*/
+							dto.setProviderName (dto.getProviderName()+": " +driver.findElement(By.className("section")).findElements(By.tagName("tr")).get(6).getText());
+						}catch(Exception b ) {
+							b.printStackTrace();
+						}
 						// History click
 						driver.findElement(By.xpath(
 								"/html/body/table[3]/tbody/tr/td[3]/div[2]/form/div[4]/table[2]/tbody/tr/td/a[3]"))
