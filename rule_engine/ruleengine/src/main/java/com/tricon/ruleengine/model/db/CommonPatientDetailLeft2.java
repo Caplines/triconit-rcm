@@ -321,6 +321,33 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "major_d72101", length = 30)
 	private String majord72101;
 
+	@Column(name = "fmx_subject_to_ded", length = 30)
+	private String fmxSubjectToDed;
+
+	@Column(name = "d1510", length = 30)
+	private String d1510;
+
+	@Column(name = "d1510_freq", length = 30)
+	private String d1510Freq;
+
+	@Column(name = "d1516", length = 30)
+	private String d1516;
+
+	@Column(name = "d1516_freq", length = 30)
+	private String d1516Freq;
+
+	@Column(name = "d1517", length = 30)
+	private String d1517;
+
+	@Column(name = "d1517_freq", length = 30)
+	private String d1517Freq;
+
+	@Column(name = "d3220", length = 30)
+	private String d3220;
+
+	@Column(name = "d3220_freq", length = 30)
+	private String d3220Freq;
+
 	public String getNpi() {
 		return npi;
 	}
@@ -1128,6 +1155,78 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setMajord72101(String majord72101) {
 		this.majord72101 = majord72101;
+	}
+
+	public String getFmxSubjectToDed() {
+		return fmxSubjectToDed;
+	}
+
+	public void setFmxSubjectToDed(String fmxSubjectToDed) {
+		this.fmxSubjectToDed = fmxSubjectToDed;
+	}
+
+	public String getD1510() {
+		return d1510;
+	}
+
+	public void setD1510(String d1510) {
+		this.d1510 = d1510;
+	}
+
+	public String getD1510Freq() {
+		return d1510Freq;
+	}
+
+	public void setD1510Freq(String d1510Freq) {
+		this.d1510Freq = d1510Freq;
+	}
+
+	public String getD1516() {
+		return d1516;
+	}
+
+	public void setD1516(String d1516) {
+		this.d1516 = d1516;
+	}
+
+	public String getD1516Freq() {
+		return d1516Freq;
+	}
+
+	public void setD1516Freq(String d1516Freq) {
+		this.d1516Freq = d1516Freq;
+	}
+
+	public String getD1517() {
+		return d1517;
+	}
+
+	public void setD1517(String d1517) {
+		this.d1517 = d1517;
+	}
+
+	public String getD1517Freq() {
+		return d1517Freq;
+	}
+
+	public void setD1517Freq(String d1517Freq) {
+		this.d1517Freq = d1517Freq;
+	}
+
+	public String getD3220() {
+		return d3220;
+	}
+
+	public void setD3220(String d3220) {
+		this.d3220 = d3220;
+	}
+
+	public String getD3220Freq() {
+		return d3220Freq;
+	}
+
+	public void setD3220Freq(String d3220Freq) {
+		this.d3220Freq = d3220Freq;
 	}
 
 

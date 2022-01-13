@@ -10,19 +10,16 @@ import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
-import org.springframework.orm.hibernate5.HibernateSystemException;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
-import com.tricon.ruleengine.dto.OfficeDto;
 import com.tricon.ruleengine.dto.scrapping.ScrapPatient;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
@@ -117,11 +114,88 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " d7283 as d7283,d7283fr as d7283fr,d7952 as d7952,d7952fr as d7952fr,d7285 as d7285,d7285fr as d7285fr,"
 			+ " d6114 as d6114,d6114fr as d6114fr,d5860 as d5860,d5860fr as d5860fr, d5110 as d5110,d5110fr as d5110fr,"
 			+ " d5130 as d5130,d5130fr as d5130fr,d0140 as d0140,s_remarks as sRemarks,m_policy as mPolicy ,m_mip as mMIP,es_bcbs as esBcbs,obtain_mpn as obtainMPN,waiting_period_duration as waitingPeriodDuration, "
-			+ " d0350 as d0350,d1330 as d1330,d2930 as d2930,srpd_4341 as srpd4341,major_d72101 as majord72101 ";
+			+ " d0350 as d0350,d1330 as d1330,d2930 as d2930,srpd_4341 as srpd4341,major_d72101 as majord72101,"
+			+ " fmx_subject_to_ded as fmxSubjectToDed,d1510 as d1510,d1510_freq as d1510Freq,d1516 as d1516,d1516_freq as d1516Freq,"
+			+ " d1517 as d1517,d1517_freq as d1517Freq,d3220 as d3220,d3220_freq as d3220Freq ";
 	
+	@Override
+	public Patient checkforPatientWithId(String patientid, Office off) {
+
+		Session session = getSession();
+		Patient pat = null;
+		try {
+			Criteria criteria = session.createCriteria(Patient.class);
+			criteria.add(Restrictions.eq("patientId", patientid));
+			criteria.createAlias("office", "off");
+			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
+			/*if (patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0
+					&& patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0) {
+				Iterator<PatientDetail> iter = patH.getPatientDetails().iterator();
+				PatientDetail patO = iter.next();
+			
+			criteria.add(Restrictions.eq("patientDetails", patO.getGeneralDateIVwasDone()));
+			}
+            */
+			pat = (Patient) criteria.uniqueResult();
+			if (pat!=null)Hibernate.initialize(pat.getPatientDetails());
+			if (pat!=null)Hibernate.initialize(pat.getPatientHistory());
+		}catch(HibernateException e){
+			closeSession(session);
+			
+		}catch(Exception e){
+		}
+		finally {
+			closeSession(session);
+		}
+		return pat;
+	}
 	@Override
 	public Patient checkforPatientWithIdAndOffice(String patientid, Office off,Patient patH,boolean chekcforException) {
 
+		return checkforPatient(patientid, off,patH, chekcforException, null);
+	}
+
+	@Override
+	public Patient checkforPatientWithIdAndOfficeAndGeneralDate(String patientid, Office off,Patient patH,boolean chekcforException,String generalDate) {
+
+		Session session = getSession();
+		Patient pat = null;
+		try {
+			Criteria criteria = session.createCriteria(Patient.class);
+			criteria.add(Restrictions.eq("patientId", patientid));
+			criteria.createAlias("office", "off");
+			criteria.createAlias("patientHistory", "patientHistory", JoinType.LEFT_OUTER_JOIN);
+			criteria.createAlias("patientDetails", "patientDetails", JoinType.INNER_JOIN);
+			criteria.createAlias("patientDetails2", "patientDetails2", JoinType.LEFT_OUTER_JOIN);
+			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
+			if (generalDate!=null ) {
+			if (!generalDate.equals(""))criteria.add(Restrictions.eq("patientDetails.generalDateIVwasDone", generalDate));
+			}
+			/*if (patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0
+					&& patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0) {
+				Iterator<PatientDetail> iter = patH.getPatientDetails().iterator();
+				PatientDetail patO = iter.next();
+			
+			criteria.add(Restrictions.eq("patientDetails", patO.getGeneralDateIVwasDone()));
+			}
+            */
+			pat = (Patient) criteria.uniqueResult();
+			if (pat!=null)Hibernate.initialize(pat.getPatientDetails());
+		}catch(HibernateException e){
+			closeSession(session);
+			if (chekcforException && e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")) {
+				
+				pat =checkForDuplicatePatDetials2(patientid,off,patH,false,e.getMessage().split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0].split("More than one row with the given identifier was found: ")[1]);
+			}
+		}catch(Exception e){
+		}
+		finally {
+			closeSession(session);
+		}
+		return pat;
+	}
+
+	private Patient checkforPatient(String patientid, Office off,Patient patH,boolean chekcforException,String generalDate) {
 		Session session = getSession();
 		Patient pat = null;
 		try {
@@ -132,7 +206,9 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			criteria.createAlias("patientDetails", "patientDetails", JoinType.LEFT_OUTER_JOIN);
 			criteria.createAlias("patientDetails2", "patientDetails2", JoinType.LEFT_OUTER_JOIN);
 			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
-			
+			if (generalDate!=null ) {
+				if (!generalDate.equals(""))criteria.add(Restrictions.eq("patientDetails.generalDateIVwasDone", generalDate));
+			}
 			/*if (patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0
 					&& patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0) {
 				Iterator<PatientDetail> iter = patH.getPatientDetails().iterator();
@@ -154,8 +230,8 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			closeSession(session);
 		}
 		return pat;
+		
 	}
-
 	private Patient checkForDuplicatePatDetials2(String patientid, Office off,Patient patH,boolean chekcforException,String patDetailId) {
 		Session session = getSession();
 

@@ -18,6 +18,8 @@ public interface PatientDao {
 	
 	
 	public Patient checkforPatientWithIdAndOffice(String patientid, Office off, Patient pat,boolean checkforException);
+	public Patient checkforPatientWithIdAndOfficeAndGeneralDate(String patientid, Office off, Patient pat,boolean checkforException,String generalDate);
+	
 	public PatientHistory getPatientHistory(String patientid, Office off);
 	public PatientDetail getPatientDetails(String patientid, Office off);
 	
@@ -35,6 +37,7 @@ public interface PatientDao {
 	public List<Object> searchPatientHistoryFromIVFGivenColumns(CaplineIVFQueryFormDto dto, Office off);
 	
 	public void deletePatientHistoryByIds(String[] ids );
+	public Patient checkforPatientWithId(String patientid, Office off);
 	
 	/**
 	 * For temp tables only

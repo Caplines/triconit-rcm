@@ -593,9 +593,9 @@
 						<td>PA(%): <span class="newff">{{reportDataInd.percentages11}}</span></td>
 						<td>Subject to ded : <span class="newff">{{reportDataInd.percentages15}}</span></td>
 						<td>FMX(%) : <span class="newff">{{reportDataInd.percentages16}}</span></td>
-						
+						<td>Subject to ded: <span class="newff">{{reportDataInd.fmxSubjectToDed}}</span></td>
 						<td>Claims Timely Fillings: <span class="newff">{{reportDataInd.percentages12}}</span></td>
-						<td></td>
+					
 					</tr>
 					
 					<tr>
@@ -682,7 +682,8 @@
 						<td>D0230: <span class="newff">{{reportDataInd.xrays3}}</span></td>
 						<td>FMX(0210): <span class="newff">{{reportDataInd.xrays4}}</span></td>
 						
-						<td></td>
+						
+						
 					</tr>
 
 					<tr>
@@ -829,6 +830,8 @@
 					<tr>
 						<td>Minor(D7111,D7140): <span class="newff">{{reportDataInd.extractions1}}</span></td>
 						<td>Major (D7210,D7220, D7230,D7240): <span class="newff">{{reportDataInd.extractions2}}</span></td>
+						<td>D7250(%): <span class="newff">{{reportDataInd.d7250}}</span></td>
+						
 						<td>MajorExt. Basic/Major: <span class="newff">{{reportDataInd.majord72101}}</span></td>
 					</tr>
 				</table>
@@ -948,6 +951,34 @@
 						<td>Consult (D9310)% :<span class="newff">{{reportDataInd.posterior8}}</span></td>
 						<td>Frequency :<span class="newff">{{reportDataInd.posterior9}}</span></td>
 					</tr>
+				  <p style="text-align: center">Space maintainer</p>
+					<tr>
+						<td>D1510(%): <span class="newff">{{reportDataInd.d1510}}</span></td>
+						<td colspan="1">Frequency: <span class="newff">{{reportDataInd.d1510Freq}}</span></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>D1516(%): <span class="newff">{{reportDataInd.d1516}}</span></td>
+						<td colspan="1">Frequency: <span class="newff">{{reportDataInd.d1516Freq}}</span></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>D1517(%): <span class="newff">{{reportDataInd.d1517}}</span></td>
+						<td colspan="1">Frequency: <span class="newff">{{reportDataInd.d1517Freq}}</span></td>
+						<td></td>
+						<td></td>
+					</tr>
+				  <p style="text-align: center">Pulpotomy</p>
+					<tr>
+						<td>D3220(%): <span class="newff">{{reportDataInd.d3220}}</span></td>
+						<td colspan="1">Frequency: <span class="newff">{{reportDataInd.d3220Freq}}</span></td>
+						<td></td>
+						<td></td>
+					</tr>
+					
+					
 					<tr>
 						<td>How many fillings can be done in a year?: <span class="newff">{{reportDataInd.fill1}}</span></td>
 						<td>How many Extractions can be done in a year?: <span class="newff">{{reportDataInd.extr1}}</span></td>

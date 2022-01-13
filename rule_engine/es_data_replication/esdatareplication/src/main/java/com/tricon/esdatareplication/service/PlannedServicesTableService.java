@@ -169,9 +169,9 @@ public class PlannedServicesTableService extends CommonTableService {
 					if (l.size() > 0)
 						plannedServicesRepositoryRe.saveAllAndFlush(l);
 				}
-				appendLoggerToWriter(TransactionsReplica.class, bw,
+				appendLoggerToWriter(PlannedServicesReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-				appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
+				appendLoggerToWriter(PlannedServicesReplica.class, bw, bu.toString(), true);
 				pL.forEach(x -> {
 					x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				});
