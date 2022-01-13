@@ -348,6 +348,9 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "d3220_freq", length = 30)
 	private String d3220Freq;
 
+	@Column(name = "out_network_message", columnDefinition = "text")
+	private String outNetworkMessage;
+	
 	public String getNpi() {
 		return npi;
 	}
@@ -1229,7 +1232,15 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 		this.d3220Freq = d3220Freq;
 	}
 
+	public String getOutNetworkMessage() {
+		return outNetworkMessage;
+	}
 
+	public void setOutNetworkMessage(String outNetworkMessage) {
+		this.outNetworkMessage = outNetworkMessage;
+	}
+
+    
 	
 }
 

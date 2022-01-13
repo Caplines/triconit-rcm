@@ -337,6 +337,7 @@ public class IVFTableSheet {
     private String d1517Freq;
     private String d3220;
     private String d3220Freq;
+    private String outNetworkMessage;
 
 
     public String getsRemarks() {
@@ -2322,6 +2323,14 @@ public class IVFTableSheet {
 	public void setD3220Freq(String d3220Freq) {
 		this.d3220Freq = d3220Freq;
 	}
+	public String getOutNetworkMessage() {
+		return outNetworkMessage;
+	}
+	public void setOutNetworkMessage(String outNetworkMessage) {
+		this.outNetworkMessage = outNetworkMessage;
+	}
+	
+	
 	
 		
 	

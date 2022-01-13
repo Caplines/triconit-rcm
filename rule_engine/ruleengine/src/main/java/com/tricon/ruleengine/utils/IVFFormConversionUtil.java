@@ -375,6 +375,7 @@ public class IVFFormConversionUtil {
 		pd2.setD1517Freq(d.getD1517Freq());
 		pd2.setD3220(d.getD3220());
 		pd2.setD3220Freq(d.getD3220Freq());
+		pd2.setOutNetworkMessage(d.getOutNetworkMessage());
 		
 		
 		
@@ -734,6 +735,7 @@ public class IVFFormConversionUtil {
 				pd.setD1517Freq(d.getD1517Freq());
 				pd.setD3220(d.getD3220());
 				pd.setD3220Freq(d.getD3220Freq());
+				pd.setOutNetworkMessage(d.getOutNetworkMessage());
 
 
 
@@ -1185,6 +1187,7 @@ public class IVFFormConversionUtil {
 		pd2.setD1517Freq(d.getD1517Freq());
 		pd2.setD3220(d.getD3220());
 		pd2.setD3220Freq(d.getD3220Freq());
+		pd2.setOutNetworkMessage(d.getOutNetworkMessage());
 
 		
 		pd.setPatientDetails2(pd2);
