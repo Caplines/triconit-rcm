@@ -285,6 +285,7 @@ border-collapse: collapse;
 			<tr>
                      <td>
                          <span class="colourmagenta"><b>Policy/Plan Information</b></span>
+						 <span style="color: red"><b><xsl:value-of select="outNetworkMessage"/></b></span>
 					 </td>
                       <td  colspan="9"></td>
             </tr>
@@ -363,7 +364,14 @@ border-collapse: collapse;
 						   <span class="sub-heading" ><xsl:value-of select="policy11"/> </span>
                         </td>
                         <td class="withds">
-                           <span class="main-heading-1"><a style="text-decoration:none" traget="_blank" href="https://docs.google.com/spreadsheets/d/13C7ph9Hal1mDdU5nioWWX2ndof6Ls2IYbVw03uRDiVM/edit#gid=2067143248">Pre-D required: </a></span>
+                           <span class="main-heading-1">
+						   <xsl:if test="policy12= 'Refer Medicaid &#38; Medicare Benefits(RD0703)'">
+                           <a style="text-decoration:none" traget="_blank" href="https://docs.google.com/spreadsheets/d/13C7ph9Hal1mDdU5nioWWX2ndof6Ls2IYbVw03uRDiVM/edit#gid=2067143248">Pre-D required: </a>
+						    </xsl:if>
+                         <xsl:if test ="not(policy12 ='Refer Medicaid &#38; Medicare Benefits(RD0703)')">
+                          Pre-D required:
+						    </xsl:if>
+                         </span>
 						</td>
 						<td>
 						   <span class="sub-heading"><xsl:value-of select="policy12"/></span>
@@ -551,21 +559,21 @@ border-collapse: collapse;
 						   <span class="sub-heading"><xsl:value-of select="percentages16"/></span>
 						 </td>
                         <td  class="withds">
-                           <span class="main-heading-1">Roll Age</span>
+                           <span class="main-heading-1">Subject To Ded</span>
 						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="rollage"/></span>
+                        <td> <span class="sub-heading"><xsl:value-of select="fmxSubjectToDed"/></span>
                         </td>
                         <td>
-                         <span class="main-heading-1">D1208</span>
+                         <span class="main-heading-1">Roll Age</span>
                          </td>
                         <td>						 
-						 <span class="sub-heading"><xsl:value-of select="fluroide1"/></span>
+						 <span class="sub-heading"><xsl:value-of select="rollage"/></span>
                         </td>
 						<td class="withds">
-                         <span class="main-heading-1"></span>
+                         <span class="main-heading-1">D1208</span>
                          </td>
                         <td class="withds">						 
-						 <span class="sub-heading"></span>
+						 <span class="sub-heading"><xsl:value-of select="fluroide1"/></span>
                         </td>
            </tr>
 		   <tr>
@@ -867,12 +875,13 @@ border-collapse: collapse;
                         <td style="border:none">						 
 						 <span class="sub-heading"><xsl:value-of select="extractions2"/></span>
                         </td>
-						<td class="withds colourgrnewbg" rowspan="2">
-                         <span class="main-heading-1">Subject<br/> to ded</span>
+						<td class="withds" rowspan="1">
+                         <span class="main-heading-1">D7250%</span>
                          </td>
-                        <td style="border:none" rowspan="2">						 
-						 <span class="sub-heading"><xsl:value-of select="percentages6"/></span>
+                        <td style="border:none" rowspan="1">						 
+						 <span class="sub-heading"><xsl:value-of select="d7250"/></span>
                         </td>
+						
              </tr>
              <tr>
                         
@@ -892,7 +901,11 @@ border-collapse: collapse;
 						 </td>
                         <td> <span class="sub-heading"><xsl:value-of select="majord72101"/></span>
                         </td>
-						
+						<td  class="withds colourgrnewbg">
+                           <span class="main-heading-1">Subject<br/> to ded</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="percentages6"/></span>
+                        </td>
              </tr>
 			 
 			 <tr>
@@ -1073,6 +1086,77 @@ border-collapse: collapse;
                         </td>
            
            </tr> 
+		   
+		   
+		   <tr>
+                        <td class="withds ">
+                           <span class="main-heading-1">D1510(%):</span>
+						</td>
+						<td class="withds">
+                           <span class="sub-heading"><xsl:value-of select="d1510"/></span>
+						</td>
+                        <td class="withds ">
+                           <span class="main-heading-1">D1516(%)</span>
+						</td>
+						<td>
+						   <span class="sub-heading"><xsl:value-of select="d1516"/></span>
+						 </td>
+                        <td  class="withds ">
+                           <span class="main-heading-1">D1517(%):</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="d1517"/></span>
+                        </td>
+                         <td class="withds">
+                           <span class="main-heading-1">D3220(%)</span>
+						</td>
+                        
+                        <td> <span class="sub-heading"><xsl:value-of select="d3220"/></span>
+                        </td>
+                         <td class="withds ">
+                          
+						</td>
+                        
+                         <td class="withds ">
+                        </td>
+           
+           </tr>
+		   <tr>
+                        <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+						<td class="withds">
+                           <span class="sub-heading"><xsl:value-of select="d1510Freq"/></span>
+						</td>
+                        <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+						<td>
+						   <span class="sub-heading"><xsl:value-of select="d1516Freq"/></span>
+						 </td>
+                        <td  class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="d1517Freq"/></span>
+                        </td>
+                         <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+                        
+                       
+                        
+                        <td> <span class="sub-heading"><xsl:value-of select="d3220Freq"/></span>
+                        </td>
+						 <td class="withds ">
+                          
+						</td>
+                        
+                         <td class="withds ">
+                        </td>
+           
+           </tr>
+		   
+		   
+		   
 		   <tr>
                         <td class="colourhow" colspan="3">
                            <span class="main-heading-1">How many Fillings can be done in a year ?</span> 
