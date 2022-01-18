@@ -199,6 +199,7 @@ public class ConnectAndReadSheets {
 
 		List<Request> requests = new ArrayList<>();
 		IVFTableSheet sh = null;
+		final int COLUMN_STATUS=188;
 		try {
 		if (ivfMap!=null) {
 		for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
@@ -211,7 +212,7 @@ public class ConnectAndReadSheets {
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(sh.getStatusDump())));
 				requests.add(new Request()
 						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(sh.getRowCounter()+1)
-								.setColumnIndex(187))
+								.setColumnIndex(COLUMN_STATUS))
 								.setRows(Arrays.asList(new RowData().setValues(values)))
 								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
 			}
@@ -1342,6 +1343,11 @@ public class ConnectAndReadSheets {
 					}
 					try {
 						vif.setD3220Freq(obj.get(++x));//d3220Freq
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setOutNetworkMessage(obj.get(++x));//OutnetworkMessage
 					}catch (Exception e) {
 						continue;
 					}
