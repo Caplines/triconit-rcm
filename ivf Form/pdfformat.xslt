@@ -407,7 +407,22 @@ border-collapse: collapse;
                 </tr>
 				
             </table>
-			
+			 <table>
+			<tr>
+                        <td colspan="2" class="main-heading-11" >
+                            Comments:
+							<div style="border: 1px solid">
+							<span class="sub-heading" >
+							&#160;
+							<xsl:value-of select="comments"/>&#160;
+							
+							</span>
+							</div>
+                             
+                        </td>
+                        
+                    </tr>
+			 </table>		
             
             <table>
 			<tr>
@@ -1750,20 +1765,7 @@ border-collapse: collapse;
 			<br/>
 			<table cellpadding="0" cellspacing="0" style="width:100%; clear:both;">
                 <tbody>
-				<tr>
-                        <td colspan="2" class="main-heading-11" >
-                            Comments:
-							<div style="border: 1px solid">
-							<span class="sub-heading" >
-							
-							<xsl:value-of select="comments"/>&#160;
-							
-							</span>
-							</div>
-                             
-                        </td>
-                        
-                    </tr>
+				
                     <tr>
                         <td>
                            <span class="main-heading-11"> Benefits Verified by:</span>
