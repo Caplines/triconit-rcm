@@ -59,6 +59,11 @@ public class ESTable extends BaseInfoAudit implements Serializable {
 	@Column(name = "last_isssue_detail", nullable = true, columnDefinition="text")
 	private String lastIssueDetail;
 	
+	@Column(name = "last_back_date_check")
+	private long lastBackDateCheck;//To see issue in Data like Transaction //for Walk-out case
+
+	@Column(name = "last_back_date_deletion_check")
+	private long lastBackDateDeletionCheck;//To see issue in Data Delete like Appointment //for Walk-out case
 	@Column(name = "updated_date", nullable = true)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;

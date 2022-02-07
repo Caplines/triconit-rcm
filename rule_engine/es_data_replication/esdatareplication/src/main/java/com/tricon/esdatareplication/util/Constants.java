@@ -23,6 +23,7 @@ public class Constants {
 	public static final String TABLE_TREATMENT_PLAN_ITEMS = "treatment_plan_items";// 10
 	public static final String TABLE_TREATMENT_PLANS = "treatment_plans";// 11
 	public static final String TABLE_PROVIDER = "provider";// 12
+	public static final String TABLE_TRANSACTIONS_HEADER = "transactions_header";// 13
 	public static final String TABLE_REPLICA_IN_CLOUD = "es_data_replica_";
 
 	public static final String PATIENTS_COLUMNS = "patient_id,first_name,last_name,salutation,address_1,address_2,city,state,zipcode,home_phone,"
@@ -105,6 +106,44 @@ public class Constants {
 	public static final String TREATEMENTPLANS_COLUMNS = "treatment_plan_id,patient_id,description,status,date_entered,user_id,"
 			+ "date_last_updated,last_updated_by,notes";
 
+	public static final String TRANSACTIONS_HEADER_COLUMNS = "tran_num,user_id,type,tran_date,resp_party_id," + 
+			"amount,service_code,paytype_id,sequence,statement_num,surface,fee,discount_surcharge," + 
+			"tax,description,defective,impacts,status,adjustment_type,claim_id,est_primary," + 
+			"est_secondary,paid_primary,paid_secondary,bulk_payment_num,aging_date,tooth,lab_fee,lab_fee2,lab_code,lab_code2,pre_fee,standard_fee_id,practice_id,procedure_type_codes,balance";
+
+	/*
+	 * Query to check what ids are missing ES
+	 */
+	public static final String APPOINTMENT_COLUMNS_DELETE_CHECK = " a.appointment_id+1 AS st, MIN(b.appointment_id) - 1 AS en " + 
+			"  FROM appointment  as a, appointment as  b" + 
+			"  WHERE "+Constants.QUERY_WHERE_CLAUSE_REP +" and a.appointment_id < b.appointment_id GROUP BY a.appointment_id" + 
+			"  HAVING st < MIN(b.appointment_id) ";
+	
+	
+	public static final String TREATMENT_PLANS_COLUMNS_DELETE_CHECK = " a.treatment_plan_id+1 AS st, MIN(b.treatment_plan_id) - 1 AS en " + 
+			"  FROM treatment_plans  as a, treatment_plans as  b" + 
+			"  WHERE "+Constants.QUERY_WHERE_CLAUSE_REP +" and a.treatment_plan_id < b.treatment_plan_id GROUP BY a.treatment_plan_id" + 
+			"  HAVING st < MIN(b.treatment_plan_id) ";
+	
+	
+	//GOT THIS QUERY FROM VIEW OF EAGLE SOFT
+	public static final String PAYMENTPROVIDER_QUERY=  "  transactions_detail.tran_num as tran_num, " +
+			" transactions_detail.collections_go_to as provider_id, " +
+			" SUM(-transactions_detail.amount) AS amount, " +
+			" transactions_detail.provider_practice_id as practice_id, " +
+			" transactions_detail.provider_id as prod_provider_id " +
+			" FROM transactions_detail, " +
+			" transactions_header " +
+			" WHERE  "+ //+ Constants.QUERY_WHERE_CLAUSE_REP+//(transactions_header.tran_date between  '2000-01-01' and '2022-01-01' or   transactions_detail.date_entered between  '2000-01-01' and '2022-01-01')
+			//" and" +
+			" transactions_header.tran_num = transactions_detail.tran_num AND transactions_detail.status = 1 AND " +
+			" 	((transactions_header.type IN ('A','P','I','Y','C','W') AND transactions_header.status IN ('A','D','V')) OR " +
+			" 	(transactions_header.type = 'D' AND transactions_header.status = 'V')) "+
+			" GROUP BY transactions_detail.tran_num, transactions_detail.collections_go_to, transactions_detail.provider_id, transactions_detail.provider_practice_id " +
+			" ORDER BY transactions_detail.tran_num, transactions_detail.collections_go_to, transactions_detail.provider_id, transactions_detail.provider_practice_id " +
+	        " "; 
+   
+	
 	public static final SimpleDateFormat SimpleDateformatForEsQuery = new SimpleDateFormat("yyyy-MM-dd");
 
 	public static final String CACHE_NAME_FOR_PROP = "__CACHE__";
@@ -122,6 +161,7 @@ public class Constants {
 	public static final String RECORDS_UPDATED_IN_TABLE_CLOUD = "Records updated in table";
 	public static final String ERROR_IN_PUSHING_TO_CLOUD= "Error in Pushing to cloud:";
 	public static final String TABLE_DATA_DELETION_PROCESS = "Table records deletion Process";
+	
 	
 	
 	

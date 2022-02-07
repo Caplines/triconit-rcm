@@ -15,4 +15,5 @@ public interface AppointmentRepository
 
 	public List<Appointment> findByMovedToCloud(int i,Pageable prepairPage);
 
+	public Appointment findByAppointmentId(Integer apointmentId);
 }

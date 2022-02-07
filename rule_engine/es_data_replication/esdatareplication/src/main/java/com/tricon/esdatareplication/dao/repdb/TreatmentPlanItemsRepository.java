@@ -20,4 +20,5 @@ public interface TreatmentPlanItemsRepository extends JpaRepository<TreatmentPla
 	
 	public List<TreatmentPlanItems> findByMovedToCloud(int i,Pageable prepairPage);
 
+	public List<TreatmentPlanItems> findByTreatmentPlanId(Integer treatmentPlanId);
 }

@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +38,7 @@ import com.tricon.esdatareplication.entity.repdb.PlannedServices;
 import com.tricon.esdatareplication.entity.repdb.Provider;
 import com.tricon.esdatareplication.entity.repdb.Transactions;
 import com.tricon.esdatareplication.entity.repdb.TransactionsDetail;
+import com.tricon.esdatareplication.entity.repdb.TransactionsHeader;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlans;
 import com.tricon.esdatareplication.util.Constants;
@@ -61,8 +64,11 @@ public class ReplicationService {
 	@Autowired
 	ChairsTableService chairsTableService;
 
+	//@Autowired
+	//TransactionsTableService transactionsTableService;
+
 	@Autowired
-	TransactionsTableService transactionsTableService;
+	TransactionsHeaderTableService transactionsHeaderTableService;
 
 	@Autowired
 	TransactionsDetailTableService transactionsDetailTableService;
@@ -131,12 +137,46 @@ public class ReplicationService {
 		patientIdsFetchedTP.clear();
 		treatmentPlanIdFetchedTP.clear();
 		
+		//Delete data from Appointment/TABLE_TREATMENT_PLANS last X days
+		deleteDataWhereOlDataCanBeDeleted(bw);
+		
 		//Handle Deletion of Records
 		//Treatment Plans //Treatment Plan Items // Planned Services
 		//deleteData(bw); //not needed for now..
 		
 	}
 	
+	private void deleteDataWhereOlDataCanBeDeleted(BufferedWriter bw) {
+		
+		//Appointment : In appointment we can delete Appointment so to counter that we place this logic to delete missing 
+		 //Appointment id's
+		Office office = officeRepository.findById(1).get();
+		List<ESTable> estables = estableRepository.findByCodeWritten(DataStatus.StatusEnum.CODE_WRITTEN_STATUS.YES);
+		for (ESTable table : estables) {
+			if (table.getTableName().equalsIgnoreCase(Constants.TABLE_APPOINTMENT)
+			     || table.getTableName().equalsIgnoreCase(Constants.TABLE_TREATMENT_PLANS)) {
+				QueryTable.QueryEnum tab = QueryTable.QueryEnum.valueOf("ES_" + table.getTableName().toUpperCase() + "_DELETE");
+				if (table.getLastBackDateDeletionCheck()>0) {
+					LocalDateTime ldt = LocalDateTime.ofInstant(table.getUpdatedDate().toInstant(), ZoneId.systemDefault());
+					LocalDateTime nDays= ldt.minusDays(table.getLastBackDateDeletionCheck());
+					Date out = Date.from(nDays.atZone(ZoneId.systemDefault()).toInstant());
+					table.setUpdatedDate(out);
+				}
+				List<?> data=fetchDataFromESToDelete(tab, table.getUpdatedDate(), new Date(), true);
+				if (table.getTableName().equalsIgnoreCase(Constants.TABLE_APPOINTMENT)) { 
+					    appointmentTableService.deleteDataToLocalDB(bw,data);
+				        appointmentTableService.deleteDataToColudDB(bw, data, office);
+			     }else if (table.getTableName().equalsIgnoreCase(Constants.TABLE_TREATMENT_PLANS)) {
+			    	 treatmentPlansTableService.deleteDataToLocalDB(bw,data);
+			    	 treatmentPlansTableService.deleteDataToColudDB(bw, data, office);
+			     }
+				
+			}
+		}
+		
+		
+		
+	}
 	/* this is not used*/
 	public void deleteData1(BufferedWriter bw) {
 		Office office = officeRepository.findById(1).get();
@@ -189,15 +229,18 @@ public class ReplicationService {
 				es = appointmentTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
 			} else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS)) {
-				es = transactionsTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				//es = transactionsTableService.pushDataFromLocalESToColudDB(bw, office, es);
+				//estableRepository.save(es);
+			} else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_HEADER)) {
+				es = transactionsHeaderTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
 			} else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
 				es = transactionsDetailTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
-			} else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
+			}/* else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
 				es = transactionsDetailTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
-			} else if (es.getTableName().equals(Constants.TABLE_PAYMENT_PROVIDER)) {
+			}*/ else if (es.getTableName().equals(Constants.TABLE_PAYMENT_PROVIDER)) {
 				es = paymentProviderTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
 			} else if (es.getTableName().equals(Constants.TABLE_PLANNED_SERVICES)) {
@@ -231,6 +274,7 @@ public class ReplicationService {
 		ESTable estableEmp = null;
 		List<ESTable> estables = estableRepository.findByCodeWrittenAndUploadedToLocal(
 				DataStatus.StatusEnum.CODE_WRITTEN_STATUS.YES, DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO);
+		
 		for (ESTable table : estables) {
 			Date currentDate = new Date();
 			int countRecord = 0;
@@ -243,7 +287,8 @@ public class ReplicationService {
 					true);
 			int totalCount = 0;
 			commonTableService.appendLoggerToWriter(bw, "Pull from Local ES start for: " + table.getTableName(), true);
-
+			//Date Subtraction
+			//table.setUpdatedDate(updatedDate);
 			if ((table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.YES
 					&& table.getUploadedToLocal() == DataStatus.StatusEnum.LOCAL_DATA_UPLOADED.NO)
 					|| (table.getStaticTable() == 0 && table.getUpdatedDate() == null)) {
@@ -276,6 +321,24 @@ public class ReplicationService {
 				}
 			} else if (table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.NO
 					&& table.getUpdatedDate() != null) {
+				if ( (
+				    //table.getTableName().equalsIgnoreCase(Constants.TABLE_TRANSACTIONS) ||
+				     table.getTableName().equalsIgnoreCase(Constants.TABLE_TRANSACTIONS_HEADER)
+			        || table.getTableName().equalsIgnoreCase(Constants.TABLE_TRANSACTIONS_DETAIL)
+			        || table.getTableName().equalsIgnoreCase(Constants.TABLE_PATIENT)
+			        || table.getTableName().equalsIgnoreCase(Constants.TABLE_EMPLOYER)
+			        || table.getTableName().equalsIgnoreCase(Constants.TABLE_TREATMENT_PLANS)
+			        || table.getTableName().equalsIgnoreCase(Constants.TABLE_TREATMENT_PLAN_ITEMS)
+			        || table.getTableName().equalsIgnoreCase(Constants.TABLE_PLANNED_SERVICES)
+			        
+			        
+			        ) && table.getLastBackDateCheck()>0) {
+					LocalDateTime ldt = LocalDateTime.ofInstant(table.getUpdatedDate().toInstant(), ZoneId.systemDefault());
+					LocalDateTime nDays= ldt.minusDays(table.getLastBackDateCheck());
+					Date out = Date.from(nDays.atZone(ZoneId.systemDefault()).toInstant());
+					table.setUpdatedDate(out);
+					}
+
 				fetchDataFromLocalESToLocalDBNext(table, currentDate, bw, false,true);
 			}
 			commonTableService.appendLoggerToWriter(bw, "*********** END *******************" + table.getTableName(),
@@ -331,17 +394,17 @@ public class ReplicationService {
 		 * table.setRecordsInsertedLastIteration(countRecord);
 		 * estableRepository.save(table); } else
 		 */
-		{
+		
 
-			// while (true) {
+			 while (true) {
 			/// SELECT TOP 1 START AT 100 p.* FROM "PPM"."paytype" AS p
-			List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), extraPat,false,updateWhere);
+			List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), extraPat,true,updateWhere);
 			int size = list == null ? 0 : list.size();
 			commonTableService.appendLoggerToWriter(bw, "Count of  Records Read From ES in Current Iteration "+tab.getTableName()+"-->" + size,
 					true);
 			countRecord = countRecord + size;
 			// System.out.println("SSSSSSSSSSSS-?>" + size);
-			// if (size == 0) {
+			 if (size == 0) {
 			if (table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.YES)
 				table.setUploadedToLocal(1);
 			// System.out.println("SSSSSSSSSSSS-?>SAVE");
@@ -349,17 +412,63 @@ public class ReplicationService {
 			table.setRecordsInsertedLastIteration(countRecord);
 			table.setUpdatedDate(currentDate);
 			estableRepository.save(table);
-			// break;
-			// }
+			 break;
+			 }
 			// insert data in Local DB
 			saveDataToLocalDB(bw, list, tab, true);
 			start = start + top;
 
-			// }
-		}
+			 }
+		
 	}
 
-	private List<?> fetchDataFromES(QueryTable.QueryEnum qnum, int total, int start, Date cDate,
+
+	//Currently only for Appointment/TABLE_TREATMENT_PLANS/ Delete for missing id in ES 
+	private List<?> fetchDataFromESToDelete(QueryTable.QueryEnum qnum, 
+			Date lastDateofCrawling,Date cDate,boolean updateWhere)	{
+	
+		List<?> arrayList = null;
+
+		Connection con = null;
+		try {
+			con = ESConnection.getConnection();
+			String query = qnum.getQuery();
+			
+			if (qnum.isWhereClause() && qnum.getTableName().equalsIgnoreCase(Constants.TABLE_APPOINTMENT)) {
+				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP,
+						" a.date_appointed between '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "' and "
+						+ "'"+ Constants.SimpleDateformatForEsQuery.format(cDate)+"'");
+			}else if (qnum.isWhereClause() && qnum.getTableName().equalsIgnoreCase(Constants.TABLE_TREATMENT_PLANS)) {
+				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP,
+						" a.date_entered between '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "' and "
+						+ "'"+ Constants.SimpleDateformatForEsQuery.format(cDate)+"'");
+			}/*else if (qnum.isWhereClause() && qnum.getTableName().equalsIgnoreCase(Constants.TABLE_TREATMENT_PLANS)) {
+				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP,
+						" a.date_entered between '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "' and "
+						+ "'"+ Constants.SimpleDateformatForEsQuery.format(cDate)+"'");
+			}*/
+			PreparedStatement pstmt = con.prepareStatement("select " + query);
+			System.out.println("query-" + query);
+			ResultSet rs = pstmt.executeQuery();
+			arrayList = prepairESDataFromFromResultSet.deleteTableData(rs, qnum.getClazz());
+
+			rs.close();
+			pstmt.close();
+		} catch (SQLException sqe) {
+			// logger.error("Unexpected exception : " + sqe.toString() + ", sqlstate = " +
+			// sqe.getSQLState());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			ESConnection.closeConnection(con);
+		}
+
+		return arrayList;
+	
+	}
+	
+	
+		private List<?> fetchDataFromES(QueryTable.QueryEnum qnum, int total, int start, Date cDate,
 			Date lastDateofCrawling, boolean extraPat, boolean needTop,boolean updateWhere) {
 
 		List<?> arrayList = null;
@@ -479,7 +588,8 @@ public class ReplicationService {
 			}
 			appointmentTableService.saveDataToLocalDB(bw, data, checkExisting);
 		} else if ((tab.getClazz().equals(Transactions.class))) {
-			if (checkExisting  && data!=null) {
+			//This is a View
+			/*if (checkExisting  && data!=null) {
 				((List<Transactions>) data).stream().map(Transactions::getTranNum)
 						.forEach(transactionsNumbersFetchced::add);
 				((List<Transactions>) data).stream().map(Transactions::getProviderId).forEach(providerIdsFetchced::add);
@@ -487,7 +597,21 @@ public class ReplicationService {
 						.forEach(patientIdsFetchcedExtra::add);
 			}
 			transactionsTableService.saveDataToLocalDB(bw, data, checkExisting);
+			*/
+		} else if ((tab.getClazz().equals(TransactionsHeader.class))) {
+			if (checkExisting  && data!=null) {
+				((List<TransactionsHeader>) data).stream().map(TransactionsHeader::getTranNum)
+						.forEach(transactionsNumbersFetchced::add);
+			}
+			transactionsHeaderTableService.saveDataToLocalDB(bw, data, checkExisting);
 		} else if ((tab.getClazz().equals(TransactionsDetail.class))) {
+			if (checkExisting  && data!=null) {
+			((List<TransactionsDetail>) data).stream().map(TransactionsDetail::getTranNum)
+					.forEach(transactionsNumbersFetchced::add);
+			((List<TransactionsDetail>) data).stream().map(TransactionsDetail::getProviderId).forEach(providerIdsFetchced::add);
+			((List<TransactionsDetail>) data).stream().map(TransactionsDetail::getPatientId)
+					.forEach(patientIdsFetchcedExtra::add);
+		   }
 			transactionsDetailTableService.saveDataToLocalDB(bw, data, checkExisting);
 		} else if ((tab.getClazz().equals(PaymentProvider.class))) {
 			paymentProviderTableService.saveDataToLocalDB(bw, data, checkExisting);
@@ -548,7 +672,7 @@ public class ReplicationService {
 		if (tab.isWhereClause() && tab.getClazz().equals(Patient.class)) {
 
 			return " date_entered BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
-					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
+					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "' or date_entered is null ";
 
 		} else if (tab.isWhereClause() && tab.getClazz().equals(Appointment.class)) {
 			// TODO
@@ -566,6 +690,14 @@ public class ReplicationService {
 							employerIdsFetchced.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
 					+ ") ";
 		} else if (tab.isWhereClause() && tab.getClazz().equals(Transactions.class)) {
+            /*
+			return " ( aging_date BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
+					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "') or (tran_date BETWEEN '"
+					+ Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
+					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "')";
+		    */			
+			
+		} else if (tab.isWhereClause() && tab.getClazz().equals(TransactionsHeader.class)) {
 
 			return " ( aging_date BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
 					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "') or (tran_date BETWEEN '"
@@ -582,7 +714,7 @@ public class ReplicationService {
 
 			return " date_entered BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
 					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
-		} else if (tab.isWhereClause() && tab.getClazz().equals(PaymentProvider.class)) {
+		}/* else if (tab.isWhereClause() && tab.getClazz().equals(PaymentProvider.class)) {
 			return " tran_num in  (" + String.join(",",
 					transactionsNumbersFetchced.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
 					+ ") and provider_id in ('"+
@@ -590,21 +722,35 @@ public class ReplicationService {
 							providerIdsFetchced.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))+
 					"')";
 
-		} else if (tab.isWhereClause() && tab.getClazz().equals(Provider.class)) {
+		}*/ else if (tab.isWhereClause() && tab.getClazz().equals(Provider.class)) {
 
-			return " provider_id in  ('" + String.join("','", providerIdsFetchced) + "')";
+			//return " provider_id in  ('" + String.join("','", providerIdsFetchced) + "')";
+			return " ";
+			
 		} else if (tab.isWhereClause() && tab.getClazz().equals(PlannedServices.class)) {
 			// See latter if we move to date_planned or patient Id
 			//return " date_planned BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
 			//		+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
 			 if (patientIdsFetchedTP.size()==0)
-				 return " date_planned  >= '"+ Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "' ";
+				 return " date_planned  between  '"+ Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)  
+				 + "'" + " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "' or completion_date BETWEEN '"+
+					Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '" 
+					+ Constants.SimpleDateformatForEsQuery.format(cDate)+ "' or status_date BETWEEN '"
+					+Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '"
+			        + Constants.SimpleDateformatForEsQuery.format(cDate)+ "'  " ;
+					
 			 else 	 
 			 return " ( patient_id in (" + "'" + String.join("','", patientIdsFetchedTP) +
 			       "') and line_number in (" 
 			       + String.join(",",  
 			       lineNumbersFetchced.stream().map(s -> String.valueOf(s)).collect(Collectors.toList())) + 
-			       ") ) or (date_planned  >= '"+ Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "')";
+			       ") ) or (date_planned  between '"+ Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) 
+			        + "'" + " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "' or completion_date BETWEEN '"+
+					Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '" 
+					+ Constants.SimpleDateformatForEsQuery.format(cDate)+ "' or status_date BETWEEN '"
+					+Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '"
+					+ Constants.SimpleDateformatForEsQuery.format(cDate)+ "')  " ;
+			       
 			// a b c
 			// a,','b,',c
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlanItems.class)) {
@@ -616,7 +762,9 @@ public class ReplicationService {
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlans.class)) {
 			// check for date date_last_updated when we get data
 			return " date_last_updated BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)
-					+ "'" + " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
+					+ "'" + " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "' or date_entered BETWEEN '"+
+					Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '" 
+					+ Constants.SimpleDateformatForEsQuery.format(cDate)+ "' ";
 		}
 
 		return "";
@@ -682,6 +830,10 @@ public class ReplicationService {
 
 			
 		} else if (tab.isWhereClause() && tab.getClazz().equals(Transactions.class)) {
+
+		
+			
+		} else if (tab.isWhereClause() && tab.getClazz().equals(TransactionsHeader.class)) {
 
 		
 			

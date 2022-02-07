@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,10 +22,8 @@ import com.tricon.esdatareplication.dao.repdb.ProviderRepository;
 import com.tricon.esdatareplication.dao.ruleenginedb.ProviderRepositoryRe;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
-import com.tricon.esdatareplication.entity.repdb.Patient;
 import com.tricon.esdatareplication.entity.repdb.Provider;
 import com.tricon.esdatareplication.entity.ruleenginedb.ProviderReplica;
-import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 

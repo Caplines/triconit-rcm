@@ -12,6 +12,8 @@ public interface TreatmentPlansRepositoryRe extends JpaRepository<TreatmentPlans
    public List<TreatmentPlansReplica> findByTreatmentPlanIdInAndOfficeId(Set<Integer> treatmentPlanIds,String officeuuid);
 	
 	public List<TreatmentPlansReplica> findByPatientIdInAndOfficeId(Set<String> patientId,String officeuuid);
+	
+	 public TreatmentPlansReplica findByTreatmentPlanIdAndOfficeId(Integer treatmentPlanId,String officeuuid);
 
 	//public List<TreatmentPlansReplica> findByMovedToCloud(int i);
 

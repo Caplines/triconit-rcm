@@ -33,5 +33,10 @@ public interface PaymentProviderRepositoryRe extends JpaRepository<PaymentProvid
 	@Query("SELECT e FROM PaymentProviderReplica e where e.tranNum= :tranNum and prodProviderId= :prodProviderId and providerId is null and officeId= :officeId")
 	public List<PaymentProviderReplica> findByTranNumAndProdProviderId(@Param("tranNum") Integer tranNum,
 			@Param("prodProviderId") String prodProviderId, @Param("officeId") String officeId);
+	
+	
+	@Query("delete FROM PaymentProviderReplica  where officeId= :officeId")
+	public void deleteAlByOfficeId(@Param("officeId") String officeId);
 
+	
 }

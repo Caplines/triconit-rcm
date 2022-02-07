@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,12 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tricon.esdatareplication.dao.repdb.ESTableRepository;
 import com.tricon.esdatareplication.dao.repdb.EmployerRespository;
 import com.tricon.esdatareplication.dao.ruleenginedb.EmployerRespositoryRe;
-import com.tricon.esdatareplication.entity.repdb.Appointment;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Employer;
 import com.tricon.esdatareplication.entity.repdb.Office;
-import com.tricon.esdatareplication.entity.repdb.Patient;
-import com.tricon.esdatareplication.entity.ruleenginedb.AppointmentReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.EmployerReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.Constants;
@@ -129,8 +125,8 @@ public class EmployerTableService extends CommonTableService {
 			StringWriter errors = new StringWriter();
 			ex.printStackTrace(new PrintWriter(errors));
 			es.setLastIssueDetail(errors.toString());
-			appendLoggerToWriter(Patient.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
-			appenErrorToWriter(Patient.class, bw, ex);
+			appendLoggerToWriter(Employer.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+			appenErrorToWriter(Employer.class, bw, ex);
 		}
 		return es;
 

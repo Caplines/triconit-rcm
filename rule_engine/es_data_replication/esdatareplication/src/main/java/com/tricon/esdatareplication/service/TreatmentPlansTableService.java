@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,19 +16,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.ls.LSSerializer;
 
 import com.tricon.esdatareplication.dao.repdb.ESTableRepository;
+import com.tricon.esdatareplication.dao.repdb.PlannedServicesRepository;
+import com.tricon.esdatareplication.dao.repdb.TreatmentPlanItemsRepository;
 import com.tricon.esdatareplication.dao.repdb.TreatmentPlansRepository;
+import com.tricon.esdatareplication.dao.ruleenginedb.PlannedServicesRepositoryRe;
+import com.tricon.esdatareplication.dao.ruleenginedb.TreatmentPlanItemsRepositoryRe;
 import com.tricon.esdatareplication.dao.ruleenginedb.TreatmentPlansRepositoryRe;
 import com.tricon.esdatareplication.entity.repdb.Appointment;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
-import com.tricon.esdatareplication.entity.repdb.Patient;
+import com.tricon.esdatareplication.entity.repdb.PlannedServices;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlans;
 import com.tricon.esdatareplication.entity.ruleenginedb.AppointmentReplica;
-import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
+import com.tricon.esdatareplication.entity.ruleenginedb.PlannedServicesReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TreatmentPlanItemsReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TreatmentPlansReplica;
 import com.tricon.esdatareplication.util.Constants;
@@ -43,6 +45,18 @@ public class TreatmentPlansTableService extends CommonTableService {
 
 	@Autowired
 	private TreatmentPlansRepositoryRe treatmentPlansRepositoryRe;
+
+	@Autowired
+	private TreatmentPlanItemsRepository treatmentPlanItemsRepository;
+
+	@Autowired
+	private TreatmentPlanItemsRepositoryRe treatmentPlanItemsRepositoryRe;
+
+	@Autowired
+	private PlannedServicesRepository plannedServicesRepository;
+
+	@Autowired
+	private PlannedServicesRepositoryRe plannedServicesRepositoryRe;
 
 	@Autowired
 	private ESTableRepository estableRepository;
@@ -116,9 +130,9 @@ public class TreatmentPlansTableService extends CommonTableService {
 					});
 
 				}
-				appendLoggerToWriter(TransactionsReplica.class, bw,
+				appendLoggerToWriter(TreatmentPlansReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-				appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
+				appendLoggerToWriter(TreatmentPlansReplica.class, bw, bu.toString(), true);
 				pL.forEach(x -> {
 					x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				});
@@ -133,8 +147,8 @@ public class TreatmentPlansTableService extends CommonTableService {
 			StringWriter errors = new StringWriter();
 			ex.printStackTrace(new PrintWriter(errors));
 			es.setLastIssueDetail(errors.toString());
-			appendLoggerToWriter(Patient.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
-			appenErrorToWriter(Patient.class, bw, ex);
+			appendLoggerToWriter(TreatmentPlans.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+			appenErrorToWriter(TreatmentPlans.class, bw, ex);
 		}
 		return es;
 
@@ -258,5 +272,81 @@ public class TreatmentPlansTableService extends CommonTableService {
 		}
      */
 	}
+	
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
+	public void deleteDataToLocalDB(BufferedWriter bw, List<?> data) {
+		try {
+		for (String values:(List<String>)data) {
+			
+			String [] loopTo= values.split(",");
+			for (int i=Integer.parseInt(loopTo[0]);i<=Integer.parseInt(loopTo[1]);i++) {
+				//delete me i == appointment Id 
+				//System.out.println("-----"+values);
+				TreatmentPlans app=treatmentPlansRepository.findByTreatmentPlanId(i);
+				if (app!=null) {
+					treatmentPlansRepository.delete(app);
+					List<TreatmentPlanItems> items =treatmentPlanItemsRepository.findByTreatmentPlanId(i);
+					for(TreatmentPlanItems item:items) {
+						treatmentPlanItemsRepository.delete(item);
+						PlannedServices pl =plannedServicesRepository.findByPatientIdAndLineNumber(item.getPatientId(),item.getLineNumber());
+						if (pl!=null) {
+							plannedServicesRepository.delete(pl);
+							appendLoggerToWriter(TreatmentPlans.class, bw,
+									Constants.TABLE_DATA_DELETION_PROCESS + ": Delete PlannedServices (Line/Pat iD):" + pl.getLineNumber() +":" +pl.getPatientId(), true);
+						 }
+						
+					}
+					appendLoggerToWriter(TreatmentPlans.class, bw,
+							Constants.TABLE_DATA_DELETION_PROCESS + ": Delete TreatmentPlanId:" + app.getTreatmentPlanId(), true);
+
+					}
+
+				}
+
+			}
+		} catch (Exception ex) {
+			StringWriter errors = new StringWriter();
+			ex.printStackTrace(new PrintWriter(errors));
+			appendLoggerToWriter(TreatmentPlans.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+			appenErrorToWriter(TreatmentPlans.class, bw, ex);
+		}
+	}
+
+	public void deleteDataToColudDB(BufferedWriter bw, List<?> data, Office office) {
+		try {
+			for (String values : (List<String>) data) {
+				String[] loopTo = values.split(",");
+				for (int i = Integer.parseInt(loopTo[0]); i <= Integer.parseInt(loopTo[1]); i++) {
+					// delete me i == appointment Id
+					//System.out.println("-----" + values);
+					TreatmentPlansReplica app = treatmentPlansRepositoryRe.findByTreatmentPlanIdAndOfficeId(i,
+							office.getUuid());
+					if (app != null) {
+						treatmentPlansRepositoryRe.delete(app);
+						List<TreatmentPlanItemsReplica> items =treatmentPlanItemsRepositoryRe.findByTreatmentPlanIdAndOfficeId(i,office.getUuid());
+						for(TreatmentPlanItemsReplica item:items) {
+							treatmentPlanItemsRepositoryRe.delete(item);
+							PlannedServicesReplica pl =plannedServicesRepositoryRe.findByPatientIdAndOfficeIdAndLineNumber(item.getPatientId(),office.getUuid(),item.getLineNumber());
+							if (pl!=null) {
+								plannedServicesRepositoryRe.delete(pl);
+								appendLoggerToWriter(TreatmentPlans.class, bw,
+										Constants.TABLE_DATA_DELETION_PROCESS + ": Delete PlannedServices (Line/Pat iD):" + pl.getLineNumber() +":" +pl.getPatientId(), true);
+							 }
+						}
+						appendLoggerToWriter(TreatmentPlansReplica.class, bw,	Constants.TABLE_DATA_DELETION_PROCESS + ": Delete TreatmentPlanId:" + app.getTreatmentPlanId(), true);
+					
+				}
+				
+			}
+			
+		}
+	}catch(Exception ex ) {
+		StringWriter errors = new StringWriter();
+		ex.printStackTrace(new PrintWriter(errors));
+		appendLoggerToWriter(TreatmentPlansReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+		appenErrorToWriter(TreatmentPlansReplica.class, bw, ex);
+	}
+
+  }
     
 }

@@ -9,9 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.springframework.data.annotation.Immutable;
-
-import com.tricon.esdatareplication.entity.common.CommonTransactions;
+import com.tricon.esdatareplication.entity.common.CommonTransactionsHeader;
 import com.tricon.esdatareplication.util.Constants;
 
 import lombok.Data;
@@ -19,20 +17,21 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Immutable
-@Table(name = Constants.TABLE_TRANSACTIONS)
+@Table(name = Constants.TABLE_TRANSACTIONS_HEADER)
 @EqualsAndHashCode(callSuper = true)
-public class Transactions  extends CommonTransactions implements Serializable{
+public class TransactionsHeader extends CommonTransactionsHeader implements Serializable{
+	
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5275263966791578462L;
-
+	private static final long serialVersionUID = -6371782013321356458L;
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique = true, nullable = false)
 	private Integer id;
 
-	public Transactions() {
+	public TransactionsHeader() {
 		super();
 	}
-
 }

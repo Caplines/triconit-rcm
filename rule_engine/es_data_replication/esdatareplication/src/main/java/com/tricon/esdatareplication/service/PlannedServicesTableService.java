@@ -23,11 +23,9 @@ import com.tricon.esdatareplication.dao.repdb.PlannedServicesRepository;
 import com.tricon.esdatareplication.dao.ruleenginedb.PlannedServicesRepositoryRe;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
-import com.tricon.esdatareplication.entity.repdb.Patient;
 import com.tricon.esdatareplication.entity.repdb.PlannedServices;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
 import com.tricon.esdatareplication.entity.ruleenginedb.PlannedServicesReplica;
-import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 

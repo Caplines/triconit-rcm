@@ -26,7 +26,6 @@ import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.Patient;
 import com.tricon.esdatareplication.entity.ruleenginedb.AppointmentReplica;
-import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 
@@ -112,9 +111,9 @@ public class AppointmentTableService extends CommonTableService {
 					});
 					appointmentRepositoryRe.saveAllAndFlush(l);
 				}
-				appendLoggerToWriter(TransactionsReplica.class, bw,
+				appendLoggerToWriter(AppointmentReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-				appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
+				appendLoggerToWriter(AppointmentReplica.class, bw, bu.toString(), true);
 				pL.forEach(x -> {
 					x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				});
@@ -129,8 +128,8 @@ public class AppointmentTableService extends CommonTableService {
 			StringWriter errors = new StringWriter();
 			ex.printStackTrace(new PrintWriter(errors));
 			es.setLastIssueDetail(errors.toString());
-			appendLoggerToWriter(Patient.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
-			appenErrorToWriter(Patient.class, bw, ex);
+			appendLoggerToWriter(Appointment.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+			appenErrorToWriter(Appointment.class, bw, ex);
 		}
 		return es;
 
@@ -165,7 +164,7 @@ public class AppointmentTableService extends CommonTableService {
 					});
 					appointmentRepository.saveAll(l);
 				}
-				apptIdInDB.removeAll(apptIdInES);// Patient id that are there in Local DB we need to update.
+				apptIdInDB.removeAll(apptIdInES);// AppointmentId id that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
 					List<Appointment> l = new ArrayList<>();
 					apptIdInDB.forEach(id -> {
@@ -192,4 +191,68 @@ public class AppointmentTableService extends CommonTableService {
 			appenErrorToWriter(Appointment.class, bw, ex);
 		}
 	}
+	
+	
+	/*
+	 * 
+	 * SELECT a.appointment_id+1 AS st, MIN(b.appointment_id) - 1 AS en
+    FROM PPM.appointment  as a, PPM.appointment as  b
+    WHERE a.appointment_id < b.appointment_id    GROUP BY a.appointment_id
+    HAVING st < MIN(b.appointment_id)
+    
+	 */
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
+	public void deleteDataToLocalDB(BufferedWriter bw, List<?> data) {
+		try {
+		for (String values:(List<String>)data) {
+			
+			String [] loopTo= values.split(",");
+			for (int i=Integer.parseInt(loopTo[0]);i<=Integer.parseInt(loopTo[1]);i++) {
+				//delete me i == appointment Id 
+				//System.out.println("-----"+values);
+				Appointment app=appointmentRepository.findByAppointmentId(i);
+				if (app!=null) {
+					appointmentRepository.delete(app);
+					appendLoggerToWriter(Appointment.class, bw,
+							Constants.TABLE_DATA_DELETION_PROCESS + ": Delete Appointment:" + app.getAppointmentId(), true);
+
+					}
+
+				}
+
+			}
+		} catch (Exception ex) {
+			StringWriter errors = new StringWriter();
+			ex.printStackTrace(new PrintWriter(errors));
+			appendLoggerToWriter(Appointment.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+			appenErrorToWriter(Appointment.class, bw, ex);
+		}
+	}
+
+	public void deleteDataToColudDB(BufferedWriter bw, List<?> data, Office office) {
+		try {
+			for (String values : (List<String>) data) {
+				String[] loopTo = values.split(",");
+				for (int i = Integer.parseInt(loopTo[0]); i <= Integer.parseInt(loopTo[1]); i++) {
+					// delete me i == appointment Id
+					//System.out.println("-----" + values);
+					AppointmentReplica app = appointmentRepositoryRe.findByAppointmentIdAndOfficeId(i,
+							office.getUuid());
+					if (app != null) {
+						 appointmentRepositoryRe.delete(app);
+						appendLoggerToWriter(AppointmentReplica.class, bw,	Constants.TABLE_DATA_DELETION_PROCESS + ": Delete Appointment:" + app.getAppointmentId(), true);
+					
+				}
+				
+			}
+			
+		}
+	}catch(Exception ex ) {
+		StringWriter errors = new StringWriter();
+		ex.printStackTrace(new PrintWriter(errors));
+		appendLoggerToWriter(AppointmentReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+		appenErrorToWriter(AppointmentReplica.class, bw, ex);
+	}
+
+  }
 }

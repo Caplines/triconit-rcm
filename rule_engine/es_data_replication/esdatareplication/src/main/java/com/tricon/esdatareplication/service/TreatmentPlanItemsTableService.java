@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.SynthesizedAnnotation;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,11 +22,7 @@ import com.tricon.esdatareplication.dao.repdb.TreatmentPlanItemsRepository;
 import com.tricon.esdatareplication.dao.ruleenginedb.TreatmentPlanItemsRepositoryRe;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
-import com.tricon.esdatareplication.entity.repdb.Patient;
-import com.tricon.esdatareplication.entity.repdb.PlannedServices;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
-import com.tricon.esdatareplication.entity.ruleenginedb.PlannedServicesReplica;
-import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TreatmentPlanItemsReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
@@ -179,16 +173,16 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 					if (l.size() > 0)
 						treatmentPlanItemsRepositoryRe.saveAllAndFlush(l);
 				}
-				appendLoggerToWriter(TransactionsReplica.class, bw,
+				appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
-				appendLoggerToWriter(TransactionsReplica.class, bw, bu.toString(), true);
+				appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw, bu.toString(), true);
 				pL.forEach(x -> {
 					x.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 				});
 				treatmentPlanItemsRepository.saveAll(pL);
 				localCt = localCt + pL.size();
 			}
-			appendLoggerToWriter(TransactionsReplica.class, bw,
+			appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw,
 					Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ": FINAL)=->" + localCt, true);
 			es.setRecordsInsertedLastIteration(localCt);
 			//es.setUpdatedDate(new Date());

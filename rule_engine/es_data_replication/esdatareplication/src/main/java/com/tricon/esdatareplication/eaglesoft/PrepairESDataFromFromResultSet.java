@@ -15,6 +15,7 @@ import com.tricon.esdatareplication.entity.repdb.PlannedServices;
 import com.tricon.esdatareplication.entity.repdb.Provider;
 import com.tricon.esdatareplication.entity.repdb.Transactions;
 import com.tricon.esdatareplication.entity.repdb.TransactionsDetail;
+import com.tricon.esdatareplication.entity.repdb.TransactionsHeader;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlans;
 import com.tricon.esdatareplication.entity.repdb.Patient;
@@ -38,6 +39,8 @@ public class PrepairESDataFromFromResultSet {
 			return createAppointmentData(rs);
 		else if (clazz.equals(Transactions.class))
 			return createTransactionsData(rs);
+		else if (clazz.equals(TransactionsHeader.class))
+			return createTransactionsHeaderData(rs);
 		else if (clazz.equals(TransactionsDetail.class))
 			return createTransactionsDetailData(rs);
 		else if (clazz.equals(PaymentProvider.class))
@@ -54,6 +57,18 @@ public class PrepairESDataFromFromResultSet {
 			return createProviderData(rs);
 		
 		return null;
+	}
+
+	public List<?> deleteTableData(ResultSet rs, Class<?> clazz) {
+
+		System.out.println("clazz.getName()-->" + clazz.getName());
+		System.out.println("clazz.getName()-->" + clazz.getClass().getName());
+		System.out.println(clazz.equals(PayType.class));
+
+		if (clazz.equals(Appointment.class) || clazz.equals(TreatmentPlans.class) || 
+				clazz.equals(PaymentProvider.class))
+		return deleteCommonDataWithId(rs);
+		else return null;
 	}
 
 	private List<Chairs> createChairData(ResultSet rs) {
@@ -324,7 +339,6 @@ public class PrepairESDataFromFromResultSet {
 				p.setUserId(rs.getString("user_id"));
 				p.setType(rs.getString("type"));
 				p.setTranDate(rs.getDate("tran_date"));
-				p.setPatientId(rs.getString("patient_id"));
 				p.setRespPartyId(rs.getString("resp_party_id"));
 				p.setAmount(rs.getDouble("amount"));
 				p.setServiceCode(rs.getString("service_code"));
@@ -350,6 +364,58 @@ public class PrepairESDataFromFromResultSet {
 				p.setPaidSecondary(rs.getDouble("paid_secondary"));
 				p.setProviderPracticeId(rs.getInt("provider_practice_id"));
 				p.setPatientPracticeId(rs.getInt("patient_practice_id"));
+				p.setBulkPaymentNum(rs.getInt("bulk_payment_num"));
+				p.setAgingDate(rs.getDate("aging_date"));
+				p.setTooth(rs.getString("tooth"));
+				p.setLabFee(rs.getDouble("lab_fee"));
+				p.setLabFee2(rs.getDouble("lab_fee2"));
+				p.setLabCode(rs.getString("lab_code"));
+				p.setLabCode2(rs.getString("lab_code2"));
+				p.setPreFee(rs.getDouble("pre_fee"));
+				p.setStandardFeeId(rs.getInt("standard_fee_id"));
+				p.setPracticeId(rs.getInt("practice_id"));
+				p.setProcedureTypeCodes(rs.getString("procedure_type_codes"));
+				p.setBalance(rs.getDouble("balance"));
+				cList.add(p);
+			}
+		} catch (Exception n) {
+			n.printStackTrace();
+
+		}
+		return cList;
+	}
+
+	private List<TransactionsHeader> createTransactionsHeaderData(ResultSet rs) {
+
+		List<TransactionsHeader> cList = new ArrayList<>();
+		TransactionsHeader p = null;
+		try {
+			while (rs.next()) {
+				p= new TransactionsHeader();
+				p.setTranNum(rs.getInt("tran_num"));
+				p.setUserId(rs.getString("user_id"));
+				p.setType(rs.getString("type"));
+				p.setTranDate(rs.getDate("tran_date"));
+				p.setRespPartyId(rs.getString("resp_party_id"));
+				p.setAmount(rs.getDouble("amount"));
+				p.setServiceCode(rs.getString("service_code"));
+				p.setPaytypeId(rs.getInt("paytype_id"));
+				p.setSequence(rs.getInt("sequence"));
+				p.setStatementNum(rs.getInt("statement_num"));
+				p.setSurface(rs.getString("surface"));
+				p.setFee(rs.getDouble("fee"));
+				p.setDiscountSurcharge(rs.getDouble("discount_surcharge"));
+				p.setTax(rs.getDouble("tax"));
+				p.setDescription(rs.getString("description"));
+				p.setDefective(rs.getString("defective"));
+				p.setImpacts(rs.getString("impacts"));
+				p.setStatus(rs.getString("status"));
+				p.setAdjustmentType(rs.getInt("adjustment_type"));
+				p.setClaimId(rs.getInt("claim_id"));
+				p.setEstPrimary(rs.getDouble("est_primary"));
+				p.setEstSecondary(rs.getDouble("est_secondary"));
+				p.setPaidPrimary(rs.getDouble("paid_primary"));
+				p.setPaidSecondary(rs.getDouble("paid_secondary"));
 				p.setBulkPaymentNum(rs.getInt("bulk_payment_num"));
 				p.setAgingDate(rs.getDate("aging_date"));
 				p.setTooth(rs.getString("tooth"));
@@ -766,4 +832,19 @@ public class PrepairESDataFromFromResultSet {
 		}
 		return cList;
 	}
+	
+	private List<String> deleteCommonDataWithId(ResultSet rs) {
+
+		List<String> cList = new ArrayList<>();
+		try {
+			while (rs.next()) {
+								cList.add(rs.getInt(1)+","+rs.getInt(2));
+
+			}
+		} catch (Exception n) {
+			n.printStackTrace();
+		}
+		return cList;
+	}
+
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tricon.esdatareplication.entity.repdb.Chairs;
-import com.tricon.esdatareplication.entity.repdb.PayType;
 
 public interface ChairsRepository extends JpaRepository<Chairs, Integer> {
 

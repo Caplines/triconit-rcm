@@ -12,6 +12,7 @@ import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlans;
 import com.tricon.esdatareplication.entity.repdb.Provider;
 import com.tricon.esdatareplication.entity.repdb.Employer;
+import com.tricon.esdatareplication.entity.repdb.TransactionsHeader;
 
 
 
@@ -88,6 +89,10 @@ public class QueryTable {
 				" count(*) from " + Constants.TABLE_APPOINTMENT + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ",
 				true, false, Appointment.class),
 
+		ES_APPOINTMENT_DELETE(Constants.TABLE_APPOINTMENT,
+				Constants.APPOINTMENT_COLUMNS_DELETE_CHECK ,
+				" ", true, false, Appointment.class),
+
 		/*
 		 * Appointment End
 		 */
@@ -159,10 +164,14 @@ public class QueryTable {
 		ES_PAYMENT_PROVIDER_COUNT(Constants.TABLE_PAYMENT_PROVIDER,
 				" count(*) from " + Constants.TABLE_PAYMENT_PROVIDER + " ", " ", false, false, PaymentProvider.class),
 
-		ES_PAYMENT_PROVIDER_NEXT(Constants.TABLE_PAYMENT_PROVIDER,
+	  /*ES_PAYMENT_PROVIDER_NEXT(Constants.TABLE_PAYMENT_PROVIDER,
 				Constants.PAYMENTPROVIDER_COLUMNS + " from " + Constants.TABLE_PAYMENT_PROVIDER + " where "
 						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by tran_num asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
+				PaymentProvider.class),
+		*/		
+		ES_PAYMENT_PROVIDER_NEXT(Constants.TABLE_PAYMENT_PROVIDER,
+				Constants.PAYMENTPROVIDER_QUERY," ", false, false,
 				PaymentProvider.class),
 
 		ES_PAYMENT_PROVIDER_NEXT_COUNT(Constants.TABLE_PAYMENT_PROVIDER,
@@ -252,6 +261,11 @@ public class QueryTable {
 		ES_TREATMENT_PLANS_NEXT_COUNT(Constants.TABLE_TREATMENT_PLANS, " count(*) from "
 				+ Constants.TABLE_TREATMENT_PLANS + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ", true,
 				false, TreatmentPlans.class),
+		
+		ES_TREATMENT_PLANS_DELETE(Constants.TABLE_TREATMENT_PLANS,
+				Constants.TREATMENT_PLANS_COLUMNS_DELETE_CHECK ,
+				" ", true, false, TreatmentPlans.class),
+		
 
 		/*
 		 * Treatment Plans End
@@ -272,13 +286,13 @@ public class QueryTable {
 				Provider.class),
 
 		ES_PROVIDER_NEXT(Constants.TABLE_PROVIDER,
-				Constants.PROVIDER_COLUMNS + " from " + Constants.TABLE_PROVIDER + " where "
-						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by provider_id asc",
-				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
+				Constants.PROVIDER_COLUMNS + " from " + Constants.TABLE_PROVIDER + "  "
+						+ " order by provider_id asc",
+				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				Provider.class),
 
 		ES_PROVIDER_NEXT_COUNT(Constants.TABLE_PROVIDER, " count(*) from "
-				+ Constants.TABLE_PROVIDER + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ", true,
+				+ Constants.TABLE_PROVIDER + " ", " ", false,
 				false, Provider.class),
 
 		/*
@@ -308,12 +322,39 @@ public class QueryTable {
 
 		ES_EMPLOYER_NEXT_COUNT(Constants.TABLE_EMPLOYER, " count(*) from "
 				+ Constants.TABLE_EMPLOYER + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ", true,
-				false, Employer.class);
+				false, Employer.class),
 
 		/*
 		 * Employer End
 		 */
 		
+		
+		/*
+		 * TransactionsHeader Start
+		 */
+
+		ES_TRANSACTIONS_HEADER(Constants.TABLE_TRANSACTIONS_HEADER,
+				Constants.TRANSACTIONS_HEADER_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS_HEADER + " order by aging_date,tran_num asc ",
+				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
+				TransactionsHeader.class),
+
+		ES_TRANSACTIONS_HEADER_COUNT(Constants.TABLE_TRANSACTIONS_HEADER, " count(*) from " + Constants.TABLE_TRANSACTIONS_HEADER + " ", " ",
+				false, false, TransactionsHeader.class),
+
+		ES_TRANSACTIONS_HEADER_NEXT(Constants.TABLE_TRANSACTIONS_HEADER,
+				Constants.TRANSACTIONS_HEADER_COLUMNS + " from " + Constants.TABLE_TRANSACTIONS_HEADER + " where "
+						+ Constants.QUERY_WHERE_CLAUSE_REP + " order by aging_date,tran_num asc",
+				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, true, true,
+				TransactionsHeader.class),
+
+		ES_TRANSACTIONS_HEADER_NEXT_COUNT(Constants.TABLE_TRANSACTIONS_HEADER,
+				" count(*) from " + Constants.TABLE_TRANSACTIONS_HEADER + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ",
+				true, false, TransactionsHeader.class);
+
+		/*
+		 * TransactionsHeader End
+		 */
+
 		
 		private final String tableName;
 		private final String query;

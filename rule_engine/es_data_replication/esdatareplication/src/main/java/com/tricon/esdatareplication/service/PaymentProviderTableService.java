@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +23,6 @@ import com.tricon.esdatareplication.dao.ruleenginedb.PaymentProviderRepositoryRe
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.PaymentProvider;
-import com.tricon.esdatareplication.entity.repdb.Transactions;
 import com.tricon.esdatareplication.entity.ruleenginedb.PaymentProviderReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
@@ -49,6 +47,8 @@ public class PaymentProviderTableService extends CommonTableService {
 	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
 		int localCt = 0;
 		try {
+			
+			paymentProviderRepositoryRe.deleteAlByOfficeId(office.getUuid());
 			// Long count =
 			// patientRepository.countByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 			// long totalPages = Double.valueOf(Math.ceil(count / (float)
@@ -275,12 +275,14 @@ public class PaymentProviderTableService extends CommonTableService {
 			StringWriter errors = new StringWriter();
 			ex.printStackTrace(new PrintWriter(errors));
 			es.setLastIssueDetail(errors.toString());
-			appendLoggerToWriter(Transactions.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
-			appenErrorToWriter(Transactions.class, bw, ex);
+			appendLoggerToWriter(PaymentProvider.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+			appenErrorToWriter(PaymentProvider.class, bw, ex);
 		}
 		return es;
 
 	}
+	
+	
 
 	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
 	public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExisting) {
@@ -290,6 +292,27 @@ public class PaymentProviderTableService extends CommonTableService {
 				logFirstTimeDataEntryToTable(PaymentProvider.class, bw, data.size());
 			} else {
 				//
+				paymentProviderRepository.deleteAll();
+				paymentProviderRepository.saveAll((List<PaymentProvider>) data);
+				appendLoggerToWriter(PaymentProvider.class, bw,
+						Constants.RECORDS_UPDATED_IN_TABLE + " PaymentProvider-->: " + data.size(), true);
+				
+			}
+		}catch (Exception ex) {
+			appenErrorToWriter(PaymentProvider.class, bw, ex);
+		}
+	
+	}
+	/*
+	@Transactional(rollbackFor = Exception.class, transactionManager = "repDbTransactionManager")
+	public void saveDataToLocalDB(BufferedWriter bw, List<?> data, boolean checkExisting) {
+		try {
+			if (!checkExisting) {
+				paymentProviderRepository.saveAll((List<PaymentProvider>) data);
+				logFirstTimeDataEntryToTable(PaymentProvider.class, bw, data.size());
+			} else {
+				//
+				
 				Set<Integer> apptIdInES = new HashSet<>();
 				Set<String> apptIdInDB1 = new HashSet<>();
 				Set<String> apptIdInES1 = new HashSet<>();
@@ -374,15 +397,7 @@ public class PaymentProviderTableService extends CommonTableService {
 						}
 					}
 
-					/*
-					 * List<PaymentProviderReplica> l = new ArrayList<>(); apptIdInES1.forEach(id ->
-					 * { PaymentProviderReplica q = ((List<PaymentProviderReplica>)
-					 * repList).stream() .filter(p -> Integer.parseInt(id.split("---")[0]) ==
-					 * p.getTranNum().intValue() && id.split("---")[1].equals(p.getProviderId()) &&
-					 * id.split("---")[2].equals(p.getProdProviderId())
-					 * 
-					 * ).findAny().orElse(null); q.setId(null); l.add(q); });
-					 */
+				
 					if (l.size() > 0)
 						paymentProviderRepository.saveAllAndFlush(l);
 				}
@@ -442,28 +457,7 @@ public class PaymentProviderTableService extends CommonTableService {
 							l.add(p);
 						}
 					}
-					/*
-					 * apptIdInDB1.forEach(id -> { PaymentProviderReplica p =
-					 * ((List<PaymentProviderReplica>) repList).stream() .filter(dp ->
-					 * Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue() &&
-					 * id.split("---")[1].equals(dp.getProviderId()) &&
-					 * id.split("---")[2].equals(dp.getProdProviderId())
-					 * 
-					 * ).findAny().orElse(null);
-					 * 
-					 * PaymentProviderReplica old = inDB.stream() .filter(dp ->
-					 * Integer.parseInt(id.split("---")[0]) == dp.getTranNum().intValue() &&
-					 * id.split("---")[1].equals(dp.getProviderId()) &&
-					 * id.split("---")[2].equals(dp.getProdProviderId())
-					 * 
-					 * ).findAny().orElse(null);
-					 * 
-					 * if (p != null && old != null) { if (old != null) { p.setId(old.getId());
-					 * p.setCreatedDate(old.getCreatedDate()); }
-					 * p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-					 * 
-					 * l.add(p); } });
-					 */
+					
 					if (l.size() > 0)
 						paymentProviderRepository.saveAllAndFlush(l);
 				}
@@ -478,6 +472,7 @@ public class PaymentProviderTableService extends CommonTableService {
 			appenErrorToWriter(PaymentProvider.class, bw, ex);
 		}
 	}
+	*/
 
 	public static void main(String aa[]) {
 

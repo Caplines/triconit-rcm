@@ -21,5 +21,7 @@ public interface PlannedServicesRepository extends JpaRepository<PlannedServices
 	public List<PlannedServices> findByMovedToCloud(int i,Pageable prepairPage);
 	
 	public List<PlannedServices> findByLineNumberIn(Set<Integer> lineNumber);
+	
+	public PlannedServices findByPatientIdAndLineNumber(String patientid,Integer linenumber);
 
 }

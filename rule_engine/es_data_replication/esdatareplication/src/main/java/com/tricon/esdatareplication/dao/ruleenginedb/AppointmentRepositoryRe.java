@@ -15,6 +15,10 @@ public interface AppointmentRepositoryRe
 	public List<AppointmentReplica> findByAppointmentIdInAndOfficeId(Set<Integer> apointmentId,String officeuuid);
 	
 	public List<AppointmentReplica> findByPatientIdInAndOfficeId(Set<String> patientId,String officeuuid);
+	
+	
+	public AppointmentReplica findByAppointmentIdAndOfficeId(Integer apointmentId,String officeuuid);
+	
 
 	//public List<AppointmentReplica> findByMovedToCloud(int i);
 
