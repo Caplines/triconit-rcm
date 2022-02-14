@@ -955,6 +955,24 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 						driver.navigate().to(
 								"https://govservices.dentaquest.com/Router.jsp?source=MemberDetail&component=MemberDetails&breadcrumb=true");
 						Thread.sleep(5000);
+						//get Other coverage..-->Insurer Name (Email 8 Feb,2022)
+						dto.setComment("");
+						try {
+						List<WebElement> elements= driver.findElements(By.className("results"));
+						for(WebElement element:elements) {
+							WebElement caption=element.findElement(By.tagName("caption"));
+							if (caption!=null && caption.getText().equals("Other Coverage")) {
+								if (element.findElements(By.tagName("td")).size()>=2) {
+								dto.setComment(element.findElements(By.tagName("td")).get(2).getText());
+								}
+							break;
+							}
+							
+						}
+						}catch(Exception n) {
+							n.printStackTrace();
+							
+						}
 						// Click on view Benefit max..
 						driver.findElement(By.xpath(
 								"/html/body/table[3]/tbody/tr/td[3]/div[2]/form/div[4]/table[2]/tbody/tr/td/a[1]"))
@@ -963,7 +981,6 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 
 						Thread.sleep(5000);
 						// copay and Remaining Benefit.
-						dto.setComment("");
 						if (driver.findElement(By.xpath(
 								"/html/body/table[3]/tbody/tr/td[3]/div[2]/form/table[6]/tbody/tr/td[1]")) != null) {
 							// html/body/table[3]/tbody/tr/td[3]/form/table[8]/tbody/tr

@@ -651,7 +651,8 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 								}
 
 							}
-							if (c == 7 && found) {
+							//Old one had C==7
+							if (c == 8 && found) {
 								List<WebElement> aa = td.findElements(By.tagName("a"));
 								for (WebElement a : aa) {
 									if (a.getText().equals("View eligibility & benefits")) {
@@ -4014,19 +4015,19 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smilepoint@1230");
-		dto.setUserName("VictoriaNCD");
+		dto.setPassword("Smilepoint00");
+		dto.setUserName("rockdale01");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("02/23/1999");// 03/20/1992 12/26/1988
-		psc.setFirstName("Annabelle");// Heather Griffith - Dean Dornak Ellen Keck
-		psc.setLastName("Ayres");
-		psc.setMemberId("120387978601");// 1125727908.. 632307605
-		psc.setSsnNumber("120387978601");
-		psc.setSubscribersFirstName("Annabelle");
-		psc.setSubscribersLastName("Ayres");
-		psc.setSubscribersDob("02/23/1999");
+		psc.setDob("12/12/1986");// 03/20/1992 12/26/1988
+		psc.setFirstName("Veronica");// Heather Griffith - Dean Dornak Ellen Keck
+		psc.setLastName("Devito");
+		psc.setMemberId("121468295201");// 1125727908.. 632307605
+		psc.setSsnNumber("121468295201");
+		psc.setSubscribersFirstName("");
+		psc.setSubscribersLastName("");
+		psc.setSubscribersDob("");
 
 		l.add(psc);
 		// dto.setPassword("Smile123");
