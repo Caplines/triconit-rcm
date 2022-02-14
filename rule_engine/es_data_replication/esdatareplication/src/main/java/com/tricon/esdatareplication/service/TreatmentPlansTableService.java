@@ -60,6 +60,10 @@ public class TreatmentPlansTableService extends CommonTableService {
 
 	@Autowired
 	private ESTableRepository estableRepository;
+	 
+	@Autowired
+	ReplicationService replicationService;
+	
 
 	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
 	private int batchSize;
@@ -139,6 +143,43 @@ public class TreatmentPlansTableService extends CommonTableService {
 				treatmentPlansRepository.saveAll(pL);
 				localCt = localCt + pL.size();
 			}
+			
+			while (true) {
+				Pageable prepairPage = PageRequest.of(0, batchSize);// 0,50
+				List<TreatmentPlanItems> pL = treatmentPlanItemsRepository
+						.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES, prepairPage);
+				if (pL.size() == 0)
+					break;
+				List<TreatmentPlanItemsReplica> repList = new ArrayList<>();
+				pL.forEach(x -> {
+					x.setOfficeId(office.getUuid());
+					TreatmentPlanItemsReplica rep = new TreatmentPlanItemsReplica();
+					BeanUtils.copyProperties(x, rep);
+					rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
+					repList.add(rep);
+				});
+				treatmentPlanItemsRepository.deleteAll(pL);
+				treatmentPlanItemsRepositoryRe.deleteAll(repList);
+				//localCt = localCt + pL.size();
+			}
+			while (true) {
+				Pageable prepairPage = PageRequest.of(0, batchSize);// 0,50
+				List<PlannedServices> pL = plannedServicesRepository
+						.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES, prepairPage);
+				if (pL.size() == 0)
+					break;
+				List<PlannedServicesReplica> repList = new ArrayList<>();
+				pL.forEach(x -> {
+					x.setOfficeId(office.getUuid());
+					PlannedServicesReplica rep = new PlannedServicesReplica();
+					BeanUtils.copyProperties(x, rep);
+					rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
+					repList.add(rep);
+				});
+				plannedServicesRepository.deleteAll(pL);
+				plannedServicesRepositoryRe.deleteAll(repList);
+				//localCt = localCt + pL.size();
+			}
 			es.setRecordsInsertedLastIteration(localCt);
 			//es.setUpdatedDate(new Date());
 			estableRepository.save(es);
@@ -171,6 +212,9 @@ public class TreatmentPlansTableService extends CommonTableService {
 				inDB.stream().map(TreatmentPlans::getTreatmentPlanId).forEach(apptIdInDB::add);
 
 				apptIdInES.removeAll(apptIdInDB);// Patientid that are not in Local DB
+				Set<Integer> trIds= new HashSet<>();
+				Set<String> patIds= new HashSet<>();
+				
 				if (apptIdInES.size() > 0) {
 					List<TreatmentPlans> l = new ArrayList<>();
 					apptIdInES.forEach(id -> {
@@ -179,12 +223,82 @@ public class TreatmentPlansTableService extends CommonTableService {
 						q.setId(null);
 						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						l.add(q);
+						trIds.add(q.getTreatmentPlanId());
+						patIds.add(q.getPatientId());
 					});
-					if (l.size() > 0)
-						treatmentPlansRepository.saveAll(l);
+					if (l.size() > 0) {
+					treatmentPlansRepository.saveAll(l);
+					String inCl="Select "+Constants.TREATEMENTPLANITEMS_COLUMNS+"  from "+Constants.TABLE_TREATMENT_PLAN_ITEMS+
+								" where  treatment_plan_id in  ("
+									+ String.join(",",
+											trIds.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
+									+ ") ";
+					List<?> exData =replicationService.fetchDataFromES(inCl, TreatmentPlanItems.class, null);
+					List<TreatmentPlanItems> inMYSQLDB =treatmentPlanItemsRepository.findByTreatmentPlanIdIn(trIds);
+					if (exData!=null) {
+						List<TreatmentPlanItems> exDataOld=(List<TreatmentPlanItems>) exData;
+						if (inMYSQLDB!=null && inMYSQLDB.size()>0) {
+							
+						
+						for (TreatmentPlanItems mysql: inMYSQLDB) {
+							List<TreatmentPlanItems> filterdata = exDataOld.stream()
+						      .filter(tpi -> tpi.getTreatmentPlanId().intValue()==mysql.getTreatmentPlanId().intValue()
+						    		   && tpi.getLineNumber().intValue()==mysql.getLineNumber().intValue())
+						      .collect(Collectors.toList());
+							if (filterdata.size()==0) {
+								// mark delete all
+								mysql.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
+								treatmentPlanItemsRepository.save(mysql);
+								PlannedServices planser=plannedServicesRepository.findByPatientIdAndLineNumber(mysql.getPatientId(), mysql.getLineNumber());
+							    if (planser!=null ) {
+							    	planser.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
+							    	plannedServicesRepository.save(planser);
+							    }
+							}
+						}
+							
+						}
+					}else {
+						// mark delete all
+						inMYSQLDB.forEach((u) -> u.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES));
+						treatmentPlanItemsRepository.saveAll(inMYSQLDB);
+					}
+					//Patient Ids
+					String inPatsCl="Select "+Constants.PLANNEDSERVICE_COLUMNS+"  from "+Constants.TABLE_PLANNED_SERVICES+
+							" where  patient_id in   (" + "'" + String.join("','", patIds) + "')";
+					exData =replicationService.fetchDataFromES(inPatsCl, PlannedServices.class, null);
+					List<PlannedServices> inMYSQLDBPlan =plannedServicesRepository.findByPatientIdIn(patIds);
+					if (exData!=null) {
+						List<PlannedServices> exDataOld=(List<PlannedServices>) exData;
+						if (inMYSQLDBPlan!=null && inMYSQLDBPlan.size()>0) {
+							
+						
+						for (PlannedServices mysql: inMYSQLDBPlan) {
+							List<PlannedServices> filterdata = exDataOld.stream()
+						      .filter(tpi -> tpi.getPatientId().equals(mysql.getPatientId())
+						    		   && tpi.getLineNumber().intValue()==mysql.getLineNumber().intValue())
+						      .collect(Collectors.toList());
+							if (filterdata.size()==0) {
+								// mark delete all
+								mysql.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
+								plannedServicesRepository.save(mysql);
+								
+							}
+						}
+							
+						}
+					}else {
+						// mark delete all
+						inMYSQLDBPlan.forEach((u) -> u.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES));
+						plannedServicesRepository.saveAll(inMYSQLDBPlan);
+					}
+						
+					}
 				}
 				apptIdInDB.removeAll(apptIdInES);// Patient id that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
+					Set<Integer> trIdsN= new HashSet<>();
+					patIds.clear();
 					List<TreatmentPlans> l = new ArrayList<>();
 					apptIdInDB.forEach(id -> {
 						TreatmentPlans p = ((List<TreatmentPlans>) data).stream()
@@ -195,10 +309,80 @@ public class TreatmentPlansTableService extends CommonTableService {
 						p.setId(old.getId());
 						p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 						p.setCreatedDate(old.getCreatedDate());
+						trIdsN.add(p.getTreatmentPlanId());
+						patIds.add(p.getPatientId());
 						l.add(p);
 					});
-					if (l.size() > 0)
+					if (l.size() > 0) {
 						treatmentPlansRepository.saveAll(l);
+						String inCl="Select "+Constants.TREATEMENTPLANITEMS_COLUMNS+"  from "+Constants.TABLE_TREATMENT_PLAN_ITEMS+
+								" where  treatment_plan_id in  ("
+									+ String.join(",",
+											trIdsN.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
+									+ ") ";
+					List<?> exData =replicationService.fetchDataFromES(inCl, TreatmentPlanItems.class, bw);
+					List<TreatmentPlanItems> inMYSQLDB =treatmentPlanItemsRepository.findByTreatmentPlanIdIn(trIdsN);
+					if (exData!=null) {
+						List<TreatmentPlanItems> exDataOld=(List<TreatmentPlanItems>) exData;
+						if (inMYSQLDB!=null && inMYSQLDB.size()>0) {
+							
+						
+						for (TreatmentPlanItems mysql: inMYSQLDB) {
+							mysql.getTreatmentPlanId();
+							mysql.getLineNumber();
+							List<TreatmentPlanItems> filterdata = exDataOld.stream()
+						      .filter(tpi -> tpi.getTreatmentPlanId().intValue()==mysql.getTreatmentPlanId().intValue()
+						    		   && tpi.getLineNumber().intValue()==mysql.getLineNumber().intValue())
+						      .collect(Collectors.toList());
+							if (filterdata.size()==0) {
+								// mark delete all
+								mysql.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
+								treatmentPlanItemsRepository.save(mysql);
+								PlannedServices planser=plannedServicesRepository.findByPatientIdAndLineNumber(mysql.getPatientId(), mysql.getLineNumber());
+							    if (planser!=null ) {
+							    	planser.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
+							    	plannedServicesRepository.save(planser);
+							    }
+							}
+						}
+							
+						}
+					}else {
+						// mark delete all
+						inMYSQLDB.forEach((u) -> u.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES));
+						treatmentPlanItemsRepository.saveAll(inMYSQLDB);
+					}
+					
+					//Patient Ids
+					String inPatsCl="Select "+Constants.PLANNEDSERVICE_COLUMNS+"  from "+Constants.TABLE_PLANNED_SERVICES+
+							" where  patient_id in   (" + "'" + String.join("','", patIds) + "')";
+					exData =replicationService.fetchDataFromES(inPatsCl, PlannedServices.class, bw);
+					List<PlannedServices> inMYSQLDBPlan =plannedServicesRepository.findByPatientIdIn(patIds);
+					if (exData!=null) {
+						List<PlannedServices> exDataOld=(List<PlannedServices>) exData;
+						if (inMYSQLDBPlan!=null && inMYSQLDBPlan.size()>0) {
+							
+						
+						for (PlannedServices mysql: inMYSQLDBPlan) {
+							List<PlannedServices> filterdata = exDataOld.stream()
+						      .filter(tpi -> tpi.getPatientId().equals(mysql.getPatientId())
+						    		   && tpi.getLineNumber().intValue()==mysql.getLineNumber().intValue())
+						      .collect(Collectors.toList());
+							if (filterdata.size()==0) {
+								// mark delete all
+								mysql.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
+								plannedServicesRepository.save(mysql);
+								
+							}
+						}
+							
+						}
+					}else {
+						// mark delete all
+						inMYSQLDBPlan.forEach((u) -> u.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES));
+						plannedServicesRepository.saveAll(inMYSQLDBPlan);
+					}
+					}
 				}
 
 				logAfterFirstTimeDataEntryToTable(TreatmentPlans.class, bw, apptIdInES.size(), apptIdInDB.size(),

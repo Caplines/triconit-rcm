@@ -191,7 +191,7 @@ public class ReplicationService {
 		for (ESTable table : estables) {
 			QueryTable.QueryEnum tab = QueryTable.QueryEnum.valueOf("ES_" + table.getTableName().toUpperCase() + "_NEXT");
 			if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLANS)) {
-				List<?> data = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), false,false,false);
+				List<?> data = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), false,false,false,null);
 				tpIds =treatmentPlansTableService.deleteRelevantDataFromLocalDB(bw, data);//no deletion happens	
 				treatmentPlansTableService.deleteRelevantDataFromColudDB(bw, tpIds, office);//no deletion happens	
 			}else	if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLAN_ITEMS)) {
@@ -302,7 +302,7 @@ public class ReplicationService {
 					top = totalCount;
 				while (true) {
 					/// SELECT TOP 1 START AT 100 p.* FROM "PPM"."paytype" AS p
-					List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), false,true,updateWhere);
+					List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), false,true,updateWhere,null);
 					countRecord = countRecord + list.size();
 					if (list.size() == 0) {
 						if (table.getStaticTable() == DataStatus.StatusEnum.STATIC_TABLE.YES)
@@ -398,7 +398,7 @@ public class ReplicationService {
 
 			 while (true) {
 			/// SELECT TOP 1 START AT 100 p.* FROM "PPM"."paytype" AS p
-			List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), extraPat,true,updateWhere);
+			List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), extraPat,true,updateWhere,bw);
 			int size = list == null ? 0 : list.size();
 			commonTableService.appendLoggerToWriter(bw, "Count of  Records Read From ES in Current Iteration "+tab.getTableName()+"-->" + size,
 					true);
@@ -469,7 +469,7 @@ public class ReplicationService {
 	
 	
 		private List<?> fetchDataFromES(QueryTable.QueryEnum qnum, int total, int start, Date cDate,
-			Date lastDateofCrawling, boolean extraPat, boolean needTop,boolean updateWhere) {
+			Date lastDateofCrawling, boolean extraPat, boolean needTop,boolean updateWhere,BufferedWriter bw) {
 
 		List<?> arrayList = null;
 
@@ -501,6 +501,9 @@ public class ReplicationService {
 			}
 			PreparedStatement pstmt = con.prepareStatement("select " + query);
 			System.out.println("query-" + query);
+			if (bw!=null) {
+				commonTableService.appendLoggerToWriter(ReplicationService.class, bw, qnum.getTableName()+"<-->"+query, true);	
+			}
 			ResultSet rs = pstmt.executeQuery();
 			arrayList = prepairESDataFromFromResultSet.createTableData(rs, qnum.getClazz());
 
@@ -518,6 +521,37 @@ public class ReplicationService {
 		return arrayList;
 
 	}
+		
+	public List<?> fetchDataFromES(String query,Class clazz,BufferedWriter bw) {
+
+			List<?> arrayList = null;
+
+			Connection con = null;
+			try {
+				con = ESConnection.getConnection();
+				
+				PreparedStatement pstmt = con.prepareStatement(query);
+				System.out.println("query-" + query);
+				if (bw!=null) {
+					commonTableService.appendLoggerToWriter(ReplicationService.class, bw, query, true);	
+				}
+				ResultSet rs = pstmt.executeQuery();
+				arrayList = prepairESDataFromFromResultSet.createTableData(rs, clazz);
+
+				rs.close();
+				pstmt.close();
+			} catch (SQLException sqe) {
+				// logger.error("Unexpected exception : " + sqe.toString() + ", sqlstate = " +
+				// sqe.getSQLState());
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				ESConnection.closeConnection(con);
+			}
+
+			return arrayList;
+
+		}		
 
 	private int fetchDataCountFromES(QueryTable.QueryEnum qnum, Date cDate, Date lastDateofCrawling, BufferedWriter bw,
 			boolean extraPat) {
