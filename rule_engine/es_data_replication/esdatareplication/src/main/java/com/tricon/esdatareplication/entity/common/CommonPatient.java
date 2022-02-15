@@ -31,7 +31,7 @@ public class CommonPatient extends CommonCloudColumn{
 	String lastName;
 	
 	@Column(name = "salutation", length = 50)
-	String salutation;;
+	String salutation;
 	
 	@Column(name = "address_1", length = 50)
 	String address1;
@@ -129,7 +129,7 @@ public class CommonPatient extends CommonCloudColumn{
     @Temporal(TemporalType.DATE)
     Date firstVisitDate;
     
-    @Column(name = "last_date_date", length = 50)
+    @Column(name = "last_date_seen", length = 50)
     @Temporal(TemporalType.DATE)
     Date lastDateSeen;
 
