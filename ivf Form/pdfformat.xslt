@@ -231,28 +231,45 @@ border-collapse: collapse;
                         </td>
 							  </xsl:otherwise>
 						</xsl:choose>
-						 
-						<td>
-                         <span class="main-heading-1">Patient ID:</span>
-                         </td>
-                        <td>						 
-						 <span class="sub-heading"><xsl:value-of select="basicInfo21"/></span>
-                        </td>
-						<td class="withds">
+						
+						 <td class="withds">
                          <span class="main-heading-1">Provider Last Name:</span>
                          </td>
                         <td class="withds">						 
 						 <span class="sub-heading"><xsl:value-of select="basicInfo19"/></span>
                         </td>
+						<xsl:choose>
+							  <xsl:when test="policy3 = 'OUT' ">
+								<td style="color:white;background-color:red">
+                           <span class="main-heading-1">Network:</span>
+						       </td>
+							   <td style="color:white;background-color:red"> <span class="sub-heading"><xsl:value-of select="policy3"/></span>
+                              </td>
+							  </xsl:when>
+							  <xsl:otherwise>
+						<td>
+                           <span class="main-heading-1">Network:</span>
+						 </td>
+						 <td> <span class="sub-heading"><xsl:value-of select="policy3"/></span>
+                        </td>
+							  </xsl:otherwise>
+						</xsl:choose>
+						
                     </tr>
 					
 					<tr>
                         <td  class="withds">
                           <span class="main-heading-1"> Insurance Address:</span>
 						</td>
-                        <td  colspan="9">						
+                        <td  colspan="7">						
 						  <span class="sub-heading"><xsl:value-of select="basicInfo20"/></span>
                             
+                        </td>
+						<td>
+                         <span class="main-heading-1">Patient ID:</span>
+                         </td>
+                        <td>						 
+						 <span class="sub-heading"><xsl:value-of select="basicInfo21"/></span>
                         </td>
                     </tr>
 					<tr>
@@ -306,9 +323,9 @@ border-collapse: collapse;
 						   <span class="sub-heading"><xsl:value-of select="policy2"/></span>
 						 </td>
                         <td>
-                           <span class="main-heading-1">Network:</span>
+                           <span class="main-heading-1"></span>
 						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="policy3"/></span>
+                        <td> <span class="sub-heading"></span>
                         </td>
                         <td>
                          <span class="main-heading-1">Fee Schedule:</span>
@@ -365,16 +382,18 @@ border-collapse: collapse;
                         </td>
                         <td class="withds">
                            <span class="main-heading-1">
-						   <xsl:if test="policy12= 'Refer Medicaid &#38; Medicare Benefits(RD0703)'">
-                           <a style="text-decoration:none" traget="_blank" href="https://docs.google.com/spreadsheets/d/13C7ph9Hal1mDdU5nioWWX2ndof6Ls2IYbVw03uRDiVM/edit#gid=2067143248">Pre-D required: </a>
-						    </xsl:if>
-                         <xsl:if test ="not(policy12 ='Refer Medicaid &#38; Medicare Benefits(RD0703)')">
+						 
                           Pre-D required:
-						    </xsl:if>
+						
                          </span>
 						</td>
 						<td>
-						   <span class="sub-heading"><xsl:value-of select="policy12"/></span>
+						    <xsl:if test="policy12= 'Refer Medicaid &#38; Medicare Benefits(RD0703)'">
+						   <span class="sub-heading"><a style="text-decoration:none" traget="_blank" href="https://docs.google.com/spreadsheets/d/13C7ph9Hal1mDdU5nioWWX2ndof6Ls2IYbVw03uRDiVM/edit#gid=2067143248"><xsl:value-of select="policy12"/></a></span>
+						    </xsl:if>
+							  <xsl:if test ="not(policy12 ='Refer Medicaid &#38; Medicare Benefits(RD0703)')">
+                         <xsl:value-of select="policy12"/>
+						    </xsl:if>
 						 </td>
                         <td>
                            <span class="main-heading-1">Non Duplicate Clause:</span>
