@@ -136,7 +136,14 @@ const appRoutes: Routes = [
 		  },
 		  loadChildren: './module/selants_ele.module#SealantelegbAppModule' },		  
   // otherwise redirect to profile
-  { path: '**', redirectTo: '/login' }
+  
+  { path: 'scrapremotelite',
+	  resolve: {
+		    offs: OfficeResolve
+	  },
+	  loadChildren: './module/scrap_lite.module#ScrapLiteAppModule' },
+	  { path: '**', redirectTo: '/login' }
+  
   
 ];
 

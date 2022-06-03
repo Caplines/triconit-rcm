@@ -559,6 +559,31 @@ export class ApplicationService {
 	          );
 	              
 	  }
+	  
+	  getAllScrappingLiteSites(callback){
+	      this.generateRefreshToken().pipe(switchMap(data => {
+	          localStorage.setItem("token", (<any>data).token);
+	            return  this.http.get(environment.API_URL+'/getsitenametoparsefulldatalite');
+	          },
+	          )    
+	      ).subscribe(data => {
+	              callback((<any>data));
+	          },
+	          error => {
+	              if (error.status==401){
+	              this.router.navigate(['/logout']);
+	              }
+	              if (error.status==500){
+	                  alert("Some un-Wanted Changes Done to Google Sheets");
+	                  callback(error);
+	              }
+	          },
+	          () => {
+	          }
+	          
+	          );
+	              
+	  }
 
 	  postData(d:any,url:string,callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {

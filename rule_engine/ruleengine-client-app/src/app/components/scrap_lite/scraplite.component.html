@@ -1,0 +1,183 @@
+
+<div class="inner-bg">
+	<div *ngIf="!showScrapMain" class="container"> 
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Scrap Remote Lite</h3>
+						<div *ngIf="showLoading" class="loader" style="margin-left: 221px;"></div>
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form"
+						(ngSubmit)="f.form.valid && fetchDetails()" #f="ngForm" novalidate>
+						
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="siteId">Site Name</label>
+							<input type="text"
+								class="login-signup-form-field form-control" 
+								name="siteIns" id="siteIns"
+								[(ngModel)]="siteIn" value="">
+							<input type="hidden"
+								class="login-signup-form-field form-control" 
+								name="siteInId" id="siteInId"
+								[(ngModel)]="siteInId" value="">	
+						
+							
+						</div>
+
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
+							<label class="sr-only" for="officeId">Office Name</label> <select
+								name="officeId" [(ngModel)]="offid"
+								class="login-signup-form-field form-control" id="officeId">
+								<option value="">Office Name...</option>
+								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
+							</select>
+							<div *ngIf="f.submitted && offid==''" class="error-msg">The
+								Office Name is required</div>
+						</div>
+
+						<p>
+							<button [disabled]="showLoading" type="submit" class="btn">Fetch Site Details
+								</button>
+						</p>
+						<div *ngIf="showLoadingD" class="loader"></div>
+
+						
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+	<div *ngIf="showScrapMain" class="container"> 
+		<div class="row">
+			<div class="col-sm-12 form-box">
+				<div class="form-top">
+					<div class="form-top-left">
+						<h3 class="ivf-title">Parse Site </h3> <a href="javascript:void(0)" (click)="goBack()">Go Back</a>
+						
+					</div>
+				</div>
+
+				<div class="form-bottom">
+					<form class="login-form" name="form2"
+						(ngSubmit)="f2.form.valid && parseSite()" #f2="ngForm" novalidate>
+						<div class="form-horizontal">
+						<div class="form-group"
+							>
+							<label class="col-sm-3 control-label" for="sietName">Office Name</label>
+							<div class="col-sm-9" > <input type="text"
+								class="login-signup-form-field form-control" 
+								name="oName" id="oName"
+								[(ngModel)]="oName" #siteO="ngModel"
+								readonly/>
+						</div>		
+						</div>
+                        <div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !siteName.valid }">
+							<label class="col-sm-3 control-label" for="sietName">Site Name</label>
+							<div class="col-sm-9" > <input type="text"
+								class="login-signup-form-field form-control" 
+								name="siteName" id="siteName"
+								[(ngModel)]="site.full" #siteName="ngModel"
+								placeholder="Site Name.." required readonly="readonly"/>
+						</div>		
+						</div>	
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !userName.valid }">
+							<label class="col-sm-3 control-label" for="userName">Site Login User Name</label>
+							<div class="col-sm-9" >
+							 <input type="text"
+								class="login-signup-form-field form-control" 
+								name="userName" id="userName"
+								[(ngModel)]="scrap.userName" #userName="ngModel"
+								required placeholder="Site Login User Name..."/>
+							</div>	
+							<div *ngIf="f2.submitted && !userName.valid" class="error-msg">
+								Site Login User Name is required</div>
+							<div *ngIf="calledOTPGeneration && scrap.userName==''" class="error-msg cl-red">
+								User Name  is required</div>	
+						</div>
+						</div>
+						<div class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !password.valid }">
+							<label class="col-sm-3 control-label" for="password">Site Password</label>
+							<div class="col-sm-9" >
+							 <input type="text"
+								class="login-signup-form-field form-control" 
+								name="password" id="password"
+								[(ngModel)]="scrap.password" #password="ngModel"
+								 required placeholder="Site Password..."/>
+						    </div>		 
+								 <div *ngIf="f2.submitted && !password.valid" class="error-msg">
+								Site Password User Name is required</div>
+								<div *ngIf="calledOTPGeneration && scrap.password==''" class="error-msg cl-red">
+								Site Password  is required</div>
+								
+							<input type="hidden" [(ngModel)]="scrap.siteDetailId" name="siteDetailId"/>
+							<input type="hidden" [(ngModel)]="scrap.siteId" name="siteId"/>
+							<input type="hidden" [(ngModel)]="scrap.officeId" name="officeId"/>
+						</div>
+						</div>
+						<div  class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !sheetValue.valid }">
+							<label class="col-sm-3 control-label" for="password">Google Sheet Id</label>
+							<div class="col-sm-6" >
+							 <input type="text"
+								class="login-signup-form-field form-control" 
+								name="sheetValue" id="sheetValue" readonly="readonly"
+								[(ngModel)]="scrap.googleSheetIdDb" #sheetValue="ngModel"
+								 required placeholder="Sheet Id..."/>
+						    </div>
+						    	 
+								
+						</div>
+						</div>
+						
+						<div  class="form-horizontal">
+						<div class="form-group"
+							[ngClass]="{ 'has-error': f2.submitted && !sheetValueSub.valid }">
+							<label class="col-sm-3 control-label" for="password">Google Sub Sheet Id</label>
+							<div class="col-sm-6" >
+							 <input type="text"
+								class="login-signup-form-field form-control" 
+								name="sheetValueSub" id="sheetValueSub" 
+								[(ngModel)]="scrap.googleSubId" #sheetValueSub="ngModel"
+								 required placeholder="Sheet Sub Id..."/>
+						    </div>
+						    	 
+								
+						</div>
+						</div>
+						
+						<p>
+							<button [disabled]="showLoadingP" type="submit" class="btn">Parse Site 
+							</button>
+						</p>
+						<div *ngIf="showLoadingPA" class="loader"></div>
+						<div *ngIf="showLoadingPAA" > Parsing started.. Please Check the Google Sheet after some-time 
+						to see the Scrapped data .<br>
+						<a href="https://docs.google.com/spreadsheets/d/{{scrap.googleSheetIdDb}}/edit#gid={{scrap.googleSheetIdDb}}" target="_blank"> SHEET LINK</a>
+						
+						</div>
+						
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+	
+	
+</div>
