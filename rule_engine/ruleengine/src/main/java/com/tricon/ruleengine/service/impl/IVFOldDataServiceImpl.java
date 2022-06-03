@@ -107,15 +107,18 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 						sh.setPlanEffectiveDate(DateUtils.correctDateformat(sh.getPlanEffectiveDate()));
 						sh.setGeneralDateIVwasDone(DateUtils.correctDateformat(sh.getGeneralDateIVwasDone()));
 						sh.setAptDate(DateUtils.correctDateformat(sh.getAptDate()));
+						boolean dollarInTooth= false;
 										//sh.getHs()
 						//Default make if Primary
 						//sh.setInsuranceType(Constants.INSURANCE_TPYE_IVF_PRIMARY);
 						if (sh.getHs() != null) {
-							updateHistortList(sh.getHs(), sh.getiVFHistorySheetList());
+							dollarInTooth = updateHistortList(sh.getHs(), sh.getiVFHistorySheetList());
+							
 //null from tooth surface is needed...
 						}
 					//System.out.println("dfdddd--"+sh.getPatientId());
 						//p=sh.getPatientId()+"-"+sh.getPlanAnnualMax();
+						if (dollarInTooth || !sh.isDollarInToothHistory()) {
 						Object[] objR=caplineIVFGoogleFormService.saveAllData(IVFFormConversionUtil.copyValueToPatient(sh, office,iVFormType), office, new Date(), user,false,true,iVFormType);
 						if (!((String)objR[1]).equals("Success")) {
 						p=p+"PatId: "+sh.getPatientId()+" GeneralDate: "+sh.getGeneralDateIVwasDone()+"  Reason: - <div class='error'>"+(String)objR[1]+"</div><br>";
@@ -123,7 +126,11 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 						}else {
 							sh.setStatusDump("DONE");
 						}
-						
+						}else {
+							sh.setStatusDump("$ found in History Tooth ");
+						p=p+"PatId: "+sh.getPatientId()+" GeneralDate: "+sh.getGeneralDateIVwasDone()+"  Reason: - <div class='error'>$ found in History Tooth </div><br>";
+								
+						}
 					}
 					
 				}
@@ -153,9 +160,10 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 		}
 		
 	}
-	private static void updateHistortList(IVFHistorySheet his,List<IVFHistorySheet> li) {
+	private static boolean updateHistortList(IVFHistorySheet his,List<IVFHistorySheet> li) {
 		int noOFhistory = Constants.history_codes_size;
 		Class<?> c2=null;
+		boolean dollarInTooth=false;
 		PropertyDescriptor pd;
 		try {
 			c2 = Class.forName("com.tricon.ruleengine.model.sheet.IVFHistorySheet");
@@ -180,7 +188,7 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 						String	dos =     hdm.invoke(his)==null?"":(String) hdm.invoke(his);
 						String	tooth =   htm.invoke(his)==null?"":(String) htm.invoke(his);
 						String	surface = hss.invoke(his)==null?"":(String) hss.invoke(his);
-						
+						if (tooth.contains("$"))  dollarInTooth=true;
 						String shc = "history" + i + "Code";
 						String shs = "history" + i + "Surface";
 						String sht = "history" + i + "Tooth";
@@ -229,7 +237,7 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 				}
 				*/
 			 }
-		
+		   return dollarInTooth;
 		
 	}
 

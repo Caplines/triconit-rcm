@@ -120,7 +120,25 @@ public class ScrappingController {
 	public ResponseEntity<Object> getSiteNametoParseFulldata()  {
 		List<?> list=null;
 		try {
-			list = fullService.getSiteNames();
+			list = fullService.getSiteNamesBySiteType("PPO");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", list));
+
+	}
+	
+	@CrossOrigin
+	@GetMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/getsitenametoparsefulldatalite", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> getSiteNametoParseFulldataLite()  {
+		List<?> list=null;
+		try {
+			list = fullService.getSiteNamesBySiteType("LITE");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -176,6 +194,31 @@ public class ScrappingController {
 
 	}
 
+	@CrossOrigin
+	@PostMapping
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@RequestMapping(value = "/parseLitedata", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> parseLitedata(@RequestBody ScrappingFullDataDetailDto dto)  {
+		 String data=null;
+		try {
+			
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String res ="";//fullService.findRunningStatus(dto);//no need for now uncomment if server has issue
+			if (res.equals("")) {
+				data=fullService.parseFullDataAndSaveDetails(dto, authentication.getName());
+				//data="Started";
+			}
+				
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", data));
+
+	}
 	
 	
 	@CrossOrigin

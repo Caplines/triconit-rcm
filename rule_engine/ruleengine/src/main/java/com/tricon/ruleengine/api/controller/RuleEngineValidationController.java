@@ -73,10 +73,10 @@ public class RuleEngineValidationController {
 	@RequestMapping(value = "/appdebug/{fname}")
 	public void readLogFile(@PathVariable(value = "fname", required = true) String name, HttpServletRequest request,
 			HttpServletResponse response) {
-
+		InputStream is=null;
 		try {
 			// get your file as InputStream
-			InputStream is = new FileInputStream(appLogFolder + name);
+			is = new FileInputStream(appLogFolder + name);
 			// copy it to response's OutputStream
 			org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
 			response.setContentType("text/plain");
@@ -84,6 +84,14 @@ public class RuleEngineValidationController {
 		} catch (IOException ex) {
 			// log.info("Error writing file to output stream. Filename was '{}'", name, ex);
 			throw new RuntimeException("IOError writing file to output stream");
+		}finally {
+			 if (is!=null)
+				try {
+					is.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 	}
 

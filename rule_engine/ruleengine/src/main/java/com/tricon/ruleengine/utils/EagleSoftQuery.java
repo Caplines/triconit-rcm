@@ -145,6 +145,28 @@ public class EagleSoftQuery {
 
 	
 	public final static int  perio_query_CL_COUNT=35;
+	
+	private static String patient_insurance_query=" select DISTINCT p.patient_id,e.name,c.name,c.address_1,c.city,c.state,c.zipcode,c.phone1 from patient p, employer e, "
+            + " insurance_claim ic, insurance_company c where ";
 
 	
+	public final static String  patient_insurance_pri_query=patient_insurance_query 
+			                      + "  p.patient_id  in ("+contstant_REP+") and "
+			                      + " p.prim_employer_id = e.employer_id and ic.prim_insurance_company_id = c.insurance_company_id and"  
+			                      + " e.insurance_company_id = c.insurance_company_id  ";
+	
+	public final static String  patient_insurance_sec_query=patient_insurance_query
+                                  + "  p.patient_id  in ("+contstant_REP+") and "
+                                  + " p.sec_employer_id = e.employer_id and ic.prim_insurance_company_id = c.insurance_company_id and"  
+                                  + " e.insurance_company_id = c.insurance_company_id  ";
+
+	public final static int  patient_insurance_query_CL_COUNT=8;
+
+	public final static String  preferance_fee_schedule_query="select p.patient_id,fs.fee_id,fs.name,p.fee_level_id from patient p, fee_schedule fs  "
+             + " where  p.patient_id  in ("+contstant_REP+") and "
+             + " and fs.fee_id = p.fee_level_id"; 
+     
+    public final static int  preferance_fee_schedule_query_CL_COUNT=3;
+
+
 }

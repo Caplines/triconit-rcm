@@ -51,6 +51,9 @@ public class ScrappingSiteDetailsFull extends BaseAudit implements Serializable 
 
 	@Column(name = "password")
 	private String password;
+	
+	@Column(name = "google_sheet_id")
+	private String googleSheetId;
 
 /*	@Column(name = "google_sheet_id")
 	private String googleSheetId;
@@ -69,10 +72,10 @@ public class ScrappingSiteDetailsFull extends BaseAudit implements Serializable 
 	@Column(name = "row_count")
 	private int rowCount;
     */
-/*	@Column(name = "google_sub_id")
+	@Column(name = "google_sub_id")
 	private String googleSubId;
 	
-*/
+
 	@Column(name = "location_provider")
 	private String locationProvider;
 	
@@ -158,6 +161,7 @@ public class ScrappingSiteDetailsFull extends BaseAudit implements Serializable 
 		this.googleSheetName = googleSheetName;
 	}
 
+*/
 	public String getGoogleSubId() {
 		return googleSubId;
 	}
@@ -165,7 +169,7 @@ public class ScrappingSiteDetailsFull extends BaseAudit implements Serializable 
 	public void setGoogleSubId(String googleSubId) {
 		this.googleSubId = googleSubId;
 	}
-*/
+
 	public String getLocationProvider() {
 		return locationProvider;
 	}
@@ -180,6 +184,14 @@ public class ScrappingSiteDetailsFull extends BaseAudit implements Serializable 
 
 	public void setMaster(ScrappingSiteFullMaster master) {
 		this.master = master;
+	}
+
+	public String getGoogleSheetId() {
+		return googleSheetId;
+	}
+
+	public void setGoogleSheetId(String googleSheetId) {
+		this.googleSheetId = googleSheetId;
 	}
 
 	

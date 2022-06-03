@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -380,14 +381,14 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				carryOn = false;
 				temp.setFirstName(sh.getFirstName());
 				temp.setStatus(temp.getStatus() + " First name mismatch issue " + sh.getFirstName() + "-- "
-						+ temp.getFirstName() + "or (ssn/member id) " + id + "issue");
+						+ temp.getFirstName() + " or (ssn/member id) " + id + "issue");
 			}
 			if (!sh.getLastName().trim().equals("")
 					&& !sh.getLastName().trim().toLowerCase().equals(temp.getLastName().trim().toLowerCase())) {
 				temp.setLastName(sh.getLastName());
 				carryOn = false;
 				temp.setStatus(temp.getStatus() + " Last name mismatch issue " + sh.getLastName() + " -- "
-						+ temp.getLastName() + "or (ssn/member id) " + id + "issue");
+						+ temp.getLastName() + " or (ssn/member id) " + id + "issue");
 			}
 
 			String url = "";
@@ -436,10 +437,17 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 							url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId="
 									+ id + "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
 						} else {
+							try {
 							jsonObj = new JSONObject(ja.getJSONObject(1).toString());
 							temp.setReferenceId(jsonObj.get("referenceId").toString());
 							url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId="
 									+ id + "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
+							}catch(Exception n) {
+								jsonObj = new JSONObject(ja.getJSONObject(0).toString());
+								temp.setReferenceId(jsonObj.get("referenceId").toString());
+								url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId="
+										+ id + "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
+							}
 
 						}
 					} else {
@@ -820,7 +828,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			
 		}
 		if (eleBody==null) eleBody = driver.findElement(
-		        By.xpath("/html/body/ui-view/ui-view/div/div[4]/div[2]/div/div[4]/plan-info/div/div[2]/table/tbody"));
+		        By.xpath("/html/body/ui-view/ui-view/div/div[4]/div[2]/div/div[4]/div/plan-info/div/div[2]/table/tbody"));
 		List<WebElement> eleTR = eleBody.findElements(By.tagName("tr"));
 		Thread.sleep(500);
 
@@ -1237,6 +1245,23 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		p2.setD0350(fetchValueByCode("D0350", temp, driver, inNetworkCoinsurance, false, false, false));
 		p2.setD1330(fetchValueByCode("D1330", temp, driver, inNetworkCoinsurance, false, false, false));
 
+		
+		p2.setD1510(fetchValueByCode("D1510", temp, driver, inNetworkCoinsurance, false, false, false));
+		p2.setD1510Freq(fetchValueByCode("D1510", temp, driver, lastrowunder2ndcolumn, false, true, true));
+		
+		p2.setD1516(fetchValueByCode("D1516", temp, driver, inNetworkCoinsurance, false, false, false));
+		p2.setD1516Freq(fetchValueByCode("D1516", temp, driver, lastrowunder2ndcolumn, false, false, false));
+		
+		p2.setD1517(fetchValueByCode("D1517", temp, driver, inNetworkCoinsurance, false, false, false));
+		p2.setD1517Freq(fetchValueByCode("D1517", temp, driver, lastrowunder2ndcolumn, false, false, false));
+		
+		p2.setD3220(fetchValueByCode("D3220", temp, driver, inNetworkCoinsurance, false, false, false));
+		p2.setD3220Freq(fetchValueByCode("D3220", temp, driver, lastrowunder2ndcolumn, false, false, false));
+		//
+		
+		//p2.setD1510(d1510);
+        //p2.setD1510Freq(d1510Freq);
+		
 		// driver.close();
 		// ArrayList<String> tabs1 = new ArrayList<String> (driver.getWindowHandles());
 		// System.out.println("TAB SIZE--"+tabs1.size());
@@ -1365,9 +1390,21 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 
 	}
 
+	private void scrollToView(WebDriver driver,WebElement togggle,WebElement span) throws InterruptedException {
+		JavascriptExecutor executor = (JavascriptExecutor) driver;
+		executor.executeScript("arguments[0].scrollIntoView(true);", togggle); 
+		Thread.sleep(1000);
+		executor.executeScript("document.getElementsByClassName('navbar')[0].style.display = 'none';" + 
+				"document.getElementById('benefitsMainPanel').style.marginTop = '0px';"); 
+		togggle = span.findElement(By.id("LastDateOfService"));
+		togggle.click();
+		
+		Thread.sleep(3000);
+		
+	}
 	private String fetchBenefitInformation(String name, WebDriver driver, String type, boolean mandatory,
 			boolean subsectionOPen) throws InterruptedException {
-		System.out.println("fetchBenefitInformation" + name);
+		System.out.println("fetchBenefitInformation-" + name);
 
 		String value = Constants.SCRAPPING_NOT_FOUND;
 		WebElement togggle = null;
@@ -1390,9 +1427,11 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		try {
 			List<WebElement> divForNames = driver.findElements(By.className("benefit-category-data"));
 			for (WebElement divForName : divForNames) {
+				
+				//work here ..cbenefitInDeductible..cbenefitInDeductible.//
 				WebElement span = divForName.findElements(By.tagName("span")).get(0);
 				String spanText = span.findElements(By.tagName("div")).get(0).getText().trim();
-				
+				System.out.println("spanText:"+spanText+":");
 				if (spanText.equals(name)) {
 					boolean covered =span.getText().toLowerCase().contains("not covered");
 						if (type.equals(benefitInNetwork)) {
@@ -1411,9 +1450,24 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 						break;
 					} else if (type.equals(benefitWaitingPeriod)) {
 
-						togggle = span.findElements(By.tagName("div")).get(0);
+						
+						
+						togggle = span.findElements(By.tagName("div")).get(0); //divForName.findElements(By.tagName("div")).get(0);
+						
 						if (true) {
+							togggle = span.findElement(By.id("LastDateOfService"));
 							togggle.click();
+							//span.findElementB
+							//LastDateOfService
+							//togggle.click();
+							//JavascriptExecutor executor = (JavascriptExecutor) driver;
+							//executor.executeScript("arguments[0].scrollIntoView(true);", togggle); 
+							//Thread.sleep(1000);
+							//executor.executeScript("document.getElementsByClassName('navbar')[0].style.display = 'none';" + 
+							//		"document.getElementById('benefitsMainPanel').style.marginTop = '0px';"); 
+							
+							
+							//span.click();
 
 							Thread.sleep(3000);
 						}
@@ -1423,6 +1477,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 
 						togggle = span.findElements(By.tagName("div")).get(0);
 						if (true) {
+							togggle = span.findElement(By.id("LastDateOfService"));
 							togggle.click();
 							Thread.sleep(3000);
 						}
@@ -1443,6 +1498,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 
 						togggle = span.findElements(By.tagName("div")).get(0);
 						if (true) {
+							togggle = span.findElement(By.id("LastDateOfService"));
 							togggle.click();
 							Thread.sleep(3000);
 						}
@@ -1480,8 +1536,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 					+ code.substring(1);
 			navigatetoUrl(driver, url, 5000);
 			data = driver.getPageSource();
-			// System.out.println("data");
-			// System.out.println(data);
+			System.out.println("data");
+			System.out.println(data);
 			data = data.replace("</pre></body></html>", "");
 			data = "{\"subscriber\":" + data.split("\"subscriberId\":")[1];
 			JSONObject jsonObj = new JSONObject(data);
@@ -1555,12 +1611,20 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
 				JSONObject limit = (JSONObject) ja.get("limitations");
 				value = ja.get("coinsuranceInNetwork").toString().replace("%", "");
+				try {
 				if (!value.equals("0")) {
-					value = limit.get("occurrences").toString() + "X" + limit.get("length").toString()
-							+ limit.get("unit").toString();
+					JSONArray  rules = (JSONArray) limit.get("rules");
+					JSONObject rule =(JSONObject) rules.get(0);
+					value = rule.get("occurrences").toString() + "X" + rule.get("length").toString()
+							+ rule.get("unit").toString();
 					if (value.equals("nullXnullnull"))
 						value = "";
 				} else {
+					value = "0";// Constants.NO_FREQUENCY;
+				}
+				}catch(Exception ss) {
+					System.out.println("NO_FREQUENCY issue");
+					ss.printStackTrace();
 					value = "0";// Constants.NO_FREQUENCY;
 				}
 				value = FreqencyUtils.convertFrequecyString(siteName, value);
@@ -1674,6 +1738,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
 
 		boolean navigate = true;
+		driver.manage().window().maximize();
 		driver.get(dto.getSiteUrl());
 		Thread.sleep(4000);// Need to keep this number high for Linux issue.
 		WebElement userNameElement = driver.findElement(By.id("username"));
@@ -1732,16 +1797,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smilepnt36");
-		dto.setUserName("caladent02");
+		dto.setPassword("springtown2020");
+		dto.setUserName("springtowndnoa");
 		dto.setSiteName("BCBS");
        
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("11/17/1997");
-		psc.setFirstName("ALANA");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
-		psc.setLastName("GARCIA");
-		psc.setMemberId("847962806");
+		psc.setDob("01/21/2012");
+		psc.setFirstName("");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
+		psc.setLastName("");
+		psc.setMemberId("838603269");
 		psc.setSsnNumber("");
 
 		l.add(psc);

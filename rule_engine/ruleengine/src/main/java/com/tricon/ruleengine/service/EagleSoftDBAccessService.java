@@ -8,6 +8,7 @@ import java.util.Map;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.sheet.ClaimData;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
+import com.tricon.ruleengine.model.sheet.InsuranceDetail;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 
@@ -41,4 +42,8 @@ public interface EagleSoftDBAccessService {
     public String[] doDiagnosticCheck(String officeUuidB);
     
     public List<String[]> doDiagnosticCheck();
+    
+    public Map<String, List<?>> getInsuranceDetailByPatientId(String insuranceType,Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,	BufferedWriter bw);
+
+    public Map<String, List<?>> getPreferanceFeeScheduleByPatientId(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,	BufferedWriter bw);
 }

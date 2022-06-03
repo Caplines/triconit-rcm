@@ -142,7 +142,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		// "Dentaquest",0+""));//
 		//cc.add(new MCNADentaSheet("", "", "", "", "", "731539564", "2/17/2019", "Dentaquest", 0 + ""));//
 		//cc.add(new MCNADentaSheet("", "", "", "", "", "604429287", "12/18/2002", "Dentaquest", 0 + ""));//
-		  cc.add(new MCNADentaSheet("", "", "", "", "", "747742189", "11/22/2019", "Dentaquest", 0 + ""));//
+		  cc.add(new MCNADentaSheet("", "", "", "", "", "725835472", "3/26/2018", "Dentaquest", 0 + ""));//
 		// Ryleigh Britt 2013/06/20
 		mapData = new HashMap<>();
 		mapData.put("1", cc);
@@ -152,16 +152,16 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 
 		// https://connectsso.dentaquest.com/authsso/providersso/SSOProviderLogin.aspx?TYPE=33554433&REALMOID=06-6a4c193d-7520-4f3d-b194-83367a3ef454&GUID=&SMAUTHREASON=0&METHOD=POST&SMAGENTNAME=-SM-imZolSjcs1FQR%2fH0k3NSK1Uvx4zWgziEWSOuwqcKGG1C%2bW%2fQdG3dRa7BVqGyOpNh&TARGET=-SM-https%3a%2f%2fconnectsso%2edentaquest%2ecom%2fprovideraccessv2%2findex%2ehtml
 		// Dental@6743 offshorebfd for 739438815 04/11/2020 Beaumont
-		det.setPassword("Potranco@999");// // Devine%1245976
-		det.setUserName("Potranco999"); // Devin13458
-		det.setLocationProvider("");
+		det.setPassword("Dentalpoint#2023");// // Devine%1245976
+		det.setUserName("Victoriacred"); // Devin13458
+		det.setLocationProvider("New Caney Dental PLLC DB Smilepoint Dental and Orthodo - VICTORIA - Geetika Rastogi");
 		Office f = new Office();
 		f.setName("Jasper");
 		det.setOffice(f);
 		// det.setOffice("Devine");
 		// det.set
 		DentaQEligibilityScrappingServiceImpl x = new DentaQEligibilityScrappingServiceImpl(det,
-				"E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files", mapData, true, "new",
+				"E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files", mapData, true, "old",
 				f.getName(), "D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe",null,null,null,null,null);
 		x.scrapSite(det, mapData);
 
@@ -848,6 +848,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			// boolean intervention=false;
 			// System.out.println(driver.getPageSource());
 			int interventionCount = 0;
+			boolean navigate=false;
 			for (WebElement child : wListChild) {
 				if (x == 0) {
 					x++;
@@ -859,6 +860,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 					continue;
 				}
 				// System.out.println("child.getText()"+child.getText());
+				if (navigate) break;
 				if (child.getText().contains("Multiple potential members found")) {
 					break;
 				}
@@ -951,7 +953,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 							}
 							dto.getHistoryList().add(hd);
 						}
-
+						navigate=true;
 						driver.navigate().to(
 								"https://govservices.dentaquest.com/Router.jsp?source=MemberDetail&component=MemberDetails&breadcrumb=true");
 						Thread.sleep(5000);

@@ -338,6 +338,8 @@ public class IVFTableSheet {
     private String d3220;
     private String d3220Freq;
     private String outNetworkMessage;
+    
+    private boolean dollarInToothHistory;
 
 
     public String getsRemarks() {
@@ -2328,6 +2330,12 @@ public class IVFTableSheet {
 	}
 	public void setOutNetworkMessage(String outNetworkMessage) {
 		this.outNetworkMessage = outNetworkMessage;
+	}
+	public boolean isDollarInToothHistory() {
+		return dollarInToothHistory;
+	}
+	public void setDollarInToothHistory(boolean dollarInToothHistory) {
+		this.dollarInToothHistory = dollarInToothHistory;
 	}
 	
 	

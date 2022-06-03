@@ -48,6 +48,28 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 		return list;
 
 	}
+	
+	@Override
+	public List<ScrappingFullDataDto> getSiteNamesBySiteType(String type) {
+		Session session = getSession();
+		List<ScrappingFullDataDto> list = null;
+		try {
+			Criteria criteria = session.createCriteria(ScrappingSiteFull.class);
+			criteria.add(Restrictions.eq("siteType", type));
+			ProjectionList pjList = Projections.projectionList();
+			pjList.add(Projections.property("id"), "id");
+			pjList.add(Projections.property("siteName"), "name");
+			pjList.add(Projections.property("siteUrl"), "url");
+			criteria.setProjection(pjList);
+			criteria.setResultTransformer(Transformers.aliasToBean(ScrappingFullDataDto.class));
+			list = (List<ScrappingFullDataDto>) criteria.list();
+		} finally {
+			closeSession(session);
+
+		}
+		return list;
+
+	}
 
 	@Override
 	public ScrappingFullDataDetailDto getScrappingDetails(int siteId, Office off) {
@@ -67,6 +89,9 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 			pjList.add(Projections.property("scrappingSite.id"), "siteId");
 			pjList.add(Projections.property("userName"), "userName");
 			pjList.add(Projections.property("password"), "password");
+			pjList.add(Projections.property("googleSheetId"), "googleSheetIdDb");
+			pjList.add(Projections.property("googleSubId"),"googleSubId");
+			
 			//pjList.add(Projections.property("googleSheetId"), "sheetId");
 			//pjList.add(Projections.property("googleSubId"), "sheetSubId");
 
@@ -85,6 +110,8 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 			pjList.add(Projections.property("sm.subscribersLastName"), "subscribersLastName");
 			pjList.add(Projections.property("sm.subscribersDob"), "subscribersDob");
 			pjList.add(Projections.property("sm.otp"), "otp");
+			pjList.add(Projections.property("sm.googleSheetId"), "googleSheetId");
+			
 			criteria.setProjection(pjList);
 			criteria.setResultTransformer(Transformers.aliasToBean(ScrappingFullDataDetailDto.class));
 			scrappingFullDataDetailDto = (ScrappingFullDataDetailDto) criteria.uniqueResult();

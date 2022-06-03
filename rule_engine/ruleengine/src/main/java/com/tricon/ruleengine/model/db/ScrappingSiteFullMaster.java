@@ -69,6 +69,10 @@ public class ScrappingSiteFullMaster extends BaseAudit implements Serializable{
 
 	@Column(name = "otp")
 	private boolean otp;
+	
+	@Column(name = "googleSheetId")
+	private boolean googleSheetId;
+	
 
 	public int getId() {
 		return id;
@@ -188,6 +192,14 @@ public class ScrappingSiteFullMaster extends BaseAudit implements Serializable{
 
 	public void setOtp(boolean otp) {
 		this.otp = otp;
+	}
+
+	public boolean isGoogleSheetId() {
+		return googleSheetId;
+	}
+
+	public void setGoogleSheetId(boolean googleSheetId) {
+		this.googleSheetId = googleSheetId;
 	}
 
 	

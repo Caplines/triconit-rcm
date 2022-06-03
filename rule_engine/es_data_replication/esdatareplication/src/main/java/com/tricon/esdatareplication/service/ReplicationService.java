@@ -146,6 +146,10 @@ public class ReplicationService {
 		
 	}
 	
+	/**
+	 * Find Missing IDs and delete
+	 * @param bw
+	 */
 	private void deleteDataWhereOlDataCanBeDeleted(BufferedWriter bw) {
 		
 		//Appointment : In appointment we can delete Appointment so to counter that we place this logic to delete missing 

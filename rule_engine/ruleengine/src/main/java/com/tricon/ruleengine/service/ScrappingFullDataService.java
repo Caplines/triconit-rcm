@@ -14,6 +14,8 @@ public interface ScrappingFullDataService {
 	
 	public List<ScrappingFullDataDto> getSiteNames();
 	
+	public List<ScrappingFullDataDto> getSiteNamesBySiteType(String type);
+	
 	public ScrappingFullDataDetailDto getScrappingDetails(int siteId, String  offId,String userName);
 	
 	public String parseFullDataAndSaveDetails(ScrappingFullDataDetailDto dto,String userName);

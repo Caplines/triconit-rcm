@@ -47,7 +47,9 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
+import com.tricon.ruleengine.model.sheet.InsuranceDetail;
 import com.tricon.ruleengine.model.sheet.Perio;
+import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
 //import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.CommonDataCheck;
 
@@ -259,6 +261,7 @@ public class RuleBook {
 	// Mode
 	public List<TPValidationResponseDto> Rule4_B(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
 			Rules rule, List<Mappings> mappings, List<EagleSoftFeeShedule> esfeess, List<EagleSoftPatient> espatients,
+			List<PreferanceFeeSchedule> preferanceFeeSchedules1,
 			BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_4,
@@ -361,7 +364,6 @@ public class RuleBook {
 							Constants.ALERT,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					// return dList;
 				}
-				// String esp_ = ivf.getPlanFeeScheduleName();
 				RuleEngineLogger.generateLogs(clazz, "Coverage Book-" + ivf.getPlanCoverageBook()
 						+ " :: Coverage Book Header Name-" + pat.getCovBookHeaderName(), Constants.rule_log_debug, bw);
 
@@ -453,6 +455,18 @@ public class RuleBook {
 				pass = false;
 			}
 
+			/*
+			if (preferanceFeeSchedules!=null &&  preferanceFeeSchedules.size()>0) {
+			     PreferanceFeeSchedule pref= preferanceFeeSchedules.get(0);
+				 if (!(ivf.getPlanFeeScheduleName().equalsIgnoreCase(pref.getName()))){
+					pass=false;
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule4.error.message_5",
+									new Object[] { ivf.getPlanFeeScheduleName(), pref.getName(),ER_MSG }, locale),
+							Constants.FAIL,"","",""));
+			    	}
+			}
+			*/
 			if (pass)
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
@@ -469,7 +483,7 @@ public class RuleBook {
 
 	// Compare Coverage Book, Fee Schedule and Fee in IV and Eaglesoft A- BATCH
 	public List<TPValidationResponseDto> Rule4_A(IVFTableSheet ivfSheet, MessageSource messageSource, Rules rule,
-			List<EagleSoftPatient> espatients, BufferedWriter bw) {
+			List<EagleSoftPatient> espatients,List<PreferanceFeeSchedule> preferanceFeeSchedules1, BufferedWriter bw) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_4,
 				Constants.rule_log_debug, bw);
@@ -501,7 +515,6 @@ public class RuleBook {
 					// return dList;
 				}
 
-				// String esp_ = ivf.getPlanFeeScheduleName();
 				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null
 						&& !ivf.getPlanCoverageBook().trim().equalsIgnoreCase(pat.getCovBookHeaderName().trim())) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -537,7 +550,18 @@ public class RuleBook {
 						locale), Constants.FAIL,"","",""));
 				pass = false;
 			}
-
+			/*
+			if (preferanceFeeSchedules!=null &&  preferanceFeeSchedules.size()>0) {
+		     PreferanceFeeSchedule pref= preferanceFeeSchedules.get(0);
+			 if (!(ivfSheet.getPlanFeeScheduleName().equalsIgnoreCase(pref.getName()))){
+				pass=false;
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule4.error.message_5",
+								new Object[] { ivf.getPlanFeeScheduleName(), pref.getName(),ER_MSG }, locale),
+						Constants.FAIL,"","",""));
+		    	}
+			}
+			*/
 			if (pass)
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,"","",""));
@@ -735,8 +759,6 @@ public class RuleBook {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_6,
 				Constants.rule_log_debug, bw);
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
-		// String coverageBook = ivf.getPlanCoverageBook();
-		// String fs = ivf.getPlanFeeScheduleName();
 		boolean pass = true;
 		String TP_CL=Constants.TP;
 		if (userType==Constants.userType_CL) {
@@ -747,7 +769,8 @@ public class RuleBook {
 			List<Rule6Dto> druleList = new ArrayList<>();
 			druleList.add(new Rule6Dto("Preventive_%", ivf.getPreventivePercentage(), "Preventive"));
 			druleList.add(new Rule6Dto("Diagnostic_%", ivf.getDiagnosticPercentage(), "Diagnostic"));
-			druleList.add(new Rule6Dto("PA_XRays_%", ivf.getpAXRaysPercentage(), "PAs/FMX"));
+			druleList.add(new Rule6Dto("PA_XRays_%", ivf.getpAXRaysPercentage(), "PAs"));//Email 25 feb..2022
+			druleList.add(new Rule6Dto("FMX_%", ivf.getFmxPer(), "FMX"));
 			druleList.add(new Rule6Dto("Sealants_D1351_%", ivf.getSealantsD1351Percentage(), "Sealants"));
 			druleList.add(new Rule6Dto("Basic_%", ivf.getBasicPercentage(), "Basic"));
 			druleList.add(new Rule6Dto("Endodontics_%", ivf.getEndodonticsPercentage(), "Endodontics"));
@@ -3183,7 +3206,7 @@ public List<TPValidationResponseDto> Rule76(Object ivfSheet,List<EagleSoftPatien
 			if (espatients != null && espatients.get(0) != null) {
 				EagleSoftPatient pat = espatients.get(0);
 				pass= true;
-				if (!ivf.getPatientName().replaceAll(" ", "").equalsIgnoreCase((pat.getFirstName()+pat.getLastName()).replaceAll(" ", ""))) {
+				if (!ivf.getPatientName().replaceAll(" ", "").replaceAll("\t", "").equalsIgnoreCase((pat.getFirstName()+pat.getLastName()).replaceAll(" ", ""))) {
 					pass=false;
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule76.error.message", new Object[] { ivf.getPatientName(),
@@ -12411,6 +12434,58 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 				ToothUtil.sortTeeth(teethNotCoveredAge),ToothUtil.sortTeeth(teethNotCoveredFreq),dList};
 	}
 
+	//Insurance and Address
+    /**
+     * 
+     * @param ivfSheet
+     * @param insuranceDetails
+     * @param messageSource
+     * @param rule
+     * @param bw
+     * @return
+     */
+	/*
+	public List<TPValidationResponseDto> Rule79(Object ivfSheet,List<InsuranceDetail> insuranceDetails, MessageSource messageSource,
+			Rules rule, BufferedWriter bw) {
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+    	
+	   	
+		boolean pass=false;
+        try {
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		
+		if (insuranceDetails==null || insuranceDetails.size()==0) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule79.error.message_no_dataAddress", new Object[] { ivf.getInsAddress() }, locale),
+					Constants.FAIL,"","",""));
+			return dList;
+		}
+		InsuranceDetail insuranceDetail =insuranceDetails.get(0);
+		if (ivf.getInsAddress().replaceAll(" ", "").replaceAll("\n", "").equalsIgnoreCase(
+			insuranceDetail.getInsuranceAddress().replaceAll(" ", "").replaceAll("\n", ""))){
+			pass=true;
+		}
+		if (pass) {
+			 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule79.pass.message", new Object[] { }, locale), Constants.PASS,"","",""));
+		   
+		}else {
+			 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule79.error.message", new Object[] {ivf.getInsAddress(),insuranceDetail.getInsuranceAddress() }, locale), Constants.FAIL,"","",""));
+			
+		}
+		
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL,"","",""));
+			return dList;
+		}
+		return dList;
+	}
+    */
+	
 	/*
 	 * private Mappings getMappingFromList(List<Mappings> map, String code) {
 	 * Mappings r = null; System.out.println("codecode---" + code);

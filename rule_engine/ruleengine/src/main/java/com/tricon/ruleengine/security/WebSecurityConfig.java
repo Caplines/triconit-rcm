@@ -149,6 +149,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                  "/ivf",
                  "/dumpOldIVFData",
                  "/sealant",
+                 "/scrapremotelite",
                 "/ivfbatch",
                 "/ivfbatchpre",
                 "/report",

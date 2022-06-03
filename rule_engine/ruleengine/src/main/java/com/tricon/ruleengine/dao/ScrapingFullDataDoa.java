@@ -17,6 +17,8 @@ public interface ScrapingFullDataDoa {
 	
 	public List<ScrappingFullDataDto> getSiteNames();
 	
+	public List<ScrappingFullDataDto> getSiteNamesBySiteType(String type);
+	
 	public ScrappingFullDataDetailDto getScrappingDetails(int siteId, Office off);
 	
 	public ScrappingSiteFull findScrappingSiteFullById(int siteId);

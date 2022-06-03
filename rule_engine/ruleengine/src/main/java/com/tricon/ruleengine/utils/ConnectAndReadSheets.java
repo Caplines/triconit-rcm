@@ -49,6 +49,7 @@ import com.tricon.ruleengine.api.enums.HighLevelReportMessageStatusEnum;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.DigitizationRuleEngineResult;
 import com.tricon.ruleengine.dto.ExceptionDataDto;
+import com.tricon.ruleengine.dto.RemoteLiteData;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
@@ -1358,6 +1359,7 @@ public class ConnectAndReadSheets {
 					}
 					vif.setRowCounter(++rowCounter);
 					vif.setStatusDump("OK");//MP
+					vif.setDollarInToothHistory(false);
 					x++;
 					boolean add=false;
 					List<IVFHistorySheet> lh= new ArrayList<>();
@@ -1367,10 +1369,14 @@ public class ConnectAndReadSheets {
 						s.setHistoryTooth("");
 						s.setHistorySurface("");
 						s.setHistoryDOS("");
+						
 						try {
 							add=false;
 							s.setHistoryCode(obj.get(++x));
 							s.setHistoryTooth(obj.get(++x));
+							if (s.getHistoryTooth().contains("$")) {
+								vif.setDollarInToothHistory(true);
+							}
 							s.setHistoryDOS(DateUtils.correctDateformat(obj.get(++x)));
 							//s.setHistorySurface(obj.get(++x));
 							lh.add(s);
@@ -1707,6 +1713,60 @@ public class ConnectAndReadSheets {
 				
 
 			
+		}
+        
+		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+	}
+	
+	public static void updateRemoteLiteScrapSheetGoogleSheet(String spreadsheetId, String sheetSubID, String clientDir, String clientFolder,
+			List<RemoteLiteData> li,String status,int row) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		List<Request> requests = new ArrayList<>();
+		//rowCount=rowCount+3;
+		//100 original -- 90 now
+		//List<CellData> values = new ArrayList<>();
+		System.out.println(sheetSubID);
+		System.out.println(spreadsheetId);
+		//int row=2;
+		if (li != null) {
+			//int hiscMax = 200;
+			//int his = 1;
+			for(RemoteLiteData rd:li) {
+				List<CellData> values = new ArrayList<>();
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProcessedDate())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getName())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getSubscriberName())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getCarrier())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getStatus())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getDescription())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getServiceDate())));
+				
+				
+				
+				requests.add(new Request()
+						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(row)//)
+								 .setColumnIndex(0))
+								.setRows(Arrays.asList(new RowData().setValues(values)))
+								.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+				row++;
+				//break;
+			}
+				
+
+			
+		}
+		
+		if (!status.equals("")) {
+			List<CellData> values = new ArrayList<>();
+			values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(status)));
+			requests.add(new Request()
+					.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(1)//)
+							 .setColumnIndex(0))
+							.setRows(Arrays.asList(new RowData().setValues(values)))
+							.setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
 		}
         
 		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);

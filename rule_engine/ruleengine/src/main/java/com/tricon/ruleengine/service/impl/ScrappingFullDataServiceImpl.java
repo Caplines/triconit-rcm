@@ -40,6 +40,7 @@ import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.ScrappingFullDataService;
 import com.tricon.ruleengine.service.scrapfull.impl.BCBSDnoaconnectImpl;
 import com.tricon.ruleengine.service.scrapfull.impl.DeltaDentalServiceImpl;
+import com.tricon.ruleengine.service.scrapfull.impl.RemoteLiteImpl;
 import com.tricon.ruleengine.service.scrapfull.impl.UHCImpl;
 import com.tricon.ruleengine.service.scrapfull.impl.UnitedConcordiaImpl;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
@@ -84,6 +85,11 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 	@Override
 	public List<ScrappingFullDataDto> getSiteNames() {
 		return dataDoa.getSiteNames();
+	}
+	
+	@Override
+	public List<ScrappingFullDataDto> getSiteNamesBySiteType(String type) {
+		return dataDoa.getSiteNamesBySiteType(type);
 	}
 	
 	
@@ -175,7 +181,7 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		else {
 			full.setUpdatedBy(user);
 //			full.setGoogleSheetId(dto.getSheetId());
-//			full.setGoogleSubId(dto.getSheetSubId());
+			full.setGoogleSubId(dto.getGoogleSubId());
 			boolean updateScrappingDetailsById=true;
 			if (dto.getSiteName().equals("UHC") && dto.getProcessId()!=null) {
 				updateScrappingDetailsById=false;//OTP/SMS  comes into picture.
@@ -199,7 +205,9 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		}
 		//increase the count
 		manage.setProcessCount(manage.getProcessCount()+dto.getDto().size());
-		
+		if (dto.getSiteName().equals(Constants.REMOTE_LITE_SITE_NAME)) {
+			manage.setProcessCount(-1);
+		}
 		
 		dataDoa.increasecrapCount(manage);
 
@@ -211,6 +219,9 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
         if (createProcess) {
 		ScrappingFullDataManagmentProcess manageP=  new ScrappingFullDataManagmentProcess();
 		manageP.setCount(dto.getDto().size());
+		if (dto.getSiteName().equals(Constants.REMOTE_LITE_SITE_NAME)) {
+			manageP.setCount(-1);
+		}
 		manageP.setStatus(""); 
 		manageP.setCreatedBy(user);
 		manageP.setCreatedDate(new Date());
@@ -223,6 +234,9 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 					.getScrappingFullDataManagmentDataProcess(Integer.parseInt(dto.getProcessId()));
 			manageP.setStatus("");
 			manageP.setCount(dto.getDto().size());
+			if (dto.getSiteName().equals(Constants.REMOTE_LITE_SITE_NAME)) {
+				manageP.setCount(-1);
+			}
 			manageP.setUpdatedBy(user);
 			manageP.setUpdatedDate(new Date());
 			dataDoa.updateScrappingFullDataManagmentProcess(manageP);
@@ -269,7 +283,17 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 						  }
 					  }*/
 					  //service.submit(new BCBSDnoaconnectImpl(full,dto,user,off));
-				  }
+				  }else if (dto.getSiteName().equals(Constants.REMOTE_LITE_SITE_NAME)) {
+					  try {
+							ConnectAndReadSheets.updateRemoteLiteScrapSheetGoogleSheet(dto.getGoogleSheetIdDb(),
+									dto.getGoogleSubId(),
+									this.CLIENT_SECRET_DIR, this.CREDENTIALS_FOLDER, null,"STARTED",2);
+							}catch(Exception b) {
+								
+							}
+					  service.submit(new RemoteLiteImpl(patDao,dataDoa ,full,dto,user,off,processId,taxId,fType,env.getProperty("google.chorme.driver"),CLIENT_SECRET_DIR,CREDENTIALS_FOLDER));
+					 
+			  }
 				 
 				// exMess="Done"; 
 				}

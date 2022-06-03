@@ -117,6 +117,8 @@ public class Constants {
 	public static final String RULE_ID_76="Patient Name";
 	public static final String RULE_ID_77="Patient DOB";
 	public static final String RULE_ID_78="Member ID";
+	public static final String RULE_ID_79="Insurance and Address";
+
 	//public static final String RULE_ID_79="Provider Name";	
 	
 	
@@ -372,6 +374,9 @@ public class Constants {
 	
 	public static String OfficeNeedToTakeInfo_o="OfficeNeedToTakeInfo";
 	public static String OfficeNeedToTakeInfo_r="Office Need To Take Info";
+	
+	
+	public static String REMOTE_LITE_SITE_NAME="Remote Lite";
 	
 	
 	

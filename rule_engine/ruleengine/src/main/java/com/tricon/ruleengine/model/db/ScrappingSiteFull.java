@@ -41,6 +41,9 @@ public class ScrappingSiteFull extends BaseAudit implements Serializable {
 
 	@Column(name = "description")
 	private String description;
+	
+	@Column(name = "site_type")
+	private String siteType;
 
     @OneToMany(mappedBy = "scrappingSite", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private Set<ScrappingSiteDetailsFull> siteSiteDetails = new HashSet<ScrappingSiteDetailsFull>();
@@ -83,6 +86,14 @@ public class ScrappingSiteFull extends BaseAudit implements Serializable {
 
 	public void setSiteSiteDetails(Set<ScrappingSiteDetailsFull> siteSiteDetails) {
 		this.siteSiteDetails = siteSiteDetails;
+	}
+
+	public String getSiteType() {
+		return siteType;
+	}
+
+	public void setSiteType(String siteType) {
+		this.siteType = siteType;
 	}
 
 		

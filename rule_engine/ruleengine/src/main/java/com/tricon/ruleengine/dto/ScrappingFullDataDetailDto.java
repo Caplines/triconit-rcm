@@ -34,7 +34,11 @@ public class ScrappingFullDataDetailDto {
 	
 	private String processId;
 	
+	private boolean googleSheetId;
 	
+	private String googleSheetIdDb;
+	
+	private String googleSubId;
 	
     
     ///
@@ -193,7 +197,26 @@ public class ScrappingFullDataDetailDto {
 	public void setOtpValue(String otpValue) {
 		this.otpValue = otpValue;
 	}
+	public boolean getGoogleSheetId() {
+		return googleSheetId;
+	}
+	public void setGoogleSheetId(boolean googleSheetId) {
+		this.googleSheetId = googleSheetId;
+	}
+	public String getGoogleSheetIdDb() {
+		return googleSheetIdDb;
+	}
+	public void setGoogleSheetIdDb(String googleSheetIdDb) {
+		this.googleSheetIdDb = googleSheetIdDb;
+	}
+	public String getGoogleSubId() {
+		return googleSubId;
+	}
+	public void setGoogleSubId(String googleSubId) {
+		this.googleSubId = googleSubId;
+	}
 
+	
 	
 	
 }
