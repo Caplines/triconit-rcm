@@ -79,6 +79,9 @@ public class ScrappingSiteDetailsFull extends BaseAudit implements Serializable 
 	@Column(name = "location_provider")
 	private String locationProvider;
 	
+	@Column(name = "scrap_sub_type")
+	private String scrapSubType;
+	
 
 	public int getId() {
 		return id;
@@ -192,6 +195,14 @@ public class ScrappingSiteDetailsFull extends BaseAudit implements Serializable 
 
 	public void setGoogleSheetId(String googleSheetId) {
 		this.googleSheetId = googleSheetId;
+	}
+
+	public String getScrapSubType() {
+		return scrapSubType;
+	}
+
+	public void setScrapSubType(String scrapSubType) {
+		this.scrapSubType = scrapSubType;
 	}
 
 	

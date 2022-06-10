@@ -238,9 +238,11 @@ public class ReplicationService {
 			} else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_HEADER)) {
 				es = transactionsHeaderTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
+				transactionsHeaderTableService.deleteOldDataRe();
 			} else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
 				es = transactionsDetailTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
+				transactionsDetailTableService.deleteOldDataRe();
 			}/* else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
 				es = transactionsDetailTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
@@ -250,12 +252,15 @@ public class ReplicationService {
 			} else if (es.getTableName().equals(Constants.TABLE_PLANNED_SERVICES)) {
 				es = plannedServicesTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
+				plannedServicesTableService.deleteOldDataRe();
 			} else if (es.getTableName().equals(Constants.TABLE_TREATMENT_PLAN_ITEMS)) {
 				es = treatmentPlanItemsTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
+				treatmentPlanItemsTableService.deleteOldDataRe();
 			} else if (es.getTableName().equals(Constants.TABLE_TREATMENT_PLANS)) {
 				es = treatmentPlansTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
+				treatmentPlansTableService.deleteOldDataRe();
 			} else if (es.getTableName().equals(Constants.TABLE_EMPLOYER)) {
 				es = employerTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
@@ -399,7 +404,32 @@ public class ReplicationService {
 		 * estableRepository.save(table); } else
 		 */
 		
-
+        //update from table  range that we fetching again
+		String where = createWhereClause(tab, currentDate, table.getUpdatedDate(),true);
+		if (table.getTableName().equals(Constants.TABLE_PLANNED_SERVICES)) {
+			System.out.println(where);
+			plannedServicesTableService.deleteOldData(where);
+			plannedServicesTableService.updateOldDataRe(where);
+		}
+		if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLANS)) {
+			System.out.println(where);
+			treatmentPlansTableService.updateOldData(where);
+			treatmentPlansTableService.deleteOldDataTPAAndTPI();
+			treatmentPlansTableService.updateOldDataRe(where);
+			treatmentPlansTableService.updateOldDataTPIRe();
+		}
+		if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLAN_ITEMS)) {
+			//Already done from above
+		}
+		if (table.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
+			transactionsDetailTableService.deleteOldData(where);
+			transactionsDetailTableService.updateOldDataRe(where);
+		}
+		if (table.getTableName().equals(Constants.TABLE_TRANSACTIONS_HEADER)) {
+			transactionsHeaderTableService.deleteOldData(where);
+			transactionsHeaderTableService.updateOldDataRe(where);
+		}
+		
 			 while (true) {
 			/// SELECT TOP 1 START AT 100 p.* FROM "PPM"."paytype" AS p
 			List<?> list = fetchDataFromES(tab, top, start, currentDate, table.getUpdatedDate(), extraPat,true,updateWhere,bw);
@@ -495,7 +525,7 @@ public class ReplicationService {
 			if (updateWhere) {
 			if (qnum.isWhereClause() && !extraPat) {
 				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP,
-						createWhereClause(qnum, cDate, lastDateofCrawling));
+						createWhereClause(qnum, cDate, lastDateofCrawling,false));
 			}else if (qnum.isWhereClause() && extraPat) {
 				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP, createWhereClause(qnum));
 			 }
@@ -571,7 +601,7 @@ public class ReplicationService {
 			if (qnum.isWhereClause()) {
 				if (!extraPat)
 					query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP,
-							createWhereClause(qnum, cDate, lastDateofCrawling));
+							createWhereClause(qnum, cDate, lastDateofCrawling,false));
 				else {
 					// query = "select patient_id in ('" + qnum.getQuery();
 					query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP, createWhereClause(qnum));
@@ -705,7 +735,7 @@ public class ReplicationService {
 		return "";
 	}
 
-	private String createWhereClause(QueryTable.QueryEnum tab, Date cDate, Date lastDateofCrawling) {
+	private String createWhereClause(QueryTable.QueryEnum tab, Date cDate, Date lastDateofCrawling,boolean fromRepo) {
 
 		if (tab.isWhereClause() && tab.getClazz().equals(Patient.class)) {
 
@@ -736,14 +766,24 @@ public class ReplicationService {
 		    */			
 			
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TransactionsHeader.class)) {
-
+			if (fromRepo) {
 			return " ( aging_date BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
 					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "') or (tran_date BETWEEN '"
 					+ Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
 					+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "')";
+			}
+			
+			return " ( aging_date BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
+			+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "') or (tran_date BETWEEN '"
+			+ Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
+			+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "')";
 			
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TransactionsDetail.class)) {
 
+			if (fromRepo) {
+				return " date_entered BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
+						+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
+			}
 			/*
 			 * in case logic changes latter; return " tran_num in  ('" + String.join(",",
 			 * transactionsNumbersFetchced.stream().map(s ->
@@ -769,7 +809,14 @@ public class ReplicationService {
 			// See latter if we move to date_planned or patient Id
 			//return " date_planned BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling) + "'"
 			//		+ " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "'";
-			 if (patientIdsFetchedTP.size()==0)
+		  if (fromRepo) {
+			  return " date_planned  between  '"+ Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)  
+				 + "'" + " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "' or completion_date BETWEEN '"+
+					Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '" 
+					+ Constants.SimpleDateformatForEsQuery.format(cDate)+ "' or status_date BETWEEN '"
+					+Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '"
+			        + Constants.SimpleDateformatForEsQuery.format(cDate)+ "'  " ;
+		  }else if (patientIdsFetchedTP.size()==0)
 				 return " date_planned  between  '"+ Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)  
 				 + "'" + " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "' or completion_date BETWEEN '"+
 					Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '" 
@@ -792,6 +839,12 @@ public class ReplicationService {
 			// a b c
 			// a,','b,',c
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlanItems.class)) {
+			if (fromRepo) {
+				return " treatment_plan_id in  ("
+						+ String.join(",",
+								treatmentPlanIdFetchedTP.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
+						+ ") and patient_id in ('" + String.join("','", patientIdsFetchedTP) + "')";
+			}
 			return " treatment_plan_id in  ("
 					+ String.join(",",
 							treatmentPlanIdFetchedTP.stream().map(s -> String.valueOf(s)).collect(Collectors.toList()))
@@ -799,6 +852,12 @@ public class ReplicationService {
 
 		} else if (tab.isWhereClause() && tab.getClazz().equals(TreatmentPlans.class)) {
 			// check for date date_last_updated when we get data
+			if (fromRepo) {
+				return " date_last_updated BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)
+				+ "'" + " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "' or date_entered BETWEEN '"+
+				Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '" 
+				+ Constants.SimpleDateformatForEsQuery.format(cDate)+ "' ";
+			}
 			return " date_last_updated BETWEEN '" + Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)
 					+ "'" + " and '" + Constants.SimpleDateformatForEsQuery.format(cDate) + "' or date_entered BETWEEN '"+
 					Constants.SimpleDateformatForEsQuery.format(lastDateofCrawling)+ "'" + " and '" 

@@ -10,6 +10,8 @@ public class RemoteLiteData {
 	private String serviceDate;
 	private String description;
 	private String processedDate;
+	private String treatingSignature;
+	
 	
 	
 	public String getName() {
@@ -59,6 +61,12 @@ public class RemoteLiteData {
 	}
 	public void setProcessedDate(String processedDate) {
 		this.processedDate = processedDate;
+	}
+	public String getTreatingSignature() {
+		return treatingSignature;
+	}
+	public void setTreatingSignature(String treatingSignature) {
+		this.treatingSignature = treatingSignature;
 	}
 	
 	

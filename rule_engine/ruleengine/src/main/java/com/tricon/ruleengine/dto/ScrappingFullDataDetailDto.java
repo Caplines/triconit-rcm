@@ -40,6 +40,7 @@ public class ScrappingFullDataDetailDto {
 	
 	private String googleSubId;
 	
+	private String scrapSubType;
     
     ///
     List<PatientScrapSearchDto> dto= new ArrayList<>();
@@ -214,6 +215,12 @@ public class ScrappingFullDataDetailDto {
 	}
 	public void setGoogleSubId(String googleSubId) {
 		this.googleSubId = googleSubId;
+	}
+	public String getScrapSubType() {
+		return scrapSubType;
+	}
+	public void setScrapSubType(String scrapSubType) {
+		this.scrapSubType = scrapSubType;
 	}
 
 	

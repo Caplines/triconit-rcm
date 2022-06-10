@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name = Constants.TABLE_APPOINTMENT, uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "appointment_id" }) })
+		@UniqueConstraint(columnNames = { "appointment_id","office_id" }) })
 @EqualsAndHashCode(callSuper = true)
 public class Appointment extends CommonAppointment implements Serializable {
 	/**

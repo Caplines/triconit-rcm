@@ -197,7 +197,7 @@ border-collapse: collapse;
                            <span class="main-heading-1">Plan Type:</span> 
 						</td>
                         <td>						
-						   <span class="sub-heading" ><xsl:value-of select="policy1"/> </span>
+						   <span class="sub-heading" ><xsl:value-of select="osPlanType"/> </span>
                         </td>
                         <td class="withds">
                            <span class="main-heading-1">Network:</span>

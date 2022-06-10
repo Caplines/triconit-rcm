@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -63,6 +66,14 @@ public class TreatmentPlansTableService extends CommonTableService {
 	 
 	@Autowired
 	ReplicationService replicationService;
+	
+	@Autowired
+	@Qualifier("repDbEntityManager")
+	private EntityManager entityManager;
+
+	@Autowired
+	@Qualifier("ruleEngineEntityManager")
+	private EntityManager entityManagerRe;
 	
 
 	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
@@ -532,5 +543,68 @@ public class TreatmentPlansTableService extends CommonTableService {
 	}
 
   }
+	
+	
+	@Transactional("repDbTransactionManager")
+	public void updateOldData(String whereClause) {
+		entityManager.createNativeQuery("update "+Constants.TABLE_TREATMENT_PLANS+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		
+		//entityManager.getTransaction().commit();
+	}
+	
+	@Transactional("repDbTransactionManager")
+	public void deleteOldDataTPAAndTPI() {
+	String query =	" delete "+Constants.TABLE_TREATMENT_PLANS+", "+Constants.TABLE_TREATMENT_PLAN_ITEMS
+			+ " FROM "+Constants.TABLE_TREATMENT_PLANS+" , "+Constants.TABLE_TREATMENT_PLAN_ITEMS+" where "+Constants.TABLE_TREATMENT_PLANS+".treatment_plan_id ="
+			+ " "+Constants.TABLE_TREATMENT_PLAN_ITEMS+".treatment_plan_id and "+Constants.TABLE_TREATMENT_PLANS+".moved_to_cloud=3";
+	System.out.println(query);	
+	entityManager.createNativeQuery(query).executeUpdate();
+		
+		//entityManager.getTransaction().commit();
+	}
+	
+
+
+	@Transactional("ruleEngineTransactionManager")
+	public void updateOldDataRe(String whereClause) {
+		System.out.println(whereClause);
+		//entityManager.getTransaction().begin();
+		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		
+		//entityManager.getTransaction().commit();
+	}
+	
+	@Transactional("ruleEngineTransactionManager")
+	public void updateOldDataTPIRe() {
+		String query =	" update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+", "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS
+				+ " set  "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+".moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+","
+				+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS+".moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES
+				+ "  where "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+".treatment_plan_id ="
+				+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS+".treatment_plan_id and "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+".moved_to_cloud=3";
+		System.out.println(query);
+		entityManagerRe.createNativeQuery(query).executeUpdate();
+			
+			//entityManager.getTransaction().commit();
+	}
+	/*
+	@Transactional("ruleEngineTransactionManager")
+	public void deleteOldDataTPAAndTPIRe() {
+		String query =	" delete "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+", "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS
+				+ " FROM "+Constants.TABLE_REPLICA_IN_CLOUD +Constants.TABLE_TREATMENT_PLANS+" , "+Constants.TABLE_REPLICA_IN_CLOUD +Constants.TABLE_TREATMENT_PLAN_ITEMS+" where "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+".treatment_plan_id ="
+				+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS+".treatment_plan_id and "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+".moved_to_cloud=3";
+		System.out.println(query);
+		entityManagerRe.createNativeQuery(query).executeUpdate();
+			
+			//entityManager.getTransaction().commit();
+	}
+	*/
+	
+	@Transactional("ruleEngineTransactionManager")
+	public void deleteOldDataRe() {
+		//entityManagerRe.getTransaction().begin();
+		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
+		
+		//entityManagerRe.getTransaction().commit();
+	}
     
 }

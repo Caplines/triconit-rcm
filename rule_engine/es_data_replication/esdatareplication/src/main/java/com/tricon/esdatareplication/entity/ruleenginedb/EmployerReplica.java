@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.tricon.esdatareplication.entity.common.CommonEmployer;
 import com.tricon.esdatareplication.util.Constants;
@@ -17,7 +18,8 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_EMPLOYER)
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_EMPLOYER, uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"employer_id", "office_id" }) })
 @EqualsAndHashCode(callSuper = true)
 public class EmployerReplica extends CommonEmployer implements Serializable{
 	/**

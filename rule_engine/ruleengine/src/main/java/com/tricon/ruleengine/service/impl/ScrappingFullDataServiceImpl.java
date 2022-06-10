@@ -260,12 +260,10 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 				 //Add All Sites Here....
 				ExecutorService service = Executors.newCachedThreadPool();	
 				
-				System.out.println("8888888888--"+dto.getSiteName());
 				 if (dto.getSiteName().equals("Delta Dental")) {
 							// service.submit(new DeltaDentalServiceImpl(patDao,full,dto,user,off));
 					 /*map.put(ConstantsScrapping.SCRAPPING_INIT + dto.getSheetId() + ConstantsScrapping.NAME_Separator
 								+ dto.getSheetSubId(), null);*/
-					 System.out.println("';"+env.getProperty("google.chorme.driver"));
 					 service.submit(new DeltaDentalServiceImpl(patDao,dataDoa ,full,dto,user,off,processId,taxId,fType,env.getProperty("google.chorme.driver")));
 				  } else if (dto.getSiteName().equals("BCBS")) {
 					  service.submit(new BCBSDnoaconnectImpl(patDao,dataDoa ,full,dto,user,off,processId,taxId,fType,env.getProperty("google.chorme.driver")));

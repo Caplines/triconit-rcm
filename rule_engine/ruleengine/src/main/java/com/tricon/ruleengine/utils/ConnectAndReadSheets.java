@@ -1737,12 +1737,14 @@ public class ConnectAndReadSheets {
 			for(RemoteLiteData rd:li) {
 				List<CellData> values = new ArrayList<>();
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getProcessedDate())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getSendDate())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getName())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getSubscriberName())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getCarrier())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getStatus())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getDescription())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getServiceDate())));
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getTreatingSignature())));
 				
 				
 				

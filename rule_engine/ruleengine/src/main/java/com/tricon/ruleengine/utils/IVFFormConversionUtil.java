@@ -376,7 +376,7 @@ public class IVFFormConversionUtil {
 		pd2.setD3220(d.getD3220());
 		pd2.setD3220Freq(d.getD3220Freq());
 		pd2.setOutNetworkMessage(d.getOutNetworkMessage());
-		
+		pd2.setOsPlanType(d.getOsPlanType());
 		
 		
 		pd.setPatientDetails2(pd2);
@@ -400,12 +400,16 @@ public class IVFFormConversionUtil {
         pd.setGeneralBenefitsVerifiedBy(d.getBenefits());
         
 		p.setDob(d.getBasicInfo6());
+		
+		
 		String fname = d.getBasicInfo2();
 		if (fname != null) {
 			String[] f = fname.split(" ");
+			if (f.length>0) {
 			p.setFirstName(f[0]);
 			if (f.length > 1) {
 				p.setLastName(fname.replace(f[0] + " ", ""));
+			}
 			}
 		}
 		p.setPatientId(d.getBasicInfo21());
@@ -736,7 +740,7 @@ public class IVFFormConversionUtil {
 				pd.setD3220(d.getD3220());
 				pd.setD3220Freq(d.getD3220Freq());
 				pd.setOutNetworkMessage(d.getOutNetworkMessage());
-
+				pd.setOsPlanType(d.getOsPlanType());
 
 
 		if (off != null)
@@ -1188,7 +1192,7 @@ public class IVFFormConversionUtil {
 		pd2.setD3220(d.getD3220());
 		pd2.setD3220Freq(d.getD3220Freq());
 		pd2.setOutNetworkMessage(d.getOutNetworkMessage());
-
+		pd2.setOsPlanType(d.getOsPlanType());
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();

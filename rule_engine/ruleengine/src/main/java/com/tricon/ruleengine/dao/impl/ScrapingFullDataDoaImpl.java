@@ -111,7 +111,7 @@ public class ScrapingFullDataDoaImpl extends BaseDaoImpl implements ScrapingFull
 			pjList.add(Projections.property("sm.subscribersDob"), "subscribersDob");
 			pjList.add(Projections.property("sm.otp"), "otp");
 			pjList.add(Projections.property("sm.googleSheetId"), "googleSheetId");
-			
+			pjList.add(Projections.property("scrapSubType"), "scrapSubType");
 			criteria.setProjection(pjList);
 			criteria.setResultTransformer(Transformers.aliasToBean(ScrappingFullDataDetailDto.class));
 			scrappingFullDataDetailDto = (ScrappingFullDataDetailDto) criteria.uniqueResult();

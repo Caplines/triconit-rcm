@@ -20,7 +20,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_TREATMENT_PLANS,
         uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"treatment_plan_id","patient_id"})})
+		@UniqueConstraint(columnNames = {"treatment_plan_id","patient_id","office_id"})})
 @EqualsAndHashCode(callSuper = true)
 public class TreatmentPlansReplica extends CommonsTreatmentPlans  implements Serializable{
 	/**

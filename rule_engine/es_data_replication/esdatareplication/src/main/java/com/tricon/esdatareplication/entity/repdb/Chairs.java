@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.tricon.esdatareplication.entity.common.CommonChair;
 import com.tricon.esdatareplication.util.Constants;
@@ -17,7 +18,8 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = Constants.TABLE_CHAIRS)
+@Table(name = Constants.TABLE_CHAIRS, uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"chair_num" ,"office_id" }) })
 @EqualsAndHashCode(callSuper = true)
 public class Chairs extends CommonChair implements Serializable {
 

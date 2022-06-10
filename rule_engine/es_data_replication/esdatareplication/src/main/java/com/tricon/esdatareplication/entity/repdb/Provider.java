@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.tricon.esdatareplication.entity.common.CommonPlannedServices;
 import com.tricon.esdatareplication.entity.common.CommonProviders;
@@ -18,7 +19,8 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = Constants.TABLE_PROVIDER)
+@Table(name = Constants.TABLE_PROVIDER, uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"provider_id", "office_id" }) })
 @EqualsAndHashCode(callSuper = true)
 public class Provider  extends CommonProviders implements Serializable{
 	

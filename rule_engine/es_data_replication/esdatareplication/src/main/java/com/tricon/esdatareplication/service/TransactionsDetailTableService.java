@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +43,14 @@ public class TransactionsDetailTableService extends CommonTableService {
 
 	@Autowired
 	private ESTableRepository estableRepository;
+	
+	@Autowired
+	@Qualifier("repDbEntityManager")
+	private EntityManager entityManager;
+
+	@Autowired
+	@Qualifier("ruleEngineEntityManager")
+	private EntityManager entityManagerRe;
 
 	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
 	private int batchSize;
@@ -190,5 +201,38 @@ public class TransactionsDetailTableService extends CommonTableService {
 		} catch (Exception ex) {
 			appenErrorToWriter(TransactionsDetail.class, bw, ex);
 		}
+	}
+	
+	@Transactional("repDbTransactionManager")
+	public void updateOldData(String whereClause) {
+		System.out.println(whereClause);
+		//entityManager.getTransaction().begin();
+		entityManager.createNativeQuery("update "+Constants.TABLE_TRANSACTIONS_DETAIL+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		
+		//entityManager.getTransaction().commit();
+	}
+
+	@Transactional("repDbTransactionManager")
+	public void deleteOldData(String where) {
+		entityManager.createNativeQuery("delete from "+Constants.TABLE_TRANSACTIONS_DETAIL+" where "+where).executeUpdate();
+		
+		//entityManager.getTransaction().commit();
+	}
+	
+	@Transactional("ruleEngineTransactionManager")
+	public void updateOldDataRe(String whereClause) {
+		System.out.println(whereClause);
+		//entityManager.getTransaction().begin();
+		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_DETAIL+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		
+		//entityManager.getTransaction().commit();
+	}
+	
+	@Transactional("ruleEngineTransactionManager")
+	public void deleteOldDataRe() {
+		//entityManagerRe.getTransaction().begin();
+		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_DETAIL+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
+		
+		//entityManagerRe.getTransaction().commit();
 	}
 }

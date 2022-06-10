@@ -59,6 +59,9 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 	
 	private static final int PAGE_RECORD=50;
 	private static final int PAGE_RECORD_INDEX=2;
+	private static final String SCRAP_TYPE_1="1";
+	private static final String SCRAP_TYPE_2="2";
+	
 
 	private static String siteName = "";
 	
@@ -116,12 +119,14 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		return navigate;
 	}
 
-	private boolean navigatetoMainSite(WebDriver driver, boolean navigate)
+	private boolean navigatetoMainSite(WebDriver driver, boolean navigate,String type)
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
 
 		if (!navigate)
 			return navigate;
-		driver.get("https://rpractice.com/Rlo");
+		if (type==null)driver.get("https://rpractice.com/Rlo");
+		else if (type!=null && type.equals("1"))driver.get("https://rpractice.com/Rlo");
+		else if (type!=null && type.equals("2"))driver.get("https://rpractice.com/Claims");
 		Thread.sleep(4000);
 		return true;
 	}
@@ -148,9 +153,9 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 
 								boolean navigate = loginToSiteRemote(dto, driver);
 
-								boolean issueNo = navigatetoMainSite(driver, navigate);
+								boolean issueNo = navigatetoMainSite(driver, navigate,scrappingSiteDetails.getScrapSubType());
 								//System.out.println("888888888888- STARTED...");
-								parsePage(driver, siteName, issueNo, office);
+								parsePage(driver, siteName, issueNo, office,scrappingSiteDetails.getScrapSubType());
 								//System.out.println("888888888888 -END " + d.getPatientId());
 								
 								
@@ -215,11 +220,14 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 	
 	
 	private void parsePage(WebDriver driver, String webSiteName, boolean issueNo,
-			Office office) throws InterruptedException {
+			Office office,String scrapSubType) throws InterruptedException {
 		
+		//There are 2 types of site Data
+		if (scrapSubType==null) scrapSubType=SCRAP_TYPE_1;
+		if (scrapSubType.equals("")) scrapSubType=SCRAP_TYPE_1; 
 		Thread.sleep(5000);
 		try {
-		driver.findElement(By.id("rc-tabs-0-tab-Sent")).click();
+		  if (scrapSubType.equals(SCRAP_TYPE_2))driver.findElement(By.id("rc-tabs-0-tab-Sent")).click();
 		}catch(Exception s) {
 			System.out.println("NO SEND");
 		}
@@ -233,27 +241,19 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		action.moveToElement(showHiddenClaims).perform();
 		*/
 			JavascriptExecutor executor = (JavascriptExecutor) driver;
-			executor.executeScript("document.getElementById('hide-ignored').click();"); 
-			/*
-			WebDriverWait wait = new WebDriverWait(driver, 10);
-			WebElement element = wait.until(
-			ExpectedConditions.visibilityOfElementLocated(By.id("hide-ignored")));
-			driver.findElement(By.id("hide-ignored")).click();
-			*/
-			
-		//WebElement showHiddenClaims=driver.findElement(By.id("hide-ignored"));
-		//if (showHiddenClaims.getAttribute("checked")==null) showHiddenClaims.click();
-		
-		
-		//driver.findElement(By.xpath("//*[@id=\"claim-history-root\"]/div/div[3]/div[3]/span/span")).click();
-		//Thread.sleep(5000);
-		driver.findElement(By.id("dateFilter")).click();//Click on Date
+			if (scrapSubType.equals(SCRAP_TYPE_1)) {
+				executor.executeScript("document.getElementById('hide-ignored').click();"); 
+		      driver.findElement(By.id("dateFilter")).click();//Click on Date
+			}
+			if (scrapSubType.equals(SCRAP_TYPE_2)) { 
+				driver.findElement(By.className("ant-picker-input-active")).click();//Click on Date
+			}
 		//driver.findElements(By.className("ant-picker-input")).get(0).click();
 		
 		//driver.findElement(By.id("dateSpan1")).click();
 		Thread.sleep(5000); 
 		//90 Days
-		
+		if (scrapSubType.equals(SCRAP_TYPE_1)) {
 		WebElement sBar=  driver.findElement(By.className("ranges"));
 		List<WebElement> spans= sBar.findElements(By.tagName("li"));
 		for(WebElement sp:spans) {
@@ -263,23 +263,110 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 			}
 			
 		}
+		}
+		if (scrapSubType.equals(SCRAP_TYPE_2)) {
+			WebElement sBar=  driver.findElement(By.className("ant-picker-ranges"));
+			List<WebElement> spans= sBar.findElements(By.tagName("li"));
+			for(WebElement sp:spans) {
+				if (sp.getText()!=null && sp.getText().equals("90 Days")) {
+					sp.click();
+					break;
+				}
+				
+			}
+			}
 		//driver.findElement(By.xpath("//*[@id=\"layout-body--side-bar\"]/div[7]/div/div/div/div[2]/div[2]/ul/li[5]/span")).click();
 		Thread.sleep(10000);
-		//driver.findElement(By.id("hide-ignored")).click();
-		//Thread.sleep(1000);        anticon-insert-row-right   
-		//driver.findElement(By.className("anticon-insert-row-right")).click();//Column
-		//driver.findElement(By.xpath("//*[@id=\"claim-history-root\"]/div/div[3]/div[7]/span")).click();//Column
+
+		 if (scrapSubType.equals(SCRAP_TYPE_2)) {
+			 try {
+			 driver.findElement(By.className("anticon-eye")).click();//Click on Eye
+			 Thread.sleep(5000);
+			 }catch(Exception n) {
+				 
+			 }
+        }
 		Thread.sleep(1000);
+		boolean serviceDate=false;
+		boolean treatingSignature=false;
 		
+		if (scrapSubType.equals(SCRAP_TYPE_1)) {
 		WebElement tableHeader=  driver.findElement(By.id("datatable-claims")); 
 		System.out.println(tableHeader.getText());
-		if (tableHeader.getText().contains("Service Date")) return ;//if header already There
+		if (tableHeader.getText().contains("Service Date")) {
+			serviceDate =true;
+		//	return ;//if header already There
+		}
+		if (tableHeader.getText().contains("Treating Signature")) {
+			treatingSignature =true;
+		//	return ;//if header already There
+		 }
+		}
+		if (scrapSubType.equals(SCRAP_TYPE_2)) {
+			WebElement tableHeader=  driver.findElement(By.className("ant-table-thead")); 
+			System.out.println(tableHeader.getText());
+			if (tableHeader.getText().contains("Service Date")) {
+				serviceDate =true;
+			//	return ;//if header already There
+			}
+			if (tableHeader.getText().contains("Treating Signature")) {
+				treatingSignature =true;
+			//	return ;//if header already There
+			 }
+		}
 		
-		driver.findElement(By.id("columnDropdown")).click();
-		Thread.sleep(5000);
-		executor.executeScript("document.getElementById('dosCheckbox').click();");
-		//driver.findElement(By.id("dosCheckbox")).click();//Service Date Click..
-		Thread.sleep(5000);
+		if (scrapSubType.equals(SCRAP_TYPE_1)) {
+			if (!treatingSignature || !serviceDate) {
+			driver.findElement(By.id("columnDropdown")).click();
+			Thread.sleep(5000);
+			
+			if (!serviceDate) {
+				executor.executeScript("document.getElementById('dosCheckbox').click();");
+			//driver.findElement(By.id("dosCheckbox")).click();//Service Date Click..
+			Thread.sleep(5000);
+			}
+			if (!treatingSignature) {
+				executor.executeScript("document.getElementById('treatinG_SIGNATURECheckbox').click();");
+			//driver.findElement(By.id("dosCheckbox")).click();//Service Date Click..
+			Thread.sleep(5000);
+			}
+			}
+		}
+		
+		if (scrapSubType.equals(SCRAP_TYPE_2)) {
+			if (!treatingSignature || !serviceDate) {
+				driver.findElement(By.className("anticon-insert-row-right")).click();
+				Thread.sleep(1000); 
+			List<WebElement> leftPanel=driver.findElements(By.className("column-select-row"));
+			for(WebElement le:leftPanel) {
+				if (le.getText().contains("Treating Signature")) {
+				WebElement but = le.findElement(By.tagName("button"));
+				if (but.getAttribute("aria-checked").equals("false")) {
+					but.click();
+					break;
+				}
+				//System.out.println(but.getAttribute("aria-checked"));
+				}
+				
+				
+			  }
+			leftPanel=driver.findElements(By.className("column-select-row"));
+			for(WebElement le:leftPanel) {
+				
+				if (le.getText().contains("Service Date")) {
+					WebElement but = le.findElement(By.tagName("button"));
+					if (but.getAttribute("aria-checked").equals("false")) {
+						but.click();
+						break;
+					}
+					//System.out.println(but.getAttribute("aria-checked"));
+				}
+				
+			  }
+			
+			
+			}
+		}
 		/*
 		sBar=  driver.findElement(By.className("ant-drawer-body"));//.findElement(By.className("ant-row"));
 		List<WebElement> divs= sBar.findElements(By.className("ant-row"));
@@ -309,11 +396,30 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		//driver.findElement(By.xpath("//*[@id=\"layout-body--side-bar\"]/div[3]/div/div[2]/div/div/div[2]/div/div[23]/div[2]/button")).click();//Apply
 		Thread.sleep(2000);
 		//TABLE
-		Select fruits = new Select(driver.findElement(By.className("select-claim-count")));
-		fruits.selectByVisibleText(PAGE_RECORD+"");
-		fruits.selectByValue(PAGE_RECORD+"");
+		//select to records to display
+		if (scrapSubType.equals(SCRAP_TYPE_1)) {
+		Select select = new Select(driver.findElement(By.className("select-claim-count")));
+		select.selectByVisibleText(PAGE_RECORD+"");
+		select.selectByValue(PAGE_RECORD+"");
 		Thread.sleep(5000);
-		fetchTableData(driver,1,dList);
+		fetchTableData(driver,1,dList,SCRAP_TYPE_1);
+		}
+		if (scrapSubType.equals(SCRAP_TYPE_2)) {
+			driver.findElement(By.className("ant-btn-primary")).click();
+			Thread.sleep(5000);
+			driver.findElement(By.className("ant-pagination-options-size-changer")).click();
+		List<WebElement> vs=driver.findElements(By.className("ant-select-item-option-content"));
+			for (WebElement v:vs) {
+				System.out.println(v.getText());
+				if (v.getText().contains("100")) {
+					v.click();
+					break;
+				}
+				
+			}
+			Thread.sleep(5000);	
+			fetchTableData(driver,1,dList,SCRAP_TYPE_2);
+		}
 		System.out.println("***********REMOTE LITE********************");
 		System.out.println("*******************************");
 		System.out.println(dList.size());
@@ -338,7 +444,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		 
 	}
 	
-	private void pagnation(WebDriver driver,int pageNo,List<RemoteLiteData> dList) throws InterruptedException {
+	private void pagnation1(WebDriver driver,int pageNo,List<RemoteLiteData> dList) throws InterruptedException {
 		System.out.println("PAGENO>>"+pageNo);         //*[@id=\"claim-history-root\"]/div/div[4]/div/div/ul
 		//*[@id="datatable-claims_paginate"]/ul
 		 WebElement pagUL=driver.findElement(By.xpath("//*[@id=\"datatable-claims_paginate\"]/ul"));
@@ -367,7 +473,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 				   n.printStackTrace();
 			   }
 			   Thread.sleep(5000);
-			   fetchTableData(driver,pageNo,dList);
+			   fetchTableData(driver,pageNo,dList,SCRAP_TYPE_1);
 			 
 		 }
 		 }catch(Exception n) {
@@ -377,16 +483,45 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		 
 	}
 	
-	private void fetchTableData(WebDriver driver,int pageNo,List<RemoteLiteData> dataList) throws InterruptedException{
-		 WebElement tableBody=driver.findElement(By.xpath("//*[@id=\"datatable-claims\"]/tbody"));
+	
+	private void pagnation2(WebDriver driver,int pageNo,List<RemoteLiteData> dList) throws InterruptedException {
+		System.out.println("PAGENO>>"+pageNo);         //*[@id=\"claim-history-root\"]/div/div[4]/div/div/ul
+		//*[@id="datatable-claims_paginate"]/ul
+		// WebElement pagUL=driver.findElements(By.className("ant-table-pagination-right"));
+		
+		 //boolean skipRow=true;
+		 try {
+			 
+			  WebElement lis=driver.findElement(By.className("ant-pagination-item-"+pageNo));
+
+               lis.click();
+               Thread.sleep(5000);
+			   fetchTableData(driver,pageNo,dList,SCRAP_TYPE_2);
+		 
+		 }catch(Exception n) {
+			 n.printStackTrace();
+			 System.out.println("REMOTELITE ERROR");
+		 }
+		 
+	}
+	
+	private void fetchTableData(WebDriver driver,int pageNo,List<RemoteLiteData> dataList,String scrapSubType) throws InterruptedException{
+		 WebElement tableBody=null;
+		 if (scrapSubType.equals(SCRAP_TYPE_1)) {
+			 tableBody= driver.findElement(By.xpath("//*[@id=\"datatable-claims\"]/tbody"));
+		 }
+		 if (scrapSubType.equals(SCRAP_TYPE_2)) {
+			 tableBody= driver.findElement(By.className("ant-table-body"));
+		 }
+		 
 			
 		List<WebElement> trs= tableBody.findElements(By.tagName("tr"));
 		//RemoteLiteData data=null;
 		 boolean skipRow=true;
 		 for (WebElement tr:trs) {
-			   if (skipRow) {
-				   //skipRow=false;
-				   //continue;
+			   if (skipRow && scrapSubType.equals(SCRAP_TYPE_2)) {
+				   skipRow=false;
+				   continue;
 			   }
 			   
 			   List<WebElement> tds= tr.findElements(By.tagName("td"));
@@ -394,7 +529,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 				   RemoteLiteData data=new RemoteLiteData();
 				   IntStream.range(0, tds.size())
 					.forEach(index -> {
-						
+						System.out.println(tds.get(index).getText());
 					//	if (data==null) data= new RemoteLiteData();
 						if (index==2) {
 							data.setSendDate(tds.get(index).getText());
@@ -424,6 +559,10 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 							data.setServiceDate(tds.get(index).getText());
 							System.out.println("Date SOS-->"+tds.get(index).getText());
 						}
+						if (index==9) {
+							data.setTreatingSignature(tds.get(index).getText());
+							System.out.println("Date TS-->"+tds.get(index).getText());
+						}
 						  
 					}
 					);
@@ -431,13 +570,31 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 				 //  System.out.println("-->"+td.getText());
 			    //}
 				   //data.setProcessedDate(driver.findElements(By.className("ant-picker-input")).get(0).findElement(By.tagName("input")).getAttribute("value"));
-				   data.setProcessedDate(driver.findElement(By.id("dateFilter")).getText());
+				  if (scrapSubType.equals(SCRAP_TYPE_1)) {
+					  data.setProcessedDate(driver.findElement(By.id("dateFilter")).getText());
+				  }
+				  if (scrapSubType.equals(SCRAP_TYPE_2)) {
+					  
+					 List<WebElement> inps=driver.findElements(By.tagName("input"));
+					 for(WebElement inp:inps) {
+						if (inp.getAttribute("placeholder")!=null) {
+							if (inp.getAttribute("placeholder").equals("Start date")) {
+								data.setProcessedDate(inp.getText());
+							}
+							if (inp.getAttribute("placeholder").equals("End date")) {
+								data.setProcessedDate(data.getProcessedDate()+"-"+inp.getText());
+							}
+						}
+					 }
+					 
+				  }
 				   //data.setProcessedDate(data.getProcessedDate()+"-"+ driver.findElements(By.className("ant-picker-input")).get(1).findElement(By.tagName("input")).getAttribute("value"));
 				   dataList.add(data);
 			   }
 			   
 			 
 		 }
+		 
 		 try {
 			 System.out.println("updateRemoteLiteScrapSheetGoogleSheet for page"+pageNo);
 			 System.out.println("updateRemoteLiteScrapSheetGoogleSheet ==>"+(((pageNo-1)*PAGE_RECORD)+2));
@@ -449,7 +606,13 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		 }catch(Exception m) {
 			 
 		 }
-		 pagnation(driver,++pageNo,dataList);
+		 if (scrapSubType.equals(SCRAP_TYPE_1)) {
+			 pagnation1(driver,++pageNo,dataList);
+	     }
+		 if (scrapSubType.equals(SCRAP_TYPE_2)) {
+			 pagnation2(driver,++pageNo,dataList);
+	     }
+		 
 	}
 	
 	public static void main(String... a) {
@@ -460,11 +623,11 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		f.setScrappingSite(fu);
 		f.setProxyPort("9500");
 		f.setGoogleSheetId("1KVaZbAfaYOGMbYRZuGH-4VVxeZQPIvML0YThPsPNTnw");
-		
+		f.setScrapSubType("2");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
 		dto.setSiteUrl("https://rpractice.com");
-		dto.setPassword("Remotelite@1234");//Aransas.credentialing@smilepoint.us
-		dto.setUserName("jasper.credentialing@smilepoint.us");//jasper.credentialing@smilepoint.us
+		dto.setPassword("Remotelite@123");//Aransas.credentialing@smilepoint.us
+		dto.setUserName("billing@smilepoint.us");//jasper.credentialing@smilepoint.us
 		dto.setSiteName("Remote Lite");
 		RemoteLiteImpl i = new RemoteLiteImpl(null, null, f, dto, null, null, 0, "",
 				null, "D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe",

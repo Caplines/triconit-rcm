@@ -677,6 +677,7 @@ public class CaplineIVFFormDto {
     private String d3220;
     private String d3220Freq;
     private String outNetworkMessage; // Field added on 14 jan
+    private String osPlanType;
     //END
     
     public String getFill1() {
@@ -3183,6 +3184,14 @@ public class CaplineIVFFormDto {
 
 	public void setOutNetworkMessage(String outNetworkMessage) {
 		this.outNetworkMessage = outNetworkMessage;
+	}
+
+	public String getOsPlanType() {
+		return osPlanType;
+	}
+
+	public void setOsPlanType(String osPlanType) {
+		this.osPlanType = osPlanType;
 	}
 	
 	

@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_TREATMENT_PLAN_ITEMS , uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"line_number","patient_id","treatment_plan_id"})
+		@UniqueConstraint(columnNames = {"line_number","patient_id","treatment_plan_id","office_id"})
 		})
 
 @EqualsAndHashCode(callSuper = true)

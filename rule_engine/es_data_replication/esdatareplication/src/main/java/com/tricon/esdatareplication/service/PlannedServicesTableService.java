@@ -10,8 +10,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +50,14 @@ public class PlannedServicesTableService extends CommonTableService {
 
 	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
 	private int batchSize;
+	
+	@Autowired
+	@Qualifier("repDbEntityManager")
+	private EntityManager entityManager;
+
+	@Autowired
+	@Qualifier("ruleEngineEntityManager")
+	private EntityManager entityManagerRe;
 
 	//@Transactional(rollbackFor = Exception.class, transactionManager = "ruleEngineTransactionManager")
 	public ESTable pushDataFromLocalESToColudDB(BufferedWriter bw, Office office, ESTable es) {
@@ -194,6 +206,8 @@ public class PlannedServicesTableService extends CommonTableService {
 				plannedServicesRepositoryRe.deleteAll(repList);
 				//localCt = localCt + pL.size();
 			}
+			//deleteOldData();
+			//deleteOldDataRe();
 			es.setRecordsInsertedLastIteration(localCt);
 			//es.setUpdatedDate(new Date());
 			estableRepository.save(es);
@@ -234,6 +248,7 @@ public class PlannedServicesTableService extends CommonTableService {
 				}
 				
 			}catch(Exception ex) {
+				ex.printStackTrace();
 				es.setRecordsInsertedLastIteration(0);
 				StringWriter errors = new StringWriter();
 				ex.printStackTrace(new PrintWriter(errors));
@@ -242,6 +257,7 @@ public class PlannedServicesTableService extends CommonTableService {
 				appenErrorToWriter(PlannedServicesReplica.class, bw, ex);
 			}
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			es.setRecordsInsertedLastIteration(0);
 			StringWriter errors = new StringWriter();
 			ex.printStackTrace(new PrintWriter(errors));
@@ -544,5 +560,45 @@ public class PlannedServicesTableService extends CommonTableService {
 			appenErrorToWriter(PlannedServices.class, bw, ex);
 		}
 	}
+	
+	public void truncatePlannedServices() {
+		plannedServicesRepository.truncatePlannedServices();
+		
+	}
+	
+	@Transactional("repDbTransactionManager")
+	public void updateOldData(String whereClause) {
+		System.out.println(whereClause);
+		//entityManager.getTransaction().begin();
+		entityManager.createNativeQuery("update planned_services set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		
+		//entityManager.getTransaction().commit();
+	}
+
+	@Transactional("repDbTransactionManager")
+	public void deleteOldData(String where) {
+		entityManager.createNativeQuery("delete from "+Constants.TABLE_PLANNED_SERVICES+" where "+where).executeUpdate();
+		
+		//entityManager.getTransaction().commit();
+	}
+	
+	@Transactional("ruleEngineTransactionManager")
+	public void updateOldDataRe(String whereClause) {
+		System.out.println(whereClause);
+		//entityManager.getTransaction().begin();
+		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_PLANNED_SERVICES+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		
+		//entityManager.getTransaction().commit();
+	}
+	
+	@Transactional("ruleEngineTransactionManager")
+	public void deleteOldDataRe() {
+		//entityManagerRe.getTransaction().begin();
+		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_PLANNED_SERVICES+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
+		
+		//entityManagerRe.getTransaction().commit();
+	}
+	
+	
 
 }

@@ -338,6 +338,7 @@ public class IVFTableSheet {
     private String d3220;
     private String d3220Freq;
     private String outNetworkMessage;
+    private String osPlanType;
     
     private boolean dollarInToothHistory;
 
@@ -2336,6 +2337,12 @@ public class IVFTableSheet {
 	}
 	public void setDollarInToothHistory(boolean dollarInToothHistory) {
 		this.dollarInToothHistory = dollarInToothHistory;
+	}
+	public String getOsPlanType() {
+		return osPlanType;
+	}
+	public void setOsPlanType(String osPlanType) {
+		this.osPlanType = osPlanType;
 	}
 	
 	

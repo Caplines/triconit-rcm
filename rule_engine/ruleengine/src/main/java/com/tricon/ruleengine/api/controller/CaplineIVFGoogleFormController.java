@@ -123,6 +123,8 @@ public class CaplineIVFGoogleFormController {
 
 	}
 
+	@CrossOrigin
+	@PostMapping
 	@RequestMapping(value = "/savedatatoreos")
 	public ResponseEntity<Object> saveOSFromGoogleForm(@RequestBody CaplineIVFFormDto dto,
 			HttpServletRequest request) {

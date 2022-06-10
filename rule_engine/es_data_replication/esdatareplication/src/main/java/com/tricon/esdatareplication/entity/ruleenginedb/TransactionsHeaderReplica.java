@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
 import com.tricon.esdatareplication.entity.common.CommonTransactionsHeader;
 import com.tricon.esdatareplication.util.Constants;
 
@@ -16,7 +18,8 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_TRANSACTIONS_HEADER)
+@Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_TRANSACTIONS_HEADER, uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"tran_num","user_id", "office_id" }) })
 @EqualsAndHashCode(callSuper = true)
 public class TransactionsHeaderReplica extends CommonTransactionsHeader implements Serializable{
 	

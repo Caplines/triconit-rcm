@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +44,14 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 	
 	@Autowired 
 	private ReplicationService replicationService;
+	
+	@Autowired
+	@Qualifier("repDbEntityManager")
+	private EntityManager entityManager;
+
+	@Autowired
+	@Qualifier("ruleEngineEntityManager")
+	private EntityManager entityManagerRe;
 
 	@Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
 	private int batchSize;
@@ -432,5 +443,15 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 			appenErrorToWriter(TreatmentPlanItems.class, bw, ex);
 		}
 
+	}
+	
+	
+	
+	@Transactional("ruleEngineTransactionManager")
+	public void deleteOldDataRe() {
+		//entityManagerRe.getTransaction().begin();
+		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
+		
+		//entityManagerRe.getTransaction().commit();
 	}
 }

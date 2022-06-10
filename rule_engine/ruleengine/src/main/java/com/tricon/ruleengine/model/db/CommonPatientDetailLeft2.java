@@ -351,6 +351,9 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "out_network_message", columnDefinition = "text")
 	private String outNetworkMessage;
 	
+	@Column(name = "os_plan_type", length = 70)
+	private String osPlanType;
+
 	public String getNpi() {
 		return npi;
 	}
@@ -1238,6 +1241,14 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setOutNetworkMessage(String outNetworkMessage) {
 		this.outNetworkMessage = outNetworkMessage;
+	}
+
+	public String getOsPlanType() {
+		return osPlanType;
+	}
+
+	public void setOsPlanType(String osPlanType) {
+		this.osPlanType = osPlanType;
 	}
 
     

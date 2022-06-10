@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name = Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_APPOINTMENT,
-uniqueConstraints = { @UniqueConstraint(columnNames = { "appointment_id" }) })
+uniqueConstraints = { @UniqueConstraint(columnNames = { "appointment_id","office_id" }) })
 @EqualsAndHashCode(callSuper = true)
 public class AppointmentReplica extends CommonAppointment implements Serializable{
 	
