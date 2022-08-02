@@ -377,7 +377,7 @@ public class IVFFormConversionUtil {
 		pd2.setD3220Freq(d.getD3220Freq());
 		pd2.setOutNetworkMessage(d.getOutNetworkMessage());
 		pd2.setOsPlanType(d.getOsPlanType());
-		
+		pd2.setSmAgeLimit(d.getSmAgeLimit());
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();
@@ -741,7 +741,7 @@ public class IVFFormConversionUtil {
 				pd.setD3220Freq(d.getD3220Freq());
 				pd.setOutNetworkMessage(d.getOutNetworkMessage());
 				pd.setOsPlanType(d.getOsPlanType());
-
+				pd.setSmAgeLimit(d.getSmAgeLimit());
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -1193,6 +1193,7 @@ public class IVFFormConversionUtil {
 		pd2.setD3220Freq(d.getD3220Freq());
 		pd2.setOutNetworkMessage(d.getOutNetworkMessage());
 		pd2.setOsPlanType(d.getOsPlanType());
+		pd2.setSmAgeLimit(d.getSmAgeLimit());
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();

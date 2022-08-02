@@ -339,6 +339,7 @@ public class IVFTableSheet {
     private String d3220Freq;
     private String outNetworkMessage;
     private String osPlanType;
+    private String smAgeLimit;
     
     private boolean dollarInToothHistory;
 
@@ -2343,6 +2344,12 @@ public class IVFTableSheet {
 	}
 	public void setOsPlanType(String osPlanType) {
 		this.osPlanType = osPlanType;
+	}
+	public String getSmAgeLimit() {
+		return smAgeLimit;
+	}
+	public void setSmAgeLimit(String smAgeLimit) {
+		this.smAgeLimit = smAgeLimit;
 	}
 	
 	

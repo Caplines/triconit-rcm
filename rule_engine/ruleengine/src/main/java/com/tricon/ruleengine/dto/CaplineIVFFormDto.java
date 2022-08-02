@@ -3,7 +3,6 @@ package com.tricon.ruleengine.dto;
 import java.math.BigInteger;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -678,6 +677,7 @@ public class CaplineIVFFormDto {
     private String d3220Freq;
     private String outNetworkMessage; // Field added on 14 jan
     private String osPlanType;
+    private String smAgeLimit;
     //END
     
     public String getFill1() {
@@ -3192,6 +3192,14 @@ public class CaplineIVFFormDto {
 
 	public void setOsPlanType(String osPlanType) {
 		this.osPlanType = osPlanType;
+	}
+
+	public String getSmAgeLimit() {
+		return smAgeLimit;
+	}
+
+	public void setSmAgeLimit(String smAgeLimit) {
+		this.smAgeLimit = smAgeLimit;
 	}
 	
 	

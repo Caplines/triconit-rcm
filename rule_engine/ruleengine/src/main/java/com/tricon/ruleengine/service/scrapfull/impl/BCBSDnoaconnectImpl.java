@@ -360,6 +360,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			}
 			List<WebElement> eles = driver.findElements(By.className("form-control-static"));
 			try {
+				System.out.println(":"+eles.get(1).getText()+":");
+				System.out.println(":"+eles.get(1).getText().trim()+":");
 				String[] name = eles.get(1).getText().split(" ");
 				String lname = "";
 				for (int x = 0; x < name.length; x++) {
@@ -373,6 +375,28 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			} catch (Exception p) {
 				temp.setFirstName("");
 				temp.setLastName("");
+				
+				
+			}
+			
+			if (temp.getFirstName().equals("") &&  temp.getLastName().equals("")) {
+				try {
+					JavascriptExecutor executor = (JavascriptExecutor) driver;
+					String names = executor.executeScript(" return  document.getElementsByClassName('form-control-static')[1].innerHTML").toString();
+					Thread.sleep(1000);
+					String[] name = names.trim().split(" ");
+					String lname = "";
+					for (int x = 0; x < name.length; x++) {
+						if (x == 0)
+							temp.setFirstName(name[x]);
+						else
+							lname = lname + " " + name[x];
+
+					}
+					temp.setLastName(lname);
+					}catch (Exception e) {
+						e.printStackTrace();
+					}
 			}
 
 			boolean carryOn = true;
@@ -392,39 +416,19 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			}
 
 			String url = "";
-			String[] dobA = null;
+			String[] dobA = sh.getDob().split("/");
 			
 			
-			id=id.replaceAll("[a-zA-Z]", "");
-			try {
-				dobA = sh.getDob().split("/");// mm/dd/yyyy
-				url = "https://www.dnoaconnect.com/members?dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1]
-						+ "&subscriberId=" + id;
-			} catch (Exception e) {
-				temp.setStatus("DOB ISSUE -" + sh.getDob());
-				carryOn = false;
+			
+			Object[] nextStep=replaceMemberIdVarChar(true, id,dobA, url, carryOn, temp, driver, sh);
+			carryOn=(boolean)nextStep[0];
+			String z=(String)nextStep[1];
+			boolean arrayC=(boolean)nextStep[2];
+			if (!carryOn) {
+				return true;
 			}
-			if (carryOn) {
-				navigatetoUrl(driver, url, 3000);
-				String z = driver.getPageSource();
-				System.out.println(z);
-				//System.out.println("444444444");
+			//if (carryOn) {
 				
-				boolean arrayC = false;
-				z = z.replaceFirst("\\[\\{", "{");
-				if (z.contains("}]}]}]")) {///   }]}]}
-					z = z.replace("}]}]}]", "}]}]}");// }]}]
-					arrayC = true;
-				}else if (z.contains("}]}]")) {
-					z = z.replace("}]}]", "}]}");// }]}]
-					arrayC = true;
-				}else
-					z = z.replace("}]", "  }");// }]}]
-				 System.out.println(z);
-				z = z.replace("</pre></body></html>", "");
-				z = "{\"subscriber\":" + z.split("\"subscriberId\":")[1];
-				//System.out.println(z);
-
 				// String referenceId = "";
 				try {
 					JSONObject jsonObj = new JSONObject(z);
@@ -469,8 +473,58 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					temp.setStatus("Patient Url creation issue");
+					nextStep=replaceMemberIdVarChar(false, id,dobA, url, carryOn, temp, driver, sh);
+					carryOn=(boolean)nextStep[0];
+					 z=(String)nextStep[1];
+					arrayC=(boolean)nextStep[2];
+					try {
+						JSONObject jsonObj = new JSONObject(z);
+						if (arrayC) {
+							JSONArray ja = jsonObj.getJSONArray("policies");
+							jsonObj = new JSONObject(ja.getJSONObject(0).toString());
+							String x = jsonObj.get("policyType").toString();
+							temp.setReferenceId(jsonObj.get("referenceId").toString());
+							if (!x.equals("Medical")) {
+								url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId="
+										+ id + "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
+							} else {
+								try {
+								jsonObj = new JSONObject(ja.getJSONObject(1).toString());
+								temp.setReferenceId(jsonObj.get("referenceId").toString());
+								url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId="
+										+ id + "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
+								}catch(Exception n) {
+									jsonObj = new JSONObject(ja.getJSONObject(0).toString());
+									temp.setReferenceId(jsonObj.get("referenceId").toString());
+									url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId="
+											+ id + "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
+								}
+
+							}
+						} else {
+							JSONObject jsonChildObject = (JSONObject) jsonObj.get("policies");
+							// System.out.println(jsonChildObject.toString());
+							jsonObj = new JSONObject(jsonChildObject.toString());
+							temp.setReferenceId(jsonObj.get("referenceId").toString());
+							url = "https://www.dnoaconnect.com/#!/benefits/" + temp.getReferenceId() + "?subscriberId=" + id
+									+ "&dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1];
+
+						}
+
+						navigatetoUrl(driver, url, 5000);
+
+						fetchPatDetails(driver, temp);
+
+						System.out.println("d");
+						temp.setStatus("");
+					}catch(Exception e2) {
+						e2.printStackTrace();
+						temp.setStatus("Patient Url creation issue");
+					}
+					
+					
 				}
-			}
+			//}
 			// https://www.dnoaconnect.com/members?dateOfBirth=1985-12-02&subscriberId=830794722
 			// String url=dobA[2]+"%2F"+dobA[0]+"%2F"+dobA[1];
 		} catch (Exception e) {
@@ -480,6 +534,50 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		}
           return true;
 	}
+	
+	
+	private Object[] replaceMemberIdVarChar (boolean replace,String id,String []dobA ,String url,boolean carryOn,PatientTemp temp,WebDriver driver,
+			PatientScrapSearchDto sh) throws Exception {
+		
+		Object [] obj= new Object[3];
+		boolean arrayC = false;
+		String  z="";
+		if (replace)id=id.replaceAll("[a-zA-Z]", "");//
+		try {
+			dobA = sh.getDob().split("/");// mm/dd/yyyy
+			url = "https://www.dnoaconnect.com/members?dateOfBirth=" + dobA[2] + "-" + dobA[0] + "-" + dobA[1]
+					+ "&subscriberId=" + id;
+		} catch (Exception e) {
+			temp.setStatus("DOB ISSUE -" + sh.getDob());
+			carryOn = false;
+		}
+		if (carryOn) {
+			navigatetoUrl(driver, url, 3000);
+			z= driver.getPageSource();
+			System.out.println(z);
+			//System.out.println("444444444");
+			
+			
+			z = z.replaceFirst("\\[\\{", "{");
+			if (z.contains("}]}]}]")) {///   }]}]}
+				z = z.replace("}]}]}]", "}]}]}");// }]}]
+				arrayC = true;
+			}else if (z.contains("}]}]")) {
+				z = z.replace("}]}]", "}]}");// }]}]
+				arrayC = true;
+			}else
+				z = z.replace("}]", "  }");// }]}]
+			 System.out.println(z);
+			z = z.replace("</pre></body></html>", "");
+			z = "{\"subscriber\":" + z.split("\"subscriberId\":")[1];
+		}
+
+		obj[0]=carryOn;
+		obj[1]=z;
+		obj[2]=arrayC;
+		return obj;
+		}
+		
 
 	private boolean searchPatient(WebDriver driver, PatientTemp temp, String memberid, String ssn, String dob)
 			throws InterruptedException {
@@ -827,8 +925,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		}catch(Exception x) {
 			
 		}
+	//	if (eleBody==null) eleBody = driver.findElement(
+	//	        By.xpath("/html/body/ui-view/ui-view/div/div[4]/div[2]/div/div[4]/div/plan-info/div/div[2]/table/tbody"));
 		if (eleBody==null) eleBody = driver.findElement(
-		        By.xpath("/html/body/ui-view/ui-view/div/div[4]/div[2]/div/div[4]/div/plan-info/div/div[2]/table/tbody"));
+		        By.id("planInfoSection")).findElement(By.tagName("tbody"));
 		List<WebElement> eleTR = eleBody.findElements(By.tagName("tr"));
 		Thread.sleep(500);
 
@@ -899,7 +999,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		dtemp.setOrthoRemaining(
 				fetchBenefitInformation("Orthodontics", driver, benefitMaximumLifeTimeRem, false, false));// 115
 		dtemp.setOrthoWaitingPeriod(MessageUtil
-				.getTEXTWaitingPeriodBCBS(fetchBenefitInformation("Orthodontics", driver, benefitWaitingPeriod, true, false),dtemp.getPlanEffectiveDate()));// 116
+				.getTEXTWaitingPeriodBCBS(fetchBenefitInformation("Orthodontics", driver, benefitWaitingPeriod, false, false),dtemp.getPlanEffectiveDate()));// 116
 
 		dtemp.setDiagnosticSubDed(MessageUtil
 				.getTEXTNAORYES(fetchBenefitInformation("Oral Exams", driver, benefitInDeductible, true, true)));// 109
@@ -1403,8 +1503,8 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		
 	}
 	private String fetchBenefitInformation(String name, WebDriver driver, String type, boolean mandatory,
-			boolean subsectionOPen) throws InterruptedException {
-		System.out.println("fetchBenefitInformation-" + name);
+			boolean subsectionOPen1) throws InterruptedException {
+		System.out.println("fetchBenefitInformation-" + name +"--- FOR "+type);
 
 		String value = Constants.SCRAPPING_NOT_FOUND;
 		WebElement togggle = null;
@@ -1442,18 +1542,24 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 						value = span.findElements(By.className("text-center")).get(cbenefitInNetwork).getText().replace("%", "");
 						break;
 					} else if (type.equals(benefitInDeductible)) {
+						try {
 						 if (covered) {
 							 value="No";
 							 break;
 						 }
 						value = span.findElements(By.className("text-center")).get(cbenefitInDeductible).getText().replace("%", "");
+						}catch(Exception s) {
+                        	System.out.println("benefitInDeductible not for "+name);
+                        	togggle=null;
+                        	value="";
+                        }
 						break;
 					} else if (type.equals(benefitWaitingPeriod)) {
 
 						
 						
 						togggle = span.findElements(By.tagName("div")).get(0); //divForName.findElements(By.tagName("div")).get(0);
-						
+						try {
 						if (true) {
 							togggle = span.findElement(By.id("LastDateOfService"));
 							togggle.click();
@@ -1472,9 +1578,14 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 							Thread.sleep(3000);
 						}
 						value = divForName.findElement(By.tagName("dd")).getText();
+						}catch(Exception n) {
+							System.out.println("LastDateOfService not for "+name);
+							value="";
+							togggle=null;
+						}
 						break;
 					} else if (type.equals(benefitMaximumLifeTime)) {
-
+                        try {
 						togggle = span.findElements(By.tagName("div")).get(0);
 						if (true) {
 							togggle = span.findElement(By.id("LastDateOfService"));
@@ -1492,10 +1603,15 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 							}
 							//
 						}
+                        }catch(Exception s) {
+                        	System.out.println("benefitMaximumLifeTime not for "+name);
+                        	togggle=null;
+                        	value="";
+                        }
 
 						break;
 					} else if (type.equals(benefitMaximumLifeTimeRem)) {
-
+                        try {
 						togggle = span.findElements(By.tagName("div")).get(0);
 						if (true) {
 							togggle = span.findElement(By.id("LastDateOfService"));
@@ -1513,6 +1629,11 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 							}
 							//
 						}
+                        }catch(Exception e) {
+                        	togggle=null;
+                        	value="";
+                        	System.out.println("benefitMaximumLifeTimeRem not for "+name);
+                        }
 					}
 					break;
 				}
@@ -1570,6 +1691,9 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 	private String fetchValueByCode(String code, PatientTemp temp, WebDriver driver, String type, boolean mandatory,
 			boolean directValues, boolean close) throws InterruptedException {
 		System.out.println("fetchValueByCode" + code + " " + type);
+		if (code.equals("D0210")) {
+			System.out.println("DEBUG");
+		}
 		String value = Constants.SCRAPPING_NOT_FOUND;
 		if (mandatory)
 			value = value + ". " + Constants.SCRAPPING_MANDATORY_WARNING;
@@ -1578,19 +1702,24 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 			// check for code existence
 		}
 		value = Constants.SCRAPPING_MAIN_CONDTION_MET;
+		
 		try {
 			if (type.equals(inNetworkCoinsurance)) {
+				try {
 				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
 				// jsonObj = ja.get("coinsuranceInNetwork").toString();
 				value = ja.get("coinsuranceInNetwork").toString().replace("%", "");
-
+				}catch(Exception y) {
+					value ="";
+				}
 				/*
 				 * WebElement div = driver.findElement(By.xpath(
 				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[1]/div[2]/dl/div")); value
 				 * =div.findElements(By.tagName("dd")).get(0).getText().replace("%","");
 				 */
 			} else if (type.equals(inNetworkDeductible)) {
+				try {
 				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
 				// jsonObj = ja.get("coinsuranceInNetwork").toString();
@@ -1599,6 +1728,9 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 					value = "N/A";
 				else
 					value = t.toString().replace("null", "N/A");
+			   }catch (Exception e) {
+				value="";
+			  }
 				/*
 				 * WebElement div =driver.findElement(By.xpath(
 				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[1]/div[2]/dl/div")); value
@@ -1606,19 +1738,21 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				 */
 
 			} else if (type.equals(lastrowunder2ndcolumn)) {
-
+				try {
 				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
 				JSONObject limit = (JSONObject) ja.get("limitations");
 				value = ja.get("coinsuranceInNetwork").toString().replace("%", "");
-				try {
 				if (!value.equals("0")) {
 					JSONArray  rules = (JSONArray) limit.get("rules");
+					if (rules.length()==0) value = "";
+					else {
 					JSONObject rule =(JSONObject) rules.get(0);
 					value = rule.get("occurrences").toString() + "X" + rule.get("length").toString()
 							+ rule.get("unit").toString();
 					if (value.equals("nullXnullnull"))
 						value = "";
+					}
 				} else {
 					value = "0";// Constants.NO_FREQUENCY;
 				}
@@ -1636,9 +1770,11 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				 */
 
 			} else if (type.equals(lastrowunder2ndcolumnNext)) {
+				try {
 				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
 				JSONObject limit = (JSONObject) ja.get("limitations");
+				
 				JSONArray proc = (JSONArray) limit.get("procedures");
 				if (proc != null && proc.length() > 0) {
 					value = "";
@@ -1656,6 +1792,10 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 						}
 					}
 				}
+			   }catch(Exception c) {
+				   System.out.println("No procedures for "+code);
+				   value = "";
+			   }
 
 				/*
 				 * WebElement div =driver.findElement(By.xpath(
@@ -1664,12 +1804,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				 * value=""; }
 				 */
 			} else if (type.equals(uptoAge)) {
+				try {
 				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
 				JSONObject limit = (JSONObject) ja.get("limitations");
 				int x=((Integer) limit.get("ageMaximum"));
 				if (x>=999) x=99;
 				value = x+"";
+				}catch (Exception e) {
+					value="";
+				}
 				//if (value<=999) value=99;
 				/*
 				 * WebElement div =driver.findElement(By.xpath(
@@ -1678,6 +1822,7 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 				 * .getText());
 				 */
 			} else if (type.equals(otherLimitations)) {
+				try {
 				JSONObject jsonObj = new JSONObject(temp.getProcedureData());
 				JSONObject ja = (JSONObject) jsonObj.get("benefit");// getJSONArray
 				JSONObject limit = (JSONObject) ja.get("limitations");
@@ -1691,7 +1836,9 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 						comma = ",";
 					}
 				}
-
+				}catch (Exception e) {
+					value="";
+				}
 				/*
 				 * WebElement dd =driver.findElement(By.xpath(
 				 * "/html/body/div[1]/div/div/div[3]/div/div[3]/div[2]/div[1]/dl/span[3]/dd"));
@@ -1797,16 +1944,16 @@ public class BCBSDnoaconnectImpl extends BaseScrappingServiceImpl implements Cal
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("springtown2020");
-		dto.setUserName("springtowndnoa");
+		dto.setPassword("Huffman01");
+		dto.setUserName("Geetika01");
 		dto.setSiteName("BCBS");
        
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("01/21/2012");
-		psc.setFirstName("");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
-		psc.setLastName("");
-		psc.setMemberId("838603269");
+		psc.setDob("05/24/2017");
+		psc.setFirstName("Dahlia");//For policies issue KYNDRICK HILL 831918461 03/21/1986 (crosbyfd07-Smile123) 
+		psc.setLastName("Contreras");
+		psc.setMemberId("828328220");
 		psc.setSsnNumber("");
 
 		l.add(psc);

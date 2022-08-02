@@ -200,7 +200,7 @@ public class ConnectAndReadSheets {
 
 		List<Request> requests = new ArrayList<>();
 		IVFTableSheet sh = null;
-		final int COLUMN_STATUS=188;
+		final int COLUMN_STATUS=189;
 		try {
 		if (ivfMap!=null) {
 		for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
@@ -1353,6 +1353,11 @@ public class ConnectAndReadSheets {
 						continue;
 					}
 					try {
+						vif.setSmAgeLimit(obj.get(++x));//space maintance smAgeLimit  
+					}catch (Exception e) {
+						continue;
+					}
+					try {
 						vif.setSheetSubId(obj.get(++x));//MO sheetsubid
 					}catch (Exception e) {
 						continue;
@@ -1745,7 +1750,7 @@ public class ConnectAndReadSheets {
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getDescription())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getServiceDate())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getTreatingSignature())));
-				
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getHiddenClaims())));
 				
 				
 				requests.add(new Request()

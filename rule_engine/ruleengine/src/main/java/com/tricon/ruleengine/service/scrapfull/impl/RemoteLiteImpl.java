@@ -523,10 +523,15 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 				   skipRow=false;
 				   continue;
 			   }
-			   
+			   String hiddenClaims="False";
+			   String className= tr.getAttribute("class");
+			   if (className!=null && className.contains("row-ignore")) {
+				   hiddenClaims="True";
+			   }
 			   List<WebElement> tds= tr.findElements(By.tagName("td"));
 			   if (tds!=null) {
 				   RemoteLiteData data=new RemoteLiteData();
+				   data.setHiddenClaims(hiddenClaims);
 				   IntStream.range(0, tds.size())
 					.forEach(index -> {
 						System.out.println(tds.get(index).getText());
@@ -579,10 +584,10 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 					 for(WebElement inp:inps) {
 						if (inp.getAttribute("placeholder")!=null) {
 							if (inp.getAttribute("placeholder").equals("Start date")) {
-								data.setProcessedDate(inp.getText());
+								data.setProcessedDate(inp.getAttribute("value"));
 							}
 							if (inp.getAttribute("placeholder").equals("End date")) {
-								data.setProcessedDate(data.getProcessedDate()+"-"+inp.getText());
+								data.setProcessedDate(data.getProcessedDate()+"-"+inp.getAttribute("value"));
 							}
 						}
 					 }

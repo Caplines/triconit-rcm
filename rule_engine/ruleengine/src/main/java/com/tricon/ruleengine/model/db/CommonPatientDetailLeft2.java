@@ -353,6 +353,9 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	
 	@Column(name = "os_plan_type", length = 70)
 	private String osPlanType;
+	
+	@Column(name = "sm_age_limit", length = 5)
+	private String smAgeLimit;
 
 	public String getNpi() {
 		return npi;
@@ -1249,6 +1252,14 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setOsPlanType(String osPlanType) {
 		this.osPlanType = osPlanType;
+	}
+
+	public String getSmAgeLimit() {
+		return smAgeLimit;
+	}
+
+	public void setSmAgeLimit(String smAgeLimit) {
+		this.smAgeLimit = smAgeLimit;
 	}
 
     

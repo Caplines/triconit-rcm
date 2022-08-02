@@ -11,7 +11,7 @@ public class RemoteLiteData {
 	private String description;
 	private String processedDate;
 	private String treatingSignature;
-	
+	private String hiddenClaims;
 	
 	
 	public String getName() {
@@ -68,6 +68,13 @@ public class RemoteLiteData {
 	public void setTreatingSignature(String treatingSignature) {
 		this.treatingSignature = treatingSignature;
 	}
+	public String getHiddenClaims() {
+		return hiddenClaims;
+	}
+	public void setHiddenClaims(String hiddenClaims) {
+		this.hiddenClaims = hiddenClaims;
+	}
+	
 	
 	
 
