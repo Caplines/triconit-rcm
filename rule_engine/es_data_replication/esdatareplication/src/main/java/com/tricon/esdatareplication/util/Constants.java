@@ -143,8 +143,11 @@ public class Constants {
 			" ORDER BY transactions_detail.tran_num, transactions_detail.collections_go_to, transactions_detail.provider_id, transactions_detail.provider_practice_id " +
 	        " "; 
    
-	
+	public static final String PAYTYPE_COLUMNS= "paytype_id,sequence,description,prompt,display_on_payment_screen,currency_type,"
+			                         + "include_on_deposit_yn,central_id,system_required";
 	public static final SimpleDateFormat SimpleDateformatForEsQuery = new SimpleDateFormat("yyyy-MM-dd");
+	public static final SimpleDateFormat SimpleDateformatForEsQueryPL = new SimpleDateFormat("yyyy/MM/dd");
+	
 
 	public static final String CACHE_NAME_FOR_PROP = "__CACHE__";
 	// Log messages

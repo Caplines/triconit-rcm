@@ -1,0 +1,141 @@
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `es_data_replica_payment_provider` AS
+    SELECT 
+        `es_data_replica_transactions_detail`.`tran_num` AS `tran_num`,
+        `es_data_replica_transactions_detail`.`collections_go_to` AS `provider_id`,
+        SUM(-(`es_data_replica_transactions_detail`.`amount`)) AS `amount`,
+        `es_data_replica_transactions_detail`.`provider_practice_id` AS `practice_id`,
+        `es_data_replica_transactions_detail`.`provider_id` AS `prod_provider_id`
+    FROM
+        (`es_data_replica_transactions_detail`
+        JOIN `es_data_replica_transactions_header`)
+    WHERE
+        ((`es_data_replica_transactions_header`.`office_id` = OFFICE_UUID())
+            AND (`es_data_replica_transactions_detail`.`office_id` = OFFICE_UUID())
+            AND (`es_data_replica_transactions_header`.`tran_num` = `es_data_replica_transactions_detail`.`tran_num`)
+            AND (`es_data_replica_transactions_detail`.`status` = 1)
+            AND (((`es_data_replica_transactions_header`.`type` IN ('A' , 'P', 'I', 'Y', 'C', 'W'))
+            AND (`es_data_replica_transactions_header`.`status` IN ('A' , 'D', 'V')))
+            OR ((`es_data_replica_transactions_header`.`type` = 'D')
+            AND (`es_data_replica_transactions_header`.`status` = 'V'))))
+    GROUP BY `es_data_replica_transactions_detail`.`tran_num` , `es_data_replica_transactions_detail`.`collections_go_to` , `es_data_replica_transactions_detail`.`provider_id` , `es_data_replica_transactions_detail`.`provider_practice_id`
+    ORDER BY `es_data_replica_transactions_detail`.`tran_num` , `es_data_replica_transactions_detail`.`collections_go_to` , `es_data_replica_transactions_detail`.`provider_id` , `es_data_replica_transactions_detail`.`provider_practice_id`
+
+-------------------------------------------
+
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `es_data_replica_transactions` AS
+    SELECT 
+        `es_data_replica_transactions_header`.`tran_num` AS `tran_num`,
+        `es_data_replica_transactions_header`.`user_id` AS `user_id`,
+        `es_data_replica_transactions_header`.`type` AS `type`,
+        `es_data_replica_transactions_header`.`tran_date` AS `tran_date`,
+        (SELECT 
+                `es_data_replica_transactions_detail`.`patient_id`
+            FROM
+                `es_data_replica_transactions_detail`
+            WHERE
+                ((`es_data_replica_transactions_detail`.`tran_num` = `es_data_replica_transactions_header`.`tran_num`)
+                    AND (`es_data_replica_transactions_detail`.`office_id` = OFFICE_UUID()))
+            ORDER BY `es_data_replica_transactions_detail`.`patient_id`
+            LIMIT 1) AS `patient_id`,
+        `es_data_replica_transactions_header`.`resp_party_id` AS `resp_party_id`,
+        `es_data_replica_transactions_header`.`amount` AS `amount`,
+        `es_data_replica_transactions_header`.`service_code` AS `service_code`,
+        `es_data_replica_transactions_header`.`paytype_id` AS `paytype_id`,
+        `es_data_replica_transactions_header`.`sequence` AS `sequence`,
+        (SELECT 
+                `es_data_replica_transactions_detail`.`provider_id`
+            FROM
+                `es_data_replica_transactions_detail`
+            WHERE
+                ((`es_data_replica_transactions_detail`.`tran_num` = `es_data_replica_transactions_header`.`tran_num`)
+                    AND (`es_data_replica_transactions_header`.`office_id` = OFFICE_UUID()))
+            ORDER BY `es_data_replica_transactions_detail`.`provider_id`
+            LIMIT 1) AS `provider_id`,
+        (SELECT 
+                `es_data_replica_transactions_detail`.`collections_go_to`
+            FROM
+                `es_data_replica_transactions_detail`
+            WHERE
+                ((`es_data_replica_transactions_detail`.`tran_num` = `es_data_replica_transactions_header`.`tran_num`)
+                    AND (`es_data_replica_transactions_header`.`office_id` = OFFICE_UUID())
+                    AND (`es_data_replica_transactions_detail`.`office_id` = OFFICE_UUID()))
+            ORDER BY `es_data_replica_transactions_detail`.`collections_go_to`
+            LIMIT 1) AS `collections_go_to`,
+        `es_data_replica_transactions_header`.`statement_num` AS `statement_num`,
+        NULL AS `old_tooth`,
+        `es_data_replica_transactions_header`.`surface` AS `surface`,
+        `es_data_replica_transactions_header`.`fee` AS `fee`,
+        `es_data_replica_transactions_header`.`discount_surcharge` AS `discount_surcharge`,
+        `es_data_replica_transactions_header`.`tax` AS `tax`,
+        `es_data_replica_transactions_header`.`description` AS `description`,
+        `es_data_replica_transactions_header`.`defective` AS `defective`,
+        `es_data_replica_transactions_header`.`impacts` AS `impacts`,
+        `es_data_replica_transactions_header`.`status` AS `status`,
+        `es_data_replica_transactions_header`.`adjustment_type` AS `adjustment_type`,
+        `es_data_replica_transactions_header`.`claim_id` AS `claim_id`,
+        `es_data_replica_transactions_header`.`est_primary` AS `est_primary`,
+        `es_data_replica_transactions_header`.`est_secondary` AS `est_secondary`,
+        `es_data_replica_transactions_header`.`paid_primary` AS `paid_primary`,
+        `es_data_replica_transactions_header`.`paid_secondary` AS `paid_secondary`,
+        (SELECT 
+                `es_data_replica_transactions_detail`.`provider_practice_id`
+            FROM
+                `es_data_replica_transactions_detail`
+            WHERE
+                ((`es_data_replica_transactions_detail`.`tran_num` = `es_data_replica_transactions_header`.`tran_num`)
+                    AND (`es_data_replica_transactions_header`.`office_id` = OFFICE_UUID())
+                    AND (`es_data_replica_transactions_detail`.`office_id` = OFFICE_UUID()))
+            ORDER BY `es_data_replica_transactions_detail`.`provider_practice_id`
+            LIMIT 1) AS `provider_practice_id`,
+        (SELECT 
+                `es_data_replica_transactions_detail`.`patient_practice_id`
+            FROM
+                `es_data_replica_transactions_detail`
+            WHERE
+                ((`es_data_replica_transactions_detail`.`tran_num` = `es_data_replica_transactions_header`.`tran_num`)
+                    AND (`es_data_replica_transactions_header`.`office_id` = OFFICE_UUID())
+                    AND (`es_data_replica_transactions_detail`.`office_id` = OFFICE_UUID()))
+            ORDER BY `es_data_replica_transactions_detail`.`patient_practice_id`
+            LIMIT 1) AS `patient_practice_id`,
+        `es_data_replica_transactions_header`.`bulk_payment_num` AS `bulk_payment_num`,
+        `es_data_replica_transactions_header`.`aging_date` AS `aging_date`,
+        `es_data_replica_transactions_header`.`tooth` AS `tooth`,
+        `es_data_replica_transactions_header`.`lab_fee` AS `lab_fee`,
+        `es_data_replica_transactions_header`.`lab_fee2` AS `lab_fee2`,
+        `es_data_replica_transactions_header`.`lab_code` AS `lab_code`,
+        `es_data_replica_transactions_header`.`lab_code2` AS `lab_code2`,
+        `es_data_replica_transactions_header`.`pre_fee` AS `pre_fee`,
+        `es_data_replica_transactions_header`.`standard_fee_id` AS `standard_fee_id`,
+        `es_data_replica_transactions_header`.`practice_id` AS `practice_id`,
+        `es_data_replica_transactions_header`.`procedure_type_codes` AS `procedure_type_codes`,
+        `es_data_replica_transactions_header`.`balance` AS `balance`
+    FROM
+        `es_data_replica_transactions_header`
+    WHERE
+        (`es_data_replica_transactions_header`.`office_id` = OFFICE_UUID())
+-----------------------
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `office_uuid`() RETURNS varchar(255) CHARSET utf8mb4
+    NO SQL
+    DETERMINISTIC
+return @office_uuid
+-------------
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS `rule_engine`.`office_uuid` $$
+CREATE FUNCTION `rule_engine`.`office_uuid` () RETURNS varchar(255)
+NO SQL
+DETERMINISTIC
+BEGIN
+return @office_uuid;
+END $$
+
+DELIMITER ;

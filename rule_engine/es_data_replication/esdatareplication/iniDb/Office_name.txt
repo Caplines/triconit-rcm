@@ -1,0 +1,7 @@
+in office_colud_name Enter Data
+Goto Rule Engine DB
+
+Goto Office table
+Fetch Name and UUID for the respective office.
+and enter data in office_colud_name
+

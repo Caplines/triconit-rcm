@@ -32,15 +32,23 @@ public class QueryTable {
 		ES_CHAIRS_COUNT(Constants.TABLE_CHAIRS, " count(*) from " + Constants.TABLE_CHAIRS + " ", " ", false, false,
 				Chairs.class),
 
-		ES_PAYTYPE(Constants.TABLE_PAYTYPE,
-				"paytype_id,sequence,description,prompt,display_on_payment_screen,currency_type,"
-						+ "include_on_deposit_yn," + "central_id,system_required" + " from " + Constants.TABLE_PAYTYPE
+		ES_PAYTYPE(Constants.TABLE_PAYTYPE,Constants.PAYTYPE_COLUMNS+ " from " + Constants.TABLE_PAYTYPE
 						+ " order by paytype_id asc",
 				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
 				PayType.class),
 
 		ES_PAYTYPE_COUNT(Constants.TABLE_PAYTYPE, " count(*) from " + Constants.TABLE_PAYTYPE + " ", " ", false, false,
 				PayType.class),
+		
+		ES_PAYTYPE_NEXT(Constants.TABLE_PAYTYPE,
+				Constants.PAYTYPE_COLUMNS + " from " + Constants.TABLE_PAYTYPE + "  "
+						 + " order by paytype_id asc",
+				" top " + Constants.QUERY_TOP_REP + " start at " + Constants.QUERY_START_REP, false, true,
+				PayType.class),
+		
+		ES_PAYTYPE_NEXT_COUNT(Constants.TABLE_PAYTYPE,
+				" count(*) from " + Constants.TABLE_PAYTYPE + "  where " + Constants.QUERY_WHERE_CLAUSE_REP, " ", true,
+				false, PayType.class),
 
 		/*
 		 * Patient Start

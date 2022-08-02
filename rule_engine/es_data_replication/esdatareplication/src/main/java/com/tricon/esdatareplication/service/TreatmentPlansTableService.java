@@ -55,11 +55,11 @@ public class TreatmentPlansTableService extends CommonTableService {
 	@Autowired
 	private TreatmentPlanItemsRepositoryRe treatmentPlanItemsRepositoryRe;
 
-	@Autowired
-	private PlannedServicesRepository plannedServicesRepository;
+	//@Autowired
+	//private PlannedServicesRepository plannedServicesRepository;
 
-	@Autowired
-	private PlannedServicesRepositoryRe plannedServicesRepositoryRe;
+	//@Autowired
+	//private PlannedServicesRepositoryRe plannedServicesRepositoryRe;
 
 	@Autowired
 	private ESTableRepository estableRepository;
@@ -173,7 +173,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 				treatmentPlanItemsRepositoryRe.deleteAll(repList);
 				//localCt = localCt + pL.size();
 			}
-			while (true) {
+			/*while (true) {
 				Pageable prepairPage = PageRequest.of(0, batchSize);// 0,50
 				List<PlannedServices> pL = plannedServicesRepository
 						.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES, prepairPage);
@@ -191,6 +191,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 				plannedServicesRepositoryRe.deleteAll(repList);
 				//localCt = localCt + pL.size();
 			}
+			*/
 			es.setRecordsInsertedLastIteration(localCt);
 			//es.setUpdatedDate(new Date());
 			estableRepository.save(es);
@@ -260,11 +261,13 @@ public class TreatmentPlansTableService extends CommonTableService {
 								// mark delete all
 								mysql.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
 								treatmentPlanItemsRepository.save(mysql);
+								/*
 								PlannedServices planser=plannedServicesRepository.findByPatientIdAndLineNumber(mysql.getPatientId(), mysql.getLineNumber());
 							    if (planser!=null ) {
 							    	planser.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
 							    	plannedServicesRepository.save(planser);
 							    }
+							    */
 							}
 						}
 							
@@ -278,6 +281,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 					String inPatsCl="Select "+Constants.PLANNEDSERVICE_COLUMNS+"  from "+Constants.TABLE_PLANNED_SERVICES+
 							" where  patient_id in   (" + "'" + String.join("','", patIds) + "')";
 					exData =replicationService.fetchDataFromES(inPatsCl, PlannedServices.class, null);
+					/*
 					List<PlannedServices> inMYSQLDBPlan =plannedServicesRepository.findByPatientIdIn(patIds);
 					if (exData!=null) {
 						List<PlannedServices> exDataOld=(List<PlannedServices>) exData;
@@ -303,7 +307,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 						inMYSQLDBPlan.forEach((u) -> u.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES));
 						plannedServicesRepository.saveAll(inMYSQLDBPlan);
 					}
-						
+						*/
 					}
 				}
 				apptIdInDB.removeAll(apptIdInES);// Patient id that are there in Local DB we need to update.
@@ -349,11 +353,13 @@ public class TreatmentPlansTableService extends CommonTableService {
 								// mark delete all
 								mysql.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
 								treatmentPlanItemsRepository.save(mysql);
+								/*
 								PlannedServices planser=plannedServicesRepository.findByPatientIdAndLineNumber(mysql.getPatientId(), mysql.getLineNumber());
 							    if (planser!=null ) {
 							    	planser.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES);
 							    	plannedServicesRepository.save(planser);
 							    }
+							    */
 							}
 						}
 							
@@ -365,6 +371,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 					}
 					
 					//Patient Ids
+					/*
 					String inPatsCl="Select "+Constants.PLANNEDSERVICE_COLUMNS+"  from "+Constants.TABLE_PLANNED_SERVICES+
 							" where  patient_id in   (" + "'" + String.join("','", patIds) + "')";
 					exData =replicationService.fetchDataFromES(inPatsCl, PlannedServices.class, bw);
@@ -393,6 +400,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 						inMYSQLDBPlan.forEach((u) -> u.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES));
 						plannedServicesRepository.saveAll(inMYSQLDBPlan);
 					}
+					*/
 					}
 				}
 
@@ -483,13 +491,13 @@ public class TreatmentPlansTableService extends CommonTableService {
 					List<TreatmentPlanItems> items =treatmentPlanItemsRepository.findByTreatmentPlanId(i);
 					for(TreatmentPlanItems item:items) {
 						treatmentPlanItemsRepository.delete(item);
-						PlannedServices pl =plannedServicesRepository.findByPatientIdAndLineNumber(item.getPatientId(),item.getLineNumber());
+						/*PlannedServices pl =plannedServicesRepository.findByPatientIdAndLineNumber(item.getPatientId(),item.getLineNumber());
 						if (pl!=null) {
 							plannedServicesRepository.delete(pl);
 							appendLoggerToWriter(TreatmentPlans.class, bw,
 									Constants.TABLE_DATA_DELETION_PROCESS + ": Delete PlannedServices (Line/Pat iD):" + pl.getLineNumber() +":" +pl.getPatientId(), true);
 						 }
-						
+						*/
 					}
 					appendLoggerToWriter(TreatmentPlans.class, bw,
 							Constants.TABLE_DATA_DELETION_PROCESS + ": Delete TreatmentPlanId:" + app.getTreatmentPlanId(), true);
@@ -521,12 +529,14 @@ public class TreatmentPlansTableService extends CommonTableService {
 						List<TreatmentPlanItemsReplica> items =treatmentPlanItemsRepositoryRe.findByTreatmentPlanIdAndOfficeId(i,office.getUuid());
 						for(TreatmentPlanItemsReplica item:items) {
 							treatmentPlanItemsRepositoryRe.delete(item);
+							/*
 							PlannedServicesReplica pl =plannedServicesRepositoryRe.findByPatientIdAndOfficeIdAndLineNumber(item.getPatientId(),office.getUuid(),item.getLineNumber());
 							if (pl!=null) {
 								plannedServicesRepositoryRe.delete(pl);
 								appendLoggerToWriter(TreatmentPlans.class, bw,
 										Constants.TABLE_DATA_DELETION_PROCESS + ": Delete PlannedServices (Line/Pat iD):" + pl.getLineNumber() +":" +pl.getPatientId(), true);
 							 }
+							 */
 						}
 						appendLoggerToWriter(TreatmentPlansReplica.class, bw,	Constants.TABLE_DATA_DELETION_PROCESS + ": Delete TreatmentPlanId:" + app.getTreatmentPlanId(), true);
 					

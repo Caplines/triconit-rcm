@@ -67,12 +67,14 @@ public class PlannedServicesTableService extends CommonTableService {
 			// patientRepository.countByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
 			// long totalPages = Double.valueOf(Math.ceil(count / (float)
 			// batchSize)).longValue();
+			boolean wentInLoopAtleastOnce=false;
 			while (true) {
 				Pageable prepairPage = PageRequest.of(0, batchSize);// 0,50
 				List<PlannedServices> pL = plannedServicesRepository
 						.findByMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO, prepairPage);
 				if (pL.size() == 0)
 					break;
+				wentInLoopAtleastOnce=true;
 				List<PlannedServicesReplica> repList = new ArrayList<>();
 				StringBuilder bu = new StringBuilder();
 				pL.forEach(x -> {
@@ -94,11 +96,14 @@ public class PlannedServicesTableService extends CommonTableService {
 
 				((List<PlannedServicesReplica>) repList).stream().map(PlannedServicesReplica::getPatientId)
 						.forEach(apptIdInES::add);
-
+				List<PlannedServicesReplica> del1 = new ArrayList<>();
+				PlannedServicesReplica ds=null;
 				for (PlannedServicesReplica r : repList) {
-					apptIdInES1.add(r.getPatientId() + "-" + r.getLineNumber());
+					apptIdInES1.add(r.getPatientId() + "-" + r.getLineNumber()+"-"+Constants.SimpleDateformatForEsQueryPL.format(r.getDatePlanned()));
+					ds =plannedServicesRepositoryRe.findByPatientIdAndOfficeIdAndLineNumber(r.getPatientId(),office.getUuid(),r.getLineNumber());
+					if (ds!=null) del1.add(ds);
 				}
-
+				if (del1.size()>0)plannedServicesRepositoryRe.deleteAll(del1);
 				((List<PlannedServicesReplica>) repList).stream().map(PlannedServicesReplica::getLineNumber)
 						.forEach(apptIdInESSecond::add);// check me
 
@@ -109,8 +114,8 @@ public class PlannedServicesTableService extends CommonTableService {
 
 				Set<String> extraAll = new HashSet<>();
 				for (PlannedServicesReplica k : inDBExtra) {
-					extraAll.add(k.getPatientId() + "-" + k.getLineNumber());
-					apptIdInDB1.add(k.getPatientId() + "-" +k.getLineNumber());
+					extraAll.add(k.getPatientId() + "-" + k.getLineNumber()+"-"+Constants.SimpleDateformatForEsQueryPL.format(k.getDatePlanned()));
+					apptIdInDB1.add(k.getPatientId() + "-" +k.getLineNumber()+"-"+Constants.SimpleDateformatForEsQueryPL.format(k.getDatePlanned()));
 				}
                 /*
 				List<PlannedServicesReplica> inDB = plannedServicesRepositoryRe
@@ -128,7 +133,9 @@ public class PlannedServicesTableService extends CommonTableService {
 					extraAll.forEach(id -> {
 						PlannedServicesReplica q = inDBExtra.stream()
 								.filter(p -> (id.split("-")[0].equals(p.getPatientId())
-										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber().intValue()))
+										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber().intValue())
+										&& id.split("-")[2].equals(Constants.SimpleDateformatForEsQueryPL.format(p.getDatePlanned())
+												))
 								.findAny().orElse(null);
 						del.add(q);
 					});
@@ -139,13 +146,21 @@ public class PlannedServicesTableService extends CommonTableService {
 
 				// inDB.stream().map( c => {c. }).forEach(apptIdInDB::add);
 				// inDB.stream().map( PlannedServicesReplica).forEach(apptIdInDB::add);
+				
+				
 				apptIdInES1.removeAll(apptIdInDB1);// Data that are not in Local DB
 				if (apptIdInES1.size() > 0) {
+					
+					
+					
+					
 					List<PlannedServicesReplica> l = new ArrayList<>();
 					apptIdInES1.forEach(id -> {
 						PlannedServicesReplica q = ((List<PlannedServicesReplica>) repList).stream()
 								.filter(p -> (id.split("-")[0].equals(p.getPatientId())
-										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber()))
+										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber())
+										&& id.split("-")[2].equals(Constants.SimpleDateformatForEsQueryPL.format(p.getDatePlanned())
+												))
 								.findAny().orElse(null);
 						q.setId(null);
 						l.add(q);
@@ -153,18 +168,51 @@ public class PlannedServicesTableService extends CommonTableService {
 					if (l.size() > 0)
 						plannedServicesRepositoryRe.saveAllAndFlush(l);
 				}
+				
+				/*if (apptIdInDB1.size() > 0) {
+					//Delete Old Data with Patients and Line  Number
+					List<PlannedServicesReplica> del = new ArrayList<>();
+					apptIdInES1.forEach(id -> {
+						PlannedServicesReplica q = ((List<PlannedServicesReplica>) (List<PlannedServicesReplica>) repList).stream()
+								.filter(p -> (id.split("-")[0].equals(p.getPatientId())
+										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber()
+										))
+								.findAny().orElse(null);
+						q.setId(null);
+						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+						del.add(q);
+						
+					});
+					
+					if (del.size()>0) {
+						List<PlannedServicesReplica> del1 = new ArrayList<>();
+						PlannedServicesReplica ds=null;
+						for (PlannedServicesReplica de:del) {
+							ds =plannedServicesRepositoryRe.findByPatientIdAndOfficeIdAndLineNumber(de.getPatientId(),office.getUuid(),de.getLineNumber());
+							if (ds!=null) del1.add(ds);
+						}
+						if (del1.size()>0)plannedServicesRepositoryRe.deleteAll(del1);
+						
+					}
+				}*/
 				apptIdInDB1.removeAll(apptIdInES1);// Data that are there in Local DB we need to update.
 				if (apptIdInDB1.size() > 0) {
+					
+					
 					List<PlannedServicesReplica> l = new ArrayList<>();
 					apptIdInDB1.forEach(id -> {
 						PlannedServicesReplica p = ((List<PlannedServicesReplica>) repList).stream()
 								.filter(dp -> (id.split("-")[0].equals(dp.getPatientId())
-										&& Integer.parseInt(id.split("-")[1]) == dp.getLineNumber()))
+										&& Integer.parseInt(id.split("-")[1]) == dp.getLineNumber())
+										&& id.split("-")[2].equals(Constants.SimpleDateformatForEsQueryPL.format(dp.getDatePlanned())
+												))
 								.findAny().orElse(null);
 
 						PlannedServicesReplica old = inDBExtra.stream()
 								.filter(ind -> (id.split("-")[0].equals(ind.getPatientId())
-										&& Integer.parseInt(id.split("-")[1]) == ind.getLineNumber()))
+										&& Integer.parseInt(id.split("-")[1]) == ind.getLineNumber())
+										&& id.split("-")[2].equals(Constants.SimpleDateformatForEsQueryPL.format(ind.getDatePlanned())
+												))
 								.findAny().orElse(null);
 						if (p != null && old != null) {
 							if (old != null) {
@@ -227,7 +275,7 @@ public class PlannedServicesTableService extends CommonTableService {
 						//Set<Integer> apptIdInESSecond = new HashSet<>();
 
 						for (PlannedServices r : pL) {
-							apptIdInDB.add(r.getPatientId() + "-" + r.getLineNumber());
+							apptIdInDB.add(r.getPatientId() + "-" + r.getLineNumber()+"-"+Constants.SimpleDateformatForEsQueryPL.format(r.getDatePlanned()));
 							//apptIdInESSecond.add(r.getLineNumber());
 							apptIdInES.add(r.getPatientId());
 						}
@@ -237,7 +285,9 @@ public class PlannedServicesTableService extends CommonTableService {
                         apptIdInDB.forEach(id -> {
                         	PlannedServicesReplica p = inDBExtra.stream()
     								.filter(dp -> (id.split("-")[0].equals(dp.getPatientId())
-    										&& Integer.parseInt(id.split("-")[1]) == dp.getLineNumber()))
+    										&& Integer.parseInt(id.split("-")[1]) == dp.getLineNumber())
+    										&& id.split("-")[2].equals(Constants.SimpleDateformatForEsQueryPL.format(dp.getDatePlanned())
+    												))
     								.findAny().orElse(null);
                         	if (p!=null)plannedServicesRepositoryRe.delete(p);
 						});
@@ -246,7 +296,10 @@ public class PlannedServicesTableService extends CommonTableService {
 						
 					}else break;
 				}
+			if (wentInLoopAtleastOnce==false) {
+				//plannedServicesRepositoryRe.activateDeactiveData(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES, DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES);
 				
+			}
 			}catch(Exception ex) {
 				ex.printStackTrace();
 				es.setRecordsInsertedLastIteration(0);
@@ -277,6 +330,9 @@ public class PlannedServicesTableService extends CommonTableService {
 				logFirstTimeDataEntryToTable(PlannedServices.class, bw, data.size());
 			} else {
 				//
+				//plannedServicesRepository.saveAll((List<PlannedServices>) data);
+				//logFirstTimeDataEntryToTable(PlannedServices.class, bw, data.size());
+				//if (true) return ;//Check This new Logic
 				// new repository for cloud.. and save data...
 				Set<String> apptIdInES = new HashSet<>();
 				// Set<String> apptIdInDB = new HashSet<>();
@@ -289,10 +345,21 @@ public class PlannedServicesTableService extends CommonTableService {
 				if (data != null) {
 					((List<PlannedServices>) (List<PlannedServices>) data).stream().map(PlannedServices::getPatientId)
 							.forEach(apptIdInES::add);
-
+					List<PlannedServices> del1 = new ArrayList<>();
+					PlannedServices ds=null;
 					for (PlannedServices r : (List<PlannedServices>) data) {
-						apptIdInES1.add(r.getPatientId() + "-" + r.getLineNumber());
+						apptIdInES1.add(r.getPatientId() + "-" + r.getLineNumber() +"-"+Constants.SimpleDateformatForEsQueryPL.format(r.getDatePlanned()));
+						ds =plannedServicesRepository.findByPatientIdAndLineNumber(r.getPatientId(),r.getLineNumber());
+						if (ds!=null) {
+							System.out.println("IN DELETION"+ds.getPatientId()+";;"+ds.getLineNumber().intValue());
+							del1.add(ds);
+						}
 					}
+					if (del1.size()>0) {
+						
+						plannedServicesRepository.deleteAll(del1);
+					}
+					
 					((List<PlannedServices>) (List<PlannedServices>) data).stream().map(PlannedServices::getLineNumber)
 							.forEach(apptIdInESSecond::add);// check me
 				}
@@ -302,8 +369,8 @@ public class PlannedServicesTableService extends CommonTableService {
 
 				Set<String> extraAll = new HashSet<>();
 				for (PlannedServices k : inDBExtra) {
-					extraAll.add(k.getPatientId() + "-" + k.getLineNumber());
-					apptIdInDB1.add(k.getPatientId() + "-" + k.getLineNumber());
+					extraAll.add(k.getPatientId() + "-" + k.getLineNumber()+"-"+Constants.SimpleDateformatForEsQueryPL.format(k.getDatePlanned()));
+					apptIdInDB1.add(k.getPatientId() + "-" + k.getLineNumber()+"-"+Constants.SimpleDateformatForEsQueryPL.format(k.getDatePlanned()));
 				}
                 /* 
 				List<PlannedServices> inDB = plannedServicesRepository
@@ -345,14 +412,26 @@ public class PlannedServicesTableService extends CommonTableService {
 
 				// inDB.stream().map( c => {c. }).forEach(apptIdInDB::add);
 				// inDB.stream().map( PlannedServicesReplica).forEach(apptIdInDB::add);
-				apptIdInES1.removeAll(apptIdInDB1);// Data that are not in Local DB
+				
+				
+				
+				
+				
 				Set<String> patIds= new HashSet<>();
+				apptIdInES1.removeAll(apptIdInDB1);// Data that are not in Local DB
+				
+				
+				try {
 				if (apptIdInES1.size() > 0) {
+					
+					
 					List<PlannedServices> l = new ArrayList<>();
 					apptIdInES1.forEach(id -> {
 						PlannedServices q = ((List<PlannedServices>) (List<PlannedServices>) data).stream()
 								.filter(p -> (id.split("-")[0].equals(p.getPatientId())
-										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber()))
+										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber()
+										&& id.split("-")[2].equals(Constants.SimpleDateformatForEsQueryPL.format(p.getDatePlanned())
+										)))
 								.findAny().orElse(null);
 						q.setId(null);
 						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
@@ -361,6 +440,7 @@ public class PlannedServicesTableService extends CommonTableService {
 					});
 					if (l.size() > 0) {
 						plannedServicesRepository.saveAll(l);
+						/*/* recently Commented
 						String inPatsCl="Select "+Constants.PLANNEDSERVICE_COLUMNS+"  from "+Constants.TABLE_PLANNED_SERVICES+
 								" where  patient_id in   (" + "'" + String.join("','", patIds) + "')";
 						List<?> exData =replicationService.fetchDataFromES(inPatsCl, PlannedServices.class, null);
@@ -389,22 +469,60 @@ public class PlannedServicesTableService extends CommonTableService {
 							inMYSQLDBPlan.forEach((u) -> u.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES));
 							plannedServicesRepository.saveAll(inMYSQLDBPlan);
 						}
+						*/
+					}
+				}
+			    }catch(Exception v) {
+			    	
+			    }
+				/*
+				if (apptIdInDB1.size() > 0) {
+                    List<PlannedServices> del = new ArrayList<>();
+					
+					//Delete Old Data with Patients and Line  Number
+                    apptIdInDB1.forEach(id -> {
+						PlannedServices q = ((List<PlannedServices>) (List<PlannedServices>) data).stream()
+								.filter(p -> (id.split("-")[0].equals(p.getPatientId())
+										&& Integer.parseInt(id.split("-")[1]) == p.getLineNumber()
+										))
+								.findAny().orElse(null);
+						q.setId(null);
+						q.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.NO);
+						del.add(q);
+						
+					});
+					
+                    if (del.size()>0) {
+						List<PlannedServices> del1 = new ArrayList<>();
+						PlannedServices ds=null;
+						for (PlannedServices de:del) {
+							ds =plannedServicesRepository.findByPatientIdAndLineNumber(de.getPatientId(),de.getLineNumber());
+							if (ds!=null) del1.add(ds);
+						}
+						if (del1.size()>0)plannedServicesRepository.deleteAll(del1);
 						
 					}
 				}
+				*/
 				apptIdInDB1.removeAll(apptIdInES1);// Data that are there in Local DB we need to update.
 				if (apptIdInDB1.size() > 0) {
 					List<PlannedServices> l = new ArrayList<>();
 					patIds.clear();
+                    
+					
 					apptIdInDB1.forEach(id -> {
 						PlannedServices p = ((List<PlannedServices>) (List<PlannedServices>) data).stream()
 								.filter(dp -> (id.split("-")[0].equals(dp.getPatientId())
-										&& Integer.parseInt(id.split("-")[1]) == dp.getLineNumber()))
+										&& Integer.parseInt(id.split("-")[1]) == dp.getLineNumber()
+										&& id.split("-")[2].equals(Constants.SimpleDateformatForEsQueryPL.format(dp.getDatePlanned())
+										)))
 								.findAny().orElse(null);
 
 						PlannedServices old = inDBExtra.stream()
 								.filter(ind -> (id.split("-")[0].equals(ind.getPatientId())
-										&& Integer.parseInt(id.split("-")[1]) == ind.getLineNumber()))
+										&& Integer.parseInt(id.split("-")[1]) == ind.getLineNumber()
+										&& id.split("-")[2].equals(Constants.SimpleDateformatForEsQueryPL.format(ind.getDatePlanned())
+										)))
 								.findAny().orElse(null);
 						if (p != null && old != null) {
 							if (old != null) {
@@ -422,6 +540,7 @@ public class PlannedServicesTableService extends CommonTableService {
 					});
 					if (l.size() > 0) {
 						plannedServicesRepository.saveAll(l);
+						/* recently Commented
 						String inPatsCl="Select "+Constants.PLANNEDSERVICE_COLUMNS+"  from "+Constants.TABLE_PLANNED_SERVICES+
 								" where  patient_id in   (" + "'" + String.join("','", patIds) + "')";
 						List<?> exData =replicationService.fetchDataFromES(inPatsCl, PlannedServices.class, null);
@@ -450,6 +569,7 @@ public class PlannedServicesTableService extends CommonTableService {
 							inMYSQLDBPlan.forEach((u) -> u.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS_DEL.YES));
 							plannedServicesRepository.saveAll(inMYSQLDBPlan);
 						}
+						*/
 					}
 				}
 				logAfterFirstTimeDataEntryToTable(PlannedServices.class, bw, apptIdInES.size(), apptIdInDB1.size(),
@@ -600,5 +720,9 @@ public class PlannedServicesTableService extends CommonTableService {
 	}
 	
 	
+	@Transactional("ruleEngineTransactionManager")
+	public void activateDeactiveData() {
+		plannedServicesRepositoryRe.activateDeactiveData(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES, DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES);
+	}
 
 }

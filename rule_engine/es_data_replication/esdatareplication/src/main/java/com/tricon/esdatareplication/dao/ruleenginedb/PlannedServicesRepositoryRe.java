@@ -3,6 +3,7 @@ package com.tricon.esdatareplication.dao.ruleenginedb;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.apache.bcel.classfile.Constant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -28,5 +29,10 @@ public interface PlannedServicesRepositoryRe extends JpaRepository<PlannedServic
 	@Modifying
 	@Query("delete PlannedServicesReplica where movedToCloud=:d")
 	void deleteDeactivateData(@Param("d") int d);
+
+	
+	@Modifying
+	@Query("update PlannedServicesReplica set movedToCloud = :d where movedToCloud= :d1")
+	void activateDeactiveData(@Param("d") int d,@Param("d1") int d1);
 
 }

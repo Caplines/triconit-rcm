@@ -1,0 +1,120 @@
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `re_local`.`payment_provider` AS
+    SELECT 
+        `re_local`.`transactions_detail`.`tran_num` AS `tran_num`,
+        `re_local`.`transactions_detail`.`collections_go_to` AS `provider_id`,
+        SUM(-(`re_local`.`transactions_detail`.`amount`)) AS `amount`,
+        `re_local`.`transactions_detail`.`provider_practice_id` AS `practice_id`,
+        `re_local`.`transactions_detail`.`provider_id` AS `prod_provider_id`
+    FROM
+        (`re_local`.`transactions_detail`
+        JOIN `re_local`.`transactions_header`)
+    WHERE
+        ((`re_local`.`transactions_header`.`tran_num` = `re_local`.`transactions_detail`.`tran_num`)
+            AND (`re_local`.`transactions_detail`.`status` = 1)
+            AND (((`re_local`.`transactions_header`.`type` IN ('A' , 'P', 'I', 'Y', 'C', 'W'))
+            AND (`re_local`.`transactions_header`.`status` IN ('A' , 'D', 'V')))
+            OR ((`re_local`.`transactions_header`.`type` = 'D')
+            AND (`re_local`.`transactions_header`.`status` = 'V'))))
+    GROUP BY `re_local`.`transactions_detail`.`tran_num` , `re_local`.`transactions_detail`.`collections_go_to` , `re_local`.`transactions_detail`.`provider_id` , `re_local`.`transactions_detail`.`provider_practice_id`
+    ORDER BY `re_local`.`transactions_detail`.`tran_num` , `re_local`.`transactions_detail`.`collections_go_to` , `re_local`.`transactions_detail`.`provider_id` , `re_local`.`transactions_detail`.`provider_practice_id`
+
+-----------------
+
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `re_local`.`transactions` AS
+    SELECT 
+        `re_local`.`transactions_header`.`tran_num` AS `tran_num`,
+        `re_local`.`transactions_header`.`user_id` AS `user_id`,
+        `re_local`.`transactions_header`.`type` AS `type`,
+        `re_local`.`transactions_header`.`tran_date` AS `tran_date`,
+        (SELECT 
+                `re_local`.`transactions_detail`.`patient_id`
+            FROM
+                `re_local`.`transactions_detail`
+            WHERE
+                (`re_local`.`transactions_detail`.`tran_num` = `re_local`.`transactions_header`.`tran_num`)
+            ORDER BY `re_local`.`transactions_detail`.`patient_id`
+            LIMIT 1) AS `patient_id`,
+        `re_local`.`transactions_header`.`resp_party_id` AS `resp_party_id`,
+        `re_local`.`transactions_header`.`amount` AS `amount`,
+        `re_local`.`transactions_header`.`service_code` AS `service_code`,
+        `re_local`.`transactions_header`.`paytype_id` AS `paytype_id`,
+        `re_local`.`transactions_header`.`sequence` AS `sequence`,
+        (SELECT 
+                `re_local`.`transactions_detail`.`provider_id`
+            FROM
+                `re_local`.`transactions_detail`
+            WHERE
+                (`re_local`.`transactions_detail`.`tran_num` = `re_local`.`transactions_header`.`tran_num`)
+            ORDER BY `re_local`.`transactions_detail`.`provider_id`
+            LIMIT 1) AS `provider_id`,
+        (SELECT 
+                `re_local`.`transactions_detail`.`collections_go_to`
+            FROM
+                `re_local`.`transactions_detail`
+            WHERE
+                (`re_local`.`transactions_detail`.`tran_num` = `re_local`.`transactions_header`.`tran_num`)
+            ORDER BY `re_local`.`transactions_detail`.`collections_go_to`
+            LIMIT 1) AS `collections_go_to`,
+        `re_local`.`transactions_header`.`statement_num` AS `statement_num`,
+        NULL AS `old_tooth`,
+        `re_local`.`transactions_header`.`surface` AS `surface`,
+        `re_local`.`transactions_header`.`fee` AS `fee`,
+        `re_local`.`transactions_header`.`discount_surcharge` AS `discount_surcharge`,
+        `re_local`.`transactions_header`.`tax` AS `tax`,
+        `re_local`.`transactions_header`.`description` AS `description`,
+        `re_local`.`transactions_header`.`defective` AS `defective`,
+        `re_local`.`transactions_header`.`impacts` AS `impacts`,
+        `re_local`.`transactions_header`.`status` AS `status`,
+        `re_local`.`transactions_header`.`adjustment_type` AS `adjustment_type`,
+        `re_local`.`transactions_header`.`claim_id` AS `claim_id`,
+        `re_local`.`transactions_header`.`est_primary` AS `est_primary`,
+        `re_local`.`transactions_header`.`est_secondary` AS `est_secondary`,
+        `re_local`.`transactions_header`.`paid_primary` AS `paid_primary`,
+        `re_local`.`transactions_header`.`paid_secondary` AS `paid_secondary`,
+        (SELECT 
+                `re_local`.`transactions_detail`.`provider_practice_id`
+            FROM
+                `re_local`.`transactions_detail`
+            WHERE
+                (`re_local`.`transactions_detail`.`tran_num` = `re_local`.`transactions_header`.`tran_num`)
+            ORDER BY `re_local`.`transactions_detail`.`provider_practice_id`
+            LIMIT 1) AS `provider_practice_id`,
+        (SELECT 
+                `re_local`.`transactions_detail`.`patient_practice_id`
+            FROM
+                `re_local`.`transactions_detail`
+            WHERE
+                (`re_local`.`transactions_detail`.`tran_num` = `re_local`.`transactions_header`.`tran_num`)
+            ORDER BY `re_local`.`transactions_detail`.`patient_practice_id`
+            LIMIT 1) AS `patient_practice_id`,
+        `re_local`.`transactions_header`.`bulk_payment_num` AS `bulk_payment_num`,
+        `re_local`.`transactions_header`.`aging_date` AS `aging_date`,
+        `re_local`.`transactions_header`.`tooth` AS `tooth`,
+        `re_local`.`transactions_header`.`lab_fee` AS `lab_fee`,
+        `re_local`.`transactions_header`.`lab_fee2` AS `lab_fee2`,
+        `re_local`.`transactions_header`.`lab_code` AS `lab_code`,
+        `re_local`.`transactions_header`.`lab_code2` AS `lab_code2`,
+        `re_local`.`transactions_header`.`pre_fee` AS `pre_fee`,
+        `re_local`.`transactions_header`.`standard_fee_id` AS `standard_fee_id`,
+        `re_local`.`transactions_header`.`practice_id` AS `practice_id`,
+        `re_local`.`transactions_header`.`procedure_type_codes` AS `procedure_type_codes`,
+        `re_local`.`transactions_header`.`balance` AS `balance`
+    FROM
+        `re_local`.`transactions_header`
+
+--------------
+CREATE DEFINER=`root`@`localhost` FUNCTION `office_uuid`() RETURNS varchar(255) CHARSET utf8mb4
+    NO SQL
+    DETERMINISTIC
+return @office_uuid
+----
+select s.* from (select @office_uuid:='23232323232' p) parm , es_data_replica_transactions s;
+select s.* from (select @office_uuid:='23232323232' p) parm , es_data_replica_payment_provider s;
