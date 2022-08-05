@@ -5,15 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,9 +28,11 @@ import com.tricon.ruleengine.dao.CompanyDao;
 import com.tricon.ruleengine.dao.IVformTypeDao;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
+import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GenericResponse;
+import com.tricon.ruleengine.exception.RuleEngineException;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.IVFormType;
@@ -479,6 +484,48 @@ public class CaplineIVFGoogleFormController {
 		}
 		
 
+	}
+	
+	@CrossOrigin
+	@GetMapping
+	@RequestMapping(value = "/googleESReportReplacation")
+	public ResponseEntity<Object> queryESReportReplacation(@RequestParam(value = "password", required = true) String password,
+            @RequestParam(value = "selectcolumns", required = true) String selectcolumns,
+            @RequestParam(value = "gndatebet", required = true) String generalDateIVFDoneDBBet,
+            @RequestParam(value = "columncount", required = false, defaultValue="0") int columncount,
+            @RequestParam(value = "office", required = true) String office,
+            @RequestParam(value = "queryfor", required = true) String qname,HttpServletRequest request,
+			HttpServletResponse response)
+	{
+		
+		List<Object> o=null;
+		CaplineDataReplicationDto dto=new CaplineDataReplicationDto();
+		dto.setPasswordRE(password);
+		dto.setOfficeNameDB(office);
+		dto.setSelectcolumns(selectcolumns);
+		dto.setGndatebet(generalDateIVFDoneDBBet);
+		dto.setColumnCount(columncount);
+		dto.setQueryName(qname);
+		try
+		{
+			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+			Office off = od.getOfficeByName(office,cmp.getUuid());
+			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+			if (esDB != null && esDB.getPassword().equals(password)) 
+			{
+		         o=(List<Object>)civf.searchCaplineDataReplacation(dto,off);
+			}
+			else
+			{
+				return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.NOT_FOUND, "OfficeName or Password are Incorrect", ""));
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.NOT_FOUND, "Error While Fetching Data", ""));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,"", o));	
 	}
 
 }

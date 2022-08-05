@@ -6,27 +6,33 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.UserDao;
+import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GoogleReportsRDDTO;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
+import com.tricon.ruleengine.exception.RuleEngineException;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
@@ -828,6 +834,31 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				}
 		}	
 		return dataBean;
+	}
+
+	@Override
+	public Object searchCaplineDataReplacation(CaplineDataReplicationDto d,Office office) throws Exception
+	{
+		
+		 List<Object> data=patientDao.searchPatientHistoryFromGivenColumns(d,office);
+		 List<GoogleReportsRDDTO> beanList = new ArrayList<>();
+			GoogleReportsRDDTO dt= null;		
+			for(Object o:data) {
+				dt = new GoogleReportsRDDTO();
+				int x=-1;
+				if (o!=null) {
+					Object [] a=(Object []) o;
+					for(Object f:a) {
+						if (x==-2) {
+							x++;
+							continue ;
+						}
+						setUPResponseData(dt, ++x,f);		
+					}
+				}
+				beanList.add(dt);
+			}
+			return beanList;
 	}
 
 }

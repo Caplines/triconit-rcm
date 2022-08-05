@@ -2,8 +2,10 @@ package com.tricon.ruleengine.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.scrapping.ScrapPatient;
@@ -51,7 +53,9 @@ public interface PatientDao {
 	
 	public void updatePatientTempDataOnly(PatientTemp pat) throws Exception;
 	
-	public List<ScrapPatient> getScrappingStatusByPatIdsTemp(List<Integer> ids); 
+	public List<ScrapPatient> getScrappingStatusByPatIdsTemp(List<Integer> ids);
+	
+	public  List<Object> searchPatientHistoryFromGivenColumns(CaplineDataReplicationDto o,Office off)throws Exception;
 	
 
 }

@@ -378,6 +378,10 @@ public class Constants {
 	
 	public static String REMOTE_LITE_SITE_NAME="Remote Lite";
 	
+	public static final String QUERY_FOR_Reconcillation="Production Reconcillation";
+	public static final String QUERY_FOR_DTP="DTP";
+	public static final String QUERY_FOR_ItemizedCash="Itemized Cash";
+	
 	
 	
 	

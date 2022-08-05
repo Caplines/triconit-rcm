@@ -1,10 +1,12 @@
 package com.tricon.ruleengine.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
@@ -18,8 +20,10 @@ import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.PatientDao;
+import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
+import com.tricon.ruleengine.dto.OfficeDto;
 import com.tricon.ruleengine.dto.scrapping.ScrapPatient;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
@@ -36,7 +40,6 @@ import com.tricon.ruleengine.utils.Constants;
 
 @Repository
 public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
-
 	
 	static Class<?> clazz = PatientDaoImpl.class;
 	
@@ -747,6 +750,43 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		}
 		return pats;
 		
+	}
+	
+	@Override
+	public List<Object> searchPatientHistoryFromGivenColumns(CaplineDataReplicationDto o,Office office)throws Exception
+	{
+		Session s=getSession();
+		List<Object> data=new ArrayList<>();
+		String finalQuery="",queryFor="";
+		queryFor=(o.getQueryName().isEmpty())?"null":o.getQueryName();
+		switch(queryFor)
+		{
+		    case Constants.QUERY_FOR_Reconcillation:
+		    	finalQuery="select "+o.getSelectcolumns()+" from office off, es_data_replica_patient p "
+		    			+ "JOIN es_data_replica_transactions_detail t ON t.patient_id = p.patient_id JOIN "
+		    			+ "es_data_replica_transactions_header th on th.tran_num = t.tran_num WHERE th.impacts = 'P' AND DATE(t.date_entered) BETWEEN "+o.getGndatebet()+""
+		    			+ " and off.uuid=p.office_id and off.uuid='"+office.getUuid()+"'";
+		    	break;
+		    case Constants.QUERY_FOR_DTP:
+		    	finalQuery="select "+o.getSelectcolumns()+" from Office off ,es_data_replica_patient p "
+		    			+ "JOIN es_data_replica_planned_services ps ON p.patient_id=ps.patient_id LEFT JOIN es_data_replica_appointment a ON a.appointment_id=ps.appt_id "
+		    			+ "LEFT JOIN es_data_replica_treatment_plan_items ti ON ps.patient_id = ti.patient_id LEFT JOIN es_data_replica_treatment_plans tp ON ti.treatment_plan_id = tp.treatment_plan_id "
+		    			+ "JOIN es_data_replica_provider pr ON ps.provider_id = pr.provider_id LEFT JOIN es_data_replica_employer e ON (p.prim_employer_id = e.employer_id OR p.sec_employer_id = e.employer_id) WHERE ps.date_planned BETWEEN "+o.getGndatebet()+" and off.uuid=p.office_id and off.uuid='"+office.getUuid()+"'";
+		    	break;
+		    	
+		    case Constants.QUERY_FOR_ItemizedCash:
+		    	finalQuery="select "+o.getSelectcolumns()+" from Office off ,es_data_replica_transactions tr "
+		    			+ "left join es_data_replica_payment_provider pp on tr.tranNum = pp.tranNum "
+		    			+ "left join es_data_replica_patient p on p.patient_id = tr.patientId "
+		    			+ "left join es_data_replica_transactions_header th on th.tran_num = tr.tranNum "
+		    			+ "left join es_data_replica_paytype pt on th.paytype_id = pt.paytype_id WHERE tr.tranDate BETWEEN "+o.getGndatebet()+" and off.uuid=p.office_id and off.uuid='"+office.getUuid()+"' and pt.paytype_id != null group by tr.patientId,CONCAT(p.first_name ,' ',p.last_name ),tr.tranDate,tr.paytypeId,pt.description,tr.providerId";
+		    	break;
+		    	default:System.out.println("No Match Found");
+		}
+		System.out.println(finalQuery);
+		data=s.createSQLQuery(finalQuery).list();
+		closeSession(s);
+		return data;
 	}
 	
 }

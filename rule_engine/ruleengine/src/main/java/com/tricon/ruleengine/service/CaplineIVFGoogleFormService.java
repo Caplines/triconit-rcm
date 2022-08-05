@@ -3,6 +3,9 @@ package com.tricon.ruleengine.service;
 import java.util.Date;
 import java.util.Set;
 
+import org.springframework.http.ResponseEntity;
+
+import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.model.db.IVFormType;
@@ -30,4 +33,7 @@ public interface CaplineIVFGoogleFormService {
 	public Object searchIVFDataPat(CaplineIVFQueryFormDto d,Office office,Set<String> patIds) throws Exception;
 
 	public Object  searchIVFDataTemp(CaplineIVFQueryFormDto d,Office office) throws Exception;
+	
+	public Object searchCaplineDataReplacation(CaplineDataReplicationDto d,Office office)throws Exception;
+
 }
