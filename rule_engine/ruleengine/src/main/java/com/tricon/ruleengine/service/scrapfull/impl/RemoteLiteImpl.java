@@ -525,7 +525,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 			   }
 			   String hiddenClaims="False";
 			   String className= tr.getAttribute("class");
-			   if (className!=null && className.contains("row-ignore")) {
+			   if (className!=null && (className.contains("row-ignore") || className.contains("ignored-row")) ) {
 				   hiddenClaims="True";
 			   }
 			   List<WebElement> tds= tr.findElements(By.tagName("td"));

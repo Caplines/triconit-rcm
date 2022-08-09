@@ -34,8 +34,8 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 	//private int size=0;
 	private final int  max=20;
 	private int  ctALL=0;
-	HtmlUnitDriver driver = null;
-	
+	//HtmlUnitDriver driver = null;
+	WebDriver driver = null;
 	//private int  ctALLO=0;
 		
 	
@@ -89,8 +89,8 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 	
 
 	public List<RosterDetails> scrapSite(ScrappingSiteDetails scrappingSiteDetails,ScrappingInputDto dto) {
-		this.driver = new HtmlUnitDriver();
-		driver.setJavascriptEnabled(true);//
+		this.driver = getBrowserDriverOpenActualBrowser();
+		//driver.setJavascriptEnabled(true);//
 		final Logger logger = LogManager.getLogger("com.gargoylesoftware");
 		final org.apache.logging.log4j.Level OFF = org.apache.logging.log4j.Level.OFF;
 		logger.log(OFF, "NO LOG"); // use the custom VERBOSE level
@@ -188,7 +188,7 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			
 		}
 			int ct = initial;//2;
-			int newCt=7;//6 old
+			int newCt=8;//6 old
 			if (cont) {
 			boolean breakonExp=false;	
 			for (;;) {
@@ -199,9 +199,16 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 					RosterDetails rd = new RosterDetails();
 					for (int x = 1; x <= elements.size(); x++) {
 						//to close pop up..
-						WebElement element23 = driver.findElement(By.className("header"));// path("/html/body/div[8]/div/div/div/div[1]/a"));
+						// path("/html/body/div[8]/div/div/div/div[1]/a"));
 						WebElement element231 = null;// path("/html/body/div[8]/div/div/div/div[1]/a"));
+						if (x!=1) {
+						try {
+						WebElement element23 = driver.findElements(By.className("closeInfoBox")).get(1);
 						element23.click();
+						}catch(Exception p){
+							p.printStackTrace();
+						}
+						}
 						WebElement element2 =null;
 						try {
 						element2 = driver.findElement(By.xpath(
@@ -215,7 +222,7 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 
 						if (x == elements.size() - 1) {
 							element2.findElement(By.tagName("div")).click();
-							Thread.sleep(5000);
+							Thread.sleep(8000);
 							try {
 							String z="moreInfoBox";	
 							//	if (name.equalsIgnoreCase("B")) z="moreInfoBox1";//for test
@@ -341,8 +348,8 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 	
 	private void reloginAndNavigate() throws InterruptedException {
 		this.driver.close();
-		this.driver = new HtmlUnitDriver();
-		this.driver.setJavascriptEnabled(true);//
+		this.driver = getBrowserDriverOpenActualBrowser();
+		//this.driver.setJavascriptEnabled(true);//
 		loginToSiteMCNA(scrappingSiteDetails, this.driver);
 		navigatetoRoster();
 

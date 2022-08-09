@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -23,27 +24,33 @@ public class BaseScrappingServiceImpl {
 	public void loginToSiteMCNA(ScrappingSiteDetails scrappingSiteDetails, WebDriver driver) throws InterruptedException {
 
 		driver.get(scrappingSiteDetails.getScrappingSite().getSiteUrl());
-		Thread.sleep(8000);// Need to keep this number high for Linux issue.
+		Thread.sleep(5000);
+        //driver.findElement(By.id("recaptcha-anchor")).click();
+		
 		WebElement element = driver.findElement(By.name("loginUsername"));
 		element.sendKeys(scrappingSiteDetails.getUserName());
-		System.out.println(driver.findElements(By.tagName("iframe")).size());
-		WebElement iframe =driver.findElements(By.tagName("iframe")).get(0);
-		System.out.println(iframe.getText());
+		//System.out.println(driver.findElements(By.tagName("iframe")).size());
+		//WebElement iframe =driver.findElements(By.tagName("iframe")).get(0);
+		//System.out.println(iframe.getText());
 		//WebElement sss =iframe.findElement(By.id("recaptcha-anchor"));
-		System.out.println(driver.findElements(By.tagName("iframe")).get(1).getText());
-		System.out.println(driver.findElements(By.tagName("iframe")).get(2).getText());
-		driver.switchTo().frame(0);
+		//System.out.println(driver.findElements(By.tagName("iframe")).get(1).getText());
+		//System.out.println(driver.findElements(By.tagName("iframe")).get(2).getText());
+		//driver.switchTo().frame(0);
 		Thread.sleep(5000);
-        driver.findElement(By.id("recaptcha-anchor")).click();
-		Thread.sleep(8000);
 
-		driver.switchTo().parentFrame();
-		WebElement element2 = driver.findElement(By.id("loginPasswordPlain"));
+		//driver.switchTo().parentFrame();
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		
+		js.executeScript("document.getElementById('loginPasswordPlain').value='"+scrappingSiteDetails.getPassword()+"';");
+		js.executeScript("document.getElementById('loginPassword').value='"+scrappingSiteDetails.getPassword()+"';");
+		/*WebElement element2 = driver.findElement(By.id("loginPasswordPlain"));
 		element2.sendKeys(scrappingSiteDetails.getPassword());
 		WebElement element5 = driver.findElement(By.id("loginPassword"));
 		element5.sendKeys(scrappingSiteDetails.getPassword());
+		*/
 		WebElement element3 = driver.findElement(By.id("loginButton"));
-
+		Thread.sleep(10000);
+		Thread.sleep(8000);// Need to keep this number high for Linux issue.
 		element3.click();
 		Thread.sleep(4000);
 
@@ -101,6 +108,36 @@ public class BaseScrappingServiceImpl {
 			// System.out.println("555");
 			options.addArguments("-disable-infobars");
 			options.addArguments("--headless");
+			options.addArguments("--no-sandbox");
+			options.addArguments("--disable-dev-shm-usage");
+			options.setExperimentalOption("useAutomationExtension", false);
+			// System.out.println("8888");
+			options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+			// System.out.println("1118888");
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+		// System.out.println("getBrowserDriver:" + 88888);
+		ChromeDriverService chromeDriverService = ChromeDriverService.createDefaultService();
+		return new ChromeDriver(chromeDriverService, options);
+
+	}
+	
+	protected WebDriver getBrowserDriverOpenActualBrowser() {
+		// System.setProperty("webdriver.gecko.driver",
+		// "D:/Project/Tricon/linkedinapp/linkedin/lib/geckodriver.exe");
+		// for chrome
+		// webClient = new WebClient();
+		ChromeOptions options = new ChromeOptions();
+		try {
+			// https://chromedriver.chromium.org/downloads
+			//System.out.println("getBrowserDriver" + driverLocation);
+			System.setProperty("webdriver.chrome.driver", driverLocation);
+			// ChromeOptions options = new ChromeOptions();
+			// System.out.println("555");
+			options.addArguments("-disable-infobars");
+			//options.addArguments("--headless");
 			options.addArguments("--no-sandbox");
 			options.addArguments("--disable-dev-shm-usage");
 			options.setExperimentalOption("useAutomationExtension", false);

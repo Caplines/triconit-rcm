@@ -131,7 +131,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 
 	public List<EligibilityDto> scrapSite(ScrappingSiteDetails scrappingSiteDetails,
 			Map<String, List<Object>> mapData) {
-		WebDriver driver = getBrowserDriver();
+		WebDriver driver = getBrowserDriverOpenActualBrowser();
 		// TODO Auto-generated method stub
 		setProps(scrappingSiteDetails.getProxyPort());
 		List<EligibilityDto> eList = new ArrayList<>();
@@ -216,7 +216,7 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 	private EligibilityDto parsePage(WebDriver driver,String dob,String subscriberId,
 			String verifyLastName,String verifyFirstName,String zip,String serviceDate,String officeName,String locationProvider,
 			String fname,String lname,String insuranceName,boolean byName) throws Exception{
-		String id="7";//6 old 
+		String id="8";//6 old 
 		
 		if (dob.equals("") ) return null;
 		if (zip==null) zip="";
@@ -228,21 +228,21 @@ public class MCNAEligibilityScrappingServiceImpl extends BaseScrappingServiceImp
 		//wait.until(ExpectedConditions.visibilityOf(element4));
 		element4 =driver.findElement(By.id("verifyDob"));
 		element4.sendKeys(dob);
-		driver.findElement(By.id("verifySubscriberId"));
+		element4 =driver.findElement(By.id("verifySubscriberId"));
 		if (subscriberId!=null && !subscriberId.equalsIgnoreCase("NA") && !subscriberId.trim().equals(""))element4.sendKeys(subscriberId);
-		driver.findElement(By.id("verifyLastName"));
+		element4 =driver.findElement(By.id("verifyLastName"));
 		element4.sendKeys(verifyLastName);
-		driver.findElement(By.id("verifyFirstName"));
+		element4 =driver.findElement(By.id("verifyFirstName"));
 		element4.sendKeys(verifyFirstName);
-		driver.findElement(By.id("verifyZip"));
+		element4 = driver.findElement(By.id("verifyZip"));
 		element4.sendKeys(zip);
 		Thread.sleep(1000);
-		driver.findElement(By.id("facilityId"));
+		element4 = driver.findElement(By.id("facilityId"));
 		String facilityId=driver.findElement(By.id("facilityId")).getAttribute("value");
 		if (!byName)createVerifyUrlAndNavigate(driver, dobA[0]+"%2F"+dobA[1]+"%2F"+dobA[2], subscriberId, verifyLastName, verifyFirstName, zip, facilityId);
 		else createVerifyUrlAndNavigate(driver, dobA[0]+"%2F"+dobA[1]+"%2F"+dobA[2], "0", verifyLastName, "", "", facilityId);
 		//Check for Valid data
-		String z=driver.getPageSource();
+		String z=driver.getPageSource().split("white-space: pre-wrap;\">")[1].split("</pre></body>")[0];
 		//use try catch here ...
        //System.out.println(z.split(",\"id\":\"")[1].split("\",\"sub_id\":\"")[0]);
        JSONObject jsonObj = new JSONObject(z);
