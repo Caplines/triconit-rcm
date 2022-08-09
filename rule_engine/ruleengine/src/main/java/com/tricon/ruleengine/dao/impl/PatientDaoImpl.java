@@ -776,10 +776,10 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		    	
 		    case Constants.QUERY_FOR_ItemizedCash:
 		    	finalQuery="select "+o.getSelectcolumns()+" from Office off ,es_data_replica_transactions tr "
-		    			+ "left join es_data_replica_payment_provider pp on tr.tranNum = pp.tranNum "
-		    			+ "left join es_data_replica_patient p on p.patient_id = tr.patientId "
-		    			+ "left join es_data_replica_transactions_header th on th.tran_num = tr.tranNum "
-		    			+ "left join es_data_replica_paytype pt on th.paytype_id = pt.paytype_id WHERE tr.tranDate BETWEEN "+o.getGndatebet()+" and off.uuid=p.office_id and off.uuid='"+office.getUuid()+"' and pt.paytype_id != null group by tr.patientId,CONCAT(p.first_name ,' ',p.last_name ),tr.tranDate,tr.paytypeId,pt.description,tr.providerId";
+		    			+ "left join es_data_replica_payment_provider pp on tr.tran_Num = pp.tran_Num "
+		    			+ "left join es_data_replica_patient p on p.patient_id = tr.patient_Id "
+		    			+ "left join es_data_replica_transactions_header th on th.tran_num = tr.tran_Num "
+		    			+ "left join es_data_replica_paytype pt on th.paytype_id = pt.paytype_id WHERE tr.tran_Date BETWEEN "+o.getGndatebet()+" and off.uuid=p.office_id and off.uuid='"+office.getUuid()+"' and pt.paytype_id != null group by tr.patient_Id,CONCAT(p.first_name ,' ',p.last_name ),tr.tran_Date,tr.paytype_Id,pt.description,tr.provider_Id";
 		    	break;
 		    	default:System.out.println("No Match Found");
 		}
