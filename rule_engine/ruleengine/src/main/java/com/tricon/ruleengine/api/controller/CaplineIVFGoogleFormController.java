@@ -488,7 +488,7 @@ public class CaplineIVFGoogleFormController {
 	
 	@CrossOrigin
 	@GetMapping
-	@RequestMapping(value = "/googleESReportReplacation")
+	@RequestMapping(value = "/googleESReportReplication")
 	public ResponseEntity<Object> queryESReportReplacation(@RequestParam(value = "password", required = true) String password,
             @RequestParam(value = "selectcolumns", required = true) String selectcolumns,
             @RequestParam(value = "gndatebet", required = true) String generalDateIVFDoneDBBet,
