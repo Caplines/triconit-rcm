@@ -162,6 +162,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ivftreatmentplan",
                 "/diagnosticcheck",
                 "/finduserbyusername",
+                "/googleESReportReplication",
                 "/ivfclaimid",
                 "/ivfcl",
                 "/ivfclbatch",
