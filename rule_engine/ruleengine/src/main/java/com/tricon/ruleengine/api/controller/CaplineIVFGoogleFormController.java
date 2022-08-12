@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -498,8 +499,9 @@ public class CaplineIVFGoogleFormController {
 			HttpServletResponse response)
 	{
 		
-		List<Object> o=null;
+		List<Object> o=new ArrayList<>();
 		CaplineDataReplicationDto dto=new CaplineDataReplicationDto();
+		String msg="";
 		dto.setPasswordRE(password);
 		dto.setOfficeNameDB(office);
 		dto.setSelectcolumns(selectcolumns);
@@ -511,13 +513,14 @@ public class CaplineIVFGoogleFormController {
 			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
 			Office off = od.getOfficeByName(office,cmp.getUuid());
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
-			if (esDB != null && esDB.getPassword().equals(password)) 
-			{
+			if (esDB != null && esDB.getPassword().equals(password)) {
 		         o=(List<Object>)civf.searchCaplineDataReplacation(dto,off);
+		         if(o.isEmpty()) {
+		        	 msg="No Data Found";
+		         }
 			}
-			else
-			{
-				return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.NOT_FOUND, "OfficeName or Password are Incorrect", ""));
+			else{
+				msg="OfficeName or Password is Incorrect";
 			}
 		}
 		catch(Exception e)
@@ -525,7 +528,7 @@ public class CaplineIVFGoogleFormController {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.NOT_FOUND, "Error While Fetching Data", ""));
 		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,"", o));	
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,msg, o));	
 	}
 
 }

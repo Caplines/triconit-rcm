@@ -840,7 +840,8 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	public Object searchCaplineDataReplacation(CaplineDataReplicationDto d,Office office) throws Exception
 	{
 		
-		 List<Object> data=patientDao.searchPatientHistoryFromGivenColumns(d,office);
+		List<Object> data=patientDao.searchPatientHistoryFromGivenColumns(d,office);
+		 if(!data.isEmpty()) {
 		 List<GoogleReportsRDDTO> beanList = new ArrayList<>();
 			GoogleReportsRDDTO dt= null;		
 			for(Object o:data) {
@@ -853,12 +854,16 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 							x++;
 							continue ;
 						}
-						setUPResponseData(dt, ++x,f);		
+						setUPResponseData(dt, ++x,f);	
 					}
 				}
 				beanList.add(dt);
 			}
 			return beanList;
+		 }
+		 else {
+			 return data;
+		 }
 	}
 
 }
