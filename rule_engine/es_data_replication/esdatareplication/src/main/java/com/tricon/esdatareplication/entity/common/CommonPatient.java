@@ -21,7 +21,7 @@ public class CommonPatient extends CommonCloudColumn{
 	 */
 	private static final long serialVersionUID = 1990940111528929546L;
 
-	@Column(name = "patient_id", length = 50,unique=true)
+	@Column(name = "patient_id", length = 50)
 	String patientId;
 	
 	@Column(name = "first_name", length = 50)

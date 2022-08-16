@@ -18,7 +18,7 @@ public class CommonTransactionsDetail extends CommonCloudColumn {
 	 */
 	private static final long serialVersionUID = -1324960160058778881L;
 
-	@Column(name = "detail_id", length = 50, nullable = false, unique =true)
+	@Column(name = "detail_id", length = 50, nullable = false)
 	Integer detailId;
 
 	@Column(name = "tran_num", length = 50)

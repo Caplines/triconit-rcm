@@ -19,7 +19,7 @@ public class CommonsTreatmentPlans extends CommonCloudColumn {
 	 */
 	private static final long serialVersionUID = -5366225049780096365L;
 
-	@Column(name = "treatment_plan_id", length = 50, nullable = false, unique=true)
+	@Column(name = "treatment_plan_id", length = 50, nullable = false)
 	Integer treatmentPlanId;
 
 	@Column(name = "patient_id", length = 50, nullable = false)

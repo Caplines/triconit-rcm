@@ -18,7 +18,7 @@ public class CommonAppointment extends CommonCloudColumn {
 	 */
 	private static final long serialVersionUID = 1111409863044643669L;
 
-	@Column(name = "appointment_id", length = 50, nullable = false, unique= true)
+	@Column(name = "appointment_id", length = 50, nullable = false)
 	Integer appointmentId;
 
 	@Column(name = "description", length = 150, nullable = true)

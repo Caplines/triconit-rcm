@@ -16,7 +16,7 @@ public class CommonEmployer extends CommonCloudColumn {
 	 */
 	private static final long serialVersionUID = -5311319078674961794L;
 
-	@Column(name = "employer_id", length = 50, nullable= false, unique=true)
+	@Column(name = "employer_id", length = 50, nullable= false)
 	Integer employerId;
 	
 	@Column(name = "name", length = 40)
