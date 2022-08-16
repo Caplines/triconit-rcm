@@ -678,6 +678,12 @@ public class CaplineIVFFormDto {
     private String outNetworkMessage; // Field added on 14 jan
     private String osPlanType;
     private String smAgeLimit;
+    private String perioD4921;
+	private String d4921Frequency;
+	private String perioD4266;
+	private String d4266Frequency;
+	private String perioD9910;
+	private String d9910Frequency;
     //END
     
     public String getFill1() {
@@ -3200,6 +3206,54 @@ public class CaplineIVFFormDto {
 
 	public void setSmAgeLimit(String smAgeLimit) {
 		this.smAgeLimit = smAgeLimit;
+	}
+
+	public String getPerioD4921() {
+		return perioD4921;
+	}
+
+	public void setPerioD4921(String perioD4921) {
+		this.perioD4921 = perioD4921;
+	}
+
+	public String getD4921Frequency() {
+		return d4921Frequency;
+	}
+
+	public void setD4921Frequency(String d4921Frequency) {
+		this.d4921Frequency = d4921Frequency;
+	}
+
+	public String getPerioD4266() {
+		return perioD4266;
+	}
+
+	public void setPerioD4266(String perioD4266) {
+		this.perioD4266 = perioD4266;
+	}
+
+	public String getD4266Frequency() {
+		return d4266Frequency;
+	}
+
+	public void setD4266Frequency(String d4266Frequency) {
+		this.d4266Frequency = d4266Frequency;
+	}
+
+	public String getPerioD9910() {
+		return perioD9910;
+	}
+
+	public void setPerioD9910(String perioD9910) {
+		this.perioD9910 = perioD9910;
+	}
+
+	public String getD9910Frequency() {
+		return d9910Frequency;
+	}
+
+	public void setD9910Frequency(String d9910Frequency) {
+		this.d9910Frequency = d9910Frequency;
 	}
 	
 	

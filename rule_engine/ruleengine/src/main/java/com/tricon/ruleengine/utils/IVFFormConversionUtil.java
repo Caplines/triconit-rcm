@@ -378,8 +378,15 @@ public class IVFFormConversionUtil {
 		pd2.setOutNetworkMessage(d.getOutNetworkMessage());
 		pd2.setOsPlanType(d.getOsPlanType());
 		pd2.setSmAgeLimit(d.getSmAgeLimit());
+		pd2.setPerioD4921(d.getPerioD4921());
+		pd2.setD4921Frequency(d.getD4921Frequency());
+		pd2.setPerioD4266(d.getPerioD4266());
+		pd2.setD4266Frequency(d.getD4266Frequency());
+		pd2.setPerioD9910(d.getPerioD9910());
+		pd2.setD9910Frequency(d.getD9910Frequency());
 		
 		pd.setPatientDetails2(pd2);
+		
 		Set<PatientDetail2> p2Set = new HashSet<>();
 		p2Set.add(pd2);
 		
@@ -742,6 +749,13 @@ public class IVFFormConversionUtil {
 				pd.setOutNetworkMessage(d.getOutNetworkMessage());
 				pd.setOsPlanType(d.getOsPlanType());
 				pd.setSmAgeLimit(d.getSmAgeLimit());
+				pd.setPerioD4921(d.getPerioD4921());
+				pd.setD4921Frequency(d.getD4921Frequency());
+				pd.setPerioD4266(d.getPerioD4266());
+				pd.setD4266Frequency(d.getD4266Frequency());
+				pd.setPerioD9910(d.getPerioD9910());
+				pd.setD9910Frequency(d.getD9910Frequency());
+				
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -1194,6 +1208,13 @@ public class IVFFormConversionUtil {
 		pd2.setOutNetworkMessage(d.getOutNetworkMessage());
 		pd2.setOsPlanType(d.getOsPlanType());
 		pd2.setSmAgeLimit(d.getSmAgeLimit());
+		pd2.setPerioD4921(d.getPerioD4921());
+		pd2.setD4921Frequency(d.getD4921Frequency());
+		pd2.setPerioD4266(d.getPerioD4266());
+		pd2.setD4266Frequency(d.getD4266Frequency());
+		pd2.setPerioD9910(d.getPerioD9910());
+		pd2.setD9910Frequency(d.getD9910Frequency());
+		
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();

@@ -1141,16 +1141,16 @@ border-collapse: collapse;
                         <td> <span class="sub-heading"><xsl:value-of select="d1517"/></span>
                         </td>
                          <td class="withds">
+                           <span class="main-heading-1">Space Maintainer<br/> Age Limit</span>
+						</td>
+                        
+                        <td> <span class="sub-heading"><xsl:value-of select="smAgeLimit"/></span>
+                        </td>
+                          <td class="withds">
                            <span class="main-heading-1">D3220(%)</span>
 						</td>
                         
-                        <td> <span class="sub-heading"><xsl:value-of select="d3220"/></span>
-                        </td>
-                         <td class="withds ">
-                          
-						</td>
-                        
-                         <td class="withds ">
+                         <td> <span class="sub-heading"><xsl:value-of select="d3220"/></span>
                         </td>
            
            </tr>
@@ -1189,8 +1189,72 @@ border-collapse: collapse;
            
            </tr>
 		   
-		   
-		   
+		   <tr>
+                        <td class="withds ">
+                           <span class="main-heading-1">D4921</span>
+						</td>
+						<td class="withds">
+                           <span class="sub-heading"><xsl:value-of select="perioD4921"/></span>
+						</td>
+                        <td class="withds ">
+                           <span class="main-heading-1">D4266</span>
+						</td>
+						<td>
+						   <span class="sub-heading"><xsl:value-of select="perioD4266"/></span>
+						 </td>
+                        <td  class="withds ">
+                           <span class="main-heading-1">D9910</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="perioD9910"/></span>
+                        </td>
+                         <td class="withds">
+                           
+						</td>
+                        
+                        <td> 
+                        </td>
+                          <td class="withds">
+                          
+						</td>
+                        
+                         <td> 
+                        </td>
+           
+           </tr>
+		   <tr>
+                        <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+						<td class="withds">
+                           <span class="sub-heading"><xsl:value-of select="d4921Frequency"/></span>
+						</td>
+                        <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+						<td>
+						   <span class="sub-heading"><xsl:value-of select="d4266Frequency"/></span>
+						 </td>
+                        <td  class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="d9910Frequency"/></span>
+                        </td>
+                         <td class="withds colourfreq">
+                           <span class="main-heading-1"></span>
+						</td>
+                        
+                       
+                        
+                        <td> 
+                        </td>
+						 <td class="withds ">
+                          
+						</td>
+                        
+                         <td class="withds ">
+                        </td>
+           
+           </tr>
 		   <tr>
                         <td class="colourhow" colspan="3">
                            <span class="main-heading-1">How many Fillings can be done in a year ?</span> 
