@@ -1,36 +1,30 @@
-
 <div class="inner-bg">
 	<div *ngIf="!showReportData" class="container">
 		<div class="row">
 			<div class="col-sm-6 col-sm-offset-3 form-box">
 				<div class="dropdown">
-					<button class="btn btn-block dropdown-toggle" type="button"
-						data-toggle="dropdown" (click)="showReportForm = false">
+					<button class="btn btn-block dropdown-toggle" type="button" data-toggle="dropdown"
+						(click)="showReportForm = false">
 						<span class="caret"></span>Select Report to Run
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('TreatmentId',$event)">{{hd1}}</a></li>
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('IvfId',$event)">IV Form Id</a></li>
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('Date',$event)">Date Run</a></li>
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('DateFromTo',$event)">Date Run (From To)</a></li>
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('PatientName',$event)">Patient Name</a></li>
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('UserName',$event)">User Name</a></li>
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('DateFromToUserName',$event)">User Name (Date Range)</a></li>	
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('ruledatasheet',$event)">Digitization of RE Results - (Google Sheet)</a></li>
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('ivfRDBMS',$event)">IVF RDBMS</a></li>
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('ivfRDBMSWebsiteParse',$event)">IVF RDBMS (Website Parsed Data) </a></li>
-						<li><a href="javascript:void(0)"
-							(click)="reportParam('sealantElig',$event)">Sealant Eligibility</a></li>  
+						<li><a href="javascript:void(0)" (click)="reportParam('TreatmentId',$event)">{{hd1}}</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('IvfId',$event)">IV Form Id</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('Date',$event)">Date Run</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('DateFromTo',$event)">Date Run (From
+								To)</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('PatientName',$event)">Patient Name</a>
+						</li>
+						<li><a href="javascript:void(0)" (click)="reportParam('UserName',$event)">User Name</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('DateFromToUserName',$event)">User Name
+								(Date Range)</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('ruledatasheet',$event)">Digitization of
+								RE Results - (Google Sheet)</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('ivfRDBMS',$event)">IVF RDBMS</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('ivfRDBMSWebsiteParse',$event)">IVF RDBMS
+								(Website Parsed Data) </a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('sealantElig',$event)">Sealant
+								Eligibility</a></li>
 					</ul>
 				</div>
 				<!-- <div class="form-top">
@@ -41,132 +35,131 @@
 					</div> -->
 
 				<div *ngIf="showReportForm" class="form-bottom">
-				 <div> Report Name - {{mainReportName}}</div>
-					<form class="login-form" name="form"
-						(ngSubmit)="f.form.valid && runReport()" #f="ngForm" novalidate>
+					<div> Report Name - {{mainReportName}}</div>
+					<form class="login-form" name="form" (ngSubmit)="f.form.valid && runReport()" #f="ngForm"
+						novalidate>
 						<!--  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">{{errorMessage}}</div>  -->
 						<span id="reauth-email" class="reauth-email"></span>
 
 						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
 							<label class="sr-only" for="reportField1">Report Field</label>
 							<div *ngIf="showParam.TreatmentId">
-								<input type="text" class="login-signup-form-field form-control"
-									name="reportField1" id="reportField1"
-									[(ngModel)]="report.reportField1" #reportField1="ngModel"
+								<input type="text" class="login-signup-form-field form-control" name="reportField1"
+									id="reportField1" [(ngModel)]="report.reportField1" #reportField1="ngModel"
 									placeholder="{{hd1}}..." required />
-								<div *ngIf="f.submitted && !reportField1.valid"
-									class="error-msg">Please enter {{hd1}}.</div>
+								<div *ngIf="f.submitted && !reportField1.valid" class="error-msg">Please enter {{hd1}}.
+								</div>
 							</div>
 							<div *ngIf="showParam.IvfId">
-								<input type="text" class="login-signup-form-field form-control"
-									name="reportField1" id="reportField1"
-									[(ngModel)]="report.reportField1" #reportField1="ngModel"
+								<input type="text" class="login-signup-form-field form-control" name="reportField1"
+									id="reportField1" [(ngModel)]="report.reportField1" #reportField1="ngModel"
 									placeholder="IVF Id..." required />
-								<div *ngIf="f.submitted && !reportField1.valid"
-									class="error-msg">Please enter IVF Id.</div>
+								<div *ngIf="f.submitted && !reportField1.valid" class="error-msg">Please enter IVF Id.
+								</div>
 							</div>
 							<div *ngIf="showParam.Date" class="date-dropdown">
 								<!-- <input type="text" name="datePicker" [(ngModel)]="report.reportField1" (click)="datePicker.toggle()" />
                                      <ng-datepicke r name="datePicker" [headless]="true" #datePicker [(ngModel)]="report.reportField1" [options]="dateOptions"></ng-datepicker>
                                     -->
-								<ng-datepicker [(ngModel)]="report.reportField1"
-									name="datePicker" [options]="dateOptions"></ng-datepicker>
+								<ng-datepicker [(ngModel)]="report.reportField1" name="datePicker"
+									[options]="dateOptions"></ng-datepicker>
 
-								<div *ngIf="f.submitted && report.reportField1==''"
-									class="error-msg">Please select valid Date.</div>
+								<div *ngIf="f.submitted && report.reportField1==''" class="error-msg">Please select
+									valid Date.</div>
 							</div>
 							<div *ngIf="showParam.UserName" class="date-dropdown">
 								<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
-							<label class="sr-only" for="users">User Name</label>
-							 <select
-								class="login-signup-form-field form-control" name="employerName"
-								id="employerName" [(ngModel)]="report.employerName">
-								<option value="">User Name..</option>
-								<option *ngFor="let title of users" [value]="title.uuid">{{title.userName}}({{title.email}})</option>
-							</select>
-							<div *ngIf="f.submitted && report.employerName==''" class="error-msg">User Name is required</div>
-						
-								
-							</div>
+									<label class="sr-only" for="users">User Name</label>
+									<select class="login-signup-form-field form-control" name="employerName"
+										id="employerName" [(ngModel)]="report.employerName">
+										<option value="">User Name..</option>
+										<option *ngFor="let title of users" [value]="title.uuid">
+											{{title.userName}}({{title.email}})</option>
+									</select>
+									<div *ngIf="f.submitted && report.employerName==''" class="error-msg">User Name is
+										required</div>
+
+
+								</div>
 							</div>
 							<div *ngIf="showParam.DateFromTo" class="date-dropdown">
 								<!-- <input type="text" name="datePicker" [(ngModel)]="report.reportField1" (click)="datePicker.toggle()" />
                                      <ng-datepicke r name="datePicker" [headless]="true" #datePicker [(ngModel)]="report.reportField1" [options]="dateOptions"></ng-datepicker>
                                     -->
-								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id ="datepicker1"
-									 [options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
+								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id="datepicker1"
+									[options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
 
-								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id ="datepicker2"
+								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id="datepicker2"
 									[options]="dateOptions2"></ng-datepicker>
-								
+
 								<div *ngIf="f.submitted &&  ( report.reportField1=='' || report.reportField2=='')"
 									class="error-msg">Please select valid Date To and from Date.</div>
-									
+
 							</div>
 							<div *ngIf="showParam.DateFromToUserName" class="date-dropdown">
 								<div class="form-group" [ngClass]="{ 'has-error': f.submitted }">
 									<label class="sr-only" for="users">User Name</label>
-									 <select
-										class="login-signup-form-field form-control" name="employerName"
+									<select class="login-signup-form-field form-control" name="employerName"
 										id="employerName" [(ngModel)]="report.employerName">
 										<option value="">User Name..</option>
-										<option *ngFor="let title of users" [value]="title.uuid">{{title.userName}}({{title.email}})</option>
+										<option *ngFor="let title of users" [value]="title.uuid">
+											{{title.userName}}({{title.email}})</option>
 									</select>
-									<div *ngIf="f.submitted && report.employerName==''" class="error-msg">User Name is required</div>
-							   </div>
-								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id ="datepicker1"
-									 [options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
+									<div *ngIf="f.submitted && report.employerName==''" class="error-msg">User Name is
+										required</div>
+								</div>
+								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id="datepicker1"
+									[options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
 
-								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id ="datepicker2"
-									 [options]="dateOptions2"></ng-datepicker>
-								
+								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id="datepicker2"
+									[options]="dateOptions2"></ng-datepicker>
+
 								<div *ngIf="f.submitted && ( report.reportField1=='' || report.reportField2==''|| report.employerName=='')"
 									class="error-msg">Please select valid Date To and from Date.</div>
-									
+
 							</div>
 							<div *ngIf="showParam.sealantElig" class="date-dropdown">
-								<input type="text" class="login-signup-form-field form-control"
-									name="patientId" id="patientId"
-									[(ngModel)]="report.patientId" #patientId="ngModel"
-									placeholder="Patient Id for (multiple  use comma separated value (1,2,3))..." required />
-								<div *ngIf="f.submitted && !patientId.valid"
-									class="error-msg">Please enter Patient Ids.</div>
-									
+								<input type="text" class="login-signup-form-field form-control" name="patientId"
+									id="patientId" [(ngModel)]="report.patientId" #patientId="ngModel"
+									placeholder="Patient Id for (multiple  use comma separated value (1,2,3))..."
+									required />
+								<div *ngIf="f.submitted && !patientId.valid" class="error-msg">Please enter Patient Ids.
+								</div>
+
 							</div>
 							<div *ngIf="showParam.sealantElig " class="date-dropdown">
 								<!-- <input type="text" name="datePicker" [(ngModel)]="report.reportField1" (click)="datePicker.toggle()" />
                                      <ng-datepicke r name="datePicker" [headless]="true" #datePicker [(ngModel)]="report.reportField1" [options]="dateOptions"></ng-datepicker>
                                     -->
-								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id ="datepicker1"
-									 [options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
+								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id="datepicker1"
+									[options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
 
-								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id ="datepicker2"
+								<ng-datepicker [(ngModel)]="report.reportField2" name="datepicker2" id="datepicker2"
 									[options]="dateOptions2"></ng-datepicker>
-								
+
 								<div *ngIf="f.submitted &&  (( report.reportField1!='' && report.reportField2=='') ||
-								        (report.reportField1=='' && report.reportField2!=''))"
-									class="error-msg">Please select valid Date To and from Date.</div>
-									
+								        (report.reportField1=='' && report.reportField2!=''))" class="error-msg">Please select valid Date To
+									and from Date.</div>
+
 							</div>
 							<div *ngIf="showParam.sealantElig" class="date-dropdown">
-								<ng-datepicker [(ngModel)]="report.ivDate" name="datepicker3" id ="datepicker3"
-									 [options]="dateOptions3" class="ngx-start-date"></ng-datepicker>
-								
+								<ng-datepicker [(ngModel)]="report.ivDate" name="datepicker3" id="datepicker3"
+									[options]="dateOptions3" class="ngx-start-date"></ng-datepicker>
+
 							</div>
 							<div *ngIf="showParam.ruledatasheet" class="date-dropdown">
-							
-							<select
-										class="login-signup-form-field form-control" name="sheetTabId"
-										id="sheetTabId" [(ngModel)]="report.sheetTabId">
-										<option value="">Report type..</option>
-										<option value="0">Tx. Plan Validation</option>
-										<option value="634516941">Claim Validation</option>
-										<option value="2006499654">Patient Wise Report</option>
-										
-										
-							</select>
-							<div *ngIf="f.submitted && report.sheetTabId=='' "
-									class="error-msg">Please select Report Name.</div>
+
+								<select class="login-signup-form-field form-control" name="sheetTabId" id="sheetTabId"
+									[(ngModel)]="report.sheetTabId">
+									<option value="">Report type..</option>
+									<option value="0">Tx. Plan Validation</option>
+									<option value="634516941">Claim Validation</option>
+									<option value="2006499654">Patient Wise Report</option>
+
+
+								</select>
+								<div *ngIf="f.submitted && report.sheetTabId=='' " class="error-msg">Please select
+									Report Name.</div>
 								<!-- 	
 									
 								<input type="text" class="login-signup-form-field form-control"
@@ -187,77 +180,69 @@
 								              (report.reportField1=='' && report.reportField2!='') || (report.reportField1!='' && report.reportField2=='') "
 									class="error-msg">Please select valid Date To and from Date.</div>
 								 -->
-									
+
 							</div>
 							<div *ngIf="showParam.PatientName">
-								<input type="text" class="login-signup-form-field form-control"
-									name="reportField1" id="reportField1"
-									[(ngModel)]="report.reportField1" #reportField1="ngModel"
+								<input type="text" class="login-signup-form-field form-control" name="reportField1"
+									id="reportField1" [(ngModel)]="report.reportField1" #reportField1="ngModel"
 									placeholder="Patient Name..." />
-								<div *ngIf="f.submitted && !reportField1.valid"
-									class="error-msg">Please enter Patient Name.</div>
+								<div *ngIf="f.submitted && !reportField1.valid" class="error-msg">Please enter Patient
+									Name.</div>
 							</div>
 							<div *ngIf="showParam.ivfRDBMS">
 
-								<input type="text" class="login-signup-form-field form-control"
-									name="reportField1" id="reportField1"
-									[(ngModel)]="report.reportField1" #reportField1="ngModel"
+								<input type="text" class="login-signup-form-field form-control" name="reportField1"
+									id="reportField1" [(ngModel)]="report.reportField1" #reportField1="ngModel"
 									placeholder="Patient ID..." /> <input type="text"
-									class="login-signup-form-field form-control" name="patientName"
-									id="patientName" [(ngModel)]="report.patientName"
-									#patientName="ngModel" placeholder="Patient Name..." /> <input
-									type="text" class="login-signup-form-field form-control"
-									name="employerName" id="employerName"
+									class="login-signup-form-field form-control" name="patientName" id="patientName"
+									[(ngModel)]="report.patientName" #patientName="ngModel"
+									placeholder="Patient Name..." /> <input type="text"
+									class="login-signup-form-field form-control" name="employerName" id="employerName"
 									[(ngModel)]="report.employerName" #employerName="ngModel"
 									placeholder="Employer Name..." /> <input type="text"
-									class="login-signup-form-field form-control"
-									name="generalDateRun" id="generalDateRun"
-									[(ngModel)]="report.generalDateRun" #generalDateRun="ngModel"
+									class="login-signup-form-field form-control" name="generalDateRun"
+									id="generalDateRun" [(ngModel)]="report.generalDateRun" #generalDateRun="ngModel"
 									placeholder="GeneralDate IVF Run (yyyy-mm-dd format)..." />
-								<div
-									*ngIf="f.submitted && (reportField1.value=='' && employerName.value=='' && generalDateRun.value=='' && patientName.value=='')"
+								<div *ngIf="f.submitted && (reportField1.value=='' && employerName.value=='' && generalDateRun.value=='' && patientName.value=='')"
 									class="error-msg">Please enter at-least one of the above
 									Fields.</div>
 							</div>
 
 						</div>
 
-								<div *ngIf="showParam.ivfRDBMSWebsiteParse">
+						<div *ngIf="showParam.ivfRDBMSWebsiteParse">
 
-								<input type="text" class="login-signup-form-field form-control"
-									name="reportField1" id="reportField1"
-									[(ngModel)]="report.reportField1" #reportField1="ngModel"
-									placeholder="Patient ID..." /> <input type="text"
-									class="login-signup-form-field form-control" name="patientName"
-									id="patientName" [(ngModel)]="report.patientName"
-									#patientName="ngModel" placeholder="Patient Name..." />
-									<input type="text"
-									class="login-signup-form-field form-control" name="patientDob"
-									id="patienDob" [(ngModel)]="report.dob"
-									#patienDob="ngModel" placeholder="Patient DOB..." />
-									<div
-									*ngIf="f.submitted && (reportField1.value=='' && patienDob.value=='' && patientName.value=='')"
-									class="error-msg">Please enter at-least one of the above
-									Fields.</div>
-							</div>
+							<input type="text" class="login-signup-form-field form-control" name="reportField1"
+								id="reportField1" [(ngModel)]="report.reportField1" #reportField1="ngModel"
+								placeholder="Patient ID..." /> <input type="text"
+								class="login-signup-form-field form-control" name="patientName" id="patientName"
+								[(ngModel)]="report.patientName" #patientName="ngModel" placeholder="Patient Name..." />
+							<input type="text" class="login-signup-form-field form-control" name="patientDob"
+								id="patienDob" [(ngModel)]="report.dob" #patienDob="ngModel"
+								placeholder="Patient DOB..." />
+							<div *ngIf="f.submitted && (reportField1.value=='' && patienDob.value=='' && patientName.value=='')"
+								class="error-msg">Please enter at-least one of the above
+								Fields.</div>
+						</div>
 
-								<div *ngIf="showParam.ivfRDBMS || showParam.Date || showParam.DateFromTo
+						<div *ngIf="showParam.ivfRDBMS || showParam.Date || showParam.DateFromTo
 								       ||showParam.UserName || showParam.DateFromToUserName || showParam.PatientName">
 
-								<label class="sr-only" for="ivformTypeId">IV FORM Type</label> <select
-								class="login-signup-form-field form-control" name="ivformTypeId"
-								id="ivformTypeId" [(ngModel)]="report.ivformTypeId">
+							<label class="sr-only" for="ivformTypeId">IV FORM Type</label> <select
+								class="login-signup-form-field form-control" name="ivformTypeId" id="ivformTypeId"
+								[(ngModel)]="report.ivformTypeId">
 								<option value="">Form Type...</option>
 								<option *ngFor="let vt of ivformTypes" [value]="vt.id">{{vt.name}}</option>
 							</select>
-							
-							</div>
-						
 
-						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }" *ngIf="!showParam.ruledatasheet">
+						</div>
+
+
+						<div class="form-group" [ngClass]="{ 'has-error': f.submitted }"
+							*ngIf="!showParam.ruledatasheet">
 							<label class="sr-only" for="officeId">Office Name</label> <select
-								class="login-signup-form-field form-control" name="officeId"
-								id="officeId" [(ngModel)]="report.officeId">
+								class="login-signup-form-field form-control" name="officeId" id="officeId"
+								[(ngModel)]="report.officeId">
 								<option value="">Office Name...</option>
 								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
 							</select>
@@ -288,163 +273,167 @@
 					Back </a>
 			</div>
 			<ng-container *ngIf="report.reportType=='ruledatasheet'">
-			<div><h3>{{reportData}}</h3></div>
+				<div>
+					<h3>{{reportData}}</h3>
+				</div>
 			</ng-container>
 			<ng-container *ngIf="report.reportType!='ivfRDBMS' && report.reportType!='ivfRDBMSWebsiteParse' 
 			   && report.reportType!='ruledatasheet' && report.reportType!='sealantElig'">
-			<div *ngFor="let key of arrayOfKeys" class="table-container">
-				<h3>{{key}}</h3>
-				<table class="table table-bordered table-striped">
-					<thead>
-						<tr>
-							<th class="date-width">Created Date</th>
-							<th>Error Message</th>
-							<th>Rule Name</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let data of reportData[key]">
-							<td><span [innerHTML]="data.rd_created_date"></span></td>
-							<td><span [innerHTML]="data.error_message"></span></td>
-							<td><span [innerHTML]="data.rule_name"></span></td>
-						<tr>
-					</tbody>
-				</table>
-			</div>
+				<div *ngFor="let key of arrayOfKeys" class="table-container">
+					<h3>{{key}}</h3>
+					<table class="table table-bordered table-striped">
+						<thead>
+							<tr>
+								<th class="date-width">Created Date</th>
+								<th>Error Message</th>
+								<th>Rule Name</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let data of reportData[key]">
+								<td><span [innerHTML]="data.rd_created_date"></span></td>
+								<td><span [innerHTML]="data.error_message"></span></td>
+								<td><span [innerHTML]="data.rule_name"></span></td>
+							<tr>
+						</tbody>
+					</table>
+				</div>
 			</ng-container>
 			<ng-container *ngIf="report.reportType=='sealantElig'">
-										<div class="form-horizontal">
-						<div>
-							<div class="form-horizontal">
-								<div class="form-group">
-									<div class="col-sm-12">
-										<table id="data-scroll-t">
-											<tr>
-												<th class="data-scroll-thdtre">Office Name</th>
-												<th class="data-scroll-thdtre">Patient ID</th>
-												<th class="data-scroll-thdtre">Patient Name</th>
-												<th class="data-scroll-thdtre">IV Date</th>
-												<th class="data-scroll-thdtre">Tooth # Eligible</th>
-												<th colspan="3" class="data-scroll-thdtre">Tooth # Not
-													Eligible for Sealants</th>
-											</tr>
-											<tr>
-												<th class="data-scroll-thdtre">
-												<span style="cursor: pointer;text-decoration: underline" (click)="downloadPdfSeal()">Download PDF</span>
-												<div *ngIf="showLoadingPDFS" class="loader"></div></th>
-												<th class="data-scroll-thdtre"></th>
-												<th class="data-scroll-thdtre"></th>
-												<th class="data-scroll-thdtre"></th>
-												<th class="data-scroll-thdtre">for Sealant</th>
-												<th class="data-scroll-thdtre">Tooth Not Covered</th>
-												<th class="data-scroll-thdtre">Age Limitation</th>
-												<th class="data-scroll-thdtre">Frequency Limitation</th>
-
-											</tr>
-											<tr *ngFor="let q1 of rdata let ind = index">
-												<td class="data-scroll-thdtre"><span [innerHTML]="q1.o"></span></td>
-												<td class="data-scroll-thdtre"><span
-													[innerHTML]="q1.pid"></span></td>
-												<td class="data-scroll-thdtre"><span
-													[innerHTML]="q1.pn"></span></td>
-												<td class="data-scroll-thdtre"><span
-													[innerHTML]="q1.ivDone"></span></td>
-												<td class="data-scroll-thdtre"><span
-													style="word-break: break-word;" [innerHTML]="q1.te"></span></td>
-												<td class="data-scroll-thdtre"><span
-													style="word-break: break-word;" [innerHTML]="q1.tne"></span></td>
-												<td class="data-scroll-thdtre"><span
-													style="word-break: break-word;" [innerHTML]="q1.tnea"></span></td>
-												<td class="data-scroll-thdtre"><span
-													style="word-break: break-word;" [innerHTML]="q1.tnef"></span></td>
-											</tr>
-										</table>
-									</div>
-								</div>
-							</div>
-
-
-
-
+				<div class="form-horizontal">
+					<div>
+						<div class="form-horizontal">
 							<div class="form-group">
 								<div class="col-sm-12">
-									<table id="data-scroll-t1">
+									<table id="data-scroll-t">
 										<tr>
 											<th class="data-scroll-thdtre">Office Name</th>
 											<th class="data-scroll-thdtre">Patient ID</th>
 											<th class="data-scroll-thdtre">Patient Name</th>
-											<th class="data-scroll-thdtre">Error Message</th>
+											<th class="data-scroll-thdtre">IV Date</th>
+											<th class="data-scroll-thdtre">Tooth # Eligible</th>
+											<th colspan="3" class="data-scroll-thdtre">Tooth # Not
+												Eligible for Sealants</th>
 										</tr>
-										<tr *ngFor="let q1 of rdata1 let ind = index">
+										<tr>
+											<th class="data-scroll-thdtre">
+												<span style="cursor: pointer;text-decoration: underline"
+													(click)="downloadPdfSeal()">Download PDF</span>
+												<div *ngIf="showLoadingPDFS" class="loader"></div>
+											</th>
+											<th class="data-scroll-thdtre"></th>
+											<th class="data-scroll-thdtre"></th>
+											<th class="data-scroll-thdtre"></th>
+											<th class="data-scroll-thdtre">for Sealant</th>
+											<th class="data-scroll-thdtre">Tooth Not Covered</th>
+											<th class="data-scroll-thdtre">Age Limitation</th>
+											<th class="data-scroll-thdtre">Frequency Limitation</th>
+
+										</tr>
+										<tr *ngFor="let q1 of rdata let ind = index">
 											<td class="data-scroll-thdtre"><span [innerHTML]="q1.o"></span></td>
-											<td class="data-scroll-thdtre"><span
-												[innerHTML]="q1.pid"></span></td>
+											<td class="data-scroll-thdtre"><span [innerHTML]="q1.pid"></span></td>
 											<td class="data-scroll-thdtre"><span [innerHTML]="q1.pn"></span></td>
-											<td class="data-scroll-thdtre"><span
-												style="word-break: break-word;" [innerHTML]="q1.mess"></span></td>
+											<td class="data-scroll-thdtre"><span [innerHTML]="q1.ivDone"></span></td>
+											<td class="data-scroll-thdtre"><span style="word-break: break-word;"
+													[innerHTML]="q1.te"></span></td>
+											<td class="data-scroll-thdtre"><span style="word-break: break-word;"
+													[innerHTML]="q1.tne"></span></td>
+											<td class="data-scroll-thdtre"><span style="word-break: break-word;"
+													[innerHTML]="q1.tnea"></span></td>
+											<td class="data-scroll-thdtre"><span style="word-break: break-word;"
+													[innerHTML]="q1.tnef"></span></td>
 										</tr>
 									</table>
 								</div>
 							</div>
-
-                             </div>
-
-
 						</div>
+
+
+
+
+						<div class="form-group">
+							<div class="col-sm-12">
+								<table id="data-scroll-t1">
+									<tr>
+										<th class="data-scroll-thdtre">Office Name</th>
+										<th class="data-scroll-thdtre">Patient ID</th>
+										<th class="data-scroll-thdtre">Patient Name</th>
+										<th class="data-scroll-thdtre">Error Message</th>
+									</tr>
+									<tr *ngFor="let q1 of rdata1 let ind = index">
+										<td class="data-scroll-thdtre"><span [innerHTML]="q1.o"></span></td>
+										<td class="data-scroll-thdtre"><span [innerHTML]="q1.pid"></span></td>
+										<td class="data-scroll-thdtre"><span [innerHTML]="q1.pn"></span></td>
+										<td class="data-scroll-thdtre"><span style="word-break: break-word;"
+												[innerHTML]="q1.mess"></span></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+
+					</div>
+
+
+				</div>
 			</ng-container>
 			<ng-container *ngIf="report.reportType=='ivfRDBMS' || report.reportType=='ivfRDBMSWebsiteParse'">
-			<div class="table-container">
-				<h3>IVF DATA</h3>
-				<div style="max-height: 330px;overflow: auto;">
-				<table class="table table-bordered table-striped">
-					<thead>
-						<tr>
-						    <th class="date-width">IVF ID</th>
-							<th class="date-width">Patient Name</th>
-							<th>Patient DOB</th>
-							<th>Employer Name</th>
-							<th><ng-container *ngIf="report.reportType=='ivfRDBMS'">
-							    General Date IVF Done</ng-container>
-							    <ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
-							    Parse Date Time</ng-container>
-							 </th>
-							<th>Details</th>
-							<th>
-							<ng-container *ngIf="report.reportType=='ivfRDBMS'">
-							    Download PDF</ng-container>
-							    <ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
-							    Status</ng-container>
-							</th>
+				<div class="table-container">
+					<h3>IVF DATA</h3>
+					<div style="max-height: 330px;overflow: auto;">
+						<table class="table table-bordered table-striped">
+							<thead>
+								<tr>
+									<th class="date-width">IVF ID</th>
+									<th class="date-width">Patient Name</th>
+									<th>Patient DOB</th>
+									<th>Employer Name</th>
+									<th>
+										<ng-container *ngIf="report.reportType=='ivfRDBMS'">
+											General Date IVF Done</ng-container>
+										<ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
+											Parse Date Time</ng-container>
+									</th>
+									<th>Details</th>
+									<th>
+										<ng-container *ngIf="report.reportType=='ivfRDBMS'">
+											Download PDF</ng-container>
+										<ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
+											Status</ng-container>
+									</th>
 
-						</tr>
-						<tr *ngFor="let data of reportData">
+								</tr>
+								<tr *ngFor="let data of reportData">
 
-							<td><span [innerHTML]="data.basicInfo1+'_'+data.id"></span></td>
-							<td><span [innerHTML]="data.basicInfo2"></span></td>
-							<td><span [innerHTML]="data.basicInfo6"></span></td>
-							<td><span [innerHTML]="data.basicInfo10"></span></td>
-							<td>
-							  <ng-container *ngIf="report.reportType=='ivfRDBMS'">
-							    <span [innerHTML]="data.date"></span></ng-container>
-							    <ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
-							     <span [innerHTML]="data.createdDate"></span></ng-container>
-						       </td>
-							<td><a href="javascript:void(0)"
-								(click)="showDetailsDataF(data)"> Details </a><span>{{data.gradePay}}</span></td>
-							<td>
-							<ng-container *ngIf="report.reportType=='ivfRDBMS'">
-							    <a href="javascript:void(0)"
-								(click)="downloadPDF(data)"> PDF</a></ng-container>
-							    <ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
-							    <span [innerHTML]="data.status"></span></ng-container>
-							
-							</td>
-						<tr>
-					</thead>
+									<td><span [innerHTML]="data.basicInfo1+'_'+data.id"></span></td>
+									<td><span [innerHTML]="data.basicInfo2"></span></td>
+									<td><span [innerHTML]="data.basicInfo6"></span></td>
+									<td><span [innerHTML]="data.basicInfo10"></span></td>
+									<td>
+										<ng-container *ngIf="report.reportType=='ivfRDBMS'">
+											<span [innerHTML]="data.date"></span>
+										</ng-container>
+										<ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
+											<span [innerHTML]="data.createdDate"></span>
+										</ng-container>
+									</td>
+									<td><a href="javascript:void(0)" (click)="showDetailsDataF(data)"> Details
+										</a><span>{{data.gradePay}}</span></td>
+									<td>
+										<ng-container *ngIf="report.reportType=='ivfRDBMS'">
+											<a href="javascript:void(0)" (click)="downloadPDF(data)"> PDF</a>
+										</ng-container>
+										<ng-container *ngIf="report.reportType=='ivfRDBMSWebsiteParse'">
+											<span [innerHTML]="data.status"></span>
+										</ng-container>
 
-				</table>
-			   </div>
-			  </div>
+									</td>
+								<tr>
+							</thead>
+
+						</table>
+					</div>
+				</div>
 			</ng-container>
 
 
@@ -483,8 +472,10 @@
 					<tr>
 						<td>Member SSN: <span class="newff">{{reportDataInd.basicInfo13}}</span></td>
 						<td>Group #: <span class="newff">{{reportDataInd.basicInfo14}}</span></td>
-						<td style="color:white;background-color:red" *ngIf="reportDataInd.basicInfo15=='Secondary'">COB Status: <span>{{reportDataInd.basicInfo15}}</span></td>
-						<td *ngIf="reportDataInd.basicInfo15!='Secondary'">COB Status: <span class="newff">{{reportDataInd.basicInfo15}}</span></td>
+						<td style="color:white;background-color:red" *ngIf="reportDataInd.basicInfo15=='Secondary'">COB
+							Status: <span>{{reportDataInd.basicInfo15}}</span></td>
+						<td *ngIf="reportDataInd.basicInfo15!='Secondary'">COB Status: <span
+								class="newff">{{reportDataInd.basicInfo15}}</span></td>
 						<td>Patient ID: <span class="newff">{{reportDataInd.basicInfo21}}</span></td>
 					</tr>
 					<tr>
@@ -495,13 +486,16 @@
 					</tr>
 					<tr>
 						<td colspan="4">Insurance Address:
-							<span class="newff">{{reportDataInd.basicInfo20}}</span></td>
+							<span class="newff">{{reportDataInd.basicInfo20}}</span>
+						</td>
 
 					</tr>
 					<tr>
 						<td>Special remarks for Office: <span class="newff">{{reportDataInd.sRemarks}}</span></td>
-						<td>Updated Prim Ins in ES as BCBS Federal: <span class="newff">{{reportDataInd.esBcbs}}</span></td>
-						<td>Need to obtain Medical Policy No: <span class="newff">{{reportDataInd.obtainMPN}}</span></td>
+						<td>Updated Prim Ins in ES as BCBS Federal: <span class="newff">{{reportDataInd.esBcbs}}</span>
+						</td>
+						<td>Need to obtain Medical Policy No: <span class="newff">{{reportDataInd.obtainMPN}}</span>
+						</td>
 						<td></td>
 					</tr>
 
@@ -545,9 +539,11 @@
 					<tr>
 						<td>Non-Duplicate clause? <span class="newff">{{reportDataInd.policy13}}</span></td>
 						<td>Full Time Student Status Required?:
-							<span class="newff">{{reportDataInd.policy14}}</span></td>
+							<span class="newff">{{reportDataInd.policy14}}</span>
+						</td>
 						<td>Assignment of Benefits Accepted?:
-							<span class="newff">{{reportDataInd.policy15}}</span></td>
+							<span class="newff">{{reportDataInd.policy15}}</span>
+						</td>
 						<td>Coverage Book: <span class="newff">{{reportDataInd.policy16}}</span></td>
 					</tr>
 					<!-- 
@@ -589,27 +585,28 @@
 						<td></td>
 						<td></td>
 					</tr>
-					
+
 					<tr>
 						<td>PA(%): <span class="newff">{{reportDataInd.percentages11}}</span></td>
 						<td>Subject to ded : <span class="newff">{{reportDataInd.percentages15}}</span></td>
 						<td>FMX(%) : <span class="newff">{{reportDataInd.percentages16}}</span></td>
 						<td>Subject to ded: <span class="newff">{{reportDataInd.fmxSubjectToDed}}</span></td>
 						<td>Claims Timely Fillings: <span class="newff">{{reportDataInd.percentages12}}</span></td>
-					
+
 					</tr>
-					
+
 					<tr>
 						<td>Missing tooth clause: <span class="newff">{{reportDataInd.prosthetics1}}</span></td>
 						<td>Replacement Clause: <span class="newff">{{reportDataInd.prosthetics2}}</span></td>
 						<td>Paid Prep/Seat Date: <span class="newff">{{reportDataInd.prosthetics3}}</span></td>
-						<td>Night Gaurds (D9940) Frequency:	<span class="newff">{{reportDataInd.prosthetics4}}</span></td>
+						<td>Night Gaurds (D9940) Frequency: <span class="newff">{{reportDataInd.prosthetics4}}</span>
+						</td>
 					</tr>
 					<tr>
 						<td></td>
 						<td></td>
 						<td>Night Gaurds(D9944)FR: <span class="newff">{{reportDataInd.posterior19}}</span></td>
-						<td>Night Gaurds(D9945)FR:	<span class="newff">{{reportDataInd.posterior20}}</span></td>
+						<td>Night Gaurds(D9945)FR: <span class="newff">{{reportDataInd.posterior20}}</span></td>
 					</tr>
 
 				</table>
@@ -620,7 +617,7 @@
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
-					    <td>Preventive: <span class="newff">{{reportDataInd.waitingPeriod4}}</span></td>
+						<td>Preventive: <span class="newff">{{reportDataInd.waitingPeriod4}}</span></td>
 						<td>Basic: <span class="newff">{{reportDataInd.waitingPeriod1}}</span></td>
 						<td>Major: <span class="newff">{{reportDataInd.waitingPeriod2}}</span></td>
 						<td>D0120 and D0150 share Frequency: <span class="newff">{{reportDataInd.shareFr}}</span></td>
@@ -643,20 +640,21 @@
 						<td>Frequency <span class="newff">{{reportDataInd.d0160Freq}}</span></td>
 						<td>Frequency <span class="newff">{{reportDataInd.freqD2934}}</span></td>
 					</tr>
-                      <tr>
+					<tr>
 						<td>D0330: <span class="newff">{{reportDataInd.pano1}}</span></td>
-						<td>Does Pano and FMX shares the frequency? <span class="newff">{{reportDataInd.pano2}}</span></td>
+						<td>Does Pano and FMX shares the frequency? <span class="newff">{{reportDataInd.pano2}}</span>
+						</td>
 						<td>D4381: <span class="newff">{{reportDataInd.d4381}}</span></td>
 						<td>D3330: <span class="newff">{{reportDataInd.d3330}}</span></td>
-						
+
 					</tr>
-		             <tr>
+					<tr>
 						<td></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.d0330Freq}}</span></td>
 						<td></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.d4381Freq}}</span></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.d3330Freq}}</span></td>
-						
+
 					</tr>
 				</table>
 
@@ -682,9 +680,9 @@
 						<td>PA(0220): <span class="newff">{{reportDataInd.xrays2}}</span></td>
 						<td>D0230: <span class="newff">{{reportDataInd.xrays3}}</span></td>
 						<td>FMX(0210): <span class="newff">{{reportDataInd.xrays4}}</span></td>
-						
-						
-						
+
+
+
 					</tr>
 
 					<tr>
@@ -701,7 +699,7 @@
 						<td>Bundling: <span class="newff">{{reportDataInd.xrays5}}</span></td>
 						<td colspan="4"></td>
 					</tr>
-                     <tr>
+					<tr>
 						<td>Bridges(%)</td>
 						<td colspan="4"></td>
 					</tr>
@@ -711,7 +709,7 @@
 						<td>Will downgrade applicable? :<span class="newff">{{reportDataInd.cdowngrade}}</span></td>
 						<td colspan="2"></td>
 					</tr>
-					
+
 				</table>
 				<span>
 					<p style="text-align: center">Fluroide(D1208)</p>
@@ -788,10 +786,21 @@
 					<tr>
 						<td>SRP(D4341)%: <span class="newff">{{reportDataInd.perio1}}</span></td>
 						<td> SRP(D4341)Basic/Major%: <span class="newff">{{reportDataInd.srpd4341}}</span></td>
-						
+
 						<td>Frequency: <span class="newff">{{reportDataInd.perio2}}</span></td>
 						<td>Quads Per Day: <span class="newff">{{reportDataInd.perio3}}</span></td>
 						<td>Days b/w Quad: <span class="newff">{{reportDataInd.perio4}}</span></td>
+					</tr>
+					<tr>
+						<td>D4921: <span class="newff">{{reportDataInd.perioD4921}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d4921Frequency}}</span></td>
+
+						<td>D4266: <span class="newff">{{reportDataInd.perioD4266}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d4266Frequency}}</span></td>
+						
+						<td>D9910: <span class="newff">{{reportDataInd.perioD9910}}</span></td>
+						<td>Frequency: <span class="newff">{{reportDataInd.d9910Frequency}}</span></td>
+						
 					</tr>
 
 				</table>
@@ -803,7 +812,8 @@
 						<td>(D4910) %: <span class="newff">{{reportDataInd.perioMnt1}}</span></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.perioMnt2}}</span></td>
 						<td colspan="2">Alt. with Prophy(D1110):
-							<span class="newff">{{reportDataInd.perioMnt3}}</span></td>
+							<span class="newff">{{reportDataInd.perioMnt3}}</span>
+						</td>
 
 					</tr>
 					<tr>
@@ -814,30 +824,32 @@
 					</tr>
 				</table>
 				<span>
-				<p style="text-align: center">Sedations</p>
+					<p style="text-align: center">Sedations</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
 						<td>Nitrous (D9230): <span class="newff">{{reportDataInd.sedations1}}</span></td>
 						<td>IV Sedation (D9243): <span class="newff">{{reportDataInd.sedations2}}</span></td>
-						<td colspan="2">IV Sedation (D9248): <span class="newff">{{reportDataInd.sedations3}}</span></td>
+						<td colspan="2">IV Sedation (D9248): <span class="newff">{{reportDataInd.sedations3}}</span>
+						</td>
 
 					</tr>
 				</table>
 				<span>
-                <p style="text-align: center">Extractions(%)</p>
+					<p style="text-align: center">Extractions(%)</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
 						<td>Minor(D7111,D7140): <span class="newff">{{reportDataInd.extractions1}}</span></td>
-						<td>Major (D7210,D7220, D7230,D7240): <span class="newff">{{reportDataInd.extractions2}}</span></td>
+						<td>Major (D7210,D7220, D7230,D7240): <span class="newff">{{reportDataInd.extractions2}}</span>
+						</td>
 						<td>D7250(%): <span class="newff">{{reportDataInd.d7250}}</span></td>
-						
+
 						<td>MajorExt. Basic/Major: <span class="newff">{{reportDataInd.majord72101}}</span></td>
 					</tr>
 				</table>
 				<span>
-				<p style="text-align: center">Oral Surgery</p>
+					<p style="text-align: center">Oral Surgery</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -846,7 +858,7 @@
 					</tr>
 				</table>
 				<span>
-				<p style="text-align: center">Alveolplasty</p>
+					<p style="text-align: center">Alveolplasty</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -859,7 +871,7 @@
 					</tr>
 				</table>
 				<span>
-				<p style="text-align: center">Dentures (Frequency)</p>
+					<p style="text-align: center">Dentures (Frequency)</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -867,16 +879,18 @@
 						<td>Immediate (D5130/D5140: <span class="newff">{{reportDataInd.dentures2}}</span></td>
 					</tr>
 					<tr>
-						<td>Partial (D5211/D5212/D5213/D5214/D5225/D5226): <span class="newff">{{reportDataInd.dentures3}}</span></td>
+						<td>Partial (D5211/D5212/D5213/D5214/D5225/D5226): <span
+								class="newff">{{reportDataInd.dentures3}}</span></td>
 						<td>Interim Partial (D5820): <span class="newff">{{reportDataInd.dentures4}}</span></td>
 					</tr>
 					<tr>
-						<td>Bone Graft (D7953) Covered w. Ext: <span class="newff">{{reportDataInd.dentures5}}</span></td>
+						<td>Bone Graft (D7953) Covered w. Ext: <span class="newff">{{reportDataInd.dentures5}}</span>
+						</td>
 						<td>Frequency: <span class="newff">{{reportDataInd.dentures6}}</span></td>
 					</tr>
 				</table>
 				<span>
-				<p style="text-align: center">Implants Coverage (%)</p>
+					<p style="text-align: center">Implants Coverage (%)</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -885,7 +899,8 @@
 					</tr>
 					<tr>
 						<td>Implants D6190: <span class="newff">{{reportDataInd.implants3}}</span></td>
-						<td>Implants Supported Porc./Ceramic (D6065): <span class="newff">{{reportDataInd.implants4}}</span></td>
+						<td>Implants Supported Porc./Ceramic (D6065): <span
+								class="newff">{{reportDataInd.implants4}}</span></td>
 					</tr>
 					<tr>
 						<td>Implants Fr(D6010): <span class="newff">{{reportDataInd.implants5}}</span></td>
@@ -897,7 +912,7 @@
 					</tr>
 				</table>
 				<span>
-				<p style="text-align: center">Posterior</p>
+					<p style="text-align: center">Posterior</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -909,14 +924,17 @@
 						<td colspan="2">Frequency: <span class="newff">{{reportDataInd.d2391Freq}}</span></td>
 					</tr>
 					<tr>
-						<td colspan="3">Downgraded to Amalgam (D2140): <span class="newff">{{reportDataInd.posterior3}}</span></td>
+						<td colspan="3">Downgraded to Amalgam (D2140): <span
+								class="newff">{{reportDataInd.posterior3}}</span></td>
 					</tr>
 					<tr>
 						<td>Crowns (D2740 &amp; D2750)%: <span class="newff">{{reportDataInd.posterior4}}</span></td>
-						<td colspan="2">Crowns(D2740 &amp; D2750) Frequency: <span class="newff">{{reportDataInd.posterior5}}</span></td>
+						<td colspan="2">Crowns(D2740 &amp; D2750) Frequency: <span
+								class="newff">{{reportDataInd.posterior5}}</span></td>
 					</tr>
 					<tr>
-						<td colspan="1">Will Crown Downgrade or not? (D2791): <span class="newff">{{reportDataInd.posterior6}}</span></td>
+						<td colspan="1">Will Crown Downgrade or not? (D2791): <span
+								class="newff">{{reportDataInd.posterior6}}</span></td>
 						<td colspan="2">Which code? <span class="newff">{{reportDataInd.posterior17}}</span></td>
 					</tr>
 					<tr>
@@ -925,7 +943,7 @@
 						<td></td>
 					</tr>
 					<tr>
-						
+
 						<td>Consult (D9310)%: <span class="newff">{{reportDataInd.posterior8}}</span></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.posterior9}}</span></td>
 						<td></td>
@@ -937,7 +955,7 @@
 					</tr>
 				</table>
 				<span>
-				<p style="text-align: center">Ortho(%)</p>
+					<p style="text-align: center">Ortho(%)</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -948,11 +966,12 @@
 					</tr>
 					<tr>
 						<td>Ortho Remaing: <span class="newff">{{reportDataInd.ortho5}}</span></td>
-						<td>Ortho Waiting Period(In Months): <span class="newff">{{reportDataInd.waitingPeriod3}}</span></td>
+						<td>Ortho Waiting Period(In Months): <span class="newff">{{reportDataInd.waitingPeriod3}}</span>
+						</td>
 						<td>Consult (D9310)% :<span class="newff">{{reportDataInd.posterior8}}</span></td>
 						<td>Frequency :<span class="newff">{{reportDataInd.posterior9}}</span></td>
 					</tr>
-				  <p style="text-align: center">Space maintainer</p>
+					<p style="text-align: center">Space maintainer</p>
 					<tr>
 						<td>D1510(%): <span class="newff">{{reportDataInd.d1510}}</span></td>
 						<td colspan="1">Frequency: <span class="newff">{{reportDataInd.d1510Freq}}</span></td>
@@ -968,22 +987,25 @@
 					<tr>
 						<td>D1517(%): <span class="newff">{{reportDataInd.d1517}}</span></td>
 						<td colspan="1">Frequency: <span class="newff">{{reportDataInd.d1517Freq}}</span></td>
-						<td></td>
+						<td>Space Maintainer Age Limit: <span class="newff">{{reportDataInd.smAgeLimit}}</span></td>
 						<td></td>
 					</tr>
-				  <p style="text-align: center">Pulpotomy</p>
+					<p style="text-align: center">Pulpotomy</p>
 					<tr>
 						<td>D3220(%): <span class="newff">{{reportDataInd.d3220}}</span></td>
 						<td colspan="1">Frequency: <span class="newff">{{reportDataInd.d3220Freq}}</span></td>
 						<td></td>
 						<td></td>
 					</tr>
-					
-					
+
+
 					<tr>
-						<td>How many fillings can be done in a year?: <span class="newff">{{reportDataInd.fill1}}</span></td>
-						<td>How many Extractions can be done in a year?: <span class="newff">{{reportDataInd.extr1}}</span></td>
-						<td>How many crowns can be done in a year? :<span class="newff">{{reportDataInd.crn1}}</span></td>
+						<td>How many fillings can be done in a year?: <span class="newff">{{reportDataInd.fill1}}</span>
+						</td>
+						<td>How many Extractions can be done in a year?: <span
+								class="newff">{{reportDataInd.extr1}}</span></td>
+						<td>How many crowns can be done in a year? :<span class="newff">{{reportDataInd.crn1}}</span>
+						</td>
 						<td></td>
 					</tr>
 				</table>
@@ -1017,7 +1039,7 @@
 
 				</table>
 				<span>
-				<p style="text-align: center">Complete History</p>
+					<p style="text-align: center">Complete History</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -1031,9 +1053,9 @@
 						<td><span class="newff">{{c.historyDos}}</span></td>
 					</tr>
 				</table>
-				
+
 				<span>
-				<p style="text-align: center"></p>
+					<p style="text-align: center"></p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -1041,7 +1063,7 @@
 					</tr>
 				</table>
 				<span>
-				<p style="text-align: center"></p>
+					<p style="text-align: center"></p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -1050,10 +1072,10 @@
 					</tr>
 				</table>
 			</div>
-            <div class="table-container" *ngIf="reportDataInd.ivFormTypeId==2">
+			<div class="table-container" *ngIf="reportDataInd.ivFormTypeId==2">
 				<h3>IVF DATA- Details</h3>
 				<span>
-					<p style="text-align: center">Smilepoint -OS Insurance 	Verification Form</p>
+					<p style="text-align: center">Smilepoint -OS Insurance Verification Form</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -1094,25 +1116,28 @@
 						<td>Payor ID: <span class="newff">{{reportDataInd.basicInfo18}}</span></td>
 					</tr>
 					<tr>
-						<td>What is allowable amount for D7210: <span class="newff">{{reportDataInd.whatAmountD7210}}</span></td>
+						<td>What is allowable amount for D7210: <span
+								class="newff">{{reportDataInd.whatAmountD7210}}</span></td>
 						<td>Maximum $: <span class="newff">{{reportDataInd.policy7}}</span></td>
 						<td>Deductible: <span class="newff">{{reportDataInd.policy9}}</span></td>
 					</tr>
 					<tr>
-						<td>What is allowable amount for D7240: <span class="newff">{{reportDataInd.allowAmountD7240}}</span></td>
+						<td>What is allowable amount for D7240: <span
+								class="newff">{{reportDataInd.allowAmountD7240}}</span></td>
 						<td>Remaining benefits $: <span class="newff">{{reportDataInd.policy8}}</span></td>
 						<td>Remaining Deductible: <span class="newff">{{reportDataInd.policy10}}</span></td>
 					</tr>
 					<tr>
-						<td>Is there a MTC?  <span class="newff">{{reportDataInd.radio3}}</span></td>
+						<td>Is there a MTC? <span class="newff">{{reportDataInd.radio3}}</span></td>
 						<td>Eligible for D3330? <span class="newff">{{reportDataInd.radio4}}</span></td>
 						<td>Is there any waiting period? <span class="newff">{{reportDataInd.radio5}}</span></td>
 						<td>Out of Network Benefits: <span class="newff">{{reportDataInd.radio1}}</span></td>
 						<td>Do you file OS under medical first? <span class="newff">{{reportDataInd.radio2}}</span></td>
 					</tr>
-                      <tr>
-						<td>Waiting Period Duration <span class="newff">{{reportDataInd.waitingPeriodDuration}}</span></td>
-						
+					<tr>
+						<td>Waiting Period Duration <span class="newff">{{reportDataInd.waitingPeriodDuration}}</span>
+						</td>
+
 					</tr>
 				</table>
 
@@ -1232,7 +1257,7 @@
 					<p style="text-align: center">Perio:</p>
 				</span>
 				<table class="table table-bordered table-striped">
-                    <tr>
+					<tr>
 						<td>D4249(%): <span class="newff">{{reportDataInd.oral1}}</span></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.oral1fr}}</span></td>
 						<td>D7951(%): <span class="newff">{{reportDataInd.d7951}}</span></td>
@@ -1240,7 +1265,7 @@
 						<td>D9310(%): <span class="newff">{{reportDataInd.posterior8}}</span></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.posterior9}}</span></td>
 					</tr>
-                    <tr>
+					<tr>
 						<td>D4266(%): <span class="newff">{{reportDataInd.d4266}}</span></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.d4266fr}}</span></td>
 						<td>D4267(%): <span class="newff">{{reportDataInd.d4267}}</span></td>
@@ -1248,7 +1273,7 @@
 						<td>D4341(%): <span class="newff">{{reportDataInd.perio1}}</span></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.perio1fr}}</span></td>
 					</tr>
-                    <tr>
+					<tr>
 						<td>D4273(%): <span class="newff">{{reportDataInd.d4273}}</span></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.d4273fr}}</span></td>
 						<td>D6065(%): <span class="newff">{{reportDataInd.implants4}}</span></td>
@@ -1256,8 +1281,8 @@
 						<td>D7251(%): <span class="newff">{{reportDataInd.d7251}}</span></td>
 						<td>Frequency: <span class="newff">{{reportDataInd.d7251fr}}</span></td>
 					</tr>
-                    
- 				</table>
+
+				</table>
 
 				<span>
 					<p style="text-align: center">Guidelines for IV Sedation:</p>
@@ -1278,7 +1303,7 @@
 				</table>
 
 				<span>
-				<p style="text-align: center">Complete History</p>
+					<p style="text-align: center">Complete History</p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -1292,9 +1317,9 @@
 						<td><span class="newff">{{c.historyDos}}</span></td>
 					</tr>
 				</table>
-				
+
 				<span>
-				<p style="text-align: center"></p>
+					<p style="text-align: center"></p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -1302,7 +1327,7 @@
 					</tr>
 				</table>
 				<span>
-				<p style="text-align: center"></p>
+					<p style="text-align: center"></p>
 				</span>
 				<table class="table table-bordered table-striped">
 					<tr>
@@ -1312,8 +1337,7 @@
 				</table>
 			</div>
 
+		</div>
+		<!--showReportData DIV  -->
+
 	</div>
-	<!--showReportData DIV  -->
-
-</div>
-
