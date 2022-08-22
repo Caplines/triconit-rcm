@@ -6,18 +6,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,17 +26,19 @@ import com.tricon.ruleengine.dao.CompanyDao;
 import com.tricon.ruleengine.dao.IVformTypeDao;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
+import com.tricon.ruleengine.dao.impl.DaysCalDaoImpl;
 import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GenericResponse;
-import com.tricon.ruleengine.exception.RuleEngineException;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.model.db.ReplicationDays;
 import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.utils.Constants;
+import com.tricon.ruleengine.utils.DaysCalculation;
 
 @CrossOrigin
 @RestController
@@ -59,6 +58,9 @@ public class CaplineIVFGoogleFormController {
 
 	@Autowired
 	IVformTypeDao iVformTypeDao;
+	
+	@Autowired
+	DaysCalDaoImpl dayCal;
 
 	@Value("${application.url}")
 	private String APP_URL;
@@ -513,14 +515,23 @@ public class CaplineIVFGoogleFormController {
 			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
 			Office off = od.getOfficeByName(office,cmp.getUuid());
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
-			if (esDB != null && esDB.getPassword().equals(password)) {
-		         o=(List<Object>)civf.searchCaplineDataReplacation(dto,off);
-		         if(o.isEmpty()) {
-		        	 msg="No Data Found";
-		         }
+			int daysbetween=DaysCalculation.getDays(dto.getGndatebet());
+			ReplicationDays day=dayCal.findByDays(daysbetween);
+			if(day!=null && day.getDays()<=daysbetween)
+			{
+				if (esDB != null && esDB.getPassword().equals(password)) {
+			         o=(List<Object>)civf.searchCaplineDataReplacation(dto,off);
+			         if(o.isEmpty()) {
+			        	 msg="No Data Found";
+			         }
+				}
+				else{
+					msg="OfficeName or Password is Incorrect";
+				}
 			}
-			else{
-				msg="OfficeName or Password is Incorrect";
+			else
+			{
+				msg="No Data Found because days is greater";
 			}
 		}
 		catch(Exception e)
