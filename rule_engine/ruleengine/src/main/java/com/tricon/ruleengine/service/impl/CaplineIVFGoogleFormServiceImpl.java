@@ -837,7 +837,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	}
 
 	@Override
-	public Object searchCaplineDataReplacation(CaplineDataReplicationDto d,Office office) throws Exception
+	public Object searchCaplineDataReplication(CaplineDataReplicationDto d,Office office) throws Exception
 	{
 		
 		List<Object> data=patientDao.searchPatientHistoryFromGivenColumns(d,office);

@@ -492,14 +492,13 @@ public class CaplineIVFGoogleFormController {
 	@CrossOrigin
 	@GetMapping
 	@RequestMapping(value = "/googleESReportReplication")
-	public ResponseEntity<Object> queryESReportReplacation(@RequestParam(value = "password", required = true) String password,
+	public ResponseEntity<Object> queryESReportReplication(@RequestParam(value = "password", required = true) String password,
             @RequestParam(value = "selectcolumns", required = true) String selectcolumns,
             @RequestParam(value = "gndatebet", required = true) String generalDateIVFDoneDBBet,
             @RequestParam(value = "columncount", required = false, defaultValue="0") int columncount,
             @RequestParam(value = "office", required = true) String office,
             @RequestParam(value = "queryfor", required = true) String qname,HttpServletRequest request,
-			HttpServletResponse response)
-	{
+			HttpServletResponse response){
 		
 		List<Object> o=new ArrayList<>();
 		CaplineDataReplicationDto dto=new CaplineDataReplicationDto();
@@ -510,37 +509,31 @@ public class CaplineIVFGoogleFormController {
 		dto.setGndatebet(generalDateIVFDoneDBBet);
 		dto.setColumnCount(columncount);
 		dto.setQueryName(qname);
-		try
-		{
+		try{
 			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
 			Office off = od.getOfficeByName(office,cmp.getUuid());
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
-			int daysbetween=DaysCalculation.getDays(dto.getGndatebet());
-			ReplicationDays day=dayCal.findByQueryName(dto.getQueryName());
-			System.out.println(daysbetween);
-			if(day!=null && day.getDays()>=daysbetween)
-			{
-				if (esDB != null && esDB.getPassword().equals(password)) {
-			         o=(List<Object>)civf.searchCaplineDataReplacation(dto,off);
-			         if(o.isEmpty()) {
-			        	 msg="No Data Found";
-			         }
-				}
-				else{
-					msg="OfficeName or Password is Incorrect";
-				}
+			if (esDB != null && esDB.getPassword().equals(password)){
+				int daysbetween=DaysCalculation.getDays(dto.getGndatebet());
+				if(daysbetween>0){  //This Check validates if any exception occures in DaysCalculation class return -1
+				ReplicationDays day=dayCal.findByQueryName(dto.getQueryName());
+				if(day!=null && day.getDays()>=daysbetween){
+					o=(List<Object>)civf.searchCaplineDataReplication(dto,off);
+				}else {
+		            o=(List<Object>)civf.searchCaplineDataReplication(dto,off);
+	             }
+			}else {
+				msg=Constants.DATE_PARSING_EXCEPTION;
 			}
-			else
-			{
-				msg="No Data Found because days is greater or queryName is Incorrect";
-			}
+		  }else {
+			  msg=Constants.OFFICE_NAME_INCORRECT;
+		  }
 		}
-		catch(Exception e)
-		{
+		catch(Exception e){
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.BAD_REQUEST, "Error While Fetching Data", ""));
 		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,msg, o));	
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,msg, o));
 	}
 
 }

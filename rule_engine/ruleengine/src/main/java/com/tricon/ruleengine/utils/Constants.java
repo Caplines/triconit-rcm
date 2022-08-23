@@ -383,6 +383,9 @@ public class Constants {
 	public static final String QUERY_FOR_DTP_Treatmentplans="DTP_Treatment plans";
 	public static final String QUERY_FOR_DTP_Appointment ="DTP_Appointment";
 	public static final String QUERY_FOR_ItemizedCash="Itemized Cash";
+	public static final String NO_DATA_FOUND="No Data Found";
+	public static final String OFFICE_NAME_INCORRECT="OfficeName or Password is Incorrect";
+	public static final String DATE_PARSING_EXCEPTION="Error while Date Parsing or Incorrect DateFormat";
 	
 	
 	

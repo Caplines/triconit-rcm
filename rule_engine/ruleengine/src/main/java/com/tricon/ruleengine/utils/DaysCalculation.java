@@ -4,32 +4,34 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-public class DaysCalculation
-{
-    public static long daysBetween=0L;
+public class DaysCalculation{
+	
+    public static int daysBetween=-1;
+    
+    /**
+     This Method calculates days between two dates for given format.
+     if format is incorrect then return -1 or any exception occures during getDays method calculation
+    * */
     
 	public static int getDays(String days){		
-		String day[]=days.split(" AND ");
-		String firstDate=day[0].replace("\'", "");
-		String secondDate=day[1].replace("\'", "");    
+		String firstDate="";
+		String secondDate="";
+		Date date1;
+		Date date2;
+		String day[]=days.split(" AND "); 
                 try {
-                	SimpleDateFormat format= new SimpleDateFormat("MM/dd/yyyy");
-                	Date date1;
-    				Date date2;
+                	firstDate=day[0].replace("\'", "");
+            		secondDate=day[1].replace("\'", "");   
+                	SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd");              	
     				date1 = format.parse(firstDate);
     				date2 = format.parse(secondDate);
-    				daysBetween = ChronoUnit.DAYS.between(date1.toInstant(),date2.toInstant());   				
-    			} catch (ParseException e) {
-    				try {
-    				SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd");
-                	Date date1;
-    				Date date2;
-    				date1 = format.parse(firstDate);
-    				date2 = format.parse(secondDate);
-    				daysBetween = ChronoUnit.DAYS.between(date1.toInstant(),date2.toInstant());
-    				}
-    				catch (ParseException e1) {e1.printStackTrace();}
-    			}      
-		    return (int)daysBetween;
+    				daysBetween = (int)ChronoUnit.DAYS.between(date1.toInstant(),date2.toInstant()); 
+    				return Math.abs(daysBetween);
+    			} 
+                 catch (ParseException e){
+    				 e.printStackTrace();
+    				 return daysBetween;
+    			  }  
+               
 	}     
 }

@@ -34,6 +34,6 @@ public interface CaplineIVFGoogleFormService {
 
 	public Object  searchIVFDataTemp(CaplineIVFQueryFormDto d,Office office) throws Exception;
 	
-	public Object searchCaplineDataReplacation(CaplineDataReplicationDto d,Office office)throws Exception;
+	public Object searchCaplineDataReplication(CaplineDataReplicationDto d,Office office)throws Exception;
 
 }

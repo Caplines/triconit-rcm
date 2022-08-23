@@ -8,12 +8,15 @@ import com.tricon.ruleengine.dao.DaysCalculationDao;
 import com.tricon.ruleengine.model.db.ReplicationDays;
 
 @Repository
-public class DaysCalDaoImpl extends BaseDaoImpl implements DaysCalculationDao
-{
-	private ReplicationDays replicationDays=null;
+public class DaysCalDaoImpl extends BaseDaoImpl implements DaysCalculationDao{
 	
-	@Override
-	public ReplicationDays findByQueryName(String query) {
+	/**
+	 This Method gets queryName from replication_days table.
+	 With the help of queryName we can find days of particular queryName that is map in replication_days table.
+	 */
+	
+	public ReplicationDays findByQueryName(String query){
+		ReplicationDays replicationDays=null;
 		Session s=getSession();		
 		try {
 		Criteria criteria=s.createCriteria(ReplicationDays.class);
@@ -27,7 +30,8 @@ public class DaysCalDaoImpl extends BaseDaoImpl implements DaysCalculationDao
 			closeSession(s);
 		}
 		return replicationDays;
-	}
+	}	
+	
 }
 
 
