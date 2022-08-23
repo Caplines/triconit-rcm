@@ -4,5 +4,5 @@ import com.tricon.ruleengine.model.db.ReplicationDays;
 
 public interface DaysCalculationDao 
 {
-            public ReplicationDays findByDays(int day);
+            public ReplicationDays findByQueryName(String queryName);
 }

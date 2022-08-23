@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.model.db;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,9 +11,11 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="replication_days")
-public class ReplicationDays 
+public class ReplicationDays implements Serializable
 {
     
+	private static final long serialVersionUID = 5665233019024928711L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)

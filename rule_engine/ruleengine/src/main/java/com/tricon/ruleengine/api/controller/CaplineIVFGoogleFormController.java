@@ -516,8 +516,9 @@ public class CaplineIVFGoogleFormController {
 			Office off = od.getOfficeByName(office,cmp.getUuid());
 			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
 			int daysbetween=DaysCalculation.getDays(dto.getGndatebet());
-			ReplicationDays day=dayCal.findByDays(daysbetween);
-			if(day!=null && day.getDays()<=daysbetween)
+			ReplicationDays day=dayCal.findByQueryName(dto.getQueryName());
+			System.out.println(daysbetween);
+			if(day!=null && day.getDays()>=daysbetween)
 			{
 				if (esDB != null && esDB.getPassword().equals(password)) {
 			         o=(List<Object>)civf.searchCaplineDataReplacation(dto,off);
@@ -531,13 +532,13 @@ public class CaplineIVFGoogleFormController {
 			}
 			else
 			{
-				msg="No Data Found because days is greater";
+				msg="No Data Found because days is greater or queryName is Incorrect";
 			}
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.NOT_FOUND, "Error While Fetching Data", ""));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.BAD_REQUEST, "Error While Fetching Data", ""));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,msg, o));	
 	}
