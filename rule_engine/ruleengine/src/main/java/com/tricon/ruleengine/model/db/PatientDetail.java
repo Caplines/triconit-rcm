@@ -139,7 +139,7 @@ public class PatientDetail extends BaseAudit implements Serializable {
 	@Column(name = "plan_assignment_of_benefits", length = 50)
 	private String planAssignmentofBenefits;// AI
 
-	@Column(name = "plan_coverage_book", length = 50)
+	@Column(name = "plan_coverage_book", length = 255)
 	private String planCoverageBook;// AJ
 
 	@Column(name = "basic_percentage", length = 50)
