@@ -836,6 +836,10 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		return dataBean;
 	}
 
+	/**
+	 * This Method gets data from searchPatientHistoryFromGivenColumns method and holds data into list of object
+	 * hereafter data dumps in googlesheet into each column
+	 */
 	@Override
 	public Object searchCaplineDataReplication(CaplineDataReplicationDto d,Office office) throws Exception
 	{

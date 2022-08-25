@@ -489,6 +489,11 @@ public class CaplineIVFGoogleFormController {
 
 	}
 	
+	/**
+	 * This API takes column name as a input and makes new query with the help of column name and fetch data from table
+	 * and dump data into googlesheet
+	 * ex-http://localhost:8080/googleESReportReplication?selectcolumns=t.patient_id,CONCAT(p.first_name,' ',p.last_name ),t.tran_date..............
+	 */
 	@CrossOrigin
 	@GetMapping
 	@RequestMapping(value = "/googleESReportReplication")

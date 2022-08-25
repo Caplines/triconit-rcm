@@ -6,11 +6,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 public class DaysCalculation{
 	   
-    /**
-     This Method calculates days between two dates for given format.
-     if format is incorrect then return -1 or any exception occures during getDays method calculation
-    * */
- 
+   
+  /**
+  *  This Method calculates days between two dates for given format.
+  *  if format is incorrect then return -1 or any exception occures during getDays method calculation     
+  */
     public static int getDays(String days){	
     	int daysBetween=-1;
 		String day[]=days.split(" AND ");

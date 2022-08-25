@@ -14,7 +14,6 @@ public class DaysCalDaoImpl extends BaseDaoImpl implements DaysCalculationDao{
 	 This Method gets queryName from replication_days table.
 	 With the help of queryName we can find days of particular queryName that is map in replication_days table.
 	 */
-	
 	public ReplicationDays findByQueryName(String query){
 		ReplicationDays replicationDays=null;
 		Session s=getSession();		
