@@ -10,6 +10,8 @@ public @Data class PropFileDto {
 	private String reDBPass;*/
 	private String timer;
 	private String logLocation;
+	private String esVersion;
+	
 	
 	
 }

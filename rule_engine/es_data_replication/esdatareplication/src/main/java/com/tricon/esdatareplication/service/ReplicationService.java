@@ -43,6 +43,7 @@ import com.tricon.esdatareplication.entity.repdb.TransactionsHeader;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlans;
 import com.tricon.esdatareplication.util.Constants;
+import com.tricon.esdatareplication.util.CustomPropFileCache;
 import com.tricon.esdatareplication.util.DataStatus;
 import com.tricon.esdatareplication.util.QueryTable;
 
@@ -521,7 +522,7 @@ public class ReplicationService {
 			Date lastDateofCrawling, boolean extraPat, boolean needTop,boolean updateWhere,BufferedWriter bw) {
 
 		List<?> arrayList = null;
-
+        System.out.println("HERE");
 		Connection con = null;
 		try {
 			con = ESConnection.getConnection();
@@ -536,6 +537,7 @@ public class ReplicationService {
 				}
 				query = limit + " " + query;	
 			}
+			System.out.println(query);
 			
 			if (updateWhere) {
 			if (qnum.isWhereClause() && !extraPat) {
@@ -548,7 +550,22 @@ public class ReplicationService {
 				query = query.replace(Constants.QUERY_WHERE_CLAUSE_REP, "");
 				query = query.replace(" where ", "  ");
 			}
+			
+			String version=CustomPropFileCache.cache.get(Constants.CACHE_NAME_FOR_PROP).getEsVersion();
+			int vsersionI= Integer.parseInt(version);
+			if (vsersionI==17) {
+				//also correct while fetching query in class PrepairESDataFromFromResultSet
+				if(qnum.getTableName().equals(Constants.TABLE_PATIENT)) {
+					query= query.replace("encrypted_social_security", "'encrypted_social_security'");
+					query= query.replace("last_medical_history", "'last_medical_history'");
+				}
+				if(qnum.getTableName().equals(Constants.TABLE_PROVIDER))  {
+					query= query.replace("encrypted_social_security", "'encrypted_social_security'");
+					query= query.replace("last_medical_history", "'last_medical_history'");
+				}
+			}
 			PreparedStatement pstmt = con.prepareStatement("select " + query);
+			
 			commonTableService.appendLoggerToWriter(ReplicationService.class,bw,"query-" + query,true);
 			if (bw!=null) {
 				commonTableService.appendLoggerToWriter(ReplicationService.class, bw, qnum.getTableName()+"<-->"+query, true);	
@@ -559,6 +576,7 @@ public class ReplicationService {
 			rs.close();
 			pstmt.close();
 		} catch (SQLException sqe) {
+			sqe.printStackTrace();
 			// logger.error("Unexpected exception : " + sqe.toString() + ", sqlstate = " +
 			// sqe.getSQLState());
 		} catch (Exception e) {
@@ -566,7 +584,7 @@ public class ReplicationService {
 		} finally {
 			ESConnection.closeConnection(con);
 		}
-
+		 System.out.println("arrayList:"+arrayList);
 		return arrayList;
 
 	}
