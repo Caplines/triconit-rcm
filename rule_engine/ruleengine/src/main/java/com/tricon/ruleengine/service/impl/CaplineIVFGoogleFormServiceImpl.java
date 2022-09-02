@@ -841,10 +841,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	 * hereafter data dumps in googlesheet into each column
 	 */
 	@Override
-	public Object searchCaplineDataReplication(CaplineDataReplicationDto d,Office office) throws Exception
-	{
+	public Object searchCaplineDataReplication(CaplineDataReplicationDto d,Office office) throws Exception{
 		
-		List<Object> data=patientDao.searchPatientHistoryFromGivenColumns(d,office);
+		List<Object> data=patientDao.replicationQueries(d,office);
 		 if(!data.isEmpty()) {
 		 List<GoogleReportsRDDTO> beanList = new ArrayList<>();
 			GoogleReportsRDDTO dt= null;		
@@ -864,10 +863,8 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				beanList.add(dt);
 			}
 			return beanList;
-		 }
-		 else {
+		 }else{
 			 return data;
 		 }
 	}
-
 }

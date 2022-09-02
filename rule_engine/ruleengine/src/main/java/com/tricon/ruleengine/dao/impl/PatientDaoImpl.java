@@ -762,7 +762,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	 * data comes from particular table and holds into List of Object
 	 */
 	@Override
-	public List<Object> searchPatientHistoryFromGivenColumns(CaplineDataReplicationDto o,Office office)throws Exception
+	public List<Object> replicationQueries(CaplineDataReplicationDto o,Office office)throws Exception
 	{
 		Session s=getSession();
 		List<Object> data=new ArrayList<>();
@@ -790,8 +790,8 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		    	finalQuery="select "+o.getSelectcolumns()+" from office off,es_data_replica_appointment a WHERE DATE(a.start_time) BETWEEN "+o.getGndatebet()+" and off.uuid=a.office_id and off.uuid='"+office.getUuid()+"'";
 		    	break;
 		    	
-		   /* case Constants.QUERY_FOR_ItemizedCash:
-		    	finalQuery="select "+o.getSelectcolumns()+" from office off,es_data_replica_transactions t "
+		   case Constants.QUERY_FOR_ItemizedCash:
+		    	/*finalQuery="select "+o.getSelectcolumns()+" from office off,es_data_replica_transactions t "
 		    			+ "JOIN es_data_replica_payment_provider py ON t.tran_num = py.tran_num "
 		    			+ "JOIN es_data_replica_paytype pt ON t.paytype_id = pt.paytype_id "
 		    			+ "JOIN es_data_replica_patient p ON p.patient_id=t.patient_id WHERE t.tran_date BETWEEN "+o.getGndatebet()+" and off.uuid=p.office_id and off.uuid='"+office.getUuid()+"' GROUP BY t.patient_id,CONCAT(p.first_name,' ', p.last_name ),t.tran_date,t.paytype_id,pt.description,t.provider_id";
@@ -802,7 +802,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		try {
           if(finalQuery!=null && !finalQuery.isEmpty()) {
 		  Query q=s.createSQLQuery(finalQuery);
-		  data=q.list();		  
+		  data=q.list();
 		  }
 		}
 		catch(Exception e) {

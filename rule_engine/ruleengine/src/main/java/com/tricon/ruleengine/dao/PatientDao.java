@@ -55,7 +55,7 @@ public interface PatientDao {
 	
 	public List<ScrapPatient> getScrappingStatusByPatIdsTemp(List<Integer> ids);
 	
-	public  List<Object> searchPatientHistoryFromGivenColumns(CaplineDataReplicationDto o,Office off)throws Exception;
+	public  List<Object> replicationQueries(CaplineDataReplicationDto o,Office off)throws Exception;
 	
 
 }
