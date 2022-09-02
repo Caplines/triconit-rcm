@@ -25,6 +25,7 @@ public class CustomPropFileCache {
 			f.setEsDbuser(properties.getProperty("dbuser"));
 			f.setEsDbPass(properties.getProperty("dbpassword"));
 			f.setLogLocation(properties.getProperty("log.location"));
+			f.setEsVersion(properties.getProperty("es_version"));
 			cache.put(Constants.CACHE_NAME_FOR_PROP, f);
 
 		} catch (IOException e) {

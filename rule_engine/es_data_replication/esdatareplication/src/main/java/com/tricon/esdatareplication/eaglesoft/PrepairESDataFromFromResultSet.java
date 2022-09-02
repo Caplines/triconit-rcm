@@ -283,8 +283,17 @@ public class PrepairESDataFromFromResultSet {
 				p.setRegistrationVerified(rs.getBoolean("registration_verified"));
 				p.setDolphinID(rs.getString("DolphinID"));
 				p.setPasswordSalt(rs.getString("password_salt"));
-				p.setEncryptedSocialSecurity(rs.getString("encrypted_social_security"));
+				try {
+					p.setEncryptedSocialSecurity(rs.getString("encrypted_social_security"));
+				}catch(Exception v) {
+						
+				}
+				//p.setEncryptedSocialSecurity(rs.getString("encrypted_social_security"));
+				try {
 				p.setLastMedicalHistory(rs.getDate("last_medical_history"));
+				}catch(Exception v) {
+					
+				}
 				p.setMovedToCloud(0);
 				cList.add(p);
 
@@ -627,7 +636,11 @@ public class PrepairESDataFromFromResultSet {
 				p.setClinicianUserName(rs.getString("ClinicianUserName"));
 				p.setClinicianPassword(rs.getString("ClinicianPassword"));
 				p.setLastLogon(rs.getDate("last_logon"));
+				try {
 				p.setEncryptedSocialSecurity(rs.getString("encrypted_social_security"));
+				}catch(Exception v) {
+					
+				}
 				p.setMovedToCloud(0);
 				cList.add(p);
 			}
