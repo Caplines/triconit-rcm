@@ -771,10 +771,12 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		switch(queryFor)
 		{
 		    case Constants.QUERY_FOR_Reconcillation:
-		    	finalQuery="select "+o.getSelectcolumns()+" from office off, es_data_replica_patient p "
-		    			+ "JOIN es_data_replica_transactions_detail t ON t.patient_id = p.patient_id JOIN "
-		    			+ "es_data_replica_transactions_header th on th.tran_num = t.tran_num WHERE th.impacts = 'P' AND DATE(t.date_entered) BETWEEN "+o.getGndatebet()+""
-		    			+ " and off.uuid=p.office_id and off.uuid='"+office.getUuid()+"'";
+		    	finalQuery="select distinct "+o.getSelectcolumns()+" from "
+		    			+ "es_data_replica_patient p , es_data_replica_transactions_detail t, es_data_replica_transactions_header th "
+		    			+ "where th.tran_num = t.tran_num and  p.office_id='"+office.getUuid()+"' "
+		    			+ "and th.impacts = 'P' and t.office_id='"+office.getUuid()+"' "
+		    			+ "and p.office_id=th.office_id and t.patient_id = p.patient_id and th.tran_num = t.tran_num and "
+		    			+ "t.date_entered  BETWEEN "+o.getGndatebet()+"";
 		    	break;
 		    case Constants.QUERY_FOR_DTP_PlannedServices:
 		    	finalQuery="select "+o.getSelectcolumns()+" from office off,es_data_replica_patient p "
