@@ -764,9 +764,9 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	@Override
 	public List<Object> replicationQueries(CaplineDataReplicationDto o,Office office)throws Exception
 	{
-		Session s=getSession();
+		Session s=null;
 		List<Object> data=new ArrayList<>();
-		String finalQuery="",queryFor="",transactionQuery="",paymentProviderQuery="";
+		String finalQuery="",queryFor="";
 		queryFor=(o.getQueryName().isEmpty())?"NOT_FOUND":o.getQueryName().trim();
 		switch(queryFor)
 		{
@@ -792,9 +792,9 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		    	finalQuery="select "+o.getSelectcolumns()+" from office off,es_data_replica_appointment a WHERE DATE(a.start_time) BETWEEN "+o.getGndatebet()+" and off.uuid=a.office_id and off.uuid='"+office.getUuid()+"'";
 		    	break;
 		    	
-		   case Constants.QUERY_FOR_ItemizedCash:
+		   case Constants.QUERY_FOR_ItemizedCash:			   
 			   //start TransactionQuery
-			    transactionQuery="(select * from "
+			   String transactionQuery="(select * from "
 			    		+ "(select  h.tran_num,user_id,type,tran_date, "
 			    		+ "(SELECT  t.patient_id FROM es_data_replica_transactions_detail t WHERE "
 			    		+ " t.office_id=h.office_id and "
@@ -826,7 +826,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			    		+ "from  es_data_replica_transactions_header h where h.office_id='"+office.getUuid()+"' "
 			    		+ "and h.tran_date BETWEEN "+o.getGndatebet()+") as tran_num) t, ";
 			    //start PayemntProviderQuery
-			    paymentProviderQuery="(SELECT t.tran_num as tran_num, "
+			   String paymentProviderQuery="(SELECT t.tran_num as tran_num, "
 			    		+ "t.collections_go_to as provider_id, "
 			    		+ "SUM(-t.amount) AS amount, "
 			    		+ "t.provider_practice_id as practice_id,"
@@ -846,11 +846,12 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		    			+ "t.tran_num = py.tran_num  and p.patient_id=t.patient_id and p.office_id=t.office_idt and py.office_idp=t.office_idt "
 		    			+ "GROUP BY t.patient_id,t.tran_date,t.paytype_id,pt.description,t.provider_id";
 		    	break;
-		    	default:System.out.println("No Match Found");
+		    	default:RuleEngineLogger.generateLogs(clazz, "No Match Found", Constants.rule_log_debug, null);
 		}
-		System.out.println(finalQuery);
+		RuleEngineLogger.generateLogs(clazz, finalQuery, Constants.rule_log_debug, null);
 		try {
           if(finalQuery!=null && !finalQuery.isEmpty()) {
+          s=getSession();
 		  Query q=s.createSQLQuery(finalQuery);
 		  data=q.list();
 		  }
@@ -859,7 +860,9 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			e.printStackTrace();
 		}
 		finally{
+			if(s!=null) {
 			closeSession(s);
+			}
 		}
 		return data;
 	}
