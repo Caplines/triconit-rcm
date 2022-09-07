@@ -766,7 +766,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	{
 		Session s=getSession();
 		List<Object> data=new ArrayList<>();
-		String finalQuery="",queryFor="";
+		String finalQuery="",queryFor="",transactionQuery="",paymentProviderQuery="";
 		queryFor=(o.getQueryName().isEmpty())?"NOT_FOUND":o.getQueryName().trim();
 		switch(queryFor)
 		{
@@ -793,11 +793,59 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		    	break;
 		    	
 		   case Constants.QUERY_FOR_ItemizedCash:
-		    	/*finalQuery="select "+o.getSelectcolumns()+" from office off,es_data_replica_transactions t "
-		    			+ "JOIN es_data_replica_payment_provider py ON t.tran_num = py.tran_num "
-		    			+ "JOIN es_data_replica_paytype pt ON t.paytype_id = pt.paytype_id "
-		    			+ "JOIN es_data_replica_patient p ON p.patient_id=t.patient_id WHERE t.tran_date BETWEEN "+o.getGndatebet()+" and off.uuid=p.office_id and off.uuid='"+office.getUuid()+"' GROUP BY t.patient_id,CONCAT(p.first_name,' ', p.last_name ),t.tran_date,t.paytype_id,pt.description,t.provider_id";
-		    	break;*/
+			   //start TransactionQuery
+			    transactionQuery="(select * from "
+			    		+ "(select  h.tran_num,user_id,type,tran_date, "
+			    		+ "(SELECT  t.patient_id FROM es_data_replica_transactions_detail t WHERE "
+			    		+ " t.office_id=h.office_id and "
+			    		+ "t.office_id='"+office.getUuid()+"' and "
+			    		+ "t.tran_num = h.tran_num "
+			    		+ "order by patient_id limit 1) as patient_id, "
+			    		+ "resp_party_id,amount,service_code, "
+			    		+ "paytype_id,sequence, "
+			    		+ "(SELECT  t.provider_id FROM es_data_replica_transactions_detail t WHERE "
+			    		+ "t.office_id=h.office_id and "
+			    		+ "t.office_id='"+office.getUuid()+"' and provider_id is not null and "
+			    		+ " t.tran_num = h.tran_num ORDER BY provider_id limit 1) as provider_id,"
+			    		+ "(SELECT  t.collections_go_to FROM es_data_replica_transactions_detail t  WHERE "
+			    		+ "t.office_id=h.office_id and "
+			    		+ "t.office_id='"+office.getUuid()+"' and collections_go_to is not null and "
+			    		+ " t.tran_num = h.tran_num ORDER BY collections_go_to  limit 1) as collections_go_to, "
+			    		+ "statement_num,null as old_tooth,surface,fee,discount_surcharge,tax, "
+			    		+ "description,defective,impacts,status,adjustment_type,claim_id,est_primary, "
+			    		+ "est_secondary,paid_primary,paid_secondary,"
+			    		+ "(SELECT  t.provider_practice_id FROM es_data_replica_transactions_detail t WHERE "
+			    		+ "t.office_id=h.office_id and t.office_id='"+office.getUuid()+"' and provider_practice_id is not null and t.tran_num = h.tran_num ORDER BY provider_id limit 1) as provider_practice_id, "
+			    		+ "(SELECT  t.patient_practice_id FROM es_data_replica_transactions_detail t  WHERE "
+			    		+ "t.office_id=h.office_id and "
+			    		+ "t.office_id='"+office.getUuid()+"' and patient_practice_id is not null and "
+			    		+ " t.tran_num = h.tran_num ORDER BY collections_go_to  limit 1) as patient_practice_id, "
+			    		+ "bulk_payment_num,aging_date, "
+			    		+ "tooth,lab_fee,lab_fee2,lab_code,lab_code2,pre_fee,standard_fee_id,practice_id, "
+			    		+ "procedure_type_codes,balance,h.office_id as office_idt "
+			    		+ "from  es_data_replica_transactions_header h where h.office_id='"+office.getUuid()+"' "
+			    		+ "and h.tran_date BETWEEN "+o.getGndatebet()+") as tran_num) t, ";
+			    //start PayemntProviderQuery
+			    paymentProviderQuery="(SELECT t.tran_num as tran_num, "
+			    		+ "t.collections_go_to as provider_id, "
+			    		+ "SUM(-t.amount) AS amount, "
+			    		+ "t.provider_practice_id as practice_id,"
+			    		+ "t.provider_id as prod_provider_id,h.office_id as office_idp "
+			    		+ "FROM es_data_replica_transactions_detail t, "
+			    		+ "es_data_replica_transactions_header h WHERE "
+			    		+ "h.office_id='"+office.getUuid()+"' "
+			    		+ "and h.office_id=t.office_id and "
+			    		+ "(h.tran_date BETWEEN "+o.getGndatebet()+") and "
+			    		+ "h.tran_num = t.tran_num AND t.status = 1 AND "
+			    		+ "((h.type IN ('A','P','I','Y','C','W') AND h.status IN ('A','D','V')) OR "
+			    		+ "(h.type = 'D' AND h.status = 'V')) "
+			    		+ "GROUP BY t.tran_num, t.collections_go_to, t.provider_id, t.provider_practice_id "
+			    		+ "ORDER BY t.tran_num, t.collections_go_to, t.provider_id, t.provider_practice_id) py ";			    		
+		    	finalQuery="select "+o.getSelectcolumns()+" from "+transactionQuery+paymentProviderQuery+",es_data_replica_patient p,es_data_replica_paytype pt "
+		    			+ "where p.office_id='"+office.getUuid()+"' and t.paytype_id = pt.paytype_id and pt.office_id=p.office_id and "
+		    			+ "t.tran_num = py.tran_num  and p.patient_id=t.patient_id and p.office_id=t.office_idt and py.office_idp=t.office_idt "
+		    			+ "GROUP BY t.patient_id,t.tran_date,t.paytype_id,pt.description,t.provider_id";
+		    	break;
 		    	default:System.out.println("No Match Found");
 		}
 		System.out.println(finalQuery);
