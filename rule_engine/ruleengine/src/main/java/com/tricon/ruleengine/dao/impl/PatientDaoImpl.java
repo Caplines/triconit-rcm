@@ -779,17 +779,26 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		    			+ "t.date_entered  BETWEEN "+o.getGndatebet()+"";
 		    	break;
 		    case Constants.QUERY_FOR_DTP_PlannedServices:
-		    	finalQuery="select "+o.getSelectcolumns()+" from office off,es_data_replica_patient p "
-		    			+ "JOIN es_data_replica_planned_services ps ON p.patient_id=ps.patient_id "
-		    			+ "LEFT JOIN es_data_replica_employer e ON (p.prim_employer_id = e.employer_id) "
-		    			+ "JOIN es_data_replica_provider pr ON ps.provider_id = pr.provider_id WHERE ps.date_planned BETWEEN "+o.getGndatebet()+" and off.uuid=p.office_id and off.uuid='"+office.getUuid()+"'";
+		    	finalQuery="select "+o.getSelectcolumns()+" from es_data_replica_patient p join "
+		    			+ "es_data_replica_planned_services ps "
+		    			+ "on (p.patient_id=ps.patient_id and p.office_id=ps.office_id and p.office_id='"+office.getUuid()+"' "
+		    			+ "and ps.date_planned BETWEEN "+o.getGndatebet()+") "
+		    			+ "LEFT JOIN es_data_replica_employer e ON "
+		    			+ "(p.prim_employer_id = e.employer_id and p.office_id='"+office.getUuid()+"' and "
+		    			+ "p.office_id=e.office_id and "
+		    			+ "ps.date_planned BETWEEN "+o.getGndatebet()+") "
+		    			+ "JOIN es_data_replica_provider pr ON (ps.provider_id = pr.provider_id and  ps.office_id=pr.office_id)"; 
 		    	break;
 		    case Constants.QUERY_FOR_DTP_Treatmentplans:
-		    	finalQuery="select "+o.getSelectcolumns()+" from office off,es_data_replica_treatment_plans tp "
-		    			+ "JOIN es_data_replica_treatment_plan_items ti ON ti.treatment_plan_id = tp.treatment_plan_id WHERE tp.date_entered BETWEEN "+o.getGndatebet()+" and off.uuid=tp.office_id and off.uuid='"+office.getUuid()+"'";
+		    	finalQuery="select "+o.getSelectcolumns()+" from es_data_replica_treatment_plans tp "
+		    			+ "JOIN es_data_replica_treatment_plan_items ti "
+		    			+ "ON ti.treatment_plan_id = tp.treatment_plan_id WHERE tp.date_entered BETWEEN "+o.getGndatebet()+" and "
+		    			+ "ti.office_id=tp.office_id and tp.office_id='"+office.getUuid()+"'";
 		    	break;
 		    case Constants.QUERY_FOR_DTP_Appointment:
-		    	finalQuery="select "+o.getSelectcolumns()+" from office off,es_data_replica_appointment a WHERE DATE(a.start_time) BETWEEN "+o.getGndatebet()+" and off.uuid=a.office_id and off.uuid='"+office.getUuid()+"'";
+		    	finalQuery="select "+o.getSelectcolumns()+" from es_data_replica_appointment a "
+		    			+ "WHERE DATE(a.start_time) BETWEEN "+o.getGndatebet()+" "
+		    			+ "and a.office_id='"+office.getUuid()+"'";
 		    	break;
 		    	
 		   case Constants.QUERY_FOR_ItemizedCash:			   
@@ -797,7 +806,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			   String transactionQuery="(select * from "
 			    		+ "(select  h.tran_num,user_id,type,tran_date, "
 			    		+ "(SELECT  t.patient_id FROM es_data_replica_transactions_detail t WHERE "
-			    		+ " t.office_id=h.office_id and "
+			    		+ "t.office_id=h.office_id and "
 			    		+ "t.office_id='"+office.getUuid()+"' and "
 			    		+ "t.tran_num = h.tran_num "
 			    		+ "order by patient_id limit 1) as patient_id, "
@@ -806,11 +815,11 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			    		+ "(SELECT  t.provider_id FROM es_data_replica_transactions_detail t WHERE "
 			    		+ "t.office_id=h.office_id and "
 			    		+ "t.office_id='"+office.getUuid()+"' and provider_id is not null and "
-			    		+ " t.tran_num = h.tran_num ORDER BY provider_id limit 1) as provider_id,"
+			    		+ "t.tran_num = h.tran_num ORDER BY provider_id limit 1) as provider_id,"
 			    		+ "(SELECT  t.collections_go_to FROM es_data_replica_transactions_detail t  WHERE "
 			    		+ "t.office_id=h.office_id and "
 			    		+ "t.office_id='"+office.getUuid()+"' and collections_go_to is not null and "
-			    		+ " t.tran_num = h.tran_num ORDER BY collections_go_to  limit 1) as collections_go_to, "
+			    		+ "t.tran_num = h.tran_num ORDER BY collections_go_to  limit 1) as collections_go_to, "
 			    		+ "statement_num,null as old_tooth,surface,fee,discount_surcharge,tax, "
 			    		+ "description,defective,impacts,status,adjustment_type,claim_id,est_primary, "
 			    		+ "est_secondary,paid_primary,paid_secondary,"
@@ -819,7 +828,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			    		+ "(SELECT  t.patient_practice_id FROM es_data_replica_transactions_detail t  WHERE "
 			    		+ "t.office_id=h.office_id and "
 			    		+ "t.office_id='"+office.getUuid()+"' and patient_practice_id is not null and "
-			    		+ " t.tran_num = h.tran_num ORDER BY collections_go_to  limit 1) as patient_practice_id, "
+			    		+ "t.tran_num = h.tran_num ORDER BY collections_go_to  limit 1) as patient_practice_id, "
 			    		+ "bulk_payment_num,aging_date, "
 			    		+ "tooth,lab_fee,lab_fee2,lab_code,lab_code2,pre_fee,standard_fee_id,practice_id, "
 			    		+ "procedure_type_codes,balance,h.office_id as office_idt "
