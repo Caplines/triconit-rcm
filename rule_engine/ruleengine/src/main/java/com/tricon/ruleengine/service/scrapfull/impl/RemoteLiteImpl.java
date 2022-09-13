@@ -254,10 +254,13 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		Thread.sleep(5000); 
 		//90 Days
 		if (scrapSubType.equals(SCRAP_TYPE_1)) {
+		String days=dto.getDays();
+		if (days==null) days="Today";
+		if (!days.equals("Today"))  days="Last "+ dto.getDays()+" Days";
 		WebElement sBar=  driver.findElement(By.className("ranges"));
 		List<WebElement> spans= sBar.findElements(By.tagName("li"));
 		for(WebElement sp:spans) {
-			if (sp.getText()!=null && sp.getText().equals("Last 90 Days")) {
+			if (sp.getText()!=null && sp.getText().equals(days)) {
 				sp.click();
 				break;
 			}
@@ -265,10 +268,13 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		}
 		}
 		if (scrapSubType.equals(SCRAP_TYPE_2)) {
+			String days=dto.getDays();
+			if (days==null) days="Today";
+			if (!days.equals("Today"))  days=dto.getDays()+" Days";
 			WebElement sBar=  driver.findElement(By.className("ant-picker-ranges"));
 			List<WebElement> spans= sBar.findElements(By.tagName("li"));
 			for(WebElement sp:spans) {
-				if (sp.getText()!=null && sp.getText().equals("90 Days")) {
+				if (sp.getText()!=null && sp.getText().equals(days)) {
 					sp.click();
 					break;
 				}
@@ -634,6 +640,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		dto.setPassword("Remotelite@123");//Aransas.credentialing@smilepoint.us
 		dto.setUserName("billing@smilepoint.us");//jasper.credentialing@smilepoint.us
 		dto.setSiteName("Remote Lite");
+		dto.setDays("7");
 		RemoteLiteImpl i = new RemoteLiteImpl(null, null, f, dto, null, null, 0, "",
 				null, "D:/Project/Tricon/linkedinapp/linkedinbit/linkedinapp/lib/chromedriver.exe",
 				"1KVaZbAfaYOGMbYRZuGH-4VVxeZQPIvML0YThPsPNTnw","0");

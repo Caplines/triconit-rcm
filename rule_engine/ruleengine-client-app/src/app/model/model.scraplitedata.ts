@@ -12,5 +12,6 @@ export class ScrapLiteDataModel {
     googleSheetIdDb:string="";
     googleSubId:string="";
     processId:string=null;
+    days:string="";
    
 }

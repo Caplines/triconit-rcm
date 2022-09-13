@@ -41,6 +41,9 @@ public class ScrappingFullDataDetailDto {
 	private String googleSubId;
 	
 	private String scrapSubType;
+	
+	private String days;
+	
     
     ///
     List<PatientScrapSearchDto> dto= new ArrayList<>();
@@ -221,6 +224,12 @@ public class ScrappingFullDataDetailDto {
 	}
 	public void setScrapSubType(String scrapSubType) {
 		this.scrapSubType = scrapSubType;
+	}
+	public String getDays() {
+		return days;
+	}
+	public void setDays(String days) {
+		this.days = days;
 	}
 
 	

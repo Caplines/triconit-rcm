@@ -3,6 +3,8 @@ package com.tricon.ruleengine.utils;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 
 public class Constants {
 	
@@ -118,6 +120,10 @@ public class Constants {
 	public static final String RULE_ID_77="Patient DOB";
 	public static final String RULE_ID_78="Member ID";
 	public static final String RULE_ID_79="Insurance and Address";
+	public static final String RULE_ID_80="Denture validation 1";
+	public static final String RULE_ID_81="Denture validation 2";
+	public static final String RULE_ID_82="Provider certification status";
+	
 
 	//public static final String RULE_ID_79="Provider Name";	
 	
@@ -387,7 +393,8 @@ public class Constants {
 	public static final String OFFICE_NAME_INCORRECT="OfficeName or Password is Incorrect";
 	public static final String DATE_PARSING_EXCEPTION="Error while Date Parsing or Incorrect DateFormat";
 	
-	
+	public static final List<String> codesToCheckForDentureValidation1= Arrays.asList("IMP", "WXBITE", "TRYIN");
+	public static final List<String> codesToCheckForProviderCertStatus= Arrays.asList("D0145", "D9230", "D9248");
 	
 	
 	

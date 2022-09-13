@@ -98,7 +98,7 @@ export class ScrapLiteComponent implements OnInit {
 						this.scrap.googleSheetIdDb="1KVaZbAfaYOGMbYRZuGH-4VVxeZQPIvML0YThPsPNTnw";
 						this.scrap.siteId=this.site.id;
 						this.scrap.officeId=this.offid;
-					
+						this.createDate();
 					}
 				 }
 				);
@@ -193,5 +193,27 @@ export class ScrapLiteComponent implements OnInit {
   }
   
   
-  
+  createDate(){
+	  /*
+	  let d  = new Date();
+	  let od = new Date();
+	  let ld = new Date(od.setDate(od.getDate()-90));
+	  
+	  let mon:any=(d.getMonth()+1);
+	  let dt:any=d.getDate();
+	  if (mon<10) mon="0"+mon;
+	  if (dt<10) dt="0"+dt;
+	  
+	  let lmon:any=(ld.getMonth()+1);
+	  let ldt:any=ld.getDate();
+	  if (lmon<10) lmon="0"+lmon;
+	  if (ldt<10) ldt="0"+ldt;
+	  
+	  
+	  let datestring = mon  + "/" + dt + "/" + d.getFullYear();
+	  let ldatestring = lmon  + "/" + ldt + "/" + ld.getFullYear();
+	  this.scrap.endDate=datestring;
+	  this.scrap.startDate=ldatestring;
+	  */
+  }
 }
