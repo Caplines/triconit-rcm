@@ -80,6 +80,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceDetail;
+import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
@@ -325,6 +326,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				
 
 				Map<String, List<EagleSoftPatient>> espatients=null;
+				Map<String, List<PatientPolicyHolder>> espatientsHolder=null;
+				
 				Map<String, List<InsuranceDetail>> insuranceDetails=null;
 				Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules=null;
 				
@@ -536,6 +539,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//
 							espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(dtod.getInsType(), ivfMap, esDB,bw);
+							espatientsHolder = (Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw);
 							
 							espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 									new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
@@ -663,7 +667,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						
 					   if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null ) {
                        espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(dtod.getInsType(),ivfMap, esDB,bw);
-						
+                       espatientsHolder = (Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw);
 						espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 								new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
 						perios = (Map<String, List<Perio>>) (Map<String, ?>) dbAccesService.getPerioDataForPatients(ivfMapPat, esDB, bw);
@@ -794,11 +798,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							validdateRulesTPOS(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
 									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,oSCodes,
-									  insuranceDetails,preferanceFeeSchedules);
+									  insuranceDetails,preferanceFeeSchedules,espatientsHolder);
 							}else validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
 									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,
-									  insuranceDetails,preferanceFeeSchedules);
+									  insuranceDetails,preferanceFeeSchedules,espatientsHolder);
 							
 							/*
 							validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
@@ -922,7 +926,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  Map<String, List<Perio>> perios,List<Mappings> mappings,RuleBook rb,List<TPValidationResponseDto> list,TPValidationResponseDto dtoR,TreatmentPlanValidationDto dtod,
 		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
 		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,Map<String,
-		  List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules) {
+		  List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
+		  Map<String, List<PatientPolicyHolder>> espatientsHolder) {
 	  
 		rule = getRulesFromList(rules, Constants.RULE_ID_4);
 		String feeKey = "-1";
@@ -2084,6 +2089,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 			}
 		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_66,
+				Constants.rule_log_debug, bw);
 		// END COB Primary
 		
 		// RULE_ID_75 "Bridge Clause"
@@ -2104,9 +2112,24 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
         
 		// END "Bridge Clause"
 
+		// RULE_ID_83 "//Policy Holder Match" 
 		
-		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_66,
+		rule = getRulesFromList(rules, Constants.RULE_ID_83);
+		dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatientsHolder.get(patKey), messageSource, rule, bw);
+
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_83,
 				Constants.rule_log_debug, bw);
+		// END "//Policy Holder Match"
+		
+		
 
 		// RULE_ID_79 "Insurance and Address"
 		/*
@@ -2140,7 +2163,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  Map<String, List<Perio>> perios,List<Mappings> mappings,RuleBook rb,List<TPValidationResponseDto> list,TPValidationResponseDto dtoR,TreatmentPlanValidationDto dtod,
 		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
 		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<OSIVFormCodes> oSCodes,
-		  Map<String, List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules) {
+		  Map<String, List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
+		  Map<String, List<PatientPolicyHolder>> espatientsHolder) {
 	  
 		String feeKey = "-1";
 		if (espatients != null && espatients.get(patKey) != null
@@ -3363,6 +3387,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			// Read Patient Key is Unique Id from IVF sheet
 			//OneDriveFile espatient=null;
 			Map<String, List<EagleSoftPatient>> espatients=null;
+			Map<String, List<PatientPolicyHolder>> espatientsHolder=null;
+			
 			Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules=null;
 			
 			//Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis=null;
@@ -3508,7 +3534,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					//preferanceFeeSchedules=(Map<String, List<PreferanceFeeSchedule>>) (Map<String, ?>)dbAccesService.getInsuranceDetailByPatientId(dto.getInsType(),ivfMap, esDB, null);
 					//espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 					//		new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
-
+					espatientsHolder =(Map<String, List<PatientPolicyHolder>>) (Map<String, ?>)  dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB, null);
 							
 					if (espatients != null && espatients.size() > 0) {
 						esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,null);
@@ -3635,6 +3661,18 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							}
 							rule = getRulesFromList(rules, Constants.RULE_ID_78);
 							dtoRL = rb.Rule78(ivfMap.get(ivx).get(0),espatients.get(patKey), messageSource, rule, null);
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
+							rule = getRulesFromList(rules, Constants.RULE_ID_83);
+							dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatientsHolder.get(patKey), messageSource, rule, null);
+
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {

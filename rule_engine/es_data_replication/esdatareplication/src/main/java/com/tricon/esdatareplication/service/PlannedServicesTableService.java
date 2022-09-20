@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,6 +163,7 @@ public class PlannedServicesTableService extends CommonTableService {
 												))
 								.findAny().orElse(null);
 						q.setId(null);
+						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
 					if (l.size() > 0)
@@ -220,7 +221,7 @@ public class PlannedServicesTableService extends CommonTableService {
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-
+							p.setOfficeId(office.getUuid());
 							l.add(p);
 						}
 					});
@@ -703,26 +704,26 @@ public class PlannedServicesTableService extends CommonTableService {
 	}
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void updateOldDataRe(String whereClause) {
+	public void updateOldDataRe(String whereClause,String officeId) {
 		System.out.println(whereClause);
 		//entityManager.getTransaction().begin();
-		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_PLANNED_SERVICES+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_PLANNED_SERVICES+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause +" and office_id='"+officeId+"'").executeUpdate();
 		
 		//entityManager.getTransaction().commit();
 	}
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void deleteOldDataRe() {
+	public void deleteOldDataRe(String officeId) {
 		//entityManagerRe.getTransaction().begin();
-		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_PLANNED_SERVICES+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
+		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_PLANNED_SERVICES+" where office_id ='"+officeId+"' and moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
 		
 		//entityManagerRe.getTransaction().commit();
 	}
 	
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void activateDeactiveData() {
-		plannedServicesRepositoryRe.activateDeactiveData(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES, DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES);
+	public void activateDeactiveData(String officeId) {
+		plannedServicesRepositoryRe.activateDeactiveData(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES, DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES,officeId);
 	}
 
 }

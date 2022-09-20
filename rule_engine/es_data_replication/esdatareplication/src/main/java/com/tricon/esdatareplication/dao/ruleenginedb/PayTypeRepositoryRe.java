@@ -19,7 +19,7 @@ public interface PayTypeRepositoryRe extends JpaRepository<PayTypeReplica, Integ
 
 
 	@Modifying
-	@Query("update PayTypeReplica set movedToCloud = :d where movedToCloud= :d1")
-	void activateDeactiveData(@Param("d") int d,@Param("d1") int d1);
+	@Query("update PayTypeReplica set movedToCloud = :d where movedToCloud= :d1 and officeId=:d2")
+	void activateDeactiveData(@Param("d") int d,@Param("d1") int d1,@Param("d2") String d2);
 
 }

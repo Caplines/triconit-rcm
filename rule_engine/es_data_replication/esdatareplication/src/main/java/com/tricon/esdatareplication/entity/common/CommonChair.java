@@ -19,7 +19,7 @@ public class CommonChair extends CommonCloudColumn {
 	@Column(name = "chair_name", length = 50)
 	String chairName;
 
-	@Column(name = "chair_num",unique=true, length = 50)
+	@Column(name = "chair_num", length = 50)
 	Integer chairNum;
 
 	@Column(name = "sun_temp_id", length = 50)

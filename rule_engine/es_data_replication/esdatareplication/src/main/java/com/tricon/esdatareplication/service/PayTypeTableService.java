@@ -147,6 +147,7 @@ public class PayTypeTableService extends CommonTableService{
 												))
 								.findAny().orElse(null);
 						q.setId(null);
+						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
 					if (l.size() > 0)
@@ -175,7 +176,7 @@ public class PayTypeTableService extends CommonTableService{
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-
+							p.setOfficeId(office.getUuid());
 							l.add(p);
 						}
 					});
@@ -425,8 +426,9 @@ public class PayTypeTableService extends CommonTableService{
 	}
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void activateDeactiveData() {
-		payTypeRepositoryRe.activateDeactiveData(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES, DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES);
+	public void activateDeactiveData(String officeId) {
+		payTypeRepositoryRe.activateDeactiveData(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES, DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES,
+				 officeId);
 	}
 
 }

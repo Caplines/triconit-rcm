@@ -120,6 +120,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 						TreatmentPlansReplica q = ((List<TreatmentPlansReplica>) repList).stream()
 								.filter(p -> id.intValue() == p.getTreatmentPlanId().intValue()).findAny().orElse(null);
 						q.setId(null);
+						q.setOfficeId(office.getUuid());
 						treatmentPlansRepositoryRe.save(q);
 					});
 				}
@@ -139,6 +140,7 @@ public class TreatmentPlansTableService extends CommonTableService {
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+							p.setOfficeId(office.getUuid());
 
 							treatmentPlansRepositoryRe.save(p);
 						}
@@ -576,21 +578,23 @@ public class TreatmentPlansTableService extends CommonTableService {
 
 
 	@Transactional("ruleEngineTransactionManager")
-	public void updateOldDataRe(String whereClause) {
+	public void updateOldDataRe(String whereClause,String officeId) {
 		System.out.println(whereClause);
 		//entityManager.getTransaction().begin();
-		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause
+				+" and office_id='"+officeId+"'").executeUpdate();
 		
 		//entityManager.getTransaction().commit();
 	}
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void updateOldDataTPIRe() {
+	public void updateOldDataTPIRe(String officeId) {
 		String query =	" update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+", "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS
 				+ " set  "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+".moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+","
 				+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS+".moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES
 				+ "  where "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+".treatment_plan_id ="
-				+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS+".treatment_plan_id and "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+".moved_to_cloud=3";
+				+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS+".treatment_plan_id and "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+".moved_to_cloud=3"
+						+ " and "+Constants.TABLE_REPLICA_IN_CLOUD+Constants.TABLE_TREATMENT_PLAN_ITEMS+".office_id='"+officeId+"'";
 		System.out.println(query);
 		entityManagerRe.createNativeQuery(query).executeUpdate();
 			
@@ -610,9 +614,9 @@ public class TreatmentPlansTableService extends CommonTableService {
 	*/
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void deleteOldDataRe() {
+	public void deleteOldDataRe(String officeId) {
 		//entityManagerRe.getTransaction().begin();
-		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
+		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLANS+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES +" and office_id='"+officeId+"'").executeUpdate();
 		
 		//entityManagerRe.getTransaction().commit();
 	}

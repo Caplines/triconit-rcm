@@ -22,6 +22,7 @@ public interface PlannedServicesRepositoryRe extends JpaRepository<PlannedServic
 			String officeuuid, Integer linenumber);
 	
 	
+	/*
 	@Modifying
 	@Query("update PlannedServicesReplica set movedToCloud = :d")
 	void deactivateAllData(@Param("d") int d);
@@ -29,10 +30,10 @@ public interface PlannedServicesRepositoryRe extends JpaRepository<PlannedServic
 	@Modifying
 	@Query("delete PlannedServicesReplica where movedToCloud=:d")
 	void deleteDeactivateData(@Param("d") int d);
-
+   */
 	
 	@Modifying
-	@Query("update PlannedServicesReplica set movedToCloud = :d where movedToCloud= :d1")
-	void activateDeactiveData(@Param("d") int d,@Param("d1") int d1);
+	@Query("update PlannedServicesReplica set movedToCloud = :d where movedToCloud= :d1 and officeId=:d2")
+	void activateDeactiveData(@Param("d") int d,@Param("d1") int d1,@Param("d2") String d2);
 
 }

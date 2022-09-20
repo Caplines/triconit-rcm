@@ -83,6 +83,7 @@ public class TransactionsTableService extends CommonTableService {
 						TransactionsReplica q = ((List<TransactionsReplica>) repList).stream()
 								.filter(p -> id.intValue() == p.getTranNum().intValue()).findAny().orElse(null);
 						q.setId(null);
+						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
 					if (l.size() > 0)
@@ -103,7 +104,7 @@ public class TransactionsTableService extends CommonTableService {
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-
+							p.setOfficeId(office.getUuid());
 							l.add(p);
 						}
 					});

@@ -123,6 +123,7 @@ public class Constants {
 	public static final String RULE_ID_80="Denture validation 1";
 	public static final String RULE_ID_81="Denture validation 2";
 	public static final String RULE_ID_82="Provider certification status";
+	public static final String RULE_ID_83="Policy Holder Match";
 	
 
 	//public static final String RULE_ID_79="Provider Name";	

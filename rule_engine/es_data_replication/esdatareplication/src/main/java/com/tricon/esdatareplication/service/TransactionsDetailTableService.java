@@ -97,6 +97,7 @@ public class TransactionsDetailTableService extends CommonTableService {
 						TransactionsDetailReplica q = ((List<TransactionsDetailReplica>) repList).stream()
 								.filter(p -> id.intValue() == p.getDetailId().intValue()).findAny().orElse(null);
 						q.setId(null);
+						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
 					if (l.size() > 0)
@@ -117,6 +118,7 @@ public class TransactionsDetailTableService extends CommonTableService {
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
+							p.setOfficeId(office.getUuid());
 							l.add(p);
 						}
 					});
@@ -220,18 +222,18 @@ public class TransactionsDetailTableService extends CommonTableService {
 	}
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void updateOldDataRe(String whereClause) {
+	public void updateOldDataRe(String whereClause,String officeId) {
 		System.out.println(whereClause);
 		//entityManager.getTransaction().begin();
-		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_DETAIL+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_DETAIL+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause +" and office_id='"+officeId+"'").executeUpdate();
 		
 		//entityManager.getTransaction().commit();
 	}
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void deleteOldDataRe() {
+	public void deleteOldDataRe(String officeId) {
 		//entityManagerRe.getTransaction().begin();
-		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_DETAIL+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
+		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_DETAIL+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES +" and office_id='"+officeId+"' ").executeUpdate();
 		
 		//entityManagerRe.getTransaction().commit();
 	}

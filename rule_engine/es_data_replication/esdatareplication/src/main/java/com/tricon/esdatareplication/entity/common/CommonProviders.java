@@ -20,7 +20,7 @@ public class CommonProviders extends CommonCloudColumn {
 	 */
 	private static final long serialVersionUID = 861120456836899889L;
 	
-	@Column(name = "provider_id", length = 50, nullable = false ,unique =true)
+	@Column(name = "provider_id", length = 50, nullable = false)
 	String providerId;
 	
 	@Column(name = "first_name", length = 50, nullable = true)

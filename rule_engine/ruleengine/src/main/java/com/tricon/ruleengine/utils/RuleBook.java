@@ -48,6 +48,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceDetail;
+import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
 //import com.tricon.ruleengine.model.sheet.TreatmentPlan;
@@ -353,22 +354,31 @@ public class RuleBook {
 			//Phase 2 change - end
 			if (espatients != null && espatients.get(0) != null) {
 				EagleSoftPatient pat = espatients.get(0);
+				String downGrade1=ivf.getWillDowngradeApplicable();
+				String downGrade2=ivf.getCrownsD2750D2740Downgrade();
+				String downGrade3=ivf.getPosteriorCompositesD2391Downgrade();
+				String cbook=pat.getCovBookHeaderName();
+				String ivfBook=ivf.getPlanCoverageBook();
+				if (downGrade1==null)downGrade1="";
+				if (downGrade2==null)downGrade2="";
+				if (downGrade3==null)downGrade3="";
+				if (cbook==null)cbook="";
+				if (ivfBook==null)ivfBook="";
+				boolean checkforDowngrade=false;
+				if (downGrade1.equalsIgnoreCase("yes") || downGrade2.equalsIgnoreCase("yes")
+					|| downGrade3.equalsIgnoreCase("yes")) checkforDowngrade=true;
+				RuleEngineLogger.generateLogs(clazz, "Coverage Book-" + ivf.getPlanCoverageBook()
+				+ " :: Coverage Book Header Name-" + pat.getCovBookHeaderName(), Constants.rule_log_debug, bw);
 				if (ivf.getIvFormTypeId() != Constants.IV_ORAL_SURGERY_FORM_NAME_ID) {
-				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null
-						&& (ivf.getPlanCoverageBook().equals("") || ivf.getPlanCoverageBook().equalsIgnoreCase("none"))
-						&& (pat.getCovBookHeaderName().equals("")
-								|| pat.getCovBookHeaderName().equalsIgnoreCase("none"))) {
+				if (checkforDowngrade &&  ivfBook.equalsIgnoreCase("none")
+						&&  cbook.equalsIgnoreCase("none")) {
 
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_4", new Object[] {}, locale),
-							Constants.ALERT,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+					pass = false;
 					// return dList;
-				}
-				RuleEngineLogger.generateLogs(clazz, "Coverage Book-" + ivf.getPlanCoverageBook()
-						+ " :: Coverage Book Header Name-" + pat.getCovBookHeaderName(), Constants.rule_log_debug, bw);
-
-				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null
-						&& !ivf.getPlanCoverageBook().trim().equalsIgnoreCase(pat.getCovBookHeaderName().trim())) {
+				}else if (checkforDowngrade &&  !ivfBook.trim().equalsIgnoreCase(cbook.trim())) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_1",
 									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName(),ER_MSG }, locale),
@@ -502,21 +512,28 @@ public class RuleBook {
 						Constants.rule_log_debug, bw);
 				RuleEngineLogger.generateLogs(clazz, "IVF ID-" + ivf.getIvFormTypeId(),
 						Constants.rule_log_debug, bw);
-				 
+				String downGrade1=ivf.getWillDowngradeApplicable();
+				String downGrade2=ivf.getCrownsD2750D2740Downgrade();
+				String downGrade3=ivf.getPosteriorCompositesD2391Downgrade();
+				String cbook=pat.getCovBookHeaderName();
+				String ivfBook=ivf.getPlanCoverageBook();
+				if (downGrade1==null)downGrade1="";
+				if (downGrade2==null)downGrade2="";
+				if (downGrade3==null)downGrade3="";
+				if (cbook==null)cbook="";
+				if (ivfBook==null)ivfBook="";
+				boolean checkforDowngrade=false;
+				if (downGrade1.equalsIgnoreCase("yes") || downGrade2.equalsIgnoreCase("yes")
+					|| downGrade3.equalsIgnoreCase("yes")) checkforDowngrade=true;
 				if (ivf.getIvFormTypeId() != Constants.IV_ORAL_SURGERY_FORM_NAME_ID) {
-				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null
-						&& (ivf.getPlanCoverageBook().equals("") || ivf.getPlanCoverageBook().equalsIgnoreCase("none"))
-						&& (pat.getCovBookHeaderName().equals("")
-								|| pat.getCovBookHeaderName().equalsIgnoreCase("none"))) {
+				if (checkforDowngrade &&  ivfBook.equalsIgnoreCase("none") &&
+						cbook.equalsIgnoreCase("none")) {
 
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName() + " & Fee",
 							messageSource.getMessage("rule4.error.message_4", new Object[] {}, locale),
-							Constants.ALERT,"","",""));
+							Constants.FAIL,"","",""));
 					// return dList;
-				}
-
-				if (ivf.getPlanCoverageBook() != null && pat.getCovBookHeaderName() != null
-						&& !ivf.getPlanCoverageBook().trim().equalsIgnoreCase(pat.getCovBookHeaderName().trim())) {
+				}else if (checkforDowngrade && !ivfBook.trim().equalsIgnoreCase(cbook.trim())) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule4.error.message_1",
 									new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName(),ER_MSG }, locale),
@@ -3323,6 +3340,52 @@ public List<TPValidationResponseDto> Rule78(Object ivfSheet,List<EagleSoftPatien
 					locale), Constants.FAIL,"","",""));
 		}
 			//if (pass)
+			
+	} catch (Exception x) {
+
+		d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+				messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+				Constants.FAIL,"","",""));
+
+	}
+	return d;
+
+}
+
+//Policy Holder Match
+public List<TPValidationResponseDto> Rule83(Object ivfSheet,List<PatientPolicyHolder> espatients, MessageSource messageSource,
+		Rules rule, BufferedWriter bw) {
+
+	RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_83,
+			Constants.rule_log_debug, bw);
+
+	IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+	List<TPValidationResponseDto> d = new ArrayList<>();
+	PatientPolicyHolder pat=null;
+	try {
+		boolean pass = false;
+		if (espatients != null && espatients.get(0) != null) {
+			pat = espatients.get(0);
+			
+			RuleEngineLogger.generateLogs(clazz, "Rule83- in IV->"+ivf.getPolicyHolder() +" in ES -->"+pat.getPolicyHolder(),
+					Constants.rule_log_debug, bw);
+			if (ivf.getPolicyHolder().equalsIgnoreCase(pat.getPolicyHolder())) {
+				pass=true;
+			}else {
+				pass=false;
+		  }
+		}
+	    if (pass) {
+		  d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule83.pass.message", new Object[] {}, locale), 
+					Constants.PASS,"","",""));
+		  
+	  }else {
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					"rule83.error.message",
+					new Object[] {ivf.getPolicyHolder(),pat.getPolicyHolder()},locale), Constants.FAIL,"","",""));
+		  
+	  }
 			
 	} catch (Exception x) {
 

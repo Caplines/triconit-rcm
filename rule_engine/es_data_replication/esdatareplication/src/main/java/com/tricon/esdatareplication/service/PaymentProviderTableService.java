@@ -154,6 +154,7 @@ public class PaymentProviderTableService extends CommonTableService {
 									appendLoggerToWriter(PaymentProviderReplica.class, bw, "SET TO NULLL OBJ-->"+k.getTranNum(), true);
 								}
 								k.setId(null);
+								k.setOfficeId(office.getUuid());
 								l.add(k);
 							}
 							if (k.getProviderId()!=null && k.getProviderId().equals("null"))
@@ -229,7 +230,7 @@ public class PaymentProviderTableService extends CommonTableService {
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-
+							p.setOfficeId(office.getUuid());
 							l.add(p);
 						}
 					}

@@ -74,6 +74,8 @@ public class TransactionsHeaderTableService extends CommonTableService {
 					TransactionsHeaderReplica rep = new TransactionsHeaderReplica();
 					BeanUtils.copyProperties(x, rep);
 					bu.append(rep.getTranNum() + ",");
+					System.out.println("DSSS-->"+rep.getId()+"--"+rep.getDescription());
+					System.out.println("IMpac-->"+rep.getId()+"--"+rep.getImpacts());
 					rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 					repList.add(rep);
 				});
@@ -94,6 +96,9 @@ public class TransactionsHeaderTableService extends CommonTableService {
 						TransactionsHeaderReplica q = ((List<TransactionsHeaderReplica>) repList).stream()
 								.filter(p -> id.intValue() == p.getTranNum().intValue()).findAny().orElse(null);
 						q.setId(null);
+						q.setOfficeId(office.getUuid());
+						System.out.println("DSSS-->"+q.getId()+"--"+q.getDescription());
+						System.out.println("IMpac-->"+q.getId()+"--"+q.getImpacts());
 						l.add(q);
 					});
 					if (l.size() > 0)
@@ -114,7 +119,7 @@ public class TransactionsHeaderTableService extends CommonTableService {
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-
+							p.setOfficeId(office.getUuid());
 							l.add(p);
 						}
 					});
@@ -221,18 +226,18 @@ public class TransactionsHeaderTableService extends CommonTableService {
 	}
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void updateOldDataRe(String whereClause) {
+	public void updateOldDataRe(String whereClause,String officeId) {
 		System.out.println(whereClause);
 		//entityManager.getTransaction().begin();
-		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_HEADER+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause).executeUpdate();
+		entityManagerRe.createNativeQuery("update "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_HEADER+" set moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES+" where "+whereClause +" and office_id='"+officeId+"'").executeUpdate();
 		
 		//entityManager.getTransaction().commit();
 	}
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void deleteOldDataRe() {
+	public void deleteOldDataRe(String officeId) {
 		//entityManagerRe.getTransaction().begin();
-		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_HEADER+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
+		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TRANSACTIONS_HEADER+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES + " and  office_id='"+officeId+"'").executeUpdate();
 		
 		//entityManagerRe.getTransaction().commit();
 	}

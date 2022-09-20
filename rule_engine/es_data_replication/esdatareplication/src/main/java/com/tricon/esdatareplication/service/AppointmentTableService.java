@@ -85,6 +85,7 @@ public class AppointmentTableService extends CommonTableService {
 						AppointmentReplica q = ((List<AppointmentReplica>) repList).stream()
 								.filter(p -> id.intValue() == p.getAppointmentId().intValue()).findAny().orElse(null);
 						q.setId(null);
+						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
 					appointmentRepositoryRe.saveAllAndFlush(l);
@@ -105,7 +106,7 @@ public class AppointmentTableService extends CommonTableService {
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-
+							p.setOfficeId(office.getUuid());
 							l.add(p);
 						}
 					});

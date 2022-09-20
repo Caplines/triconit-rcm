@@ -37,6 +37,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceDetail;
+import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
@@ -1310,6 +1311,90 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		return returnMap;
 	}
 	
+	@Override
+	public Map<String, List<?>> getPolicyHolderByPatientId(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,
+			BufferedWriter bw) {
+		// TODO Auto-generated method stub
+		EagleSoftFetchData d = new EagleSoftFetchData();
+		Map<String, List<?>> returnMap = null;
+		RuleEngineLogger.generateLogs(clazz, "PolicyHolderByPatientId Data Start ", Constants.rule_log_debug, bw);
+
+		if (ivfMap != null) {
+			List<String> ids = new ArrayList<>();
+			for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
+				if (entry.getValue() != null) {
+
+					IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
+					ids.add(ivfSheet.getPatientId());
+				}
+			}
+
+			String[] pids = ids.toArray(new String[ids.size()]);
+
+			EagleSoftQueryObject q = null;
+			q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_schedule_query,
+					EagleSoftQuery.policy_holder_schedule_query_CL_COUNT);
+			String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
+			if (data != null) {
+				PatientPolicyHolder pph = null;
+				try {
+					ObjectMapper map = new ObjectMapper();
+					// Patient patQ = map.readValue(r, Patient.class);
+					Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
+					});
+
+					RuleEngineLogger.generateLogs(clazz, "PolicyHolderByPatientId DATA-" + cMap.get("dataMap").toString(),
+							Constants.rule_log_debug, bw);
+					Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+					List<Object> list = null;
+					for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+						if (entry.getValue() != null) {
+							List<String> des = (List<String>) (entry.getValue());
+							pph = new PatientPolicyHolder();
+
+							pph.setPatientId(des.get(0));
+							pph.setPolicyHolder(des.get(1));
+							
+							//
+							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
+								if (entry.getValue() != null) {
+
+									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
+									if ((pph.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+										if (returnMap == null)
+											returnMap = new HashMap<>();
+										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
+											// if the key has already been used,
+											// we'll just grab the array list and add the value to it
+											list = (List<Object>) (List<?>) returnMap.get(ivfSheet.getUniqueID());
+											list.add(pph);
+										} else {
+											// if the key hasn't been used yet,
+											// we'll create a new ArrayList<String> object, add the value
+											// and put it in the array list with the new key
+											list = new ArrayList<>();
+											list.add(pph);
+											returnMap.put(ivfSheet.getUniqueID(), list);
+										}
+									}
+								}
+							}
+
+							//
+
+						}
+					}
+
+				} catch (Exception e) {
+					RuleEngineLogger.generateLogs(clazz, "PolicyHolderByPatientId --> DATA- ERROR- " + e.getMessage(),
+							Constants.rule_log_debug, bw);
+				}
+			}
+
+		}
+
+		return returnMap;
+	}
 	
 	private String decodeUnicode(String v) {
 		v=v.replaceAll("\n", "");

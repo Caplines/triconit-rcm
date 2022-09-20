@@ -81,6 +81,7 @@ public class EmployerTableService extends CommonTableService {
 						EmployerReplica q = ((List<EmployerReplica>) repList).stream()
 								.filter(p -> id.intValue() == p.getEmployerId().intValue()).findAny().orElse(null);
 						q.setId(null);
+						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
 					if (l.size() > 0)
@@ -101,7 +102,7 @@ public class EmployerTableService extends CommonTableService {
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-
+							p.setOfficeId(office.getUuid());
 							l.add(p);
 						}
 					});

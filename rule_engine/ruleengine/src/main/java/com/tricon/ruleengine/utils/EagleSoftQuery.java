@@ -167,6 +167,11 @@ public class EagleSoftQuery {
              + " and fs.fee_id = p.fee_level_id"; 
      
     public final static int  preferance_fee_schedule_query_CL_COUNT=3;
+    
+	public final static String  policy_holder_schedule_query="select p.patient_id,amd.patient_first_name +' '+ amd.patient_last_name AS 'Policy Holder Name'"+
+			" from patient p, account_merge_data amd where p.prim_responsible_id = amd.account_patient_id and p.patient_id in ("+contstant_REP+")";
+    
+   public final static int  policy_holder_schedule_query_CL_COUNT=2;
 
 
 }

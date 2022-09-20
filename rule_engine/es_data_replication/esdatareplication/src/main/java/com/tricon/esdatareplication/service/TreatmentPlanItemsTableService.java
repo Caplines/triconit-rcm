@@ -151,6 +151,7 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 										&& Integer.parseInt(id.split("-")[2]) == p.getLineNumber().intValue()))
 								.findAny().orElse(null);
 						q.setId(null);
+						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
 					if (l.size() > 0)
@@ -177,7 +178,7 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 								p.setCreatedDate(old.getCreatedDate());
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
-
+							p.setOfficeId(office.getUuid());
 							l.add(p);
 						}
 					});
@@ -448,9 +449,9 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 	
 	
 	@Transactional("ruleEngineTransactionManager")
-	public void deleteOldDataRe() {
+	public void deleteOldDataRe(String officeId) {
 		//entityManagerRe.getTransaction().begin();
-		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES).executeUpdate();
+		entityManagerRe.createNativeQuery("delete from "+Constants.TABLE_REPLICA_IN_CLOUD + Constants.TABLE_TREATMENT_PLAN_ITEMS+" where moved_to_cloud="+DataStatus.StatusEnum.DATA_CLOUD_STATUS_INVALID.YES +" and office_id='"+officeId+"'").executeUpdate();
 		
 		//entityManagerRe.getTransaction().commit();
 	}
