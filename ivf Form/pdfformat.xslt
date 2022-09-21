@@ -420,7 +420,13 @@ border-collapse: collapse;
                         <td>						
 						   <span class="sub-heading" ><xsl:value-of select="policy16"/> </span>
                         </td>
-                        <td colspan="8">						
+                       <td style="width:16%">
+                           <span class="main-heading-1">Does plan have OON benefits:</span> 
+						</td>
+                        <td>						
+						   <span class="sub-heading" ><xsl:value-of select="oonbenfits"/> </span>
+                        </td>
+                        <td colspan="6">						
 						   
                         </td>
                 </tr>
