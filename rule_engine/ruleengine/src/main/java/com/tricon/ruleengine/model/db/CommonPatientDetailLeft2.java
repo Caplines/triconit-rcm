@@ -372,10 +372,10 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "perio_d9910", length = 30)
 	private String perioD9910;
 	
-	@Column(name = "d9910_frequency", length = 30)
+	@Column(name = "d9910_frequency", length = 6)
 	private String d9910Frequency;
 	
-	@Column(name = "oonbenfits", length =30)
+	@Column(name = "oonbenfits", length =6)
 	private String oonbenfits;
 
 	public String getNpi() {
