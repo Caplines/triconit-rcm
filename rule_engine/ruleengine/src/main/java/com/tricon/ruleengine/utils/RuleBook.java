@@ -3353,7 +3353,7 @@ public List<TPValidationResponseDto> Rule78(Object ivfSheet,List<EagleSoftPatien
 }
 
 //Policy Holder Match
-public List<TPValidationResponseDto> Rule83(Object ivfSheet,List<PatientPolicyHolder> espatients, MessageSource messageSource,
+public List<TPValidationResponseDto> Rule83(Object ivfSheet,String patKey,Map<String, List<PatientPolicyHolder>> espatientsHolder, MessageSource messageSource,
 		Rules rule, BufferedWriter bw) {
 
 	RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_83,
@@ -3364,6 +3364,15 @@ public List<TPValidationResponseDto> Rule83(Object ivfSheet,List<PatientPolicyHo
 	PatientPolicyHolder pat=null;
 	try {
 		boolean pass = false;
+		
+		if (espatientsHolder==null) {
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					"rule83.error.message",
+					new Object[] {ivf.getPolicyHolder(),"** Not found **"},locale), Constants.FAIL,"","",""));
+			return d;
+		}
+		List<PatientPolicyHolder> espatients =espatientsHolder.get(patKey);
+		
 		if (espatients != null && espatients.get(0) != null) {
 			pat = espatients.get(0);
 			

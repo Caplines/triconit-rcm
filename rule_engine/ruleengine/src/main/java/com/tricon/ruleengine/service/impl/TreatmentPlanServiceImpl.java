@@ -2115,7 +2115,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		// RULE_ID_83 "//Policy Holder Match" 
 		
 		rule = getRulesFromList(rules, Constants.RULE_ID_83);
-		dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatientsHolder.get(patKey), messageSource, rule, bw);
+		dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),patKey,espatientsHolder, messageSource, rule, bw);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
@@ -3671,7 +3671,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							}
 							
 							rule = getRulesFromList(rules, Constants.RULE_ID_83);
-							dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatientsHolder.get(patKey), messageSource, rule, null);
+							dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),patKey,espatientsHolder, messageSource, rule, null);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
