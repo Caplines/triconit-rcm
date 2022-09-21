@@ -384,6 +384,7 @@ public class IVFFormConversionUtil {
 		pd2.setD4266Frequency(d.getD4266Frequency());
 		pd2.setPerioD9910(d.getPerioD9910());
 		pd2.setD9910Frequency(d.getD9910Frequency());
+		pd2.setOonbenfits(d.getOonbenfits());
 		
 		pd.setPatientDetails2(pd2);
 		
@@ -756,6 +757,7 @@ public class IVFFormConversionUtil {
 				pd.setPerioD9910(d.getPerioD9910());
 				pd.setD9910Frequency(d.getD9910Frequency());
 				
+				pd.setOonbenfits(d.getOonbenfits());
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -1215,6 +1217,7 @@ public class IVFFormConversionUtil {
 		pd2.setPerioD9910(d.getPerioD9910());
 		pd2.setD9910Frequency(d.getD9910Frequency());
 		
+		pd2.setOonbenfits(d.getOonbenfits());
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();

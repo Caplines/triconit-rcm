@@ -200,7 +200,7 @@ public class ConnectAndReadSheets {
 
 		List<Request> requests = new ArrayList<>();
 		IVFTableSheet sh = null;
-		final int COLUMN_STATUS=195;
+		final int COLUMN_STATUS=196;
 		try {
 		if (ivfMap!=null) {
 		for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
@@ -1384,6 +1384,11 @@ public class ConnectAndReadSheets {
 					}
 					try {
 						vif.setD9910Frequency(obj.get(++x));//D9910Frequency 
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setOonbenfits(obj.get(++x));//oonbenfits 
 					}catch (Exception e) {
 						continue;
 					}

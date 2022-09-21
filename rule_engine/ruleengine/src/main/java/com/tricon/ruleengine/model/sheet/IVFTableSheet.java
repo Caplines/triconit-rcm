@@ -350,7 +350,7 @@ public class IVFTableSheet {
 	private String d9910Frequency;
     
     private boolean dollarInToothHistory;
-
+    private String oonbenfits;
 
     public String getsRemarks() {
 		return sRemarks;
@@ -2396,7 +2396,12 @@ public class IVFTableSheet {
 		this.d9910Frequency = d9910Frequency;
 	}
 	
-	
+	public String getOonbenfits() {
+		return oonbenfits;
+	}
+	public void setOonbenfits(String oonbenfits) {
+		this.oonbenfits = oonbenfits;
+	}
 	
 		
 	

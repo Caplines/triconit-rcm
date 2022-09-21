@@ -374,6 +374,9 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	
 	@Column(name = "d9910_frequency", length = 30)
 	private String d9910Frequency;
+	
+	@Column(name = "oonbenfits", length =30)
+	private String oonbenfits;
 
 	public String getNpi() {
 		return npi;
@@ -1326,6 +1329,14 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setD9910Frequency(String d9910Frequency) {
 		this.d9910Frequency = d9910Frequency;
+	}
+
+	public String getOonbenfits() {
+		return oonbenfits;
+	}
+
+	public void setOonbenfits(String oonbenfits) {
+		this.oonbenfits = oonbenfits;
 	}
 
     

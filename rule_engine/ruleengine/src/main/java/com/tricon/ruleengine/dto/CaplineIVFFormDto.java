@@ -684,6 +684,7 @@ public class CaplineIVFFormDto {
 	private String d4266Frequency;
 	private String perioD9910;
 	private String d9910Frequency;
+	private String oonbenfits;   //Field added on 20 sep
     //END
     
     public String getFill1() {
@@ -3256,7 +3257,13 @@ public class CaplineIVFFormDto {
 		this.d9910Frequency = d9910Frequency;
 	}
 	
-	
+	public String getOonbenfits() {
+		return oonbenfits;
+	}
+
+	public void setOonbenfits(String oonbenfits) {
+		this.oonbenfits = oonbenfits;
+	}
 	
 	
 }
