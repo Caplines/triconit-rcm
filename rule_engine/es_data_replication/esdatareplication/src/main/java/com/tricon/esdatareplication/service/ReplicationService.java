@@ -185,6 +185,7 @@ public class ReplicationService {
 		
 	}
 	/* this is not used*/
+	/*
 	public void deleteData1__(BufferedWriter bw) {
 		Office office = officeRepository.findById(1).get();
 		List<ESTable> estables = estableRepository.findByCodeWrittenAndUploadedToLocal(
@@ -214,7 +215,7 @@ public class ReplicationService {
 		}
 		
 	}
-
+   */
 	public void pushDataFromLocalESToColudDB(BufferedWriter bw) {
 		Office office = officeRepository.findById(1).get();
 		System.out.println("pushDataFromLocalESToColudDB");
@@ -241,11 +242,11 @@ public class ReplicationService {
 			} else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_HEADER)) {
 				es = transactionsHeaderTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
-				transactionsHeaderTableService.deleteOldDataRe();
+				transactionsHeaderTableService.deleteOldDataRe(office.getUuid());
 			} else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
 				es = transactionsDetailTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
-				transactionsDetailTableService.deleteOldDataRe();
+				transactionsDetailTableService.deleteOldDataRe(office.getUuid());
 			}/* else if (es.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
 				es = transactionsDetailTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
@@ -255,15 +256,15 @@ public class ReplicationService {
 			} else if (es.getTableName().equals(Constants.TABLE_PLANNED_SERVICES)) {
 				es = plannedServicesTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
-				plannedServicesTableService.deleteOldDataRe();
+				plannedServicesTableService.deleteOldDataRe(office.getUuid());
 			} else if (es.getTableName().equals(Constants.TABLE_TREATMENT_PLAN_ITEMS)) {
 				es = treatmentPlanItemsTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
-				treatmentPlanItemsTableService.deleteOldDataRe();
+				treatmentPlanItemsTableService.deleteOldDataRe(office.getUuid());
 			} else if (es.getTableName().equals(Constants.TABLE_TREATMENT_PLANS)) {
 				es = treatmentPlansTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
-				treatmentPlansTableService.deleteOldDataRe();
+				treatmentPlansTableService.deleteOldDataRe(office.getUuid());
 			} else if (es.getTableName().equals(Constants.TABLE_EMPLOYER)) {
 				es = employerTableService.pushDataFromLocalESToColudDB(bw, office, es);
 				estableRepository.save(es);
@@ -275,8 +276,8 @@ public class ReplicationService {
 			commonTableService.appendLoggerToWriter(bw, "*********** END *******************", true);
 		});
 		
-		payTypeTableService.activateDeactiveData();
-		plannedServicesTableService.activateDeactiveData();
+		payTypeTableService.activateDeactiveData(office.getUuid());
+		plannedServicesTableService.activateDeactiveData(office.getUuid());
 
 	}
 
@@ -385,6 +386,8 @@ public class ReplicationService {
 			boolean extraPat,boolean updateWhere) {
 		int countRecord = 0;
 		// int totalCount = 0;
+		Office office = officeRepository.findById(1).get();
+		String officeId=office.getUuid();
 		QueryTable.QueryEnum tab = QueryTable.QueryEnum.valueOf("ES_" + table.getTableName().toUpperCase() + "_NEXT");
 		// Fetch Data From ES and see if that is in the Local DB or not
 		// between clause
@@ -421,25 +424,25 @@ public class ReplicationService {
 					"*********** END *******************" +Constants.TABLE_PLANNED_SERVICES+"---->"+ where, true);
 			System.out.println(where);
 			plannedServicesTableService.deleteOldData(where);
-			plannedServicesTableService.updateOldDataRe(where);
+			plannedServicesTableService.updateOldDataRe(where,officeId);
 		}
 		if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLANS)) {
 			System.out.println(where);
 			treatmentPlansTableService.updateOldData(where);
 			treatmentPlansTableService.deleteOldDataTPAAndTPI();
-			treatmentPlansTableService.updateOldDataRe(where);
-			treatmentPlansTableService.updateOldDataTPIRe();
+			treatmentPlansTableService.updateOldDataRe(where,officeId);
+			treatmentPlansTableService.updateOldDataTPIRe(officeId);
 		}
 		if (table.getTableName().equals(Constants.TABLE_TREATMENT_PLAN_ITEMS)) {
 			//Already done from above
 		}
 		if (table.getTableName().equals(Constants.TABLE_TRANSACTIONS_DETAIL)) {
 			transactionsDetailTableService.deleteOldData(where);
-			transactionsDetailTableService.updateOldDataRe(where);
+			transactionsDetailTableService.updateOldDataRe(where,officeId);
 		}
 		if (table.getTableName().equals(Constants.TABLE_TRANSACTIONS_HEADER)) {
 			transactionsHeaderTableService.deleteOldData(where);
-			transactionsHeaderTableService.updateOldDataRe(where);
+			transactionsHeaderTableService.updateOldDataRe(where,officeId);
 		}
 		
 		if (table.getTableName().equals(Constants.TABLE_EMPLOYER)) {
