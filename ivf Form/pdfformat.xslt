@@ -158,7 +158,7 @@ border-collapse: collapse;
                         <td> <span class="sub-heading"><xsl:value-of select="basicInfo7"/></span>
                         </td>
                         <td>
-                         <span class="main-heading-1">CSR Name:</span>
+                         <span class="main-heading-1">Source:</span>
                          </td>
                         <td>						 
 						 <span class="sub-heading"><xsl:value-of select="basicInfo8"/></span>
@@ -189,7 +189,7 @@ border-collapse: collapse;
                         <td> <span class="sub-heading"><xsl:value-of select="basicInfo11"/></span>
                         </td>
                         <td>
-                         <span class="main-heading-1">REF #:</span>
+                         <span class="main-heading-1">CSR Name &#38; Ref #:</span>
                          </td>
                         <td>						 
 						 <span class="sub-heading"><xsl:value-of select="basicInfo12"/></span>
