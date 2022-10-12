@@ -448,7 +448,17 @@ border-collapse: collapse;
                         
                     </tr>
 			 </table>		
-            
+              <xsl:if test="pdfAlert!= ''">
+		      <table>
+			    <tr>
+                     <td>
+                       <span class="colourrr">Alert: </span><span class=""><xsl:value-of select="pdfAlert"/></span>
+					 </td>
+                      <td  colspan="9"></td>
+                </tr>
+            </table>
+            <br/>
+			</xsl:if>
             <table>
 			<tr>
                      <td>
