@@ -326,7 +326,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				
 
 				Map<String, List<EagleSoftPatient>> espatients=null;
-				Map<String, List<PatientPolicyHolder>> espatientsHolder=null;
+				Map<String, List<PatientPolicyHolder>> espatientsHolderPr=null;
+				Map<String, List<PatientPolicyHolder>> espatientsHolderSec=null;
 				
 				Map<String, List<InsuranceDetail>> insuranceDetails=null;
 				Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules=null;
@@ -539,7 +540,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 							//
 							espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(dtod.getInsType(), ivfMap, esDB,bw);
-							espatientsHolder = (Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw);
+							espatientsHolderPr = (Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw,true);
+							espatientsHolderSec = espatientsHolderPr;//(Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw,false);
 							
 							espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 									new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
@@ -667,8 +669,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						
 					   if (ivfMap != null && ivfMap.get(ivx) != null && ivfMap.get(ivx).get(0) != null ) {
                        espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(dtod.getInsType(),ivfMap, esDB,bw);
-                       espatientsHolder = (Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw);
-						espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
+                       espatientsHolderPr = (Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw,true);
+                       espatientsHolderSec = espatientsHolderPr;//(Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw,false);
+					   espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 								new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
 						perios = (Map<String, List<Perio>>) (Map<String, ?>) dbAccesService.getPerioDataForPatients(ivfMapPat, esDB, bw);
 						mvpVapList=tvd.getAllMVPVAP();
@@ -798,11 +801,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							validdateRulesTPOS(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
 									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,oSCodes,
-									  insuranceDetails,preferanceFeeSchedules,espatientsHolder);
+									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec);
 							}else validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
 									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,
-									  insuranceDetails,preferanceFeeSchedules,espatientsHolder);
+									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec);
 							
 							/*
 							validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
@@ -927,7 +930,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
 		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,Map<String,
 		  List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
-		  Map<String, List<PatientPolicyHolder>> espatientsHolder) {
+		  Map<String, List<PatientPolicyHolder>> espatientsHolderPr,Map<String, List<PatientPolicyHolder>> espatientsHolderSec) {
 	  
 		rule = getRulesFromList(rules, Constants.RULE_ID_4);
 		String feeKey = "-1";
@@ -2115,7 +2118,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		// RULE_ID_83 "//Policy Holder Match" 
 		
 		rule = getRulesFromList(rules, Constants.RULE_ID_83);
-		dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),patKey,espatientsHolder, messageSource, rule, bw);
+		dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatients.get(patKey),patKey,espatientsHolderPr,espatientsHolderSec, messageSource, rule, bw);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
@@ -2164,7 +2167,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
 		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<OSIVFormCodes> oSCodes,
 		  Map<String, List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
-		  Map<String, List<PatientPolicyHolder>> espatientsHolder) {
+		  Map<String, List<PatientPolicyHolder>> espatientsHolderPr,Map<String, List<PatientPolicyHolder>> espatientsHolderSec) {
 	  
 		String feeKey = "-1";
 		if (espatients != null && espatients.get(patKey) != null
@@ -3387,7 +3390,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			// Read Patient Key is Unique Id from IVF sheet
 			//OneDriveFile espatient=null;
 			Map<String, List<EagleSoftPatient>> espatients=null;
-			Map<String, List<PatientPolicyHolder>> espatientsHolder=null;
+			Map<String, List<PatientPolicyHolder>> espatientsHolderPr=null;
+			Map<String, List<PatientPolicyHolder>> espatientsHolderSec=null;
 			
 			Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules=null;
 			
@@ -3534,7 +3538,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					//preferanceFeeSchedules=(Map<String, List<PreferanceFeeSchedule>>) (Map<String, ?>)dbAccesService.getInsuranceDetailByPatientId(dto.getInsType(),ivfMap, esDB, null);
 					//espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 					//		new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
-					espatientsHolder =(Map<String, List<PatientPolicyHolder>>) (Map<String, ?>)  dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB, null);
+					espatientsHolderPr =(Map<String, List<PatientPolicyHolder>>) (Map<String, ?>)  dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB, null,true);
+					espatientsHolderSec =espatientsHolderPr;//(Map<String, List<PatientPolicyHolder>>) (Map<String, ?>)  dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB, null,false);
 							
 					if (espatients != null && espatients.size() > 0) {
 						esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,null);
@@ -3671,7 +3676,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							}
 							
 							rule = getRulesFromList(rules, Constants.RULE_ID_83);
-							dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),patKey,espatientsHolder, messageSource, rule, null);
+							dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatients.get(patKey),patKey,espatientsHolderPr,espatientsHolderSec, messageSource, rule, null);
 
 							if (dtoRL != null) {
 								list.addAll(dtoRL);

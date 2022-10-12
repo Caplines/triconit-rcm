@@ -47,5 +47,5 @@ public interface EagleSoftDBAccessService {
 
     public Map<String, List<?>> getPreferanceFeeScheduleByPatientId(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,	BufferedWriter bw);
 
-    public Map<String, List<?>> getPolicyHolderByPatientId(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,	BufferedWriter bw);
+    public Map<String, List<?>> getPolicyHolderByPatientId(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,	BufferedWriter bw,boolean primary);
 }

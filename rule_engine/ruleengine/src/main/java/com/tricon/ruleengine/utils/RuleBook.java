@@ -3353,7 +3353,8 @@ public List<TPValidationResponseDto> Rule78(Object ivfSheet,List<EagleSoftPatien
 }
 
 //Policy Holder Match
-public List<TPValidationResponseDto> Rule83(Object ivfSheet,String patKey,Map<String, List<PatientPolicyHolder>> espatientsHolder, MessageSource messageSource,
+public List<TPValidationResponseDto> Rule83(Object ivfSheet,List<EagleSoftPatient> espatients,String patKey,Map<String, List<PatientPolicyHolder>> espatientsHolderPr,
+		Map<String, List<PatientPolicyHolder>> espatientsHolderSec, MessageSource messageSource,
 		Rules rule, BufferedWriter bw) {
 
 	RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_83,
@@ -3361,24 +3362,44 @@ public List<TPValidationResponseDto> Rule83(Object ivfSheet,String patKey,Map<St
 
 	IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 	List<TPValidationResponseDto> d = new ArrayList<>();
-	PatientPolicyHolder pat=null;
+	PatientPolicyHolder ph=null;
 	try {
 		boolean pass = false;
-		
-		if (espatientsHolder==null) {
+		String type="";
+		if (espatients != null && espatients.get(0) != null) {
+			EagleSoftPatient pat = espatients.get(0);
+			
+		if (ivf.getMemberId().equals(pat.getPrimMemberId())) {
+			type="Primary";
+		}else if (ivf.getMemberId().equals(pat.getSecMemberId())) {
+			type="Secondary";
+		}
+		RuleEngineLogger.generateLogs(clazz, "For "+patKey+" -->type -->"+type,
+				Constants.rule_log_debug, bw);
+		//List<PatientPolicyHolder> espatientPhs =null;
+		if (type.equalsIgnoreCase("Primary") && espatientsHolderPr==null) {
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					"rule83.error.message",
+					new Object[] {ivf.getPolicyHolder(),"** Not found **"},locale), Constants.FAIL,"","",""));
+			return d;
+		}else if( type.equalsIgnoreCase("Secondary") &&  espatientsHolderSec==null){
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 					"rule83.error.message",
 					new Object[] {ivf.getPolicyHolder(),"** Not found **"},locale), Constants.FAIL,"","",""));
 			return d;
 		}
-		List<PatientPolicyHolder> espatients =espatientsHolder.get(patKey);
+		String name="";
+		if (type.equalsIgnoreCase("Primary")) name=espatientsHolderPr.get(patKey).get(0).getPolicyHolder();
+		else  name=espatientsHolderSec.get(patKey).get(0).getPolicyHolderSec();
 		
-		if (espatients != null && espatients.get(0) != null) {
-			pat = espatients.get(0);
+		//List<PatientPolicyHolder> espatients =espatientsHolder.get(patKey);
+		
+		if (!name.equals("")) {
+			//ph = espatientPhs.get(0);
 			
-			RuleEngineLogger.generateLogs(clazz, "Rule83- in IV->"+ivf.getPolicyHolder() +" in ES -->"+pat.getPolicyHolder(),
+			RuleEngineLogger.generateLogs(clazz, "Rule83- in IV->"+ivf.getPolicyHolder() +" in ES -->"+name,
 					Constants.rule_log_debug, bw);
-			if (ivf.getPolicyHolder().equalsIgnoreCase(pat.getPolicyHolder())) {
+			if (ivf.getPolicyHolder().equalsIgnoreCase(name)) {
 				pass=true;
 			}else {
 				pass=false;
@@ -3386,15 +3407,24 @@ public List<TPValidationResponseDto> Rule83(Object ivfSheet,String patKey,Map<St
 		}
 	    if (pass) {
 		  d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule83.pass.message", new Object[] {}, locale), 
+					messageSource.getMessage("rule83.pass.message", new Object[] {ivf.getPolicyHolder()}, locale), 
 					Constants.PASS,"","",""));
 		  
 	  }else {
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 					"rule83.error.message",
-					new Object[] {ivf.getPolicyHolder(),pat.getPolicyHolder()},locale), Constants.FAIL,"","",""));
+					new Object[] {ivf.getPolicyHolder(),name},locale), Constants.FAIL,"","",""));
 		  
 	  }
+		}else {
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					"rule83.error.message_no_data",
+					new Object[] { "Patient Details not found in Patient Sheet(" + Constants.errorMessOPen
+							+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
+					locale), Constants.FAIL,"","",""));
+		}
+		
+		
 			
 	} catch (Exception x) {
 
@@ -9029,8 +9059,10 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 						||	tp.getEstInsurance().equals("0.0"))) continue;
 
 					//present=false;
-
-					if (reqList.contains(tp.getServiceCode().toUpperCase())) {
+					if (tp.getServiceCode().toUpperCase().toUpperCase().equalsIgnoreCase("D0150")
+						|| tp.getServiceCode().toUpperCase().toUpperCase().equalsIgnoreCase("D0210")
+						|| tp.getServiceCode().toUpperCase().toUpperCase().equalsIgnoreCase("D0330")) {
+					//if (reqList.contains(tp.getServiceCode().toUpperCase())) {
 						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 						fcodes.add(tp.getServiceCode());
@@ -9110,8 +9142,10 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 									Method hss = c2.getMethod(hs);
 
 									String code = (String) hcm.invoke(hisShee);
-									
-									if (reqList.contains(code.toUpperCase())) {
+									//if (code.toUpperCase().equalsIgnoreCase("D0150")
+									//	 || code.toUpperCase().equalsIgnoreCase("D0210")
+									//	 || code.toUpperCase().equalsIgnoreCase("D0330")) {
+									if (fcodes.contains(code.toUpperCase())) {
 										RuleEngineLogger.generateLogs(clazz, " History Service Code -"+code, Constants.rule_log_debug, bw);
 										hdto = new ToothHistoryDto((String) hcm.invoke(hisShee), (String) hdm.invoke(hisShee),
 												(String) htm.invoke(hisShee),(String) hss.invoke(hisShee));

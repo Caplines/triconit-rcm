@@ -1313,18 +1313,19 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	
 	@Override
 	public Map<String, List<?>> getPolicyHolderByPatientId(Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,
-			BufferedWriter bw) {
+			BufferedWriter bw,boolean primary) {
 		// TODO Auto-generated method stub
 		EagleSoftFetchData d = new EagleSoftFetchData();
 		Map<String, List<?>> returnMap = null;
 		RuleEngineLogger.generateLogs(clazz, "PolicyHolderByPatientId Data Start ", Constants.rule_log_debug, bw);
 
 		if (ivfMap != null) {
-			List<String> ids = new ArrayList<>();
-			for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
-				if (entry.getValue() != null) {
+			List<String> ids = null;
+			for (Map.Entry<String, List<Object>> entry1 : ivfMap.entrySet()) {
+				ids = new ArrayList<>();
+				if (entry1.getValue() != null) {
 
-					IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
+					IVFTableSheet ivfSheet = ((IVFTableSheet) entry1.getValue().get(0));
 					ids.add(ivfSheet.getPatientId());
 				}
 			}
@@ -1334,6 +1335,12 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 			EagleSoftQueryObject q = null;
 			q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_schedule_query,
 					EagleSoftQuery.policy_holder_schedule_query_CL_COUNT);
+			/*if (primary)q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_schedule_query_pr,
+					EagleSoftQuery.policy_holder_schedule_query_CL_COUNT);
+			
+			else q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_schedule_query_sec,
+					EagleSoftQuery.policy_holder_schedule_query_CL_COUNT);
+			*/		
 			String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
 			if (data != null) {
 				PatientPolicyHolder pph = null;
@@ -1347,17 +1354,18 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 							Constants.rule_log_debug, bw);
 					Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
 					List<Object> list = null;
-					for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
-						if (entry.getValue() != null) {
-							List<String> des = (List<String>) (entry.getValue());
+					for (Map.Entry<String, List<String>> entryd: dataMap.entrySet()) {
+						if (entryd.getValue() != null) {
+							List<String> des = (List<String>) (entryd.getValue());
 							pph = new PatientPolicyHolder();
 
 							pph.setPatientId(des.get(0));
 							pph.setPolicyHolder(des.get(1));
-							
+							pph.setPolicyHolderSec(des.get(2));
+							pph.setRelation(des.get(3));
 							//
 							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
-								if (entry.getValue() != null) {
+								if (entryd.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
 									if ((pph.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
@@ -1390,6 +1398,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 							Constants.rule_log_debug, bw);
 				}
 			}
+		  // }
 
 		}
 

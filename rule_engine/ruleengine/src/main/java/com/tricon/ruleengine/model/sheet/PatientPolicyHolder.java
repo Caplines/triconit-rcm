@@ -4,6 +4,9 @@ public class PatientPolicyHolder {
 
 	String policyHolder;
 	String patientId;
+	String policyHolderSec;
+	String relation;
+	
 
 	public String getPolicyHolder() {
 		return policyHolder;
@@ -20,6 +23,23 @@ public class PatientPolicyHolder {
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
+
+	public String getPolicyHolderSec() {
+		return policyHolderSec;
+	}
+
+	public void setPolicyHolderSec(String policyHolderSec) {
+		this.policyHolderSec = policyHolderSec;
+	}
+
+	public String getRelation() {
+		return relation;
+	}
+
+	public void setRelation(String relation) {
+		this.relation = relation;
+	}
+	
 	
 	
 	

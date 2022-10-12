@@ -168,10 +168,15 @@ public class EagleSoftQuery {
      
     public final static int  preferance_fee_schedule_query_CL_COUNT=3;
     
-	public final static String  policy_holder_schedule_query="select p.patient_id,amd.patient_first_name +' '+ amd.patient_last_name AS 'Policy Holder Name'"+
-			" from patient p, account_merge_data amd where p.prim_responsible_id = amd.account_patient_id and p.patient_id in ("+contstant_REP+")";
-    
-   public final static int  policy_holder_schedule_query_CL_COUNT=2;
+	//public final static String  policy_holder_schedule_query="select p.patient_id,amd.patient_first_name +' '+ amd.patient_last_name AS 'Policy Holder Name'"+
+	//		" from patient p, account_merge_data amd where p.prim_responsible_id = amd.account_patient_id and p.patient_id in ("+contstant_REP+")";
+    public final static String  policy_holder_schedule_query="select patient_id, prim_policy_holder, sec_policy_holder,relation_to_prim_policy_holder from patient_letter"
+    		+                 " where patient_id  in ("+contstant_REP+")";
+    public final static String  policy_holder_schedule_query_pr="select p.patient_id,string(p.first_name,' ',p.last_name) as Policy_Holder_Name from patient p where p.patient_id = "
+    		+ "              (Select top 1 i.prim_responsible_id  from insurance_claim i  where i.patient_id in ("+contstant_REP+"))";
+    public final static String  policy_holder_schedule_query_sec="select p.patient_id,string(p.first_name,' ',p.last_name) as Policy_Holder_Name from patient p where p.patient_id ="
+    		+ "              (Select top 1 i.sec_responsible_id  from insurance_claim i  where i.patient_id in ("+contstant_REP+"))";
+    public final static int  policy_holder_schedule_query_CL_COUNT=4;
 
 
 }

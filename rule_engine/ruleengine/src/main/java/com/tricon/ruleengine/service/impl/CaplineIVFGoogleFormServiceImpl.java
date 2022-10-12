@@ -625,7 +625,14 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			if (li!=null  && li.size() > 0) {
 				CaplineIVFFormDto form = li.get(0);
 				obj[0]=form.getBasicInfo2();
-				
+				form.setPdfAlert("");
+				if (form.getBasicInfo3()!=null) {
+					String insName=form.getBasicInfo3().toLowerCase();
+					if (insName.contains("geha") || insName.contains("connection dental") ||
+							insName.contains("fep blue dental") || insName.contains("fed blue") ) {
+						form.setPdfAlert("Patients have BCBS Medical policy as primary & we can directly bill them even if we do not have insurance details.");	
+					}
+				}
 				//remove $ sign
 				
 				if (form.getHistory() != null) {
