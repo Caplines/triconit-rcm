@@ -200,7 +200,7 @@ public class ConnectAndReadSheets {
 
 		List<Request> requests = new ArrayList<>();
 		IVFTableSheet sh = null;
-		final int COLUMN_STATUS=196;
+		final int COLUMN_STATUS=204;
 		try {
 		if (ivfMap!=null) {
 		for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
@@ -1389,6 +1389,46 @@ public class ConnectAndReadSheets {
 					}
 					try {
 						vif.setOonbenfits(obj.get(++x));//oonbenfits 
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD9630(obj.get(++x));//d9630 
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD9630fr(obj.get(++x));//d9630fr 
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD0431(obj.get(++x));//d0431
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD0431fr(obj.get(++x));//d0431fr
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD4999(obj.get(++x));//d4999
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD4999fr(obj.get(++x));//d4999fr
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD2962(obj.get(++x));//d2962
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD2962fr(obj.get(++x));//d2962fr
 					}catch (Exception e) {
 						continue;
 					}

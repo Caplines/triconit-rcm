@@ -377,6 +377,30 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	
 	@Column(name = "oonbenfits", length =6)
 	private String oonbenfits;
+	
+	@Column(name = "d9630", length = 4)
+	private String d9630;
+	
+	@Column(name = "d9630fr", length = 30)
+	private String d9630fr;
+	
+	@Column(name = "d0431", length = 4)
+	private String d0431;
+	
+	@Column(name = "d0431fr", length = 30)
+	private String d0431fr;
+	
+	@Column(name = "d4999", length = 4)
+	private String d4999;
+	
+	@Column(name = "d4999fr", length = 30)
+	private String d4999fr;
+	
+	@Column(name = "d2962", length = 4)
+	private String d2962;
+	
+	@Column(name = "d2962fr", length = 30)
+	private String d2962fr;
 
 	public String getNpi() {
 		return npi;
@@ -1337,6 +1361,70 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setOonbenfits(String oonbenfits) {
 		this.oonbenfits = oonbenfits;
+	}
+
+	public String getD9630() {
+		return d9630;
+	}
+
+	public void setD9630(String d9630) {
+		this.d9630 = d9630;
+	}
+
+	public String getD9630fr() {
+		return d9630fr;
+	}
+
+	public void setD9630fr(String d9630fr) {
+		this.d9630fr = d9630fr;
+	}
+
+	public String getD0431() {
+		return d0431;
+	}
+
+	public void setD0431(String d0431) {
+		this.d0431 = d0431;
+	}
+
+	public String getD0431fr() {
+		return d0431fr;
+	}
+
+	public void setD0431fr(String d0431fr) {
+		this.d0431fr = d0431fr;
+	}
+
+	public String getD4999() {
+		return d4999;
+	}
+
+	public void setD4999(String d4999) {
+		this.d4999 = d4999;
+	}
+
+	public String getD4999fr() {
+		return d4999fr;
+	}
+
+	public void setD4999fr(String d4999fr) {
+		this.d4999fr = d4999fr;
+	}
+
+	public String getD2962() {
+		return d2962;
+	}
+
+	public void setD2962(String d2962) {
+		this.d2962 = d2962;
+	}
+
+	public String getD2962fr() {
+		return d2962fr;
+	}
+
+	public void setD2962fr(String d2962fr) {
+		this.d2962fr = d2962fr;
 	}
 
     

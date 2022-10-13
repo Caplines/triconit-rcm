@@ -385,6 +385,14 @@ public class IVFFormConversionUtil {
 		pd2.setPerioD9910(d.getPerioD9910());
 		pd2.setD9910Frequency(d.getD9910Frequency());
 		pd2.setOonbenfits(d.getOonbenfits());
+		pd2.setD9630(d.getD9630());
+		pd2.setD9630fr(d.getD9630fr());
+		pd2.setD0431(d.getD0431());
+		pd2.setD0431fr(d.getD0431fr());
+		pd2.setD4999(d.getD4999());
+		pd2.setD4999fr(d.getD4999fr());
+		pd2.setD2962(d.getD2962());
+		pd2.setD2962fr(d.getD2962fr());
 		
 		pd.setPatientDetails2(pd2);
 		
@@ -758,6 +766,14 @@ public class IVFFormConversionUtil {
 				pd.setD9910Frequency(d.getD9910Frequency());
 				
 				pd.setOonbenfits(d.getOonbenfits());
+				pd.setD9630(d.getD9630());
+				pd.setD9630fr(d.getD9630fr());
+				pd.setD0431(d.getD0431());
+				pd.setD0431fr(d.getD0431fr());
+				pd.setD4999(d.getD4999());
+				pd.setD4999fr(d.getD4999fr());
+				pd.setD2962(d.getD2962());
+				pd.setD2962fr(d.getD2962fr());
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -1218,6 +1234,14 @@ public class IVFFormConversionUtil {
 		pd2.setD9910Frequency(d.getD9910Frequency());
 		
 		pd2.setOonbenfits(d.getOonbenfits());
+		pd2.setD9630(d.getD9630());
+		pd2.setD9630fr(d.getD9630fr());
+		pd2.setD0431(d.getD0431());
+		pd2.setD0431fr(d.getD0431fr());
+		pd2.setD4999(d.getD4999());
+		pd2.setD4999fr(d.getD4999fr());
+		pd2.setD2962(d.getD2962());
+		pd2.setD2962fr(d.getD2962fr());
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();

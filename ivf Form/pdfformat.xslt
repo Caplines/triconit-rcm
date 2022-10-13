@@ -1271,6 +1271,72 @@ border-collapse: collapse;
                         </td>
            
            </tr>
+                    <tr>
+                        <td class="withds ">
+                           <span class="main-heading-1">D9630(%):</span>
+						</td>
+						<td class="withds">
+                           <span class="sub-heading"><xsl:value-of select="d9630"/></span>
+						</td>
+                        <td class="withds ">
+                           <span class="main-heading-1">D0431(%)</span>
+						</td>
+						<td>
+						   <span class="sub-heading"><xsl:value-of select="d0431"/></span>
+						 </td>
+                        <td  class="withds ">
+                           <span class="main-heading-1">D4999(%):</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="d4999"/></span>
+                        </td>
+                         <td class="withds">
+                           <span class="main-heading-1">D2962(%):</span>
+						</td>
+                        
+                        <td> <span class="sub-heading"><xsl:value-of select="d2962"/></span>
+                        </td>
+                          <td class="withds">
+                           <span class="main-heading-1"></span>
+						</td>
+                        
+                         <td> <span class="sub-heading"></span>
+                        </td>
+           
+           </tr>
+		   <tr>
+                        <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+						<td class="withds">
+                           <span class="sub-heading"><xsl:value-of select="d9630fr"/></span>
+						</td>
+                        <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+						<td>
+						   <span class="sub-heading"><xsl:value-of select="d0431fr"/></span>
+						 </td>
+                        <td  class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						 </td>
+                        <td> <span class="sub-heading"><xsl:value-of select="d4999fr"/></span>
+                        </td>
+                         <td class="withds colourfreq">
+                           <span class="main-heading-1">Frequency</span>
+						</td>
+                        
+                       
+                        
+                        <td> <span class="sub-heading"><xsl:value-of select="d2962fr"/></span>
+                        </td>
+						 <td class="withds ">
+                          
+						</td>
+                        
+                         <td class="withds ">
+                        </td>
+           
+           </tr>
 		   <tr>
                         <td class="colourhow" colspan="3">
                            <span class="main-heading-1">How many Fillings can be done in a year ?</span> 
