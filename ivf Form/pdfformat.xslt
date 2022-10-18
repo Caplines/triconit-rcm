@@ -1295,12 +1295,13 @@ border-collapse: collapse;
                         
                         <td> <span class="sub-heading"><xsl:value-of select="d2962"/></span>
                         </td>
-                          <td class="withds">
-                           <span class="main-heading-1"></span>
+                        <td class="withds">
+                           <span class="main-heading-1">D7953(%)</span>
 						</td>
                         
-                         <td> <span class="sub-heading"></span>
+                         <td> <span class="sub-heading"><xsl:value-of select="d7953"/></span>
                         </td>
+                 
            
            </tr>
 		   <tr>
