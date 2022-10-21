@@ -772,7 +772,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		switch(queryFor)
 		{
 		    case Constants.QUERY_FOR_Reconcillation:
-		    	finalQuery="select distinct "+o.getSelectcolumns()+" from "
+		    	finalQuery="select  "+o.getSelectcolumns()+" from "
 		    			+ "es_data_replica_patient p , es_data_replica_transactions_detail t, es_data_replica_transactions_header th "
 		    			+ "where th.tran_num = t.tran_num and  p.office_id='"+office.getUuid()+"' "
 		    			+ "and th.impacts = 'P' and t.office_id='"+office.getUuid()+"' "

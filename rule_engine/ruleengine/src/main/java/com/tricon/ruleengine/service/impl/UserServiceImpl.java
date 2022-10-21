@@ -170,4 +170,12 @@ public class UserServiceImpl implements UserService {
 			return new GenericResponse(HttpStatus.OK, "Users list", li);
 	}
 
+	@Override
+	public List<OfficeDto> getAllOfficesByCompanyName(String companyName) {
+		// TODO Auto-generated method stub
+		return officeDao.getAllOfficesByCompanyName(companyName);
+	}
+	
+	
+
 }

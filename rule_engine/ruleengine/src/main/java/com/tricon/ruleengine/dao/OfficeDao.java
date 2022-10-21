@@ -17,4 +17,6 @@ public interface OfficeDao {
 	public Office getOfficeByUuid(String uuid,String companyuuid);
 
 	public Office getOfficeByName(String name,String companyuuid);
+	
+	public List<OfficeDto> getAllOfficesByCompanyName(String companyName);
 }

@@ -19,6 +19,7 @@ import com.tricon.ruleengine.dto.OfficesAndIVForms;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.service.CompanyService;
 import com.tricon.ruleengine.service.IVformTypeService;
 import com.tricon.ruleengine.service.UserService;
 import com.tricon.ruleengine.utils.Constants;
@@ -30,7 +31,7 @@ public class UtilController {
 	private UserService userService;
 	
 	@Autowired
-	CompanyDao companyDao;
+	CompanyService companyservice;
 	
 	
 	@Autowired
@@ -42,10 +43,10 @@ public class UtilController {
 	public ResponseEntity<?> getAlloffifceCap() {
 		
 		
-		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
-		Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
-		if (offices.isPresent() && offices.get() != null) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", offices.get()));
+		//Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+		List<OfficeDto> offices = userService.getAllOfficesByCompanyName(Constants.COMPANY_NAME);
+		if (offices!= null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", offices));
 		}
 
 		else
@@ -58,7 +59,7 @@ public class UtilController {
 	public ResponseEntity<?> getAlloffifceCapAndForType() {
 		
 		
-		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+		Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
 		OfficesAndIVForms f= new OfficesAndIVForms();
 		f.setIvforms(iVformTypeService.getAllIVFormType());
 		Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());

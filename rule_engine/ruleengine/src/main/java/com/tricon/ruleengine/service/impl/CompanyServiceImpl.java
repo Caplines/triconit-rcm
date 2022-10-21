@@ -19,7 +19,7 @@ public class CompanyServiceImpl implements CompanyService{
 	@Override
 	public Company getCompanyByName(String name) {
 		// TODO Auto-generated method stub
-		return null;
+		return  companyDao.getCompanyByName(name);
 	}
 
 }

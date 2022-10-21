@@ -34,5 +34,7 @@ public interface UserService {
 	
 	public GenericResponse getAllUsers(int active);
 	
+	public List<OfficeDto> getAllOfficesByCompanyName(String companyName);
+	
 
 }

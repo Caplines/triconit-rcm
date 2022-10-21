@@ -60,7 +60,7 @@ public class Company implements java.io.Serializable {
 		this.uuid = uuid;
 	}
 
-	@Column(name = "name", length = 45)
+	@Column(name = "name", length = 45,unique=true)
 	public String getName() {
 		return this.name;
 	}

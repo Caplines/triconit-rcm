@@ -3,7 +3,6 @@ package com.tricon.ruleengine.dao.impl;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.ProjectionList;
@@ -13,20 +12,21 @@ import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.OfficeDao;
+import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.OfficeDto;
 import com.tricon.ruleengine.model.db.Office;
 
 @Repository
-public class OfficeDaoImpl extends BaseDaoImpl implements OfficeDao{
+public class OfficeDaoImpl extends BaseDaoImpl implements OfficeDao {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Optional<List<OfficeDto>>  getAllOffices(String companyuuid) {
-		
+	public Optional<List<OfficeDto>> getAllOffices(String companyuuid) {
+
 		Session session = getSession();
-		List<OfficeDto> offices  = null;
+		List<OfficeDto> offices = null;
 		try {
-			//Transaction transaction = session.beginTransaction();
+			// Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(Office.class);
 			criteria.createAlias("company", "company");
 			criteria.add(Restrictions.eq("company.uuid", companyuuid));
@@ -36,42 +36,55 @@ public class OfficeDaoImpl extends BaseDaoImpl implements OfficeDao{
 			criteria.setProjection(pjList);
 			criteria.setResultTransformer(Transformers.aliasToBean(OfficeDto.class));
 			offices = criteria.list();
-			//transaction.commit();
+			// transaction.commit();
 		} finally {
 			closeSession(session);
 
 		}
 		return Optional.ofNullable((List<OfficeDto>) offices);
-		
+
 	}
 
 	@Override
-	public Office getOfficeByUuid(String uuid,String companyuuid) {
+	public Office getOfficeByUuid(String uuid, String companyuuid) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
 		Object object = null;
 		try {
-			//Transaction transaction = session.beginTransaction();
+			// Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(Office.class);
 			criteria.createAlias("company", "company");
 			criteria.add(Restrictions.eq("company.uuid", companyuuid));
 			criteria.add(Restrictions.eq("uuid", uuid));
-			object =  criteria.uniqueResult();
-			
+			object = criteria.uniqueResult();
+
 		} finally {
 			closeSession(session);
 
 		}
-		return (Office)object;
+		return (Office) object;
 
 	}
 
 	@Override
-	public Office getOfficeByName(String name,String companyuuid) {
+	public Office getOfficeByName(String name, String companyuuid) {
 		// TODO Auto-generated method stub
-		return (Office)getEntityByColumnName(Office.class, "name", name);
+		return (Office) getEntityByColumnName(Office.class, "name", name);
 	}
-	
-	
+
+	@Override
+	public List<OfficeDto> getAllOfficesByCompanyName(String companyName) {
+		Session session = getSession();
+		List<OfficeDto> cL = null;
+		try {
+            String query="select this_.name as name, this_.uuid as uuid from "  +
+            		" office this_ inner join company company1_ on this_.company_id=company1_.uuid where " + 
+            		" company1_.name='"+companyName+"'";
+			cL=session.createSQLQuery(query).setResultTransformer(Transformers.aliasToBean(OfficeDto.class)). list();
+		} finally {
+			closeSession(session);
+		}
+		return cL;
+	}
 
 }
