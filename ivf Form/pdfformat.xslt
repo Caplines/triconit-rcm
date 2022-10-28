@@ -17,6 +17,9 @@
  box-sizing:border-box;
  line-height:2px;
 }
+.yellow {
+background-color: #F7D027;
+}
 .br1px{ border-left: 1px solid #000; border-top: 1px solid #000;}
 .grid-item {
   background-color: #fff;
@@ -80,7 +83,8 @@ border-collapse: collapse;
 			
 		</head>
 		
-
+<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'" />
+<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 <body>
     <form  id="myIVForm" target="_top" >
 	
@@ -232,12 +236,24 @@ border-collapse: collapse;
 							  </xsl:otherwise>
 						</xsl:choose>
 						
+						<xsl:choose>
+						<xsl:when test="translate(basicInfo19, $smallcase, $uppercase) = 'CHANGE PROVIDER'">
+						 <td class="withds yellow">
+                         <span class="main-heading-1">Provider Last Name:</span>
+                         </td>
+                        <td class="withds yellow">						 
+						 <span class="sub-heading"><xsl:value-of select="basicInfo19"/></span>
+                        </td>
+						</xsl:when>
+						<xsl:otherwise>
 						 <td class="withds">
                          <span class="main-heading-1">Provider Last Name:</span>
                          </td>
-                        <td class="withds">						 
+                          <td class="withds">						 
 						 <span class="sub-heading"><xsl:value-of select="basicInfo19"/></span>
                         </td>
+						</xsl:otherwise>
+						</xsl:choose>
 						<xsl:choose>
 							  <xsl:when test="policy3 = 'OUT' ">
 								<td style="color:white;background-color:red">
