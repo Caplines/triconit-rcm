@@ -26,6 +26,7 @@ import com.tricon.esdatareplication.dao.ruleenginedb.TransactionsHeaderRepositor
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.TransactionsHeader;
+import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsDetailReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsHeaderReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
@@ -74,8 +75,8 @@ public class TransactionsHeaderTableService extends CommonTableService {
 					TransactionsHeaderReplica rep = new TransactionsHeaderReplica();
 					BeanUtils.copyProperties(x, rep);
 					bu.append(rep.getTranNum() + ",");
-					System.out.println("DSSS-->"+rep.getId()+"--"+rep.getDescription());
-					System.out.println("IMpac-->"+rep.getId()+"--"+rep.getImpacts());
+					//System.out.println("DSSS-->"+rep.getId()+"--"+rep.getDescription());
+					//System.out.println("IMpac-->"+rep.getId()+"--"+rep.getImpacts());
 					rep.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 					repList.add(rep);
 				});
@@ -97,12 +98,35 @@ public class TransactionsHeaderTableService extends CommonTableService {
 								.filter(p -> id.intValue() == p.getTranNum().intValue()).findAny().orElse(null);
 						q.setId(null);
 						q.setOfficeId(office.getUuid());
-						System.out.println("DSSS-->"+q.getId()+"--"+q.getDescription());
-						System.out.println("IMpac-->"+q.getId()+"--"+q.getImpacts());
+						//System.out.println("DSSS-->"+q.getId()+"--"+q.getDescription());
+						//System.out.println("IMpac-->"+q.getId()+"--"+q.getImpacts());
 						l.add(q);
 					});
-					if (l.size() > 0)
-						transactionsRepositoryRe.saveAllAndFlush(l);
+					if (l.size() > 0) {
+						//transactionsRepositoryRe.saveAllAndFlush(l);
+						try {
+							transactionsRepositoryRe.saveAllAndFlush(l);
+							}catch(Exception ex1) {
+								appendLoggerToWriter(TransactionsHeader.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="";
+								for(TransactionsHeaderReplica p:l) {
+									appendLoggerToWriter(TransactionsHeader.class, bw, "Now in Loop", true);
+									tnum=p.getTranNum()+";";
+									try {
+										transactionsRepositoryRe.saveAndFlush(p);
+										}catch(Exception ex) {
+											appendLoggerToWriter(TransactionsHeader.class, bw, tnum, true);
+											StringWriter errors = new StringWriter();
+											ex.printStackTrace(new PrintWriter(errors));
+											es.setLastIssueDetail(errors.toString());
+											appendLoggerToWriter(TransactionsHeader.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+											appenErrorToWriter(TransactionsHeader.class, bw, ex);
+										}
+									
+								}
+								
+							}
+					}
 				}
 				apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
@@ -124,7 +148,28 @@ public class TransactionsHeaderTableService extends CommonTableService {
 						}
 					});
 					if (l.size() > 0) {
+						try {
 						transactionsRepositoryRe.saveAllAndFlush(l);
+						}catch(Exception ex1) {
+							appendLoggerToWriter(TransactionsHeader.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+							String tnum="";
+							for(TransactionsHeaderReplica p:l) {
+								appendLoggerToWriter(TransactionsHeader.class, bw, "Now in Loop", true);
+								tnum=p.getTranNum()+";";
+								try {
+									transactionsRepositoryRe.saveAndFlush(p);
+									}catch(Exception ex) {
+										appendLoggerToWriter(TransactionsHeader.class, bw, tnum, true);
+										StringWriter errors = new StringWriter();
+										ex.printStackTrace(new PrintWriter(errors));
+										es.setLastIssueDetail(errors.toString());
+										appendLoggerToWriter(TransactionsHeader.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+										appenErrorToWriter(TransactionsHeader.class, bw, ex);
+									}
+								
+							}
+							
+						}
 						//transactionsRepositoryRe.flush();
 					}
 				}

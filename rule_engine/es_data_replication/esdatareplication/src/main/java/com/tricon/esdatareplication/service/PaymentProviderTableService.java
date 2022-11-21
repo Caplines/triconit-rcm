@@ -23,7 +23,9 @@ import com.tricon.esdatareplication.dao.ruleenginedb.PaymentProviderRepositoryRe
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.PaymentProvider;
+import com.tricon.esdatareplication.entity.ruleenginedb.PatientReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.PaymentProviderReplica;
+import com.tricon.esdatareplication.entity.ruleenginedb.PlannedServicesReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 
@@ -100,18 +102,33 @@ public class PaymentProviderTableService extends CommonTableService {
 				List<PaymentProviderReplica> inDB = new ArrayList<>();
 				if (repList1 != null) {
 					for (PaymentProviderReplica x : repList1) {
+						try {
 						List<PaymentProviderReplica> m = paymentProviderRepositoryRe
 								.findByTranNumAndProdIdAndProdProviderId(x.getTranNum(), x.getProviderId(),
 										x.getProdProviderId(), office.getUuid());
 						if (m != null)
 							inDB.addAll(m);
+						}catch(Exception ex) {
+							appendLoggerToWriter(PlannedServicesReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+							String tnum="";
+							tnum=tnum+x.getProviderId()+","+x.getTranNum()+";";
+							appendLoggerToWriter(PaymentProviderReplica.class, bw, tnum, true);
+							StringWriter errors = new StringWriter();
+							ex.printStackTrace(new PrintWriter(errors));
+							es.setLastIssueDetail(errors.toString());
+							appendLoggerToWriter(PlannedServicesReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+							appenErrorToWriter(PlannedServicesReplica.class, bw, ex);
+							
+						}
 					}
 				}
 				if (repList2 != null) {
 					appendLoggerToWriter(PaymentProviderReplica.class, bw, "repList2 is here :" + repList2.size(),
 							true);
 					for (PaymentProviderReplica x : repList2) {
+						try {
 						if (x.getProdProviderId() == null) {
+							
 							List<PaymentProviderReplica> m = paymentProviderRepositoryRe
 									.findByTranNumAndProdId(x.getTranNum(), x.getProviderId(), office.getUuid());
 							if (m != null)
@@ -122,7 +139,11 @@ public class PaymentProviderTableService extends CommonTableService {
 							if (m != null)
 								inDB.addAll(m);
 						}
+					 }
+					catch(Exception ex) {
+						
 					}
+				}
 				}
 				///////////////////
 
@@ -174,8 +195,30 @@ public class PaymentProviderTableService extends CommonTableService {
 					 * 
 					 * ).findAny().orElse(null); q.setId(null); l.add(q); });
 					 */
-					if (l.size() > 0)
-						paymentProviderRepositoryRe.saveAllAndFlush(l);
+					if (l.size() > 0) {
+						
+						try {
+							paymentProviderRepositoryRe.saveAllAndFlush(l);
+							}catch(Exception ex1) {
+								appendLoggerToWriter(PaymentProviderReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="";
+								for(PaymentProviderReplica p:l) {
+									appendLoggerToWriter(PaymentProviderReplica.class, bw, "Now in Loop", true);
+									tnum=p.getProviderId()+","+p.getTranNum()+";";
+									try {
+									paymentProviderRepositoryRe.saveAndFlush(p);
+									}catch(Exception ex) {
+										appendLoggerToWriter(PaymentProviderReplica.class, bw, tnum, true);
+										StringWriter errors = new StringWriter();
+										ex.printStackTrace(new PrintWriter(errors));
+										es.setLastIssueDetail(errors.toString());
+										appendLoggerToWriter(PaymentProviderReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+										appenErrorToWriter(PaymentProviderReplica.class, bw, ex);
+									}
+								}
+								
+							}
+					}
 				}
 				apptIdInDB1.removeAll(apptIdInES1);// TranNum id that are there in Local DB we need to update.
 				// no unique id just a mapping table //Check latter
@@ -256,8 +299,30 @@ public class PaymentProviderTableService extends CommonTableService {
 					 * 
 					 * l.add(p); } });
 					 */
-					if (l.size() > 0)
-						paymentProviderRepositoryRe.saveAllAndFlush(l);
+					if (l.size() > 0) {
+						
+						try {
+							paymentProviderRepositoryRe.saveAllAndFlush(l);
+							}catch(Exception ex1) {
+								appendLoggerToWriter(PaymentProviderReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="";
+								for(PaymentProviderReplica p:l) {
+									appendLoggerToWriter(PaymentProviderReplica.class, bw, "Now in Loop", true);
+									tnum=p.getProviderId()+","+p.getTranNum()+";";
+									try {
+									paymentProviderRepositoryRe.saveAndFlush(p);
+									}catch(Exception ex) {
+										appendLoggerToWriter(PaymentProviderReplica.class, bw, tnum, true);
+										StringWriter errors = new StringWriter();
+										ex.printStackTrace(new PrintWriter(errors));
+										es.setLastIssueDetail(errors.toString());
+										appendLoggerToWriter(PaymentProviderReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+										appenErrorToWriter(PaymentProviderReplica.class, bw, ex);
+									}
+								}
+								
+							}
+					}
 				}
 				appendLoggerToWriter(PaymentProviderReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);

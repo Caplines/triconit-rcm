@@ -26,6 +26,8 @@ import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.Patient;
 import com.tricon.esdatareplication.entity.ruleenginedb.AppointmentReplica;
+import com.tricon.esdatareplication.entity.ruleenginedb.PlannedServicesReplica;
+import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsDetailReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 
@@ -88,7 +90,28 @@ public class AppointmentTableService extends CommonTableService {
 						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
-					appointmentRepositoryRe.saveAllAndFlush(l);
+					//appointmentRepositoryRe.saveAllAndFlush(l);
+					try {
+						appointmentRepositoryRe.saveAllAndFlush(l);
+						}catch(Exception ex1){
+							appendLoggerToWriter(AppointmentReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+							String tnum="";
+							for(AppointmentReplica p:l) {
+								appendLoggerToWriter(AppointmentReplica.class, bw, "Now in Loop", true);
+								tnum=p.getPatientId()+","+p.getAppointmentId()+";";
+								try {
+								appointmentRepositoryRe.saveAndFlush(p);
+								}catch(Exception ex) {
+									appendLoggerToWriter(PlannedServicesReplica.class, bw, tnum, true);
+									StringWriter errors = new StringWriter();
+									ex.printStackTrace(new PrintWriter(errors));
+									es.setLastIssueDetail(errors.toString());
+									appendLoggerToWriter(AppointmentReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+									appenErrorToWriter(AppointmentReplica.class, bw, ex);
+								}
+							}
+							
+						}
 				}
 				apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
@@ -110,7 +133,27 @@ public class AppointmentTableService extends CommonTableService {
 							l.add(p);
 						}
 					});
-					appointmentRepositoryRe.saveAllAndFlush(l);
+					try {
+						appointmentRepositoryRe.saveAllAndFlush(l);
+						}catch(Exception ex1){
+							appendLoggerToWriter(AppointmentReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+							String tnum="";
+							for(AppointmentReplica p:l) {
+								appendLoggerToWriter(AppointmentReplica.class, bw, "Now in Loop", true);
+								tnum=p.getPatientId()+","+p.getAppointmentId()+";";
+								try {
+								appointmentRepositoryRe.saveAndFlush(p);
+								}catch(Exception ex) {
+									appendLoggerToWriter(PlannedServicesReplica.class, bw, tnum, true);
+									StringWriter errors = new StringWriter();
+									ex.printStackTrace(new PrintWriter(errors));
+									es.setLastIssueDetail(errors.toString());
+									appendLoggerToWriter(AppointmentReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+									appenErrorToWriter(AppointmentReplica.class, bw, ex);
+								}
+							}
+							
+						}
 				}
 				appendLoggerToWriter(AppointmentReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);

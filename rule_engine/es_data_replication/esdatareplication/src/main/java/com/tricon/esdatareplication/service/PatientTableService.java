@@ -23,7 +23,9 @@ import com.tricon.esdatareplication.dao.ruleenginedb.PatientRepositoryRe;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.Patient;
+import com.tricon.esdatareplication.entity.ruleenginedb.EmployerReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.PatientReplica;
+import com.tricon.esdatareplication.entity.ruleenginedb.PlannedServicesReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
 
@@ -94,7 +96,29 @@ public class PatientTableService extends CommonTableService {
 						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
-					patientRepositoryre.saveAllAndFlush(l);
+					//patientRepositoryre.saveAllAndFlush(l);
+					try {
+						patientRepositoryre.saveAllAndFlush(l);
+						}catch(Exception ex1) {
+							appendLoggerToWriter(PatientReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+							String tnum="";
+							for(PatientReplica p:l) {
+								appendLoggerToWriter(PatientReplica.class, bw, "Now in Loop", true);
+								tnum="Patient_id:->"+p.getPatientId()+";";
+								try {
+								patientRepositoryre.saveAndFlush(p);
+								}catch(Exception ex) {
+									appendLoggerToWriter(PatientReplica.class, bw, tnum, true);
+									StringWriter errors = new StringWriter();
+									ex.printStackTrace(new PrintWriter(errors));
+									es.setLastIssueDetail(errors.toString());
+									appendLoggerToWriter(PatientReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+									appenErrorToWriter(PatientReplica.class, bw, ex);
+								}
+							}
+							
+						}
+					
 				}
 				patIdInDB.removeAll(patIdInES);// Patient id that are there in Local DB we need to update.
 				if (patIdInDB.size() > 0) {
@@ -113,7 +137,27 @@ public class PatientTableService extends CommonTableService {
 							l.add(p);
 						}
 					});
-					patientRepositoryre.saveAllAndFlush(l);
+					try {
+						patientRepositoryre.saveAllAndFlush(l);
+						}catch(Exception ex1) {
+							appendLoggerToWriter(PatientReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+							String tnum="";
+							for(PatientReplica p:l) {
+								appendLoggerToWriter(PatientReplica.class, bw, "Now in Loop", true);
+								tnum="Patient_id:->"+p.getPatientId()+";";
+								try {
+								patientRepositoryre.saveAndFlush(p);
+								}catch(Exception ex) {
+									appendLoggerToWriter(PatientReplica.class, bw, tnum, true);
+									StringWriter errors = new StringWriter();
+									ex.printStackTrace(new PrintWriter(errors));
+									es.setLastIssueDetail(errors.toString());
+									appendLoggerToWriter(PatientReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+									appenErrorToWriter(PatientReplica.class, bw, ex);
+								}
+							}
+							
+						}
 				}
 
 				//

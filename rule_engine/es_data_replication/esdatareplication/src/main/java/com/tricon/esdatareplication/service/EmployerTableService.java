@@ -22,7 +22,9 @@ import com.tricon.esdatareplication.dao.ruleenginedb.EmployerRespositoryRe;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Employer;
 import com.tricon.esdatareplication.entity.repdb.Office;
+import com.tricon.esdatareplication.entity.ruleenginedb.AppointmentReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.EmployerReplica;
+import com.tricon.esdatareplication.entity.ruleenginedb.PaymentProviderReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
@@ -84,8 +86,30 @@ public class EmployerTableService extends CommonTableService {
 						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
-					if (l.size() > 0)
-						employerRespositoryRe.saveAll(l);
+					if (l.size() > 0) {
+						//employerRespositoryRe.saveAll(l);
+						try {
+							employerRespositoryRe.saveAll(l);
+							}catch(Exception ex1) {
+								appendLoggerToWriter(EmployerReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="";
+								for(EmployerReplica p:l) {
+									appendLoggerToWriter(EmployerReplica.class, bw, "Now in Loop", true);
+										tnum=p.getEmployerId().intValue()+";";
+									try {
+									employerRespositoryRe.save(p);
+									}catch(Exception ex) {
+										appendLoggerToWriter(EmployerReplica.class, bw, tnum, true);
+										StringWriter errors = new StringWriter();
+										ex.printStackTrace(new PrintWriter(errors));
+										es.setLastIssueDetail(errors.toString());
+										appendLoggerToWriter(EmployerReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+										appenErrorToWriter(EmployerReplica.class, bw, ex);
+									}
+								}
+								
+							}
+					}
 				}
 				apptIdInDB.removeAll(apptIdInES);// EmployerId that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
@@ -106,8 +130,30 @@ public class EmployerTableService extends CommonTableService {
 							l.add(p);
 						}
 					});
-					if (l.size() > 0)
-						employerRespositoryRe.saveAll(l);
+					if (l.size() > 0) {
+						
+						try {
+							employerRespositoryRe.saveAll(l);
+							}catch(Exception ex1) {
+								appendLoggerToWriter(EmployerReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="";
+								for(EmployerReplica p:l) {
+									appendLoggerToWriter(EmployerReplica.class, bw, "Now in Loop", true);
+									tnum=p.getEmployerId().intValue()+";";
+									try {
+									employerRespositoryRe.save(p);
+									}catch(Exception ex) {
+										appendLoggerToWriter(EmployerReplica.class, bw, tnum, true);
+										StringWriter errors = new StringWriter();
+										ex.printStackTrace(new PrintWriter(errors));
+										es.setLastIssueDetail(errors.toString());
+										appendLoggerToWriter(EmployerReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+										appenErrorToWriter(EmployerReplica.class, bw, ex);
+									}
+								}
+								
+							}
+					}
 				}
 				appendLoggerToWriter(TransactionsReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);

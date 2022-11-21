@@ -28,7 +28,9 @@ import com.tricon.esdatareplication.dao.ruleenginedb.PlannedServicesRepositoryRe
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.PlannedServices;
+
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
+import com.tricon.esdatareplication.entity.ruleenginedb.PaymentProviderReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.PlannedServicesReplica;
 import com.tricon.esdatareplication.util.Constants;
 import com.tricon.esdatareplication.util.DataStatus;
@@ -100,7 +102,19 @@ public class PlannedServicesTableService extends CommonTableService {
 				PlannedServicesReplica ds=null;
 				for (PlannedServicesReplica r : repList) {
 					apptIdInES1.add(r.getPatientId() + "-" + r.getLineNumber()+"-"+Constants.SimpleDateformatForEsQueryPL.format(r.getDatePlanned()));
-					ds =plannedServicesRepositoryRe.findByPatientIdAndOfficeIdAndLineNumber(r.getPatientId(),office.getUuid(),r.getLineNumber());
+					try{
+					ds =plannedServicesRepositoryRe.findByPatientIdAndOfficeIdAndLineNumber(r.getPatientId(),office.getUuid(),r.getLineNumber().intValue());
+					}catch(Exception ex) {
+						
+						appendLoggerToWriter(PlannedServicesReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+						String tnum="ERROR in fetch -->Patient_id:"+r.getPatientId()+ ":Line no:"+r.getLineNumber().intValue();
+						appendLoggerToWriter(PlannedServicesReplica.class, bw, tnum, true);
+						StringWriter errors = new StringWriter();
+						ex.printStackTrace(new PrintWriter(errors));
+						es.setLastIssueDetail(errors.toString());
+						appendLoggerToWriter(PlannedServicesReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+						appenErrorToWriter(PlannedServicesReplica.class, bw, ex);
+					}
 					if (ds!=null) del1.add(ds);
 				}
 				if (del1.size()>0)plannedServicesRepositoryRe.deleteAll(del1);
@@ -167,7 +181,28 @@ public class PlannedServicesTableService extends CommonTableService {
 						l.add(q);
 					});
 					if (l.size() > 0)
+						//plannedServicesRepositoryRe.saveAllAndFlush(l);
+					try {
 						plannedServicesRepositoryRe.saveAllAndFlush(l);
+						}catch(Exception ex1) {
+							appendLoggerToWriter(PlannedServicesReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+							String tnum="";
+							for(PlannedServicesReplica p:l) {
+								appendLoggerToWriter(PlannedServicesReplica.class, bw, "Now in Loop", true);
+								tnum=p.getPatientId()+","+p.getApptId()+";";
+								try {
+								plannedServicesRepositoryRe.saveAndFlush(p);
+								}catch(Exception ex) {
+									appendLoggerToWriter(PlannedServicesReplica.class, bw, tnum, true);
+									StringWriter errors = new StringWriter();
+									ex.printStackTrace(new PrintWriter(errors));
+									es.setLastIssueDetail(errors.toString());
+									appendLoggerToWriter(PlannedServicesReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+									appenErrorToWriter(PlannedServicesReplica.class, bw, ex);
+								}
+							}
+							
+						}
 				}
 				
 				/*if (apptIdInDB1.size() > 0) {
@@ -225,8 +260,31 @@ public class PlannedServicesTableService extends CommonTableService {
 							l.add(p);
 						}
 					});
-					if (l.size() > 0)
-						plannedServicesRepositoryRe.saveAllAndFlush(l);
+					if (l.size() > 0) {
+						
+						//plannedServicesRepositoryRe.saveAllAndFlush(l);
+						try {
+							plannedServicesRepositoryRe.saveAllAndFlush(l);
+							}catch(Exception ex1) {
+								appendLoggerToWriter(PlannedServicesReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="";
+								for(PlannedServicesReplica p:l) {
+									appendLoggerToWriter(PlannedServicesReplica.class, bw, "Now in Loop", true);
+									tnum=p.getPatientId()+","+p.getApptId()+";";
+									try {
+									plannedServicesRepositoryRe.saveAndFlush(p);
+									}catch(Exception ex) {
+										appendLoggerToWriter(PlannedServicesReplica.class, bw, tnum, true);
+										StringWriter errors = new StringWriter();
+										ex.printStackTrace(new PrintWriter(errors));
+										es.setLastIssueDetail(errors.toString());
+										appendLoggerToWriter(PlannedServicesReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+										appenErrorToWriter(PlannedServicesReplica.class, bw, ex);
+									}
+								}
+								
+							}
+					}
 				}
 				appendLoggerToWriter(PlannedServicesReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);

@@ -121,7 +121,19 @@ public class TreatmentPlansTableService extends CommonTableService {
 								.filter(p -> id.intValue() == p.getTreatmentPlanId().intValue()).findAny().orElse(null);
 						q.setId(null);
 						q.setOfficeId(office.getUuid());
-						treatmentPlansRepositoryRe.save(q);
+						try {
+							treatmentPlansRepositoryRe.save(q);
+                            }catch(Exception n) {
+                            	
+                            	appendLoggerToWriter(TreatmentPlansReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="patid:"+q.getPatientId()+","+q.getTreatmentPlanId()+","+";";
+								appendLoggerToWriter(TreatmentPlansReplica.class, bw, tnum, true);
+								StringWriter errors = new StringWriter();
+								n.printStackTrace(new PrintWriter(errors));
+								es.setLastIssueDetail(errors.toString());
+								appenErrorToWriter(TreatmentPlansReplica.class, bw, n);
+                            	
+                            }
 					});
 				}
 				apptIdInDB.removeAll(apptIdInES);// TranNum id that are there in Local DB we need to update.
@@ -141,8 +153,19 @@ public class TreatmentPlansTableService extends CommonTableService {
 							}
 							p.setMovedToCloud(DataStatus.StatusEnum.DATA_CLOUD_STATUS.YES);
 							p.setOfficeId(office.getUuid());
-
+                            try {
 							treatmentPlansRepositoryRe.save(p);
+                            }catch(Exception n) {
+                            	
+                            	appendLoggerToWriter(TreatmentPlansReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="patid:"+p.getPatientId()+","+p.getTreatmentPlanId()+","+";";
+								appendLoggerToWriter(TreatmentPlansReplica.class, bw, tnum, true);
+								StringWriter errors = new StringWriter();
+								n.printStackTrace(new PrintWriter(errors));
+								es.setLastIssueDetail(errors.toString());
+								appenErrorToWriter(TreatmentPlansReplica.class, bw, n);
+                            	
+                            }
 						}
 					});
 

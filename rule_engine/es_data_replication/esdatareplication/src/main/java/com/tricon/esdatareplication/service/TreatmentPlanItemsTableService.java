@@ -25,6 +25,7 @@ import com.tricon.esdatareplication.dao.repdb.TreatmentPlanItemsRepository;
 import com.tricon.esdatareplication.dao.ruleenginedb.TreatmentPlanItemsRepositoryRe;
 import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
+import com.tricon.esdatareplication.entity.repdb.TransactionsHeader;
 import com.tricon.esdatareplication.entity.repdb.TreatmentPlanItems;
 import com.tricon.esdatareplication.entity.ruleenginedb.TreatmentPlanItemsReplica;
 import com.tricon.esdatareplication.util.Constants;
@@ -154,8 +155,29 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
-					if (l.size() > 0)
-						treatmentPlanItemsRepositoryRe.saveAllAndFlush(l);
+					if (l.size() > 0) {
+						try {
+							treatmentPlanItemsRepositoryRe.saveAllAndFlush(l);
+							}catch(Exception ex) {
+								String tnum="";
+								for(TreatmentPlanItemsReplica p:l) {
+									appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw, "Now in Loop", true);
+									try {
+									treatmentPlanItemsRepositoryRe.saveAndFlush(p);
+									}catch(Exception n) {
+										appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+										appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw, p.getApprovedByInsurance(), true);
+										tnum=p.getPatientId()+","+p.getTreatmentPlanId()+","+p.getLineNumber()+","+";";
+										appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw, tnum, true);
+										StringWriter errors = new StringWriter();
+										n.printStackTrace(new PrintWriter(errors));
+										es.setLastIssueDetail(errors.toString());
+										appenErrorToWriter(TreatmentPlanItemsReplica.class, bw, n);
+									}
+								}
+							}
+					}
+					
 				}
 				apptIdInDB1.removeAll(apptIdInES1);// id that are there in Local DB we need to update.
 				if (apptIdInDB1.size() > 0) {
@@ -182,8 +204,29 @@ public class TreatmentPlanItemsTableService extends CommonTableService {
 							l.add(p);
 						}
 					});
-					if (l.size() > 0)
+					if (l.size() > 0) {
+						
+					try {
 						treatmentPlanItemsRepositoryRe.saveAllAndFlush(l);
+						}catch(Exception ex) {
+							appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw, "Now in Loop", true);
+							String tnum="";
+							for(TreatmentPlanItemsReplica p:l) {
+								try {
+								treatmentPlanItemsRepositoryRe.saveAndFlush(p);
+								}catch(Exception n) {
+									appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+									appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw, p.getApprovedByInsurance(), true);
+									tnum=p.getPatientId()+","+p.getTreatmentPlanId()+","+p.getLineNumber()+","+";";
+									appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw, tnum, true);
+									StringWriter errors = new StringWriter();
+									n.printStackTrace(new PrintWriter(errors));
+									es.setLastIssueDetail(errors.toString());
+									appenErrorToWriter(TreatmentPlanItemsReplica.class, bw, n);
+								}
+							}
+						}
+				   }
 				}
 				appendLoggerToWriter(TreatmentPlanItemsReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);

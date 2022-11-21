@@ -27,6 +27,7 @@ import com.tricon.esdatareplication.entity.repdb.ESTable;
 import com.tricon.esdatareplication.entity.repdb.Office;
 import com.tricon.esdatareplication.entity.repdb.Transactions;
 import com.tricon.esdatareplication.entity.repdb.TransactionsDetail;
+import com.tricon.esdatareplication.entity.ruleenginedb.ProviderReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsDetailReplica;
 import com.tricon.esdatareplication.entity.ruleenginedb.TransactionsReplica;
 import com.tricon.esdatareplication.util.Constants;
@@ -100,8 +101,30 @@ public class TransactionsDetailTableService extends CommonTableService {
 						q.setOfficeId(office.getUuid());
 						l.add(q);
 					});
-					if (l.size() > 0)
-						transactionsDetailRepositoryRe.saveAllAndFlush(l);
+					if (l.size() > 0) {
+						
+						try {
+							transactionsDetailRepositoryRe.saveAllAndFlush(l);
+							}catch(Exception ex1) {
+								appendLoggerToWriter(TransactionsDetailReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="";
+								for(TransactionsDetailReplica p:l) {
+									appendLoggerToWriter(TransactionsDetailReplica.class, bw, "Now in Loop", true);
+									tnum=p.getPatientId()+","+p.getDetailId().intValue()+";";
+								    try {
+									transactionsDetailRepositoryRe.saveAndFlush(p);
+								    }catch(Exception ex) {
+								    	appendLoggerToWriter(TransactionsDetailReplica.class, bw, tnum, true);
+										StringWriter errors = new StringWriter();
+										ex.printStackTrace(new PrintWriter(errors));
+										es.setLastIssueDetail(errors.toString());
+										appendLoggerToWriter(TransactionsDetailReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+										appenErrorToWriter(TransactionsDetailReplica.class, bw, ex);
+								    }
+								}
+								
+							}
+					}
 				}
 				apptIdInDB.removeAll(apptIdInES);// Detail id that are there in Local DB we need to update.
 				if (apptIdInDB.size() > 0) {
@@ -122,8 +145,30 @@ public class TransactionsDetailTableService extends CommonTableService {
 							l.add(p);
 						}
 					});
-					if (l.size() > 0)
-						transactionsDetailRepositoryRe.saveAllAndFlush(l);
+					if (l.size() > 0) {
+						
+						try {
+							transactionsDetailRepositoryRe.saveAllAndFlush(l);
+							}catch(Exception ex1) {
+								appendLoggerToWriter(TransactionsDetailReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+								String tnum="";
+								for(TransactionsDetailReplica p:l) {
+									appendLoggerToWriter(TransactionsDetailReplica.class, bw, "Now in Loop", true);
+									tnum=p.getPatientId()+","+p.getDetailId().intValue()+";";
+								    try {
+									transactionsDetailRepositoryRe.saveAndFlush(p);
+								    }catch(Exception ex) {
+								    	appendLoggerToWriter(TransactionsDetailReplica.class, bw, tnum, true);
+										StringWriter errors = new StringWriter();
+										ex.printStackTrace(new PrintWriter(errors));
+										es.setLastIssueDetail(errors.toString());
+										appendLoggerToWriter(TransactionsDetailReplica.class, bw, Constants.ERROR_IN_PUSHING_TO_CLOUD, true);
+										appenErrorToWriter(TransactionsDetailReplica.class, bw, ex);
+								    }
+								}
+								
+							}
+					}
 				}
 				appendLoggerToWriter(TransactionsReplica.class, bw,
 						Constants.RECORDS_UPDATED_IN_TABLE_CLOUD + ":" + repList.size(), true);
