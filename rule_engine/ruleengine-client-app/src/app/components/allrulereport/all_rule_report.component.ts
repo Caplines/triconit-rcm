@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {RuleReportModel} from "../../model/model.rulereport";
+import {AllRuleReportModel} from "../../model/model.allrulereport";
 import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute} from "@angular/router";
 import { DatepickerOptions } from 'ng2-datepicker';
@@ -7,21 +7,21 @@ import { DatePipe } from '@angular/common';
 
 
 @Component({
-  selector: 'app-rule-report',
-  templateUrl: './rule_report.component.html',
-  styleUrls: ['./rule_report.css'],
+  selector: 'app-all-rule-report',
+  templateUrl: './all_rule_report.component.html',
+  styleUrls: ['./all_rule_report.css'],
   encapsulation: ViewEncapsulation.None,
   providers: [DatePipe]
 })
-export class RuleReportComponent implements OnInit {
+export class AllRuleReportComponent implements OnInit {
 	
 offices:any;
 showReportData:any=false;
 showLoadingPA:any=false;
 rname:any="";
-ur: string = "/rulereportdata";
+ur: string = "/rulereportdataAllMess";
 reportData:any;
-reportModel: RuleReportModel = new RuleReportModel();
+reportModel: AllRuleReportModel = new AllRuleReportModel();
 
 dateOptions1: DatepickerOptions = {
 		displayFormat: 'MM/DD/YYYY',
@@ -39,7 +39,13 @@ dateOptions1: DatepickerOptions = {
 		
 	};
 
-
+    rulesArray:Array<Object> = [
+        {id: 21, name: "Frequency Limitation"},
+        {id: 8, name: "Age Limitation"},
+        {id: 39, name: "Age Limitation Prophylaxis"},
+        {id: 59, name: "BWX Age Limitation"},
+        {id: 60, name: "Exams Age Limitation"}
+    ];
 
 constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute
 		, private datePipe: DatePipe) {
@@ -53,15 +59,20 @@ constructor(public applicationService: ApplicationService, public router: Router
 		this.dateOptions2.barTitleIfEmpty = this.datePipe.transform(new Date(), 'MMMM y');
   }
 	
+   	
+	
 	runReport(){
 		 let ths=this;
 		 ths.showReportData=false;
 		 ths.showLoadingPA=false;
-		 if (ths.reportModel.startDate=='' || ths.reportModel.endDate=='' || ths.reportModel.officeId==''){
+		if (ths.reportModel.startDate=='' || ths.reportModel.endDate=='' || ths.reportModel.officeId=='' ){
 			 return;
 		 }
 		 
-	    ths.rname="MVP Rule Result";	
+		 let al: Array<any>= ths.rulesArray
+         .filter((al: any) => al.id === ths.reportModel.ruleId);
+		 
+	    ths.rname=al[0].name;
 		//From service
 		 ths.showLoadingPA=true;
 		 ths.reportModel.startDate = ths.datePipe.transform(ths.reportModel.startDate, 'MM/dd/yyyy');

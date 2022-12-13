@@ -482,7 +482,8 @@
 						<td>Member ID: <span class="newff">{{reportDataInd.basicInfo16}}</span></td>
 						<td>Appointment: <span class="newff">{{reportDataInd.basicInfo17}}</span></td>
 						<td>Payer ID: <span class="newff">{{reportDataInd.basicInfo18}}</span></td>
-						<td>Provider Last Name: <span class="newff">{{reportDataInd.basicInfo19}}</span></td>
+						<td *ngIf="(reportDataInd.basicInfo19 | lowercase) == 'change provider'" class="yellow">Provider Last Name: <span class="newff">{{reportDataInd.basicInfo19}}</span></td>
+						<td *ngIf="(reportDataInd.basicInfo19 | lowercase) != 'change provider'">Provider Last Name: <span class="newff">{{reportDataInd.basicInfo19}}</span></td>
 					</tr>
 					<tr>
 						<td colspan="4">Insurance Address:
@@ -884,7 +885,7 @@
 						<td>Interim Partial (D5820): <span class="newff">{{reportDataInd.dentures4}}</span></td>
 					</tr>
 					<tr>
-						<td>Bone Graft (D7953) Covered w. Ext: <span class="newff">{{reportDataInd.dentures5}}</span>
+						<td>Bone Graft (D7953) Covered w.Implants: <span class="newff">{{reportDataInd.dentures5}}</span>
 						</td>
 						<td>Frequency: <span class="newff">{{reportDataInd.dentures6}}</span></td>
 					</tr>

@@ -6,7 +6,9 @@
 	color:#0000ff;
 }
 
-
+.yellow{
+	background:#efff00;
+}
 table#data-scroll-t th, table#data-scroll-tre th{
   position: -webkit-sticky;
   position: sticky;

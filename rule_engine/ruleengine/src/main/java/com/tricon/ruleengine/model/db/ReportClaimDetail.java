@@ -54,7 +54,8 @@ public class ReportClaimDetail extends BaseAudit implements java.io.Serializable
 	@Column(name = "iv_date", length = 45)
 	private String ivDate;
 
-
+	@Column(name = "ignored_service_data", columnDefinition = "text")
+	private String ignoredServiceData;
 
 	public ReportClaimDetail() {
 	}
@@ -148,6 +149,14 @@ public class ReportClaimDetail extends BaseAudit implements java.io.Serializable
 
 	public void setIvDate(String ivDate) {
 		this.ivDate = ivDate;
+	}
+
+	public String getIgnoredServiceData() {
+		return ignoredServiceData;
+	}
+
+	public void setIgnoredServiceData(String ignoredServiceData) {
+		this.ignoredServiceData = ignoredServiceData;
 	}
 
 	

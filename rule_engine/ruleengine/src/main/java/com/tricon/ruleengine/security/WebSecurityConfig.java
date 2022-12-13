@@ -173,6 +173,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/rulereport",
                 "/userinput",
                 "/extIVF",
+                "/fetch-claims",
+                "/allrulereport",
                 "/",
                 "/*.html",
                 "/index.jsp",

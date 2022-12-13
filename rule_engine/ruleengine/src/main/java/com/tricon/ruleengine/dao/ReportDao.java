@@ -16,5 +16,7 @@ public interface ReportDao {
 	
 	public List<RuleMessageDetailDto> getRuleReports(RuleReportDto dto);
 	
+	public List<RuleMessageDetailDto> getRuleReportsAll(RuleReportDto dto);
+	
 	public List<ReportResponseDto> getReportsForSealant(ReportDto dto);
 }

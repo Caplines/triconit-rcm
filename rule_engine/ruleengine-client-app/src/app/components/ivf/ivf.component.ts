@@ -1,10 +1,11 @@
-import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation, Input ,Output,EventEmitter} from '@angular/core';
 import {IVFModel} from "../../model/model.ivf";
 import {UserInputModel} from "../../model/model.userinput";
 import {Office} from "../../model/model.office";
 import {ApplicationService} from "../../services/application.service";
 import {Router,ActivatedRoute } from "@angular/router";
-import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext"; 
+import {ClaimTreatmentTextModel} from "../../model/model.claimtreatmenttext";
+import {IgnoreDataModel} from "../../model/model.ignoredata";
 import Utils from '../../util/utils';
 
 @Component({
@@ -16,6 +17,7 @@ import Utils from '../../util/utils';
 export class IVFComponent implements OnInit {
   @Input() treatmentPlanId:any;
   @Input() officeId:any;
+  @Input() ignoreDataArray: Array<IgnoreDataModel>;
   ivfm: IVFModel = new IVFModel();
   uim: UserInputModel = new UserInputModel();
   errorMessage: string;
@@ -32,7 +34,7 @@ export class IVFComponent implements OnInit {
   hd1:string="";
   hd2:string="";
   //hd3:string="";
-  
+  @Output() emitToParent = new EventEmitter<any>();
   
   
   constructor(public applicationService: ApplicationService, public router: Router,private route: ActivatedRoute) {
@@ -53,19 +55,20 @@ export class IVFComponent implements OnInit {
 		this.hd1=ClaimTreatmentTextModel.claim;
 		this.hd2=ClaimTreatmentTextModel.claimId;
 	}
+	
   }
 
   ngOnInit() {
 	this.ivfm.treatmentPlanId = this.treatmentPlanId;
 	//console.log(this.officeId);
 	if(this.officeId)this.ivfm.officeId = this.officeId;
-	
+	//console.log(this.ignoreDataArray);	
   }
 
   validateIVF() {
 	if(this.ivfm.officeId) {
 		
-		
+		this.emitToParent.emit({action: "vrun", value: true});
 		this.showLoading = true;
 		if (this.ivfm.inputModeD){
 		    this.uim.treatmentPlanId =this.ivfm.treatmentPlanId ;
@@ -74,6 +77,7 @@ export class IVFComponent implements OnInit {
 		    this.uim.inputMode=this.ivfm.inputModeD;
 			//this.showLoading = true;
 		    this.uim.status=this.ivfm.status;
+		    this.uim.ignoreData=this.ignoreDataArray;
 		    //this.applicationService.validateIVF(this.ivfm, this.ivfValidateName, (result) => {
 		    this.applicationService.validateIVF(this.uim, 'validateTreatmentPlan', (result) => {		
 				if (result.status=='OK'){

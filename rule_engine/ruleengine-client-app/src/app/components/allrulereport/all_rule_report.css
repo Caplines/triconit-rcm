@@ -1,0 +1,120 @@
+.form-control.inner-inp-2 {height: 38px;
+    margin: 0;
+    padding: 0 10px;
+    vertical-align: middle;
+    background: #ffffff;
+    border: 1px solid #dadada;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 38px;
+    color: #888;
+    border-radius: 4px;
+    box-shadow: none;
+    transition: all .3s;
+}
+    
+.form-horizontal .control-label {
+	font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+}
+
+
+ #data-scroll {
+  display: inline-block;
+  height: 210px;
+  overflow: auto;
+  width:100%;
+}
+
+table#data-scroll-t th, table#data-scroll-tre th{
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  line-height: 32px;
+  text-align: center;
+  background: #bcbbfb;
+  z-index:1;
+  font-weight: bold;
+}
+
+#data-scroll-t .data-scroll-thd ,#data-scroll-tre, .data-scroll-thdtre{
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+ font-weight: 300;
+}
+
+.inblo{
+	display:inline-block;
+	font-family: 'Roboto', sans-serif;
+  font-size: 21px;
+ font-weight: 300;
+}
+.br1px{
+border:1px solid;
+}
+table#data-scroll-t,table#data-scroll-tre {
+  border-collapse: collapse;
+  width:100%
+}
+
+th#table#data-scroll-thd ,th#table#data-scroll-thdtre {
+  background-color: #1976D2;
+  color: #fff;
+}
+
+th#table#data-scroll-thd,
+td#table#data-scroll-thdtre {
+  padding: 1.1em 1.5em;
+}
+
+table#data-scroll-t tr,table#data-scroll-tre tr {
+  color: #212121;
+}
+
+table#data-scroll-t tr:nth-child(odd) {
+  background-color: #BBDEFB;
+}
+
+.heightdef{
+	height:30px!important;
+	border:none!important;
+	width:100%!important;
+}   
+
+.final-detail-report {
+	    display: flex;
+    align-items: center;
+    justify-content: space-between;
+        width: 60%;
+}
+.form-top {
+	display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.popup-heading .ivf-title {
+    margin-bottom: 0px;
+}
+.form-top-left {
+    float: left;
+    padding-top: 5px;
+}
+.final-detail-report-table {
+	padding: 0px 0px 5px 0px;
+}
+.final-detail-report-table table th.data-scroll-thdtre {
+    white-space: nowrap;
+    padding: 7px 15px;
+        text-align: left!important;
+}
+.final-detail-report-table table td {padding: 7px 15px;
+    line-height: 20px;}
+    .final-detail-report-table #data-scroll {
+    height:auto;
+    max-height: 650px;
+    overflow-y: auto;
+  }
+   .final-detail-report-table #data-scroll .col-sm-12 {
+   padding:0px}

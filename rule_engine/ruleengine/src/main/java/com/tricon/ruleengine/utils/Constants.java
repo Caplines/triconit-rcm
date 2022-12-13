@@ -125,6 +125,10 @@ public class Constants {
 	public static final String RULE_ID_82="Provider certification status";
 	public static final String RULE_ID_83="Policy Holder Match";
 	
+	public static final String RULE_ID_84="Provider Name";
+	public static final String RULE_ID_85="Perio Maintenance with Prophy and Fluoride";
+	public static final String RULE_ID_86="Oral hygiene with Prophy and Fluoride";
+	
 
 	//public static final String RULE_ID_79="Provider Name";	
 	
@@ -152,6 +156,8 @@ public class Constants {
 	
 	
    public static final String FAIL = "FAIL";
+   public static final int FAIL_MESSAGE_TYPE = 1;
+   
    public static final String PASS = "PASS";
    public static final String DEBUG = "DEBUG";
    public static final String EXTI_ENGINE = "EXIT";

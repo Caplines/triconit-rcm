@@ -64,12 +64,91 @@
 					<tr>
 						<td [innerHTML]="data.tDescription"></td>
 						<td [innerHTML]="data.dateLastUpdated"></td>
-						<td><a class="ivf-data-anchor" href="javascript:void(0)" [innerHTML]="data.treatmentPlanId" (click)="getTreatmentPlanData(data.treatmentPlanId, i)"></a>
+						<td><a class="ivf-data-anchor" href="javascript:void(0)" [innerHTML]="data.treatmentPlanId" (click)="getTPorClaimData(data.treatmentPlanId, i)"></a>
 							<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+							<div *ngIf="loadingSubdata && selectedSubIndex == i" class="loader"></div>
 						</td>
 					<tr>
-					<tr *ngIf="selectedIndex == i" class="ivf-form-validation">
-						<td class="ivf-popup-padding" colspan="2"><app-ivf [treatmentPlanId]="treatmentPlanId" [officeId]="officeId"></app-ivf></td>
+					<tr *ngIf="selectedIndex == i && !mainServiceSelection" class="ivf-form-validation">
+					<td colspan="3">
+					  <table class="tx-table">
+					    <tr>
+					     <th>Service</th>
+					     <th>Date Planned</th>
+					     <th>Description</th>
+					     <th>Tooth</th>
+					     <th>Surface</th>
+					     <th>Status</th>
+					     <th>Fee</th>
+					     <th>Fee Ins</th>
+					     <th><input type="checkbox" (change)="selectDeselectData(data1,data.treatmentPlanId, $event)" [checked]="true" id="sd{{data.treatmentPlanId}}"/>Select TX Performed on Pat.</th>
+					     </tr>
+					     <tr *ngFor="let data1 of tpclDetail[data.treatmentPlanId]; let ii=index">
+					      <td>{{data1.serviceCode}}</td>
+					      <td>{{data1.treatmentPlanDetails.dateLastUpdated}}</td>
+					      <td>{{data1.treatmentPlanDetails.description}}</td>
+					      <td>{{data1.tooth}}</td>
+					      <td>{{data1.surface}}</td>
+					      <td>{{data1.status}}</td>
+					      <td>{{data1.fee}}</td>
+					      <td>{{data1.estInsurance}}</td>
+					      <td><input type="checkbox" (change)="perPairIngoreData(data1,data.treatmentPlanId,ii, $event)" [checked]="data1.selected"/></td>
+					     </tr>
+					   </table>
+					    </td> 
+					     </tr>
+					     
+					     <tr><td colspan="9" *ngIf="checkFinalArrayLength() && selectedIndex == i && vd" class="tx-action">
+					     Are you ready to Run the Run Engine?
+					     <button class="btn" (click)=makeMainServiceSelection(true)>YES</button>
+					     <button class="btn btn-warning" (click)=makeMainServiceSelection(false)>NO</button>
+					     </td>
+					     </tr>
+					     <tr *ngIf="mainServiceSelection && checkFinalArrayLength() && selectedIndex == i">
+					     <td colspan="9" class="tx-message">Enter details for validating the services selected above</td>
+					     </tr>
+					     <tr>
+					     <td colspan="9" (click)="showNextStep()" *ngIf="mainServiceSelection && checkFinalArrayLength() && selectedIndex == i"> 
+					     <table class="tx-table">
+					      <tr>
+					     <th>Service</th>
+					     <th>Date Planned</th>
+					     <th>Description</th>
+					     <th>Tooth</th>
+					     <th>Surface</th>
+					     <th>Status</th>
+					     <th>Fee</th>
+					     <th>Fee Ins</th>
+					     </tr>
+					      <tr *ngFor="let data1 of tpclDetail[data.treatmentPlanId]; let ii=index">
+					       <ng-container *ngIf="data1.selected">
+					       
+					          <td>{{data1.serviceCode}}</td>
+						      <td>{{data1.treatmentPlanDetails.dateLastUpdated}}</td>
+						      <td>{{data1.treatmentPlanDetails.description}}</td>
+						      <td>{{data1.tooth}}</td>
+						      <td>{{data1.surface}}</td>
+						      <td>{{data1.status}}</td>
+						      <td>{{data1.fee}}</td>
+						      <td>{{data1.estInsurance}}</td>
+						     
+					      </ng-container>
+					      <ng-container *ngIf="!data1.selected">
+					          <td class="tr-strike"><s>{{data1.serviceCode}}</s></td>
+						      <td class="tr-strike"><s>{{data1.treatmentPlanDetails.dateLastUpdated}}</s></td>
+						      <td class="tr-strike"><s>{{data1.treatmentPlanDetails.description}}</s></td>
+						      <td class="tr-strike"><s>{{data1.tooth}}</s></td>
+						      <td class="tr-strike"><s>{{data1.surface}}</s></td>
+						      <td class="tr-strike"><s>{{data1.status}}</s></td>
+						      <td class="tr-strike"><s>{{data1.fee}}</s></td>
+						      <td class="tr-strike"><s>{{data1.estInsurance}}</s></td>
+						  </ng-container>
+					       </tr>
+					     </table>
+					   </td>
+					
+					<tr *ngIf="selectedIndex == i && showStep3 && checkFinalArrayLength()" class="ivf-form-validation">
+						<td class="ivf-popup-padding" colspan="2"><app-ivf [treatmentPlanId]="treatmentPlanId" [officeId]="officeId" [ignoreDataArray]="ignoreDataArray" (emitToParent)="receiveChildrenEmitter($event)"></app-ivf></td>
 					</tr>
 				</tbody>						
 			</table>

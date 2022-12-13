@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TreatmentPlanValidationDto {
@@ -11,6 +12,8 @@ public class TreatmentPlanValidationDto {
 	private boolean inputMode;
 	private String status;
 	private String insType;
+	private List<IgnoreDataArrayDto> ignoreDataArray= new ArrayList<>();
+	
 	//private String ivformTypeId;
 	
 	//private List<String> statses;
@@ -66,6 +69,12 @@ public class TreatmentPlanValidationDto {
 	//public void setIvformTypeId(String ivformTypeId) {
 	//	this.ivformTypeId = ivformTypeId;
 	//}
+	public List<IgnoreDataArrayDto> getIgnoreDataArray() {
+		return ignoreDataArray;
+	}
+	public void setIgnoreDataArray(List<IgnoreDataArrayDto> ignoreDataArray) {
+		this.ignoreDataArray = ignoreDataArray;
+	}
 	
 	
 

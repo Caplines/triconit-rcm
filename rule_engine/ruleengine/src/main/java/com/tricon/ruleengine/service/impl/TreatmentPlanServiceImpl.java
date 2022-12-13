@@ -21,6 +21,7 @@ import java.util.TreeSet;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.google.common.collect.Collections2;
 import com.tricon.ruleengine.api.enums.HighLevelReportTypeEnum;
@@ -43,10 +45,12 @@ import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.ExceptionDataDto;
+import com.tricon.ruleengine.dto.IgnoreDataArrayDto;
 import com.tricon.ruleengine.dto.MicroSoftGraphToken;
 import com.tricon.ruleengine.dto.PatientTreamentDto;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
+import com.tricon.ruleengine.dto.TreatmentClaimDto;
 import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
@@ -233,6 +237,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		BufferedWriter bw = null;
 		Object[] o = null;
 		String tempFname = "";
+		String ignoredValues="";
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
@@ -465,9 +470,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}
 						if (type==Constants.userType_TR) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
 						if (type==Constants.userType_CL) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getClaimData(trids, esDB,bw);
-						
 						//Phase 3 add new Query
+						//For UI pass the Service Codes that Rule Engine will not run on. 
+						Object[] oArray=reduceTheTPClaimData(tMap, dtod.getIgnoreDataArray(), type,bw);
+						ignoredValues=(String)oArray[1];
+						tMap= (Map<String, List<Object>>) oArray[0];
 						tMapReduced=tMap;
+						
 						tMap=createCommonDataObject(tMap,authentication,false,null);//create Common Object
 						tMapReduced=createCommonDataObject(tMapReduced,authentication,true,dtod.getStatus());//create Common Object
 						
@@ -825,7 +834,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					
 					if (ivfMap != null && ivfMap.get(ivx) != null && tListReduced != null)
 						saveReportsList(authentication, rules, tp, (IVFTableSheet) (ivfMap.get(ivx).get(0)), list, off,type,dtod.getInsType(),
-								iVformTypeDao.getIVFormTypeById(((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()));
+								iVformTypeDao.getIVFormTypeById(((IVFTableSheet) (ivfMap.get(ivx).get(0))).getIvFormTypeId()),ignoredValues);
 					// else
 					// saveReportsList(authentication, rules, trx, null, list,off);
 
@@ -2118,7 +2127,16 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		// RULE_ID_83 "//Policy Holder Match" 
 		
 		rule = getRulesFromList(rules, Constants.RULE_ID_83);
-		dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatients.get(patKey),patKey,espatientsHolderPr,espatientsHolderSec, messageSource, rule, bw);
+		
+		if (espatients == null)
+				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.patient.notfound",
+								new Object[] { new Object[] {
+										"Patient ID-" + ((IVFTableSheet) (ivfMap.get(ivx).get(0)))
+												.getPatientId() } },
+								locale),
+						Constants.FAIL,"","",""));
+		else dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatients.get(patKey),patKey,espatientsHolderPr,espatientsHolderSec, messageSource, rule, bw);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
@@ -2132,6 +2150,55 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Constants.rule_log_debug, bw);
 		// END "//Policy Holder Match"
 		
+		
+		// RULE_ID_84 "//Provider Name" 
+        rule = getRulesFromList(rules, Constants.RULE_ID_84);
+        dtoRL = rb.Rule84(tList,ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_84,
+				Constants.rule_log_debug, bw);
+		
+		// END "//Provider Name"
+		
+		// RULE_ID_85 "//Perio Maintenance with Prophy and Fluoride" 
+		rule = getRulesFromList(rules, Constants.RULE_ID_85);
+		dtoRL = rb.Rule85(tList, messageSource, rule, bw,type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_85,
+				Constants.rule_log_debug, bw);
+		// END "//Perio Maintenance with Prophy and Fluoride"
+		
+		// RULE_ID_86 "//Oral hygiene with Prophy and Fluoride"
+		rule = getRulesFromList(rules, Constants.RULE_ID_86);
+		dtoRL = rb.Rule86(tList, messageSource, rule, bw,type);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		}
+		
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_86,
+				Constants.rule_log_debug, bw);
+		// END "//Oral hygiene with Prophy and Fluoride"
 		
 
 		// RULE_ID_79 "Insurance and Address"
@@ -2761,7 +2828,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 * rd.setReports(reports); tvd.saveReportDestail(rd); // }
 	 */
 	public void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
-			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType,IVFormType iVFormType) {
+			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType,IVFormType iVFormType,String ignoredValues) {
 		//String[] p=env.getActiveProfiles();
 		//int xx=0;
 		//if (xx==0) return ;
@@ -2835,6 +2902,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rd.setCreatedBy(user);
 				rd.setReports(reports);
 				rd.setIvDate("");
+				rd.setIgnoredServiceData(ignoredValues);
 				try {
 				  if (ivfSheet.getGeneralDateIVwasDone()!=null && !ivfSheet.getGeneralDateIVwasDone().equals("")){
 					rd.setIvDate(Constants.SIMPLE_DATE_FORMAT.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivfSheet.getGeneralDateIVwasDone())));
@@ -2889,6 +2957,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rd.setErrorMessage(d.getMessage());
 						rd.setRules(getRulesFromListByid(rules, d.getRuleId()));
 						rd.setIvDate("");
+						rd.setIgnoredServiceData(ignoredValues);
 						try {
 						if (ivfSheet.getGeneralDateIVwasDone()!=null && !ivfSheet.getGeneralDateIVwasDone().equals("")){
 							rd.setIvDate(Constants.SIMPLE_DATE_FORMAT.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivfSheet.getGeneralDateIVwasDone())));
@@ -4051,5 +4120,91 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		}
 		return tMap;
 	}
+	
+  
+  public Object getTreatmentClaimData(TreatmentClaimDto dto) {
+	  dbAccesService.setUpSSLCertificates();
+	  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	  Object principal = authentication.getPrincipal();
+	  Map<String, List<Object>> tMap=null;
+	  String trids[] = dto.getDataId().split(",");
+	  final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+	  JwtUser user = (JwtUser) userDetails;
+	  Office off = od.getOfficeByUuid(dto.getOfficeId(),user.getCompany().getUuid());
+	  EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+	  if (dto.getType()==Constants.userType_TR) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,null);
+	  if (dto.getType()==Constants.userType_CL) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getClaimData(trids, esDB,null);
+      return tMap;
+   }
+  
+    private Object[] reduceTheTPClaimData(Map<String, List<Object>> tMap ,List<IgnoreDataArrayDto> ignoreDataArray,int type,BufferedWriter bw) {
+    	List<String> stb= new  ArrayList<>();
+    	Object[] objA= new Object[2]; 
+    	if (tMap!=null && ignoreDataArray!=null && ignoreDataArray.size()>0) {
+    		Map<String, List<Object>> tempMap =new HashMap<>();
+    		for (Map.Entry<String,List<Object>> entry : tMap.entrySet())  {
+	            System.out.println("Key = " + entry.getKey() + 
+	                             ", Value = " + entry.getValue());
+	            List<Object> l= (List<Object>)entry.getValue();
+	            //List<Object> x= new ArrayList<>();
+	            for(Object oL:l) {
+	            	if (type == Constants.userType_TR) {
+						TreatmentPlan a=(TreatmentPlan)oL;
+						TreatmentPlanDetails b=a.getTreatmentPlanDetails();
+						if (!compairToothSurfaceDescriptionCode(ignoreDataArray, a.getServiceCode(),
+							b.getDescription(), a.getTooth(), a.getSurface())) {
+							tempMap.put(entry.getKey(),entry.getValue());
+						}else {
+							RuleEngineLogger.generateLogs(clazz, "Ignoring  Service Code-"+a.getServiceCode(),
+									Constants.rule_log_debug, bw);
+							stb.add(a.getServiceCode());
+						}
+	                 }
+	            	if (type == Constants.userType_CL) {
+						ClaimData a=(ClaimData)oL;
+						ClaimDataDetails b=a.getDetails();
+						if (!compairToothSurfaceDescriptionCode(ignoreDataArray, a.getServiceCode(),
+								b.getDescription(), a.getTooth(), a.getSurface())) {
+								tempMap.put(entry.getKey(),entry.getValue());
+						}else {
+							RuleEngineLogger.generateLogs(clazz, "Ignoring  Service Code-"+a.getServiceCode(),
+									Constants.rule_log_debug, bw);
+							stb.add(a.getServiceCode());
+						}
+	            	}
+	            }
+    	    }
+    		tMap=tempMap;
+    		objA[0]=tMap;
+    	}else {
+    		objA[0]=tMap;
+    	}
+    	objA[1]=StringUtils.join(stb, ',');
+    	
+    	return objA;
+    	
+	}
+    
+    private boolean compairToothSurfaceDescriptionCode(List<IgnoreDataArrayDto> ignoreDataArray,
+    		String serviceCode,String description,String tooth,String surface) {
+    	 boolean ignore=false;
+    	 for(IgnoreDataArrayDto dto:ignoreDataArray) {
+    		    if (dto.isSelected()) continue;
+    		    if (dto.getServiceCode()==null)dto.setServiceCode("");
+    		    if (dto.getDescription()==null)dto.setDescription("");
+    		    if (dto.getTooth()==null)dto.setTooth("");
+    		    if (dto.getSurface()==null)dto.setSurface("");
+    		    if (serviceCode==null)serviceCode="";
+    		    if (description==null)description="";
+    		    if (tooth==null)tooth="";
+    		    if (surface==null)surface="";
+    		    if (dto.getServiceCode().equals(serviceCode) && dto.getDescription().equals(description)
+    		    		 && dto.getTooth().equals(tooth)  && dto.getSurface().equals(surface)) {
+    		    	ignore=true;
+    		    }
+    		  
+    	 }
+    	 return ignore;
+    }
 
 }

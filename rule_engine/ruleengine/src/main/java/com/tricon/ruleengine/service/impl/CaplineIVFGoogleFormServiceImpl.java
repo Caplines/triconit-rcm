@@ -182,9 +182,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				  }
 					if(fd) {
 						patientDao.deletePatientHistoryByIds(l.stream().toArray(String[]::new));	
-						patd.setPatientHistory(new HashSet<>());
+						
 					}
-					
+					patd.setPatientHistory(new HashSet<>());
 			    }
 				
 				}//End

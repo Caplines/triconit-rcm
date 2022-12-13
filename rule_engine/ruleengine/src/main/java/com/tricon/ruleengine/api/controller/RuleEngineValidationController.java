@@ -31,6 +31,7 @@ import com.tricon.ruleengine.dto.PatientTreamentDto;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
 import com.tricon.ruleengine.dto.QuestionHeaderDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
+import com.tricon.ruleengine.dto.TreatmentClaimDto;
 import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
@@ -204,5 +205,14 @@ public class RuleEngineValidationController {
 		}
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", list));
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/getTreatmentClaimData", method = RequestMethod.POST)
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	public ResponseEntity<?> getTreatmentClaimData(@RequestBody TreatmentClaimDto dto) {
+		
+		Object map = tPService.getTreatmentClaimData(dto);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Treatment/Claim Data Fetched Successfully", map));
 	}
 }

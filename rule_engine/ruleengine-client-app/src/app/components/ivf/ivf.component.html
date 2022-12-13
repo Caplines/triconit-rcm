@@ -105,7 +105,7 @@
 	</div>
 	
 	<app-ivfpopup *ngIf="showPopup" [ivfm]="ivfm" (emitToParent)="receiveChildrenEmitter($event)" 
-		[ivfValidateName]="'validateTreatmentPlan'" [showIvfData]="showIvfData"></app-ivfpopup>	
+		[ivfValidateName]="'validateTreatmentPlan'" [showIvfData]="showIvfData" [ignoreDataArray]="ignoreDataArray"></app-ivfpopup>	
 	
 	<app-questionformpopup *ngIf="showPopupInput" [questionData]="questionData" (emitToParent)="receiveChildrenEmitter($event)"
 	[showValidation]="'1'" 

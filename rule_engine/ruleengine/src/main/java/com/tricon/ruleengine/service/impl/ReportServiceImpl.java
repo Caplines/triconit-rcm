@@ -177,6 +177,81 @@ public class ReportServiceImpl implements ReportService {
 		return d;
 	}
 	
+	
+	@Override
+	public RuleReportResponseDto getRuleReportAllMessage(RuleReportDto dto) {
+
+		List<RuleMessageDetailDto> li = rd.getRuleReportsAll(dto);
+		RuleReportResponseDto d = new RuleReportResponseDto();
+		d.setUniqueAllPats(0);
+		d.setUniqueFailPats(0);
+		d.setUniquePassPats(0);
+		d.setUniqueAlertPats(0);
+		List<RuleMessageDetailDto> fi= new ArrayList<>();
+		List<RuleMessageDetailDto> allMessagaes= new ArrayList<>();
+		
+		if (li != null) {
+			Set<String> all = new HashSet<>();
+			Set<String> fail = new HashSet<>();
+			Set<String> pass = new HashSet<>();
+			Set<String> alert = new HashSet<>();
+            
+            //Check query and 	RuleMessageDetailDto equals method for any issue		
+			for (RuleMessageDetailDto dt : li) {
+
+				all.add(dt.getPatientId()+"-"+dt.getOfficeName());
+				if (!fi.contains(dt)) {
+					fi.add(dt);
+			    }
+
+			}
+			//Only Failed Messages are needed.
+			for (RuleMessageDetailDto f : fi) {
+				if (f.getMessageType() == 2) {
+					//if (!allMessagaes.contains(f))
+					//   allMessagaes.add(f);
+					pass.add(f.getPatientId()+"-"+f.getOfficeName());
+				}else if (f.getMessageType() == Constants.FAIL_MESSAGE_TYPE) {
+					if (!allMessagaes.contains(f))
+						allMessagaes.add(f);
+					fail.add(f.getPatientId()+"-"+f.getOfficeName());
+				}else if (f.getMessageType() == 3) {
+					//if (!allMessagaes.contains(f))
+				//		allMessagaes.add(f);
+					alert.add(f.getPatientId());
+				}
+			}
+			
+			
+			
+			/*
+			
+			for (RuleMessageDetailDto dt : li) {
+
+				all.add(dt.getPatientId());
+				if (dt.getMessageType() == 2) {
+					pass.add(dt.getPatientId());
+				} else if (dt.getMessageType() == 1) {
+					if (!fi.contains(dt))
+						fi.add(dt);
+					fail.add(dt.getPatientId());
+				} else if (dt.getMessageType() == 3) {
+					alert.add(dt.getPatientId());
+				}
+			}
+			*/	
+
+			
+			d.setUniqueAllPats(all.size());
+			d.setUniqueFailPats(fail.size());
+			d.setUniquePassPats(pass.size());
+			d.setUniqueAlertPats(alert.size());
+			d.setData(allMessagaes);
+		}
+
+		return d;
+	}
+	
 	@Override
 	public List<DigitizationRuleEngineResult> getReportsForGoogleSheet(ReportDto dto){
 		

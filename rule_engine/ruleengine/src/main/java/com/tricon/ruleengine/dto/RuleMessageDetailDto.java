@@ -15,6 +15,10 @@ public class RuleMessageDetailDto{
 	private String pname;
 	private String email;
 	private int groupRun;
+	private String dos;
+	private String ivDate;
+	
+	
 	
 	/*
 	 * (non-Javadoc)
@@ -149,6 +153,22 @@ public class RuleMessageDetailDto{
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getDos() {
+		return dos;
+	}
+
+	public void setDos(String dos) {
+		this.dos = dos;
+	}
+
+	public String getIvDate() {
+		return ivDate;
+	}
+
+	public void setIvDate(String ivDate) {
+		this.ivDate = ivDate;
 	}
 	
 	

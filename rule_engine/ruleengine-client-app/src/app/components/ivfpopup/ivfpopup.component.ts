@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
 import {ApplicationService} from "../../services/application.service";
+import {IgnoreDataModel} from "../../model/model.ignoredata";
 
 @Component({
   selector: 'app-ivfpopup',
@@ -12,6 +13,7 @@ export class IVFPopupComponent implements OnInit {
 	@Input() ivfm:any;
 	@Input() ivfValidateName:any;
 	@Input() showIvfData:boolean;
+	 @Input() ignoreDataArray: Array<IgnoreDataModel>;
 	@Output() emitToParent = new EventEmitter<any>();
 	ivfmData: any;
 	arrayOfKeys: any;
@@ -41,6 +43,7 @@ export class IVFPopupComponent implements OnInit {
 		ths.countE=0;
 		this.ivfmData=[];
 		this.arrayOfKeys=[];
+		this.ivfm.ignoreDataArray=this.ignoreDataArray;
 		this.applicationService.validateIVF(this.ivfm, this.ivfValidateName, (result) => { 
 			this.emitToParent.emit({action: "showLoading", value: false});
 			if (result.status=='OK' && result.data){
@@ -78,7 +81,7 @@ export class IVFPopupComponent implements OnInit {
 				    		ths.ivfmData[key].countE=ths.countE;
 				    	}
 				    	});
-				    ths.toggleResultFAILALERT();
+				    ths.toggleResultFAIL();
 				    
 				});
 				this.emitToParent.emit({action: "showIvfData", value: true});
@@ -134,6 +137,24 @@ export class IVFPopupComponent implements OnInit {
 		this.activeClP=this.activeClE=this.activeClA=this.activeClF=false;
 		 this.filterType=["fail","alert"];
 	     this.activeClF=true;
+	     this.activeClA=true;
+	        
+		
+	}
+	
+	toggleResultFAIL(){
+		this.activeClP=this.activeClE=this.activeClA=this.activeClF=false;
+		 this.filterType=["fail"];
+	     this.activeClF=true;
+	     //this.activeClA=true;
+	        
+		
+	}
+	
+	toggleResultALERT(){
+		this.activeClP=this.activeClE=this.activeClA=this.activeClF=false;
+		 this.filterType=["alert"];
+	     //this.activeClF=true;
 	     this.activeClA=true;
 	        
 		

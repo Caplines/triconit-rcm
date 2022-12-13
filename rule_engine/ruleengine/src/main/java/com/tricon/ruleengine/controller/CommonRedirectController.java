@@ -105,7 +105,8 @@ public class CommonRedirectController {
 	@RequestMapping(value={ "/ivfclaimid", "/ivfcl","/ivfclbatch","/reportcl","/enreportscl","/usersettings","/scrap","/enreports",
 			"/userinput",",diagnosticcheck","/ivf", "/ivfbatch","/ivfbatchpre","/report","/ivftreatmentplan",
 			"/login","/register","/logout","/profile",
-			"/dumpOldIVFData","/scrapfulldata","/extIVF","/rulereport","/sealant","/scrapremotelite" }, method = RequestMethod.GET)
+			"/dumpOldIVFData","/scrapfulldata","/extIVF","/rulereport","/sealant","/scrapremotelite",
+	        "/allrulereport"}, method = RequestMethod.GET)
 	public void ivfClaimIdForward(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 	System.out.println("IP ---> "+request.getServerName());

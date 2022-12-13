@@ -369,5 +369,17 @@ public class ReportController {
 		
 	  return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", reportService.getRuleReport(dto)));
 	}
+	
+	
+	@CrossOrigin
+	@RequestMapping(value = "/rulereportdataAllMess", method = RequestMethod.POST)
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	public ResponseEntity<?> generateRuleReportAllMess(@RequestBody RuleReportDto dto) {
+		
+	  return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Created Successfully", reportService.getRuleReportAllMessage(dto)));
+	}
+	
+	
+	
 
 }

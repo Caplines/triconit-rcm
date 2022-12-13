@@ -130,6 +130,11 @@ const appRoutes: Routes = [
 			    offs: OfficeResolve
 		  },
 		  loadChildren: './module/rule_report.module#RuleReportAppModule' },
+   { path: 'allrulereport',
+		  resolve: {
+			    offs: OfficeResolve
+		  },
+		  loadChildren: './module/all_rule_report.module#AllRuleReportAppModule' },  		  
 { path: 'sealant',
 		  resolve: {
 			    offs: OfficeResolve

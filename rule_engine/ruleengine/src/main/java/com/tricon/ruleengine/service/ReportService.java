@@ -29,5 +29,7 @@ public interface ReportService {
 	
 	public Object[] generateSealntPDByUIData(HashMap<String,List<TPValidationResponseDto>> rdto);
 	
+	public RuleReportResponseDto getRuleReportAllMessage(RuleReportDto dto);
+	
 
 }

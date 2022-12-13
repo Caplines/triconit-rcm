@@ -421,6 +421,7 @@ public class CaplineIVFFormDto {
     private String dentures4;
     
     //Bone Graft (D7953) Covered w. Ext (Yes/No) --BoneGrafts_D7953_CoveredWithEXT
+    //Bone Graft (D7953) Covered w. Implants (Yes/No) --BoneGrafts_D7953_CoveredWithEXT
     private String dentures5;
     
     //Frequency                                -- BoneGrafts_D7953_FL

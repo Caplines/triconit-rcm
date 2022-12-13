@@ -6,8 +6,9 @@ import java.util.Map;
 import org.springframework.security.core.Authentication;
 
 import com.tricon.ruleengine.dto.PatientTreamentDto;
-import com.tricon.ruleengine.dto.ReportResponseDto;
+
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
+import com.tricon.ruleengine.dto.TreatmentClaimDto;
 import com.tricon.ruleengine.dto.TreatmentPlanBatchValidationDto;
 import com.tricon.ruleengine.dto.TreatmentPlanDto;
 import com.tricon.ruleengine.dto.TreatmentPlanValidationDto;
@@ -43,9 +44,12 @@ public interface TreatmentPlanService {
 	public Rules getRulesFromList(List<Rules> rules, String name);
 	
 	public void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
-			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType,IVFormType iVFormType);
+			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType,IVFormType iVFormType,String ignoredValues);
 	
 	public void saveReportsListBatch(Authentication authentication, List<Rules> rules, IVFTableSheet ivfSheet,
 			List<TPValidationResponseDto> list, Office off,IVFormType iVFormType,String mode);
+	
+	public Object getTreatmentClaimData(TreatmentClaimDto dto);
+	
 	
 }
