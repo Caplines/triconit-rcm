@@ -174,6 +174,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/userinput",
                 "/extIVF",
                 "/fetch-claims",
+                "/fetch-insurance",
+                "/remote-lite-details",
                 "/allrulereport",
                 "/",
                 "/*.html",

@@ -1,0 +1,283 @@
+package com.tricon.ruleengine.api.controller;
+
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
+
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.tricon.ruleengine.dto.EnhancedReportDto;
+import com.tricon.ruleengine.dto.GenericResponse;
+import com.tricon.ruleengine.dto.OfficeDto;
+import com.tricon.ruleengine.dto.RcmClaimDataDto;
+import com.tricon.ruleengine.dto.RcmClaimRootDto;
+import com.tricon.ruleengine.dto.RcmEnv;
+import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
+import com.tricon.ruleengine.dto.ScrappingFullDataDto;
+import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.model.db.Company;
+import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.service.CompanyService;
+import com.tricon.ruleengine.service.ScrappingFullDataService;
+import com.tricon.ruleengine.service.UserService;
+import com.tricon.ruleengine.utils.Constants;
+import com.tricon.ruleengine.utils.RuleBook;
+
+
+/**
+ * For Accessing from RCM TOOL
+ * 
+ * @author Deepak.Dogra
+ *
+ */
+
+@CrossOrigin
+@RestController
+public class RcmController {
+
+	@Autowired
+	GoogleReportsController googleReportsController;
+
+	@Autowired
+	Environment env;
+
+	@Autowired
+	CompanyService companyservice;
+
+	@Autowired
+	private UserService userService;
+
+	RcmEnv rcmEnvClaim = null;
+	RcmEnv rcmEnvInsurance = null;
+	
+	@Autowired ScrappingFullDataService  fullService;
+	
+	static Class<?> clazz = RcmController.class;
+
+	@PostConstruct
+	public void init() {
+
+		rcmEnvClaim = new RcmEnv(env.getProperty("claim.unbilled.query"), env.getProperty("claim.unbilled.query.count"),
+				env.getProperty("claim.unbilled.query.selectcolumns"),env.getProperty("rmc.auth.token"));
+		rcmEnvInsurance = new RcmEnv(env.getProperty("claim.insurance.query"), env.getProperty("claim.insurance.query.count"),
+				env.getProperty("claim.insurance.query.selectcolumns"),env.getProperty("rmc.auth.token"));
+
+	}
+
+	@RequestMapping(value = "/fetch-claims", method = RequestMethod.GET)
+	public ResponseEntity<?> fetchClaims(@RequestHeader("x-api-key") String apiKey,@RequestParam(value = "office", required = false) String officeUuid,
+			@RequestParam(value = "password", required = true) String password)
+			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+	
+		String ids = null;
+		// Office office = null;
+		RuleEngineLogger.generateLogs(clazz, "ENTER fetch-claims From  Rule Engine"+new Date()," INFO", null);
+		
+		if (apiKey == null || !apiKey.equals(rcmEnvClaim.getApiKey())) {
+			RuleEngineLogger.generateLogs(clazz, "ERROR -in KEY"+new Date()," INFO", null);
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report No Created Successfully","Key Error"));
+		}
+		RcmClaimDataDto dd=null;
+		RcmClaimRootDto rootDto= new RcmClaimRootDto();
+		ArrayList<RcmClaimDataDto> datas= new ArrayList<>();
+		
+		rootDto.setDatas(datas);
+		rootDto.setMessage("Claim Data Fetched Successfully");
+		if (officeUuid != null) {
+			Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+			Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+			String officeName ="";
+			if (offices.isPresent() && offices.get() != null) {
+				officeName = offices.get().stream()
+					      .filter(n -> n.getUuid().equals(officeUuid)).findFirst().get().getName();
+					      
+			}
+			GenericResponse data=(GenericResponse) googleReportsController.fethESGoogleresponse(rcmEnvClaim.getQuerySelectcolumns(),
+					rcmEnvClaim.getQuery(), ids,
+					Integer.parseInt(rcmEnvClaim.getQueryCount()), password, officeName, null, null).getBody();
+			dd= new RcmClaimDataDto();
+			dd.setOfficeName(officeUuid);
+			dd.setData(data.getData());
+			datas.add(dd);
+		} else {
+			Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+			Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+			if (offices.isPresent() && offices.get() != null) {
+				offices.get().forEach((n) -> {
+					GenericResponse data=null;
+					try {
+						RcmClaimDataDto ddd=null;
+						data=(GenericResponse)	googleReportsController.fethESGoogleresponse(rcmEnvClaim.getQuerySelectcolumns(),
+								rcmEnvClaim.getQuerySelectcolumns(), ids,
+								Integer.parseInt(rcmEnvClaim.getQueryCount()), password, n.getName(), null, null).getBody();
+						
+						ddd= new RcmClaimDataDto();
+						ddd.setOfficeName(n.getUuid());
+						ddd.setData(data.getData());
+						datas.add(ddd);
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				});
+			}
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Claim Data Fetched Successfully",rootDto));
+	}
+	
+	
+	
+	@RequestMapping(value = "/fetch-insurance", method = RequestMethod.GET)
+	public ResponseEntity<?> fetchInsurance(@RequestHeader("x-api-key") String apiKey,@RequestParam(value = "office", required = false) String officeUuid,
+			@RequestParam(value = "password", required = true) String password)
+			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+	
+		String ids = null;
+		// Office office = null;
+		RuleEngineLogger.generateLogs(clazz, "ENTER fetch-insurance From  Rule Engine"+new Date()," INFO", null);
+		
+		if (apiKey == null || !apiKey.equals(rcmEnvInsurance.getApiKey())) {
+			RuleEngineLogger.generateLogs(clazz, "ERROR -in KEY"+new Date()," INFO", null);
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report No Created Successfully","Key Error"));
+		}
+		RcmClaimDataDto dd=null;
+		RcmClaimRootDto rootDto= new RcmClaimRootDto();
+		ArrayList<RcmClaimDataDto> datas= new ArrayList<>();
+		
+		rootDto.setDatas(datas);
+		rootDto.setMessage("Insurance Data Fetched Successfully");
+		if (officeUuid != null) {
+			Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+			Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+			String officeName ="";
+			if (offices.isPresent() && offices.get() != null) {
+				officeName = offices.get().stream()
+					      .filter(n -> n.getUuid().equals(officeUuid)).findFirst().get().getName();
+					      
+			}
+			GenericResponse data=(GenericResponse) googleReportsController.fethESGoogleresponse(rcmEnvInsurance.getQuerySelectcolumns(),
+					rcmEnvInsurance.getQuery(), ids,
+					Integer.parseInt(rcmEnvInsurance.getQueryCount()), password, officeName, null, null).getBody();
+			dd= new RcmClaimDataDto();
+			dd.setOfficeName(officeUuid);
+			dd.setData(data.getData());
+			datas.add(dd);
+		} else {
+			Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+			Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+			if (offices.isPresent() && offices.get() != null) {
+				offices.get().forEach((n) -> {
+					GenericResponse data=null;
+					try {
+						RcmClaimDataDto ddd=null;
+						data=(GenericResponse)	googleReportsController.fethESGoogleresponse(rcmEnvInsurance.getQuerySelectcolumns(),
+								rcmEnvInsurance.getQuerySelectcolumns(), ids,
+								Integer.parseInt(rcmEnvInsurance.getQueryCount()), password, n.getName(), null, null).getBody();
+						
+						ddd= new RcmClaimDataDto();
+						ddd.setOfficeName(n.getUuid());
+						ddd.setData(data.getData());
+						datas.add(ddd);
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				});
+			}
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Insurance Data Fetched Successfully",rootDto));
+	}
+
+	@GetMapping("/remote-lite-details")
+	public ResponseEntity<Object> getRemoteLiteSiteDetails(@RequestHeader("x-api-key") String apiKey,@RequestParam(value = "office", required = false) String officeUuid,
+			@RequestParam(value = "password", required = true) String password)  {
+		
+		List<ScrappingFullDataDetailDto> remoteList= new ArrayList<>();
+		ScrappingFullDataDetailDto d =null;
+		try {
+			List<ScrappingFullDataDto> list = fullService.getSiteNamesBySiteType("LITE");
+			
+			ScrappingFullDataDto scrap =list.get(0);
+			
+			String email = "admin_admin";
+			if (officeUuid != null) {
+				Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+				Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+				String officeUUid ="";
+				if (offices.isPresent() && offices.get() != null) {
+					officeUUid = offices.get().stream()
+						      .filter(n -> n.getUuid().equals(officeUuid)).findFirst().get().getUuid();
+					d = fullService.getScrappingDetailsForRcm(scrap.getId(),officeUUid,email);
+					d.setOfficeId(officeUUid);
+					d.setGoogleSheetIdDb("1KVaZbAfaYOGMbYRZuGH-4VVxeZQPIvML0YThPsPNTnw");
+					remoteList.add(d); 
+				}
+			}else {
+				
+				Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+				Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+				for(OfficeDto off:offices.get()) {
+					d = fullService.getScrappingDetailsForRcm(scrap.getId(),off.getUuid(),email);
+					d.setGoogleSheetIdDb("1KVaZbAfaYOGMbYRZuGH-4VVxeZQPIvML0YThPsPNTnw");
+					d.setOfficeId(off.getUuid());
+					remoteList.add(d); 
+				}
+				
+				
+			}
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
+			 return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "remote-lite-details", remoteList));
+
+	}
+}

@@ -132,6 +132,18 @@ public class ScrappingFullDataServiceImpl implements ScrappingFullDataService{
 		}
 
 	}
+	
+	@Override
+	public ScrappingFullDataDetailDto getScrappingDetailsForRcm(int siteId,String offId,String userName) {
+		
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+		JwtUser juser = (JwtUser) userDetails;
+		
+		ScrappingFullDataDetailDto d = dataDoa.getScrappingDetails(siteId,offDoa.getOfficeByUuid(offId,juser.getCompany().getUuid()));
+		return d;
+		
+
+	}
 
 	@Override
 	public String findRunningStatus(ScrappingFullDataDetailDto dto) {

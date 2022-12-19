@@ -1,0 +1,177 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    padding: 0px;
+    background-color: #ececec;
+    font-size: 16px;
+    color: #333;
+}
+* {
+    box-sizing: border-box;
+}
+h1 {
+    font-weight: 500;
+}
+button {
+    outline: none!important;
+    border: none;
+    background: 0 0;
+}
+input::-webkit-input-placeholder {
+    color: #adadad
+}
+
+input:-moz-placeholder {
+    color: #adadad
+}
+
+input::-moz-placeholder {
+    color: #adadad
+}
+
+input:-ms-input-placeholder {
+    color: #adadad
+}
+input {
+    outline: none;
+    border: none;
+}
+    textarea:focus, input:focus {
+        border-color: transparent !important;
+    }
+.login-bg {
+    background-image: url("../../../assets/img/pattern.jpg");
+    background-size: 100%;
+}
+		a {
+			color: #007bff;
+			text-decoration: none;
+			font-size: 14px;
+		}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 40px 30px 60px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0px 1px 7px #152635;
+}
+.label-input {
+    line-height: 1.5;
+    padding-left: 7px;
+    font-size: 15px;
+}
+.input-box {
+    width: 100%;
+    position: relative;
+    border-bottom: 2px solid #d9d9d9;
+    margin-bottom: 23px;
+}
+    .input-box:nth-of-type(2) {
+        margin-bottom: 0px;
+    }
+
+.inp-input {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.2;
+    display: block;
+    width: 100%;
+    height: 45px;
+    background: 0 0;
+    padding: 0 7px 0 40px;
+}
+.focus-input {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+.focus-input::before {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #7f7f7f;
+    transition: all .4s;
+}
+.inp-input:focus + .focus-input::before {
+    width: 100%;
+}
+.focus-input::after {
+    content: attr(data-symbol);
+    background: url(../../../assets/img/user.png) no-repeat;
+    position: absolute;
+    height: calc(100% - 20px);
+    bottom: 0;
+    left: 0;
+    padding-left: 34px;
+    background-position: center center;
+    opacity: 0.4;
+}
+.focus-password::after {
+    background: url(../../../assets/img/padlock.png) no-repeat;
+    background-position: center center;
+}
+
+.btn {
+    font-size: 16px;
+    color: #fff;
+    line-height: 1.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    width: 100%;
+    height: 45px;
+    cursor: pointer;
+}
+
+.container-login-form-btn {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    clear:both;
+}
+.wrap-login-form-btn {
+    width: 100%;
+    display: block;
+    position: relative;
+    z-index: 1;
+    border-radius: 25px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+.login-form-bgbtn {
+    position: absolute;
+    z-index: -1;
+    width: 300%;
+    height: 100%;
+    background: #a64bf4;
+    background: -webkit-linear-gradient(right,#00dbde,#fc00ff,#00dbde,#fc00ff);
+    background: -o-linear-gradient(right,#00dbde,#fc00ff,#00dbde,#fc00ff);
+    background: -moz-linear-gradient(right,#00dbde,#fc00ff,#00dbde,#fc00ff);
+    background: linear-gradient(right,#00dbde,#fc00ff,#00dbde,#fc00ff);
+    top: 0;
+    left: -100%;
+    transition: all .4s;
+}
+.wrap-login-form-btn:hover .login-form-bgbtn {
+    left: 0;
+}
+.forgot-link {
+    margin: 10px 0px 30px;
+    display: inline-block;
+    float: right;
+}
+.forgot-link:hover {
+    text-decoration:underline;
+
+}

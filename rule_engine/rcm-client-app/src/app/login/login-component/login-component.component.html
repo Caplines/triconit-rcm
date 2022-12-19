@@ -1,0 +1,35 @@
+<div class="login-container">
+  <form       *ngIf="!isLoggedIn"  name="form"
+ (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+     <img src="../assets/img/capline-logo.png" alt="" >
+     <h1 class="">Login</h1>
+     <div class="input-box">
+         <label for="inputEmail" class="label-input">Email address</label>
+  <input type="text"  class="inp-input" name="username" [(ngModel)]="form.username" required #username="ngModel" 
+  placeholder="Type your email"  autofocus=""/>
+         <span class="focus-input"></span>
+     </div>
+     <div class="input-box">
+         <label for="inputPassword" class="label-input">Password</label>
+ <input  type="password" class="inp-input" name="password" [(ngModel)]="form.password" required minlength="6" #password="ngModel" 
+ placeholder="Type your password" />
+         <div  class="alert alert-danger" role="alert" *ngIf="password.errors && f.submitted">
+   <div *ngIf="password.errors['required']">Password is required</div>
+           <div *ngIf="password.errors['minlength']"> Password must be at least 6 characters</div>
+         </div>
+         <span class="focus-input focus-password"></span>
+     </div>
+          
+     <div class="container-login-form-btn">
+         <div class="wrap-login-form-btn">
+             <div class="login-form-bgbtn"></div>
+             <button class="btn">Login</button>
+         </div>
+     </div>
+ <div class="form-group">
+   <div class="alert alert-danger" role="alert" *ngIf="f.submitted && isLoginFailed">
+     Login failed: {{ errorMessage }}
+     </div>
+   </div>
+  </form>
+</div>
