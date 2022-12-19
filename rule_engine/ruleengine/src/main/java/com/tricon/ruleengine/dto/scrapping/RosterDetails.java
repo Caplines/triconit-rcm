@@ -12,6 +12,8 @@ public class RosterDetails {
 	private String address2;
 	private String dob;
 	private String telephone;
+	private String id;
+	
 	public String getPatFName() {
 		return patFName;
 	}
@@ -72,6 +74,12 @@ public class RosterDetails {
 	}
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	

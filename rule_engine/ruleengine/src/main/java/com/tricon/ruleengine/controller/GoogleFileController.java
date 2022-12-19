@@ -44,26 +44,26 @@ public class GoogleFileController {
 	
     private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String CREDENTIALS_FOLDER = "D:\\Project\\Tricon\\TimeEstimates\\IV rule engine\\Code Related\\2\\"; // Directory to store user credentials.
+    private static final String CREDENTIALS_FOLDER = "D:\\Project\\Tricon\\TimeEstimates\\IV rule engine\\Code Related\\4\\"; // Directory to store user credentials.
     /**
      * Global instance of the scopes required by this quickstart.
      * If modifying these scopes, delete your previously saved credentials/ folder.
      */
-    private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
-    private static final String CLIENT_SECRET_DIR = "D:\\Project\\Tricon\\TimeEstimates\\IV rule engine\\Code Related\\2\\client_secret.json";
+    private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+    private static final String CLIENT_SECRET_DIR = "D:\\Project\\Tricon\\TimeEstimates\\IV rule engine\\Code Related\\4\\client_secret.json";
 
     /*
      * https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/drive.file&access_type=offline&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri=http://localhost:8080/sss&response_type=code&client_id=125735930803-sj8kb5ofpr0kem4ldvqs95ce99d3sv2m.apps.googleusercontent.com
      */
 
-	@RequestMapping(value = "/getIVF/{officeId}/{fileid}", method = RequestMethod.GET)
-	public void fetchIVFData(@PathVariable String officeId,@PathVariable String fileid) throws GeneralSecurityException, IOException {
+	@RequestMapping(value = "/xxxxx", method = RequestMethod.GET)
+	public void fetchIVFData() throws GeneralSecurityException, IOException {
 		//check for office Id is its same as logged in user then continue
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		final String spreadsheetId = "1HYEYlEtOxXeCN0bJ7Q9c6d5i3c5W2o7sWAzQUdrLveM";
 		Credential cd= getCredentials(HTTP_TRANSPORT);
 		System.err.println( cd.getExpiresInSeconds());
-		final String range = "Rules - OM/TP";// Name of Sheet
+		final String range = "Sheet1";// Name of Sheet
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY,cd )
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, range).execute();
@@ -86,7 +86,7 @@ public class GoogleFileController {
 
 	private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
 		// Load client secrets.
-		File initialFile = new File("d:/client_secret1.json");
+		File initialFile = new File("d:/client_secret4.json");
 		InputStream targetStream = new FileInputStream(initialFile);
 		//InputStream in = GoogleFileController.class.getResourceAsStream(CLIENT_SECRET_DIR);
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(targetStream));

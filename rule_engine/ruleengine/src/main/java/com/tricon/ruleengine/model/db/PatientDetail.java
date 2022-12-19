@@ -608,6 +608,9 @@ public class PatientDetail extends BaseAudit implements Serializable {
 
 	@Column(name = "freq_d2934", length = 50)
 	private String freqD2934;//freq_d2934
+	
+	@Column(name = "history_count", length = 5)
+	private String historyCount;//history Count
 
 	//OS FORM add in Patient Detail 2 table..
 	//
@@ -2090,6 +2093,14 @@ public class PatientDetail extends BaseAudit implements Serializable {
 
 	public void setFreqD2934(String freqD2934) {
 		this.freqD2934 = freqD2934;
+	}
+
+	public String getHistoryCount() {
+		return historyCount;
+	}
+
+	public void setHistoryCount(String historyCount) {
+		this.historyCount = historyCount;
 	}
 
 	

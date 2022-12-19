@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
@@ -227,7 +228,7 @@ public class IVFFormConversionUtil {
 		pd.setD3330(d.getD3330());//d3330
 		pd.setD3330Freq(d.getD3330Freq());//d3330Freq
 		pd.setFreqD2934(d.getFreqD2934());
-		
+		pd.setHistoryCount(d.getHistoryCount());
 		pd2.setNpi(d.getNpi());
 		pd2.setLicence(d.getLicence());
 		pd2.setRadio3(d.getRadio3());
@@ -671,7 +672,7 @@ public class IVFFormConversionUtil {
 				pd.setD3330(d.getD3330());//d3330
 				pd.setD3330Freq(d.getD3330Freq());//d3330Freq
 				pd.setFreqD2934(d.getFreqD2934());
-				
+				pd.setHistoryCount(d.getHistoryCount());
 				pd.setNpi(d.getNpi());
 				pd.setLicence(d.getLicence());
 				pd.setRadio3(d.getRadio3());
@@ -1108,6 +1109,7 @@ public class IVFFormConversionUtil {
 		pd.setD3330(d.getD3330());//d3330
 		pd.setD3330Freq(d.getD3330Freq());//d3330Freq
 		pd.setFreqD2934(d.getFreqD2934());
+		pd.setHistoryCount(d.getHistoryCount());
 		
 		pd2.setNpi(d.getNpi());
 		pd2.setLicence(d.getLicence());

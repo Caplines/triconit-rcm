@@ -359,6 +359,7 @@ public class IVFTableSheet {
 	private String d4999fr;
 	private String d2962;
     private String d2962fr;
+    private String historyCount;
 
     public String getsRemarks() {
 		return sRemarks;
@@ -2457,6 +2458,12 @@ public class IVFTableSheet {
 	}
 	public void setD2962fr(String d2962fr) {
 		this.d2962fr = d2962fr;
+	}
+	public String getHistoryCount() {
+		return historyCount;
+	}
+	public void setHistoryCount(String historyCount) {
+		this.historyCount = historyCount;
 	}
 	
 		

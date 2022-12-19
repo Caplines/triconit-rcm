@@ -605,6 +605,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 				}
 				form.setHdto(hdto);
+				if (form.getHistoryCount()==null)form.setHistoryCount(hdto.size()+"");
 				form.setHistory(null);
 			 }
 			}
@@ -679,6 +680,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 					form.setHdto2(l2);
 					form.setHdto3(l3);
 					form.setHdto(null);
+					if (form.getHistoryCount()==null) form.setHistoryCount((form.getHdto1().size()+form.getHdto2().size()+form.getHdto3().size())+"");
 				//Remove $ sign	
 				if (form.getSealantsD()!=null)	form.setSealantsD(form.getSealantsD().replaceAll("\\$", ""));
 				if (form.getPerioMnt1()!=null)	form.setPerioMnt1(form.getPerioMnt1().replaceAll("\\$", ""));

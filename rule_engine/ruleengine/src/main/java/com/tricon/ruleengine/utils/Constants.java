@@ -33,7 +33,7 @@ public class Constants {
 	public static final int eagleSoftFSNAMESheetID=5;
 	public static final int eagleSoftRemDedBalSheetID=8;
     */
-	public static final String COMPANY_NAME="Capline";//This matches with Company Table  Name Column... 
+	public static final String COMPANY_NAME="Capline";//This matches with Company Table  Name Column...  same in rcm TOO
 	
 	//Entry from Rules Table (These values should Match from Database..)
 	public static final String RULE_ID_1="Eligibility of the patient";

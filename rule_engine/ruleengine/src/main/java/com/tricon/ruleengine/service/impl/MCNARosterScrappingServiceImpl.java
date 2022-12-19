@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -20,6 +21,8 @@ import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.db.ScrappingSiteDetails;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.ConstantsScrapping;
+
+
 
 /**
  * 
@@ -108,6 +111,7 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			//int size=0;
 			for (c = dto.getStart().toLowerCase().charAt(0); c <= dto.getEnd().toLowerCase().charAt(0); ++c) {
 				navigatetoRoster();
+				String providerFacilityId=driver.findElement(By.id("facilityId")).getAttribute("value");
 				System.out.println("*********************************"       +c +"-"+rList.size());
 				/*if (rList.size()>40) {
 					try {
@@ -122,7 +126,7 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 					size=size+rList.size();
 					rList.clear();
 				}*/
-				clickOnNameLink( c + "", rList,true,1,2);
+				clickOnNameLink( c + "", rList,true,1,2,providerFacilityId);
 			}
 			//size=size+rList.size();
 		   //finalSize=size;
@@ -170,195 +174,69 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			
 	}
 	
-	private void clickOnNameLink( String name, List<RosterDetails> rList,boolean page,int  pagging,int initial)  {
-		boolean cont=false;
+	private void clickOnNameLink( String name, List<RosterDetails> rList,boolean page,int  pagging,int initial,String providerFacilityId)  {
+		//boolean cont=false;
+		
+		ArrayList<String> tabsOld = new ArrayList<String> (driver.getWindowHandles());
+		if (tabsOld.size()==1) {
+			
+			String selectLinkOpeninNewTab = Keys.chord(Keys.CONTROL,Keys.RETURN);
+			//driver.switchTo().newWindow(WindowType.WINDOW);
+			driver.findElement(By.linkText("Acceptable Use Policy")).sendKeys(selectLinkOpeninNewTab);//to open empty tab
+			tabsOld = new ArrayList<String> (driver.getWindowHandles());
+			
+			 }
 		
 		try {
-		if (page) {
-		try {
-		Thread.sleep(10000);
-		WebElement element = driver.findElement(By.xpath("//*[@id=\"" + name + "\"]"));
-		if (element != null) {
-			element.click();
-			cont=true;
-				Thread.sleep(2000);
-				
-			 }
-			}catch (Exception e) {
-			e.printStackTrace();
-		}
-		}else {
-			//false case 
-			//check for pagination //continue if we find links 
-			try {                                           
-			WebElement element =driver.findElement(By.xpath("/html/body/div[7]/div[2]/div[2]/div[2]/div/div"));//Increase 6  to 7
-			element = element.findElement(By.linkText(pagging+""));
-			element.click();
-			cont=true;
-			Thread.sleep(2000);
-			}catch (Exception e) {
-				//System.out.println("UUUUUUUUUUUU");
+		//https://portal.mcna.net/provider/members_roster_list.json?alpha=g&providerFacilityId=24979
+		driver.navigate().to("https://portal.mcna.net/provider/members_roster_list.json?alpha="+name+"&providerFacilityId="+providerFacilityId);	
+		Thread.sleep(4000);
+		List<RosterDetails> l= parserAlphabetApi();
+		int ct=0;
+		for(RosterDetails rd:l) {
+			
+			String patId=rd.getId();
+			ct++;
+			if (ct==61) {
+				navigatetoRoster();
+				ct=0;
 			}
 			
+			driver.switchTo().window(tabsOld.get(1)); // switch new Tab to main screen
+			driver.navigate().to("https://portal.mcna.net/provider/get_member_info.json?id="+patId+"&providerFacilityId="+providerFacilityId);
+			Thread.sleep(8000);
+			parserPopupDetailPage(rd);
+			 //driver.close();
+			 driver.switchTo().window(tabsOld.get(0));
+			 rList.add(rd);
+			 
+			 if (rList.size()>=max) {
+					try {
+						List<RosterDetails> rListC = new ArrayList<>(rList);
+						int q=1+(max*ctALL);
+						//if (q>1) q=q+1+ctALLO;
+						//ctALLO=ctALLO+1;
+						ConnectAndReadSheets.updateSheetRoster(scrappingSiteDetails.getGoogleSheetId(),
+								  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<RosterDetails>)rListC,scrappingSiteDetails.getRowCount(),q,"YES");
+					System.out.println("Qqqqqqqq"+q);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//size=size+rList.size();
+					ctALL=ctALL+1;
+					rList.clear();
+					System.out.println("rList--"+rList.size());
+				}
+			 
+		}
+		}catch(Exception v) {
 			
 		}
-			int ct = initial;//2;
-			int newCt=7;//6 old //Check pagination also
-			if (cont) {
-			boolean breakonExp=false;	
-			for (;;) {
-				try {
-				List<WebElement> elements = driver
-						.findElements(By.xpath("/html/body/div["+newCt+"]/div[2]/div[2]/div[2]/table/tbody/tr[" + ct + "]/td"));
-				if (elements != null && elements.size() > 0) {
-					RosterDetails rd = new RosterDetails();
-					for (int x = 1; x <= elements.size(); x++) {
-						//to close pop up..
-						// path("/html/body/div[8]/div/div/div/div[1]/a"));
-						WebElement element231 = null;// path("/html/body/div[8]/div/div/div/div[1]/a"));
-						if (x!=1) {
-						try {
-						//WebElement element23 = driver.findElements(By.className("closeInfoBox")).get(1);
-						//element23.click();
-						}catch(Exception p){
-							p.printStackTrace();
-						}
-						}
-						WebElement element2 =null;
-						try {
-						element2 = driver.findElement(By.xpath(
-								"/html/body/div["+newCt+"]/div[2]/div[2]/div[2]/table/tbody/tr[" + ct + "]/td[" + x + "]"));
-						if (x == 1)
-							rd.setPatFName(element2.getText());
-						if (x == 2)
-							rd.setCity(element2.getText());
-						if (x == 3)
-							rd.setAssignedDentistF(element2.getText());
-						//if --***1 Start
-						if (x == elements.size() - 1) {
-							//
-							//
-							String providerFacilityId=driver.findElement(By.id("facilityId")).getAttribute("value");
-							
-							String patId=element2.findElement(By.tagName("div")).getAttribute("id");
-							ArrayList<String> tabsOld = new ArrayList<String> (driver.getWindowHandles());
-							if (tabsOld.size()==1) {
-								
-							String selectLinkOpeninNewTab = Keys.chord(Keys.CONTROL,Keys.RETURN);
-							//driver.switchTo().newWindow(WindowType.WINDOW);
-							driver.findElement(By.linkText("Acceptable Use Policy")).sendKeys(selectLinkOpeninNewTab);//to open empty tab
-							tabsOld = new ArrayList<String> (driver.getWindowHandles());
-							
-							 }
-							driver.switchTo().window(tabsOld.get(1)); // switch new Tab to main screen
-							driver.navigate().to("https://portal.mcna.net/provider/get_member_info.json?id="+patId+"&providerFacilityId="+providerFacilityId);
-							Thread.sleep(8000);
-							parserPopupDetailPage(rd);
-							 //driver.close();
-							 driver.switchTo().window(tabsOld.get(0));
-							//
-							//element2.findElement(By.tagName("div")).click();
-							//Thread.sleep(8000);
-							 
-							try {
-							//String z="moreInfoBox";	
-							//	if (name.equalsIgnoreCase("B")) z="moreInfoBox1";//for test
-									
-							//WebElement element21 = driver.findElement(By.id(z));
-							// element21.findElement(By.className(className))
-							//((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
-								//	element21);
-							//element231 = driver.findElement(By.className("header"));// path("/html/body/div[8]/div/div/div/div[1]/a"));
-							
-							// element23.click();
-							//parseSubdetail(rd, element21.getAttribute("textContent"),element21);
-//							String n=null;
-//							
-//							if (name.equals("a") && ct ==15) {
-//							  if (n.equals("Zz")) {
-//								  element2 = driver.findElement(By.xpath(
-//											"/html/body/div[6]/div[2]/div[2]/div[2]/table/tbody/tr[" + 1000000000 + "]/td[" + x + "]"));
-//											  
-//							  }
-//							}
-							}catch(Exception x1) {
-								reloginAndNavigate();
-								/*
-								try {
-									ConnectAndReadSheets.updateSheetMCNADentaRunStatus(scrappingSiteDetails.getGoogleSheetId(), scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, "NAME issue (moreInfoBox): "+name+"----", ConstantsScrapping.MCNA_ROSTER_ROW_INDEX_STATUS, ConstantsScrapping.MCNA_ROSTER_COLUMN_INDEX_STATUS+1+1);
-									clickOnNameLink(name, rList, page,pagging,ct);
-									breakonExp=true;
-									break;
-								} catch (IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-								*/
-							}
-							rList.add(rd);
-							// WebElement element21 = driver.findElement(By.id("moreInfoBox"));
-							// WebElement element22
-							// =driver.findElement(By.xpath("/html/body/div[8]/div/div/div/div[1]/a"));
-							// ((JavascriptExecutor)
-							// driver).executeScript("arguments[0].scrollIntoView(true);", element22);
-							//if (element231!=null) element231.click();
-							
-							if (rList.size()>=max) {
-								try {
-									List<RosterDetails> rListC = new ArrayList<>(rList);
-									int q=1+(max*ctALL);
-									//if (q>1) q=q+1+ctALLO;
-									//ctALLO=ctALLO+1;
-									ConnectAndReadSheets.updateSheetRoster(scrappingSiteDetails.getGoogleSheetId(),
-											  scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,(List<RosterDetails>)rListC,scrappingSiteDetails.getRowCount(),q,"YES");
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								//size=size+rList.size();
-								ctALL=ctALL+1;
-								rList.clear();
-							}else {
-							 //size=size+1;
-							 //finalSize=size;
-							}
-
-							
-							
-							
-						}//if --***1 stop
-					}catch (Exception e) {
-						try {
-							ConnectAndReadSheets.updateSheetMCNADentaRunStatus(scrappingSiteDetails.getGoogleSheetId(), scrappingSiteDetails.getGoogleSubId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, "NAME issue (moreInfoBox): "+name+"----"+e.getMessage(), ConstantsScrapping.MCNA_ROSTER_ROW_INDEX_STATUS, ConstantsScrapping.MCNA_ROSTER_COLUMN_INDEX_STATUS+1+1+1);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-
-					}
-					}
-					if (breakonExp) 	break; //break on Exception from main Loop...
-
-				} else {
-					break;
-				}
-				}catch (Exception e) {
-					e.printStackTrace();
-					break;
-				}
-				ct = ct + 1;
-
-			 }//for
-		    }
-			if (cont)clickOnNameLink( name, rList, false,++pagging,2);
-		}
-		 catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+		
 	}
 
-	private void parseSubdetail(RosterDetails rd, String data,WebElement moreInfoBox) {
+	/*private void parseSubdetail(RosterDetails rd, String data,WebElement moreInfoBox) {
 		String aa[] = data.split("\\r?\\n");
 		try {
 		for (int x = 0; x < aa.length; x++) {
@@ -381,7 +259,7 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			// TODO: handle exception
 		}
 
-	}
+	}*/
 	
 	private void reloginAndNavigate() throws InterruptedException {
 		this.driver.close();
@@ -421,5 +299,58 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			
 		
 	}
+	
+	public static void main(String ss[]) {
+		MCNARosterScrappingServiceImpl sd= new MCNARosterScrappingServiceImpl(null, null, null, null, null);
+		sd.parserAlphabetApi();
+	}
+	
+	private List<RosterDetails> parserAlphabetApi() {
+	
+		//String data="<html><head><meta name=\"color-scheme\" content=\"light dark\"></head><body><pre style=\"word-wrap: break-word; white-space: pre-wrap;\">{\"members_roster_list\":{\"response_code\":\"200\",\"response_message\":\"OK\",\"practice_state\":\"TX\",\"members\":[{\"id\":\"6698556\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ABDULLAH\",\"prov_mname\":\" \",\"city\":\"HOUSTON\",\"prov_title\":\"DMD\",\"fname\":\"AHMED\",\"mname\":\"M\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"38756809\",\"prov_lname\":\"GHAZAL\",\"effective_date\":null,\"lname\":\"ACRES\",\"prov_mname\":\" \",\"city\":\"BEAUMONT\",\"prov_title\":\"DDS\",\"fname\":\"RYAN\",\"mname\":\"ODIN\",\"suffix\":\" \",\"prov_fname\":\"TARIQ \"},{\"id\":\"25921795\",\"prov_lname\":\"SHAH\",\"effective_date\":null,\"lname\":\"ADAMS\",\"prov_mname\":\" \",\"city\":\"LIBERTY\",\"prov_title\":\"DMD\",\"fname\":\"SAVANNA\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"NISARG\"},{\"id\":\"15619747\",\"prov_lname\":\"SHAH\",\"effective_date\":null,\"lname\":\"AGUILAR\",\"prov_mname\":\" \",\"city\":\"CLEVELAND\",\"prov_title\":\"DMD\",\"fname\":\"ANALICIA\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"NISARG\"},{\"id\":\"13854296\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALEMAN\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"IZABELLA\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"6026166\",\"prov_lname\":\"SHAH\",\"effective_date\":null,\"lname\":\"ALEMAN\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"JULIAN\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"NISARG\"},{\"id\":\"10659163\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALEMAN\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"DAVID\",\"mname\":\"A\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"6050171\",\"prov_lname\":\"SHAH\",\"effective_date\":null,\"lname\":\"ALEMAN\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"MIA\",\"mname\":\"ANDREA\",\"suffix\":\" \",\"prov_fname\":\"NISARG\"},{\"id\":\"6106761\",\"prov_lname\":\"SHAH\",\"effective_date\":null,\"lname\":\"ALEMAN\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"FRANK\",\"mname\":\"GERARDO\",\"suffix\":\" \",\"prov_fname\":\"NISARG\"},{\"id\":\"18264201\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALEMAN\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"VICTORIA\",\"mname\":\"LETICIA\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"15121301\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALEXANDER\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"KENZINGTON\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"19323154\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALFARO LOPEZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"ERVIN\",\"mname\":\"MANUEL\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"15332303\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALFARO LOPEZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"LEYRI\",\"mname\":\"MELISSA\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"14678328\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALFARO MARTINEZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"ANDREZ\",\"mname\":\"ANTONIO\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"35275359\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALFARO MARTINEZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"NOAH\",\"mname\":\"ELI\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"18269441\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALFARO MARTINEZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"SAMANTHA\",\"mname\":\"ROSE\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"20425894\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALFRED\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"BRANDON\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"42577582\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALFRED\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"RIYA\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"25095690\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALFRED\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"BRAYA\",\"mname\":\"J'CHELLE\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"5770776\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALGERE\",\"prov_mname\":\" \",\"city\":\"BAYTOWN\",\"prov_title\":\"DMD\",\"fname\":\"KELAN\",\"mname\":\"ANTHQEON\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"6023168\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALGERE\",\"prov_mname\":\" \",\"city\":\"BAYTOWN\",\"prov_title\":\"DMD\",\"fname\":\"KILANI\",\"mname\":\"SHANJAYA\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"7877389\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALLEN\",\"prov_mname\":\" \",\"city\":\"HIGHLANDS\",\"prov_title\":\"DMD\",\"fname\":\"SAMARA\",\"mname\":\"M\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"26480071\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALMOND\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"MALLORY\",\"mname\":\"JANE\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"25092175\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALVAREZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"JOVANNY\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"29081246\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALVAREZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"MAILEEN\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"5950347\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ALVAREZ\",\"prov_mname\":\" \",\"city\":\"HOUSTON\",\"prov_title\":\"DMD\",\"fname\":\"AMY\",\"mname\":\"SAMANTHA\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"43016143\",\"prov_lname\":\"ROSSI\",\"effective_date\":null,\"lname\":\"AMEZQUITA\",\"prov_mname\":\"ALAN\",\"city\":\"CROSBY\",\"prov_title\":\"DDS\",\"fname\":\"AVA\",\"mname\":\"MARIEL\",\"suffix\":\" \",\"prov_fname\":\"DOUGLAS\"},{\"id\":\"28575061\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ANAYA VELAZQUEZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"YATZIRY\",\"mname\":\"EDITH\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"14106066\",\"prov_lname\":\"SHAH\",\"effective_date\":null,\"lname\":\"ANAYA-VELAZQUEZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"ZAHORY\",\"mname\":\"ABRIL\",\"suffix\":\" \",\"prov_fname\":\"NISARG\"},{\"id\":\"29942245\",\"prov_lname\":\"TEPPA SANCHEZ\",\"effective_date\":null,\"lname\":\"ANDERSON\",\"prov_mname\":\"F\",\"city\":\"CENTER\",\"prov_title\":\"DMD\",\"fname\":\"KAYLA\",\"mname\":\"RENEE\",\"suffix\":\" \",\"prov_fname\":\"JOSE\"},{\"id\":\"29475787\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ANDERSON\",\"prov_mname\":\" \",\"city\":\"HUFFMAN\",\"prov_title\":\"DMD\",\"fname\":\"CECILYA\",\"mname\":\"ROSE\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"28576950\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ANDREWS\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"GWYNN\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"14227127\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ANDREWS\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"ROBERT\",\"mname\":\"AXEL\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"38314424\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ANTHONY\",\"prov_mname\":\" \",\"city\":\"HOUSTON\",\"prov_title\":\"DMD\",\"fname\":\"XAYLEE\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"25926921\",\"prov_lname\":\"SHAH\",\"effective_date\":null,\"lname\":\"ARCHIE\",\"prov_mname\":\" \",\"city\":\"HOUSTON\",\"prov_title\":\"DMD\",\"fname\":\"KYMAURI\",\"mname\":\"ANIYAH\",\"suffix\":\" \",\"prov_fname\":\"NISARG\"},{\"id\":\"7822771\",\"prov_lname\":\"SHAH\",\"effective_date\":\"11/29/2022\",\"lname\":\"ARIAS\",\"prov_mname\":\" \",\"city\":\"HOUSTON\",\"prov_title\":\"DMD\",\"fname\":\"AGUSTIN\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"NISARG\"},{\"id\":\"6356608\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ARMENDARIZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"AIDEN\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"6903532\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ARMENDARIZ\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"IVAN\",\"mname\":\"MANUEL\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"43027562\",\"prov_lname\":\"GANDHI\",\"effective_date\":null,\"lname\":\"ARMSTRONG\",\"prov_mname\":\"S\",\"city\":\"CROSBY\",\"prov_title\":\"DDS\",\"fname\":\"AUBREY\",\"mname\":\"MICHELLE\",\"suffix\":\" \",\"prov_fname\":\"RAHUL\"},{\"id\":\"6696012\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ARREDONDO\",\"prov_mname\":\" \",\"city\":\"BAYTOWN\",\"prov_title\":\"DMD\",\"fname\":\"MARIAH\",\"mname\":\"A\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"6696005\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ARREDONDO\",\"prov_mname\":\" \",\"city\":\"BAYTOWN\",\"prov_title\":\"DMD\",\"fname\":\"JORDAN\",\"mname\":\"LOREN\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"12381856\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ARROYO\",\"prov_mname\":\" \",\"city\":\"HIGHLANDS\",\"prov_title\":\"DMD\",\"fname\":\"YALITZA\",\"mname\":\" \",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"},{\"id\":\"4204407\",\"prov_lname\":\"GANDHI\",\"effective_date\":null,\"lname\":\"ARSOLA\",\"prov_mname\":\"S\",\"city\":\"HUFFMAN\",\"prov_title\":\"DDS\",\"fname\":\"DAMIEN\",\"mname\":\"NOEL\",\"suffix\":\" \",\"prov_fname\":\"RAHUL\"},{\"id\":\"4292457\",\"prov_lname\":\"RASTOGI\",\"effective_date\":null,\"lname\":\"ASHBY\",\"prov_mname\":\" \",\"city\":\"CROSBY\",\"prov_title\":\"DMD\",\"fname\":\"CARTER\",\"mname\":\"JAMES\",\"suffix\":\" \",\"prov_fname\":\"GEETIKA\"}],\"num_plans\":\"2\",\"num_recs\":\"44\"}}</pre></body></html>";
+		
+		//System.out.println("CALLED--URL...");
+		String data = "";
+		List<RosterDetails> li = new ArrayList<>();
+		try {
+			data = driver.getPageSource();
+			System.out.println("data");
+			System.out.println(data);
+			data = data.replace("</pre></body></html>", "");
+			data = "{\"members_roster_list\":"+data.split("\"members_roster_list\":")[1];
+			////data.
+			JSONObject jsonObj = new JSONObject(data);
+			JSONObject subData =(JSONObject) jsonObj.get("members_roster_list");
+			JSONArray arr = subData.getJSONArray("members");
+			
+			for (int i=0; i<arr.length(); i++) {
+			    JSONObject obj = arr.getJSONObject(i);
+			    RosterDetails rd= new RosterDetails();
+			    try {
+			    rd.setPatFName(obj.get("fname").toString());
+				rd.setPatLName(obj.get("lname").toString());
+				rd.setPatFName(rd.getPatLName()+", "+rd.getPatFName());
+				rd.setCity(obj.get("city").toString());
+				rd.setAssignedDentistF(obj.get("prov_fname").toString());
+				rd.setAssignedDentistL(obj.get("prov_lname").toString());
+				rd.setId(obj.get("id").toString());
+				li.add(rd);
+			    }catch(Exception c) {
+			    	c.printStackTrace();
+			    }
+			}
+			
+			
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+		
+		return li;
+	
+}
 
 }

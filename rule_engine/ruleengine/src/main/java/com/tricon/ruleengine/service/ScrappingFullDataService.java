@@ -28,5 +28,7 @@ public interface ScrappingFullDataService {
 	
 	public String getScrappingFullDataManagmentProcessStatus(int id);
 	
+	public ScrappingFullDataDetailDto getScrappingDetailsForRcm(int siteId,String offId,String userName);
+	
 
 }
