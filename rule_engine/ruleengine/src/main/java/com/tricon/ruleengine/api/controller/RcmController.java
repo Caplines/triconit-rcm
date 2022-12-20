@@ -247,13 +247,14 @@ public class RcmController {
 			if (officeUuid != null) {
 				Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
 				Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
-				String officeUUid ="";
+				Office office =null;
 				if (offices.isPresent() && offices.get() != null) {
-					officeUUid = offices.get().stream()
-						      .filter(n -> n.getUuid().equals(officeUuid)).findFirst().get().getUuid();
-					d = fullService.getScrappingDetailsForRcm(scrap.getId(),officeUUid,email);
-					d.setOfficeId(officeUUid);
+					OfficeDto od = offices.get().stream()
+						      .filter(n -> n.getUuid().equals(officeUuid)).findFirst().get();
+					d = fullService.getScrappingDetailsForRcm(scrap.getId(),od.getUuid(),email);
+					d.setOfficeId(od.getUuid());
 					d.setGoogleSheetIdDb("1KVaZbAfaYOGMbYRZuGH-4VVxeZQPIvML0YThPsPNTnw");
+					d.setPassword(od.getName());
 					remoteList.add(d); 
 				}
 			}else {
@@ -264,6 +265,7 @@ public class RcmController {
 					d = fullService.getScrappingDetailsForRcm(scrap.getId(),off.getUuid(),email);
 					d.setGoogleSheetIdDb("1KVaZbAfaYOGMbYRZuGH-4VVxeZQPIvML0YThPsPNTnw");
 					d.setOfficeId(off.getUuid());
+					d.setPassword(off.getName());
 					remoteList.add(d); 
 				}
 				

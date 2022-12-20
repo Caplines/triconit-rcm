@@ -1,13 +1,20 @@
 package com.tricon.rcm.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.tricon.rcm.dto.RcmClaimMainRootDto;
 import com.tricon.rcm.dto.RcmInsuranceMainRootDto;
 import com.tricon.rcm.dto.RcmRemoteLiteMainRootDto;
+import com.tricon.rcm.dto.RcmRemoteLiteSiteDetailsDto;
+import com.tricon.rcm.dto.RemoteLiteDto;
+import com.tricon.rcm.util.ConnectAndReadSheets;
 import com.tricon.rcm.dto.ClaimSourceDto;
+
+import java.util.HashMap;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -27,6 +34,12 @@ public class RuleEngineService {
 
 	@Autowired
 	Environment ev;
+
+	@Value("${google.credential.folder}")
+	private String CREDENTIALS_FOLDER;
+
+	@Value("${google.client.secret}")
+	private String CLIENT_SECRET_DIR;
 
 	@Autowired
 	RestTemplate restTemplate;
@@ -93,18 +106,18 @@ public class RuleEngineService {
 		System.out.println(result.getBody());
 		RcmInsuranceMainRootDto rootDto = result.getBody();
 		System.out.println(rootDto.getData().getDatas().get(0).getData().get(0).getName());
-		//System.out.println(rootDto.getData().getDatas().get(0).getName());
+		// System.out.println(rootDto.getData().getDatas().get(0).getName());
 
 		return true;
 	}
 
-	public boolean pullRemoteLiteDate(ClaimSourceDto dto) {
+	public HashMap<String, List<RemoteLiteDto>> pullRemoteLiteDate(ClaimSourceDto dto) {
 
 		logger.info(" In pullRemoteLiteDate");
 		dto.setPassword(ev.getProperty("rcm.ruleengine.password"));
 
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
-
+		HashMap<String, List<RemoteLiteDto>> map = new HashMap<>();
 		String param = "?password=" + dto.getPassword();
 		if (dto.getOfficeuuid() != null)
 			param = param + "&office=" + dto.getOfficeuuid();
@@ -116,10 +129,22 @@ public class RuleEngineService {
 
 		System.out.println(result.getBody());
 		RcmRemoteLiteMainRootDto rootDto = result.getBody();
-		System.out.println(rootDto.getData().get(0).getOfficeId());
-		System.out.println(rootDto.getData().get(0).getGoogleSubId());
+		try {
+			List<RcmRemoteLiteSiteDetailsDto> data = rootDto.getData();
+			for (RcmRemoteLiteSiteDetailsDto dto1 : data) {
 
-		return true;
+				map.put(dto1.getOfficeName(), ConnectAndReadSheets.readRemoteLiteSheet(dto1.getGoogleSheetIdDb(),
+						dto1.getPassword(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER));
+
+			}
+			// System.out.println(rootDto.getData().get(0).getOfficeId());
+			// System.out.println(rootDto.getData().get(0).getGoogleSubId());
+
+		} catch (Exception n) {
+			n.printStackTrace();
+
+		}
+		return map;
 	}
 
 }
