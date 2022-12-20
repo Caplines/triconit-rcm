@@ -6,12 +6,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.tricon.rcm.dto.RcmClaimMainRootDto;
+import com.tricon.rcm.dto.RcmInsuranceDatas;
 import com.tricon.rcm.dto.RcmInsuranceMainRootDto;
 import com.tricon.rcm.dto.RcmRemoteLiteMainRootDto;
 import com.tricon.rcm.dto.RcmRemoteLiteSiteDetailsDto;
 import com.tricon.rcm.dto.RemoteLiteDto;
+import com.tricon.rcm.jpa.repository.RcmInsuranceRepo;
+import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.util.ConnectAndReadSheets;
+import com.tricon.rcm.db.entity.RcmInsurance;
 import com.tricon.rcm.dto.ClaimSourceDto;
+import com.tricon.rcm.dto.ClaimsFromRuleEngine;
+import com.tricon.rcm.dto.InsuranceFromRuleEngine;
+import com.tricon.rcm.dto.RcmClaimDataDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +51,12 @@ public class RuleEngineService {
 	@Autowired
 	RestTemplate restTemplate;
 
+	@Autowired
+	RcmInsuranceRepo insuranceRepo;
+
+	@Autowired
+	RcmOfficeRepository officeRepo;
+
 	HttpHeaders headers = null;
 
 	@PostConstruct
@@ -60,52 +73,95 @@ public class RuleEngineService {
 
 	}
 
-	public boolean pullClaimFromRE(ClaimSourceDto dto) {
+	public RcmClaimMainRootDto pullClaimFromRE(ClaimSourceDto dto) {
 
 		logger.info(" In pullClaimFromRE");
-
+		RcmClaimMainRootDto mainRoot=null;
 		dto.setPassword(ev.getProperty("rcm.ruleengine.password"));
+		try {
+			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			String param = "?password=" + dto.getPassword();
+			if (dto.getOfficeuuid() != null)
+				param = param + "&office=" + dto.getOfficeuuid();
 
-		HttpEntity<String> entity = new HttpEntity<String>(headers);
+			// Call Rule Engine API..
+			ResponseEntity<RcmClaimMainRootDto> result = restTemplate.exchange(
+					ev.getProperty("rmc.pullclaimurl") + param, HttpMethod.GET, entity, RcmClaimMainRootDto.class);
 
-		String param = "?password=" + dto.getPassword();
-		if (dto.getOfficeuuid() != null)
-			param = param + "&office=" + dto.getOfficeuuid();
+			mainRoot = result.getBody();
+			/*
+			for (RcmClaimDataDto datas : rootDto.getData().getDatas()) {
+				String OfficeUuid = datas.getOfficeName();
+				try {
+					for (ClaimsFromRuleEngine re : datas.getData()) {
+						insurance = new RcmInsurance();
+						insurance.setInsuranceId(re.getInsuranceCompanyId());
+						insurance.setName(re.getName());
+						insurance.setOffice(officeRepo.findByUuid(OfficeUuid));
+						insuranceOld = insuranceRepo.findByInsuranceId(re.getInsuranceCompanyId());
+						if (insuranceOld == null)
+							insuranceRepo.save(insurance);
+						else {
+							insuranceOld.setName(insurance.getName());
+							insuranceRepo.save(insuranceOld);
+						}
+					}
+				} catch (Exception n) {
 
-		// Call Rule Engine API..
-		ResponseEntity<RcmClaimMainRootDto> result = restTemplate.exchange(ev.getProperty("rmc.pullclaimurl") + param,
-				HttpMethod.GET, entity, RcmClaimMainRootDto.class);
-
-		System.out.println(result.getBody());
-		RcmClaimMainRootDto rootDto = result.getBody();
-		System.out.println(rootDto.getData().getDatas().get(0).getOfficeName());
-		System.out.println(rootDto.getData().getDatas().get(0).getData().get(0).getPatientId());
-
-		return true;
+				}
+				
+			}*/
+		} catch (Exception n) {
+			logger.error("Error in " + dto.getOfficeuuid());
+			logger.error(n.getMessage());
+		}
+		return mainRoot;
 	}
 
-	public boolean pullInsuranceFromRE(ClaimSourceDto dto) {
+	public boolean pullIAndSaveInsuranceFromRE(ClaimSourceDto dto) {
 
 		logger.info(" In pull Insurance From RE");
 		dto.setPassword(ev.getProperty("rcm.ruleengine.password"));
+		try {
+			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			String param = "?password=" + dto.getPassword();
+			if (dto.getOfficeuuid() != null)
+				param = param + "&office=" + dto.getOfficeuuid();
+			// Call Rule Engine API..
+			ResponseEntity<RcmInsuranceMainRootDto> result = restTemplate.exchange(
+					ev.getProperty("rmc.pullInsuranceUrl") + param, HttpMethod.GET, entity,
+					RcmInsuranceMainRootDto.class);
 
-		HttpEntity<String> entity = new HttpEntity<String>(headers);
+			RcmInsuranceMainRootDto rootDto = result.getBody();
+			RcmInsurance insurance = null;
+			RcmInsurance insuranceOld = null;
 
-		String param = "?password=" + dto.getPassword();
-		if (dto.getOfficeuuid() != null)
-			param = param + "&office=" + dto.getOfficeuuid();
+			for (RcmInsuranceDatas datas : rootDto.getData().getDatas()) {
+				String OfficeUuid = datas.getOfficeName();
+				try {
+					for (InsuranceFromRuleEngine re : datas.getData()) {
+						insurance = new RcmInsurance();
+						insurance.setInsuranceId(re.getInsuranceCompanyId());
+						insurance.setName(re.getName());
+						insurance.setOffice(officeRepo.findByUuid(OfficeUuid));
+						insuranceOld = insuranceRepo.findByInsuranceId(re.getInsuranceCompanyId());
+						if (insuranceOld == null)
+							insuranceRepo.save(insurance);
+						else {
+							insuranceOld.setName(insurance.getName());
+							insuranceRepo.save(insuranceOld);
+						}
+					}
+				} catch (Exception n) {
 
-		// Call Rule Engine API..
-		ResponseEntity<RcmInsuranceMainRootDto> result = restTemplate.exchange(
-				ev.getProperty("rmc.pullInsuranceUrl") + param, HttpMethod.GET, entity, RcmInsuranceMainRootDto.class);
+				}
+			}
 
-		// ResponseEntity<RcmClaimMainRootDto> result1 = restTemplate
-		// .getForEntity(ev.getProperty("rmc.pullclaimurl")+param,request,
-		// RcmClaimMainRootDto.class);
+		} catch (Exception n) {
+			logger.error("Error in " + dto.getOfficeuuid());
+			logger.error(n.getMessage());
+		}
 
-		System.out.println(result.getBody());
-		RcmInsuranceMainRootDto rootDto = result.getBody();
-		System.out.println(rootDto.getData().getDatas().get(0).getData().get(0).getName());
 		// System.out.println(rootDto.getData().getDatas().get(0).getName());
 
 		return true;
@@ -115,34 +171,40 @@ public class RuleEngineService {
 
 		logger.info(" In pullRemoteLiteDate");
 		dto.setPassword(ev.getProperty("rcm.ruleengine.password"));
-
-		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		HashMap<String, List<RemoteLiteDto>> map = new HashMap<>();
-		String param = "?password=" + dto.getPassword();
-		if (dto.getOfficeuuid() != null)
-			param = param + "&office=" + dto.getOfficeuuid();
-
-		// Call Rule Engine API..
-		ResponseEntity<RcmRemoteLiteMainRootDto> result = restTemplate.exchange(
-				ev.getProperty("rcm.pullremoteliteurl") + param, HttpMethod.GET, entity,
-				RcmRemoteLiteMainRootDto.class);
-
-		System.out.println(result.getBody());
-		RcmRemoteLiteMainRootDto rootDto = result.getBody();
 		try {
-			List<RcmRemoteLiteSiteDetailsDto> data = rootDto.getData();
-			for (RcmRemoteLiteSiteDetailsDto dto1 : data) {
+			HttpEntity<String> entity = new HttpEntity<String>(headers);
 
-				map.put(dto1.getOfficeName(), ConnectAndReadSheets.readRemoteLiteSheet(dto1.getGoogleSheetIdDb(),
-						dto1.getPassword(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER));
+			String param = "?password=" + dto.getPassword();
+			if (dto.getOfficeuuid() != null)
+				param = param + "&office=" + dto.getOfficeuuid();
+
+			// Call Rule Engine API..
+			ResponseEntity<RcmRemoteLiteMainRootDto> result = restTemplate.exchange(
+					ev.getProperty("rcm.pullremoteliteurl") + param, HttpMethod.GET, entity,
+					RcmRemoteLiteMainRootDto.class);
+
+			System.out.println(result.getBody());
+			RcmRemoteLiteMainRootDto rootDto = result.getBody();
+			try {
+				List<RcmRemoteLiteSiteDetailsDto> data = rootDto.getData();
+				for (RcmRemoteLiteSiteDetailsDto dto1 : data) {
+
+					map.put(dto1.getOfficeName(), ConnectAndReadSheets.readRemoteLiteSheet(dto1.getGoogleSheetIdDb(),
+							dto1.getPassword(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER));
+					System.err.println(map.get(dto1.getOfficeName()).size());
+
+				}
+				// System.out.println(rootDto.getData().get(0).getOfficeId());
+				// System.out.println(rootDto.getData().get(0).getGoogleSubId());
+
+			} catch (Exception n) {
+				n.printStackTrace();
 
 			}
-			// System.out.println(rootDto.getData().get(0).getOfficeId());
-			// System.out.println(rootDto.getData().get(0).getGoogleSubId());
-
 		} catch (Exception n) {
-			n.printStackTrace();
-
+			logger.error("Error in " + dto.getOfficeuuid());
+			logger.error(n.getMessage());
 		}
 		return map;
 	}

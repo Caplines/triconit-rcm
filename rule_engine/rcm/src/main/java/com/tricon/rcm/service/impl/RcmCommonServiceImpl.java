@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmCompany;
-import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;

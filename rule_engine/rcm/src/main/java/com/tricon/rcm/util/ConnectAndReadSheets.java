@@ -81,7 +81,7 @@ public class ConnectAndReadSheets {
 
 		List<List<Object>> values = range.getValues();
 		List<RemoteLiteDto> list = new ArrayList<>();
-		ListIterator li = values.listIterator(values.size());
+		ListIterator li = values.listIterator();
 		RemoteLiteDto dto = null;
 		// IVFHistorySheet vifH = null;
 		
@@ -89,6 +89,7 @@ public class ConnectAndReadSheets {
 		while (li.hasNext()) {
 			ArrayList<String> obj = (ArrayList<String>) li.next();
 			ctr++;
+			System.out.println("dddddd");
 			if (ctr < 3)
 				continue;
 			try {

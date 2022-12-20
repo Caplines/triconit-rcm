@@ -60,6 +60,7 @@ public class ClaimsFromRuleEngine {
 	@JsonProperty("c17")
 	Date birthDate;
 	
-
+	@JsonProperty("c18")
+	String patientName;
 	
 }

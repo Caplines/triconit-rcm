@@ -22,6 +22,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.tricon.rcm.db.BaseAuditEntity;
 
+
 import lombok.Data;
 
 @Data
@@ -71,5 +72,10 @@ public class RcmUser extends BaseAuditEntity implements Serializable{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id",referencedColumnName="id")
 	private RcmTeam team;
+	
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "office_id")
+	private RcmOffice office;
 	
 }
