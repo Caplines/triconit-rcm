@@ -233,8 +233,7 @@ public class RcmController {
 	}
 
 	@GetMapping("/remote-lite-details")
-	public ResponseEntity<Object> getRemoteLiteSiteDetails(@RequestHeader("x-api-key") String apiKey,@RequestParam(value = "office", required = false) String officeUuid,
-			@RequestParam(value = "password", required = true) String password)  {
+	public ResponseEntity<Object> getRemoteLiteSiteDetails(@RequestHeader("x-api-key") String apiKey,@RequestParam(value = "office", required = false) String officeUuid)  {
 		
 		List<ScrappingFullDataDetailDto> remoteList= new ArrayList<>();
 		ScrappingFullDataDetailDto d =null;

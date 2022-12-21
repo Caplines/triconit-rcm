@@ -19,14 +19,14 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "rcm_claim_answer")
-public class RcmClaimAnswer extends BaseAuditEntity implements Serializable{
+@Table(name = "rcm_remote_lite_count")
+public class RcmRemoteStatusCount extends BaseAuditEntity implements Serializable{
 
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 3061770400704865792L;
+	private static final long serialVersionUID = 4620987119373238283L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,16 +34,19 @@ public class RcmClaimAnswer extends BaseAuditEntity implements Serializable{
 	private int id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "claim_id",referencedColumnName="claim_uuid")
-	private RcmClaims claim;
+	@JoinColumn(name = "office_id")
+	private RcmOffice office;
 	
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "question_id",nullable=false)
-	private RcmClaimQuestions question;
+	@Column(name = "rejected_count", length =5)
+	private int rejectedCount;
 	
-	@Column(name = "anwser",length=255)
-	private String anwser;
+	@Column(name = "accepted_count", length =5)
+	private int acceptedCount;
 	
+	@Column(name = "printed_count", length =5)
+	private int printedCount;
 	
+	@Column(name = "duplicate_count", length =5)
+	private int duplicateCount;
 	
 }

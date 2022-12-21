@@ -1,5 +1,7 @@
 package com.tricon.rcm.db.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,7 +20,13 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "rcm_insurance", uniqueConstraints = { @UniqueConstraint(columnNames = { "insurance_id", "office_id" }) })
-public class RcmInsurance extends BaseAuditEntity {
+public class RcmInsurance extends BaseAuditEntity implements Serializable{
+
+   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5571111391743504351L;
+	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,4 +42,8 @@ public class RcmInsurance extends BaseAuditEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "office_id", referencedColumnName = "uuid")
 	private RcmOffice office;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "insurance_type_id", referencedColumnName = "id",nullable=true)
+	private RcmInsuranceType insuranceType;
 }

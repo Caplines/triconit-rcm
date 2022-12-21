@@ -29,8 +29,10 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.tricon.rcm.dto.InsuranceNameTypeDto;
+import com.tricon.rcm.dto.RemoteLietStatusCount;
+import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.dto.RemoteLiteDto;
-
 
 @Configuration
 public class ConnectAndReadSheets {
@@ -68,34 +70,86 @@ public class ConnectAndReadSheets {
 		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
 	}
 
-	public static List<RemoteLiteDto> readRemoteLiteSheet(String spreadsheetId, String sheetName,
-			String clientDir, String clientFolder)
-			throws IOException {
+	public static RemoteLiteDataDto readRemoteLiteSheet(String spreadsheetId, String sheetName, String clientDir,
+			String clientFolder) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
 		return readFullRemoteLiteSheet(response);
 	}
 
-	public static List<RemoteLiteDto> readFullRemoteLiteSheet(ValueRange range) {
+	private static RemoteLiteDataDto readFullRemoteLiteSheet(ValueRange range) {
 
 		List<List<Object>> values = range.getValues();
+
+		RemoteLietStatusCount statusCount = new RemoteLietStatusCount();
+		statusCount.setAcceptedCount(0);
+		statusCount.setDuplicateCount(0);
+		statusCount.setPrintedCount(0);
+		statusCount.setRejectedCount(0);
+
+		RemoteLiteDataDto fulldto = new RemoteLiteDataDto();
 		List<RemoteLiteDto> list = new ArrayList<>();
 		ListIterator li = values.listIterator();
 		RemoteLiteDto dto = null;
 		// IVFHistorySheet vifH = null;
-		
+
 		int ctr = 0;
 		while (li.hasNext()) {
 			ArrayList<String> obj = (ArrayList<String>) li.next();
 			ctr++;
-			System.out.println("dddddd");
 			if (ctr < 3)
 				continue;
 			try {
 				int x = -1;
 				dto = new RemoteLiteDto(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 						obj.get(++x), obj.get(++x), obj.get(++x));
+				list.add(dto);
+				if (dto.getStatus().equalsIgnoreCase("Accepted")) {
+					statusCount.setAcceptedCount(statusCount.getAcceptedCount() + 1);
+				} else if (dto.getStatus().equalsIgnoreCase("Rejected")) {
+					statusCount.setRejectedCount(statusCount.getRejectedCount() + 1);
+				} else if (dto.getStatus().equalsIgnoreCase("Duplicate")) {
+					statusCount.setDuplicateCount(statusCount.getDuplicateCount() + 1);
+				} else if (dto.getStatus().equalsIgnoreCase("Printed")) {
+					statusCount.setPrintedCount(statusCount.getPrintedCount() + 1);
+				}
+
+			} catch (Exception ex) {
+				continue;
+			}
+
+		}
+
+		fulldto.setDataList(list);
+		fulldto.setStatusCount(statusCount);
+		return fulldto;
+
+	}
+
+	public static List<InsuranceNameTypeDto> readInsuranceMappingSheet(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		return readInsuranceMappingSheetFull(response);
+	}
+
+	private static List<InsuranceNameTypeDto> readInsuranceMappingSheetFull(ValueRange range) {
+
+		List<List<Object>> values = range.getValues();
+		List<InsuranceNameTypeDto> list = new ArrayList<>();
+		InsuranceNameTypeDto dto = null;
+		ListIterator li = values.listIterator();
+		int ctr = 0;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			ctr++;
+			if (ctr < 2)
+				continue;
+			try {
+				int x = -1;
+				dto = new InsuranceNameTypeDto(obj.get(++x), obj.get(++x));
 				list.add(dto);
 
 			} catch (Exception ex) {

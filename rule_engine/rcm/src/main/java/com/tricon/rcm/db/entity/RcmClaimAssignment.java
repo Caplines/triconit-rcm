@@ -2,6 +2,8 @@ package com.tricon.rcm.db.entity;
 
 
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,9 +23,14 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "rcm_claim_assignment")
-public class RcmClaimAssignment extends BaseAuditEntity{
+public class RcmClaimAssignment extends BaseAuditEntity implements Serializable{
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 113571778937002573L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)

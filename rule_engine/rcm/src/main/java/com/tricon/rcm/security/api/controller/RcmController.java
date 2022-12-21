@@ -8,11 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.enums.ClaimSourceEnum;
@@ -50,11 +54,14 @@ public class RcmController {
 	@GetMapping("/api/fetch-claims") 
 	public ResponseEntity<Object>  fetchClaims(@RequestBody ClaimSourceDto dto) {
 
-		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		((UserDetails)principal).getUsername();
+		RcmUser user=null;
 		if (dto.getSource().equals(ClaimSourceEnum.EAGLESOFT.toString())) {
 			
 			//go to Rule Engine.
-			rService.pullClaimFromRE(dto);
+			rService.pullClaimFromRE(dto,user);
 			
 		}else {
 			
