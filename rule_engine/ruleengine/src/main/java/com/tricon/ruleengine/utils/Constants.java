@@ -128,6 +128,8 @@ public class Constants {
 	public static final String RULE_ID_84="Provider Name";
 	public static final String RULE_ID_85="Perio Maintenance with Prophy and Fluoride";
 	public static final String RULE_ID_86="Oral hygiene with Prophy and Fluoride";
+	public static final String RULE_ID_87="Provider Certification";
+	
 	
 
 	//public static final String RULE_ID_79="Provider Name";	
