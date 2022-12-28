@@ -4,6 +4,8 @@ public class RosterDetails {
 
 	private String patFName;
 	private String patLName;
+	private String patMName;
+	
 	private String city;
 	private String assignedDentistF;
 	private String assignedDentistL;
@@ -80,6 +82,12 @@ public class RosterDetails {
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	public String getPatMName() {
+		return patMName;
+	}
+	public void setPatMName(String patMName) {
+		this.patMName = patMName;
 	}
 	
 	

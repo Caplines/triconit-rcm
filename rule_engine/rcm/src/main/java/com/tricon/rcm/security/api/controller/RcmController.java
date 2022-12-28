@@ -20,6 +20,7 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.enums.ClaimSourceEnum;
+import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
 
 
@@ -31,7 +32,7 @@ public class RcmController {
 	private final Logger logger = LoggerFactory.getLogger(RuleEngineService.class);
 	
 	@Autowired
-	RuleEngineService rService;
+	ClaimServiceImpl claimServiceImpl;
 	
 	@Autowired
 	Environment ev;
@@ -58,17 +59,9 @@ public class RcmController {
 		Object principal = authentication.getPrincipal();
 		((UserDetails)principal).getUsername();
 		RcmUser user=null;
-		if (dto.getSource().equals(ClaimSourceEnum.EAGLESOFT.toString())) {
-			
-			//go to Rule Engine.
-			rService.pullClaimFromRE(dto,user);
-			
-		}else {
-			
-			//go to Google Sheet.
-			
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", ""));
+		Object sucess=null;
+		sucess= claimServiceImpl.pullClaimFromSource(dto,user);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",sucess));
 	}
 	
 	

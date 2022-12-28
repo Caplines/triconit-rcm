@@ -29,6 +29,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.RemoteLiteDataDto;
@@ -161,5 +162,38 @@ public class ConnectAndReadSheets {
 		return list;
 
 	}
+	
+	
+	public static List<ClaimFromSheet> readClaimsFromGSheet(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		List<List<Object>> values = response.getValues();
+		List<ClaimFromSheet> list = new ArrayList<>();
+		ClaimFromSheet dto = null;
+		ListIterator li = values.listIterator();
+		int ctr = 0;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			ctr++;
+			if (ctr < 2)
+				continue;
+			try {
+				int x = -1;
+				dto = new ClaimFromSheet(obj.get(++x), obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
+						obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x));
+				list.add(dto);
+
+			} catch (Exception ex) {
+				continue;
+			}
+
+		}
+
+		return list;
+	}
+
+	
 
 }

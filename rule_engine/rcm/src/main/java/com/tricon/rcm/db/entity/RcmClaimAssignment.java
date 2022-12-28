@@ -61,5 +61,5 @@ public class RcmClaimAssignment extends BaseAuditEntity implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "status_id",referencedColumnName="id")
-	private RcmClaimStatus rcmClaimStatus;
+	private RcmClaimStatusType rcmClaimStatus;
 }

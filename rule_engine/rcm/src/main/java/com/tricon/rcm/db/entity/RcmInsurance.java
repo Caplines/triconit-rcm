@@ -38,6 +38,9 @@ public class RcmInsurance extends BaseAuditEntity implements Serializable{
 
 	@Column(name = "insurance_id", nullable = false)
 	private String insuranceId;
+	
+	@Column(name = "active", nullable = false)
+	private Boolean active;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "office_id", referencedColumnName = "uuid")

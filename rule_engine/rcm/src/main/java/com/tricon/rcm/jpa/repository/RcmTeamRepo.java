@@ -6,4 +6,5 @@ import com.tricon.rcm.db.entity.RcmTeam;
 
 public interface RcmTeamRepo extends JpaRepository<RcmTeam, String>{
 
+	RcmTeam findByNameId(String nameid);
 }

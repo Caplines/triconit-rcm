@@ -933,15 +933,19 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	}
 
 	@Override
-	public String[] doDiagnosticCheck(String officeUuid) {
+	public String[] doDiagnosticCheck(String officeUuid,String companyUUid) {
 		// TODO Auto-generated method stub
-
+		Office office=null;
+		if (companyUUid!=null) {
+			 office = od.getOfficeByUuid(officeUuid,companyUUid);
+		}else {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
 		JwtUser user = (JwtUser) userDetails;
 		
-		Office office = od.getOfficeByUuid(officeUuid,user.getCompany().getUuid());
+		 office = od.getOfficeByUuid(officeUuid,user.getCompany().getUuid());
+		}
 		String[] ret = new String[3];
 		ret[2] = office.getName();
 		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
