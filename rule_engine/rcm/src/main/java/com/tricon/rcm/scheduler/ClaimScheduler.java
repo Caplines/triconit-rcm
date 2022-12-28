@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmUser;
@@ -36,6 +37,7 @@ public class ClaimScheduler {
 	RcmCommonServiceImpl commonsService;
 
 	@Scheduled(cron = "${scheduler.startcron}")
+	@Transactional(rollbackFor = Exception.class)
 	public void updateClaimAndInsuranceWithUnBilledClaimsFromRE() {
 
 		logger.info("ClaimScheduler Run at :-" + new Date());
