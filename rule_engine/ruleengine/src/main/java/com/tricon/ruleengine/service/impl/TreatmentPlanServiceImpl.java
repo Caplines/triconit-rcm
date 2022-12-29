@@ -4197,7 +4197,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						TreatmentPlanDetails b=a.getTreatmentPlanDetails();
 						if (!compairToothSurfaceDescriptionCode(ignoreDataArray, a.getServiceCode(),
 							b.getDescription(), a.getTooth(), a.getSurface())) {
-							tempMap.put(entry.getKey(),entry.getValue());
+							if (tempMap.get(entry.getKey())!=null) {
+								List<Object>  t =tempMap.get(entry.getKey());
+								t.add(oL);
+							//tempMap.put(entry.getKey(),t);
+							}else {
+								List<Object> t= new ArrayList<>();
+								t.add(oL);
+								tempMap.put(entry.getKey(),t);
+							}
 						}else {
 							RuleEngineLogger.generateLogs(clazz, "Ignoring  Service Code-"+a.getServiceCode(),
 									Constants.rule_log_debug, bw);
@@ -4209,7 +4217,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						ClaimDataDetails b=a.getDetails();
 						if (!compairToothSurfaceDescriptionCode(ignoreDataArray, a.getServiceCode(),
 								b.getDescription(), a.getTooth(), a.getSurface())) {
-								tempMap.put(entry.getKey(),entry.getValue());
+								if (tempMap.get(entry.getKey())!=null) {
+									List<Object>  t =tempMap.get(entry.getKey());
+									t.add(oL);
+								//tempMap.put(entry.getKey(),t);
+								}else {
+									List<Object> t= new ArrayList<>();
+									t.add(oL);
+									tempMap.put(entry.getKey(),t);
+								}
 						}else {
 							RuleEngineLogger.generateLogs(clazz, "Ignoring  Service Code-"+a.getServiceCode(),
 									Constants.rule_log_debug, bw);

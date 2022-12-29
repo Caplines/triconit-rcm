@@ -12579,7 +12579,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 	// Provider Name
 	public List<TPValidationResponseDto> Rule84(List<Object> tpList, Object ivfSheet,MessageSource messageSource,
 			Rules rule, BufferedWriter bw,int userType) {
-		
+		boolean  pass=false;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_84,
 				Constants.rule_log_debug, bw);
@@ -12602,7 +12602,20 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 					Constants.rule_log_debug, bw);
 		RuleEngineLogger.generateLogs(clazz, "IV Provider  Name =" + ivf.getProviderName(),
 				Constants.rule_log_debug, bw);
-		if (!pcName.trim().equalsIgnoreCase(ivf.getProviderName())) {
+		
+		if (ivf.getProviderName().equalsIgnoreCase(pcName.trim())) {
+			pass=true;
+		}else  {
+			String[] names= ivf.getProviderName().split(" ");
+			if (names.length>1) {
+				String lastName =names[names.length-1];
+				if (lastName.equalsIgnoreCase(pcName.trim())) {
+					pass=true;
+				}
+			}
+		}
+		
+		if (!pass) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule84.error.message",
 							new Object[] { ivf.getProviderName(), pcName,ER_MSG }, locale),
@@ -12823,18 +12836,18 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 					pass=false;
 					errorCode=String.join(",", fcodesRules);
 				}else {
-				String status= mapping.getProviderStatus();
+				String status= mapping.getProviderStatus().trim();
 				if (status.equalsIgnoreCase("Active")) {
 				
-				if (D9230 && mapping.getD9230().equalsIgnoreCase("no")) {
+				if (D9230 && mapping.getD9230().trim().equalsIgnoreCase("no")) {
 					fcodesRulesInd.add("D9230");
 					pass=false;
 				}
-				if (D0145 && mapping.getD0145().equalsIgnoreCase("no")) {
+				if (D0145 && mapping.getD0145().trim().equalsIgnoreCase("no")) {
 					fcodesRulesInd.add("D0145");
 					pass=false;
 				}
-				if (D9248 && mapping.getD9248().equalsIgnoreCase("no")) {
+				if (D9248 && mapping.getD9248().trim().equalsIgnoreCase("no")) {
 					fcodesRulesInd.add("D9248");
 					pass=false;
 				 }
