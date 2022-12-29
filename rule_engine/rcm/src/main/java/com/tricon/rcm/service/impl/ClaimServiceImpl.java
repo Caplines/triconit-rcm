@@ -25,6 +25,7 @@ import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RcmClaimMainRootDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RcmClaimLogRepo;
@@ -115,6 +116,15 @@ public class ClaimServiceImpl {
 
 		}
 		return messages;
+	}
+	
+	
+	/**
+	 * Service For Billing Pendency Dashboard (Get Fresh Claims Count Details)
+	 * @return
+	 */
+	public List<FreshClaimDetailsDto> fetchFreshClaimDetails() {
+		return rcmClaimRepository.fetchFreshClaimDetails();
 	}
 
 	public String pullAndSaveClaimFromSheet(ClaimSourceDto dto, RcmUser user) {

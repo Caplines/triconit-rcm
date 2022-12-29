@@ -1,5 +1,6 @@
 package com.tricon.rcm.security.api.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -19,52 +20,47 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
-
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
 public class RcmController {
-	
+
 	private final Logger logger = LoggerFactory.getLogger(RuleEngineService.class);
-	
+
 	@Autowired
 	ClaimServiceImpl claimServiceImpl;
-	
+
 	@Autowired
 	Environment ev;
-	
-	@ApiOperation(value = "Api TEST)", response = String.class)
-	@PostMapping("ignore1") 
-	public String  Test() {
 
-		return "called";
-	}
-
-	@ApiOperation(value = "Api TEST)", response = String.class)
-	@GetMapping("ignore3") 
-	public String  Test1() {
-
-		return "called";
-	}
-
-	@ApiOperation(value = "Api For Fetching Claims For ES", response = String.class)
-	@GetMapping("/api/fetch-claims") 
-	public ResponseEntity<Object>  fetchClaims(@RequestBody ClaimSourceDto dto) {
+	/**
+	 * Fetch Claims From Eagle Soft or Google Sheet
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	@ApiOperation(value = "Api For Fetching Claims For ES", response = String.class, responseContainer = "Map")
+	@GetMapping("/api/fetch-claims")
+	public ResponseEntity<Object> fetchClaims(@RequestBody ClaimSourceDto dto) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
-		((UserDetails)principal).getUsername();
-		RcmUser user=null;
-		Object sucess=null;
-		sucess= claimServiceImpl.pullClaimFromSource(dto,user);
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",sucess));
+		((UserDetails) principal).getUsername();
+		RcmUser user = null;
+		Object sucess = null;
+		sucess = claimServiceImpl.pullClaimFromSource(dto, user);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", sucess));
 	}
-	
-	
-	
+
+	@ApiOperation(value = "Api For Fetching Fresh Claims Details (Billing Pendency Dashboard)", response = FreshClaimDetailsDto.class, responseContainer = "List")
+	@GetMapping("/api/fetch-fresh-claims")
+	public ResponseEntity<Object> fetchFreshClaimDetails() {
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchFreshClaimDetails()));
+	}
 
 }
