@@ -127,7 +127,8 @@ public class WebSecurityConfig {
 			                "/csrf",
 			                "/",
 			                "/v2/api-docs",
-						    "/webjars/*");
+						    "/webjars/*",
+						    "/master/*");
 	}
 
 	/*

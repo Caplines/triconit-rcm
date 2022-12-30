@@ -1,6 +1,11 @@
 package com.tricon.rcm.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 
 public class Constants {
 
@@ -27,4 +32,11 @@ public class Constants {
 	public static String socketnotworkingFine="Connection to office is <b style=\"color:red\" class=\"error-message-api\">not</b> working propertly. Make sure Agent is running / router is configured properly.";
 	//Taken From Rule Engine - END
 	
+	public static final String ROLE_PREFIX="ROLE_";
+	public static final String  HYPHEN="_";
+	public static final String ROLE_ADMIN="ROLE_ADMIN";
+	public static final Integer ENABLE=1;
+	public static final Integer DISABLE=0;
+	public static final Map<String, String> roles=ImmutableMap.<String,String>builder().put("Team Lead","TL").put("Associate","ASSO").build();
+
 }
