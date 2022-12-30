@@ -3,10 +3,8 @@ package com.tricon.rcm.api.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,10 +25,6 @@ public class UserController {
 
 	@Autowired
 	private UserServiceImpl userService;
-
-	@Autowired
-	@Qualifier("jwtUserDetailsService")
-	private UserDetailsService userDetailsService;
 
 	@RequestMapping(value = "/updatepassword", method = RequestMethod.POST)
 	public ResponseEntity<?> updatePasswordOfUserOrAdmin(@RequestBody PasswordResetDto dto) {

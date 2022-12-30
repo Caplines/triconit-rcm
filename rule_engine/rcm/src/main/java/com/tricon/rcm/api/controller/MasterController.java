@@ -23,8 +23,7 @@ public class MasterController {
 
 	@Autowired
 	MasterServiceImpl masterDataService;
-	
-	
+
 	@RequestMapping(value = "/getoffices", method = RequestMethod.GET)
 	public ResponseEntity<?> getAlloffifceCap() {
 
@@ -42,7 +41,7 @@ public class MasterController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", teams));
 
 	}
-	
+
 	@RequestMapping(value = "/getroles", method = RequestMethod.GET)
 	public ResponseEntity<?> getRoles() {
 

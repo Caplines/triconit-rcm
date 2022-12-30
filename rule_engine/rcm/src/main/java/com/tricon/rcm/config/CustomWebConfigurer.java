@@ -39,7 +39,7 @@ public class CustomWebConfigurer implements WebMvcConfigurer {
 
     private ApiInfo getApiInfo() {
         return new ApiInfoBuilder()
-                .title("Revenue Claim Management")
+                .title("Revenue Cycle Management")
                 .description("End Points for RCM Tool")
                 .version("1.0.0")
                 .build();

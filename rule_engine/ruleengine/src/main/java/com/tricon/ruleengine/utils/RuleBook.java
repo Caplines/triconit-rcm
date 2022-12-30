@@ -321,12 +321,12 @@ public class RuleBook {
 			
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
-				if (codes.contains(tp.getServiceCode())) {
+				//if (codes.contains(tp.getServiceCode())) {
 					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 					fcodes.add(tp.getServiceCode());
 					
-				}
+				//}
 			}
             /* Moved this to new Rule Rule84 -- >Provider Name
 			for (Object obj : tpList) {

@@ -1,7 +1,4 @@
-package com.tricon.rcm.security.api.controller;
-
-import java.util.HashMap;
-import java.util.List;
+package com.tricon.rcm.api.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +17,6 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
-import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
 
@@ -64,3 +59,4 @@ public class RcmController {
 	}
 
 }
+
