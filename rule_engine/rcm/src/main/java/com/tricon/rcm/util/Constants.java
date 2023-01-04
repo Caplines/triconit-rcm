@@ -37,6 +37,5 @@ public class Constants {
 	public static final String ROLE_ADMIN="ROLE_ADMIN";
 	public static final Integer ENABLE=1;
 	public static final Integer DISABLE=0;
-	public static final Map<String, String> roles=ImmutableMap.<String,String>builder().put("Team Lead","TL").put("Associate","ASSO").build();
 
 }

@@ -3,17 +3,17 @@ package com.tricon.rcm.enums;
 
 public enum RcmRoleEnum {
 
-	TL("TL","Team Lead"),
-	ASSO("ASSO","Associate"),
-	SYSTEM("SYSTEM","SYSTEM"),
-	ADMIN("ADMIN","Admin");
-	
+	TL("TL", "Team Lead", true), ASSO("ASSO", "Associate", true), SYSTEM("SYSTEM", "System", false),
+	ADMIN("ADMIN", "Admin", false);
+
 	final private String name;
 	final private String fullName;
-	
-	private RcmRoleEnum(String name, String fullName) {
+	final private boolean visibility;
+
+	private RcmRoleEnum(String name, String fullName, boolean visibility2) {
 		this.name = name;
 		this.fullName = fullName;
+		this.visibility = visibility2;
 	}
 
 	public String getName() {
@@ -25,5 +25,8 @@ public enum RcmRoleEnum {
 	}
 	
 
+	public boolean isVisibility() {
+		return visibility;
+	}
 
 }

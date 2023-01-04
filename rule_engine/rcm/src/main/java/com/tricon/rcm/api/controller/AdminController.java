@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -81,12 +82,12 @@ public class AdminController {
 		return ResponseEntity.ok(response);
 	}
 
-	@RequestMapping(value = "/getAllUsers", method = RequestMethod.GET)
+	@RequestMapping(value = "/getAllUsers/{pageNumber}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getAllUsers() {
+	public ResponseEntity<?> getAllUsers(@PathVariable("pageNumber") int pageNumber) {
 		GenericResponse response = null;
 		try {
-			response = serviceImpl.getAllUsers();
+			response = serviceImpl.getAllUsers(pageNumber);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -105,6 +106,20 @@ public class AdminController {
 		}
 		try {
 			response = serviceImpl.resetUserStatus(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(response);
+	}
+	
+	@RequestMapping(value = "/finduserbydetail/{query}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> findUserByDetail(@PathVariable("query")String searchQuery) {
+		GenericResponse response = null;
+		try {
+			response = serviceImpl.findUserByDetail(searchQuery);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

@@ -1,5 +1,6 @@
 package com.tricon.rcm.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
@@ -50,19 +52,27 @@ public class MasterServiceImpl {
 	 * @return List of RcmTeam
 	 */
 	public List<RcmTeam> getAllTeams() {
-		return rcmTeam.findAll();
+		List<RcmTeam> team = rcmTeam.findAll();
+		team.removeIf(x -> x.getNameId().contentEquals(RcmRoleEnum.valueOf("SYSTEM").getName()));
+		team.removeIf(x -> x.getNameId().contentEquals(RcmRoleEnum.valueOf("ADMIN").getName()));
+		return team;
 
 	}
 
 	/**
-	 * Get user roles from ImmutableHashMap
+	 * Get user roles from RcmRoleEnum
 	 * 
 	 * @return List<Entry<String, String>>
 	 */
 	public List<Entry<String, String>> getRoles() {
-		Map<String, String> roles = Constants.roles;
-		List<Entry<String, String>>list=roles.entrySet().stream().collect(Collectors.toList());
-		return list;
+		Map<String, String> data = new HashMap<>();
+		RcmRoleEnum[] roles = RcmRoleEnum.values();
+		for (RcmRoleEnum r : roles) {
+			if (r.isVisibility()) {
+				data.put(r.getFullName(), r.getName());
+			}
+		}
+		return data.entrySet().stream().collect(Collectors.toList());
 	}
 
 }

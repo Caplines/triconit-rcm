@@ -1,5 +1,6 @@
 package com.tricon.rcm.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -9,6 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,10 +32,12 @@ import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmUserDto;
+import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.ResetStatusDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
-import com.tricon.rcm.enums.UserRoleEnum;
+import com.tricon.rcm.dto.UserSearchDto;
+import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
@@ -39,7 +47,6 @@ import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.MessageConstants;
-import com.tricon.rcm.util.RoleUtil;
 
 @Service
 public class AdminServiceImpl {
@@ -67,6 +74,9 @@ public class AdminServiceImpl {
 
 	@Autowired
 	RcmCommonServiceImpl commonService;
+	
+	@Value("${data.totalRecordperPage}")
+	private int totalRecordsperPage;
 
 	/**
 	 * This Method save Data of New Register User
@@ -92,9 +102,7 @@ public class AdminServiceImpl {
 				user = userRepo.save(user);
 				pk.setUuid(user.getUuid());
 				roles.setId(pk);
-				UserRoleEnum rolesEnum = UserRoleEnum.valueOf(team.getId());
-				roles.setRole(RoleUtil.generateRole(rolesEnum, dto.getUserRole()));
-				System.out.println(roles.getRole());
+				roles.setRole(RcmTeamEnum.generateRole(team.getId(), dto.getUserRole()));
 				userRole.save(roles);
 				return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 			}
@@ -135,6 +143,7 @@ public class AdminServiceImpl {
 			RcmUserDto data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
+			data.setTeamNameId(user.getTeam().getId());
 			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_EXIST, data);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
@@ -145,13 +154,25 @@ public class AdminServiceImpl {
 	 * 
 	 * @return List of user Details
 	 */
-	public GenericResponse getAllUsers() throws Exception {
+	public GenericResponse getAllUsers(int pageNumber) throws Exception {
 		String companyUuid = "";
 		RcmCompany company = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);
+		RcmUserPaginationDto paginationDto = new RcmUserPaginationDto();
+		List<RcmUserPaginationDto> listOfUsers = new ArrayList<>();
 		if (company != null) {
 			companyUuid = company.getUuid();
-			List<RcmUserToDto> listOfUsers = userRepo.getAllUser(companyUuid);
-			if (listOfUsers != null && !listOfUsers.isEmpty()) {
+			if (pageNumber == -1) { // without pagination if pageNumber<0
+				List<RcmUserToDto> data = userRepo.getAllUser(companyUuid);
+				return new GenericResponse(HttpStatus.OK, "", data);
+			}
+			Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
+			Page<RcmUserToDto> pageableList = userRepo.getAllUserByPagination(companyUuid, paging);
+			if (pageableList != null && !pageableList.isEmpty()) {
+				paginationDto.setData(pageableList.getContent());
+				paginationDto.setPageNumber(pageableList.getNumber());
+				paginationDto.setTotalElements(pageableList.getTotalElements());
+				paginationDto.setPageSize(pageableList.getSize());
+				listOfUsers.add(paginationDto);
 				return new GenericResponse(HttpStatus.OK, "", listOfUsers);
 			}
 		}
@@ -219,5 +240,18 @@ public class AdminServiceImpl {
 			msg = MessageConstants.USER_NOT_EXIST;
 		}
 		return new GenericResponse(HttpStatus.OK, msg, null);
+	}
+    
+	/**
+	 * This Method find users basis of userName,email,firstName,lastName
+	 * @param searchQuery
+	 * @return List of users
+	 */
+	public GenericResponse findUserByDetail(String searchQuery)throws Exception {
+		List<UserSearchDto>user = userRepo.findByUserDetails(searchQuery);
+		if (user != null &&!user.isEmpty()) {
+			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_EXIST, user);
+		}
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
 	}
 }

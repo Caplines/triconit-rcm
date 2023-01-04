@@ -13,5 +13,9 @@ public class RcmUserDto {
 	private Integer active;
 	private String userName;
 	private String fullName;
+	private String email;
+	private Integer teamNameId;
+	private String firstName;
+	private String lastName;
 
 }

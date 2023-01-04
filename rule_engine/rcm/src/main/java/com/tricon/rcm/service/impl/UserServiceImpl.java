@@ -17,12 +17,11 @@ import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmUserToDto;
-import com.tricon.rcm.enums.UserRoleEnum;
+import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.MessageConstants;
-import com.tricon.rcm.util.RoleUtil;
 
 @Service
 public class UserServiceImpl {
@@ -81,9 +80,7 @@ public class UserServiceImpl {
 		if (loginUser != null) {
 			RcmTeam team = loginUser.getTeam();
 			if (team != null) {
-				UserRoleEnum teamName = UserRoleEnum.valueOf(team.getId());
-				role = RoleUtil.generateRole(teamName, role);
-				data = userRepo.findUsersByRole(role);
+				data = userRepo.findUsersByRole(RcmTeamEnum.generateRole(team.getId(), role));
 			}
 		} else {
 			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
