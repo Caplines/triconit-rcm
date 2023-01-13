@@ -1,0 +1,497 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    font-weight: normal;
+    padding: 0px;
+    background-color: #ececec;
+    font-size: 16px;
+    color: #000;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.inner-container {
+    padding-top: 80px;
+    padding-left: 25px;
+    padding-bottom: 20px;
+    position: relative;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none !important;
+    border-color: #ddd;
+}
+
+.bg-main {
+    border-bottom: 3px solid #ffffff;
+    padding: 0px;
+    height: 42px;
+    background-image: linear-gradient(to right, #DC2424 0%, #617dcc 51%, #DC2424 100%);
+}
+
+.form-signin {
+    width: 100%;
+    max-width: 370px;
+    margin: 60px auto;
+    text-align: center;
+    padding: 35px 30px 60px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0px 1px 7px #152635;
+}
+
+.form-signin p {
+    font-size: 14px;
+    line-height: normal;
+    color: #444
+}
+
+.form-signin .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+
+label {
+    display: inline-block;
+    margin-bottom: .5rem;
+}
+
+.btn-bca {
+    color: #fff !important;
+    min-width: 180px;
+    padding: 5px !important;
+    font-size: 16px !important;
+    display: inline-block !important;
+    border: 0 !important;
+    background: #00a1fb;
+    height: 40px;
+    width: 100%;
+}
+
+.btn-bca:hover {
+    background: #007ec5 !important;
+    color: #fff;
+    text-decoration: none;
+}
+
+footer {
+    color: #fff;
+    display: block;
+    font-size: 14px;
+    padding-top: 10px;
+    padding-bottom: 1px;
+    text-align: center;
+    background: #3c4d79;
+}
+
+footer a {
+    color: #ffffff !important;
+}
+
+p {
+    margin: 0 0 10px;
+}
+
+.page-header {
+    background: rgba(255, 255, 255, 0.85);
+    height: 80px;
+    padding-top: 15px;
+    z-index: 9;
+    position: relative;
+    border-bottom: 2px solid #00a1fb;
+}
+
+.page-header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.page-header ul {
+    list-style: none;
+    display: flex;
+    font-weight: 500;
+    margin: 0px;
+}
+
+.page-header ul li {
+    padding-right: 10px;
+    line-height: 14px;
+    padding-left: 10px;
+}
+
+.page-header ul li:last-child {
+    border-right: 0px;
+}
+
+.inner-page-bg {
+    min-height: 400px;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    height: calc(100vh - 123px);
+}
+
+.page-heading {
+    font-size: 27px;
+    color: #666;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-weight: 400;
+}
+
+.page-heading strong {
+    color: #333;
+}
+
+
+.login-box {
+    margin-top: 15px;
+    padding-bottom: 25px;
+}
+
+.login-box label {
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 5px;
+    padding-left: 2px;
+}
+
+
+
+.form-control-sm {
+    height: calc(1.5em + 0.8rem + 5px);
+    padding: 0.25rem 0.5rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    border: 1px solid rgb(173, 182, 190);
+    width: 100%;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none !important;
+    border-color: #767676;
+}
+
+.login-page-image {
+    position: absolute;
+    top: 40px;
+    left: 480px;
+}
+
+.login-page-image img {
+    width: 600px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.body-2 {
+    /*background: #f5f6fa;*/
+    background: #f7fcff;
+    font-family: 'Raleway', sans-serif;
+}
+
+.body-2 .inner-page-bg {
+    background: transparent;
+}
+
+.body-2 .form-control {
+    height: 50px;
+    width: 380px;
+    border: 1px solid #dbdada;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px #ede6e6;
+    padding-left: 38px;
+    line-height: 50px;
+}
+
+.body-2 .login-box label {
+    font-size: 14px;
+    color: #494949;
+    margin-bottom: 5px;
+    font-weight: 500;
+    margin-left: 2px;
+}
+
+.body-2 .btn-bca {
+    background: #1676dd;
+    height: 45px;
+    width: 380px;
+    font-size: 14px !important;
+    font-weight: 600;
+}
+
+.body-2 .btn-bca:hover {
+    background: #4c68cb !important;
+    color: #fff;
+    text-decoration: none;
+}
+
+.body-2 input::placeholder {
+    color: #bec1ce;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+.body-2 .focus-input::after {
+    content: "";
+    background: url(../../../assets/img/email_icon.png) no-repeat;
+    position: absolute;
+    bottom: 0;
+    left: 5px;
+    padding-left: 60px;
+    background-position: center center;
+    height: 50px;
+}
+
+.body-2 .focus-input.password::after {
+    background: url(../../../assets/img/password_icon.png) no-repeat;
+    background-position: center center;
+}
+
+
+.body-2 .page-heading {
+    font-size: 21px;
+    color: #151e55;
+    font-weight: 500;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.body-2 .remberMe {
+    padding-left: 26px;
+    display: flex;
+    justify-content: space-between;
+    width: 380px;
+}
+
+/*.body-2 .remberMe label {
+            font-weight: 400;
+            font-size: 13px;
+        }*/
+
+.body-2 .custom-control-label::before {
+    background-color: #fff;
+    border: #e3e3e3 solid 1px;
+    box-shadow: 0px 0px 5px #ede6e6;
+}
+
+.body-2 .remberMe a {
+    margin-right: 10px;
+    color: #1676dd;
+    font-weight: 600;
+}
+
+.body-2 .remberMe .custom-checkbox {
+    line-height: 20px;
+}
+
+.body-2 .info-box {
+    width: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*background: #e4e7f5;*/
+    background: #fff;
+    color: #000;
+    margin-left: -15px;
+    position: relative;
+    border-top: 1px solid transparent;
+    border-image: linear-gradient(to right, #a0c6dd, white);
+    border-image-slice: 1;
+}
+
+.body-2 .info-box::before {
+    content: "";
+    background-image: url(../../../assets/img/10912.jpg);
+    background-size: cover;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    opacity: 0.3;
+    transform: rotate(180deg);
+}
+
+.body-2 .rcm-logo {
+    font-size: 25px;
+    width: 160px;
+    display: flex;
+    margin: 0 auto 20px;
+    background: #fff;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 6px #e7e7e7;
+    font-weight: 700;
+    color: #1676dd;
+}
+
+.body-2 .rcm-logo span {
+    margin-left: 6px;
+}
+
+.body-2 .inner-container {
+    padding-top: 50px;
+    width: 40%;
+    padding-right: 35px;
+}
+
+/*.body-2::before {
+        content: "";
+        background-image: url(../images/10912.jpg);
+        background-size: cover;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        opacity: 0.3;
+        transform: rotate(180deg);
+    }*/
+.body-2 .custom-control-label::before {
+    top: 0;
+    width: 18px;
+    height: 18px;
+}
+
+.body-2 .custom-control-label::after {
+    top: 0;
+    width: 18px;
+    height: 18px;
+    background: no-repeat 55%/55% 55%;
+    border: 1px solid #dbdada;
+    box-shadow: 0px 0px 5px #ede6e6;
+    border-radius: 5px;
+}
+
+.body-2 .custom-control-input:checked~.custom-control-label::before {
+    color: #fff;
+    border-color: #486ef6;
+    background: rgb(68 107 246);
+}
+
+.body-2 .inner-page-bg {
+    height: auto;
+    justify-content: space-between;
+}
+
+.body-2 footer {
+    color: #000;
+    display: block;
+    font-size: 14px;
+    padding: 30px;
+    background: #ffffff;
+    text-align: left;
+}
+
+.body-2 .login-box {
+    margin-top: 15px;
+    padding-bottom: 25px;
+    width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.body-2 .info-box ul {
+    list-style: none;
+    padding: 0px;
+
+}
+
+.body-2 .info-box h2 {
+    margin-bottom: 40px;
+    font-weight: 400;
+    font-size: 32px;
+    position: relative;
+    color: #151e55;
+}
+
+.body-2 .info-box ul li {
+    width: 480px;
+    font-size: 13px;
+    background: #fff;
+    border-radius: 60px;
+    padding: 8px 36px 8px 65px;
+    line-height: 15px;
+    box-shadow: 0px 1px 6px #dfdfdf;
+    margin-bottom: 25px;
+    font-weight: 500;
+    color: #555;
+    min-height: 67px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    position: relative;
+}
+
+.body-2 .info-box ul li strong {
+    color: #444;
+    margin-bottom: 3px;
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.body-2 .info-box ul li em {
+    position: absolute;
+    /*box-shadow: 2px 1px 8px #ccc;*/
+    box-shadow: 2px 1px 8px #a9a9a9;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    line-height: 60px;
+    left: -20px;
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 500;
+    background: #1676dd;
+    font-style: normal;
+}
+
+.body-2 .page-header {
+    border: 0px;
+}
+
+.theme-2 .info-box ul li em {
+    background: #fd5631;
+}
+
+.theme-2 .rcm-logo {
+
+    color: #fd5631;
+}

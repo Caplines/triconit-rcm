@@ -1,0 +1,74 @@
+<div>
+<button type="button" (click)="logout()"> <h3>Logout</h3></button>
+
+<br><br><br>
+
+<ng-container *ngIf="userRole != 'ROLE_ADMIN' ">
+    <label for="changePass">Change User Password</label>
+    <input type="password" [(ngModel)]="user.changedPassword">
+    <button type="button" (click)="changePassword()">Change Password</button>
+</ng-container>
+
+<br><br><br>
+
+<ng-container *ngIf="userRole == 'ROLE_ADMIN' ">
+    <label for="findUser">Find User By Username: </label>
+    <input type="text" [(ngModel)]="user.username">
+    <button type="button" (click)="findUser()">Find</button>
+    <ng-container *ngIf="showActionPopup">
+        <select (change)="userAction($event)">
+            <option selected="true" hidden="true">Action</option>
+            <option value="changePass">Change Password</option>
+            <option value="status">Enable / Disable Status</option>
+        </select>
+    </ng-container>
+
+    <br><br><br>
+
+    <ng-container *ngIf="user.showChangePassword">
+        <label for="changepass">Change Password</label>
+        <input type="text" [(ngModel)]="user.changedPassword">
+        <button type="button" (click)="changePassword()">Change Password</button>
+    </ng-container>
+
+    <br><br><br>
+
+    <ng-container *ngIf="user.showStatus">
+        <label for="status">Enable Disable Status</label>
+        <button type="button" (click)="updateSingleUserStatus()">Change Status</button>
+    </ng-container>
+
+    <hr>
+
+    <button type="button" (click)="findAllUser()">Find All User</button>
+    <ng-container *ngIf="allUser.length != 0">
+        <table>
+            <tr>
+            <th>User Name</th>
+            <th>Full Name</th>
+            <th>Status</th>
+        </tr>
+        <ng-container *ngFor="let user of allUser;let idx= index">
+            <tr *ngIf="userName != user.userName">
+                <td>{{user.userName}}</td>
+                <td>{{user.fullName}}</td>
+                <!-- <td> &nbsp;&nbsp;&nbsp; Enable : <input type="radio" [checked]="user.active == 1" name="status_{{idx}}"
+                        (change)="updateStatus(user.uuid,user.active)"> Disabled : <input type="radio"
+                        [checked]="user.active == 0" name="status_{{idx}}"
+                        (change)="updateStatus(user.uuid,user.active)">
+                </td> -->
+                <td> &nbsp;&nbsp;&nbsp; Enable : <input type="radio" [checked]="user.active == 1" name="status_{{idx}}"
+                        (change)="differentiateStatus(user.uuid)"> Disabled : <input type="radio"
+                        [checked]="user.active == 0" name="status_{{idx}}"
+                        (change)="differentiateStatus(user.uuid)">
+                </td>
+            </tr>
+        </ng-container>
+    </table>
+</ng-container>
+    <ng-container *ngIf="allUser.length != 0">
+        <button type="button" (click)="updateUserStatus()">Update Status</button>
+    </ng-container>
+
+</ng-container>
+</div>

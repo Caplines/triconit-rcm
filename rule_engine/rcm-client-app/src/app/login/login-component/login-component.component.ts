@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { BaseService } from 'src/app/service/base-service.service';
 import { AuthService } from '../../service/auth-service.service';
 import { TokenStorageService } from '../../service/token-storage.service';
 
@@ -6,22 +8,30 @@ import { TokenStorageService } from '../../service/token-storage.service';
 @Component({
   selector: 'app-login-component',
   templateUrl: './login-component.component.html',
-  styleUrls: ['./login-component.component.scss']
+  // styleUrls: ['./login-component.component.scss']
+  // styleUrls: ['./login-component.component.css']
+  styleUrls: ['./rcm-login-component.css']
 })
 export class LoginComponent implements OnInit {
   form: any = {
     username: null,
-    password: null
+    password: null,
   };
   isLoggedIn = false;
   isLoginFailed = false;
   errorMessage = '';
   roles: string[] = [];
+  
+  forgotPassObj={
+    email:'',
+    showForgotPasswordBox:false,
+    showResetEmailMsg:false
+  }
 
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
 
-  constructor(private authService: AuthService, private tokenStorage: TokenStorageService) { }
+  constructor(private authService: AuthService, private tokenStorage: TokenStorageService,private router:Router,private _baseService: BaseService) { }
 
   ngOnInit(): void {
     /* if (this.tokenStorage.getToken()) {
@@ -36,7 +46,6 @@ export class LoginComponent implements OnInit {
       console.log(result);
       if (result.status == 200) {
         this.tokenStorage.saveData(result.data, result.data.token);
-
         this.isLoginFailed = false;
         this.isLoggedIn = true;
         //this.roles = this.tokenStorage.getUser().roles;
@@ -69,5 +78,29 @@ export class LoginComponent implements OnInit {
 
   reloadPage(): void {
     window.location.reload();
+  }
+
+  showForgotPassBox(){
+
+  }
+
+  forgotPass(){
+    if(this.forgotPassObj.email.includes("@")){
+      this._baseService.forgotPassword({"email":this.forgotPassObj.email},(callback:any)=>{
+        if(callback.status && callback.result.message === 'Password has been updated' ){
+          console.log(callback)
+          this.forgotPassObj.showResetEmailMsg = true;
+          this.forgotPassObj.showForgotPasswordBox = false;
+          this.forgotPassObj.email= '';
+          this.errorMessage='';
+        } else { 
+          this.errorMessage = callback.result.message;
+          this.forgotPassObj.email= '';
+        }
+      })
+    } else{
+      this.errorMessage="Please Enter the Email";
+      this.forgotPassObj.email= '';
+    }
   }
 }

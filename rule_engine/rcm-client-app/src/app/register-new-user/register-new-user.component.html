@@ -1,0 +1,34 @@
+<select (change)="location($event.target)">
+    <option selected="true" hidden="true">Admin</option>
+    <option value="register" >Register New User</option>
+    <option value="user-setting">User Setting</option>
+</select>
+<button type="button" (click)="logout()">Logout</button>
+<div class="form-container">
+    <label for="fname">First Name</label>
+    <input type="text" [(ngModel)]="userDetails.firstName"><br>
+    <label for="lname">Last Name</label>
+    <input type="text" [(ngModel)]="userDetails.lastName"><br>
+    <label for="email">Email</label>
+    <input type="email" [(ngModel)]="userDetails.email"><br>
+    <label for="userName">Username</label>
+    <input type="text" [(ngModel)]="userDetails.userName"><br>
+    <label for="password">Password</label>
+    <input type="password" [(ngModel)]="userDetails.password"><br>
+    <label for="officeId">Office Name</label>
+    <select [(ngModel)]="userDetails.officeId">
+        <option selected="true" hidden="true">Office</option>
+        <option *ngFor="let office of officeData" value="{{office.uuid}}">{{office.name}}</option>
+    </select><br>
+    <label for="teamId">Team Name</label>
+    <select [(ngModel)]="userDetails.teamId">
+        <option selected="true" hidden="true">Team</option>
+        <option *ngFor="let team of teamData" value="{{team.id}}">{{team.name}}</option>
+    </select><br>
+    <label for="userRole">User Role</label>
+    <select [(ngModel)]="userDetails.userRole">
+        <option selected="true" hidden="true">User Role</option>
+        <!-- <option *ngFor="let user of userRoles" value="{{user.id}}">{{user}}</option> -->
+    </select><br>
+    <button type="button" (click)="submitUser()">Submit</button>
+</div>

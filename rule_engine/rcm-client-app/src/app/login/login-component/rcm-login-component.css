@@ -1,0 +1,320 @@
+body {
+    font-family: 'Open Sans', sans-serif !important;
+    font-weight: normal;
+    padding: 0px;
+    background: #f8f8f9 !important;
+    font-size: 16px;
+    color: #000;
+}
+
+
+.inner-container {
+    padding-left: 25px;
+    padding-bottom: 20px;
+    position: relative;
+    padding-top: 50px;
+    width: 33%;
+    padding-right: 25px;
+}
+
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none !important;
+    border-color: #ddd;
+}
+
+
+label {
+    display: inline-block;
+    margin-bottom: .5rem;
+}
+
+
+.page-header {
+    background: #1c212d;
+    height: 70px;
+    padding-top: 12px;
+    z-index: 9;
+    position: relative;
+}
+
+    .page-header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+.inner-page-bg {
+    min-height: 400px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.page-heading {
+    font-size: 21px;
+    color: #1c212d;
+    margin-top: 5px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+    .page-heading strong {
+        color: #333;
+    }
+
+.login-box {
+    margin-top: 15px;
+    padding-bottom: 25px;
+    width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+    .login-box label {
+        padding-left: 2px;
+        font-size: 14px;
+        color: #1c212d;
+        margin-bottom: 5px;
+        font-weight: 500;
+        margin-left: 2px;
+    }
+
+
+
+.form-control-sm {
+    height: calc(1.5em + 0.8rem + 5px);
+    padding: 0.25rem 0.5rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    border: 1px solid rgb(173, 182, 190);
+    width: 100%;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none !important;
+    border-color: #767676;
+}
+
+
+
+.form-control {
+    height: 50px;
+    width: 380px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px #ede6e6;
+    padding-left: 38px;
+    line-height: 50px;
+}
+
+.btn-bca {
+    background: #1c212d;
+    height: 45px;
+    width: 380px;
+    font-size: 14px !important;
+    font-weight: 600;
+    color: #fff;
+}
+
+    .btn-bca:hover {
+        background: #000 !important;
+        color: #fff;
+        text-decoration: none;
+    }
+
+input::placeholder {
+    color: #bec1ce;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+.focus-input::after {
+    content: "";
+    background: url(../../../assets/img/email_icon.png) no-repeat;
+    position: absolute;
+    bottom: 0;
+    left: 5px;
+    padding-left: 60px;
+    background-position: center center;
+    height: 50px;
+}
+
+.focus-input.password::after {
+    background: url(../../../assets/img/password_icon.png) no-repeat;
+    background-position: center center;
+}
+
+
+
+.remberMe {
+    padding-left: 26px;
+    display: flex;
+    justify-content: space-between;
+    width: 380px;
+}
+
+
+
+    .remberMe a {
+        margin-right: 10px;
+        color: #1676dd;
+        font-weight: 500;
+        font-size: 13px;
+    }
+
+    .remberMe .custom-checkbox {
+        line-height: 20px;
+    }
+
+.info-box {
+    width: 67%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #000;
+    margin-left: -15px;
+    position: relative;
+    border-top: 1px solid transparent;
+    border-image: linear-gradient(to right, #a0c6dd, white);
+    border-image-slice: 1;
+}
+
+    .info-box::before {
+        content: "";
+        background-image: url(../../../assets/img/10912.jpg);
+        background-size: cover;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        opacity: 0.3;
+        transform: rotate(180deg);
+    }
+
+.rcm-logo {
+    font-size: 25px;
+    width: 160px;
+    display: flex;
+    margin: 0 auto 20px;
+    background: #fff;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 6px #e7e7e7;
+    font-weight: 700;
+    color: #1c212d;
+}
+
+    .rcm-logo span {
+        margin-left: 6px;
+    }
+
+.custom-control-label::before {
+    background-color: #fff;
+    border: #e3e3e3 solid 1px;
+    box-shadow: 0px 0px 5px #ede6e6;
+    top: 0;
+    width: 18px;
+    height: 18px;
+}
+
+.custom-control-label::after {
+    top: 0;
+    width: 18px;
+    height: 18px;
+    background: no-repeat 55%/55% 55%;
+    border: 1px solid #dbdada;
+    box-shadow: 0px 0px 5px #ede6e6;
+    border-radius: 5px;
+    border: 1px solid rgb(173, 182, 190);
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    color: #fff;
+    border-color: #00c37f;
+    background: rgb(52 219 161);
+}
+
+
+
+.info-box ul {
+    list-style: none;
+    padding: 0px;
+}
+
+.info-box h2 {
+    margin-bottom: 40px;
+    font-weight: 400;
+    font-size: 32px;
+    position: relative;
+    color: #1c212d;
+}
+
+.info-box ul li {
+    width: 480px;
+    font-size: 13px;
+    background: #fff;
+    border-radius: 60px;
+    padding: 8px 36px 8px 65px;
+    line-height: 15px;
+    box-shadow: 0px 1px 6px #dfdfdf;
+    margin-bottom: 25px;
+    font-weight: 500;
+    color: #555;
+    min-height: 67px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    position: relative;
+}
+
+    .info-box ul li strong {
+        color: #1c212d;
+        margin-bottom: 3px;
+        display: block;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .info-box ul li em {
+        position: absolute;
+        box-shadow: 2px 1px 8px #cfcfcf;
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        line-height: 60px;
+        left: -20px;
+        font-size: 30px;
+        font-style: normal;
+        background: #34dba1;
+        color: #fff;
+        text-shadow: 1px 1px 0px #22b984;
+    }
+
+    .inner-container .errorMessage{
+        width:200%;
+    }
+
+    .inner-container .closeIcon{
+        cursor:pointer;
+         font-size:25px;
+    }
+
+    .inner-container .cancel-link a{
+        cursor:pointer;
+         text-decoration:none;
+    }
+
+    .inner-container .cancel-link {
+        margin-top:10px;
+    }
+

@@ -1,35 +1,99 @@
-<div class="login-container">
-  <form       *ngIf="!isLoggedIn"  name="form"
- (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
-     <img src="../assets/img/capline-logo.png" alt="" >
-     <h1 class="">Login</h1>
-     <div class="input-box">
-         <label for="inputEmail" class="label-input">Email address</label>
-  <input type="text"  class="inp-input" name="username" [(ngModel)]="form.username" required #username="ngModel" 
-  placeholder="Type your email"  autofocus=""/>
-         <span class="focus-input"></span>
-     </div>
-     <div class="input-box">
-         <label for="inputPassword" class="label-input">Password</label>
- <input  type="password" class="inp-input" name="password" [(ngModel)]="form.password" required minlength="6" #password="ngModel" 
- placeholder="Type your password" />
-         <div  class="alert alert-danger" role="alert" *ngIf="password.errors && f.submitted">
-   <div *ngIf="password.errors['required']">Password is required</div>
-           <div *ngIf="password.errors['minlength']"> Password must be at least 6 characters</div>
-         </div>
-         <span class="focus-input focus-password"></span>
-     </div>
-          
-     <div class="container-login-form-btn">
-         <div class="wrap-login-form-btn">
-             <div class="login-form-bgbtn"></div>
-             <button class="btn">Login</button>
-         </div>
-     </div>
- <div class="form-group">
-   <div class="alert alert-danger" role="alert" *ngIf="f.submitted && isLoginFailed">
-     Login failed: {{ errorMessage }}
-     </div>
-   </div>
-  </form>
+<!-- <div class="body-2 theme-2"> -->
+
+    <div class="page-header">
+        <div class="container">
+            <a class="logo" href="javascript:void(0);" routerLink="/"><img src="../assets/img/capline-logo.png" /></a>
+
+        </div>
+    </div>
+    <div class="container-fluid inner-page-bg">
+        <div class="info-box">
+            <div>
+                <h2>How it works?</h2>
+                <ul>
+                    <li><em>1</em><strong>Claims Preparation</strong>Lorem ipsum dolor elit, sed do eiusmod tempor
+                        incididunt </li>
+                    <li><em>2</em><strong>Claims Submission</strong>Lorem ipsum dolor sit elit, sed do eiusmod tempor
+                        incididunt </li>
+                    <li><em>3</em><strong>Claims Management</strong>consectetur adipiscing elit, sed do eiusmod tempor
+                        incididunt </li>
+                    <li><em>4</em><strong>Reporting & Analytics</strong>Lorem ipsum elit, sed do eiusmod tempor
+                        incididunt </li>
+                </ul>
+            </div>
+        </div>
+        <ng-container *ngIf="!forgotPassObj.showForgotPasswordBox && !forgotPassObj.showResetEmailMsg">
+        <div class="inner-container">
+            <div class="rcm-logo">RCM <span>Login</span></div>
+            <h2 class="page-heading">Hello ! Welcome back</h2>
+
+            <form class="login-box" name="form" *ngIf="!isLoggedIn" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="user">Email</label>
+                        <input type="text" id="" class="form-control form-control-sm"
+                            placeholder="Enter your Email address" name="username" [(ngModel)]="form.username" required
+                            #username="ngModel" autofocus="">
+                        <span class="focus-input"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <label for="Password">Password</label>
+                        <input type="password" id="" name="password" class="form-control form-control-sm" placeholder="***********"
+                            [(ngModel)]="form.password" required minlength="6" #password="ngModel">
+                        <div class="alert alert-danger" role="alert" *ngIf="password.errors && f.submitted">
+                            <div *ngIf="password.errors['required']">Password is required</div>
+                            <div *ngIf="password.errors['minlength']"> Password must be at least 6 characters</div>
+                        </div>
+                        <span class="focus-input password"></span>
+                    </div>
+
+                </div>
+                <div class="mb-2 mt-3 remberMe">
+                <div class="custom-checkbox">
+                    <!-- <input type="checkbox" class="custom-control-input" id="remember"> -->
+                    <!-- <label class="custom-control-label" for="remember">Remember me</label> -->
+                </div>
+                <a href="javascript:void(0);" (click)="forgotPassObj.showForgotPasswordBox=true;">Forgot password?</a>
+            </div>
+                <div class="row">
+                    <div class="col-md-4 mt-2 mb-3">
+                        <button class="btn btn-lg btn-bca mt-2" type="submit">Login</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="alert alert-danger" role="alert" *ngIf="f.submitted && isLoginFailed">
+                        Login failed: {{ errorMessage }}
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="forgotPassObj.showForgotPasswordBox">
+        <div class="inner-container container my-5">
+        <div class="col-md-4 mb-3 forgot-pass-box">
+            <label for="user">Email</label>
+            <input type="email" name="email" class="form-control form-control-sm"
+            placeholder="Enter your Email address" [(ngModel)]="forgotPassObj.email" required='true'/>
+            <div class="my-2 errorMessage">{{errorMessage}}</div>
+            <div class="row">
+                <div class="col-md-4 mt-2 mb-3">
+                    <button class="btn btn-lg btn-bca mt-2"  (click)="forgotPass()">Submit</button>
+                    <div class="text-center cancel-link" (click)="forgotPassObj.showForgotPasswordBox=false;forgotPassObj.showResetEmailMsg=false;"><a href="javascript:void(0);">Cancel</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </ng-container>
+    <ng-container *ngIf="forgotPassObj.showResetEmailMsg">
+        <div class="inner-container">
+            <h6>Password has been sent to your Email! 
+                <span class="closeIcon" (click)="forgotPassObj.showForgotPasswordBox=false;forgotPassObj.showResetEmailMsg=false;" style="" aria-hidden="true">&times;</span>
+            </h6>
+        </div>
+    </ng-container>
 </div>
+<!-- </div> -->

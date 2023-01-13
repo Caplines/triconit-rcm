@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AppConstants } from '../constants/app.constants';
-import { TeamModel } from '../models/team.module';
+import { TeamModel } from '../models/team.model';
 
 @Injectable()
 export class CheckUserLoggedInState implements CanActivate {
@@ -10,6 +10,7 @@ export class CheckUserLoggedInState implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     console.log(localStorage.getItem('currentUser'));
+    console.log(state)
     if (localStorage.getItem('currentUser')) {
       let ut: any = localStorage.getItem('teamId');
       let ntKey: Number = new Number(ut).valueOf();

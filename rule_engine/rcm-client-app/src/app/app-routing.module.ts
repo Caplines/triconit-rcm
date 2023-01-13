@@ -6,6 +6,9 @@ import { UrlPermission } from './urlPermission/url.permission';
 const routes: Routes = [
 
   {
+    path:'',pathMatch:'full',redirectTo:"/login"
+  },
+  {
     path: 'login',
     loadChildren: () => import('./login/login.module').then(m => m.LoginModule),
     canActivate: [CheckUserLoggedInState]
@@ -14,6 +17,14 @@ const routes: Routes = [
     path: 'fetch-claims',
     loadChildren: () => import('./fetch-claims/fetch-claims.module').then(m => m.FetchClaimsModule),
     canActivate: [UrlPermission]
+  },
+  {
+    path:'register',
+    loadChildren :()=> import("./register-new-user/register-new-user/register-new-user.module").then(m=>m.RegisterNewUserModule),
+  },
+  {
+    path:'user-setting',
+    loadChildren:()=> import("./user-setting/user-setting/user-setting.module").then(m=>m.UserSettingModule),
   },
   { path: '**', redirectTo: '/login' }
 ];

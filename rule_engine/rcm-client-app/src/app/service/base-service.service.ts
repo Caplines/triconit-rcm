@@ -9,7 +9,22 @@ import { environment } from '../../environments/environment';
 })
 export class BaseService {
 
-  constructor(public http: HttpClient) { }
+  httpUrl = {
+    'getTeams':environment.API_URL+"/master/getteams",
+    'getOffices':environment.API_URL+"/master/getoffices",
+    'registerUser':environment.API_URL+"/register",
+    'findUserByUserName':environment.API_URL+"/finduser",
+    'changePassword':environment.API_URL+"/resetpassword",
+    'getAllUsers':environment.API_URL+"/getAllUsers",
+    'updateStatus':environment.API_URL+"/resetstatus",
+    'getUserRoles':environment.API_URL+"/master/getroles",
+    'forgotPassword':environment.API_URL+"/forgotPassword",
+  }
+  token:any;
+
+  constructor(public http: HttpClient) {
+    this.token = localStorage.getItem("token")
+   }
 
   generateRefreshToken() {
     return this.http.get(environment.API_URL + '/refresh');
@@ -68,5 +83,82 @@ export class BaseService {
 
   }
 
+  getTeamsData(callback:any){
+    return this.http.get(this.httpUrl['getTeams']).pipe(map((data:any)=>{
+			data;
+			return data;
+		})).subscribe(
+			(data:any) => { callback({'status':true,'result':data}); 
+		});
+  }
+
+  getOfficeData(callback:any){
+    return this.http.get(this.httpUrl['getOffices']).pipe(map((data:any)=>{
+			return data;
+		})).subscribe(
+			(data:any) => { callback({'status':true,'result':data}); 
+		});
+  }
+
+  getUserRoleData(callback:any){
+    return this.http.get(this.httpUrl['getUserRoles']).pipe(map((data:any)=>{
+			return data;
+		})).subscribe(
+			(data:any) => { callback({'status':true,'result':data}); 
+		});
+  }
+
+  registerUser(params:any,callback:any){
+    let token:any = localStorage.getItem("token")
+    let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ token});
+    return this.http.post(this.httpUrl['registerUser'],params,cpHeaders).pipe(map(data=>{
+      return data;
+    })).subscribe(
+      (data:any) => { callback({'status':true,'result':data}); 
+    });
+  }
+
+  findUser(username:any,callback:any){
+    let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ this.token});
+    return this.http.post(this.httpUrl['findUserByUserName'],username,cpHeaders).pipe(map(data=>{
+      return data;
+    })).subscribe(
+      (data:any) => { callback({'status':true,'result':data}); 
+    });
+  }
+  changePassword(params:any,callback:any){
+    let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ this.token});
+    return this.http.post(this.httpUrl['changePassword'],params,cpHeaders).pipe(map(data=>{
+      return data;
+    })).subscribe(
+      (data:any) => { callback({'status':true,'result':data}); 
+    });
+  }
+
+  findAllUser(callback:any){
+    return this.http.get(this.httpUrl['getAllUsers']).pipe(map((data:any)=>{
+			return data;
+		})).subscribe(
+			(data:any) => { callback({'status':true,'result':data}); 
+		});
+  }
+
+  updateUserStatus(params:any,callback:any){
+    let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ this.token});
+    return this.http.post(this.httpUrl['updateStatus'],params,cpHeaders).pipe(map(data=>{
+      return data;
+    })).subscribe(
+      (data:any) => { callback({'status':true,'result':data}); 
+    });
+  }
+
+  forgotPassword(params:any,callback:any){
+    let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ this.token});
+    return this.http.post(this.httpUrl['forgotPassword'],params,cpHeaders).pipe(map(data=>{
+      return data;
+    })).subscribe(
+      (data:any) => { callback({'status':true,'result':data}); 
+    });
+  }
 
 }

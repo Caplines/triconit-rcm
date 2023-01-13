@@ -5,5 +5,4 @@ export class  TeamModel {
     paths: Array<string>=[];
     defaultpath: string="";
 
-
 }

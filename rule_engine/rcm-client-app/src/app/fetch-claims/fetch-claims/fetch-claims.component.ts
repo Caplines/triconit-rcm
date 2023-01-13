@@ -18,14 +18,16 @@ export class FetchClaimsComponent implements OnInit {
 
   fetchClaims(){
 
-    this.appService.fetchClaimData((res:any)=>{
-      if (res.status=== 200){
+    // this.appService.fetchClaimData((res:any)=>{
+    //   if (res.status=== 200){
 
-      }else{
-        //ERROR
-      }
+    //   }else{
+    //     //ERROR
+    //   }
       
-    });
+    // });
   }
+
+  
 
 }
