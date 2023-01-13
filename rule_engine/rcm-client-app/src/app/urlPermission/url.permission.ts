@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 //import Utils from '../util/utils';
 import { AppConstants } from '../constants/app.constants';
-import { TeamModel } from '../models/team.module';
+import { TeamModel } from '../models/team.model';
 
 
 @Injectable()
@@ -13,7 +13,6 @@ export class UrlPermission implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot
   ) {
-
     //console.log("state.url",state.url);
     let ut: any = localStorage.getItem('teamId');
     if (!ut) {
