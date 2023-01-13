@@ -109,8 +109,26 @@ public class WebSecurityConfig {
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().antMatchers(HttpMethod.POST, authenticationPath, "/ignore1", "/ignore2").and()
-				.ignoring().antMatchers(HttpMethod.GET, "/ignore3");
+		return (web) -> web.ignoring().antMatchers(HttpMethod.POST, authenticationPath).and()
+				.ignoring().antMatchers(HttpMethod.GET,"/swagger-ui.html",
+						 "/*.html",
+			                "/index.jsp",
+			                "/favicon.ico",
+			                "/**/*.html",
+			                "/**/*.css",
+			                "/**/*.jpg",
+			                "/**/*.ttf",
+			                "/**/*.png",
+			                "/**/*.js",
+			                "/**/*.woff2",
+			                "/swagger-resources/configuration/ui",
+			                "/swagger-resources/configuration/security",
+			                "/swagger-resources",
+			                "/csrf",
+			                "/",
+			                "/v2/api-docs",
+						    "/webjars/*",
+						    "/master/*");
 	}
 
 	/*

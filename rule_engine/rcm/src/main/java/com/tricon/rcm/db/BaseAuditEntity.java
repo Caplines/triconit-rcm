@@ -20,6 +20,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.tricon.rcm.db.entity.RcmUser;
 
+import lombok.Data;
+
+@Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseAuditEntity {

@@ -11,5 +11,6 @@ import com.tricon.rcm.dto.RcmOfficeDto;
 public interface RcmOfficeRepository extends JpaRepository<RcmOffice, String> {
 
 	List<RcmOfficeDto> findByCompany(RcmCompany company);
+	List<RcmOffice> getByCompany(RcmCompany company);
 	RcmOffice findByUuid(String uuid);
 }

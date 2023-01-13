@@ -321,6 +321,7 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			////data.
 			JSONObject jsonObj = new JSONObject(data);
 			JSONObject subData =(JSONObject) jsonObj.get("members_roster_list");
+			try {
 			JSONArray arr = subData.getJSONArray("members");
 			
 			for (int i=0; i<arr.length(); i++) {
@@ -329,7 +330,10 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			    try {
 			    rd.setPatFName(obj.get("fname").toString());
 				rd.setPatLName(obj.get("lname").toString());
+				rd.setPatMName(obj.get("mname").toString());
 				rd.setPatFName(rd.getPatLName()+", "+rd.getPatFName());
+				if (rd.getPatMName()!=null && !rd.getPatMName().trim().equals(""))
+					rd.setPatFName(rd.getPatFName()+" "+rd.getPatMName());	
 				rd.setCity(obj.get("city").toString());
 				rd.setAssignedDentistF(obj.get("prov_fname").toString());
 				rd.setAssignedDentistL(obj.get("prov_lname").toString());
@@ -338,6 +342,26 @@ public class MCNARosterScrappingServiceImpl  extends BaseScrappingServiceImpl im
 			    }catch(Exception c) {
 			    	c.printStackTrace();
 			    }
+			}
+			}catch(Exception s) {
+				JSONObject obj = subData.getJSONObject("members");
+				
+				//for (int i=0; i<arr.length(); i++) {
+				    //JSONObject obj = arr.getJSONObject(i);
+				    RosterDetails rd= new RosterDetails();
+				    try {
+				    rd.setPatFName(obj.get("fname").toString());
+					rd.setPatLName(obj.get("lname").toString());
+					rd.setPatFName(rd.getPatLName()+", "+rd.getPatFName());
+					rd.setCity(obj.get("city").toString());
+					rd.setAssignedDentistF(obj.get("prov_fname").toString());
+					rd.setAssignedDentistL(obj.get("prov_lname").toString());
+					rd.setId(obj.get("id").toString());
+					li.add(rd);
+				    }catch(Exception c) {
+				    	c.printStackTrace();
+				    }
+				//}
 			}
 			
 			

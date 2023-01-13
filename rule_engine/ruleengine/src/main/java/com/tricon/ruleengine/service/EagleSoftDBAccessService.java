@@ -39,7 +39,7 @@ public interface EagleSoftDBAccessService {
 
     public void setUpSSLCertificates();
 
-    public String[] doDiagnosticCheck(String officeUuidB);
+    public String[] doDiagnosticCheck(String officeUuidB,String comanyuuid);
     
     public List<String[]> doDiagnosticCheck();
     

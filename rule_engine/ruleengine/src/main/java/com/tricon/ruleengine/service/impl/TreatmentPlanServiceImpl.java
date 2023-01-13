@@ -32,7 +32,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.google.common.collect.Collections2;
 import com.tricon.ruleengine.api.enums.HighLevelReportTypeEnum;
@@ -84,6 +83,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceDetail;
+import com.tricon.ruleengine.model.sheet.InsuranceMappingDto;
 import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
@@ -342,6 +342,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Map<String, List<Object>> tMap=null;
 				Map<String, List<Object>> tMapReduced=null;
 				List<ExceptionDataDto> exceptionData=null;
+				List<InsuranceMappingDto> insuranceData=null;
 				List<OSIVFormCodes> oSCodes=null;
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				Map<String, List<EagleSoftFeeShedule>> esfeess= null;
@@ -464,10 +465,18 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						//READ Exception RULE GOOGLE SHEET ->
 						//https://docs.google.com/spreadsheets/d/1r_9il1-9p5xfPNBhSIRTZNNqFLPH2EKKdtj1eOo1rDs/edit#gid=0
 						try {
-						exceptionData=ConnectAndReadSheets.readSheetExceptionRulesheet("1r_9il1-9p5xfPNBhSIRTZNNqFLPH2EKKdtj1eOo1rDs", "Data", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+						exceptionData=ConnectAndReadSheets.readSheetExceptionRulesheet(env.getProperty("mapping.sheet.exception"), "Data", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
 						}catch(Exception exp) {
 							
 						}
+						
+						try {
+							insuranceData=ConnectAndReadSheets.readSheetInsuranceMapping(env.getProperty("mapping.sheet.insurance"), "Provider Certification Status", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+						     System.out.println(insuranceData.size());	
+						}catch(Exception exp) {
+								
+							}
+						
 						if (type==Constants.userType_TR) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
 						if (type==Constants.userType_CL) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getClaimData(trids, esDB,bw);
 						//Phase 3 add new Query
@@ -809,11 +818,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							oSCodes=oSIVFormCodesService.getAllActiveOSIVCodes();
 							validdateRulesTPOS(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
-									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,oSCodes,
+									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,insuranceData,oSCodes,
 									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec);
 							}else validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
-									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,
+									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,insuranceData,
 									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec);
 							
 							/*
@@ -937,7 +946,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  String empMasterKey,
 		  Map<String, List<Perio>> perios,List<Mappings> mappings,RuleBook rb,List<TPValidationResponseDto> list,TPValidationResponseDto dtoR,TreatmentPlanValidationDto dtod,
 		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
-		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,Map<String,
+		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<InsuranceMappingDto> insuranceData,Map<String,
 		  List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
 		  Map<String, List<PatientPolicyHolder>> espatientsHolderPr,Map<String, List<PatientPolicyHolder>> espatientsHolderSec) {
 	  
@@ -2200,6 +2209,23 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Constants.rule_log_debug, bw);
 		// END "//Oral hygiene with Prophy and Fluoride"
 		
+		// Provider Certification
+		
+		rule = getRulesFromList(rules, Constants.RULE_ID_87);
+			dtoRL = rb.Rule87(tList,ivfMap.get(ivx).get(0),insuranceData ,messageSource, rule, bw);
+			if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+		}
+				
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_87,
+						Constants.rule_log_debug, bw);
+			
+		//END Provider Certification 
 
 		// RULE_ID_79 "Insurance and Address"
 		/*
@@ -2232,7 +2258,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  String empMasterKey,
 		  Map<String, List<Perio>> perios,List<Mappings> mappings,RuleBook rb,List<TPValidationResponseDto> list,TPValidationResponseDto dtoR,TreatmentPlanValidationDto dtod,
 		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
-		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<OSIVFormCodes> oSCodes,
+		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<InsuranceMappingDto> insuranceData,List<OSIVFormCodes> oSCodes,
 		  Map<String, List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
 		  Map<String, List<PatientPolicyHolder>> espatientsHolderPr,Map<String, List<PatientPolicyHolder>> espatientsHolderSec) {
 	  
@@ -2376,6 +2402,24 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				}
 				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_75,
 						Constants.rule_log_debug, bw);
+				
+			// Provider Certification
+			
+			rule = getRulesFromList(rules, Constants.RULE_ID_87);
+				dtoRL = rb.Rule87(tList,ivfMap.get(ivx).get(0),insuranceData ,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+			}
+					
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_87,
+							Constants.rule_log_debug, bw);
+				
+			//END Provider Certification 
 		        
 		// END "Bridge Clause"
 
@@ -4153,7 +4197,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						TreatmentPlanDetails b=a.getTreatmentPlanDetails();
 						if (!compairToothSurfaceDescriptionCode(ignoreDataArray, a.getServiceCode(),
 							b.getDescription(), a.getTooth(), a.getSurface())) {
-							tempMap.put(entry.getKey(),entry.getValue());
+							if (tempMap.get(entry.getKey())!=null) {
+								List<Object>  t =tempMap.get(entry.getKey());
+								t.add(oL);
+							//tempMap.put(entry.getKey(),t);
+							}else {
+								List<Object> t= new ArrayList<>();
+								t.add(oL);
+								tempMap.put(entry.getKey(),t);
+							}
 						}else {
 							RuleEngineLogger.generateLogs(clazz, "Ignoring  Service Code-"+a.getServiceCode(),
 									Constants.rule_log_debug, bw);
@@ -4165,7 +4217,15 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						ClaimDataDetails b=a.getDetails();
 						if (!compairToothSurfaceDescriptionCode(ignoreDataArray, a.getServiceCode(),
 								b.getDescription(), a.getTooth(), a.getSurface())) {
-								tempMap.put(entry.getKey(),entry.getValue());
+								if (tempMap.get(entry.getKey())!=null) {
+									List<Object>  t =tempMap.get(entry.getKey());
+									t.add(oL);
+								//tempMap.put(entry.getKey(),t);
+								}else {
+									List<Object> t= new ArrayList<>();
+									t.add(oL);
+									tempMap.put(entry.getKey(),t);
+								}
 						}else {
 							RuleEngineLogger.generateLogs(clazz, "Ignoring  Service Code-"+a.getServiceCode(),
 									Constants.rule_log_debug, bw);

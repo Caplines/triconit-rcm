@@ -13,7 +13,7 @@ public class ClaimsFromRuleEngine {
 	String patientId;
 	
 	@JsonProperty("c2")
-	String claimId;
+	int claimId;
 	
 	@JsonProperty("c3")
 	String empty;
@@ -22,19 +22,19 @@ public class ClaimsFromRuleEngine {
 	String tranDate;
 	
 	@JsonProperty("c5")
-	String submittedTotal;
+	float submittedTotal;
 	
 	@JsonProperty("c6")
-	String primSubmittedTotal;
+	float primSubmittedTotal;
 	
 	@JsonProperty("c7")
-	String primTotalPaid;
+	float primTotalPaid;
 	
 	@JsonProperty("c8")
 	String primDateSent;
 	
 	@JsonProperty("c9")
-	String secSubmittedTotal;
+	float secSubmittedTotal;
 	
 	@JsonProperty("c10")
 	String secDateSent;
@@ -46,19 +46,19 @@ public class ClaimsFromRuleEngine {
 	String primInsuranceCompanyId;
 	
 	@JsonProperty("c13")
-	String sec_insurance_company_id;
+	String secInsuranceCompanyId;
 	
 	@JsonProperty("c14")
-	String prim_status;
+	String primStatus;
 	
 	@JsonProperty("c15")
-	String sec_status;
+	String secStatus;
 	
 	@JsonProperty("c16")
-	String claim_type;
+	String claimType;
 	
 	@JsonProperty("c17")
-	Date birthDate;
+	String birthDate;
 	
 	@JsonProperty("c18")
 	String patientName;

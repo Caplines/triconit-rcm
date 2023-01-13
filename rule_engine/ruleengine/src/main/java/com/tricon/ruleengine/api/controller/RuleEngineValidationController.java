@@ -199,7 +199,7 @@ public class RuleEngineValidationController {
 
 		if (!dto.getOfficeId().equals("All offices")) {
 			 list =new ArrayList<>();
-			list.add(es.doDiagnosticCheck(dto.getOfficeId()));
+			list.add(es.doDiagnosticCheck(dto.getOfficeId(),null));
 		} else {
 			list= es.doDiagnosticCheck();
 		}

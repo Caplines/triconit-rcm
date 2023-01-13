@@ -1,5 +1,6 @@
 package com.tricon.rcm.service.impl;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,16 +11,42 @@ import com.tricon.rcm.dto.RcmInsuranceDatas;
 import com.tricon.rcm.dto.RcmInsuranceMainRootDto;
 import com.tricon.rcm.dto.RcmRemoteLiteMainRootDto;
 import com.tricon.rcm.dto.RcmRemoteLiteSiteDetailsDto;
+import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.dto.RemoteLiteDto;
+import com.tricon.rcm.enums.ClaimSourceEnum;
+import com.tricon.rcm.enums.RcmTeamEnum;
+import com.tricon.rcm.jpa.repository.RCMUserRepository;
+import com.tricon.rcm.jpa.repository.RcmClaimLogRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimRepository;
+import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
+import com.tricon.rcm.jpa.repository.RcmEagleSoftDBDetailsRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceRepo;
+import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
+import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmRemoteLiteRepo;
+import com.tricon.rcm.jpa.repository.RcmTeamRepo;
+import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.ConnectAndReadSheets;
+import com.tricon.rcm.util.Constants;
+import com.google.common.collect.Collections2;
+import com.tricon.rcm.db.entity.RcmClaimLog;
+import com.tricon.rcm.db.entity.RcmClaimStatusType;
+import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmInsurance;
+import com.tricon.rcm.db.entity.RcmMappingTable;
+import com.tricon.rcm.db.entity.RcmOffice;
+import com.tricon.rcm.db.entity.RcmRemoteStatusCount;
+import com.tricon.rcm.db.entity.RcmTeam;
+import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceFromRuleEngine;
+import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RcmClaimDataDto;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,7 +57,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
@@ -52,10 +80,37 @@ public class RuleEngineService {
 	RestTemplate restTemplate;
 
 	@Autowired
+	RCMUserRepository userRepo;
+
+	@Autowired
 	RcmInsuranceRepo insuranceRepo;
 
 	@Autowired
 	RcmOfficeRepository officeRepo;
+
+	@Autowired
+	RcmRemoteLiteRepo rcmRemoteLiteRepo;
+
+	@Autowired
+	RcmEagleSoftDBDetailsRepo eagleSoftDBDetailsRepo;
+
+	@Autowired
+	RcmInsuranceTypeRepo rcmInsuranceTypeRepo;
+
+	@Autowired
+	RcmMappingTableRepo rcmMappingTableRepo;
+
+	@Autowired
+	RcmClaimRepository rcmClaimRepository;
+
+	@Autowired
+	RcmTeamRepo rcmTeamRepo;
+
+	@Autowired
+	RcmClaimStatusTypeRepo rcmClaimStatusTypeRepo;
+
+	@Autowired
+	CommonClaimServiceImpl commonClaimServiceImpl;
 
 	HttpHeaders headers = null;
 
@@ -73,55 +128,116 @@ public class RuleEngineService {
 
 	}
 
-	public RcmClaimMainRootDto pullClaimFromRE(ClaimSourceDto dto) {
+	/**
+	 * Pull and Save Claims From Rule Engine
+	 * 
+	 * @param dto
+	 * @param user
+	 * @return
+	 */
+	public String pullAndSaveClaimFromRE(ClaimSourceDto dto, RcmUser user) {
 
+		String success = Constants.ClAIM_PULLED_SUCCESS;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			user = userRepo.findByUserName(authentication.getName());
+		}
 		logger.info(" In pullClaimFromRE");
-		RcmClaimMainRootDto mainRoot=null;
-		dto.setPassword(ev.getProperty("rcm.ruleengine.password"));
+		RcmClaimMainRootDto mainRoot = null;
+		RcmOffice off = officeRepo.findByUuid(dto.getOfficeuuid());
+
+		int newClaimCt = 0;
+		int logStatus=0;
 		try {
+			List<RcmTeam> team = rcmTeamRepo.findAll();
+			RcmClaimStatusType systemStatus = rcmClaimStatusTypeRepo.findByStatus(Constants.billingClaim);
+			dto.setPassword(eagleSoftDBDetailsRepo.findByOffice(off).getPassword());
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			String param = "?password=" + dto.getPassword();
 			if (dto.getOfficeuuid() != null)
 				param = param + "&office=" + dto.getOfficeuuid();
 
 			// Call Rule Engine API..
-			ResponseEntity<RcmClaimMainRootDto> result = restTemplate.exchange(
-					ev.getProperty("rmc.pullclaimurl") + param, HttpMethod.GET, entity, RcmClaimMainRootDto.class);
+			
+			ResponseEntity<String> diagnostic = restTemplate.exchange(ev.getProperty("rcm.diagnosticurl") + param,
+					HttpMethod.GET, entity, String.class);
+			
+			if (diagnostic.getBody()!=null) {
+				String diag= diagnostic.getBody();
+				if (diag.equals(Constants.socketworkingFine)) {
+					logStatus=1;
+					ResponseEntity<RcmClaimMainRootDto> result = restTemplate.exchange(
+							ev.getProperty("rmc.pullclaimurl") + param, HttpMethod.GET, entity, RcmClaimMainRootDto.class);
 
-			mainRoot = result.getBody();
-			/*
-			for (RcmClaimDataDto datas : rootDto.getData().getDatas()) {
-				String OfficeUuid = datas.getOfficeName();
-				try {
-					for (ClaimsFromRuleEngine re : datas.getData()) {
-						insurance = new RcmInsurance();
-						insurance.setInsuranceId(re.getInsuranceCompanyId());
-						insurance.setName(re.getName());
-						insurance.setOffice(officeRepo.findByUuid(OfficeUuid));
-						insuranceOld = insuranceRepo.findByInsuranceId(re.getInsuranceCompanyId());
-						if (insuranceOld == null)
-							insuranceRepo.save(insurance);
-						else {
-							insuranceOld.setName(insurance.getName());
-							insuranceRepo.save(insuranceOld);
+					mainRoot = result.getBody();
+					RcmClaims claims = null, oldClaims = null;
+					for (RcmClaimDataDto datas : mainRoot.getData().getDatas()) {
+						//String officeUuid = datas.getOfficeName();
+						// RcmOffice off = officeRepo.findByUuid(officeUuid);
+						try {
+							for (ClaimsFromRuleEngine re : datas.getData()) {
+		                        System.out.println(re.getClaimId()+"--<ID");
+								oldClaims = rcmClaimRepository.findByClaimIdAndOffice(re.getClaimId(), off);
+								if (oldClaims == null) {
+									newClaimCt++;
+									claims = new RcmClaims();
+									claims = ClaimUtil.createClaimFromESData(claims, off, re,
+											filterTeamByNameId(team, RcmTeamEnum.SYSYEM.toString()), user,
+											insuranceRepo.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off),
+											insuranceRepo.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off),
+											systemStatus);
+								}else {
+									claims = new RcmClaims();
+									claims = ClaimUtil.createClaimFromESData(claims, off, re,
+											filterTeamByNameId(team, RcmTeamEnum.SYSYEM.toString()), null,
+											insuranceRepo.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off),
+											insuranceRepo.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off),
+											systemStatus);
+									claims.setClaimUuid(oldClaims.getClaimUuid());
+									claims.setUpdatedBy(user);
+								}
+								rcmClaimRepository.save(claims);
+							}
+
+						} catch (Exception n1) {
+							success = n1.getMessage();
+							n1.printStackTrace();
 						}
-					}
-				} catch (Exception n) {
 
+					}
 				}
-				
-			}*/
+			}	
+			
+			RcmClaimLog log = new RcmClaimLog();
+			commonClaimServiceImpl.saveClaimLog(log, user, off, ClaimSourceEnum.EAGLESOFT.toString(), logStatus, newClaimCt);
+			
 		} catch (Exception n) {
 			logger.error("Error in " + dto.getOfficeuuid());
 			logger.error(n.getMessage());
+			success = n.getMessage();
+			n.printStackTrace();
 		}
-		return mainRoot;
+		return success;
 	}
 
-	public boolean pullIAndSaveInsuranceFromRE(ClaimSourceDto dto) {
+	/**
+	 * Pull Insurance From Eagle Soft and Store in "rcm_insurance" table
+	 * 
+	 * @param dto
+	 * @param user
+	 * @return
+	 */
+	public boolean pullAndSaveInsuranceFromRE(ClaimSourceDto dto, RcmUser user) {
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		List<InsuranceNameTypeDto> insuranceTypeDto = pullInsuranceMappingFromSheet();
+		if (authentication != null) {
+			user = userRepo.findByUserName(authentication.getName());
+		}
 
 		logger.info(" In pull Insurance From RE");
-		dto.setPassword(ev.getProperty("rcm.ruleengine.password"));
+		dto.setPassword(eagleSoftDBDetailsRepo.findByOffice(officeRepo.findByUuid(dto.getOfficeuuid())).getPassword());
+		insuranceRepo.inActiveAllInsuranceByOffice(dto.getOfficeuuid());
 		try {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			String param = "?password=" + dto.getPassword();
@@ -141,15 +257,36 @@ public class RuleEngineService {
 				try {
 					for (InsuranceFromRuleEngine re : datas.getData()) {
 						insurance = new RcmInsurance();
+						insurance.setCreatedBy(user);
+
 						insurance.setInsuranceId(re.getInsuranceCompanyId());
 						insurance.setName(re.getName());
 						insurance.setOffice(officeRepo.findByUuid(OfficeUuid));
-						insuranceOld = insuranceRepo.findByInsuranceId(re.getInsuranceCompanyId());
+
+						String insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto, re.getName());
+						if (insuranceType != null) {
+							insurance.setInsuranceType(rcmInsuranceTypeRepo.findByName(insuranceType));
+						}
+						insuranceOld = insuranceRepo.findByInsuranceIdAndOffice(re.getInsuranceCompanyId(),
+								insurance.getOffice());
+						insurance.setActive(true);
 						if (insuranceOld == null)
 							insuranceRepo.save(insurance);
 						else {
+							insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto, insurance.getName());
+							if (insuranceType != null) {
+								insuranceOld.setInsuranceType(rcmInsuranceTypeRepo.findByName(insuranceType));
+							}
+							insuranceOld.setUpdatedBy(user);
+							// insuranceOld.setOffice(officeRepo.findByUuid(OfficeUuid));
 							insuranceOld.setName(insurance.getName());
-							insuranceRepo.save(insuranceOld);
+							insuranceOld.setUpdatedDate(new Date());
+							insuranceOld.setActive(true);
+							try {
+								insuranceRepo.save(insuranceOld);
+							} catch (Exception s) {
+								s.printStackTrace();
+							}
 						}
 					}
 				} catch (Exception n) {
@@ -167,17 +304,29 @@ public class RuleEngineService {
 		return true;
 	}
 
-	public HashMap<String, List<RemoteLiteDto>> pullRemoteLiteDate(ClaimSourceDto dto) {
+	/**
+	 * Pull Data From Remote Lite Google sheet and Count the data of
+	 * rejected/duplicate/Printed/Accepted and store in "rcm_remote_lite_count"
+	 * Table
+	 * 
+	 * @param dto
+	 * @param user
+	 * @return
+	 */
+	public HashMap<String, RemoteLiteDataDto> pullAndSaveRemoteLiteData(ClaimSourceDto dto, RcmUser user) {
 
 		logger.info(" In pullRemoteLiteDate");
-		dto.setPassword(ev.getProperty("rcm.ruleengine.password"));
-		HashMap<String, List<RemoteLiteDto>> map = new HashMap<>();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			user = userRepo.findByUserName(authentication.getName());
+		}
+		HashMap<String, RemoteLiteDataDto> map = new HashMap<>();
 		try {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 
-			String param = "?password=" + dto.getPassword();
+			String param = "";// "?password=" + dto.getPassword();
 			if (dto.getOfficeuuid() != null)
-				param = param + "&office=" + dto.getOfficeuuid();
+				param = param + "?office=" + dto.getOfficeuuid();
 
 			// Call Rule Engine API..
 			ResponseEntity<RcmRemoteLiteMainRootDto> result = restTemplate.exchange(
@@ -189,14 +338,19 @@ public class RuleEngineService {
 			try {
 				List<RcmRemoteLiteSiteDetailsDto> data = rootDto.getData();
 				for (RcmRemoteLiteSiteDetailsDto dto1 : data) {
+					RemoteLiteDataDto dataDtao = ConnectAndReadSheets.readRemoteLiteSheet(dto1.getGoogleSheetIdDb(),
+							dto1.getPassword(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+					map.put(dto1.getOfficeId(), dataDtao);
 
-					map.put(dto1.getOfficeName(), ConnectAndReadSheets.readRemoteLiteSheet(dto1.getGoogleSheetIdDb(),
-							dto1.getPassword(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER));
-					System.err.println(map.get(dto1.getOfficeName()).size());
+					RcmOffice office = officeRepo.findByUuid(dto1.getOfficeId());
+					RcmRemoteStatusCount ct = new RcmRemoteStatusCount();
+					BeanUtils.copyProperties(dataDtao.getStatusCount(), ct);
+					// ct.setCreatedDate(new Date());
+					ct.setOffice(office);
+					ct.setCreatedBy(user);
+					rcmRemoteLiteRepo.save(ct);
 
 				}
-				// System.out.println(rootDto.getData().get(0).getOfficeId());
-				// System.out.println(rootDto.getData().get(0).getGoogleSubId());
 
 			} catch (Exception n) {
 				n.printStackTrace();
@@ -206,7 +360,63 @@ public class RuleEngineService {
 			logger.error("Error in " + dto.getOfficeuuid());
 			logger.error(n.getMessage());
 		}
+
 		return map;
+	}
+
+	/**
+	 * Pull Insurance Mapping Data From google Sheet
+	 * 
+	 * @return
+	 */
+	private List<InsuranceNameTypeDto> pullInsuranceMappingFromSheet() {
+
+		logger.info(" In pullInsuranceMappingFromSheet");
+		RcmMappingTable table = rcmMappingTableRepo.findByName(Constants.RCM_MAPPING_INSURANCE);
+		List<InsuranceNameTypeDto> li = null;
+		try {
+			li = ConnectAndReadSheets.readInsuranceMappingSheet(table.getGoogleSheetId(), table.getGoogleSheetSubName(),
+					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+
+		} catch (Exception n) {
+			logger.error("Error in Fetching Insurance ");
+			logger.error(n.getMessage());
+		}
+
+		return li;
+	}
+
+	/**
+	 * Filter Insurance Type from Google Sheet based on Insurance Name
+	 * 
+	 * @param sheetData
+	 * @param name
+	 * @return
+	 */
+	private String getInsuranceTypeFromSheetList(List<InsuranceNameTypeDto> sheetData, String name) {
+		String insuranceType = null;
+		if (sheetData == null) {
+			logger.error("Data From Mapping sheet not found");
+			return null;
+		}
+		Collection<InsuranceNameTypeDto> ruleGen = Collections2.filter(sheetData,
+				sh -> sh.getInsuranceName().equals(name));
+		for (InsuranceNameTypeDto gs : ruleGen) {
+			insuranceType = gs.getInsuranceType();
+			break;
+		}
+		if (insuranceType == null) {
+			logger.error(name + " Not found in  Google sheet");
+
+		}
+		return insuranceType;
+	}
+
+	private RcmTeam filterTeamByNameId(List<RcmTeam> rcmTeamList, String teamNameId) {
+
+		Collection<RcmTeam> ruleGen = Collections2.filter(rcmTeamList, sh -> sh.getNameId().equals(teamNameId));
+		return ruleGen.iterator().next();
+
 	}
 
 }

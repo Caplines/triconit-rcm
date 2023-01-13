@@ -48,6 +48,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceDetail;
+import com.tricon.ruleengine.model.sheet.InsuranceMappingDto;
 import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
@@ -320,12 +321,12 @@ public class RuleBook {
 			
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
-				if (codes.contains(tp.getServiceCode())) {
+				//if (codes.contains(tp.getServiceCode())) {
 					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 					fcodes.add(tp.getServiceCode());
 					
-				}
+				//}
 			}
             /* Moved this to new Rule Rule84 -- >Provider Name
 			for (Object obj : tpList) {
@@ -12578,7 +12579,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 	// Provider Name
 	public List<TPValidationResponseDto> Rule84(List<Object> tpList, Object ivfSheet,MessageSource messageSource,
 			Rules rule, BufferedWriter bw,int userType) {
-		
+		boolean  pass=false;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_84,
 				Constants.rule_log_debug, bw);
@@ -12601,7 +12602,20 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 					Constants.rule_log_debug, bw);
 		RuleEngineLogger.generateLogs(clazz, "IV Provider  Name =" + ivf.getProviderName(),
 				Constants.rule_log_debug, bw);
-		if (!pcName.trim().equalsIgnoreCase(ivf.getProviderName())) {
+		
+		if (ivf.getProviderName().equalsIgnoreCase(pcName.trim())) {
+			pass=true;
+		}else  {
+			String[] names= ivf.getProviderName().split(" ");
+			if (names.length>1) {
+				String lastName =names[names.length-1];
+				if (lastName.equalsIgnoreCase(pcName.trim())) {
+					pass=true;
+				}
+			}
+		}
+		
+		if (!pass) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule84.error.message",
 							new Object[] { ivf.getProviderName(), pcName,ER_MSG }, locale),
@@ -12760,6 +12774,117 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 		}
 		return dList;
 	}
+	
+	// Provider Certification
+	public List<TPValidationResponseDto> Rule87(List<Object> tpList,Object ivfSheet,List<InsuranceMappingDto> mappingData,
+			MessageSource messageSource,
+			Rules rule, BufferedWriter bw) {
+		
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new TreeSet<>();
+		Set<String> fcodesRules=new TreeSet<>();
+		Set<String> fcodesRulesInd=new TreeSet<>();
+    	Set<String> surfaces=new TreeSet<>();
+    	Set<String> teethC=new TreeSet<>();
+    	boolean pass=true;
+    	RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_87,
+				Constants.rule_log_debug, bw);
+        try {
+		/*String ER_MSG=Constants.TP;
+		
+		if (userType==Constants.userType_CL) {
+			ER_MSG=Constants.CL;
+		}*/
+        	IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		   boolean D0145=false;
+		   boolean D9230=false;
+		   boolean D9248=false;
+		   String errorCode="";
+		
+			for (Object obj : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				String code=tp.getServiceCode();
+				String estIns =tp.getEstInsurance();
+				surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+				teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+				fcodes.add(code);
+				if(estIns.equals("") || estIns.equals("0") || estIns.equals("0.00")
+						||	estIns.equals("0.0")) {
+					RuleEngineLogger.generateLogs(clazz, code + "- Fees - " + estIns,
+							Constants.rule_log_debug, bw);
+					//continue;//need to ask.
+				}
+				//only check if amount is Present
+				if (code.equalsIgnoreCase("D0145")) {
+					D0145=true;
+					fcodesRules.add(code);
+				}
+				else if (code.equalsIgnoreCase("D9230")) {
+					D9230=true;
+					fcodesRules.add(code);
+				}
+				else if (code.equalsIgnoreCase("D9248")) {
+					D9248=true;
+					fcodesRules.add(code);
+				}
+				
+			}
+			if (D0145  || D9230 || D9248) {
+				InsuranceMappingDto mapping=getMappingFromInsurance(mappingData, ivf.getProviderName());
+				if (mapping ==null) {
+					// Provider not found in sheet. 
+					pass=false;
+					errorCode=String.join(",", fcodesRules);
+				}else {
+				String status= mapping.getProviderStatus().trim();
+				if (status.equalsIgnoreCase("Active")) {
+				
+				if (D9230 && mapping.getD9230().trim().equalsIgnoreCase("no")) {
+					fcodesRulesInd.add("D9230");
+					pass=false;
+				}
+				if (D0145 && mapping.getD0145().trim().equalsIgnoreCase("no")) {
+					fcodesRulesInd.add("D0145");
+					pass=false;
+				}
+				if (D9248 && mapping.getD9248().trim().equalsIgnoreCase("no")) {
+					fcodesRulesInd.add("D9248");
+					pass=false;
+				 }
+				if (!pass) errorCode=String.join(",", fcodesRulesInd);
+				}else {
+					// status inactive
+					pass=false;
+					errorCode=String.join(",", fcodesRules);
+					
+				}
+				
+			  }
+			}
+			
+			
+			if (pass) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule87.pass.message", new Object[] { errorCode }, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+			}else {
+				   dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule87.error.message", new Object[] { String.join(",", fcodes) }, locale),
+						Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				
+			}
+		
+		
+		
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+			return dList;
+		}
+		return dList;
+	}
 
 	//Insurance and Address
     /**
@@ -12830,6 +12955,18 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 			r = rule;
 		}
 		// Debug me for nulll
+		return r;
+	}
+	
+	private InsuranceMappingDto getMappingFromInsurance(List<InsuranceMappingDto> list, String provider) {
+		InsuranceMappingDto r = null;
+		Collection<InsuranceMappingDto> ruleGen = Collections2.filter(list,
+				rule -> ( rule.getProviders().equalsIgnoreCase(provider) ||  rule.getProviders().equalsIgnoreCase("Dr. "+provider)));
+		for (InsuranceMappingDto rule : ruleGen) {
+			r = rule;
+			break;
+		}
+		
 		return r;
 	}
 

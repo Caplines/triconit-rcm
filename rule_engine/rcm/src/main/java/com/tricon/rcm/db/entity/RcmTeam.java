@@ -21,6 +21,9 @@ public class RcmTeam {
 
 	@Column(name = "name", unique = true, nullable = false)
 	private String name;
+	
+	@Column(name = "name_id", unique = true, nullable = false)
+	private String nameId;
 
 	@Column(name = "description", nullable = false)
 	private String description;

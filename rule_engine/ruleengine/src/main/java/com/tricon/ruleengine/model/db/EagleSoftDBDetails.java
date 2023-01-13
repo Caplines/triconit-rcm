@@ -19,7 +19,7 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name = "eaglesoft_db_details")
+@Table(name = "eaglesoft_db_details") //used in RCM ALSO
 public class EagleSoftDBDetails extends BaseAudit implements Serializable{
 
 	

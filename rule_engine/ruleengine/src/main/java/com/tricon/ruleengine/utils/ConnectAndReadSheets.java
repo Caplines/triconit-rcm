@@ -61,6 +61,7 @@ import com.tricon.ruleengine.model.db.PatientTemp;
 import com.tricon.ruleengine.model.sheet.FullWebsiteDataParsingSheet;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
+import com.tricon.ruleengine.model.sheet.InsuranceMappingDto;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
 
 @Configuration
@@ -1854,5 +1855,37 @@ public class ConnectAndReadSheets {
 		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
 		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
 	}
+	
+	
+	
+	public static List<InsuranceMappingDto> readSheetInsuranceMapping(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		List<List<Object>> values = response.getValues();
+		ListIterator li = values.listIterator();
+		InsuranceMappingDto dto = null;
+		List<InsuranceMappingDto> list = new ArrayList<>();
+		int heading_rows = 2;
+        int ct=-1;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			try {
+				ct++;
+				if (ct<=heading_rows)
+				continue;
+				int x = -1;
+				dto = new InsuranceMappingDto(obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
+					
+				list.add(dto);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				continue;
+			}
+			
+		}
+		return list;
+	  }
 
 }
