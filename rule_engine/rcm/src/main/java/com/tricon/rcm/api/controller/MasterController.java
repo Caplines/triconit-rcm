@@ -27,7 +27,7 @@ public class MasterController {
 	@RequestMapping(value = "/getoffices", method = RequestMethod.GET)
 	public ResponseEntity<?> getAlloffifceCap() {
 
-		List<RcmOfficeDto> offices = masterDataService.getAllOffices();
+		List<RcmOfficeDto> offices = masterDataService.getSmilePointOffice();
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", offices));
 

@@ -40,7 +40,7 @@ public class MasterServiceImpl {
 	 * @return RcmOffice list
 	 */
 
-	public List<RcmOfficeDto> getAllOffices() {
+	public List<RcmOfficeDto> getSmilePointOffice() {
 		RcmCompany company = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);
 
 		return rcmOfficeRepository.findByCompany(company);

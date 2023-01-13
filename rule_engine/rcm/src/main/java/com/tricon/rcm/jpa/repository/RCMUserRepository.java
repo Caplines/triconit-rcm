@@ -20,6 +20,7 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	RcmUser findByUserNameAndActive(String userName,int active);
 	RcmUser findByUuid(String uuid);
 	RcmUser findByUserName(String userName);
+	RcmUser findByEmail(String email);
 	
 	@Query(value="select u.uuid as Uuid,u.userName as UserName,concat(u.first_name,' ',u.last_name)as FullName from rcm_user u join rcm_user_role r on u.uuid=r.uuid where r.role=?1 and u.active=1",nativeQuery=true)
 	List<RcmUserToDto> findUsersByRole(String role);

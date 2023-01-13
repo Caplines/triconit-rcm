@@ -34,8 +34,12 @@ public class Constants {
 	
 	public static final String ROLE_PREFIX="ROLE_";
 	public static final String  HYPHEN="_";
-	public static final String ROLE_ADMIN="ROLE_ADMIN";
+	public static final String  ADMIN="ADMIN";
+	public static final String  SYSTEM="SYSTEM";
 	public static final Integer ENABLE=1;
 	public static final Integer DISABLE=0;
+	public static final Integer LENGTH=8;
+	public static final String  ROLE_ADMIN="ROLE_ADMIN";
+	public static final String PASSWORD_PATTERN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 }

@@ -2,6 +2,7 @@ package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -31,6 +32,10 @@ import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
+import com.tricon.rcm.dto.RcmCompanyDto;
+import com.tricon.rcm.dto.RcmEditOfficeDto;
+import com.tricon.rcm.dto.RcmEditRolesDto;
+import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmUserDto;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserToDto;
@@ -87,23 +92,32 @@ public class AdminServiceImpl {
 	@Transactional(rollbackOn = Exception.class)
 	public GenericResponse registerUser(UserRegistrationDto dto) throws Exception {
 		RcmOffice office = officeRepo.findByUuid(dto.getOfficeId());
-		RcmUserRole roles = new RcmUserRole();
-		RcmUserRolePk pk = new RcmUserRolePk();
+		RcmUserRole roles = null;
+		RcmUserRolePk pk = null;
 		RcmUser user = null;
 		if (office != null) {
 			user = userRepo.findByUserNameOrEmail(dto.getUserName(), dto.getEmail());
 			if (user == null) {
 				RcmTeam team = teamRepo.findById(dto.getTeamId());
-				RcmCompany company = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);
+				RcmCompany company = rcmCompanyRepo.findByName(dto.getCompanyName());
 				user = convertDtotoModel(dto);
 				user.setOffice(office);
 				user.setTeam(team);
 				user.setCompany(company);
 				user = userRepo.save(user);
-				pk.setUuid(user.getUuid());
-				roles.setId(pk);
-				roles.setRole(RcmTeamEnum.generateRole(team.getId(), dto.getUserRole()));
-				userRole.save(roles);
+				for (String role : dto.getUserRole()) {
+					roles = new RcmUserRole();
+					pk = new RcmUserRolePk();
+					pk.setUuid(user.getUuid());
+					roles.setId(pk);
+					if (role.equals(Constants.ADMIN)) {
+						roles.setRole(RcmTeamEnum.generateRole(0, role));
+					} else {
+						roles.setRole(RcmTeamEnum.generateRole(team.getId(), role));
+					}
+					userRole.save(roles);
+				}
+
 				return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 			}
 			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_EXIST, null);
@@ -150,8 +164,8 @@ public class AdminServiceImpl {
 	}
 
 	/**
-	 * This Method is used to fetch All user records This Method can use only ADMIN
-	 * 
+	 * This Method is used to fetch All user records .
+	 * This Method can use only ADMIN and company is capline
 	 * @return List of user Details
 	 */
 	public GenericResponse getAllUsers(int pageNumber) throws Exception {
@@ -180,20 +194,15 @@ public class AdminServiceImpl {
 	}
 
 	/**
-	 * This Method enable/disable status based on user uuid. This Method can use
-	 * only ADMIN
-	 * 
+	 * This Method enable/disable status based on user uuid.
+	 *  This Method can use only ADMIN and cmpany is capline
 	 * @param dto
 	 * @param logInUser
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse resetUserStatus(ResetStatusDto dto)  throws Exception {
+	public GenericResponse resetUserStatus(JwtUser jwtUser, ResetStatusDto dto) throws Exception {
 		List<String> enables = dto.getEnable();
 		List<String> disables = dto.getDisable();
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
 		RcmUser logInUser = userRepo.findByUserName(jwtUser.getUserName());
 		String updatedBy = logInUser.getUuid();
 		try {
@@ -214,18 +223,14 @@ public class AdminServiceImpl {
 
 	/**
 	 * This method does change user's password basis of user's uuid and password
-	 * Password can change only admin
+	 * Password can change only admin and company is capline
 	 * 
 	 * @param jwtUser
 	 * @param dto
 	 * @return GenericResponse
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse passwordUpdation(PasswordResetDto dto) throws Exception {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
+	public GenericResponse passwordUpdation(JwtUser jwtUser, PasswordResetDto dto) throws Exception {
 		String msg = "";
 		RcmUser user = null, loginUser = null;
 		loginUser = userRepo.findByUserName(jwtUser.getUserName());
@@ -244,14 +249,190 @@ public class AdminServiceImpl {
     
 	/**
 	 * This Method find users basis of userName,email,firstName,lastName
+	 * This Method can use only admin and company is capline
 	 * @param searchQuery
 	 * @return List of users
 	 */
-	public GenericResponse findUserByDetail(String searchQuery)throws Exception {
-		List<UserSearchDto>user = userRepo.findByUserDetails(searchQuery);
-		if (user != null &&!user.isEmpty()) {
+	public GenericResponse findUserByDetail(String searchQuery) throws Exception {
+		List<UserSearchDto> user = userRepo.findByUserDetails(searchQuery);
+		if (user != null && !user.isEmpty()) {
 			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_EXIST, user);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
 	}
+
+	/**
+	 * Fetch All company data
+	 * If login user is capline then fetch all companies  otherwise login user fetch only own company 
+	 * This method is used only admin
+	 * @return List of companies
+	 */
+	public GenericResponse getCompany() throws Exception {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		List<RcmCompany> company = null;
+		List<RcmCompanyDto> listOfCompany = null;
+		// if login user is capline then return all companies details like company name and company uuid otherwise login user
+		// company details
+		if (jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+			company = rcmCompanyRepo.findAll();
+			if (company != null && !company.isEmpty()) {
+				listOfCompany = company.stream().map(x -> new RcmCompanyDto(x.getName(), x.getUuid()))
+						.collect(Collectors.toList());
+			}
+			return new GenericResponse(HttpStatus.OK, "", listOfCompany);
+		} else {
+			RcmCompany loginUserCompany = rcmCompanyRepo.findByUuid(jwtUser.getCompany().getUuid());
+			if (loginUserCompany != null) {
+				RcmCompanyDto dto = new RcmCompanyDto();
+				dto.setName(loginUserCompany.getName());
+				dto.setCompanyUuid(loginUserCompany.getUuid());
+				return new GenericResponse(HttpStatus.OK, "", dto);
+			}
+		}
+		return new GenericResponse(HttpStatus.OK, "", null);
+	}
+
+	/**
+	 * New office will be added in basis of company name
+	 * 
+	 * @param dto
+	 * @return Generic Response
+	 */
+	@Transactional(rollbackOn = Exception.class)
+	public GenericResponse addNewOfficeByAdmin(RcmCompanyDto dto) throws Exception {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyUuid());
+		RcmOffice office = new RcmOffice();
+		RcmOffice oldOffice = officeRepo.findByCompanyAndName(company, dto.getName());
+
+		// if company uuid is same as capline or office is alreday exist then return
+		if (oldOffice != null || company.getName().equals(Constants.COMPANY_NAME)) {
+			return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+		}
+
+		// if login user(ADMIN) is capline then login user can add other company new
+		// office
+		if (oldOffice == null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+			office.setName(dto.getName());
+			office.setCompany(company);
+			officeRepo.save(office);
+			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+		} else {
+			// if login user(ADMIN) is other than capline then login user can add own new
+			// company offices
+			if (oldOffice == null && jwtUser.getCompany().getName().equals(company.getName())) {
+				office.setName(dto.getName());
+				office.setCompany(company);
+				officeRepo.save(office);
+				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+			}
+		}
+		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+	}
+
+	/**
+	 * Fetch office data with the help of Company uuid
+	 * This method can use only admin
+	 * @param uuid
+	 * @return List of RcmOfficeDto
+	 */
+	public GenericResponse getOfficesByCompanyUuid(String uuid) throws Exception {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		//if login user is capline then fetch all companies offices otherwise login user can fetch own company offices by uuid
+		if (jwtUser.getCompany().getUuid().equals(uuid)
+				|| jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+			RcmCompany company = rcmCompanyRepo.findByUuid(uuid);
+			if (company != null) {
+				List<RcmOfficeDto> office = officeRepo.findByCompany(company);
+				return new GenericResponse(HttpStatus.OK, "", office);
+			}
+		}
+		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+	}
+
+	/**
+	 * Update office details like office name
+	 * @param dto
+	 * @return GenericResponse
+	 */
+	@Transactional(rollbackOn = Exception.class)
+	public GenericResponse editOfficeDetailsByAdmin(RcmEditOfficeDto dto) throws Exception {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		RcmOffice office = officeRepo.findByUuid(dto.getOfficeUuid());
+
+		// if office id is capline then return
+		if (office.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+			return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+		}
+
+		// if login user(ADMIN) is capline then login user can edit other company office
+		if (office != null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+			office.setName(dto.getOfficeName());
+			officeRepo.save(office);
+			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+		} else {
+			// if login user(ADMIN) is other than capline then login user can edit own
+			// company offices
+			if (office != null && jwtUser.getCompany().getName().equals(office.getCompany().getName())) {
+				office.setName(dto.getOfficeName());
+				officeRepo.save(office);
+				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+			}
+		}
+		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+	}
+
+	/**
+	 * This api does edit roles of any user
+	 * This method can use only admin of capline
+	 * @param jwtUser
+	 * @param dto
+	 * @return GenericResponse
+	 */
+
+	@Transactional(rollbackOn = Exception.class)
+	public GenericResponse editRolesByAdmin(JwtUser jwtUser, RcmEditRolesDto dto) throws Exception {
+		RcmUser existingUser = userRepo.findByUuid(dto.getUuid());
+		RcmUserRole rcmRole = null;
+		RcmUserRolePk pk = null;
+		List<RcmUserRole> listOfRoles = new ArrayList<>();
+		// if uuid is match from login user then return
+		if (jwtUser.getUuid().equals(dto.getUuid())) {
+			return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+		}
+
+		// if user is not null and company is capline then admin can change user's roles of own company users and other company user's roles
+		if (existingUser != null) {
+			List<RcmUserRole> existingRoles = existingUser.getRoles().stream().collect(Collectors.toList());
+			if (existingRoles != null) {
+				// remove all existingRoles include ADMIN
+				userRole.deleteAll(existingRoles);
+			}
+
+			// add new roles
+			for (String role : dto.getRoles()) {
+				rcmRole = new RcmUserRole();
+				pk = new RcmUserRolePk();
+				pk.setUuid(existingUser.getUuid());
+				rcmRole.setId(pk);
+				rcmRole.setRole(Constants.ROLE_PREFIX.concat(role));
+				listOfRoles.add(rcmRole);
+			}
+			userRole.saveAll(listOfRoles);
+			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+		}
+		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
 }
+	}

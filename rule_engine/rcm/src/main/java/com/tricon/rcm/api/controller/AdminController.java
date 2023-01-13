@@ -5,9 +5,14 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
+import com.tricon.rcm.dto.RcmCompanyDto;
+import com.tricon.rcm.dto.RcmEditOfficeDto;
+import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.ResetStatusDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
+import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.AdminServiceImpl;
+import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 
 @RestController
@@ -31,11 +41,26 @@ public class AdminController {
 
 	@Autowired
 	private AdminServiceImpl serviceImpl;
+	
+	@Autowired
+	@Qualifier("jwtUserDetailsService")
+	private UserDetailsService userDetailsService;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto dto) {
+		if (dto.getUserRole().stream().anyMatch(x->x.equals(Constants.SYSTEM))) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+		}
 		GenericResponse response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
 		try {
 			response = serviceImpl.registerUser(dto);
 		} catch (Exception e) {
@@ -49,13 +74,20 @@ public class AdminController {
 	@RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> resetpasswordByAdmin(@RequestBody PasswordResetDto dto) {
+		GenericResponse response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
 		if (dto.getPassword().trim().equals("") || dto.getUuid().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
-		GenericResponse response = null;
 		try {
-			response = serviceImpl.passwordUpdation(dto);
+			response = serviceImpl.passwordUpdation(jwtUser,dto);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -68,6 +100,13 @@ public class AdminController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> findUserByUsername(@RequestBody FindUserDto dto) {
 		GenericResponse response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
 		if (dto.getUsername().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
@@ -86,6 +125,13 @@ public class AdminController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getAllUsers(@PathVariable("pageNumber") int pageNumber) {
 		GenericResponse response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
 		try {
 			response = serviceImpl.getAllUsers(pageNumber);
 		} catch (Exception e) {
@@ -100,12 +146,19 @@ public class AdminController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> resetstatus(@RequestBody ResetStatusDto dto) {
 		GenericResponse response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
 		if (dto.getEnable().isEmpty() && dto.getDisable().isEmpty()) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
 		try {
-			response = serviceImpl.resetUserStatus(dto);
+			response = serviceImpl.resetUserStatus(jwtUser,dto);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -118,6 +171,13 @@ public class AdminController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> findUserByDetail(@PathVariable("query")String searchQuery) {
 		GenericResponse response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
 		try {
 			response = serviceImpl.findUserByDetail(searchQuery);
 		} catch (Exception e) {
@@ -127,4 +187,95 @@ public class AdminController {
 		}
 		return ResponseEntity.ok(response);
 	}
+	
+	@RequestMapping(value = "/company", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> getCompanyDetails() {
+		GenericResponse response = null;
+		try {
+			response = serviceImpl.getCompany();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+
+	@RequestMapping(value = "addOffice", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> addOffice(@RequestBody RcmCompanyDto dto) {
+		if (dto.getName().trim().equals("") || dto.getCompanyUuid().trim().equals("")) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		GenericResponse response = null;
+		try {
+			response = serviceImpl.addNewOfficeByAdmin(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+
+	@RequestMapping(value = "officeByCompany/{uuid}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> officesByUuid(@PathVariable("uuid") String uuid) {
+		GenericResponse response = null;
+		try {
+			response = serviceImpl.getOfficesByCompanyUuid(uuid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+
+	@RequestMapping(value = "editOffice", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> editOffice(@RequestBody RcmEditOfficeDto dto) {
+		if (dto.getOfficeName().trim().equals("") || dto.getOfficeUuid().trim().equals("")) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		GenericResponse response = null;
+		try {
+			response = serviceImpl.editOfficeDetailsByAdmin(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@RequestMapping(value = "editRole", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> editRoles(@RequestBody RcmEditRolesDto dto) {
+		if (dto.getUuid().trim().equals("")||dto.getRoles().isEmpty()) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		GenericResponse response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		try {
+			response = serviceImpl.editRolesByAdmin(jwtUser,dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	
 }

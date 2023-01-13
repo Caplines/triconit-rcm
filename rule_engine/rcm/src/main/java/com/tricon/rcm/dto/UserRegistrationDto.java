@@ -1,5 +1,7 @@
 package com.tricon.rcm.dto;
 
+import java.util.List;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -22,7 +24,9 @@ public class UserRegistrationDto {
 	private String userName;
 	@NotEmpty(message = "Please provide your password")
 	private String password;
+	@NotEmpty(message = "Please provide office name")
 	private String officeId;
 	private int teamId;
-	private String userRole;
+	private List<String> userRole;
+	private String companyName;
 }

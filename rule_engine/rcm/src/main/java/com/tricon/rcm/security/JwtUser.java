@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.tricon.rcm.db.entity.RcmCompany;
+import com.tricon.rcm.util.Constants;
 
 
 //import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,6 +32,7 @@ public class JwtUser implements UserDetails {
     private final Date lastPasswordResetDate;
     private final RcmCompany company;
     
+    private final boolean isSmilePoint;
     
 
     public JwtUser(
@@ -55,6 +57,7 @@ public class JwtUser implements UserDetails {
         this.active = enabled;
         this.lastPasswordResetDate = lastPasswordResetDate;
         this.company =company;
+        this.isSmilePoint=company.getName().equals(Constants.COMPANY_NAME)?true:false;
     }
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -116,6 +119,10 @@ public class JwtUser implements UserDetails {
 	public RcmCompany getCompany() {
 		return company;
 	}
+	public boolean isSmilePoint() {
+		return isSmilePoint;
+	}
+	
 	
 
 	

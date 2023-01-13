@@ -109,7 +109,7 @@ public class WebSecurityConfig {
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().antMatchers(HttpMethod.POST, authenticationPath).and()
+		return (web) -> web.ignoring().antMatchers(HttpMethod.POST, authenticationPath,"/forgotPassword").and()
 				.ignoring().antMatchers(HttpMethod.GET,"/swagger-ui.html",
 						 "/*.html",
 			                "/index.jsp",

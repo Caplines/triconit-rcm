@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -59,7 +60,7 @@ public class RcmUser extends BaseAuditEntity implements Serializable{
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	private Set<RcmUserRole> roles;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "company_id",referencedColumnName="uuid")
 	private RcmCompany company;
 
@@ -77,5 +78,11 @@ public class RcmUser extends BaseAuditEntity implements Serializable{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "office_id")
 	private RcmOffice office;
+	
+	@Transient
+	private boolean isSmilePoint;
+	
+	@Column(nullable = true, length = 64)
+	private String tempPassword;
 	
 }

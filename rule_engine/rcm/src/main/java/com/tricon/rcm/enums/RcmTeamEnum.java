@@ -60,6 +60,11 @@ public enum RcmTeamEnum {
 			role = Constants.ROLE_PREFIX.concat(teamName).concat(Constants.HYPHEN).concat(roleName);
 			return role;
 		}
+		if(value==0 &&roleEnum.isPresent()) {
+			roleName = roleEnum.get().getName();
+			role = Constants.ROLE_PREFIX.concat(roleName);
+			return role;
+		}
 		return null;
 	}
 }

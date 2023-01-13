@@ -31,5 +31,11 @@ public class MessageConstants {
 	public static final String UPDATION_FAIL = "Updation has been failed";
 
 	public static final String EMPTY_RESOURCE = "Given resource is empty";
+	
+	public static final String COMPANY_NOT_EXIST = "Company not exist";
+	
+	public static final String OFFICE_NOT_EXIST = "Office not exist";
+	
+	public static final String OFFICE_EXIST="Office Exist";
 
 }

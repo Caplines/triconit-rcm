@@ -32,7 +32,7 @@ public class RcmCommonServiceImpl {
 	
 	@Autowired
 	RCMUserRepository userRepo;
-	
+		
 	
 	public List<RcmOfficeDto> getAllOffices(){
 		
@@ -56,6 +56,7 @@ public class RcmCommonServiceImpl {
 			user.setPassword(EncrytedKeyUtil.encryptKey(password));
 			user.setUpdatedBy(updatedBy);
 			user.setLastPasswordResetDate(Timestamp.from(Instant.now()));
+			user.setTempPassword("null");
 			userRepo.save(user);
 			msg = MessageConstants.PASSWORD_UPDATE;
 		} catch (Exception e) {
