@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,7 +26,7 @@ import org.hibernate.annotations.UpdateTimestamp;
  *
  */
 @Entity
-@Table(name = "office")
+@Table(name = "office",uniqueConstraints = { @UniqueConstraint(columnNames = { "company_id", "office_id" }) })
 public class Office implements java.io.Serializable {
 
 	/**
@@ -79,7 +80,7 @@ public class Office implements java.io.Serializable {
 		this.company = company;
 	}
 
-	@Column(name = "name", length = 45,unique=true)
+	@Column(name = "name", length = 45)
 	public String getName() {
 		return this.name;
 	}

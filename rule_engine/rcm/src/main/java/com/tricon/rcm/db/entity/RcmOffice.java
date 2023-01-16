@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -21,7 +22,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "office")//Used in Rule Engine As well..
+@Table(name = "office",uniqueConstraints = { @UniqueConstraint(columnNames = { "company_id", "office_id" }) })//Used in Rule Engine As well..
 public class RcmOffice implements Serializable{
 
 	/**
@@ -39,7 +40,7 @@ public class RcmOffice implements Serializable{
 	@JoinColumn(name = "company_id",referencedColumnName="uuid")
 	private RcmCompany company;
 	
-	@Column(name = "name", length = 45,unique=true)
+	@Column(name = "name", length = 45)
 	private String name;
 	
 	@CreationTimestamp
