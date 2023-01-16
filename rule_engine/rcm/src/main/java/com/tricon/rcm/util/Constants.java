@@ -25,6 +25,8 @@ public class Constants {
 	public static final String billingClaim="Billing";
 	public static final String reBillingClaim="Re-billing";
 	
+	public static final String secondaryClaimTypeES="U";
+	
 	public static final String ClAIM_PULLED_SUCCESS="ClAIM PULLED SUCCESS";
 	
 	//Taken From Rule Engine

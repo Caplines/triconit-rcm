@@ -3,6 +3,7 @@ package com.tricon.rcm.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmInsurance;
@@ -12,6 +13,7 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
 import com.tricon.rcm.enums.ClaimSourceEnum;
+import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.service.impl.RuleEngineService;
 
 public class ClaimUtil {
@@ -30,11 +32,11 @@ public class ClaimUtil {
 	 * @return
 	 */
 	public static RcmClaims createClaimFromESData(RcmClaims claims, RcmOffice off, ClaimsFromRuleEngine re,
-			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType) {
+			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,String claimSuffix) {
 
 		claims.setOffice(off);
 		claims.setClaimStatusType(cType);//;mStatus("NEED TO RELOOK");// see latter
-		claims.setClaimId(re.getClaimId());
+		
 		if (user!=null) claims.setCreatedBy(user);
 		claims.setCurrentTeamId(team);
 		claims.setPrimInsuranceCompanyId(prim);
@@ -50,6 +52,7 @@ public class ClaimUtil {
 		claims.setSecStatus(re.getSecStatus());
 		claims.setSecSubmittedTotal(re.getSecSubmittedTotal());
 		claims.setSubmittedTotal(re.getSubmittedTotal());
+		claims.setClaimId(re.getClaimId()+claimSuffix);
 		try {
 			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getBirthDate()).getTime()));
 		} catch (Exception dt) {
@@ -76,7 +79,7 @@ public class ClaimUtil {
         try {
 		claims.setOffice(off);
 		claims.setClaimStatusType(cType);
-		claims.setClaimId(Integer.parseInt(re.getClaimId()));
+		claims.setClaimId(re.getClaimId());
 		
 		claims.setCreatedBy(user);
 		claims.setCurrentTeamId(team);
@@ -118,5 +121,10 @@ public class ClaimUtil {
 			claims=null;
 		}
 		return claims;
+	}
+	
+	public static RcmClaimAssignment createAssginmentData(RcmClaimAssignment assignment) {
+		
+		return assignment;
 	}
 }

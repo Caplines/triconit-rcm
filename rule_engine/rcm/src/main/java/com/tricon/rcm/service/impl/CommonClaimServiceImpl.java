@@ -14,14 +14,29 @@ public class CommonClaimServiceImpl {
 	@Autowired
 	RcmClaimLogRepo rcmClaimLogRepo;
 	
-	public void saveClaimLog(RcmClaimLog log, RcmUser user, RcmOffice off, String source, int logStatus,
-			int newClaimCt) {
+	/**
+	 * 
+	 * @param log
+	 * @param user
+	 * @param off
+	 * @param source
+	 * @param logStatus
+	 * @param newClaimCt
+	 * @param newPrimaryCt
+	 * @param newSecondayCt
+	 * @return
+	 */
+	public int saveClaimLog(RcmClaimLog log, RcmUser user, RcmOffice off, String source, int logStatus,
+			int newClaimCt,int newPrimaryCt,int newSecondayCt) {
 		log.setCreatedBy(user);
 		log.setOffice(off);
 		log.setSource(source);
 		log.setStatus(logStatus);
 		log.setNewClaimsCount(newClaimCt);
-		rcmClaimLogRepo.save(log);
+		log.setNewClaimsPrimaryCount(newPrimaryCt);
+		log.setNewClaimsSecodaryCount(newSecondayCt);
+
+		return rcmClaimLogRepo.save(log).getId();
 	}
 	
 }

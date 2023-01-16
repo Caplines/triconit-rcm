@@ -49,4 +49,9 @@ public class RcmRemoteStatusCount extends BaseAuditEntity implements Serializabl
 	@Column(name = "duplicate_count", length =5)
 	private int duplicateCount;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "rcm_claim_log_id",referencedColumnName="id")
+	private RcmClaimLog rcmClaimLog;
+	
+	
 }

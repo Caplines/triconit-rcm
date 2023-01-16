@@ -14,8 +14,9 @@ import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 
 public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
-	RcmClaims findByClaimIdAndOffice(int claimId,RcmOffice office);
+	RcmClaims findByClaimIdAndOffice(String claimId,RcmOffice office);
 	
+	List<RcmClaims> findByClaimIdInAndOffice(List<String> claimIds,RcmOffice office);
 	
 	@Query(nativeQuery=true,value=
 		"	select off.uuid as officeUuid ,off.name as officeName,"+

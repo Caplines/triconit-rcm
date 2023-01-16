@@ -26,7 +26,7 @@ import org.hibernate.annotations.UpdateTimestamp;
  *
  */
 @Entity
-@Table(name = "office",uniqueConstraints = { @UniqueConstraint(columnNames = { "company_id", "office_id" }) })
+@Table(name = "office",uniqueConstraints = { @UniqueConstraint(columnNames = { "company_id", "name" }) })
 public class Office implements java.io.Serializable {
 
 	/**

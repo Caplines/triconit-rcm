@@ -57,7 +57,7 @@ public class JwtUser implements UserDetails {
         this.active = enabled;
         this.lastPasswordResetDate = lastPasswordResetDate;
         this.company =company;
-        this.isSmilePoint=company.getName().equals(Constants.COMPANY_NAME)?true:false;
+        this.isSmilePoint=company!=null?(company.getName().equals(Constants.COMPANY_NAME)?true:false):false;
     }
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

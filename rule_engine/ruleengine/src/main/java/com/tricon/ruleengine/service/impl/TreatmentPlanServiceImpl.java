@@ -71,6 +71,7 @@ import com.tricon.ruleengine.model.db.ReportsClaim;
 import com.tricon.ruleengine.model.db.Rules;
 import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.model.db.UserInputRuleQuestionHeader;
+import com.tricon.ruleengine.model.sheet.CRAReqMappingDto;
 import com.tricon.ruleengine.model.sheet.ClaimData;
 import com.tricon.ruleengine.model.sheet.ClaimDataDetails;
 import com.tricon.ruleengine.model.sheet.ClaimDataPatient;
@@ -343,6 +344,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Map<String, List<Object>> tMapReduced=null;
 				List<ExceptionDataDto> exceptionData=null;
 				List<InsuranceMappingDto> insuranceData=null;
+				List<CRAReqMappingDto> craData=null;
+				
 				List<OSIVFormCodes> oSCodes=null;
 				Map<String, List<EagleSoftEmployerMaster>> esempmaster = null;
 				Map<String, List<EagleSoftFeeShedule>> esfeess= null;
@@ -472,7 +475,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						
 						try {
 							insuranceData=ConnectAndReadSheets.readSheetInsuranceMapping(env.getProperty("mapping.sheet.insurance"), "Provider Certification Status", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
-						     System.out.println(insuranceData.size());	
+						}catch(Exception exp) {
+								
+							}
+						try {
+							craData=ConnectAndReadSheets.readSheetCRAReqMapping(env.getProperty("mapping.sheet.insurance"), "CRA Requirement", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+						     System.out.println(craData.size());	
 						}catch(Exception exp) {
 								
 							}
@@ -818,11 +826,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							oSCodes=oSIVFormCodesService.getAllActiveOSIVCodes();
 							validdateRulesTPOS(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
-									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,insuranceData,oSCodes,
+									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,insuranceData,craData,oSCodes,
 									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec);
 							}else validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
-									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,insuranceData,
+									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,insuranceData,craData,
 									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec);
 							
 							/*
@@ -946,7 +954,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  String empMasterKey,
 		  Map<String, List<Perio>> perios,List<Mappings> mappings,RuleBook rb,List<TPValidationResponseDto> list,TPValidationResponseDto dtoR,TreatmentPlanValidationDto dtod,
 		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
-		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<InsuranceMappingDto> insuranceData,Map<String,
+		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<InsuranceMappingDto> insuranceData,List<CRAReqMappingDto> craData,Map<String,
 		  List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
 		  Map<String, List<PatientPolicyHolder>> espatientsHolderPr,Map<String, List<PatientPolicyHolder>> espatientsHolderSec) {
 	  
@@ -1328,7 +1336,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		// RULE_ID_22 "CRA
 		rule = getRulesFromList(rules, Constants.RULE_ID_22);
-		dtoRL = rb.Rule22(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+		dtoRL = rb.Rule22(tListReduced, ivfMap.get(ivx).get(0),craData, messageSource, rule, bw,type);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
@@ -2258,7 +2266,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  String empMasterKey,
 		  Map<String, List<Perio>> perios,List<Mappings> mappings,RuleBook rb,List<TPValidationResponseDto> list,TPValidationResponseDto dtoR,TreatmentPlanValidationDto dtod,
 		  List<QuestionAnswerDto> ansL,List<UserInputRuleQuestionHeader> qhList,List<MVPandVAP> mvpVapList,Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis,
-		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<InsuranceMappingDto> insuranceData,List<OSIVFormCodes> oSCodes,
+		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<InsuranceMappingDto> insuranceData,List<CRAReqMappingDto> craData,List<OSIVFormCodes> oSCodes,
 		  Map<String, List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
 		  Map<String, List<PatientPolicyHolder>> espatientsHolderPr,Map<String, List<PatientPolicyHolder>> espatientsHolderSec) {
 	  

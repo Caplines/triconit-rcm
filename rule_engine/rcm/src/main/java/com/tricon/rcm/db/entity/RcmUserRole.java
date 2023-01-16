@@ -19,7 +19,6 @@ public class RcmUserRole implements Serializable{
 	 */
 	private static final long serialVersionUID = 9043330816732239655L;
 
-	@Id
 	@EmbeddedId
 	private RcmUserRolePk id = new RcmUserRolePk();
 

@@ -38,7 +38,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	private String claimUuid;
 
 	@Column(name = "claim_id", nullable = false)
-	private int claimId;// c1
+	private String claimId;// c1
 
 	//@Column(name = "claim_status")
 	//private String claimStatus;// For Rule Engine..
@@ -114,6 +114,10 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "claim_status_type_id", referencedColumnName = "id")
 	private RcmClaimStatusType claimStatusType;
+	
+	
+	@Column(name = "regenerated")
+	private boolean regenerated;//
 
 
 }

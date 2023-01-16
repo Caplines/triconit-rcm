@@ -13,7 +13,7 @@ public class ClaimsFromRuleEngine {
 	String patientId;
 	
 	@JsonProperty("c2")
-	int claimId;
+	String claimId;
 	
 	@JsonProperty("c3")
 	String empty;

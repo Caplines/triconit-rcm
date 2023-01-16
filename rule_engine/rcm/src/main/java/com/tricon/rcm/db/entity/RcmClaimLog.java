@@ -38,12 +38,21 @@ public class RcmClaimLog  extends BaseAuditEntity implements Serializable{
 	@Column(name = "new_claims_count", nullable = false)
 	private int newClaimsCount;
 	
+	@Column(name = "new_claims_count_s", nullable = false)
+	private int newClaimsSecodaryCount;
+	
+	@Column(name = "new_claims_count_p", nullable = false)
+	private int newClaimsPrimaryCount;
+	
 	@Column(name = "status", nullable = false)
 	private int status;//1 Means Fine 0 Mean Fetch claim Service Ran but not able to fetch Claims 
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "office_id",referencedColumnName="uuid")
 	private RcmOffice office;
+	
+	@Column(name = "message", nullable = false)
+	private String message; 
 	
 }
 

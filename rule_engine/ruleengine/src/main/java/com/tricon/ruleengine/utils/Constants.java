@@ -211,7 +211,8 @@ public class Constants {
 	public static String microsoft_patient="Patient";
 	public static String google_ivf_sheet="IVF Sheet";
 	public static String insurance_Medicaid="medicaid";
-	public static String insurance_Dentaquest="dentaquest";
+	public static String adult_Medicaid="Adult Medicaid";
+	
 	public static String insurance_Mcna="mcna";
 	public static String insurance_PPO="ppo";
 	public static String insurance_Medicare="medicare";

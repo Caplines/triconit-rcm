@@ -49,10 +49,9 @@ public class ClaimScheduler {
 			dto.setOfficeuuid(officeDto.getUuid());
 			dto.setSource(ClaimSourceEnum.EAGLESOFT.toString());
 			
-			ruleEngineService.pullAndSaveRemoteLiteData(dto,user);
-			
-	        ruleEngineService.pullAndSaveInsuranceFromRE(dto,user);
-			ruleEngineService.pullAndSaveClaimFromRE(dto,user);
+			ruleEngineService.pullAndSaveInsuranceFromRE(dto,user);
+			int logId =ruleEngineService.pullAndSaveClaimFromRE(dto,user);
+			ruleEngineService.pullAndSaveRemoteLiteData(dto,user,logId);
 			
 			break;
 		}

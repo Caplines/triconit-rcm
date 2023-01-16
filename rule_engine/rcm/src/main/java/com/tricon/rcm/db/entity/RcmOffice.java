@@ -22,7 +22,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "office",uniqueConstraints = { @UniqueConstraint(columnNames = { "company_id", "office_id" }) })//Used in Rule Engine As well..
+@Table(name = "office",uniqueConstraints = { @UniqueConstraint(columnNames = { "company_id", "name" }) })//Used in Rule Engine As well..
 public class RcmOffice implements Serializable{
 
 	/**

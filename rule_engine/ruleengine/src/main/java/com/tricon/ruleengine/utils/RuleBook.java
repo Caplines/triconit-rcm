@@ -52,6 +52,7 @@ import com.tricon.ruleengine.model.sheet.InsuranceMappingDto;
 import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
+import com.tricon.ruleengine.model.sheet.CRAReqMappingDto;
 //import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.CommonDataCheck;
 
@@ -6192,15 +6193,15 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 
 
 	// CRA
-	public List<TPValidationResponseDto> Rule22(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
+	public List<TPValidationResponseDto> Rule22(List<Object> tpList, Object ivfSheet,List<CRAReqMappingDto> mappingData, MessageSource messageSource,
 			Rules rule, BufferedWriter bw,int userType) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_22,
 				Constants.rule_log_debug, bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
-		String cra = ivf.getCraRequired();
-		RuleEngineLogger.generateLogs(clazz, "CRA-"+cra, Constants.rule_log_debug, bw);
+		String cra = "";//ivf.getCraRequired();//Now get value from Mapping Sheet
+		
 		//boolean pass = true;
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		Set<String> fcodes=new HashSet<>();
@@ -6216,11 +6217,29 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 		}
 
 		try {
+			
 			if (tpList == null) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				return d;
 			}
+			String planType= ivf.getPlanType();
+			String insName= ivf.getInsName();
+			String group =ivf.getGroup();
+			String emp =ivf.getEmployerName();
+			
+			CRAReqMappingDto dto =getMappingFromCRA(mappingData, insName, planType,group,emp);	
+			if (dto!=null) {
+				
+				cra= dto.getCraRequired().trim().equalsIgnoreCase("yes")?"yes":"No";
+			}else {
+				cra="No";
+			}
+			RuleEngineLogger.generateLogs(clazz, "CRA-"+cra, Constants.rule_log_debug, bw);
+			RuleEngineLogger.generateLogs(clazz, "planType:-"+planType+" - insName:"+insName+
+					 " group:-"+group+" - empName:"+emp,
+					Constants.rule_log_debug, bw);
+			
 			String codeFound1 = "";
 			String codeFound2 = "";
 
@@ -12963,6 +12982,20 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 		Collection<InsuranceMappingDto> ruleGen = Collections2.filter(list,
 				rule -> ( rule.getProviders().equalsIgnoreCase(provider) ||  rule.getProviders().equalsIgnoreCase("Dr. "+provider)));
 		for (InsuranceMappingDto rule : ruleGen) {
+			r = rule;
+			break;
+		}
+		
+		return r;
+	}
+	
+	private CRAReqMappingDto getMappingFromCRA(List<CRAReqMappingDto> list, String insuranceName,
+			String planType,String group,String empName) {
+		CRAReqMappingDto r = null;//DentaQuest - Adult Medicaid //Dentaquest-Adult Medicaid
+		Collection<CRAReqMappingDto> ruleGen = Collections2.filter(list,
+				rule -> ( rule.getInsuranceName().replaceAll(" ", "").trim().equalsIgnoreCase(insuranceName.replaceAll(" ", "").trim()) &&  rule.getPlanType().replaceAll(" ", "").trim().equalsIgnoreCase(planType.replaceAll(" ", "").trim())
+						 && (rule.getGroupEmpName().replaceAll(" ", "").trim().equalsIgnoreCase(group.replaceAll(" ", "").trim()) || rule.getGroupEmpName().replaceAll(" ", "").trim().equalsIgnoreCase(empName.replaceAll(" ", "")) ) ));
+		for (CRAReqMappingDto rule : ruleGen) {
 			r = rule;
 			break;
 		}
