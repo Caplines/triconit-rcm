@@ -140,7 +140,7 @@ public class RuleEngineService {
 		String success = Constants.ClAIM_PULLED_SUCCESS;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
-			user = userRepo.findByUserName(authentication.getName());
+			user = userRepo.findByEmail(authentication.getName());
 		}
 		logger.info(" In pullClaimFromRE");
 		RcmClaimMainRootDto mainRoot = null;
@@ -232,7 +232,7 @@ public class RuleEngineService {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List<InsuranceNameTypeDto> insuranceTypeDto = pullInsuranceMappingFromSheet();
 		if (authentication != null) {
-			user = userRepo.findByUserName(authentication.getName());
+			user = userRepo.findByEmail(authentication.getName());
 		}
 
 		logger.info(" In pull Insurance From RE");
@@ -318,7 +318,7 @@ public class RuleEngineService {
 		logger.info(" In pullRemoteLiteDate");
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
-			user = userRepo.findByUserName(authentication.getName());
+			user = userRepo.findByEmail(authentication.getName());
 		}
 		HashMap<String, RemoteLiteDataDto> map = new HashMap<>();
 		try {

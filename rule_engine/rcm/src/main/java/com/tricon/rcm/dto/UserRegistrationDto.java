@@ -20,8 +20,6 @@ public class UserRegistrationDto {
 	@Email(message = "Please provide a valid Email")
 	@NotEmpty(message = "Please provide an email")
 	private String email;
-	@NotEmpty(message = "Please provide your user name")
-	private String userName;
 	@NotEmpty(message = "Please provide your password")
 	private String password;
 	@NotEmpty(message = "Please provide office name")

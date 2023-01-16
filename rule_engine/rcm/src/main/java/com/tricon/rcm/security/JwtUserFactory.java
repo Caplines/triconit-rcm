@@ -26,7 +26,7 @@ public final class JwtUserFactory {
                 user.getUuid(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getUserName(),
+                user.getEmail(),
                 user.getPassword(),
                 user.getTeam().getId(),
                 mapToGrantedAuthorities(user.getRoles()),

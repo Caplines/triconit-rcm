@@ -42,9 +42,6 @@ public class RcmUser extends BaseAuditEntity implements Serializable{
 	@Column(name = "uuid", nullable = false, length = 45)
 	private String uuid;
 
-	@Column(nullable = false, unique = true, length = 45)
-	private String userName;
-
 	@Column(nullable = false, unique = true, length = 100)
 	private String email;
 	

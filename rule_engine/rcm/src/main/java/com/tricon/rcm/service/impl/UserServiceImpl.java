@@ -53,7 +53,7 @@ public class UserServiceImpl {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		String msg = "";
-		RcmUser loginUser = userRepo.findByUserName(jwtUser.getUserName());
+		RcmUser loginUser = userRepo.findByEmail(jwtUser.getUsername());
 		if (loginUser != null) {
 			msg = commonService.resetPassword(loginUser, loginUser, password);
 		} else {
@@ -75,7 +75,7 @@ public class UserServiceImpl {
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
-		RcmUser loginUser = userRepo.findByUserName(jwtUser.getUserName());
+		RcmUser loginUser = userRepo.findByEmail(jwtUser.getUsername());
 		List<RcmUserToDto> data = null;
 		if (loginUser != null) {
 			RcmTeam team = loginUser.getTeam();

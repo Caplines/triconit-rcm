@@ -29,6 +29,7 @@ import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
+import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
@@ -40,14 +41,17 @@ import com.tricon.rcm.dto.RcmUserDto;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.ResetStatusDto;
+import com.tricon.rcm.dto.UserAssignOfficeDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
+import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
+import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
@@ -80,6 +84,9 @@ public class AdminServiceImpl {
 	@Autowired
 	RcmCommonServiceImpl commonService;
 	
+	@Autowired
+	UserAssignOfficeRepo userAssignRepo;
+	
 	@Value("${data.totalRecordperPage}")
 	private int totalRecordsperPage;
 
@@ -95,8 +102,9 @@ public class AdminServiceImpl {
 		RcmUserRole roles = null;
 		RcmUserRolePk pk = null;
 		RcmUser user = null;
+		UserAssignOffice userAssignOffice = null;
 		if (office != null) {
-			user = userRepo.findByUserNameOrEmail(dto.getUserName(), dto.getEmail());
+			user = userRepo.findByEmail(dto.getEmail());
 			if (user == null) {
 				RcmTeam team = teamRepo.findById(dto.getTeamId());
 				RcmCompany company = rcmCompanyRepo.findByName(dto.getCompanyName());
@@ -117,6 +125,22 @@ public class AdminServiceImpl {
 					}
 					userRole.save(roles);
 				}
+				
+				// save user data into user_assign_office table
+				if (user.getCompany().getName().equals(Constants.COMPANY_NAME) && dto.getUserRole().stream().anyMatch(x->x.equals(RcmRoleEnum.ASSO.getName()))) {
+
+					// check office is alreday exist or not
+					userAssignOffice = userAssignRepo.findByOfficeIdUuid(user.getOffice().getUuid());
+
+					if (userAssignOffice == null) {
+						userAssignOffice=new UserAssignOffice();
+						userAssignOffice.setUserId(user);
+						userAssignOffice.setOfficeId(user.getOffice());
+						userAssignOffice.setTeamId(user.getTeam());
+						userAssignRepo.save(userAssignOffice);
+					}
+				}
+					
 
 				return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 			}
@@ -139,7 +163,6 @@ public class AdminServiceImpl {
 		user.setPassword(EncrytedKeyUtil.encryptKey(dto.getPassword()));
 		user.setActive(1);
 		user.setEmail(dto.getEmail());
-		user.setUserName(dto.getUserName());
 		user.setCreatedBy(user);
 		return user;
 	}
@@ -151,8 +174,8 @@ public class AdminServiceImpl {
 	 * @param dto
 	 * @return user details
 	 */
-	public GenericResponse findUserByUserName(FindUserDto dto) throws Exception {
-		RcmUser user = userRepo.findByUserNameAndActive(dto.getUsername(), Constants.ENABLE);
+	public GenericResponse findUserByEmail(FindUserDto dto) throws Exception {
+		RcmUser user = userRepo.findByEmailAndActive(dto.getEmail(), Constants.ENABLE);
 		if (user != null) {
 			RcmUserDto data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
@@ -203,7 +226,7 @@ public class AdminServiceImpl {
 	public GenericResponse resetUserStatus(JwtUser jwtUser, ResetStatusDto dto) throws Exception {
 		List<String> enables = dto.getEnable();
 		List<String> disables = dto.getDisable();
-		RcmUser logInUser = userRepo.findByUserName(jwtUser.getUserName());
+		RcmUser logInUser = userRepo.findByEmail(jwtUser.getUsername());
 		String updatedBy = logInUser.getUuid();
 		try {
 			if (enables != null && !enables.isEmpty()) {
@@ -233,7 +256,7 @@ public class AdminServiceImpl {
 	public GenericResponse passwordUpdation(JwtUser jwtUser, PasswordResetDto dto) throws Exception {
 		String msg = "";
 		RcmUser user = null, loginUser = null;
-		loginUser = userRepo.findByUserName(jwtUser.getUserName());
+		loginUser = userRepo.findByEmail(jwtUser.getUsername());
 		if (loginUser != null) {
 			if (!dto.getUuid().equals(loginUser.getUuid())) {
 				user = userRepo.findByUuid(dto.getUuid());
@@ -434,5 +457,65 @@ public class AdminServiceImpl {
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
-}
+   }
+	
+	@Transactional(rollbackOn = Exception.class)
+	public GenericResponse assignOfficeByAdmin(UserAssignOfficeDto dto)throws Exception {
+		List<UserAssignOffice> searchOffice = userAssignRepo.findByOfficeIdUuidIn(dto.getOfficeId());
+		List<UserAssignOffice> saveAllOffices = null;
+		List<String> existingOffice = null;
+		List<UserAssignOffice> existingUser = null;
+		UserAssignOffice user = null;
+		RcmUser rcmUser = null;
+		RcmOffice office = null;
+
+		// First we check given office id is assign or not to any user
+		if (searchOffice != null && !searchOffice.isEmpty()) {
+			existingOffice = searchOffice.stream().map(x -> x.getOfficeId()).map(x -> x.getName())
+					.collect(Collectors.toList());
+			return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, existingOffice);
+		} else {
+			existingUser = userAssignRepo.findByUserIdUuid(dto.getUserId());
+			// if user id is exist then proceed next step
+			if (existingUser != null && !existingUser.isEmpty()) {
+				// now we will assign new offices to given user
+				rcmUser = existingUser.stream().map(x -> x.getUserId()).findFirst().get();
+				RcmTeam team = existingUser.stream().map(x -> x.getTeamId()).findFirst().get();
+				saveAllOffices = new ArrayList<>();
+				for (String off : dto.getOfficeId()) {
+					user = new UserAssignOffice();
+					office = new RcmOffice();
+					user.setUserId(rcmUser);
+					user.setTeamId(team);
+					office.setUuid(off);
+					user.setOfficeId(office);
+					saveAllOffices.add(user);
+				}
+				userAssignRepo.saveAll(saveAllOffices);
+				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+
+			} else {
+				// It means given user is new ,now we will save this new user
+				// First we check given user is valid or not
+				rcmUser = userRepo.findByUuid(dto.getUserId());
+				if (rcmUser != null && rcmUser.getRoles().stream().map(x -> x.getRole())
+						.anyMatch(x -> x.equals(RcmRoleEnum.ASSO.getName()))) {
+					saveAllOffices = new ArrayList<>();
+					for (String off : dto.getOfficeId()) {
+						user = new UserAssignOffice();
+						office = new RcmOffice();
+						user.setUserId(rcmUser);
+						user.setTeamId(rcmUser.getTeam());
+						office.setUuid(off);
+						user.setOfficeId(office);
+						saveAllOffices.add(user);
+					}
+					userAssignRepo.saveAll(saveAllOffices);
+					return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+				}
+
+			}
+			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
+		}
 	}
+}

@@ -36,8 +36,9 @@ public class RcmUtilServiceImpl {
 	@Transactional(rollbackOn = Exception.class)
 	public GenericResponse forgotPassword(ForgotPasswordDto dto) throws Exception {
 		RcmUser existingUser = userRepo.findByEmail(dto.getEmail());
-		RcmUser system=userRepo.findByUserName(Constants.SYSTEM);
+		RcmUser system = null;
 		if (existingUser != null) {
+			system = userRepo.findByEmail(Constants.SYSTEM_USER_EMAIL);
 			String newPassword = GeneratePassword.generateTempPassword();
 			String emailSubject = "Reset Password RCM Tool";
 			String emailText = "Hi " + existingUser.getFirstName()

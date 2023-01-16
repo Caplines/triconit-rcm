@@ -41,7 +41,7 @@ public class ClaimScheduler {
 	public void updateClaimAndInsuranceWithUnBilledClaimsFromRE() {
 
 		logger.info("ClaimScheduler Run at :-" + new Date());
-		RcmUser user= userRepo.findByUserName(Constants.SYSTEM_USER_NAME);
+		RcmUser user= userRepo.findByEmail(Constants.SYSTEM_USER_EMAIL);
 		ClaimSourceDto dto = new ClaimSourceDto();
 		
 		for(RcmOfficeDto officeDto: commonsService.getAllOffices()) {

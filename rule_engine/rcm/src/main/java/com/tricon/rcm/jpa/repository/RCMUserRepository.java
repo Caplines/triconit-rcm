@@ -15,17 +15,14 @@ import com.tricon.rcm.dto.UserSearchDto;
 
 public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	
-	
-	RcmUser findByUserNameOrEmail(String userName,String email);
-	RcmUser findByUserNameAndActive(String userName,int active);
+	RcmUser findByEmailAndActive(String email,int active);
 	RcmUser findByUuid(String uuid);
-	RcmUser findByUserName(String userName);
 	RcmUser findByEmail(String email);
 	
-	@Query(value="select u.uuid as Uuid,u.userName as UserName,concat(u.first_name,' ',u.last_name)as FullName from rcm_user u join rcm_user_role r on u.uuid=r.uuid where r.role=?1 and u.active=1",nativeQuery=true)
+	@Query(value="select u.uuid as Uuid,u.email as email,concat(u.first_name,' ',u.last_name)as FullName from rcm_user u join rcm_user_role r on u.uuid=r.uuid where r.role=?1 and u.active=1",nativeQuery=true)
 	List<RcmUserToDto> findUsersByRole(String role);
 	
-	@Query(value="select uuid as Uuid,active as Active,userName as UserName,concat(first_name,' ',last_name)as FullName from rcm_user where company_id=?1",nativeQuery = true)
+	@Query(value="select uuid as Uuid,active as Active,email as email,concat(first_name,' ',last_name)as FullName from rcm_user where company_id=?1",nativeQuery = true)
 	List<RcmUserToDto> getAllUser(String uuid);
 	
 
@@ -36,7 +33,7 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	@Query(value="update rcm_user set active=:status,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where uuid in(:uuid)",nativeQuery = true)
 	void enableOrDisableStatus(@Param("status")int active,@Param("updatedBy")String updatedBy,@Param("uuid")List<String> uuid);
 
-	@Query(value = "select uuid as Uuid,active as Active,userName as UserName,concat(first_name,' ',last_name)as FullName,email as Email,"
+	@Query(value = "select uuid as Uuid,active as Active,concat(first_name,' ',last_name)as FullName,email as Email,"
 			+ "first_name as FirstName,last_name as LastName,team_id as TeamNameid from rcm_user where"
 			+ "(userName like %:search% or first_name like %:search% or email like %:search% or last_name like %:search%)",nativeQuery = true)
 	List<UserSearchDto> findByUserDetails(String search);

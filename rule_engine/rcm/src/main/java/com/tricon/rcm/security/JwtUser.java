@@ -26,7 +26,7 @@ public class JwtUser implements UserDetails {
     private final String lastname;
     private final String password;
     private final int teamId;
-    private final String userName;
+    private final String email;
     private final Collection<? extends GrantedAuthority> authorities;
     private final int active;
     private final Date lastPasswordResetDate;
@@ -39,7 +39,7 @@ public class JwtUser implements UserDetails {
           String uuid,
           String firstname,
           String lastname,
-          String userName,
+          String email,
           String password,
            int teamId,
           Collection<? extends GrantedAuthority> authorities,
@@ -50,7 +50,7 @@ public class JwtUser implements UserDetails {
         this.uuid = uuid;
         this.firstname = firstname;
         this.lastname = lastname;
-        this.userName = userName;
+        this.email = email;
         this.password = password;
         this.teamId  = teamId;
         this.authorities = authorities;
@@ -72,7 +72,7 @@ public class JwtUser implements UserDetails {
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
-		return userName;
+		return email;
 	}
 	@Override
 	public boolean isAccountNonExpired() {
@@ -104,9 +104,6 @@ public class JwtUser implements UserDetails {
 	public String getLastname() {
 		return lastname;
 	}
-	public String getUserName() {
-		return userName;
-	}
 	public int getActive() {
 		return active;
 	}
@@ -121,6 +118,9 @@ public class JwtUser implements UserDetails {
 	}
 	public boolean isSmilePoint() {
 		return isSmilePoint;
+	}
+	public String getEmail() {
+		return email;
 	}
 	
 	

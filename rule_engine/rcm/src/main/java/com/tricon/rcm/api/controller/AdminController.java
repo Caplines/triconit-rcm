@@ -27,6 +27,7 @@ import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.ResetStatusDto;
+import com.tricon.rcm.dto.UserAssignOfficeDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.AdminServiceImpl;
@@ -98,7 +99,7 @@ public class AdminController {
 
 	@RequestMapping(value = "/finduser", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> findUserByUsername(@RequestBody FindUserDto dto) {
+	public ResponseEntity<?> findUserByEmail(@RequestBody FindUserDto dto) {
 		GenericResponse response = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
@@ -107,12 +108,12 @@ public class AdminController {
 		if(!jwtUser.isSmilePoint()) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
-		if (dto.getUsername().trim().equals("")) {
+		if (dto.getEmail().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
 		try {
-			response = serviceImpl.findUserByUserName(dto);
+			response = serviceImpl.findUserByEmail(dto);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -277,5 +278,28 @@ public class AdminController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	
+	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> assignOffice(@RequestBody UserAssignOfficeDto dto) {
+		if (dto.getUserId().trim().equals("") || dto.getOfficeId().isEmpty()) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		GenericResponse response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if (!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		try {
+			response = serviceImpl.assignOfficeByAdmin(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 }

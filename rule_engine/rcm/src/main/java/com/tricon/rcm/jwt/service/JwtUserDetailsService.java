@@ -17,11 +17,11 @@ public class JwtUserDetailsService implements UserDetailsService {
 	RCMUserRepository rcmUserRepository;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		RcmUser user = rcmUserRepository.findByUserName(username);
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		RcmUser user = rcmUserRepository.findByEmail(email);
 
 		if (user == null) {
-			throw new UsernameNotFoundException(String.format("No user found with email '%s'.", username));
+			throw new UsernameNotFoundException(String.format("No user found with email '%s'.",email));
 		} else {
 			return JwtUserFactory.create(user);
 		}

@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FindUserDto {
 
-	private String username;
+	private String email;
 }
