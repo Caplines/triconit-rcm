@@ -4,8 +4,6 @@ public interface UserSearchDto {
 
 	String getUuid();
 
-	String getUserName();
-
 	String getFullName();
 
 	String getEmail();

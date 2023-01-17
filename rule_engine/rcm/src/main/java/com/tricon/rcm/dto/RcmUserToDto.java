@@ -9,7 +9,7 @@ public interface RcmUserToDto {
  
 	   String getUuid();
 	   Integer getActive();
-	   String getUserName();
+	   String getEmail();
 	   String getFullName();
 	
 }

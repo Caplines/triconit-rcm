@@ -119,7 +119,7 @@ public class AdminServiceImpl {
 					pk.setUuid(user.getUuid());
 					roles.setId(pk);
 					if (role.equals(Constants.ADMIN)) {
-						roles.setRole(RcmTeamEnum.generateRole(0, role));
+						roles.setRole(RcmTeamEnum.generateRole(0, role));  //If role is admin then by default teamId will consider 0
 					} else {
 						roles.setRole(RcmTeamEnum.generateRole(team.getId(), role));
 					}
@@ -168,9 +168,8 @@ public class AdminServiceImpl {
 	}
 
 	/**
-	 * This Method finds user by userName whose status is enable This Method can use
-	 * only ADMIN
-	 * 
+	 * This Method finds user by email whose status is enable 
+	 * This Method can use only ADMIN
 	 * @param dto
 	 * @return user details
 	 */
@@ -218,7 +217,7 @@ public class AdminServiceImpl {
 
 	/**
 	 * This Method enable/disable status based on user uuid.
-	 *  This Method can use only ADMIN and cmpany is capline
+	 * This Method can use only ADMIN and cmpany is capline
 	 * @param dto
 	 * @param logInUser
 	 */
@@ -469,6 +468,7 @@ public class AdminServiceImpl {
 		RcmUser rcmUser = null;
 		RcmOffice office = null;
 
+        String msg="";
 		// First we check given office id is assign or not to any user
 		if (searchOffice != null && !searchOffice.isEmpty()) {
 			existingOffice = searchOffice.stream().map(x -> x.getOfficeId()).map(x -> x.getName())
@@ -499,7 +499,7 @@ public class AdminServiceImpl {
 				// First we check given user is valid or not
 				rcmUser = userRepo.findByUuid(dto.getUserId());
 				if (rcmUser != null && rcmUser.getRoles().stream().map(x -> x.getRole())
-						.anyMatch(x -> x.equals(RcmRoleEnum.ASSO.getName()))) {
+						.anyMatch(x ->x.endsWith(RcmRoleEnum.ASSO.getName()))) {
 					saveAllOffices = new ArrayList<>();
 					for (String off : dto.getOfficeId()) {
 						user = new UserAssignOffice();
@@ -513,9 +513,9 @@ public class AdminServiceImpl {
 					userAssignRepo.saveAll(saveAllOffices);
 					return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 				}
-
+              msg="User not exist or user is not associate user";
 			}
-			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
+			return new GenericResponse(HttpStatus.BAD_REQUEST, msg, null);
 		}
 	}
 }

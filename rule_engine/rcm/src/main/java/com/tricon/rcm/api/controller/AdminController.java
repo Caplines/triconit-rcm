@@ -60,7 +60,7 @@ public class AdminController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		try {
 			response = serviceImpl.registerUser(dto);
@@ -81,7 +81,7 @@ public class AdminController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		if (dto.getPassword().trim().equals("") || dto.getUuid().trim().equals("")) {
 			return ResponseEntity
@@ -106,7 +106,7 @@ public class AdminController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		if (dto.getEmail().trim().equals("")) {
 			return ResponseEntity
@@ -131,7 +131,7 @@ public class AdminController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		try {
 			response = serviceImpl.getAllUsers(pageNumber);
@@ -152,7 +152,7 @@ public class AdminController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		if (dto.getEnable().isEmpty() && dto.getDisable().isEmpty()) {
 			return ResponseEntity
@@ -177,7 +177,7 @@ public class AdminController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		try {
 			response = serviceImpl.findUserByDetail(searchQuery);
@@ -216,7 +216,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
@@ -266,7 +266,7 @@ public class AdminController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		try {
 			response = serviceImpl.editRolesByAdmin(jwtUser,dto);
@@ -291,7 +291,7 @@ public class AdminController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		if (!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		try {
 			response = serviceImpl.assignOfficeByAdmin(dto);
