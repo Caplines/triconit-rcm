@@ -81,7 +81,8 @@ export class LoginComponent implements OnInit {
   }
 
   showForgotPassBox(){
-
+    this.forgotPassObj.showForgotPasswordBox=true;
+    this.errorMessage = '';
   }
 
   forgotPass(){

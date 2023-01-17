@@ -39,14 +39,18 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-4 mb-2">
+                    <div class="col-md-12 mb-2">
                         <label for="Password">Password</label>
                         <input type="password" id="" name="password" class="form-control form-control-sm" placeholder="***********"
-                            [(ngModel)]="form.password" required minlength="6" #password="ngModel">
-                        <div class="alert alert-danger" role="alert" *ngIf="password.errors && f.submitted">
-                            <div *ngIf="password.errors['required']">Password is required</div>
-                            <div *ngIf="password.errors['minlength']"> Password must be at least 6 characters</div>
-                        </div>
+                            [(ngModel)]="form.password" required minlength="6" #password="ngModel" [ngClass]="{'is-invalid': password.errors && f.submitted &&  (password.errors['required'] || password.errors['minlength'])}">
+                            <ng-container *ngIf="password.errors && f.submitted">
+                                <div class="invalid-feedback" role="alert" *ngIf="password.errors['required']">
+                                    Password is required
+                                </div>
+                                <div class="invalid-feedback" role="alert"  *ngIf="password.errors['minlength']">
+                                    Password must be at least 6 characters
+                                </div>
+                            </ng-container>
                         <span class="focus-input password"></span>
                     </div>
 
@@ -56,7 +60,7 @@
                     <!-- <input type="checkbox" class="custom-control-input" id="remember"> -->
                     <!-- <label class="custom-control-label" for="remember">Remember me</label> -->
                 </div>
-                <a href="javascript:void(0);" (click)="forgotPassObj.showForgotPasswordBox=true;">Forgot password?</a>
+                <a href="javascript:void(0);" (click)="showForgotPassBox()">Forgot password?</a>
             </div>
                 <div class="row">
                     <div class="col-md-4 mt-2 mb-3">
@@ -64,7 +68,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="alert alert-danger" role="alert" *ngIf="f.submitted && isLoginFailed">
+                    <div class="alert alert-danger" role="alert" *ngIf="f.submitted && isLoginFailed && errorMessage!==''">
                         Login failed: {{ errorMessage }}
                     </div>
                 </div>
@@ -73,26 +77,39 @@
         </div>
     </ng-container>
     <ng-container *ngIf="forgotPassObj.showForgotPasswordBox">
-        <div class="inner-container container my-5">
-        <div class="col-md-4 mb-3 forgot-pass-box">
-            <label for="user">Email</label>
-            <input type="email" name="email" class="form-control form-control-sm"
-            placeholder="Enter your Email address" [(ngModel)]="forgotPassObj.email" required='true'/>
-            <div class="my-2 errorMessage">{{errorMessage}}</div>
+        <div class="inner-container my-5 forgot-password">
+            <div class="forgot-pass-header">Forgot <span>Password</span></div>
+            <div class="mb-3 forgot-pass-box">
+                <label for="user">Email</label>
+                <input type="email" name="email" class="form-control form-control-sm " [ngClass]="{'is-invalid':errorMessage!==''}"
+                       placeholder="Enter your Email address" [(ngModel)]="forgotPassObj.email" required='true' />
+                <span _ngcontent-hon-c49="" class="focus-input"></span>
+                <div class="invalid-feedback" role="alert" *ngIf="errorMessage!==''">
+                    {{ errorMessage }}
+                </div>
+            </div>
+
+        <!--<div class="form-group">
+            <div class="alert alert-danger" role="alert" *ngIf="errorMessage!==''">
+                {{ errorMessage }}
+            </div>
+        </div>-->
             <div class="row">
-                <div class="col-md-4 mt-2 mb-3">
+                <div class="col-md-12 mt-2 mb-3">
                     <button class="btn btn-lg btn-bca mt-2"  (click)="forgotPass()">Submit</button>
                     <div class="text-center cancel-link" (click)="forgotPassObj.showForgotPasswordBox=false;forgotPassObj.showResetEmailMsg=false;"><a href="javascript:void(0);">Cancel</a></div>
                 </div>
             </div>
-        </div>
     </div>
     </ng-container>
     <ng-container *ngIf="forgotPassObj.showResetEmailMsg">
         <div class="inner-container">
-            <h6>Password has been sent to your Email! 
-                <span class="closeIcon" (click)="forgotPassObj.showForgotPasswordBox=false;forgotPassObj.showResetEmailMsg=false;" style="" aria-hidden="true">&times;</span>
-            </h6>
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 165px; margin-bottom:235px;">
+                <strong>Password has been sent to your Email! </strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true" (click)="forgotPassObj.showForgotPasswordBox=false;forgotPassObj.showResetEmailMsg=false;">&times;</span>
+                </button>
+              </div>
         </div>
     </ng-container>
 </div>
