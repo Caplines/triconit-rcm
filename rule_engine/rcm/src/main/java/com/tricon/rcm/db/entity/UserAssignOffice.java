@@ -11,12 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "rcm_user_assign_office")
+@Table(name = "rcm_user_assign_office",uniqueConstraints = { @UniqueConstraint(columnNames = { "team_id", "office_id" }) })
 public class UserAssignOffice implements Serializable{
 	
 	private static final long serialVersionUID = 4089920262978783006L;
@@ -29,13 +30,13 @@ public class UserAssignOffice implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "uuid")
-	private RcmUser userId;
+	private RcmUser user;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id",referencedColumnName="id")
-	private RcmTeam teamId;
+	private RcmTeam team;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "office_id", referencedColumnName = "uuid",unique =true)
-	private RcmOffice officeId;
+	@JoinColumn(name = "office_id", referencedColumnName = "uuid")
+	private RcmOffice office;
 }

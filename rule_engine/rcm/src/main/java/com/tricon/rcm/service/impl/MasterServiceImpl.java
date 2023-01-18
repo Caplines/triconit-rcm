@@ -7,12 +7,14 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmCompany;
-import com.tricon.rcm.db.entity.RcmTeam;
+import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.enums.RcmRoleEnum;
+import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
@@ -51,12 +53,23 @@ public class MasterServiceImpl {
 	 * 
 	 * @return List of RcmTeam
 	 */
-	public List<RcmTeam> getAllTeams() {
-		List<RcmTeam> team = rcmTeam.findAll();
-		team.removeIf(x -> x.getNameId().contentEquals(RcmRoleEnum.valueOf("SYSTEM").getName()));
-		team.removeIf(x -> x.getNameId().contentEquals(RcmRoleEnum.valueOf("ADMIN").getName()));
-		return team;
-
+	public GenericResponse getTeams(boolean isSmilePoint) {
+		RcmTeamEnum[] teams = RcmTeamEnum.values();
+		Map<String, Integer> team = new HashMap<>();
+		if (isSmilePoint) {
+			for (RcmTeamEnum t : teams) {
+				if (t.isSmilepoint() && t.isRoleVisible()) {
+					team.put(t.getName(), t.getId());
+				}
+			}
+		} else {
+			for (RcmTeamEnum t : teams) {
+				if (!t.isSmilepoint() && t.isRoleVisible()) {
+					team.put(t.getName(), t.getId());
+				}
+			}
+		}
+		return new GenericResponse(HttpStatus.OK, "", team.entrySet().stream().collect(Collectors.toList()));
 	}
 
 	/**
@@ -64,15 +77,25 @@ public class MasterServiceImpl {
 	 * 
 	 * @return List<Entry<String, String>>
 	 */
-	public List<Entry<String, String>> getRoles() {
+	public GenericResponse getRoles(boolean isSmilePoint) {
 		Map<String, String> data = new HashMap<>();
 		RcmRoleEnum[] roles = RcmRoleEnum.values();
-		for (RcmRoleEnum r : roles) {
-			if (r.isVisibility()) {
-				data.put(r.getFullName(), r.getName());
+		if (isSmilePoint) {
+			for (RcmRoleEnum r : roles) {
+				if (r.isVisibility()) {
+					data.put(r.getFullName(), r.getName());
+				}
+			}
+
+		} else {
+			for (RcmRoleEnum r : roles) {
+				if (r.isVisibility()
+						&& !(r.getName().equals(Constants.ADMIN) || r.getName().equals(Constants.ASSOCIATE))) {
+					data.put(r.getFullName(), r.getName());
+				}
 			}
 		}
-		return data.entrySet().stream().collect(Collectors.toList());
+		return new GenericResponse(HttpStatus.OK, "",data.entrySet().stream().collect(Collectors.toList()));
 	}
 
 }

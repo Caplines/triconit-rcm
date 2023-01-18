@@ -129,14 +129,14 @@ public class AdminServiceImpl {
 				// save user data into user_assign_office table
 				if (user.getCompany().getName().equals(Constants.COMPANY_NAME) && dto.getUserRole().stream().anyMatch(x->x.equals(RcmRoleEnum.ASSO.getName()))) {
 
-					// check office is alreday exist or not
-					userAssignOffice = userAssignRepo.findByOfficeIdUuid(user.getOffice().getUuid());
+					// check office is alreday exist or not in given team id
+					userAssignOffice = userAssignRepo.findByOfficeUuidAndTeamId(user.getOffice().getUuid(),user.getTeam().getId());
 
-					if (userAssignOffice == null) {
+					if (userAssignOffice==null) {
 						userAssignOffice=new UserAssignOffice();
-						userAssignOffice.setUserId(user);
-						userAssignOffice.setOfficeId(user.getOffice());
-						userAssignOffice.setTeamId(user.getTeam());
+						userAssignOffice.setUser(user);
+						userAssignOffice.setOffice(user.getOffice());
+						userAssignOffice.setTeam(user.getTeam());
 						userAssignRepo.save(userAssignOffice);
 					}
 				}
@@ -217,7 +217,7 @@ public class AdminServiceImpl {
 
 	/**
 	 * This Method enable/disable status based on user uuid.
-	 * This Method can use only ADMIN and cmpany is capline
+	 * This Method can use only ADMIN and company is capline
 	 * @param dto
 	 * @param logInUser
 	 */
@@ -459,63 +459,88 @@ public class AdminServiceImpl {
    }
 	
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse assignOfficeByAdmin(UserAssignOfficeDto dto)throws Exception {
-		List<UserAssignOffice> searchOffice = userAssignRepo.findByOfficeIdUuidIn(dto.getOfficeId());
+	public GenericResponse assignOfficeByAdmin(UserAssignOfficeDto dto) throws Exception {
+		List<UserAssignOffice> searchOffice = userAssignRepo.findByOfficeUuidIn(dto.getOfficeId());
 		List<UserAssignOffice> saveAllOffices = null;
-		List<String> existingOffice = null;
 		List<UserAssignOffice> existingUser = null;
 		UserAssignOffice user = null;
 		RcmUser rcmUser = null;
 		RcmOffice office = null;
+		String msg = "";
+		// First we check given office is exist or not in given userId
+		if (!searchOffice.isEmpty()) {
+			for (UserAssignOffice uOffice : searchOffice) {
+				String userId = uOffice.getUser().getUuid();
+				String officeName = uOffice.getOffice().getName();
+				if (dto.getOfficeId().stream()
+						.anyMatch(x -> x.equals(uOffice.getOffice().getUuid()) && dto.getUserId().equals(userId))) {
+					return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, officeName);
+				}
+			}
+		}
+		existingUser = userAssignRepo.findByUserUuid(dto.getUserId());
+		if (!existingUser.isEmpty()) {
+			// now we will check new offices in given userId is assign or not to any user
+			// with same teamId
+			int existingUserTeamId = existingUser.stream().map(x -> x.getTeam().getId()).findFirst().get();
+			for (UserAssignOffice uOffice : searchOffice) {
+				int teamId = uOffice.getTeam().getId();
+				String OfficeName = uOffice.getOffice().getName();
+				if (dto.getOfficeId().stream()
+						.anyMatch(x -> x.equals(uOffice.getOffice().getUuid()) && teamId == existingUserTeamId)) {
+					return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, OfficeName);
+				}
 
-        String msg="";
-		// First we check given office id is assign or not to any user
-		if (searchOffice != null && !searchOffice.isEmpty()) {
-			existingOffice = searchOffice.stream().map(x -> x.getOfficeId()).map(x -> x.getName())
-					.collect(Collectors.toList());
-			return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, existingOffice);
+			}
+			// now we will assign new offices to given user
+			rcmUser = existingUser.stream().map(x -> x.getUser()).findFirst().get();
+			RcmTeam team = existingUser.stream().map(x -> x.getTeam()).findFirst().get();
+			saveAllOffices = new ArrayList<>();
+			for (String off : dto.getOfficeId()) {
+				user = new UserAssignOffice();
+				office = new RcmOffice();
+				user.setUser(rcmUser);
+				user.setTeam(team);
+				office.setUuid(off);
+				user.setOffice(office);
+				saveAllOffices.add(user);
+			}
+			userAssignRepo.saveAll(saveAllOffices);
+			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 		} else {
-			existingUser = userAssignRepo.findByUserIdUuid(dto.getUserId());
-			// if user id is exist then proceed next step
-			if (existingUser != null && !existingUser.isEmpty()) {
-				// now we will assign new offices to given user
-				rcmUser = existingUser.stream().map(x -> x.getUserId()).findFirst().get();
-				RcmTeam team = existingUser.stream().map(x -> x.getTeamId()).findFirst().get();
+			// It means given user is new ,now we will save this new user
+			// First we check given user is valid or not
+			rcmUser = userRepo.findByUuid(dto.getUserId());
+			if (rcmUser != null && rcmUser.getRoles().stream().map(x -> x.getRole())
+					.anyMatch(x -> x.endsWith(RcmRoleEnum.ASSO.getName()))) {
+
+				// now we will check new offices in given userId is assign or not to any user
+				// with same teamId
+				int newUserTeamId = rcmUser.getTeam().getId();
+				for (UserAssignOffice uOffice : searchOffice) {
+					int teamId = uOffice.getTeam().getId();
+					String OfficeName = uOffice.getOffice().getName();
+					if (dto.getOfficeId().stream()
+							.anyMatch(x -> x.equals(uOffice.getOffice().getUuid()) && teamId == newUserTeamId)) {
+						return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, OfficeName);
+					}
+
+				}
 				saveAllOffices = new ArrayList<>();
 				for (String off : dto.getOfficeId()) {
 					user = new UserAssignOffice();
 					office = new RcmOffice();
-					user.setUserId(rcmUser);
-					user.setTeamId(team);
+					user.setUser(rcmUser);
+					user.setTeam(rcmUser.getTeam());
 					office.setUuid(off);
-					user.setOfficeId(office);
+					user.setOffice(office);
 					saveAllOffices.add(user);
 				}
 				userAssignRepo.saveAll(saveAllOffices);
 				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
-
-			} else {
-				// It means given user is new ,now we will save this new user
-				// First we check given user is valid or not
-				rcmUser = userRepo.findByUuid(dto.getUserId());
-				if (rcmUser != null && rcmUser.getRoles().stream().map(x -> x.getRole())
-						.anyMatch(x ->x.endsWith(RcmRoleEnum.ASSO.getName()))) {
-					saveAllOffices = new ArrayList<>();
-					for (String off : dto.getOfficeId()) {
-						user = new UserAssignOffice();
-						office = new RcmOffice();
-						user.setUserId(rcmUser);
-						user.setTeamId(rcmUser.getTeam());
-						office.setUuid(off);
-						user.setOfficeId(office);
-						saveAllOffices.add(user);
-					}
-					userAssignRepo.saveAll(saveAllOffices);
-					return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
-				}
-              msg="User not exist or user is not associate user";
 			}
-			return new GenericResponse(HttpStatus.BAD_REQUEST, msg, null);
 		}
+		msg = "User not exist or user is not associate user";
+		return new GenericResponse(HttpStatus.OK, msg, null);
 	}
 }

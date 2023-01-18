@@ -8,9 +8,9 @@ import com.tricon.rcm.db.entity.UserAssignOffice;
 
 public interface UserAssignOfficeRepo extends JpaRepository<UserAssignOffice, Integer>{
 	
-	UserAssignOffice findByOfficeIdUuid(String officeId);
-	List<UserAssignOffice>findByUserIdUuid(String uuid);
-	List<UserAssignOffice>findByOfficeIdUuidIn(List<String> officeId);
+	UserAssignOffice findByOfficeUuidAndTeamId(String officeId,int teamId);
+	List<UserAssignOffice>findByUserUuid(String uuid);
+	List<UserAssignOffice>findByOfficeUuidIn(List<String> officeId);
 	
 
 }

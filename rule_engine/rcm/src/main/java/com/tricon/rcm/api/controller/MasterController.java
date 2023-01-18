@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.service.impl.MasterServiceImpl;
@@ -33,21 +33,20 @@ public class MasterController {
 
 	}
 
-	@RequestMapping(value = "/getteams", method = RequestMethod.GET)
-	public ResponseEntity<?> getTeams() {
+	@RequestMapping(value = "/getteams/{isSmilePoint}", method = RequestMethod.GET)
+	public ResponseEntity<?> getTeams(@PathVariable("isSmilePoint")boolean isSmilePoint) {
 
-		List<RcmTeam> teams = masterDataService.getAllTeams();
-
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", teams));
+		GenericResponse teams = masterDataService.getTeams(isSmilePoint);
+		return ResponseEntity.ok(teams);
 
 	}
 
-	@RequestMapping(value = "/getroles", method = RequestMethod.GET)
-	public ResponseEntity<?> getRoles() {
+	@RequestMapping(value = "/getroles/{isSmilePoint}", method = RequestMethod.GET)
+	public ResponseEntity<?> getRoles(@PathVariable("isSmilePoint")boolean isSmilePoint) {
 
-		List<Entry<String, String>> roles = masterDataService.getRoles();
+		GenericResponse roles = masterDataService.getRoles(isSmilePoint);
 
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", roles));
+		return ResponseEntity.ok(roles);
 
 	}
 }

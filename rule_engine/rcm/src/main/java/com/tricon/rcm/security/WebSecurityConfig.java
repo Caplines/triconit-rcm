@@ -128,7 +128,7 @@ public class WebSecurityConfig {
 			                "/",
 			                "/v2/api-docs",
 						    "/webjars/*",
-						    "/master/*");
+						    "/master/**");
 	}
 
 	/*

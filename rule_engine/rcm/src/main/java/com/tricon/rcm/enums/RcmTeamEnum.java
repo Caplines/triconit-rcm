@@ -7,25 +7,38 @@ import com.tricon.rcm.util.Constants;
 
 public enum RcmTeamEnum {
 
-	SYSYEM(1, "SYSTEM", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM }),
-	ADMIN(2, "ADMIN", new RcmRoleEnum[] { RcmRoleEnum.ADMIN }),
-	PATIENT_CALLING(3, "PATIENT_CALLING", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO }),
-	OFFICE(4, "OFFICE", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO }),
-	INTERNAL_AUDIT(5, "INTERNAL_AUDIT", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO }),
-	IV_TEAM(6, "IV_TEAM", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO }),
-	BILLING(7, "BILLING", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO }),
-	LC3(8, "LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO });
-
+	SYSYEM(1, "SYSTEM", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM },true,false),
+	ADMIN(2, "ADMIN", new RcmRoleEnum[] { RcmRoleEnum.ADMIN },true,false),
+	PATIENT_CALLING(3, "PATIENT_CALLING", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	OFFICE(4, "OFFICE", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	INTERNAL_AUDIT(5, "INTERNAL_AUDIT", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	IV_TEAM(6, "IV_TEAM", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	BILLING(7, "BILLING", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	LC3(8, "LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	OTHER(9, "OTHER", new RcmRoleEnum[] { RcmRoleEnum.TL},false,true);
 	
 	final private int id;
 	final private String name;
 	final private RcmRoleEnum[] role;
+	final private boolean isSmilepoint;
+	final private boolean isRoleVisible;
 	
-	
-	private RcmTeamEnum(int id,String name,RcmRoleEnum[] role) {
+	private RcmTeamEnum(int id,String name,RcmRoleEnum[] role,boolean isSmilepoint, boolean isRoleVisible) {
 		this.id = id;
 		this.name = name;
 		this.role = role;
+		this.isSmilepoint=isSmilepoint;
+		this.isRoleVisible=isRoleVisible;
+	}
+
+
+	public boolean isRoleVisible() {
+		return isRoleVisible;
+	}
+
+
+	public boolean isSmilepoint() {
+		return isSmilepoint;
 	}
 
 
