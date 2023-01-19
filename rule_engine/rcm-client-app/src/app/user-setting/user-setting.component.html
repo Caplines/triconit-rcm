@@ -1,6 +1,5 @@
 <div>
-<button type="button" (click)="logout()"> <h3>Logout</h3></button>
-
+    <app-header-component></app-header-component>
 <br><br><br>
 
 <ng-container *ngIf="userRole != 'ROLE_ADMIN' ">
@@ -13,7 +12,7 @@
 
 <ng-container *ngIf="userRole == 'ROLE_ADMIN' ">
     <label for="findUser">Find User By Username: </label>
-    <input type="text" [(ngModel)]="user.username">
+    <input type="text" [(ngModel)]="user.email">
     <button type="button" (click)="findUser()">Find</button>
     <ng-container *ngIf="showActionPopup">
         <select (change)="userAction($event)">

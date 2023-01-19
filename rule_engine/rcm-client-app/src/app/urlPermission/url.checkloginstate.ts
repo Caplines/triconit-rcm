@@ -22,12 +22,17 @@ export class CheckUserLoggedInState implements CanActivate {
       if (typeof ph == "undefined") {
         this.router.navigate([teamM.defaultpath]);
         return false;
+      } else{
+        return true;
       }
-      return false;
+    } else{ 
+      if(state.url == "/login"){
+        return true;
+      } else{
+        this.router.navigate(['/login']);
+        return false;
+      } 
     }
 
-
-
-    return true;
   }
 }

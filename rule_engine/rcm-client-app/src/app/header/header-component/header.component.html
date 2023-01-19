@@ -1,0 +1,22 @@
+<div class=" navbar-dark sticky-top bg-dark">
+    <div class="topbar">
+        <h1>Revenue cycle management (RCM)</h1>
+        <ul class="navbar-nav px-3">
+            <li><img src="../../assets/img/user-blue.png" /> Welcome Name</li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0);"><img src="../../assets/img/help.png" /> Help</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign out</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="gray-bar">
+        <ul>
+            <li *ngIf="loggedInUserDetail === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/register']"><img src="../../assets/img/team-pendency-gray-icon.png" />Register New User</a></li>
+            <li *ngIf="loggedInUserDetail === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/user-setting']"><img src="../../assets/img/team-pendency-gray-icon.png" />User Setting</a></li>
+        </ul>
+
+    </div>
+</div>

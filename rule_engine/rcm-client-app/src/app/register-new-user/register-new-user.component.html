@@ -1,34 +1,131 @@
-<select (change)="location($event.target)">
-    <option selected="true" hidden="true">Admin</option>
-    <option value="register" >Register New User</option>
-    <option value="user-setting">User Setting</option>
-</select>
-<button type="button" (click)="logout()">Logout</button>
-<div class="form-container">
-    <label for="fname">First Name</label>
-    <input type="text" [(ngModel)]="userDetails.firstName"><br>
-    <label for="lname">Last Name</label>
-    <input type="text" [(ngModel)]="userDetails.lastName"><br>
-    <label for="email">Email</label>
-    <input type="email" [(ngModel)]="userDetails.email"><br>
-    <label for="userName">Username</label>
-    <input type="text" [(ngModel)]="userDetails.userName"><br>
-    <label for="password">Password</label>
-    <input type="password" [(ngModel)]="userDetails.password"><br>
-    <label for="officeId">Office Name</label>
-    <select [(ngModel)]="userDetails.officeId">
-        <option selected="true" hidden="true">Office</option>
-        <option *ngFor="let office of officeData" value="{{office.uuid}}">{{office.name}}</option>
-    </select><br>
-    <label for="teamId">Team Name</label>
-    <select [(ngModel)]="userDetails.teamId">
-        <option selected="true" hidden="true">Team</option>
-        <option *ngFor="let team of teamData" value="{{team.id}}">{{team.name}}</option>
-    </select><br>
-    <label for="userRole">User Role</label>
-    <select [(ngModel)]="userDetails.userRole">
-        <option selected="true" hidden="true">User Role</option>
-        <!-- <option *ngFor="let user of userRoles" value="{{user.id}}">{{user}}</option> -->
-    </select><br>
-    <button type="button" (click)="submitUser()">Submit</button>
-</div>
+﻿
+      <div class="right-container">
+         <app-header-component></app-header-component>
+         <ng-container *ngIf="alert.showAlertPopup">
+            <div class="alert alert-success alert-dismissible fade show my-3 text-center" role="alert">
+                <strong>{{alert.alertMsg}}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true" (click)="alert.showAlertPopup=false;">&times;</span>
+                </button>
+            </div>
+        </ng-container>
+         <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 pt-3">
+                    <h2 class="page-heading">Create Your Account</h2>
+                    <div class="main-container register-User">
+                        <div class="form-container">
+                            <form [formGroup]="userDetails" style="padding-right:20%">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="form-group">
+                                            <label for="fname">First Name</label>
+                                            <input type="text" class="form-control" formControlName="firstName" [ngClass]="{'is-invalid':userDetails.controls.firstName.invalid && userDetails.controls.firstName.touched}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="form-group">
+                                            <label for="lname">Last Name</label>
+                                            <input type="text" class="form-control" formControlName="lastName" [ngClass]="{'is-invalid':userDetails.controls.lastName.invalid && userDetails.controls.lastName.touched}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" class="form-control" formControlName="email" [ngClass]="{'is-invalid':userDetails.controls.email.invalid && userDetails.controls.email.touched}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="form-group">
+                                            <label for="password">Password</label>
+                                            <input type="password" class="form-control" formControlName="password" [ngClass]="{'is-invalid':userDetails.controls.password.invalid && userDetails.controls.password.touched}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm"></div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="form-group">
+                                            <label for="companyId">Company Name</label>
+                                            <select class="form-control" formControlName="companyName" (change)="getOfficesByCompany($event)" [ngClass]="{'is-invalid':userDetails.controls.companyName.invalid && userDetails.controls.companyName.touched}">
+                                                <option value="" hidden="true">Company</option>
+                                                <ng-container *ngFor="let comp of companyData">
+                                                    <option value="{{comp.name}}">{{comp.name}}</option>
+                                                </ng-container>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="form-group">
+                                            <label for="officeId">Office Name</label>
+                                            <select class="form-control" formControlName="officeId" [ngClass]="{'is-invalid':userDetails.controls.officeId.invalid && userDetails.controls.officeId.touched,'disabled':officeData.length==0}">
+                                                <option selected="true" hidden="true">Office</option>
+                                                <option *ngFor="let office of officeData" value="{{office.uuid}}">{{office.name}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="form-group">
+                                            <label for="teamId">Team Name</label>
+                                            <select class="form-control" formControlName="teamNameId" [ngClass]="{'is-invalid':userDetails.controls.teamNameId.invalid && userDetails.controls.teamNameId.touched,'disabled':teamData.length==0}">
+                                                <option selected="true" hidden="true">Team</option>
+                                                <option *ngFor="let team of teamData" value="{{team}}">{{team}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="form-group">
+                                            <label for="userRole">User Role :</label>
+                                            <ng-container *ngIf="userRolesData.includes('TeamLead')">
+                                                <div class="form-check  form-check-inline custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="role" id="TeamLead" (change)="selectUserRole($event)">
+                                                    <label class="custom-control-label" for="TeamLead">
+                                                        Team Lead
+                                                    </label>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="userRolesData.includes('Associate')">
+                                                <div class="form-check  form-check-inline custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="role" id="Associate" (change)="selectUserRole($event)">
+                                                    <label class="custom-control-label" for="Associate">
+                                                        Associate
+                                                    </label>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="userRolesData.includes('Admin')">
+                                                <div class="form-check  form-check-inline custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="role" id="Admin" (change)="selectUserRole($event)">
+                                                    <label class="custom-control-label" for="Admin">
+                                                        Admin
+                                                    </label>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="action-buttons">
+                                    <button type="button" class="btn btn-success" [disabled]="userDetails.invalid" (click)="registerNewUser()">Submit</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </div>
+      <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+      <script src="https://getbootstrap.com/docs/4.4/dist/js/bootstrap.bundle.min.js"></script>
+   </body>
+</html> -->

@@ -11,11 +11,10 @@ export class AppConstants {
 
     public TEAMS_CONFIG = new Map<Number, TeamModel>([
         [1, {
-            "name": "Billing Team", "paths": ["/fetch-claims"], "defaultpath": "register"
-        }
-        ],
+            "name": "Billing Team", "paths": ["/register"], "defaultpath": "register"
+        }],
         [2, {
-        "name":"LC3 Team","paths":["/user-setting"],"defaultpath":"/user-setting"
+        "name":"Admin","paths":["/register"],"defaultpath":"/register"
         }],
         [3,{
         "name":"Patient Calling Team","paths":["/user-setting"],"defaultpath":"/user-setting"

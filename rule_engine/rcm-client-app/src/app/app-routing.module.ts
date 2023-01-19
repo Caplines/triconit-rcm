@@ -21,10 +21,12 @@ const routes: Routes = [
   {
     path:'register',
     loadChildren :()=> import("./register-new-user/register-new-user/register-new-user.module").then(m=>m.RegisterNewUserModule),
+    canActivate: [CheckUserLoggedInState]
   },
   {
     path:'user-setting',
     loadChildren:()=> import("./user-setting/user-setting/user-setting.module").then(m=>m.UserSettingModule),
+    // canActivate: [CheckUserLoggedInState]
   },
   { path: '**', redirectTo: '/login' }
 ];

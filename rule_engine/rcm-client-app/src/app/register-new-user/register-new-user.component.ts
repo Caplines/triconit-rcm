@@ -1,42 +1,61 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BaseService } from '../service/base-service.service';
+import {FormBuilder,Validators} from "@angular/forms";
+
 @Component({
   selector: 'app-register-new-user',
   templateUrl: './register-new-user.component.html',
-  styleUrls: ['./register-new-user.component.scss']
+  styleUrls: ['./register-new-user.component.css']
 })
 export class RegisterNewUserComponent implements OnInit {
 
-  userDetails:any={"firstName":'',"lastName":"","email":"","userName":"","password":"","officeId":"","teamId":'',"userRole":""}
+  userDetails:any;
   teamData:any=[];
   officeData:any=[];
+  userRolesData:any=[];
+  companyData:any=[];
   userRoles:any=[];
-  constructor(private router: Router, private _baseService:BaseService) { }
+  alert:any={'showAlertPopup':false,'alertMsg':''}
+  constructor(private router: Router, private _baseService:BaseService ,private fb : FormBuilder) {
+
+    this.userDetails = this.fb.group({
+      'firstName' : ['',Validators.required],
+      'lastName' : ['',Validators.required],
+      'email' : ['',Validators.email],
+      'password' : ['',[Validators.required,Validators.minLength(6)]],
+      'companyName' : ['',Validators.required],
+      'officeId' : ['',Validators.required],
+      'teamNameId' : ['',Validators.required],
+      'userRole' : ['',Validators.required],
+    })
+   }
 
   ngOnInit(): void {
-    this.getTeamsData();
-    this.getOfficeData();
-    this.getUserRoleData();
+    this.getcompanyData();
+    this.userDetails.reset();
     console.log(localStorage.getItem("token"))
   }
 
-  location(location:any){
-    console.log(location.value)
-    this.router.navigate([`/${location.value}`])
-  }
-
-  submitUser(){
-    this._baseService.registerUser(this.userDetails,(callback:any)=>{
-      if(callback.status){
+  registerNewUser(){
+    this._baseService.registerUser(this.userDetails.value,(callback:any)=>{
+      if(callback.status && callback.result.message !=''){
         console.log(callback)
-      }
+        this.alert.showAlertPopup = true;
+        this.alert.alertMsg = callback.result.message;
+        this.userDetails.reset();
+        console.log(this.userDetails.value)
+        
+      } 
     })
-    console.log(this.userDetails)
-  }
+    }
   
   getTeamsData(){
-    this._baseService.getTeamsData((callback:any)=>{
+    let isSmilePoint: boolean = false;
+    if (this.userDetails.value.companyName === "Capline") {
+      isSmilePoint = true;
+    }
+    this._baseService.getTeamsData(isSmilePoint,(callback:any)=>{
       console.log(callback)
       if(callback.status){
         this.teamData = callback.result.data
@@ -53,15 +72,50 @@ export class RegisterNewUserComponent implements OnInit {
   }
 
   getUserRoleData(){
-    this._baseService.getUserRoleData((callback:any)=>{
+    let isSmilePoint: boolean = false;
+    if (this.userDetails.value.companyName === "Capline") {
+      isSmilePoint = true;
+    }
+    this._baseService.getUserRoleData(isSmilePoint,(callback:any)=>{
       if(callback.status){
-        this.userRoles = callback.result.data
+        this.userRolesData = callback.result.data
       }
     })
   }
 
-  logout(){
-    localStorage.clear();
-    window.location.href="/login";
+  getcompanyData(){
+    this._baseService.getCompanyData((callback:any)=>{
+      if(callback.status){
+        this.companyData = callback.result.data.data;
+      }
+    })
   }
+
+  selectUserRole(event:any){
+      if(this.userRoles.includes(event.target.id)){
+        this.userRoles.find((e:any,index:any)=>{
+          if(e == event.target.id){
+            this.userRoles.splice(index,1)
+          }
+        })
+      }else{
+        this.userRoles.push(event.target.id)
+      }
+      this.userDetails.controls.userRole.setValue(this.userRoles);
+  }
+
+  getOfficesByCompany(event:any){
+      this.companyData.find((e:any)=>{
+        if(e.name === event.target.value){
+          this._baseService.getOfficeByCompany(e.companyUuid,(callback:any)=>{
+              if(callback.status){
+                this.officeData = callback.result.data.data;
+                this.getUserRoleData();
+                this.getTeamsData();
+              }
+          })
+        }
+      })
+  }
+
 }

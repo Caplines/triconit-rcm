@@ -8,9 +8,7 @@ import { TokenStorageService } from '../../service/token-storage.service';
 @Component({
   selector: 'app-login-component',
   templateUrl: './login-component.component.html',
-  // styleUrls: ['./login-component.component.scss']
-  // styleUrls: ['./login-component.component.css']
-  styleUrls: ['./rcm-login-component.css']
+  styleUrls: ['./login-component.component.scss']
 })
 export class LoginComponent implements OnInit {
   form: any = {

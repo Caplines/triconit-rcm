@@ -11,14 +11,16 @@ export class BaseService {
 
   httpUrl = {
     'getTeams':environment.API_URL+"/master/getteams",
+    'getUserRoles':environment.API_URL+"/master/getroles",
     'getOffices':environment.API_URL+"/master/getoffices",
     'registerUser':environment.API_URL+"/register",
     'findUserByUserName':environment.API_URL+"/finduser",
     'changePassword':environment.API_URL+"/resetpassword",
-    'getAllUsers':environment.API_URL+"/getAllUsers",
+    'getAllUsers':environment.API_URL+"/getAllUsers/1",
     'updateStatus':environment.API_URL+"/resetstatus",
-    'getUserRoles':environment.API_URL+"/master/getroles",
     'forgotPassword':environment.API_URL+"/forgotPassword",
+    'getCompany':environment.API_URL+"/company",
+    'officeByCompany':environment.API_URL+"/officeByCompany",
   }
   token:any;
 
@@ -83,8 +85,8 @@ export class BaseService {
 
   }
 
-  getTeamsData(callback:any){
-    return this.http.get(this.httpUrl['getTeams']).pipe(map((data:any)=>{
+  getTeamsData(params:any,callback:any){
+    return this.http.get(this.httpUrl['getTeams']+`/${params}`).pipe(map((data:any)=>{
 			data;
 			return data;
 		})).subscribe(
@@ -100,8 +102,24 @@ export class BaseService {
 		});
   }
 
-  getUserRoleData(callback:any){
-    return this.http.get(this.httpUrl['getUserRoles']).pipe(map((data:any)=>{
+  getCompanyData(callback:any){
+    return this.http.get(this.httpUrl['getCompany']).pipe(map((data:any)=>{
+			return data;
+		})).subscribe(
+			(data:any) => { callback({'status':true,'result':data}); 
+		});
+  }
+
+  getUserRoleData(params:any,callback:any){
+    return this.http.get(this.httpUrl['getUserRoles']+`/${params}`).pipe(map((data:any)=>{
+			return data;
+		})).subscribe(
+			(data:any) => { callback({'status':true,'result':data}); 
+		});
+  }
+
+  getOfficeByCompany(params:any,callback:any){
+    return this.http.get(this.httpUrl['officeByCompany']+`/${params}`).pipe(map((data:any)=>{
 			return data;
 		})).subscribe(
 			(data:any) => { callback({'status':true,'result':data}); 

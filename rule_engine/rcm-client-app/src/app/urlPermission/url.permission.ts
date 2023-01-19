@@ -16,7 +16,8 @@ export class UrlPermission implements CanActivate {
     //console.log("state.url",state.url);
     let ut: any = localStorage.getItem('teamId');
     if (!ut) {
-      this.router.navigate(['/logout']);
+      this.router.navigate(['/']);
+      return false;
     }
     if (localStorage.getItem('currentUser')) {
       // logged in so return true

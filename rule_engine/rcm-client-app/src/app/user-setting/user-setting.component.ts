@@ -8,7 +8,7 @@ import { BaseService } from '../service/base-service.service';
 })
 export class UserSettingComponent implements OnInit {
 
-  user: any = { 'username': '', 'showChangePassword': false, 'showStatus': false, 'changedPassword': '', 'uuid': '' };
+  user: any = { 'email': '', 'showChangePassword': false, 'showStatus': false, 'changedPassword': '', 'uuid': '' };
   allUser: any = [];
   showActionPopup: boolean = false;
   userRole: any;
@@ -26,7 +26,7 @@ export class UserSettingComponent implements OnInit {
   }
 
   findUser() {
-    this._baseService.findUser({ "username": this.user.username }, (callback: any) => {
+    this._baseService.findUser({ "email": this.user.email }, (callback: any) => {
       if (callback.result.status == 200 && callback.result.data) {
         this.showActionPopup = true;
         this.user.uuid = callback.result.data.uuid;
