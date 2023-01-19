@@ -65,7 +65,7 @@ public enum RcmTeamEnum {
 	public static String generateRole(int value, String roleType) {
 		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() == value).findFirst();
 		Optional<RcmRoleEnum> roleEnum = Arrays.stream(RcmRoleEnum.values())
-				.filter(x -> x.getName().equals(roleType) && x.isVisibility() == true).findFirst();
+				.filter(x -> x.getFullName().equals(roleType) && x.isVisibility() == true).findFirst();
 		String teamName = "", roleName = "", role = "";
 		if (teamEnum.isPresent() && roleEnum.isPresent()) {
 			teamName = teamEnum.get().getName();

@@ -106,7 +106,7 @@ public class AdminServiceImpl {
 		if (office != null) {
 			user = userRepo.findByEmail(dto.getEmail());
 			if (user == null) {
-				RcmTeam team = teamRepo.findById(dto.getTeamId());
+				RcmTeam team = teamRepo.findByNameId(dto.getTeamNameId());
 				RcmCompany company = rcmCompanyRepo.findByName(dto.getCompanyName());
 				user = convertDtotoModel(dto);
 				user.setOffice(office);
@@ -457,7 +457,11 @@ public class AdminServiceImpl {
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
    }
-	
+	/**
+	 * This api can assign office to particular users basis of userId
+	 * @param dto
+	 * @return GenericResponse
+	 */
 	@Transactional(rollbackOn = Exception.class)
 	public GenericResponse assignOfficeByAdmin(UserAssignOfficeDto dto) throws Exception {
 		List<UserAssignOffice> searchOffice = userAssignRepo.findByOfficeUuidIn(dto.getOfficeId());
@@ -467,31 +471,16 @@ public class AdminServiceImpl {
 		RcmUser rcmUser = null;
 		RcmOffice office = null;
 		String msg = "";
-		// First we check given office is exist or not in given userId
-		if (!searchOffice.isEmpty()) {
-			for (UserAssignOffice uOffice : searchOffice) {
-				String userId = uOffice.getUser().getUuid();
-				String officeName = uOffice.getOffice().getName();
-				if (dto.getOfficeId().stream()
-						.anyMatch(x -> x.equals(uOffice.getOffice().getUuid()) && dto.getUserId().equals(userId))) {
-					return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, officeName);
-				}
-			}
-		}
-		existingUser = userAssignRepo.findByUserUuid(dto.getUserId());
+		boolean status = false;
+		existingUser = searchOffice.stream().filter(x -> x.getUser().getUuid().equals(dto.getUserId()))
+				.collect(Collectors.toList());
 		if (!existingUser.isEmpty()) {
-			// now we will check new offices in given userId is assign or not to any user
+			// now we will check given offices in given userId is assign or not to any user
 			// with same teamId
 			int existingUserTeamId = existingUser.stream().map(x -> x.getTeam().getId()).findFirst().get();
-			for (UserAssignOffice uOffice : searchOffice) {
-				int teamId = uOffice.getTeam().getId();
-				String OfficeName = uOffice.getOffice().getName();
-				if (dto.getOfficeId().stream()
-						.anyMatch(x -> x.equals(uOffice.getOffice().getUuid()) && teamId == existingUserTeamId)) {
-					return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, OfficeName);
-				}
-
-			}
+			status = checkOfficeExistOrNot(searchOffice, existingUserTeamId, dto);
+			if (status)
+				return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, null);
 			// now we will assign new offices to given user
 			rcmUser = existingUser.stream().map(x -> x.getUser()).findFirst().get();
 			RcmTeam team = existingUser.stream().map(x -> x.getTeam()).findFirst().get();
@@ -513,19 +502,12 @@ public class AdminServiceImpl {
 			rcmUser = userRepo.findByUuid(dto.getUserId());
 			if (rcmUser != null && rcmUser.getRoles().stream().map(x -> x.getRole())
 					.anyMatch(x -> x.endsWith(RcmRoleEnum.ASSO.getName()))) {
-
 				// now we will check new offices in given userId is assign or not to any user
 				// with same teamId
 				int newUserTeamId = rcmUser.getTeam().getId();
-				for (UserAssignOffice uOffice : searchOffice) {
-					int teamId = uOffice.getTeam().getId();
-					String OfficeName = uOffice.getOffice().getName();
-					if (dto.getOfficeId().stream()
-							.anyMatch(x -> x.equals(uOffice.getOffice().getUuid()) && teamId == newUserTeamId)) {
-						return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, OfficeName);
-					}
-
-				}
+				status = checkOfficeExistOrNot(searchOffice, newUserTeamId, dto);
+				if (status)
+					return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, null);
 				saveAllOffices = new ArrayList<>();
 				for (String off : dto.getOfficeId()) {
 					user = new UserAssignOffice();
@@ -542,5 +524,16 @@ public class AdminServiceImpl {
 		}
 		msg = "User not exist or user is not associate user";
 		return new GenericResponse(HttpStatus.OK, msg, null);
+	}
+
+	private boolean checkOfficeExistOrNot(List<UserAssignOffice> searchOffice, int userTeamid,
+			UserAssignOfficeDto dto) {
+		for (UserAssignOffice uOffice : searchOffice) {
+			if (dto.getOfficeId().stream().anyMatch(
+					x -> x.equals(uOffice.getOffice().getUuid()) && uOffice.getTeam().getId() == userTeamid)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

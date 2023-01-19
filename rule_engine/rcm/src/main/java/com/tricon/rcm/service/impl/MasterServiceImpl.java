@@ -1,10 +1,7 @@
 package com.tricon.rcm.service.impl;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,21 +52,21 @@ public class MasterServiceImpl {
 	 */
 	public GenericResponse getTeams(boolean isSmilePoint) {
 		RcmTeamEnum[] teams = RcmTeamEnum.values();
-		Map<String, Integer> team = new HashMap<>();
+		List<String> team = new ArrayList<>();
 		if (isSmilePoint) {
 			for (RcmTeamEnum t : teams) {
 				if (t.isSmilepoint() && t.isRoleVisible()) {
-					team.put(t.getName(), t.getId());
+					team.add(t.getName());
 				}
 			}
 		} else {
 			for (RcmTeamEnum t : teams) {
 				if (!t.isSmilepoint() && t.isRoleVisible()) {
-					team.put(t.getName(), t.getId());
+					team.add(t.getName());
 				}
 			}
 		}
-		return new GenericResponse(HttpStatus.OK, "", team.entrySet().stream().collect(Collectors.toList()));
+		return new GenericResponse(HttpStatus.OK, "", team);
 	}
 
 	/**
@@ -78,12 +75,12 @@ public class MasterServiceImpl {
 	 * @return List<Entry<String, String>>
 	 */
 	public GenericResponse getRoles(boolean isSmilePoint) {
-		Map<String, String> data = new HashMap<>();
+		List<String> role = new ArrayList<>();
 		RcmRoleEnum[] roles = RcmRoleEnum.values();
 		if (isSmilePoint) {
 			for (RcmRoleEnum r : roles) {
 				if (r.isVisibility()) {
-					data.put(r.getFullName(), r.getName());
+					role.add(r.getFullName());
 				}
 			}
 
@@ -91,11 +88,11 @@ public class MasterServiceImpl {
 			for (RcmRoleEnum r : roles) {
 				if (r.isVisibility()
 						&& !(r.getName().equals(Constants.ADMIN) || r.getName().equals(Constants.ASSOCIATE))) {
-					data.put(r.getFullName(), r.getName());
+					role.add(r.getFullName());
 				}
 			}
 		}
-		return new GenericResponse(HttpStatus.OK, "",data.entrySet().stream().collect(Collectors.toList()));
+		return new GenericResponse(HttpStatus.OK, "", role);
 	}
 
 }
