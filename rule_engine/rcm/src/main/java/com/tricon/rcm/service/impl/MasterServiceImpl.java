@@ -87,7 +87,7 @@ public class MasterServiceImpl {
 		} else {
 			for (RcmRoleEnum r : roles) {
 				if (r.isVisibility()
-						&& !(r.getName().equals(Constants.ADMIN) || r.getName().equals(Constants.ASSOCIATE))) {
+						&& !(r.getFullName().equals(Constants.ADMIN) || r.getFullName().equals(Constants.ASSOCIATE))) {
 					role.add(r.getFullName());
 				}
 			}
