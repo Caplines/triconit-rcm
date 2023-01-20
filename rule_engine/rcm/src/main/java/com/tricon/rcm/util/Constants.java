@@ -1,11 +1,6 @@
 package com.tricon.rcm.util;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.google.common.collect.ImmutableMap;
 
 public class Constants {
 
@@ -36,9 +31,9 @@ public class Constants {
 	
 	public static final String ROLE_PREFIX="ROLE_";
 	public static final String  HYPHEN="_";
-	public static final String  ADMIN="Admin";
+	public static final String  ADMIN="ADMIN";
 	public static final String  SYSTEM="SYSTEM";
-	public static final String  ASSOCIATE="Associate";
+	public static final String  ASSOCIATE="ASSO";
 	public static final Integer ENABLE=1;
 	public static final Integer DISABLE=0;
 	public static final Integer LENGTH=8;

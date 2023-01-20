@@ -1,7 +1,6 @@
 package com.tricon.rcm.api.controller;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +33,7 @@ public class MasterController {
 	}
 
 	@RequestMapping(value = "/getteams/{isSmilePoint}", method = RequestMethod.GET)
-	public ResponseEntity<?> getTeams(@PathVariable("isSmilePoint")boolean isSmilePoint) {
+	public ResponseEntity<?> getTeams(@PathVariable("isSmilePoint")boolean isSmilePoint){
 
 		GenericResponse teams = masterDataService.getTeams(isSmilePoint);
 		return ResponseEntity.ok(teams);
@@ -42,7 +41,7 @@ public class MasterController {
 	}
 
 	@RequestMapping(value = "/getroles/{isSmilePoint}", method = RequestMethod.GET)
-	public ResponseEntity<?> getRoles(@PathVariable("isSmilePoint")boolean isSmilePoint) {
+	public ResponseEntity<?> getRoles(@PathVariable("isSmilePoint")boolean isSmilePoint){
 
 		GenericResponse roles = masterDataService.getRoles(isSmilePoint);
 

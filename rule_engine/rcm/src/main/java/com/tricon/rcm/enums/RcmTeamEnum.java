@@ -7,28 +7,35 @@ import com.tricon.rcm.util.Constants;
 
 public enum RcmTeamEnum {
 
-	SYSYEM(1, "SYSTEM", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM },true,false),
-	ADMIN(2, "ADMIN", new RcmRoleEnum[] { RcmRoleEnum.ADMIN },true,false),
-	PATIENT_CALLING(3, "PATIENT_CALLING", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
-	OFFICE(4, "OFFICE", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
-	INTERNAL_AUDIT(5, "INTERNAL_AUDIT", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
-	IV_TEAM(6, "IV_TEAM", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
-	BILLING(7, "BILLING", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
-	LC3(8, "LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
-	OTHER(9, "OTHER", new RcmRoleEnum[] { RcmRoleEnum.TL},false,true);
+	SYSYEM(1, "SYSTEM","System", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM },true,false),
+	ADMIN(2, "ADMIN","Admin", new RcmRoleEnum[] { RcmRoleEnum.ADMIN },true,false),
+	PATIENT_CALLING(3,"PATIENT_CALLING","Patient Calling", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	OFFICE(4, "OFFICE", "Office",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	INTERNAL_AUDIT(5, "INTERNAL_AUDIT","Internal Audit", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	IV_TEAM(6, "IV_TEAM","IV Team", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	LC3(8, "LC3","LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
+	OTHER(9, "OTHER","other", new RcmRoleEnum[] { RcmRoleEnum.TL},false,true);
 	
 	final private int id;
 	final private String name;
+	final private String description;
 	final private RcmRoleEnum[] role;
 	final private boolean isSmilepoint;
 	final private boolean isRoleVisible;
 	
-	private RcmTeamEnum(int id,String name,RcmRoleEnum[] role,boolean isSmilepoint, boolean isRoleVisible) {
+	private RcmTeamEnum(int id,String name,String description,RcmRoleEnum[] role,boolean isSmilepoint, boolean isRoleVisible) {
 		this.id = id;
 		this.name = name;
+		this.description=description;
 		this.role = role;
 		this.isSmilepoint=isSmilepoint;
 		this.isRoleVisible=isRoleVisible;
+	}
+
+
+	public String getDescription() {
+		return description;
 	}
 
 
@@ -65,7 +72,7 @@ public enum RcmTeamEnum {
 	public static String generateRole(int value, String roleType) {
 		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() == value).findFirst();
 		Optional<RcmRoleEnum> roleEnum = Arrays.stream(RcmRoleEnum.values())
-				.filter(x -> x.getFullName().equals(roleType) && x.isVisibility() == true).findFirst();
+				.filter(x -> x.getName().equals(roleType) && x.isVisibility() == true).findFirst();
 		String teamName = "", roleName = "", role = "";
 		if (teamEnum.isPresent() && roleEnum.isPresent()) {
 			teamName = teamEnum.get().getName();

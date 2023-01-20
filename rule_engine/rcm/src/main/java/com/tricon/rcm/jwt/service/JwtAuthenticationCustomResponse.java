@@ -22,18 +22,21 @@ public class JwtAuthenticationCustomResponse implements Serializable {
 	
 	private int teamId;
 	
+	private String firstName;
+	
 	Collection<? extends GrantedAuthority> authorities;
 	
 	
     public JwtAuthenticationCustomResponse(String token,
     		String userName ,
     		Collection<? extends GrantedAuthority>  authorities,
-    		int teamId) {
+    		int teamId,String firstName) {
         this.token = token;
         this.userName = userName;
         this.authorities = authorities;
         this.teamId = teamId;
         
+        this.firstName=firstName;
     }
 	
 	public String getToken() {
@@ -52,6 +55,9 @@ public class JwtAuthenticationCustomResponse implements Serializable {
 		return authorities;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
 
 	
 }

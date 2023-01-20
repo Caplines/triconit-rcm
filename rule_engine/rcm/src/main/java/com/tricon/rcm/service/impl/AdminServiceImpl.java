@@ -2,6 +2,8 @@ package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -44,6 +46,7 @@ import com.tricon.rcm.dto.ResetStatusDto;
 import com.tricon.rcm.dto.UserAssignOfficeDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
+import com.tricon.rcm.email.EmailService;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -89,6 +92,9 @@ public class AdminServiceImpl {
 	
 	@Value("${data.totalRecordperPage}")
 	private int totalRecordsperPage;
+	
+	@Autowired
+	EmailService emailService;
 
 	/**
 	 * This Method save Data of New Register User
@@ -98,18 +104,23 @@ public class AdminServiceImpl {
 	 */
 	@Transactional(rollbackOn = Exception.class)
 	public GenericResponse registerUser(UserRegistrationDto dto) throws Exception {
-		RcmOffice office = officeRepo.findByUuid(dto.getOfficeId());
 		RcmUserRole roles = null;
 		RcmUserRolePk pk = null;
 		RcmUser user = null;
 		UserAssignOffice userAssignOffice = null;
-		if (office != null) {
 			user = userRepo.findByEmail(dto.getEmail());
 			if (user == null) {
-				RcmTeam team = teamRepo.findByNameId(dto.getTeamNameId());
+				RcmOffice office = officeRepo.findByUuid(dto.getOfficeId());
 				RcmCompany company = rcmCompanyRepo.findByName(dto.getCompanyName());
 				user = convertDtotoModel(dto);
-				user.setOffice(office);
+				if (company.getName().equals(Constants.COMPANY_NAME)) {
+					if (office != null) {
+						user.setOffice(office);
+					} else
+						return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.INCORRECT_OFFICE_NAME,
+								null);
+				}		
+				RcmTeam team = teamRepo.findById(dto.getTeamId());
 				user.setTeam(team);
 				user.setCompany(company);
 				user = userRepo.save(user);
@@ -141,13 +152,25 @@ public class AdminServiceImpl {
 					}
 				}
 					
+				
+				//send email to register User
+				if (user != null) {
+					String userEmail=user.getEmail();
+					String emailSubject = "New Registration Confirmation";
+					String emailText = "Hi " + user.getFirstName()+ ",\n\nThanks for signing up to RCM. You can now log in to the RCM Account.\n\n"
+							+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
+						ExecutorService emailExecutor = Executors.newCachedThreadPool();
+						emailExecutor.execute(new Runnable() {
+							@Override
+							public void run() {
+								emailService.sendSimpleMessage(userEmail, emailSubject, emailText);
+							}
+						});
+					} 
 
 				return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 			}
 			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_EXIST, null);
-		}
-
-		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.INCORRECT_OFFICE_NAME, null);
 	}
 
 	/**

@@ -60,7 +60,7 @@ public class AuthenticationRestController {
 
         // Return the token
         return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Sucess",
-        		new JwtAuthenticationCustomResponse(token,userDetails.getUsername(),userDetails.getAuthorities(),user.getTeamId() )));
+        		new JwtAuthenticationCustomResponse(token,userDetails.getUsername(),userDetails.getAuthorities(),user.getTeamId(),user.getFirstname() )));
         //return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 

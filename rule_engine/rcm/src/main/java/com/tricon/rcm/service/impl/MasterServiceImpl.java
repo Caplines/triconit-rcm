@@ -1,7 +1,9 @@
 package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +37,6 @@ public class MasterServiceImpl {
 
 	/**
 	 * Fetch office data by given company name
-	 * 
 	 * @return RcmOffice list
 	 */
 
@@ -47,52 +48,61 @@ public class MasterServiceImpl {
 
 	/**
 	 * Fetch all RcmTeams data
-	 * 
 	 * @return List of RcmTeam
 	 */
 	public GenericResponse getTeams(boolean isSmilePoint) {
-		RcmTeamEnum[] teams = RcmTeamEnum.values();
-		List<String> team = new ArrayList<>();
+		List<Map<String,Object>>teams=new ArrayList<Map<String,Object>>();
+		Map<String,Object>team=null;
 		if (isSmilePoint) {
-			for (RcmTeamEnum t : teams) {
+			for (RcmTeamEnum t : RcmTeamEnum.values()) {
+				team = new LinkedHashMap<>();
 				if (t.isSmilepoint() && t.isRoleVisible()) {
-					team.add(t.getName());
+					team.put("teamName", t.getDescription());
+					team.put("teamId", t.getId());
+					teams.add(team);
 				}
 			}
 		} else {
-			for (RcmTeamEnum t : teams) {
+			for (RcmTeamEnum t : RcmTeamEnum.values()) {
+				team = new LinkedHashMap<>();
 				if (!t.isSmilepoint() && t.isRoleVisible()) {
-					team.add(t.getName());
+					team.put("teamName", t.getDescription());
+					team.put("teamId", t.getId());
+					teams.add(team);
 				}
 			}
 		}
-		return new GenericResponse(HttpStatus.OK, "", team);
+		return new GenericResponse(HttpStatus.OK, "", teams);
 	}
 
 	/**
 	 * Get user roles from RcmRoleEnum
-	 * 
-	 * @return List<Entry<String, String>>
+	 * @return List of RcmRoles
 	 */
-	public GenericResponse getRoles(boolean isSmilePoint) {
-		List<String> role = new ArrayList<>();
-		RcmRoleEnum[] roles = RcmRoleEnum.values();
+	public GenericResponse getRoles(boolean isSmilePoint){
+		List<Map<String,Object>>roles=new ArrayList<Map<String,Object>>();
+		Map<String,Object>role=null;
 		if (isSmilePoint) {
-			for (RcmRoleEnum r : roles) {
+			for (RcmRoleEnum r : RcmRoleEnum.values()) {
+				role=new LinkedHashMap<>();
 				if (r.isVisibility()) {
-					role.add(r.getFullName());
+					role.put("roleName", r.getFullName());
+					role.put("roleId", r.getName());
+					roles.add(role);
+					
 				}
 			}
-
 		} else {
-			for (RcmRoleEnum r : roles) {
+			for (RcmRoleEnum r : RcmRoleEnum.values()) {
+				role=new LinkedHashMap<>();
 				if (r.isVisibility()
-						&& !(r.getFullName().equals(Constants.ADMIN) || r.getFullName().equals(Constants.ASSOCIATE))) {
-					role.add(r.getFullName());
+						&& !(r.getName().equals(Constants.ADMIN) || r.getName().equals(Constants.ASSOCIATE))) {
+					role.put("roleName", r.getFullName());
+					role.put("roleId", r.getName());
+					roles.add(role);
 				}
 			}
 		}
-		return new GenericResponse(HttpStatus.OK, "", role);
+		return new GenericResponse(HttpStatus.OK, "",roles);
 	}
-
 }

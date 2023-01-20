@@ -22,9 +22,8 @@ public class UserRegistrationDto {
 	private String email;
 	@NotEmpty(message = "Please provide your password")
 	private String password;
-	@NotEmpty(message = "Please provide office name")
 	private String officeId;
-	private String teamNameId;
+	private Integer teamId;
 	private List<String> userRole;
 	private String companyName;
 }
