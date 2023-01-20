@@ -116,9 +116,10 @@ public class AdminServiceImpl {
 				if (company.getName().equals(Constants.COMPANY_NAME)) {
 					if (office != null) {
 						user.setOffice(office);
-					} else
-						return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.INCORRECT_OFFICE_NAME,
-								null);
+					} else {
+					//	return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.INCORRECT_OFFICE_NAME,
+						//		null);
+					}
 				}else {
 					user.setOffice(office);
 				}
@@ -142,7 +143,8 @@ public class AdminServiceImpl {
 				// save user data into user_assign_office table
 				if (user.getCompany().getName().equals(Constants.COMPANY_NAME) && dto.getUserRole().stream().anyMatch(x->x.equals(RcmRoleEnum.ASSO.getName()))) {
 
-					// check office is alreday exist or not in given team id
+					// check office is already exist or not in given team id
+					if (user.getOffice()!=null) {
 					userAssignOffice = userAssignRepo.findByOfficeUuidAndTeamId(user.getOffice().getUuid(),user.getTeam().getId());
 
 					if (userAssignOffice==null) {
@@ -151,6 +153,7 @@ public class AdminServiceImpl {
 						userAssignOffice.setOffice(user.getOffice());
 						userAssignOffice.setTeam(user.getTeam());
 						userAssignRepo.save(userAssignOffice);
+					 }
 					}
 				}
 					
