@@ -119,7 +119,9 @@ public class AdminServiceImpl {
 					} else
 						return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.INCORRECT_OFFICE_NAME,
 								null);
-				}		
+				}else {
+					user.setOffice(office);
+				}
 				RcmTeam team = teamRepo.findById(dto.getTeamId());
 				user.setTeam(team);
 				user.setCompany(company);
