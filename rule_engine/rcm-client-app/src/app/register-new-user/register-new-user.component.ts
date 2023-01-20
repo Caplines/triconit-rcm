@@ -20,13 +20,13 @@ export class RegisterNewUserComponent implements OnInit {
   constructor(private router: Router, private _baseService:BaseService ,private fb : FormBuilder) {
 
     this.userDetails = this.fb.group({
-      'firstName' : ['',Validators.required],
-      'lastName' : ['',Validators.required],
+      'firstName' : ['',[Validators.required,Validators.minLength(3)]],
+      'lastName' : ['',[Validators.required,Validators.minLength(3)]],
       'email' : ['',Validators.email],
       'password' : ['',[Validators.required,Validators.minLength(6)]],
       'companyName' : ['',Validators.required],
-      'officeId' : ['',Validators.required],
-      'teamNameId' : ['',Validators.required],
+      'officeId' : [''],
+      'teamId' : ['',Validators.required],
       'userRole' : ['',Validators.required],
     })
    }
@@ -34,7 +34,6 @@ export class RegisterNewUserComponent implements OnInit {
   ngOnInit(): void {
     this.getcompanyData();
     this.userDetails.reset();
-    console.log(localStorage.getItem("token"))
   }
 
   registerNewUser(){
@@ -43,9 +42,10 @@ export class RegisterNewUserComponent implements OnInit {
         console.log(callback)
         this.alert.showAlertPopup = true;
         this.alert.alertMsg = callback.result.message;
-        this.userDetails.reset();
-        console.log(this.userDetails.value)
-        
+        if(callback.result.message === "User has been created"){
+          this.userRoles = this.userRolesData = this.officeData = this.teamData = [];
+          this.userDetails.reset();
+        }
       } 
     })
     }

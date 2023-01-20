@@ -15,21 +15,18 @@ export class HeaderComponent implements OnInit {
     username: null,
     password: null,
   };
-  isLoggedIn = false;
-  isLoginFailed = false;
-  errorMessage = '';
-  roles: string[] = [];
-  loggedInUserDetail:any;
+  loggedInUserRole:any;
+  loggedInUserName:any;
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
 
   constructor(private _baseService: BaseService) { }
 
   ngOnInit(): void {
-    if(!this.loggedInUserDetail){
-      this.loggedInUserDetail =  localStorage.getItem("roles")
+    if(!this.loggedInUserRole){
+      this.loggedInUserRole =  localStorage.getItem("roles")
     }
-    console.log(this.loggedInUserDetail)
+    this.loggedInUserName = localStorage.getItem("name")
   }
 
  

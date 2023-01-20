@@ -12,7 +12,7 @@
          <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12 pt-3">
-                    <h2 class="page-heading">Create Your Account</h2>
+                    <h2 class="page-heading">Register User Account</h2>
                     <div class="main-container register-User">
                         <div class="form-container">
                             <form [formGroup]="userDetails" style="padding-right:20%">
@@ -52,7 +52,7 @@
                                         <div class="form-group">
                                             <label for="companyId">Company Name</label>
                                             <select class="form-control" formControlName="companyName" (change)="getOfficesByCompany($event)" [ngClass]="{'is-invalid':userDetails.controls.companyName.invalid && userDetails.controls.companyName.touched}">
-                                                <option value="" hidden="true">Company</option>
+                                                <option selected  disabled="true">Company</option>
                                                 <ng-container *ngFor="let comp of companyData">
                                                     <option value="{{comp.name}}">{{comp.name}}</option>
                                                 </ng-container>
@@ -71,9 +71,9 @@
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="teamId">Team Name</label>
-                                            <select class="form-control" formControlName="teamNameId" [ngClass]="{'is-invalid':userDetails.controls.teamNameId.invalid && userDetails.controls.teamNameId.touched,'disabled':teamData.length==0}">
+                                            <select class="form-control" formControlName="teamId" [ngClass]="{'is-invalid':userDetails.controls.teamId.invalid && userDetails.controls.teamId.touched,'disabled':teamData.length==0}">
                                                 <option selected="true" hidden="true">Team</option>
-                                                <option *ngFor="let team of teamData" value="{{team}}">{{team}}</option>
+                                                <option *ngFor="let team of teamData" value="{{team.teamId}}">{{team.teamName}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -83,7 +83,15 @@
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="userRole">User Role :</label>
-                                            <ng-container *ngIf="userRolesData.includes('TeamLead')">
+                                            <ng-container *ngFor="let userRole of userRolesData">
+                                                <div class="form-check  form-check-inline custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="role" id="{{userRole.roleId}}" (change)="selectUserRole($event)">
+                                                    <label class="custom-control-label" for="{{userRole.roleId}}">
+                                                        {{userRole.roleName}}
+                                                    </label>
+                                                </div>
+                                            </ng-container>
+                                            <!-- <ng-container *ngIf="userRolesData.includes('TeamLead')">
                                                 <div class="form-check  form-check-inline custom-checkbox">
                                                     <input class="custom-control-input" type="checkbox" name="role" id="TeamLead" (change)="selectUserRole($event)">
                                                     <label class="custom-control-label" for="TeamLead">
@@ -106,7 +114,7 @@
                                                         Admin
                                                     </label>
                                                 </div>
-                                            </ng-container>
+                                            </ng-container> -->
                                         </div>
                                     </div>
                                 </div>

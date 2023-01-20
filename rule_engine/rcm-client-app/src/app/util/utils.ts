@@ -23,6 +23,7 @@ export default class Utils {
        localStorage.setItem('token', token);
        localStorage.setItem('teamId', data.teamId);
        localStorage.setItem('roles', Utils.getRoles(data.authorities));
+       localStorage.setItem('name', data.firstName);
        
    }
    
@@ -35,6 +36,7 @@ export default class Utils {
        localStorage.removeItem('teamId');
        localStorage.removeItem('token');
        localStorage.removeItem('roles');
+       localStorage.removeItem('name');
    }
    /*
    static fetchUserTypeFromLocalStorage():string{
