@@ -17,6 +17,7 @@ export class RegisterNewUserComponent implements OnInit {
   companyData:any=[];
   userRoles:any=[];
   alert:any={'showAlertPopup':false,'alertMsg':''}
+  showLoader:boolean=false;
   constructor(private router: Router, private _baseService:BaseService ,private fb : FormBuilder) {
 
     this.userDetails = this.fb.group({
@@ -43,14 +44,21 @@ export class RegisterNewUserComponent implements OnInit {
         this.alert.showAlertPopup = true;
         this.alert.alertMsg = callback.result.message;
         if(callback.result.message === "User has been created"){
-          this.userRoles = this.userRolesData = this.officeData = this.teamData = [];
+          this.companyData =this.userRoles = this.userRolesData = this.officeData = this.teamData = [];
           this.userDetails.reset();
+          this.getcompanyData();
         }
-      } 
+      } else { 
+        if(callback.result.message === ''){
+          this.alert.showAlertPopup = true;
+          this.alert.alertMsg = 'Something Went Wrong';
+        }
+      }
     })
     }
   
   getTeamsData(){
+    this.showLoader=true;
     let isSmilePoint: boolean = false;
     if (this.userDetails.value.companyName === "Capline") {
       isSmilePoint = true;
@@ -58,14 +66,17 @@ export class RegisterNewUserComponent implements OnInit {
     this._baseService.getTeamsData(isSmilePoint,(callback:any)=>{
       console.log(callback)
       if(callback.status){
+        this.showLoader = false;
         this.teamData = callback.result.data
       }
     })
   }
 
   getOfficeData(){
+    this.showLoader=true;
     this._baseService.getOfficeData((callback:any)=>{
       if(callback.status){
+        this.showLoader = false;
         this.officeData = callback.result.data
       }
     })
@@ -102,6 +113,41 @@ export class RegisterNewUserComponent implements OnInit {
         this.userRoles.push(event.target.id)
       }
       this.userDetails.controls.userRole.setValue(this.userRoles);
+      this.changeTeamMandatoryStatus(event.target.id);
+  }
+
+  
+  changeTeamMandatoryStatus(role: any) {
+
+    let k = this.userRolesData;
+    k.find((e: any) => {
+      if (e.roleId === role) {
+        if (e.teamMandatory && (this.userRoles.includes("TL") || this.userRoles.includes("ASSO"))) {
+          this.userDetails.controls.teamId.setValidators([Validators.required]);
+          this.userDetails.controls.teamId.updateValueAndValidity();
+        } else if (!(this.userRoles.includes("TL") || this.userRoles.includes("ASSO"))) {
+          this.userDetails.controls.teamId.setValidators();
+          this.userDetails.controls.teamId.updateValueAndValidity();
+        } else {
+          this.userDetails.controls.teamId.setValidators([Validators.required]);
+          this.userDetails.controls.teamId.updateValueAndValidity();
+        }
+
+      }
+    })
+
+  }
+
+  selectCompany(e:any){
+    this.userDetails.controls.companyName.setValue(e.target.value);
+  }
+
+  selectOffice(e:any){
+    this.userDetails.controls.officeId.setValue(e.target.value);
+  }
+
+  selectTeamName(e:any){
+    this.userDetails.controls.teamId.setValue(e.target.value);
   }
 
   getOfficesByCompany(event:any){
@@ -112,6 +158,7 @@ export class RegisterNewUserComponent implements OnInit {
                 this.officeData = callback.result.data.data;
                 this.getUserRoleData();
                 this.getTeamsData();
+                this.userRoles= [];
               }
           })
         }

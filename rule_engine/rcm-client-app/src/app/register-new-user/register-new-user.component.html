@@ -1,7 +1,6 @@
-﻿
-      <div class="right-container">
-         <app-header-component></app-header-component>
-         <ng-container *ngIf="alert.showAlertPopup">
+﻿        <div class="right-container">
+        <app-header-component></app-header-component>
+        <ng-container *ngIf="alert.showAlertPopup">
             <div class="alert alert-success alert-dismissible fade show my-3 text-center" role="alert">
                 <strong>{{alert.alertMsg}}</strong>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -9,7 +8,7 @@
                 </button>
             </div>
         </ng-container>
-         <div class="container-fluid">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12 pt-3">
                     <h2 class="page-heading">Register User Account</h2>
@@ -51,8 +50,8 @@
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="companyId">Company Name</label>
-                                            <select class="form-control" formControlName="companyName" (change)="getOfficesByCompany($event)" [ngClass]="{'is-invalid':userDetails.controls.companyName.invalid && userDetails.controls.companyName.touched}">
-                                                <option selected  disabled="true">Company</option>
+                                            <select class="form-control"  (change)="getOfficesByCompany($event);selectCompany($event);" [ngClass]="{'is-invalid':userDetails.controls.companyName.invalid && userDetails.controls.companyName.touched}">
+                                                <option selected="true" hidden="true" >Select Company</option>
                                                 <ng-container *ngFor="let comp of companyData">
                                                     <option value="{{comp.name}}">{{comp.name}}</option>
                                                 </ng-container>
@@ -62,8 +61,9 @@
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="officeId">Office Name</label>
-                                            <select class="form-control" formControlName="officeId" [ngClass]="{'is-invalid':userDetails.controls.officeId.invalid && userDetails.controls.officeId.touched,'disabled':officeData.length==0}">
-                                                <option selected="true" hidden="true">Office</option>
+                                            <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
+                                            <select class="form-control" (change)="selectOffice($event);"  [ngClass]="{'is-invalid':userDetails.controls.officeId.invalid && userDetails.controls.officeId.touched,'disabled':officeData.length==0}">
+                                                <option selected="true" hidden="true" *ngIf="!showLoader">Select Office</option>
                                                 <option *ngFor="let office of officeData" value="{{office.uuid}}">{{office.name}}</option>
                                             </select>
                                         </div>
@@ -71,14 +71,14 @@
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="teamId">Team Name</label>
-                                            <select class="form-control" formControlName="teamId" [ngClass]="{'is-invalid':userDetails.controls.teamId.invalid && userDetails.controls.teamId.touched,'disabled':teamData.length==0}">
-                                                <option selected="true" hidden="true">Team</option>
+                                        <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
+                                            <select class="form-control" (change)="selectTeamName($event);" [ngClass]="{'is-invalid':userDetails.controls.teamId.invalid && userDetails.controls.teamId.touched,'disabled':teamData.length==0}">
+                                                <option selected="true" hidden="true" *ngIf="!showLoader">Select Team</option>
                                                 <option *ngFor="let team of teamData" value="{{team.teamId}}">{{team.teamName}}</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="row">
                                     <div class="col-sm">
                                         <div class="form-group">
@@ -91,30 +91,6 @@
                                                     </label>
                                                 </div>
                                             </ng-container>
-                                            <!-- <ng-container *ngIf="userRolesData.includes('TeamLead')">
-                                                <div class="form-check  form-check-inline custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="role" id="TeamLead" (change)="selectUserRole($event)">
-                                                    <label class="custom-control-label" for="TeamLead">
-                                                        Team Lead
-                                                    </label>
-                                                </div>
-                                            </ng-container>
-                                            <ng-container *ngIf="userRolesData.includes('Associate')">
-                                                <div class="form-check  form-check-inline custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="role" id="Associate" (change)="selectUserRole($event)">
-                                                    <label class="custom-control-label" for="Associate">
-                                                        Associate
-                                                    </label>
-                                                </div>
-                                            </ng-container>
-                                            <ng-container *ngIf="userRolesData.includes('Admin')">
-                                                <div class="form-check  form-check-inline custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="role" id="Admin" (change)="selectUserRole($event)">
-                                                    <label class="custom-control-label" for="Admin">
-                                                        Admin
-                                                    </label>
-                                                </div>
-                                            </ng-container> -->
                                         </div>
                                     </div>
                                 </div>
@@ -133,7 +109,7 @@
 
                 </div>
             </div>
-      <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-      <script src="https://getbootstrap.com/docs/4.4/dist/js/bootstrap.bundle.min.js"></script>
-   </body>
-</html> -->
+        <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+        <script src="https://getbootstrap.com/docs/4.4/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
+        </html> -->
