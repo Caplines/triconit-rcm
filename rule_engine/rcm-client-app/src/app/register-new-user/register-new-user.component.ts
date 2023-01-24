@@ -27,7 +27,7 @@ export class RegisterNewUserComponent implements OnInit {
       'password' : ['',[Validators.required,Validators.minLength(6)]],
       'companyName' : ['',Validators.required],
       'officeId' : [''],
-      'teamId' : ['',Validators.required],
+      'teamId' : ['0',Validators.required],
       'userRole' : ['',Validators.required],
     })
    }
@@ -38,6 +38,7 @@ export class RegisterNewUserComponent implements OnInit {
   }
 
   registerNewUser(){
+    if(this.userDetails.value.teamId == undefined || this.userDetails.value.teamId == null){this.userDetails.controls.teamId.setValue(0);}
     this._baseService.registerUser(this.userDetails.value,(callback:any)=>{
       if(callback.status && callback.result.message !=''){
         console.log(callback)
