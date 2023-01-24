@@ -37,4 +37,6 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ "first_name as FirstName,last_name as LastName,team_id as TeamNameid from rcm_user where"
 			+ "(first_name like %:search% or email like %:search% or last_name like %:search%)",nativeQuery = true)
 	List<UserSearchDto> findByUserDetails(String search);
+	
+	List<RcmUser>findByUuidIn(List<String> userId);
 }

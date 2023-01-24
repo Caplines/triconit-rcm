@@ -27,7 +27,6 @@ import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.ResetStatusDto;
-import com.tricon.rcm.dto.UserAssignOfficeDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.AdminServiceImpl;
@@ -189,7 +188,7 @@ public class AdminController {
 		return ResponseEntity.ok(response);
 	}
 	
-	@RequestMapping(value = "/company", method = RequestMethod.GET)
+	@RequestMapping(value = "/getOrganization", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getCompanyDetails() {
 		GenericResponse response = null;
@@ -270,31 +269,6 @@ public class AdminController {
 		}
 		try {
 			response = serviceImpl.editRolesByAdmin(jwtUser,dto);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
-	
-	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> assignOffice(@RequestBody UserAssignOfficeDto dto) {
-		if (dto.getUserId().trim().equals("") || dto.getOfficeId().isEmpty()) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
-		}
-		GenericResponse response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		if (!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-		}
-		try {
-			response = serviceImpl.assignOfficeByAdmin(dto);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

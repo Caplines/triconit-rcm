@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmRoleDto;
+import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
@@ -51,23 +53,23 @@ public class MasterServiceImpl {
 	 * @return List of RcmTeam
 	 */
 	public GenericResponse getTeams(boolean isSmilePoint) {
-		List<Map<String,Object>>teams=new ArrayList<Map<String,Object>>();
-		Map<String,Object>team=null;
+		List<RcmTeamDto>teams=new ArrayList<>();
+		RcmTeamDto team=null;
 		if (isSmilePoint) {
 			for (RcmTeamEnum t : RcmTeamEnum.values()) {
-				team = new LinkedHashMap<>();
+				team = new RcmTeamDto();
 				if (t.isSmilepoint() && t.isRoleVisible()) {
-					team.put("teamName", t.getDescription());
-					team.put("teamId", t.getId());
+					team.setTeamName(t.getDescription());
+					team.setTeamId(t.getId());
 					teams.add(team);
 				}
 			}
 		} else {
 			for (RcmTeamEnum t : RcmTeamEnum.values()) {
-				team = new LinkedHashMap<>();
+				team = new RcmTeamDto();
 				if (!t.isSmilepoint() && t.isRoleVisible()) {
-					team.put("teamName", t.getDescription());
-					team.put("teamId", t.getId());
+					team.setTeamName(t.getDescription());
+					team.setTeamId(t.getId());
 					teams.add(team);
 				}
 			}
@@ -80,25 +82,26 @@ public class MasterServiceImpl {
 	 * @return List of RcmRoles
 	 */
 	public GenericResponse getRoles(boolean isSmilePoint){
-		List<Map<String,Object>>roles=new ArrayList<Map<String,Object>>();
-		Map<String,Object>role=null;
+		List<RcmRoleDto>roles=new ArrayList<>();
+		RcmRoleDto role=null;
 		if (isSmilePoint) {
 			for (RcmRoleEnum r : RcmRoleEnum.values()) {
-				role=new LinkedHashMap<>();
-				if (r.isVisibility()) {
-					role.put("roleName", r.getFullName());
-					role.put("roleId", r.getName());
+				role=new RcmRoleDto();
+				if(r.isRoleVisibilityForSmilepoint()) {
+					role.setRoleName(r.getFullName());
+					role.setRoleId(r.getName());
+					role.setTeamMandatory(r.isTeamMandatory());
 					roles.add(role);
 					
 				}
 			}
 		} else {
 			for (RcmRoleEnum r : RcmRoleEnum.values()) {
-				role=new LinkedHashMap<>();
-				if (r.isVisibility()
-						&& !(r.getName().equals(Constants.ADMIN) || r.getName().equals(Constants.ASSOCIATE))) {
-					role.put("roleName", r.getFullName());
-					role.put("roleId", r.getName());
+				role=new RcmRoleDto();
+				if(r.isRoleVisibilityForOthers()) {
+					role.setRoleName(r.getFullName());
+					role.setRoleId(r.getName());
+					role.setTeamMandatory(r.isTeamMandatory());
 					roles.add(role);
 				}
 			}

@@ -1,7 +1,5 @@
 package com.tricon.rcm.jpa.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tricon.rcm.db.entity.UserAssignOffice;
@@ -9,8 +7,6 @@ import com.tricon.rcm.db.entity.UserAssignOffice;
 public interface UserAssignOfficeRepo extends JpaRepository<UserAssignOffice, Integer>{
 	
 	UserAssignOffice findByOfficeUuidAndTeamId(String officeId,int teamId);
-	List<UserAssignOffice>findByUserUuid(String uuid);
-	List<UserAssignOffice>findByOfficeUuidIn(List<String> officeId);
-	
-
+	UserAssignOffice findByUserUuid(String uuid);
+	UserAssignOffice findByUserUuidAndOfficeUuidAndTeamId(String userUuid,String officeId,int teamId);
 }

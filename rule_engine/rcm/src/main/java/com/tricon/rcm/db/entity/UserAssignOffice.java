@@ -36,7 +36,7 @@ public class UserAssignOffice implements Serializable{
 	@JoinColumn(name = "team_id",referencedColumnName="id")
 	private RcmTeam team;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "office_id", referencedColumnName = "uuid")
 	private RcmOffice office;
 }

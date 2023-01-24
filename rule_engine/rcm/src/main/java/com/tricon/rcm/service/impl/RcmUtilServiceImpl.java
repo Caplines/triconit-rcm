@@ -2,8 +2,6 @@ package com.tricon.rcm.service.impl;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ForgotPasswordDto;
 import com.tricon.rcm.dto.GenericResponse;
-import com.tricon.rcm.email.EmailService;
+import com.tricon.rcm.email.EmailUtil;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
@@ -26,7 +24,7 @@ public class RcmUtilServiceImpl {
 	RCMUserRepository userRepo;
 	
 	@Autowired
-	EmailService emailService;
+	EmailUtil emailUtil;
 
 	/**
 	 * This Api does reset password for a user.Reset Password procedure completes through Email
@@ -44,13 +42,7 @@ public class RcmUtilServiceImpl {
 			String emailText = "Hi " + existingUser.getFirstName()
 					+ ",\n\nYou recently requested to reset your password for your RCM account.\n\n"
 					+ "Your New Password is: " + newPassword + "\n\n" + "Thanks and Regards\nRCM Team";
-			ExecutorService emailExecutor = Executors.newCachedThreadPool();
-		      emailExecutor.execute(new Runnable() {
-		 	    @Override
-				public void run() {
-		 	    	emailService.sendSimpleMessage(dto.getEmail(), emailSubject, emailText);
-			}
-		});
+			emailUtil.sendEmailForForgotPassword(dto.getEmail(), emailSubject, emailText);
 			if (!newPassword.trim().equals("")) {
 				String newEncryptPassword=EncrytedKeyUtil.encryptKey(newPassword);
 				existingUser.setPassword(newEncryptPassword);

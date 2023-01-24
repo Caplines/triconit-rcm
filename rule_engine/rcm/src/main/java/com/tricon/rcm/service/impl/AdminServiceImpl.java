@@ -2,8 +2,6 @@ package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -43,10 +41,9 @@ import com.tricon.rcm.dto.RcmUserDto;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.ResetStatusDto;
-import com.tricon.rcm.dto.UserAssignOfficeDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
-import com.tricon.rcm.email.EmailService;
+import com.tricon.rcm.email.EmailUtil;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -94,7 +91,7 @@ public class AdminServiceImpl {
 	private int totalRecordsperPage;
 	
 	@Autowired
-	EmailService emailService;
+	EmailUtil emailUtil;
 
 	/**
 	 * This Method save Data of New Register User
@@ -112,18 +109,9 @@ public class AdminServiceImpl {
 			if (user == null) {
 				RcmOffice office = officeRepo.findByUuid(dto.getOfficeId());
 				RcmCompany company = rcmCompanyRepo.findByName(dto.getCompanyName());
-				user = convertDtotoModel(dto);
-				if (company.getName().equals(Constants.COMPANY_NAME)) {
-					if (office != null) {
-						user.setOffice(office);
-					} else {
-					//	return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.INCORRECT_OFFICE_NAME,
-						//		null);
-					}
-				}else {
-					user.setOffice(office);
-				}
 				RcmTeam team = teamRepo.findById(dto.getTeamId());
+				user = convertDtotoModel(dto);		
+				user.setOffice(office);
 				user.setTeam(team);
 				user.setCompany(company);
 				user = userRepo.save(user);
@@ -164,13 +152,7 @@ public class AdminServiceImpl {
 					String emailSubject = "New Registration Confirmation";
 					String emailText = "Hi " + user.getFirstName()+ ",\n\nThanks for signing up to RCM. You can now log in to the RCM Account.\n\n"
 							+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
-						ExecutorService emailExecutor = Executors.newCachedThreadPool();
-						emailExecutor.execute(new Runnable() {
-							@Override
-							public void run() {
-								emailService.sendSimpleMessage(userEmail, emailSubject, emailText);
-							}
-						});
+					emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
 					} 
 
 				return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
@@ -485,83 +467,4 @@ public class AdminServiceImpl {
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
    }
-	/**
-	 * This api can assign office to particular users basis of userId
-	 * @param dto
-	 * @return GenericResponse
-	 */
-	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse assignOfficeByAdmin(UserAssignOfficeDto dto) throws Exception {
-		List<UserAssignOffice> searchOffice = userAssignRepo.findByOfficeUuidIn(dto.getOfficeId());
-		List<UserAssignOffice> saveAllOffices = null;
-		List<UserAssignOffice> existingUser = null;
-		UserAssignOffice user = null;
-		RcmUser rcmUser = null;
-		RcmOffice office = null;
-		String msg = "";
-		boolean status = false;
-		existingUser = searchOffice.stream().filter(x -> x.getUser().getUuid().equals(dto.getUserId()))
-				.collect(Collectors.toList());
-		if (!existingUser.isEmpty()) {
-			// now we will check given offices in given userId is assign or not to any user
-			// with same teamId
-			int existingUserTeamId = existingUser.stream().map(x -> x.getTeam().getId()).findFirst().get();
-			status = checkOfficeExistOrNot(searchOffice, existingUserTeamId, dto);
-			if (status)
-				return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, null);
-			// now we will assign new offices to given user
-			rcmUser = existingUser.stream().map(x -> x.getUser()).findFirst().get();
-			RcmTeam team = existingUser.stream().map(x -> x.getTeam()).findFirst().get();
-			saveAllOffices = new ArrayList<>();
-			for (String off : dto.getOfficeId()) {
-				user = new UserAssignOffice();
-				office = new RcmOffice();
-				user.setUser(rcmUser);
-				user.setTeam(team);
-				office.setUuid(off);
-				user.setOffice(office);
-				saveAllOffices.add(user);
-			}
-			userAssignRepo.saveAll(saveAllOffices);
-			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
-		} else {
-			// It means given user is new ,now we will save this new user
-			// First we check given user is valid or not
-			rcmUser = userRepo.findByUuid(dto.getUserId());
-			if (rcmUser != null && rcmUser.getRoles().stream().map(x -> x.getRole())
-					.anyMatch(x -> x.endsWith(RcmRoleEnum.ASSO.getName()))) {
-				// now we will check new offices in given userId is assign or not to any user
-				// with same teamId
-				int newUserTeamId = rcmUser.getTeam().getId();
-				status = checkOfficeExistOrNot(searchOffice, newUserTeamId, dto);
-				if (status)
-					return new GenericResponse(HttpStatus.OK, MessageConstants.OFFICE_EXIST, null);
-				saveAllOffices = new ArrayList<>();
-				for (String off : dto.getOfficeId()) {
-					user = new UserAssignOffice();
-					office = new RcmOffice();
-					user.setUser(rcmUser);
-					user.setTeam(rcmUser.getTeam());
-					office.setUuid(off);
-					user.setOffice(office);
-					saveAllOffices.add(user);
-				}
-				userAssignRepo.saveAll(saveAllOffices);
-				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
-			}
-		}
-		msg = "User not exist or user is not associate user";
-		return new GenericResponse(HttpStatus.OK, msg, null);
-	}
-
-	private boolean checkOfficeExistOrNot(List<UserAssignOffice> searchOffice, int userTeamid,
-			UserAssignOfficeDto dto) {
-		for (UserAssignOffice uOffice : searchOffice) {
-			if (dto.getOfficeId().stream().anyMatch(
-					x -> x.equals(uOffice.getOffice().getUuid()) && uOffice.getTeam().getId() == userTeamid)) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

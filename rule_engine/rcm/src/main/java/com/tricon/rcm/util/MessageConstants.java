@@ -37,5 +37,8 @@ public class MessageConstants {
 	public static final String OFFICE_NOT_EXIST = "Office not exist";
 	
 	public static final String OFFICE_EXIST="Office Exist";
+	
+	public static final String DUPLICATE_OFFICE="Duplicate office not allow";
+	
 
 }

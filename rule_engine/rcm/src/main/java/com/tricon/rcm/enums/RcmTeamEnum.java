@@ -18,7 +18,7 @@ public enum RcmTeamEnum {
 	IV_TEAM(6, "IV_TEAM","IV Team", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
 	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
 	LC3(8, "LC3","LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	OTHER(9, "OTHER","other", new RcmRoleEnum[] { RcmRoleEnum.TL},false,true,true);
+	CLIENT_MANAGER(9, "CLIENT_MANAGER","Client Manager", new RcmRoleEnum[] { RcmRoleEnum.TL},false,true,true);
 	
 	final private int id;
 	final private String name;
@@ -86,7 +86,7 @@ public enum RcmTeamEnum {
 	public static String generateRole(int value, String roleType) {
 		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() == value).findFirst();
 		Optional<RcmRoleEnum> roleEnum = Arrays.stream(RcmRoleEnum.values())
-				.filter(x -> x.getName().equals(roleType) && x.isVisibility() == true).findFirst();
+				.filter(x -> x.getName().equals(roleType)).findFirst();
 		String teamName = "", roleName = "", role = "";
 		if (teamEnum.isPresent() && roleEnum.isPresent()) {
 			teamName = teamEnum.get().getName();
