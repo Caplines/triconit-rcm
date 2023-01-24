@@ -16,10 +16,10 @@ export class BaseService {
     'registerUser':environment.API_URL+"/register",
     'findUserByUserName':environment.API_URL+"/finduser",
     'changePassword':environment.API_URL+"/resetpassword",
-    'getAllUsers':environment.API_URL+"/getAllUsers/1",
+    'getAllUsers':environment.API_URL+"/getAllUsers/-1",
     'updateStatus':environment.API_URL+"/resetstatus",
     'forgotPassword':environment.API_URL+"/forgotPassword",
-    'getCompany':environment.API_URL+"/company",
+    'getCompany':environment.API_URL+"/getOrganization",
     'officeByCompany':environment.API_URL+"/officeByCompany",
   }
   token:any;
