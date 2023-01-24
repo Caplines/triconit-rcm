@@ -851,3 +851,14 @@ select {
         pointer-events: none;
     }
 
+    .form-group {
+        position: relative;
+    }
+
+    .register-User .form-group .spinner-border {
+        position: absolute;
+        left: 10px;
+        top: 35px;
+        width: 24px;
+        height: 24px;
+    }
