@@ -26,6 +26,7 @@ import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
+import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.ResetStatusDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.security.JwtUser;
@@ -144,7 +145,7 @@ public class AdminController {
 
 	@RequestMapping(value = "/resetstatus", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> resetstatus(@RequestBody ResetStatusDto dto) {
+	public ResponseEntity<?> resetstatus(@RequestBody RcmUserStatusDto dto) {
 		GenericResponse response = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
@@ -153,7 +154,7 @@ public class AdminController {
 		if(!jwtUser.isSmilePoint()) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
-		if (dto.getEnable().isEmpty() && dto.getDisable().isEmpty()) {
+		if (dto.getUserActiveStatus().isEmpty()) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}

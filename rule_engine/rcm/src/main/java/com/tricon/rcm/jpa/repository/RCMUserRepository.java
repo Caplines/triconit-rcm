@@ -15,7 +15,6 @@ import com.tricon.rcm.dto.UserSearchDto;
 
 public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	
-	RcmUser findByEmailAndActive(String email,int active);
 	RcmUser findByUuid(String uuid);
 	RcmUser findByEmail(String email);
 	
@@ -26,7 +25,7 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	List<RcmUserToDto> getAllUser(String uuid);
 	
 
-	@Query(value = "select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName from rcm_user where company_id=:uuid", countQuery = "select count(*) from rcm_user", nativeQuery = true)
+	@Query(value = "select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName from rcm_user where company_id=:uuid", countQuery = "select count(*) from rcm_user where company_id=:uuid", nativeQuery = true)
 	Page<RcmUserToDto> getAllUserByPagination(@Param("uuid") String uuid, Pageable page);
 
 	@Modifying

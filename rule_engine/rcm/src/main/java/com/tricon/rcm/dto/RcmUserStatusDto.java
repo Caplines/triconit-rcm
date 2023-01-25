@@ -1,5 +1,7 @@
 package com.tricon.rcm.dto;
 
+import java.util.List;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -7,7 +9,7 @@ import lombok.ToString;
 @Data
 @ToString
 @NoArgsConstructor
-public class ResetStatusDto {
-	private String userId;
-	private  Integer status;
+public class RcmUserStatusDto {
+
+	private List<ResetStatusDto> userActiveStatus;
 }

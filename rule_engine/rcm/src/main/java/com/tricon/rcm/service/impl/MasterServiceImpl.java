@@ -1,9 +1,7 @@
 package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +12,7 @@ import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
+import com.tricon.rcm.enums.RcmCompanyEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
@@ -107,5 +106,49 @@ public class MasterServiceImpl {
 			}
 		}
 		return new GenericResponse(HttpStatus.OK, "",roles);
+	}
+
+	/**
+	 * Get roles by teamId
+	 * @param teamId
+	 * @return list of roles
+	 */
+	public GenericResponse getRolesByTeamId(int teamId) {
+		List<RcmRoleDto> roles = new ArrayList<>();
+		RcmRoleDto role = null;
+		for (RcmTeamEnum t : RcmTeamEnum.values()) {
+			if (t.getId() == teamId && t.isRoleVisible()) {
+				for (RcmRoleEnum r : t.getRole()) {
+					role = new RcmRoleDto();
+					role.setRoleName(r.getFullName());
+					role.setRoleId(r.getName());
+					role.setTeamMandatory(t.isTeamMandatory());
+					roles.add(role);
+				}
+			}
+		}
+		return new GenericResponse(HttpStatus.OK, "", roles);
+	}
+
+	/**
+	 * Get defaultRoles in basis of CompanayName
+	 * @param companyName
+	 * @return
+	 */
+	public GenericResponse defaultRolesByCompanyName(String companyName) {
+		List<RcmRoleDto> roles = new ArrayList<>();
+		RcmRoleDto role = null;
+		for ( RcmCompanyEnum t : RcmCompanyEnum.values()) {
+			if (t.getName().equals(companyName)) {
+				for (RcmRoleEnum r : t.getRole()) {
+					role = new RcmRoleDto();
+					role.setRoleName(r.getFullName());
+					role.setRoleId(r.getName());
+					role.setTeamMandatory(r.isTeamMandatory());
+					roles.add(role);
+				}
+			}
+		}
+		return new GenericResponse(HttpStatus.OK, "", roles);
 	}
 }

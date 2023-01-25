@@ -3,6 +3,7 @@ package com.tricon.rcm.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -37,13 +38,16 @@ import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmUserDto;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
+import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.ResetStatusDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.email.EmailUtil;
+import com.tricon.rcm.enums.RcmCompanyEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -184,7 +188,7 @@ public class AdminServiceImpl {
 	 * @return user details
 	 */
 	public GenericResponse findUserByEmail(FindUserDto dto) throws Exception {
-		RcmUser user = userRepo.findByEmailAndActive(dto.getEmail(), Constants.ENABLE);
+		RcmUser user = userRepo.findByEmail(dto.getEmail());
 		if (user != null) {
 			RcmUserDto data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
@@ -218,6 +222,7 @@ public class AdminServiceImpl {
 				paginationDto.setPageNumber(pageableList.getNumber());
 				paginationDto.setTotalElements(pageableList.getTotalElements());
 				paginationDto.setPageSize(pageableList.getSize());
+				paginationDto.setHasNextElement(pageableList.hasNext());
 				listOfUsers.add(paginationDto);
 				return new GenericResponse(HttpStatus.OK, "", listOfUsers);
 			}
@@ -232,9 +237,9 @@ public class AdminServiceImpl {
 	 * @param logInUser
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse resetUserStatus(JwtUser jwtUser, ResetStatusDto dto) throws Exception {
-		List<String> enables = dto.getEnable();
-		List<String> disables = dto.getDisable();
+	public GenericResponse resetUserStatus(JwtUser jwtUser, RcmUserStatusDto dto) throws Exception {
+		List<String> enables = dto.getUserActiveStatus().stream().filter(x->x.getStatus()==Constants.ENABLE).map(x->x.getUserId()).collect(Collectors.toList());
+		List<String> disables = dto.getUserActiveStatus().stream().filter(x->x.getStatus()==Constants.DISABLE).map(x->x.getUserId()).collect(Collectors.toList());
 		RcmUser logInUser = userRepo.findByEmail(jwtUser.getUsername());
 		String updatedBy = logInUser.getUuid();
 		try {

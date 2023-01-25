@@ -15,4 +15,5 @@ public class RcmUserPaginationDto {
 	private Integer pageSize;
 	private Integer pageNumber;
 	private Long totalElements;
+	private boolean hasNextElement;
 }

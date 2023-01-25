@@ -48,4 +48,22 @@ public class MasterController {
 		return ResponseEntity.ok(roles);
 
 	}
+	
+	@RequestMapping(value = "/rolesByTeamId/{teamId}", method = RequestMethod.GET)
+	public ResponseEntity<?> rolesByTeamId(@PathVariable("teamId")int teamId){
+
+		GenericResponse roles = masterDataService.getRolesByTeamId(teamId);
+
+		return ResponseEntity.ok(roles);
+
+	}
+	
+	@RequestMapping(value = "/defaultRolesByCname/{companyName}", method = RequestMethod.GET)
+	public ResponseEntity<?> defaultRolesByCname(@PathVariable("companyName")String companyName){
+
+		GenericResponse defaultRoles = masterDataService.defaultRolesByCompanyName(companyName);
+
+		return ResponseEntity.ok(defaultRoles);
+
+	}
 }
