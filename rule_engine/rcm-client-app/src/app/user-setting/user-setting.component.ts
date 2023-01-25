@@ -89,6 +89,7 @@ export class UserSettingComponent implements OnInit {
           this.alert.alertMsg = callback.result.message;
           this.allUser=[];
           this.userStatusArray.userActiveStatus=[];
+          this.pageNumber=0;
         } else {
           console.log(callback.result)
         }
