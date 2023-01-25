@@ -13,7 +13,11 @@ export class UserSettingComponent implements OnInit {
   showActionPopup: boolean = false;
   userRole: any;
   userName:any;
-  userStatus:any= {'enable':[],'disable':[]}
+  pageNumber:number = 0;
+  hasNext:boolean=false;
+  userStatusArray:any={'userActiveStatus':[]}
+  alert:any={'showAlertPopup':false,'alertMsg':''}
+
   constructor(private _baseService: BaseService) { }
 
   ngOnInit(): void {
@@ -29,20 +33,23 @@ export class UserSettingComponent implements OnInit {
     this._baseService.findUser({ "email": this.user.email }, (callback: any) => {
       if (callback.result.status == 200 && callback.result.data) {
         this.showActionPopup = true;
-        this.user.uuid = callback.result.data.uuid;
+        this.user = callback.result.data;
+        console.log(this.user)
+        
       } else {
         this.showActionPopup = false;
-        alert(callback.result.message)
+        this.alert.showAlertPopup = true;
+        this.alert.alertMsg = callback.result.message;
       }
     })
-    // console.log(this.user.username)
   }
 
   changePassword() {
-    this._baseService.changePassword({ "uuid": this.user.uuid, "password": this.user.changedPassword }, (callback: any) => {
+    this._baseService.changePassword({ "uuid": this.user.uuid, "password": this.user['changedPassword'] }, (callback: any) => {
       if (callback.result.status == 200) {
         console.log(callback)
-        alert(callback.result.message)
+        this.alert.showAlertPopup = true;
+        this.alert.alertMsg = callback.result.message;
         localStorage.clear();
         window.location.href= "/"
       }
@@ -51,99 +58,78 @@ export class UserSettingComponent implements OnInit {
 
   userAction(event: any) {
     if (event.target.value === 'changePass') {
-      this.user.showChangePassword = true;
+      this.user['showChangePassword'] = true;
     } else if (event.target.value === 'status') {
-      this.user.showStatus = true;
+      this.user['showStatus'] = true;
     }
   }
 
-  findAllUser() {
-    this._baseService.findAllUser((callback: any) => {
-      if (callback.result.status == 200) {
-        this.allUser = callback.result.data;
+  findAllUser(pageNumber:any) {
+    this.hasNext=false;
+    this._baseService.findAllUser(pageNumber,(callback: any) => {
+      if (callback.result.status == 200 && callback.result.data) {
+        if(this.pageNumber== -1){
+          this.allUser = callback.result.data;
+        }
+        if(callback.result.data[0].hasNextElement){
+          this.pageNumber = this.pageNumber+1;
+        }
+        if(callback.result.data[0].data){
+          this.allUser.push.apply(this.allUser,callback.result.data[0].data)
+        }
+        this.hasNext = callback.result.data[0].hasNextElement;
       }
     })
   }
 
-  // updateStatus(uuid: any, status: any) {
-  //   this.allUser.find((e: any) => {
-  //     if (e.uuid === uuid) {
-  //       e.active == 1 ? e.active = 0 : e.active = 1;
-  //       status = e.active
-  //       let params: object = { "uuid": uuid, "status": status }
-  //       this._baseService.updateUserStatus(params, (callback: any) => {
-  //         if (callback.result.status == 200) {
-  //           alert(callback.result.message)
-  //         } else {
-  //           console.log(callback.result)
-  //         }
-  //       })
-  //     }
-  //   })
-  // }
-
-  differentiateStatus(uuid:any){
-    console.time()
-    this.allUser.find((e:any)=>{
-      if(e.uuid === uuid){
-        if(e.active == 0){
-          e.active = 1;
-          if(!this.userStatus.enable.includes(uuid)){
-            if(this.userStatus.disable.includes(uuid)){
-              this.userStatus.disable.find((e:any,index:any)=>{
-                if(e == uuid){
-                  this.userStatus.disable.splice(index,1)
-                }
-              })
-            }
-              this.userStatus.enable.push(uuid)
-          }
-          return ;
-        }
-        else{
-          e.active = 0;
-          if(!this.userStatus.disable.includes(uuid)){
-            if(this.userStatus.enable.includes(uuid)){
-              this.userStatus.enable.find((e:any,index:any)=>{
-                if(e == uuid){
-                  this.userStatus.enable.splice(index,1)
-                }
-              })
-            } 
-              this.userStatus.disable.push(uuid)
-          }
-        }
-        return ;
-      }
-      return;
-    })
-    console.timeEnd();
-    console.log(this.userStatus)
-
-  }
-
-  updateUserStatus(){
-    if (this.userStatus.enable.length != 0 || this.userStatus.disable.length != 0) {
-      this._baseService.updateUserStatus(this.userStatus, (callback: any) => {
+  updateAlUserStatus(){
+      this._baseService.updateUserStatus(this.userStatusArray, (callback: any) => {
         if (callback.result.status == 200) {
-          alert(callback.result.message)
+          this.alert.showAlertPopup = true;
+          this.alert.alertMsg = callback.result.message;
+          this.allUser=[];
+          this.userStatusArray.userActiveStatus=[];
         } else {
           console.log(callback.result)
         }
       })
-    } else { 
-      alert("No Changes detected")
-    }
   }
 
-  updateSingleUserStatus(){
-    this.userStatus.disable.push(this.user.uuid);
-    this._baseService.updateUserStatus(this.userStatus, (callback: any) => {
+  updateSingleUserStatus(status:any){
+    this.userStatusArray.userActiveStatus.push({'userId':this.user.uuid,'status':status})
+    console.log(this.userStatusArray)
+    this._baseService.updateUserStatus(this.userStatusArray, (callback: any) => {
       if (callback.result.status == 200) {
-        alert(callback.result.message)
+        this.userStatusArray.userActiveStatus=[];
+        this.alert.showAlertPopup = true;
+        this.alert.alertMsg = callback.result.message;
+        this.user={};
+        this.showActionPopup=false;
+
       } else {
         console.log(callback.result)
       }
     })
+  }
+
+  changeUserStatus(userId:any,status:any){
+    if (this.userStatusArray.userActiveStatus.length != 0) {
+      let uuidFoundStatus = this.userStatusArray.userActiveStatus.some((el: any) => el.userId === userId ? el.status = status : '');
+      if (!uuidFoundStatus) {
+        let uuidAlreadyExistStatus = this.userStatusArray.userActiveStatus.some((el: any) => el.userId === userId)
+        if (!uuidAlreadyExistStatus) {
+          this.userStatusArray.userActiveStatus.push({ 'userId': userId, 'status': status });
+        }
+      }
+    } else {
+      this.userStatusArray.userActiveStatus.push({ 'userId': userId, 'status': status });
+    }
+  }
+   
+
+  loadMoreData(){
+    if(this.hasNext){
+      this.findAllUser(this.pageNumber)
+    }
   }
 }

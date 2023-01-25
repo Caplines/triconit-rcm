@@ -16,7 +16,7 @@ export class BaseService {
     'registerUser':environment.API_URL+"/register",
     'findUserByUserName':environment.API_URL+"/finduser",
     'changePassword':environment.API_URL+"/resetpassword",
-    'getAllUsers':environment.API_URL+"/getAllUsers/-1",
+    'getAllUsers':environment.API_URL+"/getAllUsers",
     'updateStatus':environment.API_URL+"/resetstatus",
     'forgotPassword':environment.API_URL+"/forgotPassword",
     'getCompany':environment.API_URL+"/getOrganization",
@@ -153,8 +153,8 @@ export class BaseService {
     });
   }
 
-  findAllUser(callback:any){
-    return this.http.get(this.httpUrl['getAllUsers']).pipe(map((data:any)=>{
+  findAllUser(page:any,callback:any){
+    return this.http.get(this.httpUrl['getAllUsers']+`/${page}`).pipe(map((data:any)=>{
 			return data;
 		})).subscribe(
 			(data:any) => { callback({'status':true,'result':data}); 
