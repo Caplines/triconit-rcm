@@ -50,7 +50,7 @@
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="companyId">Company Name</label>
-                                            <select class="form-control"  (change)="getOfficesByCompany($event);selectCompany($event);" [ngClass]="{'is-invalid':userDetails.controls.companyName.invalid && userDetails.controls.companyName.touched}">
+                                            <select class="form-control"  (change)="getOfficesByCompany($event);selectCompany($event);getRolesByCompany($event);" [ngClass]="{'is-invalid':userDetails.controls.companyName.invalid && userDetails.controls.companyName.touched}">
                                                 <option selected="true" hidden="true" >Select Company</option>
                                                 <ng-container *ngFor="let comp of companyData">
                                                     <option value="{{comp.name}}">{{comp.name}}</option>
@@ -72,7 +72,7 @@
                                         <div class="form-group">
                                             <label for="teamId">Team Name</label>
                                         <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
-                                            <select class="form-control" (change)="selectTeamName($event);" [ngClass]="{'is-invalid':userDetails.controls.teamId.invalid && userDetails.controls.teamId.touched,'disabled':teamData.length==0}">
+                                            <select class="form-control" (change)="selectTeamName($event);getRolesByTeam($event);" [ngClass]="{'is-invalid':userDetails.controls.teamId.invalid && userDetails.controls.teamId.touched,'disabled':teamData.length==0}">
                                                 <option selected="true" hidden="true" *ngIf="!showLoader">Select Team</option>
                                                 <option *ngFor="let team of teamData" value="{{team.teamId}}">{{team.teamName}}</option>
                                             </select>

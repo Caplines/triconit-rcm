@@ -30,8 +30,9 @@ export class UserSettingComponent implements OnInit {
   }
 
   findUser() {
-    this._baseService.findUser({ "email": this.user.email }, (callback: any) => {
-      if (callback.result.status == 200 && callback.result.data) {
+    if(this.user.email !== ''){
+      this._baseService.findUser({ "email": this.user.email }, (callback: any) => {
+        if (callback.result.status == 200 && callback.result.data) {
         this.showActionPopup = true;
         this.user = callback.result.data;
         console.log(this.user)
@@ -42,7 +43,11 @@ export class UserSettingComponent implements OnInit {
         this.alert.alertMsg = callback.result.message;
       }
     })
+  }else{
+    this.alert.showAlertPopup = true;
+    this.alert.alertMsg = "Field Cannot Be Empty";
   }
+}
 
   changePassword() {
     this._baseService.changePassword({ "uuid": this.user.uuid, "password": this.user['changedPassword'] }, (callback: any) => {
@@ -66,37 +71,37 @@ export class UserSettingComponent implements OnInit {
         }
     }
 
-  findAllUser(pageNumber:any) {
-    this.hasNext=false;
-    this._baseService.findAllUser(pageNumber,(callback: any) => {
-      if (callback.result.status == 200 && callback.result.data) {
-        if(this.pageNumber== -1){
-          this.allUser = callback.result.data;
-        }
-        if(callback.result.data[0].hasNextElement){
-          this.pageNumber = this.pageNumber+1;
-        }
-        if(callback.result.data[0].data){
-          this.allUser.push.apply(this.allUser,callback.result.data[0].data)
-        }
-        this.hasNext = callback.result.data[0].hasNextElement;
-      }
-    })
-  }
+  // findAllUser(pageNumber:any) {
+  //   this.hasNext=false;
+  //   this._baseService.findAllUser(pageNumber,(callback: any) => {
+  //     if (callback.result.status == 200 && callback.result.data) {
+  //       if(this.pageNumber== -1){
+  //         this.allUser = callback.result.data;
+  //       }
+  //       if(callback.result.data[0].hasNextElement){
+  //         this.pageNumber = this.pageNumber+1;
+  //       }
+  //       if(callback.result.data[0].data){
+  //         this.allUser.push.apply(this.allUser,callback.result.data[0].data)
+  //       }
+  //       this.hasNext = callback.result.data[0].hasNextElement;
+  //     }
+  //   })
+  // }
 
-  updateAlUserStatus(){
-      this._baseService.updateUserStatus(this.userStatusArray, (callback: any) => {
-        if (callback.result.status == 200) {
-          this.alert.showAlertPopup = true;
-          this.alert.alertMsg = callback.result.message;
-          this.allUser=[];
-          this.userStatusArray.userActiveStatus=[];
-          this.pageNumber=0;
-        } else {
-          console.log(callback.result)
-        }
-      })
-  }
+  // updateAlUserStatus(){
+  //     this._baseService.updateUserStatus(this.userStatusArray, (callback: any) => {
+  //       if (callback.result.status == 200) {
+  //         this.alert.showAlertPopup = true;
+  //         this.alert.alertMsg = callback.result.message;
+  //         this.allUser=[];
+  //         this.userStatusArray.userActiveStatus=[];
+  //         this.pageNumber=0;
+  //       } else {
+  //         console.log(callback.result)
+  //       }
+  //     })
+  // }
 
   updateSingleUserStatus(status:any){
     this.userStatusArray.userActiveStatus.push({'userId':this.user.uuid,'status':status})
@@ -130,9 +135,9 @@ export class UserSettingComponent implements OnInit {
   }
    
 
-  loadMoreData(){
-    if(this.hasNext){
-      this.findAllUser(this.pageNumber)
-    }
-  }
+  // loadMoreData(){
+  //   if(this.hasNext){
+  //     this.findAllUser(this.pageNumber)
+  //   }
+  // }
 }

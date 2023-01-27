@@ -58,17 +58,12 @@ export class RegisterNewUserComponent implements OnInit {
     })
     }
   
-  getTeamsData(){
+  getTeamsData(companyName:any){
     this.showLoader=true;
-    let isSmilePoint: boolean = false;
-    if (this.userDetails.value.companyName === "Capline") {
-      isSmilePoint = true;
-    }
-    this._baseService.getTeamsData(isSmilePoint,(callback:any)=>{
-      console.log(callback)
+    this._baseService.getTeamsData(companyName,(callback:any)=>{
       if(callback.status){
         this.showLoader = false;
-        this.teamData = callback.result.data
+        this.teamData = callback.result.data;
       }
     })
   }
@@ -79,18 +74,6 @@ export class RegisterNewUserComponent implements OnInit {
       if(callback.status){
         this.showLoader = false;
         this.officeData = callback.result.data
-      }
-    })
-  }
-
-  getUserRoleData(){
-    let isSmilePoint: boolean = false;
-    if (this.userDetails.value.companyName === "Capline") {
-      isSmilePoint = true;
-    }
-    this._baseService.getUserRoleData(isSmilePoint,(callback:any)=>{
-      if(callback.status){
-        this.userRolesData = callback.result.data
       }
     })
   }
@@ -156,14 +139,35 @@ export class RegisterNewUserComponent implements OnInit {
         if(e.name === event.target.value){
           this._baseService.getOfficeByCompany(e.companyUuid,(callback:any)=>{
               if(callback.status){
+                this.userDetails.controls.officeId.setValue('');
+                this.userDetails.controls.teamId.setValue('');
                 this.officeData = callback.result.data.data;
-                this.getUserRoleData();
-                this.getTeamsData();
+                this.getTeamsData(event.target.value);
                 this.userRoles= [];
               }
           })
         }
       })
+  }
+
+  getRolesByCompany(event:any){
+    this._baseService.getRolesByCompany(event.target.value,(callback:any)=>{
+      if(callback.status){
+        this.userRoles =[];
+        this.userDetails.controls.userRole.setValue('');
+        this.userRolesData = callback.result.data;
+      }
+    })
+  }
+
+  getRolesByTeam(event:any){
+    this._baseService.getRolesByTeam(event.target.value,(callback:any)=>{
+      if(callback.status){
+        this.userRoles = [];
+        this.userDetails.controls.userRole.setValue('');
+        this.userRolesData = callback.result.data;
+      }
+    })
   }
 
 }

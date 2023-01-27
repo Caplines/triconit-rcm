@@ -32,3 +32,10 @@
     font-weight: 500;
     padding-left: 0px;
 }
+
+.alert-info{
+    display: block !important;
+}
+.alert-dismissible .close {
+    top: -5px !important;
+}

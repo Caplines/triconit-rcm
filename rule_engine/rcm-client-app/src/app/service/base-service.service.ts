@@ -11,7 +11,7 @@ export class BaseService {
 
   httpUrl = {
     'getTeams':environment.API_URL+"/master/getteams",
-    'getUserRoles':environment.API_URL+"/master/getroles",
+    // 'getUserRoles':environment.API_URL+"/master/getroles",
     'getOffices':environment.API_URL+"/master/getoffices",
     'registerUser':environment.API_URL+"/register",
     'findUserByUserName':environment.API_URL+"/finduser",
@@ -21,6 +21,8 @@ export class BaseService {
     'forgotPassword':environment.API_URL+"/forgotPassword",
     'getCompany':environment.API_URL+"/getOrganization",
     'officeByCompany':environment.API_URL+"/officeByCompany",
+    'rolesByCompanyName': environment.API_URL+"/master/defaultRolesByCname",
+    'rolesByTeam':  environment.API_URL+"/master/rolesByTeamId"
   }
   token:any;
 
@@ -110,14 +112,6 @@ export class BaseService {
 		});
   }
 
-  getUserRoleData(params:any,callback:any){
-    return this.http.get(this.httpUrl['getUserRoles']+`/${params}`).pipe(map((data:any)=>{
-			return data;
-		})).subscribe(
-			(data:any) => { callback({'status':true,'result':data}); 
-		});
-  }
-
   getOfficeByCompany(params:any,callback:any){
     return this.http.get(this.httpUrl['officeByCompany']+`/${params}`).pipe(map((data:any)=>{
 			return data;
@@ -177,6 +171,22 @@ export class BaseService {
     })).subscribe(
       (data:any) => { callback({'status':true,'result':data}); 
     });
+  }
+
+  getRolesByCompany(companyName:any,callback:any){
+      return this.http.get(this.httpUrl['rolesByCompanyName']+`/${companyName}`).pipe(map((data:any)=>{
+			return data;
+		})).subscribe(
+			(data:any) => { callback({'status':true,'result':data}); 
+		});
+  }
+
+  getRolesByTeam(teamId:any,callback:any){
+      return this.http.get(this.httpUrl['rolesByTeam']+`/${teamId}`).pipe(map((data:any)=>{
+			return data;
+		})).subscribe(
+			(data:any) => { callback({'status':true,'result':data}); 
+		});
   }
 
 }
