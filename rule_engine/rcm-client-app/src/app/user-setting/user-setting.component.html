@@ -1,79 +1,120 @@
-<div>
+<div class="right-container">
     <app-header-component></app-header-component>
-<br><br><br><br>
-<ng-container *ngIf="alert.showAlertPopup">
-    <div class="alert alert-info alert-dismissible fade show my-3 text-center" role="alert">
-        <strong>{{alert.alertMsg}}</strong>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="alert.showAlertPopup=false;">
-            <span aria-hidden="true" >&times;</span>
-        </button>
-    </div>
-</ng-container>
-  <br><br>
-<ng-container *ngIf="userRole != 'ROLE_ADMIN' ">
-    <label for="changePass">Change User Password</label>
-    <input type="password" [(ngModel)]="user.changedPassword">
-    <button type="button" (click)="changePassword()">Change Password</button>
-</ng-container>
-
-<br><br><br>
-
-
-
-<ng-container *ngIf="userRole == 'ROLE_ADMIN' ">
-    <label for="findUser">Find User By Email: </label>
-    <input type="text" [(ngModel)]="user.email">
-    <button type="button" (click)="findUser()">Find</button>
-    <ng-container *ngIf="showActionPopup">
-        <select (change)="userAction($event)">
-            <option selected="true" hidden="true">Action</option>
-            <option value="changePass">Change Password</option>
-            <option value="status" *ngIf="this.user.uuid !== userName">Enable / Disable Status</option>
-        </select>
-    </ng-container>
-
-    <br><br><br>
-
-    <ng-container *ngIf="user.showChangePassword">
-        <label for="changepass">Change Password</label>
-        <input type="text" [(ngModel)]="user['changedPassword']">
-        <button type="button" (click)="changePassword()">Change Password</button>
-    </ng-container>
-
-    <br><br><br>
-
-    <ng-container *ngIf="user.showStatus">
-        <label for="status">Enable Disable Status</label>
-        Enable : <input type="radio" [checked]="user.active == 1" name="status" (change)="updateSingleUserStatus(1)"> 
-        Disabled : <input type="radio" [checked]="user.active == 0" name="status" (change)="updateSingleUserStatus(0)">
-    </ng-container>
-
-    <hr>
-
-    <button type="button" class="btn btn-outline-primary" (click)="findAllUser(0)">Find All User</button>
-    <ng-container *ngIf="allUser.length != 0">
-        <table class="table table-border text-center" id="table">
-            <tr class="thead-dark">  
-            <th>Full Name</th>
-            <th>Status</th>
-        </tr>
-        <ng-container *ngFor="let user of allUser;let idx= index">
-            <tr *ngIf="userName != user.email">
-                <td scope="col">{{user.fullName}}</td>
-                <td scope="col"> &nbsp;&nbsp;&nbsp;
-                     Enable : <input type="radio" [checked]="user.active == 1" name="status_{{idx}}" (change)="changeUserStatus(user.uuid,1)"> 
-                   Disabled : <input type="radio" [checked]="user.active == 0" name="status_{{idx}}" (change)="changeUserStatus(user.uuid,0)">
-                </td>
-            </tr>
-        </ng-container>
-    </table>
-</ng-container>
-    <ng-container *ngIf="allUser.length != 0">
-        <div class="container d-flex justify-content-between">
-            <button type="button" class="btn btn-warning" (click)="updateAlUserStatus()" [disabled]="this.userStatusArray.userActiveStatus.length === 0">Update Status</button>
-            <button type="button" class="btn btn-warning"  (click)="loadMoreData()" [disabled]="!hasNext">Load More Data</button>
+    <ng-container *ngIf="alert.showAlertPopup">
+        <div class="alert alert-info alert-dismissible fade show my-3 text-center" role="alert">
+            <strong>{{alert.alertMsg}}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="alert.showAlertPopup=false;">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
     </ng-container>
 
-</ng-container>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 pt-3">
+                <h2 class="page-heading">User Setting</h2>
+                <div class="main-container">
+                    <div class="form-container detail-box ">
+                        <ng-container *ngIf="userRole != 'ROLE_ADMIN' ">
+                            <label for="changePass">Change User Password</label>
+                            <input type="password" [(ngModel)]="user.changedPassword">
+                            <button type="button" (click)="changePassword()">Change Password</button>
+                        </ng-container>
+
+                        <ng-container *ngIf="userRole == 'ROLE_ADMIN' ">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="findUser">Find User By Email: </label>
+                                        <div class="input-group">
+                                            <input type="text" [(ngModel)]="user.email" class="form-control" placeholder="User By Email" aria-label="User By Email" aria-describedby="basic-addon2">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-secondary" (click)="findUser()" type="button"><img src="../assets/img/search.png" class="search-icon" /> Find</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 find-btn"><button type="button" class="btn btn-secondary" (click)="findAllUser(0)"><img src="../assets/img/user-white.png" class="search-icon" /> Find All User</button></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <ng-container *ngIf="showActionPopup">
+                                            <select (change)="userAction($event)" class="form-control">
+                                                <option selected="true" hidden="true">Action</option>
+                                                <option value="changePass">Change Password</option>
+                                                <option value="status" *ngIf="this.user.uuid !== userName">Enable / Disable Status</option>
+                                            </select>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" *ngIf="user.showChangePassword">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="changepass">Change Password:</label>
+                                        <input type="text" class="form-control" [(ngModel)]="user['changedPassword']">
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 find-btn">
+                                    <button type="button" class="btn btn-success" (click)="changePassword()">Change Password</button>
+                                </div>
+                            </div>
+
+                            <div class="row" *ngIf="user.showStatus">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="status">Enable Disable Status :</label>
+                                        <div>
+                                            <div class="form-check-inline">
+                                                <input type="radio" class="form-check-input"  [checked]="user.active == 1" name="status" (change)="updateSingleUserStatus(1)">
+                                                <label class="form-check-label">Enable </label>
+                                            </div>
+                                            <div class="form-check-inline">
+                                                <input type="radio" [checked]="user.active == 0"  class="form-check-input" name="status" (change)="updateSingleUserStatus(0)">
+                                                <label class="form-check-label">Disabled</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ng-container *ngIf="allUser.length != 0">
+                                <div class="table-heading">All Users:</div>
+                                <div class="table-responsive">
+                                    <table class="table" id="table">
+                                        <tr class="thead-dark">
+                                            <th>Full Name</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        <ng-container *ngFor="let user of allUser;let idx= index">
+                                            <tr *ngIf="userName != user.email">
+                                                <td scope="col">{{user.fullName}}</td>
+                                                <td scope="col">
+                                                    &nbsp;&nbsp;&nbsp;
+                                                    Enable : <input type="radio" [checked]="user.active == 1" name="status_{{idx}}" (change)="changeUserStatus(user.uuid,1)">
+                                                    Disabled : <input type="radio" [checked]="user.active == 0" name="status_{{idx}}" (change)="changeUserStatus(user.uuid,0)">
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </table>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="allUser.length != 0">
+                                <div class="action-buttons text-left">
+                                    <button type="button" class="btn btn-success" (click)="updateAlUserStatus()" [disabled]="this.userStatusArray.userActiveStatus.length === 0">Update Status</button>
+                                    <button type="button" class="btn btn-success" (click)="loadMoreData()" [disabled]="!hasNext">Load More Data</button>
+                                </div>
+                            </ng-container>
+
+                        </ng-container>
+                    </div>
+                </div>
+                </div>
+
+        </div>
+
+    </div>
+
 </div>

@@ -56,13 +56,15 @@ export class UserSettingComponent implements OnInit {
     })
   }
 
-  userAction(event: any) {
-    if (event.target.value === 'changePass') {
-      this.user['showChangePassword'] = true;
-    } else if (event.target.value === 'status') {
-      this.user['showStatus'] = true;
+    userAction(event: any) {
+        if (event.target.value === 'changePass') {
+            this.user['showChangePassword'] = true;
+            this.user['showStatus'] = false;
+        } else if (event.target.value === 'status') {
+            this.user['showStatus'] = true;
+            this.user['showChangePassword'] = false;
+        }
     }
-  }
 
   findAllUser(pageNumber:any) {
     this.hasNext=false;
