@@ -43,7 +43,7 @@
                                             <select (change)="userAction($event)" class="form-control">
                                                 <option selected="true" hidden="true">Action</option>
                                                 <option value="changePass">Change Password</option>
-                                                <option value="status" *ngIf="this.user.uuid !== userName">Enable / Disable Status</option>
+                                                <option value="status" *ngIf="this.user.email !== userName">Enable / Disable Status</option>
                                             </select>
                                         </ng-container>
                                     </div>

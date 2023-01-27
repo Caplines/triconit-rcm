@@ -3,9 +3,9 @@ package com.tricon.rcm.enums;
 public enum RcmCompanyEnum {
 	
 	CAPLINE("Capline", new RcmRoleEnum[] { RcmRoleEnum.ADMIN }),
-	UDG("UDG", new RcmRoleEnum[] { RcmRoleEnum.TL }),
-	MAYERLAND("Meyerland", new RcmRoleEnum[] { RcmRoleEnum.TL }),
-	GRANDPRARIE("Grand Prarie", new RcmRoleEnum[] { RcmRoleEnum.TL });
+	UDG("UDG", new RcmRoleEnum[] {}),
+	MAYERLAND("Meyerland", new RcmRoleEnum[] {}),
+	GRANDPRARIE("Grand Prarie", new RcmRoleEnum[] {});
 	
 	final private String name;
 	final private RcmRoleEnum[] defaultRoles;

@@ -109,14 +109,20 @@ public class AdminServiceImpl {
 		RcmUserRolePk pk = null;
 		RcmUser user = null;
 		UserAssignOffice userAssignOffice = null;
-			user = userRepo.findByEmail(dto.getEmail());
-			if (user == null) {
-				RcmOffice office = officeRepo.findByUuid(dto.getOfficeId());
-				RcmCompany company = rcmCompanyRepo.findByName(dto.getCompanyName());
-				RcmTeam team = teamRepo.findById(dto.getTeamId());
-				user = convertDtotoModel(dto);		
-				user.setOffice(office);
+		user = userRepo.findByEmail(dto.getEmail());
+		if (user == null) {
+			RcmOffice office = officeRepo.findByUuid(dto.getOfficeId());
+			RcmCompany company = rcmCompanyRepo.findByName(dto.getCompanyName());
+			RcmTeam team = teamRepo.findById(dto.getTeamId());
+			user = convertDtotoModel(dto);
+			user.setOffice(office);
+			if (team == null) {
+				team = new RcmTeam();
+				team.setId(RcmTeamEnum.ADMIN.getId());  //set default teamId=2 when role is only admin
 				user.setTeam(team);
+			}else {
+				user.setTeam(team);
+			}
 				user.setCompany(company);
 				user = userRepo.save(user);
 				for (String role : dto.getUserRole()) {
@@ -189,7 +195,7 @@ public class AdminServiceImpl {
 	 */
 	public GenericResponse findUserByEmail(FindUserDto dto) throws Exception {
 		RcmUser user = userRepo.findByEmail(dto.getEmail());
-		if (user != null) {
+		if (user != null && !user.getEmail().equals(Constants.SYSTEM_USER_EMAIL)) {
 			RcmUserDto data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
