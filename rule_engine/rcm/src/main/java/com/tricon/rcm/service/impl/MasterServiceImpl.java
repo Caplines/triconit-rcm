@@ -2,6 +2,7 @@ package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
 import com.tricon.rcm.util.Constants;
+import com.tricon.rcm.util.MessageConstants;
 
 @Service
 public class MasterServiceImpl {
@@ -51,39 +53,44 @@ public class MasterServiceImpl {
 	 * Fetch all RcmTeams data
 	 * @return List of RcmTeam
 	 */
-	public GenericResponse getTeams(boolean isSmilePoint) {
-		List<RcmTeamDto>teams=new ArrayList<>();
-		RcmTeamDto team=null;
-		if (isSmilePoint) {
-			for (RcmTeamEnum t : RcmTeamEnum.values()) {
-				team = new RcmTeamDto();
-				if (t.isSmilepoint() && t.isRoleVisible()) {
-					team.setTeamName(t.getDescription());
-					team.setTeamId(t.getId());
-					teams.add(team);
+	public GenericResponse getTeams(String companyName) {
+		List<RcmTeamDto> teams = new ArrayList<>();
+		RcmTeamDto team = null;
+		if (Stream.of(RcmCompanyEnum.values()).anyMatch(x -> x.getName().equals(companyName))) {
+			if (RcmCompanyEnum.CAPLINE.getName().equals(companyName)) {
+				for (RcmTeamEnum t : RcmTeamEnum.values()) {
+					team = new RcmTeamDto();
+					if (t.isSmilepoint() && t.isRoleVisible()) {
+						team.setTeamName(t.getDescription());
+						team.setTeamId(t.getId());
+						teams.add(team);
+					}
+				}
+			} else {
+				for (RcmTeamEnum t : RcmTeamEnum.values()) {
+					team = new RcmTeamDto();
+					if (!t.isSmilepoint() && t.isRoleVisible()) {
+						team.setTeamName(t.getDescription());
+						team.setTeamId(t.getId());
+						teams.add(team);
+					}
 				}
 			}
+			return new GenericResponse(HttpStatus.OK, "", teams);
 		} else {
-			for (RcmTeamEnum t : RcmTeamEnum.values()) {
-				team = new RcmTeamDto();
-				if (!t.isSmilepoint() && t.isRoleVisible()) {
-					team.setTeamName(t.getDescription());
-					team.setTeamId(t.getId());
-					teams.add(team);
-				}
-			}
+			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
 		}
-		return new GenericResponse(HttpStatus.OK, "", teams);
 	}
 
 	/**
 	 * Get user roles from RcmRoleEnum
 	 * @return List of RcmRoles
 	 */
-	public GenericResponse getRoles(boolean isSmilePoint){
+	public GenericResponse getRoles(String companyName){
 		List<RcmRoleDto>roles=new ArrayList<>();
 		RcmRoleDto role=null;
-		if (isSmilePoint) {
+		if (Stream.of(RcmCompanyEnum.values()).anyMatch(x -> x.getName().equals(companyName))) {
+		if (RcmCompanyEnum.CAPLINE.getName().equals(companyName)) {
 			for (RcmRoleEnum r : RcmRoleEnum.values()) {
 				role=new RcmRoleDto();
 				if(r.isRoleVisibilityForSmilepoint()) {
@@ -104,8 +111,10 @@ public class MasterServiceImpl {
 					roles.add(role);
 				}
 			}
-		}
+		  }
 		return new GenericResponse(HttpStatus.OK, "",roles);
+		}
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
 	}
 
 	/**

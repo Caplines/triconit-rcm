@@ -32,18 +32,18 @@ public class MasterController {
 
 	}
 
-	@RequestMapping(value = "/getteams/{isSmilePoint}", method = RequestMethod.GET)
-	public ResponseEntity<?> getTeams(@PathVariable("isSmilePoint")boolean isSmilePoint){
+	@RequestMapping(value = "/getteams/{companyName}", method = RequestMethod.GET)
+	public ResponseEntity<?> getTeams(@PathVariable("companyName")String companyName){
 
-		GenericResponse teams = masterDataService.getTeams(isSmilePoint);
+		GenericResponse teams = masterDataService.getTeams(companyName);
 		return ResponseEntity.ok(teams);
 
 	}
 
-	@RequestMapping(value = "/getroles/{isSmilePoint}", method = RequestMethod.GET)
-	public ResponseEntity<?> getRoles(@PathVariable("isSmilePoint")boolean isSmilePoint){
+	@RequestMapping(value = "/getroles/{companyName}", method = RequestMethod.GET)
+	public ResponseEntity<?> getRoles(@PathVariable("companyName")String companyName){
 
-		GenericResponse roles = masterDataService.getRoles(isSmilePoint);
+		GenericResponse roles = masterDataService.getRoles(companyName);
 
 		return ResponseEntity.ok(roles);
 

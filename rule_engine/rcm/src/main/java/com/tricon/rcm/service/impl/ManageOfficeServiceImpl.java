@@ -17,7 +17,6 @@ import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.AssignOfficesToBillingUserDto;
 import com.tricon.rcm.dto.AssignUserOfficeDto;
 import com.tricon.rcm.dto.GenericResponse;
-import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.util.Constants;
@@ -60,7 +59,7 @@ public class ManageOfficeServiceImpl {
 
 			Set<String> getDuplicateOffices = new HashSet<>(listOfOfficeId);
 			if (getDuplicateOffices.size() != listOfOfficeId.size()) {
-				return new GenericResponse(HttpStatus.OK, MessageConstants.DUPLICATE_OFFICE, null);
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.DUPLICATE_OFFICE, null);
 			}
 
 			for (AssignUserOfficeDto userAndOfficeId : userOfficeData) {
@@ -99,6 +98,6 @@ public class ManageOfficeServiceImpl {
 			}
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 		}
-		return new GenericResponse(HttpStatus.OK, "", null);
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
 	}
 }

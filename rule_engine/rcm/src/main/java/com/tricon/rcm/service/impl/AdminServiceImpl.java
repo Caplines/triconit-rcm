@@ -227,7 +227,7 @@ public class AdminServiceImpl {
 				return new GenericResponse(HttpStatus.OK, "", listOfUsers);
 			}
 		}
-		return new GenericResponse(HttpStatus.OK, "", null);
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
 	}
 
 	/**
