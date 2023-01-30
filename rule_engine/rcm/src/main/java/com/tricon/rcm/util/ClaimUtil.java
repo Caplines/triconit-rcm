@@ -142,7 +142,7 @@ public class ClaimUtil {
 		assignment.setCreatedBy(assigneByUser);
 		assignment.setCurrentTeamId(assigneToUser.getTeam());
 		assignment.setRcmClaimStatus(rcmClaimStatusType);
-		
+		assignment.setActive(true);
 		return assignment;
 	}
 }
