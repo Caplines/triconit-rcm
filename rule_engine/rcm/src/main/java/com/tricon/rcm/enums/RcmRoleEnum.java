@@ -3,8 +3,8 @@ package com.tricon.rcm.enums;
 
 public enum RcmRoleEnum {
 
-	TL("TL", "TeamLead", true,true,true), ASSO("ASSO", "Associate", true,false,true), SYSTEM("SYSTEM", "System", false,false,false),
-	ADMIN("ADMIN", "Admin",true,false,false);
+	TL("TL", "TeamLead", true,false,true), ASSO("ASSO", "Associate", true,false,true), SYSTEM("SYSTEM", "System", false,false,false),
+	ADMIN("ADMIN", "Admin",true,false,false),CLIENT_MANAGER("CLIENT_MANAGER", "Client Manager",false,true,true);
 
 	final private String name;
 	final private String fullName;

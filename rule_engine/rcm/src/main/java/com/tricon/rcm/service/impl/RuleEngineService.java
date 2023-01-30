@@ -11,6 +11,7 @@ import com.tricon.rcm.dto.RcmInsuranceDatas;
 import com.tricon.rcm.dto.RcmInsuranceMainRootDto;
 import com.tricon.rcm.dto.RcmRemoteLiteMainRootDto;
 import com.tricon.rcm.dto.RcmRemoteLiteSiteDetailsDto;
+import com.tricon.rcm.dto.RcmRemoteStatusCountDto;
 import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.dto.RemoteLiteDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
@@ -21,12 +22,15 @@ import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLogRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
+import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmEagleSoftDBDetailsRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
+import com.tricon.rcm.jpa.repository.RcmIssueClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmRemoteLiteRepo;
+import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.ConnectAndReadSheets;
@@ -36,18 +40,23 @@ import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimLog;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
+import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsurance;
+import com.tricon.rcm.db.entity.RcmInsuranceType;
+import com.tricon.rcm.db.entity.RcmIssueClaims;
 import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmRemoteStatusCount;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RcmClaimDataDto;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -108,6 +117,9 @@ public class RuleEngineService {
 	RcmClaimRepository rcmClaimRepository;
 
 	@Autowired
+	UserAssignOfficeRepo userAssignOfficeRepo;
+
+	@Autowired
 	RcmTeamRepo rcmTeamRepo;
 
 	@Autowired
@@ -115,13 +127,19 @@ public class RuleEngineService {
 
 	@Autowired
 	CommonClaimServiceImpl commonClaimServiceImpl;
-	
+
 	@Autowired
 	RcmClaimLogRepo rcmClaimLogRepo;
-	
+
 	@Autowired
 	RcmClaimAssignmentRepo rcmClaimAssignmentRepo;
 
+	@Autowired
+	RcmCompanyRepo compRepo;
+	
+	@Autowired
+	RcmIssueClaimsRepo rcmIssueClaimsRepo;
+	
 	HttpHeaders headers = null;
 
 	@PostConstruct
@@ -145,26 +163,26 @@ public class RuleEngineService {
 	 * @param user
 	 * @return
 	 */
-	public int pullAndSaveClaimFromRE(ClaimSourceDto dto, RcmUser user) {
+	public String pullAndSaveClaimFromRE(ClaimSourceDto dto, RcmUser user) {
 
-		String success = Constants.ClAIM_PULLED_SUCCESS;
-		int logId=-1;
+		String success = "";
+		int logId = -1;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			user = userRepo.findByEmail(authentication.getName());
 		}
-		logger.info(" In pullClaimFromRE");
+		logger.info(" In pullClaimFrom RE");
 		RcmClaimMainRootDto mainRoot = null;
 		RcmOffice off = officeRepo.findByUuid(dto.getOfficeuuid());
-		RcmUser assingedOfficeUser =null;//Once Api is Done implement it.
-		RcmClaimAssignment rcmAssigment=null;
+		// RcmUser assingedOfficeUser =null;//Once Api is Done implement it.
+		RcmClaimAssignment rcmAssigment = null;
 		int newClaimCt = 0;
 		int newClaimPCt = 0;
 		int newClaimSCt = 0;
-		int logStatus=0;
+		int logStatus = 0;
 		try {
-			List<RcmTeam> team = rcmTeamRepo.findAll();
-			RcmClaimStatusType systemStatus = rcmClaimStatusTypeRepo.findByStatus(Constants.billingClaim);
+			List<RcmTeam> allTeams = rcmTeamRepo.findAll();
+			RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(Constants.billingClaim);
 			dto.setPassword(eagleSoftDBDetailsRepo.findByOffice(off).getPassword());
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			String param = "?password=" + dto.getPassword();
@@ -172,117 +190,247 @@ public class RuleEngineService {
 				param = param + "&office=" + dto.getOfficeuuid();
 
 			// Call Rule Engine API..
-			
+
 			ResponseEntity<String> diagnostic = restTemplate.exchange(ev.getProperty("rcm.diagnosticurl") + param,
 					HttpMethod.GET, entity, String.class);
-			
-			if (diagnostic.getBody()!=null) {
-				String diag= diagnostic.getBody();
+
+			if (diagnostic.getBody() != null) {
+				String diag = diagnostic.getBody();
 				if (diag.equals(Constants.socketworkingFine)) {
-					logStatus=1;
+					logStatus = 1;
 					ResponseEntity<RcmClaimMainRootDto> result = restTemplate.exchange(
-							ev.getProperty("rmc.pullclaimurl") + param, HttpMethod.GET, entity, RcmClaimMainRootDto.class);
+							ev.getProperty("rmc.pullclaimurl") + param, HttpMethod.GET, entity,
+							RcmClaimMainRootDto.class);
 
 					mainRoot = result.getBody();
 					RcmClaims claim = null;
 					for (RcmClaimDataDto datas : mainRoot.getData().getDatas()) {
-						//String officeUuid = datas.getOfficeName();
+						// String officeUuid = datas.getOfficeName();
 						// RcmOffice off = officeRepo.findByUuid(officeUuid);
 						try {
 							for (ClaimsFromRuleEngine re : datas.getData()) {
-		                        System.out.println(re.getClaimId()+"--<ID");
-		                        List<String> allCl=Arrays.asList(re.getClaimId()+ClaimTypeEnum.P.getSuffix(),re.getClaimId()+ClaimTypeEnum.S.getSuffix());
-		    					List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
-								
-								if (claims == null || claims.size()==0) {
-									//Fresh Claims
-									newClaimCt++;
-									newClaimPCt++;
-									claim = new RcmClaims();
-									claim = ClaimUtil.createClaimFromESData(claim, off, re,
-											filterTeamByNameId(team, RcmTeamEnum.SYSYEM.toString()), user,
-											insuranceRepo.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off),
-											insuranceRepo.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off),
-											systemStatus,ClaimTypeEnum.P.getSuffix());
-									rcmClaimRepository.save(claim);
-									///createAssginmentData
-									rcmAssigment = new RcmClaimAssignment();
-									
-									rcmClaimAssignmentRepo.save(rcmAssigment);
-									if (re.getSecStatus().equalsIgnoreCase(Constants.secondaryClaimTypeES)) {
-									newClaimCt++;	
-									newClaimSCt++;
-									claim = new RcmClaims();
-									claim = ClaimUtil.createClaimFromESData(claim, off, re,
-											filterTeamByNameId(team, RcmTeamEnum.SYSYEM.toString()), user,
-											insuranceRepo.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off),
-											insuranceRepo.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off),
-											systemStatus,ClaimTypeEnum.S.getSuffix());
-									rcmClaimRepository.save(claim);
-									}
-								}else {
-									//OLD Claims Exists
-									boolean secondaryPresent=false;
-									boolean primaryPresent=false;
-									for(RcmClaims oldClaims:claims) {
-										
-										if (oldClaims.getClaimId().equalsIgnoreCase(re.getClaimId()+ClaimTypeEnum.P.getSuffix())) {
-											primaryPresent=true;
-										}
-										if (oldClaims.getClaimId().equalsIgnoreCase(re.getClaimId()+ClaimTypeEnum.S.getSuffix())) {
-											secondaryPresent=true;
-										}
-									}
-									
-									if (!primaryPresent) {
+								try {
+									System.out.println(re.getClaimId() + "--<ID");
+									List<String> allCl = Arrays.asList(re.getClaimId() + ClaimTypeEnum.P.getSuffix(),
+											re.getClaimId() + ClaimTypeEnum.S.getSuffix());
+									List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
+									UserAssignOffice assignedUser = userAssignOfficeRepo
+											.findByOfficeUuidAndTeamId(off.getUuid(), RcmTeamEnum.BILLING.getId());
+
+									RcmInsuranceType rcmInsuranceType = null;
+									if (claims == null || claims.size() == 0) {
+										List<String> buildError=null;
+										// Fresh Claims
 										newClaimCt++;
 										newClaimPCt++;
 										claim = new RcmClaims();
+										System.out.println(re.getPrimInsuranceCompanyId());
+										RcmInsurance primaryIns = insuranceRepo
+												.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off);
+										if (primaryIns==null) {
+										    saveRcmIssueClaim(re, buildError, off,user,
+										    "Primary Insurance Missing for id:"+re.getPrimInsuranceCompanyId());
+										    continue;
+										}
+										if (primaryIns.getInsuranceType()==null) {
+										    saveRcmIssueClaim(re, buildError, off,user,
+										    "Primary Insurance Type Missing for id:"+re.getPrimInsuranceCompanyId()+" and Name: "+primaryIns.getName());
+										    continue;
+										}
+										int insuranceId = primaryIns.getInsuranceType().getId();
+										rcmInsuranceType = rcmInsuranceTypeRepo.findById(insuranceId);
 										claim = ClaimUtil.createClaimFromESData(claim, off, re,
-												filterTeamByNameId(team, RcmTeamEnum.SYSYEM.toString()), null,
-												insuranceRepo.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off),
-												insuranceRepo.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off),
-												systemStatus,ClaimTypeEnum.P.getSuffix());
-										rcmClaimRepository.save(claim);
-										
+												filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user,
+												primaryIns,
+												insuranceRepo.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(),
+														off),
+												systemStatusBilling, ClaimTypeEnum.P.getSuffix(), rcmInsuranceType);
+										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
+										RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOffice(re.getClaimId(), off);
+									    if (isC!=null){
+											isC.setResolved(true);
+											rcmIssueClaimsRepo.save(isC);
+										}
+										/// createAssginmentData
+										if (assignedUser != null) {
+											rcmAssigment = new RcmClaimAssignment();
+											//
+											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+													assignedUser.getUser(), claimUUid, claim,
+													Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling);
+
+											rcmClaimAssignmentRepo.save(rcmAssigment);
+										}
+										if (re.getSecStatus().equalsIgnoreCase(Constants.secondaryClaimTypeES)) {
+											newClaimCt++;
+											newClaimSCt++;
+											claim = new RcmClaims();
+											RcmInsurance secondarySec = insuranceRepo
+													.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off);
+											
+											if (secondarySec==null && !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA)) {
+											    saveRcmIssueClaim(re, buildError, off,user,
+											    "Secondary Insurance Missing for id:"+re.getSecInsuranceCompanyId());
+											    continue;
+											}
+											if (secondarySec.getInsuranceType()==null && !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA)) {
+											    saveRcmIssueClaim(re, buildError, off,user,
+											    "Secondary Insurance Type Missing for id:"+re.getSecInsuranceCompanyId()+" and Name: "+secondarySec.getName());
+											    continue;
+											}
+											insuranceId = secondarySec.getInsuranceType().getId();
+											rcmInsuranceType = rcmInsuranceTypeRepo.findById(insuranceId);
+											claim = ClaimUtil.createClaimFromESData(claim, off, re,
+													filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user,
+													insuranceRepo.findByInsuranceIdAndOffice(
+															re.getPrimInsuranceCompanyId(), off),
+													secondarySec, systemStatusBilling, ClaimTypeEnum.S.getSuffix(),
+													rcmInsuranceType);
+											claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
+											if (assignedUser != null) {
+												rcmAssigment = new RcmClaimAssignment();
+												rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+														assignedUser.getUser(), claimUUid, claim,
+														Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling);
+												rcmClaimAssignmentRepo.save(rcmAssigment);
+											}
+										}
+										if (isC!=null){
+											isC.setResolved(true);
+											rcmIssueClaimsRepo.save(isC);
+										}
+									} else {
+										// OLD Claims Exists
+										boolean secondaryPresent = false;
+										boolean primaryPresent = false;
+										List<String> buildError=null;
+										for (RcmClaims oldClaims : claims) {
+
+											if (oldClaims.getClaimId()
+													.equalsIgnoreCase(re.getClaimId() + ClaimTypeEnum.P.getSuffix())) {
+												primaryPresent = true;
+											}
+											if (oldClaims.getClaimId()
+													.equalsIgnoreCase(re.getClaimId() + ClaimTypeEnum.S.getSuffix())) {
+												secondaryPresent = true;
+											}
+										}
+
+										if (!primaryPresent) {
+											newClaimCt++;
+											newClaimPCt++;
+											claim = new RcmClaims();
+											RcmInsurance primarySec = insuranceRepo
+													.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off);
+											if (primarySec==null) {
+											    saveRcmIssueClaim(re, buildError, off,user,
+											    "Primary Insurance Missing for id:"+re.getPrimInsuranceCompanyId());
+											    continue;
+											}
+											
+											if (primarySec.getInsuranceType()==null) {
+											    saveRcmIssueClaim(re, buildError, off,user,
+											    "Primary Insurance Type Missing for id:"+re.getPrimInsuranceCompanyId()+" and Name: "+primarySec.getName());
+											    continue;
+											}
+											
+											int insuranceId = primarySec.getInsuranceType().getId();
+											rcmInsuranceType = rcmInsuranceTypeRepo.findById(insuranceId);
+											claim = ClaimUtil.createClaimFromESData(claim, off, re,
+													filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user,
+													insuranceRepo.findByInsuranceIdAndOffice(
+															re.getPrimInsuranceCompanyId(), off),
+													insuranceRepo.findByInsuranceIdAndOffice(
+															re.getSecInsuranceCompanyId(), off),
+													systemStatusBilling, ClaimTypeEnum.P.getSuffix(), rcmInsuranceType);
+											String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
+											RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOffice(re.getClaimId(), off);
+										    if (isC!=null){
+												isC.setResolved(true);
+												rcmIssueClaimsRepo.save(isC);
+											}
+											if (assignedUser != null) {
+												rcmAssigment = new RcmClaimAssignment();
+												rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+														assignedUser.getUser(), claimUUid, claim,
+														Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling);
+												rcmClaimAssignmentRepo.save(rcmAssigment);
+											}
+										}
+										if (!secondaryPresent) {
+											newClaimCt++;
+											newClaimSCt++;
+											claim = new RcmClaims();
+											RcmInsurance secondarySec = insuranceRepo
+													.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off);
+											if (secondarySec==null && !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA)) {
+											    saveRcmIssueClaim(re, buildError, off,user,
+											    "Secondary Insurance Missing for id:"+re.getSecInsuranceCompanyId());
+											    continue;
+											}
+											
+											if (secondarySec.getInsuranceType()==null && !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA)) {
+											    saveRcmIssueClaim(re, buildError, off,user,
+											    "Secondary Insurance Type Missing for id:"+re.getSecInsuranceCompanyId()+" and Name: "+secondarySec.getName());
+											    continue;
+											}
+											int insuranceId = secondarySec.getInsuranceType().getId();
+											rcmInsuranceType = rcmInsuranceTypeRepo.findById(insuranceId);
+											claim = ClaimUtil.createClaimFromESData(claim, off, re,
+													filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user,
+													insuranceRepo.findByInsuranceIdAndOffice(
+															re.getPrimInsuranceCompanyId(), off),
+													insuranceRepo.findByInsuranceIdAndOffice(
+															re.getSecInsuranceCompanyId(), off),
+													systemStatusBilling, ClaimTypeEnum.S.getSuffix(), rcmInsuranceType);
+											String claimUUid = rcmClaimRepository.save(claim).getClaimId();
+											RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOffice(re.getClaimId(), off);
+										    if (isC!=null){
+												isC.setResolved(true);
+												rcmIssueClaimsRepo.save(isC);
+											}
+											if (assignedUser != null) {
+												rcmAssigment = new RcmClaimAssignment();
+												rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+														assignedUser.getUser(), claimUUid, claim,
+														Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling);
+												rcmClaimAssignmentRepo.save(rcmAssigment);
+											}
+										}
+
 									}
-									if (!secondaryPresent) {
-										newClaimCt++;
-										newClaimSCt++;
-										claim = new RcmClaims();
-										claim = ClaimUtil.createClaimFromESData(claim, off, re,
-												filterTeamByNameId(team, RcmTeamEnum.SYSYEM.toString()), null,
-												insuranceRepo.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off),
-												insuranceRepo.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off),
-												systemStatus,ClaimTypeEnum.S.getSuffix());
-										rcmClaimRepository.save(claim);
-									}
-						
-								
+
+								} catch (Exception clai) {
+									// success = n1.getMessage();
+									clai.printStackTrace();
+									success = success + "," + re.getClaimId();
+									logger.error(clai.getMessage());
 								}
-								
 							}
 
 						} catch (Exception n1) {
-							success = n1.getMessage();
+							// success = n1.getMessage();
 							n1.printStackTrace();
+							logger.error(n1.getMessage());
 						}
 
 					}
 				}
-			}	
-			//assign Claims left..
+			}
+
+			if (success.equals(""))
+				success = Constants.ClAIM_PULLED_SUCCESS;
 			RcmClaimLog log = new RcmClaimLog();
-			logId =commonClaimServiceImpl.saveClaimLog(log, user, off, ClaimSourceEnum.EAGLESOFT.toString(), logStatus, newClaimCt,
-					newClaimPCt,newClaimSCt);
-			
+			logId = commonClaimServiceImpl.saveClaimLog(log, user, off, ClaimSourceEnum.EAGLESOFT.toString(), logStatus,
+					newClaimCt, newClaimPCt, newClaimSCt, success);
+
 		} catch (Exception n) {
 			logger.error("Error in " + dto.getOfficeuuid());
 			logger.error(n.getMessage());
-			success = n.getMessage();
+			// success = n.getMessage();
 			n.printStackTrace();
 		}
-		return logId;
+		return success + "___" + logId;
 	}
 
 	/**
@@ -295,7 +443,8 @@ public class RuleEngineService {
 	public boolean pullAndSaveInsuranceFromRE(ClaimSourceDto dto, RcmUser user) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		List<InsuranceNameTypeDto> insuranceTypeDto = pullInsuranceMappingFromSheet();
+		List<InsuranceNameTypeDto> insuranceTypeDto = pullInsuranceMappingFromSheet(
+				compRepo.findByUuid(dto.getCompanyuuid()));
 		if (authentication != null) {
 			user = userRepo.findByEmail(authentication.getName());
 		}
@@ -378,20 +527,23 @@ public class RuleEngineService {
 	 * @param user
 	 * @return
 	 */
-	public HashMap<String, RemoteLiteDataDto> pullAndSaveRemoteLiteData(ClaimSourceDto dto, RcmUser user,int rcmClaimLogId) {
+	public RcmRemoteStatusCountDto pullAndSaveRemoteLiteData(ClaimSourceDto dto, RcmUser user, int rcmClaimLogId) {
 
 		logger.info(" In pullRemoteLiteDate");
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			user = userRepo.findByEmail(authentication.getName());
 		}
-		RcmClaimLog log=null;
-		try {
-		log=rcmClaimLogRepo.findById(Integer.valueOf(rcmClaimLogId)).get();
-		}catch(Exception n) {
-			logger.info("RcmClaimLog nort found for id -"+rcmClaimLogId);
+		RcmClaimLog log = null;
+		RcmRemoteStatusCount ct = new RcmRemoteStatusCount();
+		RcmRemoteStatusCountDto ctDto = new RcmRemoteStatusCountDto();
+		if (rcmClaimLogId != -1) {
+			try {
+				log = rcmClaimLogRepo.findById(Integer.valueOf(rcmClaimLogId)).get();
+			} catch (Exception n) {
+				logger.info("RcmClaimLog not found for id -" + rcmClaimLogId);
+			}
 		}
-		
 		HashMap<String, RemoteLiteDataDto> map = new HashMap<>();
 		try {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
@@ -415,8 +567,9 @@ public class RuleEngineService {
 					map.put(dto1.getOfficeId(), dataDtao);
 
 					RcmOffice office = officeRepo.findByUuid(dto1.getOfficeId());
-					RcmRemoteStatusCount ct = new RcmRemoteStatusCount();
+
 					BeanUtils.copyProperties(dataDtao.getStatusCount(), ct);
+					BeanUtils.copyProperties(dataDtao.getStatusCount(), ctDto);
 					// ct.setCreatedDate(new Date());
 					ct.setOffice(office);
 					ct.setCreatedBy(user);
@@ -434,7 +587,31 @@ public class RuleEngineService {
 			logger.error(n.getMessage());
 		}
 
-		return map;
+		return ctDto;
+	}
+	
+	
+	private void saveRcmIssueClaim(ClaimsFromRuleEngine re,List<String> buildError,RcmOffice off,
+			RcmUser user,String error) {
+		
+		RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOffice(re.getClaimId(), off);
+	      if (buildError==null) buildError=new ArrayList<>();
+		    buildError.add(error);
+		    if (isC==null){
+		    	isC = new RcmIssueClaims();
+		    	isC.setClaimId(re.getClaimId());
+		    	isC.setOffice(off);
+		    	isC.setResolved(false);
+		    	isC.setIssue(String.join(",", buildError));
+		    	isC.setCreatedBy(user);
+		    	rcmIssueClaimsRepo.save(isC);
+		    }
+		    else {
+		    	isC.setIssue(String.join(",", buildError));
+		    	isC.setResolved(false);
+		    	isC.setUpdatedBy(user);
+		    	rcmIssueClaimsRepo.save(isC);
+		    }
 	}
 
 	/**
@@ -442,10 +619,10 @@ public class RuleEngineService {
 	 * 
 	 * @return
 	 */
-	private List<InsuranceNameTypeDto> pullInsuranceMappingFromSheet() {
+	private List<InsuranceNameTypeDto> pullInsuranceMappingFromSheet(RcmCompany company) {
 
 		logger.info(" In pullInsuranceMappingFromSheet");
-		RcmMappingTable table = rcmMappingTableRepo.findByName(Constants.RCM_MAPPING_INSURANCE);
+		RcmMappingTable table = rcmMappingTableRepo.findByNameAndCompany(Constants.RCM_MAPPING_INSURANCE, company);
 		List<InsuranceNameTypeDto> li = null;
 		try {
 			li = ConnectAndReadSheets.readInsuranceMappingSheet(table.getGoogleSheetId(), table.getGoogleSheetSubName(),

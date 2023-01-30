@@ -22,7 +22,10 @@ export class BaseService {
     'getCompany':environment.API_URL+"/getOrganization",
     'officeByCompany':environment.API_URL+"/officeByCompany",
     'rolesByCompanyName': environment.API_URL+"/master/defaultRolesByCname",
-    'rolesByTeam':  environment.API_URL+"/master/rolesByTeamId"
+    'rolesByTeam':  environment.API_URL+"/master/rolesByTeamId",
+    'fetchclaims':"/api/fetch-claims",
+    'freshclaimlogs':"/api/fetch-fresh-claims-logs",
+    'fetchclaimsFromSource':"/api/fetch-claims-from-source"
   }
   token:any;
 

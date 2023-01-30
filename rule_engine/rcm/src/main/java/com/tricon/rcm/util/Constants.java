@@ -20,13 +20,20 @@ public class Constants {
 	public static final String billingClaim="Billing";
 	public static final String reBillingClaim="Re-billing";
 	
+	public static final String insuranceTypePrimary="Primary";
+	public static final String insuranceTypeSecondary="Secondary";
+	
+	
 	public static final String secondaryClaimTypeES="U";
 	
 	public static final String ClAIM_PULLED_SUCCESS="ClAIM PULLED SUCCESS";
 	
+	public static final String SYSTEM_INITIAL_COMMENT="Please Work o New Claim";
+	
 	//Taken From Rule Engine
     public static String socketworkingFine="Connection to office working fine. Agent is running successfully.";
 	public static String socketnotworkingFine="Connection to office is <b style=\"color:red\" class=\"error-message-api\">not</b> working propertly. Make sure Agent is running / router is configured properly.";
+	public static String NO_DATA="-NO-DATA-";
 	//Taken From Rule Engine - END
 	
 	public static final String ROLE_PREFIX="ROLE_";

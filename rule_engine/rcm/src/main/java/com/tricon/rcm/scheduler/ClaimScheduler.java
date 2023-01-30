@@ -17,6 +17,7 @@ import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
+import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
 import com.tricon.rcm.util.Constants;
@@ -32,6 +33,8 @@ public class ClaimScheduler {
 	@Autowired
 	RCMUserRepository userRepo;
 	
+	@Autowired
+	RcmCompanyRepo compRepo;
 	
 	@Autowired
 	RcmCommonServiceImpl commonsService;
@@ -42,16 +45,17 @@ public class ClaimScheduler {
 
 		logger.info("ClaimScheduler Run at :-" + new Date());
 		RcmUser user= userRepo.findByEmail(Constants.SYSTEM_USER_EMAIL);
-		ClaimSourceDto dto = new ClaimSourceDto();
 		
+		ClaimSourceDto dto = new ClaimSourceDto();
+		dto.setCompanyuuid(compRepo.findByName(Constants.COMPANY_NAME).getUuid());
 		for(RcmOfficeDto officeDto: commonsService.getAllOffices()) {
 			logger.info("ClaimScheduler For  " + officeDto.getName());
 			dto.setOfficeuuid(officeDto.getUuid());
 			dto.setSource(ClaimSourceEnum.EAGLESOFT.toString());
 			
 			ruleEngineService.pullAndSaveInsuranceFromRE(dto,user);
-			int logId =ruleEngineService.pullAndSaveClaimFromRE(dto,user);
-			ruleEngineService.pullAndSaveRemoteLiteData(dto,user,logId);
+			ruleEngineService.pullAndSaveClaimFromRE(dto,user);
+			//ruleEngineService.pullAndSaveRemoteLiteData(dto,user,logId);
 			
 			break;
 		}

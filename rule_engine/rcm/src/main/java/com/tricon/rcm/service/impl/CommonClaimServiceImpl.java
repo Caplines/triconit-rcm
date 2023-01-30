@@ -27,7 +27,7 @@ public class CommonClaimServiceImpl {
 	 * @return
 	 */
 	public int saveClaimLog(RcmClaimLog log, RcmUser user, RcmOffice off, String source, int logStatus,
-			int newClaimCt,int newPrimaryCt,int newSecondayCt) {
+			int newClaimCt,int newPrimaryCt,int newSecondayCt,String message) {
 		log.setCreatedBy(user);
 		log.setOffice(off);
 		log.setSource(source);
@@ -35,8 +35,11 @@ public class CommonClaimServiceImpl {
 		log.setNewClaimsCount(newClaimCt);
 		log.setNewClaimsPrimaryCount(newPrimaryCt);
 		log.setNewClaimsSecodaryCount(newSecondayCt);
-
+		log.setMessage(message);
 		return rcmClaimLogRepo.save(log).getId();
 	}
+	
+	
+	
 	
 }

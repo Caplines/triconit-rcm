@@ -15,20 +15,22 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "rcm_insurance_type", uniqueConstraints = { @UniqueConstraint(columnNames = { "name"}) })
-public class RcmInsuranceType {
+@Table(name = "rcm_insurance_team", uniqueConstraints = { @UniqueConstraint(columnNames = { "rcm_insurance_type","team_id"}) })
+public class RcmInsuranceTeam {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", unique = true, nullable = false)
+	@Column(name = "id", nullable = false)
 	private int id;
 
-	@Column(name = "name", nullable = false)
-	private String name;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "rcm_insurance_type", referencedColumnName = "id")
+	private RcmInsuranceType rcmInsuranceType;
 	
 	
-	/*@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id", referencedColumnName = "id")
 	private RcmTeam team;
-    */
+    
 }
+

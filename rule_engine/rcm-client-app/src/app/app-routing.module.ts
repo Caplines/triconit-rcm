@@ -28,6 +28,11 @@ const routes: Routes = [
     loadChildren:()=> import("./user-setting/user-setting/user-setting.module").then(m=>m.UserSettingModule),
     // canActivate: [CheckUserLoggedInState]
   },
+  {
+    path:'tool-update',
+    loadChildren :()=> import("./tool-update-db/tool-update.module").then(m=>m.ToolUpdateModule),
+   
+  },
   { path: '**', redirectTo: '/login' }
 ];
 

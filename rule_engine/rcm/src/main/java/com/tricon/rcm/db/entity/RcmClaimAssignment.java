@@ -38,7 +38,7 @@ public class RcmClaimAssignment extends BaseAuditEntity implements Serializable{
 	
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "claim_id",referencedColumnName="claim_uuid")
-	private RcmClaims claimId;
+	private RcmClaims claims;
 	
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "assigned_by",referencedColumnName="uuid")

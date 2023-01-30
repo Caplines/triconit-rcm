@@ -11,14 +11,14 @@ public enum RcmTeamEnum {
 	 * Make sure Same is present in rcm_team Table
 	 */
 	SYSYEM(1, "SYSTEM","System", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM },true,false,false),
-	ADMIN(2, "ADMIN","Admin", new RcmRoleEnum[] { RcmRoleEnum.ADMIN },true,false,false),
+    ADMIN(2, "ADMIN","Admin", new RcmRoleEnum[] { RcmRoleEnum.ADMIN },true,false,false),
 	PATIENT_CALLING(3,"PATIENT_CALLING","Patient Calling", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
 	OFFICE(4, "OFFICE", "Office",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
 	INTERNAL_AUDIT(5, "INTERNAL_AUDIT","Internal Audit", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
 	IV_TEAM(6, "IV_TEAM","IV Team", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
 	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
 	LC3(8, "LC3","LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	CLIENT_MANAGER(9, "CLIENT_MANAGER","Client Manager", new RcmRoleEnum[] { RcmRoleEnum.TL},false,true,true);
+	CLIENT(9, "CLIENT","Client", new RcmRoleEnum[] { RcmRoleEnum.CLIENT_MANAGER},false,true,true);
 	
 	final private int id;
 	final private String name;

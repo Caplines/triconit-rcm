@@ -51,7 +51,7 @@ public class RcmClaimLog  extends BaseAuditEntity implements Serializable{
 	@JoinColumn(name = "office_id",referencedColumnName="uuid")
 	private RcmOffice office;
 	
-	@Column(name = "message", nullable = false)
+	@Column(name = "message", nullable = false,columnDefinition="text")
 	private String message; 
 	
 }

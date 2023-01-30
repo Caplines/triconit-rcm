@@ -8,13 +8,15 @@ public interface FreshClaimDetailsDto {
 
 	String getOfficeName();
 
-	Date getClaimFetchDate();
+	Date getOpdt();
 
-	int getClaimCount();
+	Date getOpdos();
 
-	String getCreateByName();
+	//String getSource();
 
-	String getSource();
-
-	int getStatus();
+	int getBill();
+	
+	int getRebill();
+	
+	int getRemoteLiteRejections();
 }

@@ -116,8 +116,19 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	private RcmClaimStatusType claimStatusType;
 	
 	
-	@Column(name = "regenerated")
+	@Column(name = "regenerated",columnDefinition = "BIT default 0")
 	private boolean regenerated;//
 
+	
+	@Column(name = "pending",columnDefinition = "BIT default 0")
+	private boolean pending;//
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "rcm_insurance_type", referencedColumnName = "id")
+	private RcmInsuranceType rcmInsuranceType;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "last_work_team_id", referencedColumnName = "id",nullable=true)
+	private RcmTeam lastWorkTeamId;
 
 }

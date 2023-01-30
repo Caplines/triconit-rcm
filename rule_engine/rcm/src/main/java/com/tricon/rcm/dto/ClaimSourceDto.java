@@ -12,9 +12,9 @@ import lombok.Data;
 @Data 
 public class ClaimSourceDto {
 
-	String officeuuid;
+	String officeuuid;//do not pass For api "api/fetch-claims-from-source"
 	String source;
 	String password;
 	List<String> officeuuids;
-	
+	String companyuuid;
 }

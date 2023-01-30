@@ -42,6 +42,6 @@ public class RcmMappingTable implements Serializable{
 	private String googleSheetSubName;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "office_id")
-	private RcmOffice office;
+	@JoinColumn(name = "company_id",referencedColumnName="uuid")
+	private RcmCompany company;
 }

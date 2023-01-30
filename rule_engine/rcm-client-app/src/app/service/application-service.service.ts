@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from './base-service.service';
 import { HttpClient } from '@angular/common/http';
+import {FreshClaimPullModel} from '../models/fresh.claim.pull.model';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApplicationServiceService extends BaseService {
+
 
   constructor(http: HttpClient) {
     super(http);
@@ -12,7 +15,19 @@ export class ApplicationServiceService extends BaseService {
 
   fetchClaimData(callback:any){
 
-    this.getData({},"/api/fetch-claims",callback);
+    this.getData({},this.httpUrl['fetchclaims'],callback);
 
   }
+
+  fetchLatesClaimLLogs(callback:any){
+    this.getData({},this.httpUrl['freshclaimlogs'],callback);
+  }
+
+  
+  pullFreshClaims(model:FreshClaimPullModel,callback:any){
+   
+    this.postData(model, this.httpUrl['fetchclaimsFromSource'],callback);
+
+  }
+
 }

@@ -7,6 +7,7 @@ import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmInsurance;
+import com.tricon.rcm.db.entity.RcmInsuranceType;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
@@ -20,19 +21,23 @@ public class ClaimUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(ClaimUtil.class);
 	
-	/**
-	 * Create RcmClaims from Data fetched from Eagle Soft : ES
-	 * 
-	 * @param off
-	 * @param re
-	 * @param team
-	 * @param user
-	 * @param prim
-	 * @param sec
-	 * @return
-	 */
+   /**
+    * 
+    * @param claims
+    * @param off
+    * @param re
+    * @param team
+    * @param user
+    * @param prim
+    * @param sec
+    * @param cType
+    * @param claimSuffix
+    * @param rcmInsuranceType
+    * @return
+    */
 	public static RcmClaims createClaimFromESData(RcmClaims claims, RcmOffice off, ClaimsFromRuleEngine re,
-			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,String claimSuffix) {
+			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,String claimSuffix,
+			RcmInsuranceType rcmInsuranceType) {
 
 		claims.setOffice(off);
 		claims.setClaimStatusType(cType);//;mStatus("NEED TO RELOOK");// see latter
@@ -53,6 +58,7 @@ public class ClaimUtil {
 		claims.setSecSubmittedTotal(re.getSecSubmittedTotal());
 		claims.setSubmittedTotal(re.getSubmittedTotal());
 		claims.setClaimId(re.getClaimId()+claimSuffix);
+		claims.setPending(true);
 		try {
 			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getBirthDate()).getTime()));
 		} catch (Exception dt) {
@@ -74,8 +80,9 @@ public class ClaimUtil {
 		return claims;
 	}
 	
-	public static RcmClaims createClaimFromESData(RcmClaims claims, RcmOffice off, ClaimFromSheet re,
-			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType) {
+	public static RcmClaims createClaimFromSheetData(RcmClaims claims, RcmOffice off, ClaimFromSheet re,
+			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,
+			RcmInsuranceType rcmInsuranceType1) {
         try {
 		claims.setOffice(off);
 		claims.setClaimStatusType(cType);
@@ -97,6 +104,7 @@ public class ClaimUtil {
 		claims.setSecStatus("");
 		claims.setSecSubmittedTotal(Float.parseFloat(re.getInsuranceEstimatedAmount()));
 		claims.setSubmittedTotal(Float.parseFloat(re.getTotalBilled()));
+		claims.setPending(true);
 		try {
 			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getSubscriberDob()).getTime()));
 		} catch (Exception dt) {
@@ -123,7 +131,17 @@ public class ClaimUtil {
 		return claims;
 	}
 	
-	public static RcmClaimAssignment createAssginmentData(RcmClaimAssignment assignment) {
+	public static RcmClaimAssignment createAssginmentData(RcmClaimAssignment assignment,
+			RcmUser assigneByUser,RcmUser assigneToUser,String uuid,RcmClaims claims,
+			String commentsBy,RcmClaimStatusType rcmClaimStatusType) {
+		
+		assignment.setAssignedBy(assigneByUser);
+		assignment.setAssignedTo(assigneToUser);
+		assignment.setClaims(claims);
+		assignment.setCommentAssignedBy(commentsBy);
+		assignment.setCreatedBy(assigneByUser);
+		assignment.setCurrentTeamId(assigneToUser.getTeam());
+		assignment.setRcmClaimStatus(rcmClaimStatusType);
 		
 		return assignment;
 	}
