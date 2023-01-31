@@ -29,14 +29,14 @@ public class UserAssignOffice implements Serializable{
     private Integer id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", referencedColumnName = "uuid")
+	@JoinColumn(name = "user_id", referencedColumnName = "uuid",nullable = false)
 	private RcmUser user;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "team_id",referencedColumnName="id")
+	@JoinColumn(name = "team_id",referencedColumnName="id",nullable = false)
 	private RcmTeam team;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "office_id", referencedColumnName = "uuid")
+	@JoinColumn(name = "office_id", referencedColumnName = "uuid",nullable = false)
 	private RcmOffice office;
 }

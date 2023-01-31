@@ -1,10 +1,13 @@
 package com.tricon.rcm.api.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
+import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.service.impl.UserServiceImpl;
 import com.tricon.rcm.util.MessageConstants;
 
@@ -44,15 +48,19 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/users/{role}", method = RequestMethod.GET)
+	@PreAuthorize("hasAnyRole('ADMIN','BILLING_TL')")
 	public ResponseEntity<?> getUsersOfParticularTeam(@PathVariable("role") String role) {
-		GenericResponse response = null;
+		List<RcmUserToDto> response = null;
 		try {
 			response = userService.getUsersByRole(role);
+			if(response==null) {
+				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 }

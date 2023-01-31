@@ -50,11 +50,8 @@ public class ManageOfficeController {
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
-		if (!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-		}
 		try {
-			response = officeService.assignOfficeByAdmin(dto,dto.getTeamId());
+			response = officeService.assignOfficeByAdmin(dto,dto.getTeamId(),jwtUser.getCompany());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

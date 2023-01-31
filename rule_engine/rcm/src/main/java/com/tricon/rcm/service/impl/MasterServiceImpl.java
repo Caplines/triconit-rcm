@@ -5,11 +5,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmCompany;
-import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
@@ -21,7 +19,6 @@ import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
 import com.tricon.rcm.util.Constants;
-import com.tricon.rcm.util.MessageConstants;
 
 @Service
 public class MasterServiceImpl {
@@ -53,7 +50,7 @@ public class MasterServiceImpl {
 	 * Fetch all RcmTeams data
 	 * @return List of RcmTeam
 	 */
-	public GenericResponse getTeams(String companyName) {
+	public List<RcmTeamDto> getTeams(String companyName) {
 		List<RcmTeamDto> teams = new ArrayList<>();
 		RcmTeamDto team = null;
 		if (Stream.of(RcmCompanyEnum.values()).anyMatch(x -> x.getName().equals(companyName))) {
@@ -76,9 +73,9 @@ public class MasterServiceImpl {
 					}
 				}
 			}
-			return new GenericResponse(HttpStatus.OK, "", teams);
+			return teams;
 		} else {
-			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
+			return null;
 		}
 	}
 
@@ -86,7 +83,7 @@ public class MasterServiceImpl {
 	 * Get user roles from RcmRoleEnum
 	 * @return List of RcmRoles
 	 */
-	public GenericResponse getRoles(String companyName){
+	public List<RcmRoleDto> getRoles(String companyName){
 		List<RcmRoleDto>roles=new ArrayList<>();
 		RcmRoleDto role=null;
 		if (Stream.of(RcmCompanyEnum.values()).anyMatch(x -> x.getName().equals(companyName))) {
@@ -112,9 +109,9 @@ public class MasterServiceImpl {
 				}
 			}
 		  }
-		return new GenericResponse(HttpStatus.OK, "",roles);
+		return roles;
 		}
-		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
+		return null;
 	}
 
 	/**
@@ -122,7 +119,7 @@ public class MasterServiceImpl {
 	 * @param teamId
 	 * @return list of roles
 	 */
-	public GenericResponse getRolesByTeamId(int teamId) {
+	public List<RcmRoleDto> getRolesByTeamId(int teamId) {
 		List<RcmRoleDto> roles = new ArrayList<>();
 		RcmRoleDto role = null;
 		for (RcmTeamEnum t : RcmTeamEnum.values()) {
@@ -136,7 +133,7 @@ public class MasterServiceImpl {
 				}
 			}
 		}
-		return new GenericResponse(HttpStatus.OK, "", roles);
+		return roles;
 	}
 
 	/**
@@ -144,7 +141,7 @@ public class MasterServiceImpl {
 	 * @param companyName
 	 * @return
 	 */
-	public GenericResponse defaultRolesByCompanyName(String companyName) {
+	public List<RcmRoleDto> defaultRolesByCompanyName(String companyName) {
 		List<RcmRoleDto> roles = new ArrayList<>();
 		RcmRoleDto role = null;
 		for ( RcmCompanyEnum t : RcmCompanyEnum.values()) {
@@ -158,6 +155,6 @@ public class MasterServiceImpl {
 				}
 			}
 		}
-		return new GenericResponse(HttpStatus.OK, "", roles);
+		return roles;
 	}
 }

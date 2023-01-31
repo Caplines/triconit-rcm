@@ -1,5 +1,7 @@
 package com.tricon.rcm.api.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.rcm.dto.RcmClaimDto;
+import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
@@ -27,6 +31,7 @@ import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.RcmUserStatusDto;
+import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.ResetStatusDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.security.JwtUser;
@@ -158,6 +163,10 @@ public class AdminController {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
+		if(dto.getUserActiveStatus().stream().anyMatch(x->x.getUserId().equals(jwtUser.getUuid())))
+		{
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+		}
 		try {
 			response = serviceImpl.resetUserStatus(jwtUser,dto);
 		} catch (Exception e) {
@@ -194,7 +203,7 @@ public class AdminController {
 	public ResponseEntity<?> getCompanyDetails() {
 		GenericResponse response = null;
 		try {
-			response = serviceImpl.getCompany();
+			response = serviceImpl.getCompanies();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -270,6 +279,62 @@ public class AdminController {
 		}
 		try {
 			response = serviceImpl.editRolesByAdmin(jwtUser,dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@RequestMapping(value = "claimUsers", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> claimsFromAssignmentTable(@RequestBody RcmClaimDto dto) {
+		if (dto.getUserUuid().trim().equals("")||dto.getTeamId()==null) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		List<RcmUserToDto> response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+		}
+		try {
+			response = serviceImpl.getUsersFromClaimAssignmentTable(dto);
+			if(response==null) {
+				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@RequestMapping(value = "assignclaimToUser", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> claimAssignmentToUser(@RequestBody ClaimAssignmentDto dto) {
+		if (dto.getNewClaimUserUuid().trim().equals("")||dto.getOldClaimUserUuid().trim().equals("")) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		String response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+		}
+		try {
+			response = serviceImpl.claimAssignmentToUser(dto,jwtUser);
+			if(response==null) {
+				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

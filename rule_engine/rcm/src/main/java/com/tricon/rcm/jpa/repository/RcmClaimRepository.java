@@ -59,5 +59,7 @@ inner join company cmp on cmp.uuid=off.company_id where cmp.name='Capline';
 			" inner join company cmp on cmp.uuid=off.company_id where cmp.uuid=:companyId")
 	List<FreshClaimLogDto> fetchFreshClaimLogs(@Param("companyId") String companyId);
 	
+	RcmClaims findByClaimId(String claimId);
+	
 
 }

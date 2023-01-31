@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
@@ -40,7 +41,7 @@ public class ManageOfficeServiceImpl {
 	 * @throws Exception
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse assignOfficeByAdmin(AssignOfficesToBillingUserDto dto, int teamId) throws Exception {
+	public GenericResponse assignOfficeByAdmin(AssignOfficesToBillingUserDto dto, int teamId,RcmCompany logedIncompany) throws Exception {
 		List<AssignUserOfficeDto> userOfficeData = dto.getAssignOfficeDetails();
 		List<String> listOfUserId = userOfficeData.stream().map(x -> x.getUserId()).collect(Collectors.toList());
 		List<String> listOfOfficeId = userOfficeData.stream().map(x -> x.getOfficeId()).collect(Collectors.toList());
@@ -51,7 +52,7 @@ public class ManageOfficeServiceImpl {
 
 		if (!listOfUsers.isEmpty()) {
 			for (RcmUser u : listOfUsers) {
-				if (u.getTeam().getId() != teamId || !u.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+				if (u.getTeam().getId() != teamId || !u.getCompany().getUuid().equals(logedIncompany.getUuid())) {
 					return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
 				}
 			}

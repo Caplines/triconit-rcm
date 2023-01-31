@@ -70,7 +70,7 @@ public class UserServiceImpl {
 	 * @return List of users
 	 */
 
-	public GenericResponse getUsersByRole(String role) throws Exception {
+	public List<RcmUserToDto> getUsersByRole(String role) throws Exception {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
@@ -81,11 +81,21 @@ public class UserServiceImpl {
 			RcmTeam team = loginUser.getTeam();
 			if (team != null) {
 				data = userRepo.findUsersByRole(RcmTeamEnum.generateRole(team.getId(), role));
+				data.removeIf(x->x.getUuid().equals(loginUser.getUuid()));
+				return data;
 			}
-		} else {
-			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
 		}
-		return new GenericResponse(HttpStatus.OK, "", data);
+		return null;
+	}
+
+	public List<RcmUserToDto> getUsersByTeamId(int teamId) throws Exception {
+		List<RcmUserToDto> data = null;
+		RcmTeam team = teamRepo.findById(teamId);
+		if (team != null) {
+			data = userRepo.findUsersByTeamId(team.getId());
+			return data;
+		}
+		return null;
 	}
 
 }

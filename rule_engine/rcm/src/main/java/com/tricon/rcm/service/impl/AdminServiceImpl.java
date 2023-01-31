@@ -1,5 +1,7 @@
 package com.tricon.rcm.service.impl;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +26,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.tricon.rcm.db.entity.RcmClaimAssignment;
+import com.tricon.rcm.db.entity.RcmClaimStatusType;
+import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmTeam;
@@ -31,9 +36,12 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.UserAssignOffice;
+import com.tricon.rcm.dto.RcmClaimDto;
+import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
+import com.tricon.rcm.dto.customquery.RcmClaimAssignmentDto;
 import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
@@ -51,12 +59,16 @@ import com.tricon.rcm.enums.RcmCompanyEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
+import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimRepository;
+import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
+import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.MessageConstants;
@@ -96,6 +108,19 @@ public class AdminServiceImpl {
 	
 	@Autowired
 	EmailUtil emailUtil;
+	
+	@Autowired
+	RcmClaimAssignmentRepo claimAssignmentRepo;
+	
+	@Autowired
+	RcmClaimStatusTypeRepo rcmClaimStatusTypeRepo;
+	
+	@Autowired
+	RcmClaimRepository rcmClaimRepository;
+	
+	@Autowired
+	UserServiceImpl userService;
+	
 
 	/**
 	 * This Method save Data of New Register User
@@ -117,10 +142,15 @@ public class AdminServiceImpl {
 			user = convertDtotoModel(dto);
 			user.setOffice(office);
 			if (team == null) {
-				team = new RcmTeam();
-				team.setId(RcmTeamEnum.ADMIN.getId());  //set default teamId=2 when role is only admin
-				user.setTeam(team);
-			}else {
+				if (dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1)) {
+					team = new RcmTeam();
+					team.setId(RcmTeamEnum.ADMIN.getId());
+					user.setTeam(team);
+				} else {
+					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);
+				}
+			} else {
 				user.setTeam(team);
 			}
 				user.setCompany(company);
@@ -310,7 +340,7 @@ public class AdminServiceImpl {
 	 * This method is used only admin
 	 * @return List of companies
 	 */
-	public GenericResponse getCompany() throws Exception {
+	public GenericResponse getCompanies() throws Exception {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
@@ -478,4 +508,54 @@ public class AdminServiceImpl {
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
    }
+
+	public List<RcmUserToDto> getUsersFromClaimAssignmentTable(RcmClaimDto dto) throws Exception {
+		// first we will check any claim is assign or not in this uuid
+		// if yes then fetch all billing users data will show in popup window
+
+		List<RcmClaimAssignment> existingcUser = claimAssignmentRepo.findByAssignedToUuid(dto.getUserUuid());
+		if (!existingcUser.isEmpty()) {
+			List<RcmUserToDto> rcmUser=userService.getUsersByTeamId(dto.getTeamId());
+			rcmUser.removeIf(x->x.getUuid().equals(dto.getUserUuid()));
+			return rcmUser;
+
+		} 
+		return null;
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public String claimAssignmentToUser(ClaimAssignmentDto dto, JwtUser jwtUser)throws Exception {
+		List<RcmClaimAssignment> oldClaimUserData = claimAssignmentRepo.findByAssignedToUuid(dto.getOldClaimUserUuid());
+		RcmUser assigneByUser = null, assigneToUser = null;
+		RcmClaimAssignment assignment = null;
+		RcmClaims assignClaim = null;
+		String msg="";
+		if (!oldClaimUserData.isEmpty()) {
+
+			assigneToUser  = userRepo.findByUuid(dto.getNewClaimUserUuid());
+			if (assigneToUser !=null && assigneToUser.getTeam().getId()==RcmTeamEnum.BILLING.getId()) {
+				assigneByUser = userRepo.findByEmail(jwtUser.getEmail());
+				RcmClaimStatusType claimStatusType = oldClaimUserData.stream().map(x->x.getRcmClaimStatus()).findFirst().get();
+				// change comment and claim status of oldClaim user
+
+				claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REMOVE_MESSAGE,
+						assigneByUser, false, dto.getOldClaimUserUuid());
+
+				// now insert old user claims will assign to new user
+				for (RcmClaimAssignment assign : oldClaimUserData) {
+					assignment = new RcmClaimAssignment();
+					assignClaim = rcmClaimRepository.findByClaimId(assign.getClaims().getClaimId());
+					assignment = ClaimUtil.createAssginmentData(assignment, assigneByUser, assigneToUser, null,
+							assignClaim, MessageConstants.CLAIM_REASSIGN_MESSAGE,  claimStatusType);
+					claimAssignmentRepo.save(assignment);
+				}
+
+			} else {
+				return null;
+			}
+			msg=MessageConstants.CLAIM_REASSIGN_SUCCESS_MESSAGE;
+			return msg;
+		}
+		return null;
+	}
 }

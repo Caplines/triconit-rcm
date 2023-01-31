@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmRoleDto;
+import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.service.impl.MasterServiceImpl;
 
 @RestController
@@ -35,35 +37,39 @@ public class MasterController {
 	@RequestMapping(value = "/getteams/{companyName}", method = RequestMethod.GET)
 	public ResponseEntity<?> getTeams(@PathVariable("companyName")String companyName){
 
-		GenericResponse teams = masterDataService.getTeams(companyName);
-		return ResponseEntity.ok(teams);
+		List<RcmTeamDto> teams = masterDataService.getTeams(companyName);
+		if(teams==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", teams));
 
 	}
 
 	@RequestMapping(value = "/getroles/{companyName}", method = RequestMethod.GET)
 	public ResponseEntity<?> getRoles(@PathVariable("companyName")String companyName){
 
-		GenericResponse roles = masterDataService.getRoles(companyName);
-
-		return ResponseEntity.ok(roles);
+		List<RcmRoleDto> roles = masterDataService.getRoles(companyName);
+		if(roles==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", roles));
 
 	}
 	
 	@RequestMapping(value = "/rolesByTeamId/{teamId}", method = RequestMethod.GET)
 	public ResponseEntity<?> rolesByTeamId(@PathVariable("teamId")int teamId){
 
-		GenericResponse roles = masterDataService.getRolesByTeamId(teamId);
-
-		return ResponseEntity.ok(roles);
+		List<RcmRoleDto> roles = masterDataService.getRolesByTeamId(teamId);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", roles));
 
 	}
 	
 	@RequestMapping(value = "/defaultRolesByCname/{companyName}", method = RequestMethod.GET)
 	public ResponseEntity<?> defaultRolesByCname(@PathVariable("companyName")String companyName){
 
-		GenericResponse defaultRoles = masterDataService.defaultRolesByCompanyName(companyName);
+		List<RcmRoleDto> defaultRoles = masterDataService.defaultRolesByCompanyName(companyName);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", defaultRoles));
 
-		return ResponseEntity.ok(defaultRoles);
 
 	}
 }

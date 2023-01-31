@@ -40,5 +40,13 @@ public class MessageConstants {
 	
 	public static final String DUPLICATE_OFFICE="Duplicate office not allow";
 	
+	public static final String TEAM_MANDATORY="Team is mandatory";
+	
+	public static final String CLAIM_REMOVE_MESSAGE="Old user role removed";
+	
+	public static final String CLAIM_REASSIGN_MESSAGE="Please Work on Claim";
+	
+	public static final String CLAIM_REASSIGN_SUCCESS_MESSAGE="Claim has been assigned";
+	
 
 }
