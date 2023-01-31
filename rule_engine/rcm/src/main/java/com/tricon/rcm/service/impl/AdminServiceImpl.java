@@ -41,7 +41,6 @@ import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
-import com.tricon.rcm.dto.customquery.RcmClaimAssignmentDto;
 import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
