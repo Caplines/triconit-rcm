@@ -1,3 +1,41 @@
 
 
+<table>
+    <tr>Through ES Agent<input
+        type="checkbox"
+        [(ngModel)]="esAgent"/>
+    </tr>
 
+    <tr>Through Google Sheet<input
+        type="checkbox"
+        [(ngModel)]="googleSheet"/>
+    </tr>
+
+    <input type="button" (click)="updateClaims()">
+</table>
+
+
+<table>
+    <tr>
+        <td>Office Name</td>
+    <td>Database Updation Done?</td>
+    <td>Last Updated On</td>
+    <td>Source</td>
+    <td>Total No. of New Claims Added</td>
+    <td>Update </td>
+    </tr>
+
+    <tr *ngFor="let lg of log">
+        <td>{{lg.officeName}}</td>
+        <td>{{lg.status}}</td>
+        <td>{{lg.cd | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+        <td>{{lg.source}}</td>
+        <td>{{lg.newClaimsCount}}</td>
+        <td><input
+            type="checkbox"
+            [(ngModel)]="lg.update"/></td>
+    </tr>
+
+    <input type="button" (click)="pullFreshClaims()" value="update lastest Claims"
+     *ngIf="!loader">
+</table>

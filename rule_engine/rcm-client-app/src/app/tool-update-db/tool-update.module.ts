@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { ToolUpdateClaimsRoutingModule } from './tool-update-routing.module';
 import { ToolUpdateComponent } from './tool-update/tool-update.component';
-
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -11,7 +11,8 @@ import { ToolUpdateComponent } from './tool-update/tool-update.component';
   ],
   imports: [
     CommonModule,
-    ToolUpdateClaimsRoutingModule
+    ToolUpdateClaimsRoutingModule,
+    FormsModule      
   ]
 })
 export class ToolUpdateModule { 

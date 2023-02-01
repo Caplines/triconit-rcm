@@ -1,12 +1,13 @@
 
 export interface  FreshClaimPLogs {
 
-    source: Array<string>;
+    source: string;
     officeUuid: string;
     status: string;
     cd: Date;
     newClaimsCount:Number;
     officeName:string;
+    update:boolean;
 
    // constructor(source: Array<string>, officeUuid: string,
     //    status: string,cd: Date,newClaimsCount:Number): void;
