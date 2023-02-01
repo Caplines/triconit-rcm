@@ -33,6 +33,11 @@ const routes: Routes = [
     loadChildren :()=> import("./tool-update-db/tool-update.module").then(m=>m.ToolUpdateModule),
    
   },
+  {
+    path:'manage-office',
+    loadChildren :()=> import("./manage-office/manage-office.module").then(m=>m.ManageOfficeModule),
+   
+  },
   { path: '**', redirectTo: '/login' }
 ];
 

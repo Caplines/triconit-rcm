@@ -1,5 +1,5 @@
 <div class="right-container">
-    <app-header-component></app-header-component>
+    <app-header-component [isUserSetting]="isUserSetting"></app-header-component>
     <ng-container *ngIf="alert.showAlertPopup">
         <div class="alert alert-info alert-dismissible fade show my-3 text-center" role="alert">
             <strong>{{alert.alertMsg}}</strong>

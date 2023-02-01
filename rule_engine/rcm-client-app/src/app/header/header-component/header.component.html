@@ -14,8 +14,9 @@
 
     <div class="gray-bar">
         <ul>
-            <li *ngIf="loggedInUserRole === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/register']"><img src="../../assets/img/team-pendency-gray-icon.png" />Register New User</a></li>
-            <li *ngIf="loggedInUserRole === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/user-setting']"><img src="../../assets/img/team-pendency-gray-icon.png" />User Setting</a></li>
+            <li *ngIf="loggedInUserRole === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/register']" [ngClass]="{'active':isRegister}"><img [src]="isRegister? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Register New User</a></li>
+            <li *ngIf="loggedInUserRole === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/user-setting']" [ngClass]="{'active':isUserSetting}"><img [src]="isUserSetting ? '../../assets/img/team-pendency-green-icon.png' : '../../assets/img/team-pendency-gray-icon.png'" />User Setting</a></li>
+            <li *ngIf="loggedInUserRole === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/manage-office']" [ngClass]="{'active':isManageOffice}"><img [src]="isManageOffice? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Manage Offices</a></li>
         </ul>
 
     </div>

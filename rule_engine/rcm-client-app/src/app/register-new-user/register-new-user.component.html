@@ -1,5 +1,5 @@
 ﻿        <div class="right-container">
-        <app-header-component></app-header-component>
+        <app-header-component [isRegister]="isRegister"></app-header-component>
         <ng-container *ngIf="alert.showAlertPopup">
             <div class="alert alert-success alert-dismissible fade show my-3 text-center" role="alert">
                 <strong>{{alert.alertMsg}}</strong>
@@ -79,21 +79,33 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm">
-                                        <div class="form-group">
-                                            <label for="userRole">User Role :</label>
-                                            <ng-container *ngFor="let userRole of userRolesData">
-                                                <div class="form-check  form-check-inline custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="role" id="{{userRole.roleId}}" (change)="selectUserRole($event)">
-                                                    <label class="custom-control-label" for="{{userRole.roleId}}">
-                                                        {{userRole.roleName}}
-                                                    </label>
-                                                </div>
-                                            </ng-container>
+                                <ng-container *ngIf="defaulUserRoleData.length>0 || userRoleByTeam.length>0">
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="userRole">User Role :</label>
+                                                <ng-container *ngFor="let userRole of defaulUserRoleData">
+                                                    <div class="form-check  form-check-inline custom-checkbox">
+                                                        <input class="custom-control-input" type="checkbox" name="role" id="{{userRole.roleId}}"
+                                                            (change)="selectUserRole($event)">
+                                                        <label class="custom-control-label" for="{{userRole.roleId}}">
+                                                            {{userRole.roleName}}
+                                                        </label>
+                                                    </div>
+                                                </ng-container>
+                                                <ng-container *ngFor="let userRole of userRoleByTeam">    
+                                                    <div class="form-check  form-check-inline custom-checkbox">
+                                                        <input class="custom-control-input" type="checkbox" name="role" id="{{userRole.roleId}}"
+                                                            (change)="selectUserRole($event)">
+                                                        <label class="custom-control-label" for="{{userRole.roleId}}">
+                                                            {{userRole.roleName}}
+                                                        </label>
+                                                    </div>
+                                                </ng-container>
                                         </div>
                                     </div>
                                 </div>
+                            </ng-container>
                                 <div class="action-buttons">
                                     <button type="button" class="btn btn-success" [disabled]="userDetails.invalid" (click)="registerNewUser()">Submit</button>
                                 </div>

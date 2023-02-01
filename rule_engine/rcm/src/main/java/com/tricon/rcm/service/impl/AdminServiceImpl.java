@@ -360,10 +360,12 @@ public class AdminServiceImpl {
 		} else {
 			RcmCompany loginUserCompany = rcmCompanyRepo.findByUuid(jwtUser.getCompany().getUuid());
 			if (loginUserCompany != null) {
-				RcmCompanyDto dto = new RcmCompanyDto();
-				dto.setName(loginUserCompany.getName());
-				dto.setCompanyUuid(loginUserCompany.getUuid());
-				return new GenericResponse(HttpStatus.OK, "", dto);
+				listOfCompany=new ArrayList<>();
+			RcmCompanyDto dto = new RcmCompanyDto();
+			dto.setName(loginUserCompany.getName());
+			dto.setCompanyUuid(loginUserCompany.getUuid());
+			listOfCompany.add(dto);
+			return new GenericResponse(HttpStatus.OK, "", listOfCompany);
 			}
 		}
 		return new GenericResponse(HttpStatus.OK, "", null);

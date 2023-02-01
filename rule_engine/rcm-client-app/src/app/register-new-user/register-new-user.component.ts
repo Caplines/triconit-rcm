@@ -13,11 +13,13 @@ export class RegisterNewUserComponent implements OnInit {
   userDetails:any;
   teamData:any=[];
   officeData:any=[];
-  userRolesData:any=[];
+  defaulUserRoleData:any=[];
   companyData:any=[];
   userRoles:any=[];
   alert:any={'showAlertPopup':false,'alertMsg':''}
   showLoader:boolean=false;
+  isRegister:boolean=true;
+  userRoleByTeam:any=[];
   constructor(private router: Router, private _baseService:BaseService ,private fb : FormBuilder) {
 
     this.userDetails = this.fb.group({
@@ -45,7 +47,7 @@ export class RegisterNewUserComponent implements OnInit {
         this.alert.showAlertPopup = true;
         this.alert.alertMsg = callback.result.message;
         if(callback.result.message === "User has been created"){
-          this.companyData =this.userRoles = this.userRolesData = this.officeData = this.teamData = [];
+          this.companyData =this.userRoles = this.defaulUserRoleData = this.officeData = this.teamData = [];
           this.userDetails.reset();
           this.getcompanyData();
         }
@@ -98,12 +100,13 @@ export class RegisterNewUserComponent implements OnInit {
       }
       this.userDetails.controls.userRole.setValue(this.userRoles);
       this.changeTeamMandatoryStatus(event.target.id);
+      console.log(this.userRoles)
   }
 
   
   changeTeamMandatoryStatus(role: any) {
 
-    let k = this.userRolesData;
+    let k = this.defaulUserRoleData;
     k.find((e: any) => {
       if (e.roleId === role) {
         if (e.teamMandatory && (this.userRoles.includes("TL") || this.userRoles.includes("ASSO"))) {
@@ -144,6 +147,7 @@ export class RegisterNewUserComponent implements OnInit {
                 this.officeData = callback.result.data.data;
                 this.getTeamsData(event.target.value);
                 this.userRoles= [];
+                this.userRoleByTeam=[];
               }
           })
         }
@@ -155,7 +159,7 @@ export class RegisterNewUserComponent implements OnInit {
       if(callback.status){
         this.userRoles =[];
         this.userDetails.controls.userRole.setValue('');
-        this.userRolesData = callback.result.data;
+        this.defaulUserRoleData = callback.result.data;
       }
     })
   }
@@ -163,9 +167,14 @@ export class RegisterNewUserComponent implements OnInit {
   getRolesByTeam(event:any){
     this._baseService.getRolesByTeam(event.target.value,(callback:any)=>{
       if(callback.status){
-        this.userRoles = [];
         this.userDetails.controls.userRole.setValue('');
-        this.userRolesData = callback.result.data;
+        this.userRoleByTeam = callback.result.data;
+        this.userRoleByTeam.find((e:any,index:any)=>{
+          if(e == this.userRoles[index]){
+            this.userRoles.splice(index,1)
+          }
+        })
+        console.log(this.userRoleByTeam,this.userRoles)
       }
     })
   }

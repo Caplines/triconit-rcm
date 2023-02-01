@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BaseService } from 'src/app/service/base-service.service';
 import { AuthService } from '../../service/auth-service.service';
@@ -17,6 +17,9 @@ export class HeaderComponent implements OnInit {
   };
   loggedInUserRole:any;
   loggedInUserName:any;
+  @Input() isUserSetting:any;
+  @Input() isRegister:any;
+  @Input() isManageOffice:any;
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
 

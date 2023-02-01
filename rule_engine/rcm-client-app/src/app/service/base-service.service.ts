@@ -25,7 +25,9 @@ export class BaseService {
     'rolesByTeam':  environment.API_URL+"/master/rolesByTeamId",
     'fetchclaims':"/api/fetch-claims",
     'freshclaimlogs':"/api/fetch-fresh-claims-logs",
-    'fetchclaimsFromSource':"/api/fetch-claims-from-source"
+    'fetchclaimsFromSource':"/api/fetch-claims-from-source",
+    'editOfficeName': environment.API_URL+"/editOffice",
+    'addNewOffice': environment.API_URL+"/addOffice",
   }
   token:any;
 
@@ -192,4 +194,21 @@ export class BaseService {
 		});
   }
 
+  editOfficeName(params:any,callback:any){
+    let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ this.token});
+    return this.http.post(this.httpUrl['editOfficeName'],params,cpHeaders).pipe(map(data=>{
+      return data;
+    })).subscribe(
+      (data:any) => { callback({'status':true,'result':data}); 
+    });
+  }
+
+  addNewOffice(params:any,callback:any){
+    let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ this.token});
+    return this.http.post(this.httpUrl['addNewOffice'],params,cpHeaders).pipe(map(data=>{
+      return data;
+    })).subscribe(
+      (data:any) => { callback({'status':true,'result':data}); 
+    });
+  }
 }

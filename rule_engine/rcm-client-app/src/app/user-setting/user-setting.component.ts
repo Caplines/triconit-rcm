@@ -16,7 +16,8 @@ export class UserSettingComponent implements OnInit {
   pageNumber:number = 0;
   hasNext:boolean=false;
   userStatusArray:any={'userActiveStatus':[]}
-  alert:any={'showAlertPopup':false,'alertMsg':''}
+  alert:any={'showAlertPopup':false,'alertMsg':''};
+  isUserSetting:boolean=true;
 
   constructor(private _baseService: BaseService) { }
 
