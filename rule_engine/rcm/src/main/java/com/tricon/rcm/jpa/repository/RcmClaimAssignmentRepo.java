@@ -14,7 +14,7 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	List<RcmClaimAssignment>findByAssignedToUuid(String assignTo);
 	
 	@Modifying
-	@Query(value = "update  rcm_claim_assignment set comment_assigned_by=:comment,updated_by=:updatedBy,updated_date=now(),active=:status where assigned_to=:userUuid", nativeQuery = true)
-	void updateClaimUserStatusAndComment(String comment,RcmUser updatedBy,boolean status,String userUuid);
+	@Query(value = "update  rcm_claim_assignment set comment_assigned_by=:comment,updated_by=:updatedBy,updated_date=now(),active=:status where assigned_to=:userUuid AND claim_id=:claimUuid ", nativeQuery = true)
+	void updateClaimUserStatusAndComment(String comment,RcmUser updatedBy,boolean status,String userUuid,String claimUuid);
 	
 }

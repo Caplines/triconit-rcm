@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -229,6 +230,7 @@ public class AdminServiceImpl {
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
 			data.setTeamNameId(user.getTeam().getId());
+			data.setRoles(user.getRoles().stream().map(x->x.getRole()).collect(Collectors.toList()));;
 			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_EXIST, data);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
@@ -513,12 +515,13 @@ public class AdminServiceImpl {
 		// if yes then fetch all billing users data will show in popup window
 
 		List<RcmClaimAssignment> existingcUser = claimAssignmentRepo.findByAssignedToUuid(dto.getUserUuid());
-		if (!existingcUser.isEmpty()) {
-			List<RcmUserToDto> rcmUser=userService.getUsersByTeamId(dto.getTeamId());
-			rcmUser.removeIf(x->x.getUuid().equals(dto.getUserUuid()));
-			return rcmUser;
-
-		} 
+		if (existingcUser!=null && !existingcUser.isEmpty()) {
+			List<RcmUserToDto> rcmUser = userService.getUsersByTeamId(dto.getTeamId());
+			if (rcmUser != null) {
+				rcmUser.removeIf(x -> x.getUuid().equals(dto.getUserUuid()));
+				return rcmUser;
+			} 
+		}
 		return null;
 	}
 
@@ -528,32 +531,34 @@ public class AdminServiceImpl {
 		RcmUser assigneByUser = null, assigneToUser = null;
 		RcmClaimAssignment assignment = null;
 		RcmClaims assignClaim = null;
-		String msg="";
-		if (!oldClaimUserData.isEmpty()) {
+		RcmClaimStatusType claimStatusType = null;
+		String msg = "";
+		if (oldClaimUserData != null && !oldClaimUserData.isEmpty()) {
 
-			assigneToUser  = userRepo.findByUuid(dto.getNewClaimUserUuid());
-			if (assigneToUser !=null && assigneToUser.getTeam().getId()==RcmTeamEnum.BILLING.getId()) {
+			assigneToUser = userRepo.findByUuid(dto.getNewClaimUserUuid());
+			if (assigneToUser != null && assigneToUser.getTeam().getId() == RcmTeamEnum.BILLING.getId()) {
 				assigneByUser = userRepo.findByEmail(jwtUser.getEmail());
-				RcmClaimStatusType claimStatusType = oldClaimUserData.stream().map(x->x.getRcmClaimStatus()).findFirst().get();
-				// change comment and claim status of oldClaim user
 
-				claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REMOVE_MESSAGE,
-						assigneByUser, false, dto.getOldClaimUserUuid());
-
-				// now insert old user claims will assign to new user
 				for (RcmClaimAssignment assign : oldClaimUserData) {
 					assignment = new RcmClaimAssignment();
-					assignClaim = rcmClaimRepository.findByClaimId(assign.getClaims().getClaimId());
-					assignment = ClaimUtil.createAssginmentData(assignment, assigneByUser, assigneToUser, null,
-							assignClaim, MessageConstants.CLAIM_REASSIGN_MESSAGE,  claimStatusType);
-					claimAssignmentRepo.save(assignment);
+					claimStatusType = assign.getRcmClaimStatus();
+					assignClaim = rcmClaimRepository.findByClaimUuid(assign.getClaims().getClaimUuid());
+					if (assignClaim != null && assignClaim.isPending()) {
+						// change comment and active status of oldClaim user whose claim is pending
+						claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REMOVE_MESSAGE,
+								assigneByUser, false, dto.getOldClaimUserUuid(), assignClaim.getClaimUuid());
+						// now insert old user claims will assign to new user whose claim is pending
+						assignment = ClaimUtil.createAssginmentData(assignment, assigneByUser, assigneToUser, null,
+								assignClaim, MessageConstants.CLAIM_REASSIGN_MESSAGE, claimStatusType);
+						claimAssignmentRepo.save(assignment);
+					} else {
+						msg = MessageConstants.SOMETHING_WENT_WRONG;
+						return msg;
+					}
 				}
-
-			} else {
-				return null;
+				msg = MessageConstants.CLAIM_REASSIGN_SUCCESS_MESSAGE;
+				return msg;
 			}
-			msg=MessageConstants.CLAIM_REASSIGN_SUCCESS_MESSAGE;
-			return msg;
 		}
 		return null;
 	}

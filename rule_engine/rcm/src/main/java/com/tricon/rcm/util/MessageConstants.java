@@ -48,5 +48,7 @@ public class MessageConstants {
 	
 	public static final String CLAIM_REASSIGN_SUCCESS_MESSAGE="Claim has been assigned";
 	
+	public static final String SOMETHING_WENT_WRONG="Something went wrong";
+	
 
 }

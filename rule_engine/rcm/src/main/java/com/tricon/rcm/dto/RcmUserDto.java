@@ -3,7 +3,7 @@ package com.tricon.rcm.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
+import java.util.List;
 @Data
 @ToString
 @NoArgsConstructor
@@ -16,5 +16,5 @@ public class RcmUserDto {
 	private Integer teamNameId;
 	private String firstName;
 	private String lastName;
-
+    private List<String>roles;
 }
