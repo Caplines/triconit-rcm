@@ -1,6 +1,7 @@
 package com.tricon.rcm.jpa.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,57 +10,87 @@ import org.springframework.data.repository.query.Param;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
-
+import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
+import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 
 public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
-	RcmClaims findByClaimIdAndOffice(String claimId,RcmOffice office);
-	
-	List<RcmClaims> findByClaimIdInAndOffice(List<String> claimIds,RcmOffice office);
-	
-	/**
-	 select off.uuid,off.name,
-Case when us.first_name is null then ''  ELSE us.first_name END as userName,
-Case when l.created_date is null then null  ELSE l.created_date END as created_date,
-Case when new_claims_count is null then 0  ELSE new_claims_count END as new_claims_count,
-Case when l.source is null then ''  ELSE l.source END as source,
-Case when l.status is null then 0  ELSE l.status END as status
- from office off left join (
-select created_date,created_by,new_claims_count,source,office_id,status from rule_engine_2.rcm_claim_log where id in (
-select max(id) as id from  rule_engine_2.rcm_claim_log log group by log.office_id))  l
+	RcmClaims findByClaimIdAndOffice(String claimId, RcmOffice office);
 
-left join rcm_user_assign_office assign on assign.office_id=l.office_id
-left join rcm_user us on us.uuid=assign.user_id 
-on off.uuid=l.office_id
-inner join company cmp on cmp.uuid=off.company_id where cmp.name='Capline';
-*/
-	
-	@Query(nativeQuery=true,value=
-			"SELECT off.name as officeName,"+
-			"count(Case When claim_status_type_id=1 and pending is true Then 'bill' End) as 'bill' , "+
-			"count(Case When claim_status_type_id=2 and pending is true Then 'rebill' End) as 'rebill', "+
-			"min(Case When claim_status_type_id=1 Then cl.created_date End)   as 'opdt', "+
-			"min(Case When claim_status_type_id=1 Then cl.dos End)   as 'opdos', "+
-			"off.uuid as officeUuid,0 as remoteLiteRejections FROM  rule_engine_2.office off left join rule_engine_2.rcm_claims  cl "+
-			"on off.uuid=cl.office_id where off.company_id=:companyId "+
-			"group by off.uuid ")
-	List<FreshClaimDetailsDto> fetchFreshClaimDetails(@Param("companyId") String companyId);
-	
-	@Query(nativeQuery=true,value=
-			"select off.uuid as officeUuid,off.name as officeName, "+
-			"Case when l.created_date is null then null  ELSE l.created_date END as cd, "+
-			"Case when new_claims_count is null then 0  ELSE new_claims_count END as newClaimsCount, "+
-			"Case when l.source is null then ''  ELSE l.source END as source, "+
-			"Case when l.status is null then 0  ELSE l.status END as status "+
-			" from office off left join (  "+
-			" select created_date,created_by,new_claims_count,source,office_id,status from rule_engine_2.rcm_claim_log where id in ( "+
-			" select max(id) as id from  rule_engine_2.rcm_claim_log log group by log.office_id))  l "+
-			" on off.uuid=l.office_id "+ 
-			" inner join company cmp on cmp.uuid=off.company_id where cmp.uuid=:companyId")
-	List<FreshClaimLogDto> fetchFreshClaimLogs(@Param("companyId") String companyId);
-	
 	RcmClaims findByClaimId(String claimId);
+
+	RcmClaims findByClaimUuid(String claimId);
+
+	List<RcmClaims> findByClaimIdInAndOffice(List<String> claimIds, RcmOffice office);
+
 	
+	@Query(nativeQuery = true, value = "SELECT off.name as officeName,"
+			+ "count(Case When claim_status_type_id=:status and pending is true Then 'billre' End) as 'count' , "
+			+ "min(Case When claim_status_type_id=:status Then cl.created_date End)   as 'opdt', "
+			+ "min(Case When claim_status_type_id=:status Then cl.dos End)   as 'opdos', "
+			+ "off.uuid as officeUuid,0 as remoteLiteRejections FROM  rule_engine_2.office off left join rule_engine_2.rcm_claims  cl "
+			+ "on off.uuid=cl.office_id where off.company_id=:companyId " + "group by off.uuid ")
+	List<FreshClaimDetailsDto> fetchBillingOrReBillingClaimDetails(@Param("companyId") String companyId,
+			@Param("status") int status);
+
+	@Query(nativeQuery = true, value = "select off.uuid as officeUuid,off.name as officeName, "
+			+ "Case when l.created_date is null then null  ELSE l.created_date END as cd, "
+			+ "Case when new_claims_count is null then 0  ELSE new_claims_count END as newClaimsCount, "
+			+ "Case when l.source is null then ''  ELSE l.source END as source, "
+			+ "Case when l.status is null then 0  ELSE l.status END as status " + " from office off left join (  "
+			+ " select created_date,created_by,new_claims_count,source,office_id,status from rule_engine_2.rcm_claim_log where id in ( "
+			+ " select max(id) as id from  rule_engine_2.rcm_claim_log log group by log.office_id))  l "
+			+ " on off.uuid=l.office_id "
+			+ " inner join company cmp on cmp.uuid=off.company_id where cmp.uuid=:companyId")
+	List<FreshClaimLogDto> fetchFreshClaimLogs(@Param("companyId") String companyId);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName, "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal " + " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId " + " and pending=true ")
+	List<FreshClaimDataDto> fetchFreshClaimDetails(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName, "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal " + " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id<>:teamid and off.company_id=:companyId " + " and pending=true ")
+	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeam(@Param("companyId") String companyId,
+			@Param("teamid") int teamid);
+
+	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
+			+ " count(Case When claim_status_type_id in :status and pending is true and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
+			+ " min(Case When claim_status_type_id in :status and pending=true  and cl.rcm_insurance_type in :inst Then cl.created_date End)   as 'opdt',"
+			+ " min(Case When claim_status_type_id in :status and pending=true  and cl.rcm_insurance_type in :inst Then cl.dos End) as 'opdos',0 as remoteLiteRejections, "
+			+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName " + " FROM "
+			+ "  rule_engine_2.office off left join rule_engine_2.rcm_claims  " + "  cl on off.uuid=cl.office_id "
+			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
+			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid "
+			+ "  left join rcm_user us on us.uuid=assig.user_id "
+			+ "  where off.company_id=:companyId  group by off.uuid")
+	List<AssignFreshClaimLogsDto> fetchClaimsForAssignments(@Param("companyId") String companyId,
+			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst);
 
 }

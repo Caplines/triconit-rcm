@@ -37,7 +37,7 @@ public class ClaimUtil {
     */
 	public static RcmClaims createClaimFromESData(RcmClaims claims, RcmOffice off, ClaimsFromRuleEngine re,
 			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,String claimSuffix,
-			RcmInsuranceType rcmInsuranceType) {
+			RcmInsuranceType rcmInsuranceType,String timelyLmt) {
 
 		claims.setOffice(off);
 		claims.setClaimStatusType(cType);//;mStatus("NEED TO RELOOK");// see latter
@@ -58,6 +58,8 @@ public class ClaimUtil {
 		claims.setSecSubmittedTotal(re.getSecSubmittedTotal());
 		claims.setSubmittedTotal(re.getSubmittedTotal());
 		claims.setClaimId(re.getClaimId()+claimSuffix);
+		claims.setTimelyFilingLimitData(timelyLmt);
+		claims.setRcmInsuranceType(rcmInsuranceType);
 		claims.setPending(true);
 		try {
 			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getBirthDate()).getTime()));

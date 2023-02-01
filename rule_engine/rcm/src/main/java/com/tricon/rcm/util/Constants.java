@@ -7,6 +7,7 @@ public class Constants {
 	public static final String COMPANY_NAME="Capline";//This matches with Company Table  Name Column... Same in Rule Engine 
 	public static final String SYSTEM_USER_EMAIL="SYSTEM";//Default User  IN DB
 	public static final String RCM_MAPPING_INSURANCE="Insurance";//Entry needed in DB->rcm_mapping_table 
+	public static final String RCM_MAPPING_TIMELY_LIMIT="Timely Filling Sheet";//Entry needed in DB->rcm_mapping_table 
 	public static final String RCM_MAPPING_RCM_DATABASE="RCM DataBase";//Entry needed in DB->rcm_mapping_table
 	
 	//Date Format from  Eagle Soft.
@@ -17,8 +18,8 @@ public class Constants {
 	
 	public static final int CLAIM_WITH_SYSTEM= 1;
 	
-	public static final String billingClaim="Billing";
-	public static final String reBillingClaim="Re-billing";
+	//public static final String billingClaim="Billing";
+	//public static final String reBillingClaim="Re-billing";
 	
 	public static final String insuranceTypePrimary="Primary";
 	public static final String insuranceTypeSecondary="Secondary";

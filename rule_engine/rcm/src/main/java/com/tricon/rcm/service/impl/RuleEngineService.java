@@ -14,7 +14,9 @@ import com.tricon.rcm.dto.RcmRemoteLiteSiteDetailsDto;
 import com.tricon.rcm.dto.RcmRemoteStatusCountDto;
 import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.dto.RemoteLiteDto;
+import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
+import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -163,7 +165,8 @@ public class RuleEngineService {
 	 * @param user
 	 * @return
 	 */
-	public String pullAndSaveClaimFromRE(ClaimSourceDto dto, RcmUser user) {
+	public String pullAndSaveClaimFromRE(ClaimSourceDto dto, RcmUser user,
+			List<TimelyFilingLimitDto> timelyFilingLimits) {
 
 		String success = "";
 		int logId = -1;
@@ -182,7 +185,7 @@ public class RuleEngineService {
 		int logStatus = 0;
 		try {
 			List<RcmTeam> allTeams = rcmTeamRepo.findAll();
-			RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(Constants.billingClaim);
+			RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
 			dto.setPassword(eagleSoftDBDetailsRepo.findByOffice(off).getPassword());
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			String param = "?password=" + dto.getPassword();
@@ -224,18 +227,26 @@ public class RuleEngineService {
 										newClaimCt++;
 										newClaimPCt++;
 										claim = new RcmClaims();
+										List<String> error= new ArrayList<>();
 										System.out.println(re.getPrimInsuranceCompanyId());
 										RcmInsurance primaryIns = insuranceRepo
 												.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off);
 										if (primaryIns==null) {
-										    saveRcmIssueClaim(re, buildError, off,user,
-										    "Primary Insurance Missing for id:"+re.getPrimInsuranceCompanyId());
-										    continue;
+										    error.add( "Primary Insurance Missing for id:"+re.getPrimInsuranceCompanyId());
 										}
 										if (primaryIns.getInsuranceType()==null) {
-										    saveRcmIssueClaim(re, buildError, off,user,
-										    "Primary Insurance Type Missing for id:"+re.getPrimInsuranceCompanyId()+" and Name: "+primaryIns.getName());
-										    continue;
+										    error.add("Primary Insurance Type Missing for id:"+re.getPrimInsuranceCompanyId()+" and Name: "+primaryIns.getName());
+										}
+										
+										String timely =getTimelyLimitFromSheetList(timelyFilingLimits, primaryIns.getName());
+										if (timely==null) {
+											error.add("Timely Limit Type Missing for Primary Ins. :"+primaryIns.getName());		    
+													    
+										}
+										if (error.size()>0) {
+											 saveRcmIssueClaim(re, buildError, off,user,
+													 String.join("\n", error));
+											 continue;
 										}
 										int insuranceId = primaryIns.getInsuranceType().getId();
 										rcmInsuranceType = rcmInsuranceTypeRepo.findById(insuranceId);
@@ -244,7 +255,8 @@ public class RuleEngineService {
 												primaryIns,
 												insuranceRepo.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(),
 														off),
-												systemStatusBilling, ClaimTypeEnum.P.getSuffix(), rcmInsuranceType);
+												systemStatusBilling, ClaimTypeEnum.P.getSuffix(), rcmInsuranceType,
+												timely);
 										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
 										RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOffice(re.getClaimId(), off);
 									    if (isC!=null){
@@ -265,19 +277,28 @@ public class RuleEngineService {
 											newClaimCt++;
 											newClaimSCt++;
 											claim = new RcmClaims();
+											error= new ArrayList<>();
 											RcmInsurance secondarySec = insuranceRepo
 													.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off);
 											
 											if (secondarySec==null && !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA)) {
-											    saveRcmIssueClaim(re, buildError, off,user,
-											    "Secondary Insurance Missing for id:"+re.getSecInsuranceCompanyId());
-											    continue;
+												error.add("Secondary Insurance Missing for id:"+re.getSecInsuranceCompanyId());
 											}
 											if (secondarySec.getInsuranceType()==null && !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA)) {
-											    saveRcmIssueClaim(re, buildError, off,user,
-											    "Secondary Insurance Type Missing for id:"+re.getSecInsuranceCompanyId()+" and Name: "+secondarySec.getName());
-											    continue;
+												error.add("Secondary Insurance Type Missing for id:"+re.getSecInsuranceCompanyId()+" and Name: "+secondarySec.getName());
 											}
+											
+											 timely =getTimelyLimitFromSheetList(timelyFilingLimits, secondarySec.getName() );
+											if (timely==null) {
+												error.add("Timely Limit Type Missing for Secondary Ins. :"+secondarySec.getName());
+											}
+											
+											if (error.size()>0) {
+												 saveRcmIssueClaim(re, buildError, off,user,
+														 String.join("\n", error));
+												 continue;
+											}
+											
 											insuranceId = secondarySec.getInsuranceType().getId();
 											rcmInsuranceType = rcmInsuranceTypeRepo.findById(insuranceId);
 											claim = ClaimUtil.createClaimFromESData(claim, off, re,
@@ -285,7 +306,7 @@ public class RuleEngineService {
 													insuranceRepo.findByInsuranceIdAndOffice(
 															re.getPrimInsuranceCompanyId(), off),
 													secondarySec, systemStatusBilling, ClaimTypeEnum.S.getSuffix(),
-													rcmInsuranceType);
+													rcmInsuranceType,timely);
 											claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
 											if (assignedUser != null) {
 												rcmAssigment = new RcmClaimAssignment();
@@ -317,23 +338,30 @@ public class RuleEngineService {
 										}
 
 										if (!primaryPresent) {
+											List<String> error= new ArrayList<>();
+											
 											newClaimCt++;
 											newClaimPCt++;
 											claim = new RcmClaims();
 											RcmInsurance primarySec = insuranceRepo
 													.findByInsuranceIdAndOffice(re.getPrimInsuranceCompanyId(), off);
 											if (primarySec==null) {
-											    saveRcmIssueClaim(re, buildError, off,user,
-											    "Primary Insurance Missing for id:"+re.getPrimInsuranceCompanyId());
-											    continue;
+												error.add("Primary Insurance Missing for id:"+re.getPrimInsuranceCompanyId());
 											}
 											
 											if (primarySec.getInsuranceType()==null) {
-											    saveRcmIssueClaim(re, buildError, off,user,
-											    "Primary Insurance Type Missing for id:"+re.getPrimInsuranceCompanyId()+" and Name: "+primarySec.getName());
-											    continue;
+												error.add("Primary Insurance Type Missing for id:"+re.getPrimInsuranceCompanyId()+" and Name: "+primarySec.getName());
 											}
+											String timely =getTimelyLimitFromSheetList(timelyFilingLimits, primarySec.getName());
 											
+											if (timely==null) {
+												error.add("Timely Limit Type Missing for Primary Ins. :"+primarySec.getName());
+											}
+											if (error.size()>0) {
+												 saveRcmIssueClaim(re, buildError, off,user,
+														 String.join("\n", error));
+												 continue;
+											}
 											int insuranceId = primarySec.getInsuranceType().getId();
 											rcmInsuranceType = rcmInsuranceTypeRepo.findById(insuranceId);
 											claim = ClaimUtil.createClaimFromESData(claim, off, re,
@@ -342,7 +370,7 @@ public class RuleEngineService {
 															re.getPrimInsuranceCompanyId(), off),
 													insuranceRepo.findByInsuranceIdAndOffice(
 															re.getSecInsuranceCompanyId(), off),
-													systemStatusBilling, ClaimTypeEnum.P.getSuffix(), rcmInsuranceType);
+													systemStatusBilling, ClaimTypeEnum.P.getSuffix(), rcmInsuranceType,timely);
 											String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
 											RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOffice(re.getClaimId(), off);
 										    if (isC!=null){
@@ -361,19 +389,28 @@ public class RuleEngineService {
 											newClaimCt++;
 											newClaimSCt++;
 											claim = new RcmClaims();
+											List<String> error= new ArrayList<>();
 											RcmInsurance secondarySec = insuranceRepo
 													.findByInsuranceIdAndOffice(re.getSecInsuranceCompanyId(), off);
 											if (secondarySec==null && !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA)) {
-											    saveRcmIssueClaim(re, buildError, off,user,
-											    "Secondary Insurance Missing for id:"+re.getSecInsuranceCompanyId());
-											    continue;
+											    error.add("Secondary Insurance Missing for id:"+re.getSecInsuranceCompanyId());
 											}
 											
 											if (secondarySec.getInsuranceType()==null && !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA)) {
-											    saveRcmIssueClaim(re, buildError, off,user,
-											    "Secondary Insurance Type Missing for id:"+re.getSecInsuranceCompanyId()+" and Name: "+secondarySec.getName());
-											    continue;
+												error.add("Secondary Insurance Type Missing for id:"+re.getSecInsuranceCompanyId()+" and Name: "+secondarySec.getName());
 											}
+											
+											String timely =getTimelyLimitFromSheetList(timelyFilingLimits, secondarySec.getName() );
+											if (timely==null) {
+												error.add("Timely Limit Type Missing for Secondary Ins. :"+secondarySec.getName());
+											}
+											
+											if (error.size()>0) {
+												 saveRcmIssueClaim(re, buildError, off,user,
+														 String.join("\n", error));
+												 continue;
+											}
+											
 											int insuranceId = secondarySec.getInsuranceType().getId();
 											rcmInsuranceType = rcmInsuranceTypeRepo.findById(insuranceId);
 											claim = ClaimUtil.createClaimFromESData(claim, off, re,
@@ -382,7 +419,8 @@ public class RuleEngineService {
 															re.getPrimInsuranceCompanyId(), off),
 													insuranceRepo.findByInsuranceIdAndOffice(
 															re.getSecInsuranceCompanyId(), off),
-													systemStatusBilling, ClaimTypeEnum.S.getSuffix(), rcmInsuranceType);
+													systemStatusBilling, ClaimTypeEnum.S.getSuffix(), rcmInsuranceType,
+													timely);
 											String claimUUid = rcmClaimRepository.save(claim).getClaimId();
 											RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOffice(re.getClaimId(), off);
 										    if (isC!=null){
@@ -451,7 +489,7 @@ public class RuleEngineService {
 
 		logger.info(" In pull Insurance From RE");
 		dto.setPassword(eagleSoftDBDetailsRepo.findByOffice(officeRepo.findByUuid(dto.getOfficeuuid())).getPassword());
-		insuranceRepo.inActiveAllInsuranceByOffice(dto.getOfficeuuid());
+		
 		try {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			String param = "?password=" + dto.getPassword();
@@ -465,7 +503,9 @@ public class RuleEngineService {
 			RcmInsuranceMainRootDto rootDto = result.getBody();
 			RcmInsurance insurance = null;
 			RcmInsurance insuranceOld = null;
-
+			if (rootDto.getData().getDatas()!=null) {
+			insuranceRepo.inActiveAllInsuranceByOffice(dto.getOfficeuuid()); 
+			}
 			for (RcmInsuranceDatas datas : rootDto.getData().getDatas()) {
 				String OfficeUuid = datas.getOfficeName();
 				try {
@@ -591,6 +631,23 @@ public class RuleEngineService {
 	}
 	
 	
+	public List<TimelyFilingLimitDto> pullTimelyFilingLmtMappingFromSheet(RcmCompany company) {
+
+		logger.info(" In TimelyFilingLimitDto");
+		RcmMappingTable table = rcmMappingTableRepo.findByNameAndCompany(Constants.RCM_MAPPING_TIMELY_LIMIT, company);
+		List<TimelyFilingLimitDto> li = null;
+		try {
+			li = ConnectAndReadSheets.readTimelyFilingLimitMappingSheet(table.getGoogleSheetId(), table.getGoogleSheetSubName(),
+					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+
+		} catch (Exception n) {
+			logger.error("Error in Fetching TimelyFilingLimi ");
+			logger.error(n.getMessage());
+		}
+
+		return li;
+	}
+	
 	private void saveRcmIssueClaim(ClaimsFromRuleEngine re,List<String> buildError,RcmOffice off,
 			RcmUser user,String error) {
 		
@@ -650,13 +707,32 @@ public class RuleEngineService {
 			return null;
 		}
 		Collection<InsuranceNameTypeDto> ruleGen = Collections2.filter(sheetData,
-				sh -> sh.getInsuranceName().equals(name));
+				sh -> sh.getInsuranceName().equalsIgnoreCase(name));
 		for (InsuranceNameTypeDto gs : ruleGen) {
 			insuranceType = gs.getInsuranceType();
 			break;
 		}
 		if (insuranceType == null) {
 			logger.error(name + " Not found in  Google sheet");
+
+		}
+		return insuranceType;
+	}
+	
+	private String getTimelyLimitFromSheetList(List<TimelyFilingLimitDto> sheetData, String name) {
+		String insuranceType = null;
+		if (sheetData == null) {
+			logger.error("Data From Mapping sheet not found");
+			return null;
+		}
+		Collection<TimelyFilingLimitDto> ruleGen = Collections2.filter(sheetData,
+				sh -> sh.getInsuranceName().equalsIgnoreCase(name));
+		for (TimelyFilingLimitDto gs : ruleGen) {
+			insuranceType = gs.getTimelyFilingLimit();
+			break;
+		}
+		if (insuranceType == null) {
+			logger.error(name + " TimelyLimit Not found in  Google sheet");
 
 		}
 		return insuranceType;

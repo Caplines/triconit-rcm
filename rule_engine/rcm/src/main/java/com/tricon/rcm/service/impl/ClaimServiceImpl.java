@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Collections2;
+
 import com.tricon.rcm.db.entity.RcmClaimLog;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
@@ -33,6 +35,7 @@ import com.tricon.rcm.db.entity.RcmInsuranceType;
 import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
@@ -40,8 +43,12 @@ import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RcmClaimMainRootDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.TimelyFilingLimitDto;
+import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
+import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
+import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -115,6 +122,11 @@ public class ClaimServiceImpl {
 		// go to Rule Engine.
 		Object status = null;
 		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		
 		if (dto.getSource().equals(ClaimSourceEnum.GOOGLESHEET.toString())) {
 			try {
 				status = pullAndSaveClaimFromSheet(dto, user);
@@ -132,8 +144,10 @@ public class ClaimServiceImpl {
 				// logId=-1;
 				String data="";
 				ruleEngineService.pullAndSaveInsuranceFromRE(d, user);
+				
+				List<TimelyFilingLimitDto> li= ruleEngineService.pullTimelyFilingLmtMappingFromSheet(jwtUser.getCompany());
 				try {
-					data = ruleEngineService.pullAndSaveClaimFromRE(d, user);
+					data = ruleEngineService.pullAndSaveClaimFromRE(d, user,li);
 					String[] logs=data.split("___");
 					if (logs.length==2) {
 						
@@ -163,14 +177,24 @@ public class ClaimServiceImpl {
 	 * 
 	 * @return
 	 */
-	public List<FreshClaimDetailsDto> fetchFreshClaimDetails() {
+	public List<FreshClaimDetailsDto> fetchBillingClaimDetails() {
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		
-		return rcmClaimRepository.fetchFreshClaimDetails(jwtUser.getCompany().getUuid());
+		return rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(),ClaimStatusEnum.Billing.getId());
+	}
+	
+    public List<FreshClaimDetailsDto> fetchReBillingClaimDetails() {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		
+		return rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(),ClaimStatusEnum.ReBilling.getId());
 	}
 
 	
@@ -208,7 +232,7 @@ public class ClaimServiceImpl {
 					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
 			if (li != null) {
 
-				RcmClaimStatusType billingStatus = rcmClaimStatusTypeRepo.findByStatus(Constants.billingClaim);
+				RcmClaimStatusType billingStatus = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
 				for (ClaimFromSheet ins : li) {
 
 					RcmOffice office = officeRepo.findByCompanyAndName(company, ins.getOfficeName());
@@ -341,5 +365,69 @@ public class ClaimServiceImpl {
 		}
 		else return null;
 	}
-
+	
+	
+	 public List<FreshClaimDataDto> fetchFreshClaimDetails(int teamId) {
+			
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			Object principal = authentication.getPrincipal();
+			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+			JwtUser jwtUser = (JwtUser) userDetails;
+			
+			return rcmClaimRepository.fetchFreshClaimDetails(jwtUser.getCompany().getUuid(), teamId);
+		}
+	 
+	 public List<FreshClaimDataDto> fetchClaimsByTeamNotFrom(int teamId) {
+			
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			Object principal = authentication.getPrincipal();
+			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+			JwtUser jwtUser = (JwtUser) userDetails;
+			
+			return rcmClaimRepository.fetchFreshClaimDetailsOtherTeam(jwtUser.getCompany().getUuid(),teamId);
+		}
+	 
+	 
+	 
+	 public List<AssignFreshClaimLogsDto> fetchClaimsForAssignments(AssigmentClaimListDto dto) {
+			
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			Object principal = authentication.getPrincipal();
+			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+			JwtUser jwtUser = (JwtUser) userDetails;
+			List<Integer> ct=dto.getClaimType();
+			List<String> inst=dto.getInsuranceType();
+			if (dto.getClaimType()==null) {
+				ct= new ArrayList<>();
+				ct.add(ClaimStatusEnum.Billing.getId());
+				ct.add(ClaimStatusEnum.ReBilling.getId());
+			}
+			
+			 Set<Integer> instDB=new HashSet<>();
+			 List<RcmInsuranceType>  insList=rcmInsuranceTypeRepo.findAll();
+			if (inst==null) {
+			  insList.stream().map(RcmInsuranceType::getId).forEach(instDB::add);
+			}else {
+				
+				for(String i:inst) {
+					
+					List<RcmInsuranceType> x=	insList.stream()
+							.filter(p -> p.getName().contains(i)).collect(Collectors.toList());
+					if (x!=null) {
+						x.stream().map(RcmInsuranceType::getId).forEach(instDB::add);
+					}
+					
+				}
+				
+			}
+			List<AssignFreshClaimLogsDto> l=null;
+			try {
+			 l=rcmClaimRepository.fetchClaimsForAssignments(jwtUser.getCompany().getUuid(),ct,instDB);
+	        }catch(Exception n) {
+	        	n.printStackTrace();
+	        }
+			return l;
+		}
+	 
+	 
 }

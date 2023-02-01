@@ -34,6 +34,7 @@ import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.dto.RemoteLiteDto;
+import com.tricon.rcm.dto.TimelyFilingLimitDto;
 
 @Configuration
 public class ConnectAndReadSheets {
@@ -151,6 +152,43 @@ public class ConnectAndReadSheets {
 			try {
 				int x = -1;
 				dto = new InsuranceNameTypeDto(obj.get(++x), obj.get(++x));
+				list.add(dto);
+
+			} catch (Exception ex) {
+				continue;
+			}
+
+		}
+
+		return list;
+
+	}
+	
+	
+	public static List<TimelyFilingLimitDto> readTimelyFilingLimitMappingSheet(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		return readTimelyFilingLimitMappingSheetFull(response);
+	}
+	
+	
+	private static List<TimelyFilingLimitDto> readTimelyFilingLimitMappingSheetFull(ValueRange range) {
+
+		List<List<Object>> values = range.getValues();
+		List<TimelyFilingLimitDto> list = new ArrayList<>();
+		TimelyFilingLimitDto dto = null;
+		ListIterator li = values.listIterator();
+		int ctr = 0;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			ctr++;
+			if (ctr < 2)
+				continue;
+			try {
+				int x = -1;
+				dto = new TimelyFilingLimitDto(obj.get(++x), obj.get(++x),obj.get(++x),obj.get(++x));
 				list.add(dto);
 
 			} catch (Exception ex) {

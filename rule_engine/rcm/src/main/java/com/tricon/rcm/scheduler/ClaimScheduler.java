@@ -2,6 +2,7 @@ package com.tricon.rcm.scheduler;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +11,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ClaimSourceDto;
+import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RemoteLiteDataDto;
+import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
@@ -47,14 +51,16 @@ public class ClaimScheduler {
 		RcmUser user= userRepo.findByEmail(Constants.SYSTEM_USER_EMAIL);
 		
 		ClaimSourceDto dto = new ClaimSourceDto();
-		dto.setCompanyuuid(compRepo.findByName(Constants.COMPANY_NAME).getUuid());
+		RcmCompany comp= compRepo.findByName(Constants.COMPANY_NAME);
+		dto.setCompanyuuid(comp.getUuid());
+		List<TimelyFilingLimitDto> li= ruleEngineService.pullTimelyFilingLmtMappingFromSheet(comp);
 		for(RcmOfficeDto officeDto: commonsService.getAllOffices()) {
 			logger.info("ClaimScheduler For  " + officeDto.getName());
 			dto.setOfficeuuid(officeDto.getUuid());
 			dto.setSource(ClaimSourceEnum.EAGLESOFT.toString());
 			
 			ruleEngineService.pullAndSaveInsuranceFromRE(dto,user);
-			ruleEngineService.pullAndSaveClaimFromRE(dto,user);
+			ruleEngineService.pullAndSaveClaimFromRE(dto,user,li);
 			//ruleEngineService.pullAndSaveRemoteLiteData(dto,user,logId);
 			
 			break;

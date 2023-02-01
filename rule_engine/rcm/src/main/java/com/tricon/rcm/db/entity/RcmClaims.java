@@ -127,6 +127,9 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@JoinColumn(name = "rcm_insurance_type", referencedColumnName = "id")
 	private RcmInsuranceType rcmInsuranceType;
 	
+	@Column(name = "timely_fil_lmt_dt")
+	private String  timelyFilingLimitData;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "last_work_team_id", referencedColumnName = "id",nullable=true)
 	private RcmTeam lastWorkTeamId;
