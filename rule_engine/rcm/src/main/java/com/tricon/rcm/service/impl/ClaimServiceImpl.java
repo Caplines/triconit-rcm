@@ -2,7 +2,6 @@ package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -114,6 +114,7 @@ public class ClaimServiceImpl {
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
 	private UserDetailsService userDetailsService;
+	
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -136,6 +137,11 @@ public class ClaimServiceImpl {
 		} else {
 			List<ClaimLogDto> mapcountNew = new ArrayList<>();
 			ClaimLogDto claimLogDto =null;
+			if (dto.getOfficeuuids()==null) {
+				List<String> of= new ArrayList<>(); 
+				officeRepo.findByCompany(jwtUser.getCompany()).stream().map(RcmOfficeDto::getUuid).forEach(of::add);
+				dto.setOfficeuuids(of);
+			}
 			for (String dtoOff : dto.getOfficeuuids()) {
 				ClaimSourceDto d = new ClaimSourceDto();
 				

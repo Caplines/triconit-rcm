@@ -396,12 +396,13 @@ public class RuleEngineService {
 											    error.add("Secondary Insurance Missing for id:"+re.getSecInsuranceCompanyId());
 											}
 											
-											if (secondarySec.getInsuranceType()==null && !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA)) {
+											if (secondarySec!=null && (secondarySec.getInsuranceType()==null || !re.getSecInsuranceCompanyId().equals(Constants.NO_DATA))) {
 												error.add("Secondary Insurance Type Missing for id:"+re.getSecInsuranceCompanyId()+" and Name: "+secondarySec.getName());
 											}
 											
-											String timely =getTimelyLimitFromSheetList(timelyFilingLimits, secondarySec.getName() );
-											if (timely==null) {
+											String timely =null;
+											if (secondarySec!=null) getTimelyLimitFromSheetList(timelyFilingLimits, secondarySec.getName() );
+											if (timely==null && secondarySec!=null) {
 												error.add("Timely Limit Type Missing for Secondary Ins. :"+secondarySec.getName());
 											}
 											
@@ -411,7 +412,7 @@ public class RuleEngineService {
 												 continue;
 											}
 											
-											int insuranceId = secondarySec.getInsuranceType().getId();
+											int insuranceId =secondarySec!=null?secondarySec.getInsuranceType().getId():-1;
 											rcmInsuranceType = rcmInsuranceTypeRepo.findById(insuranceId);
 											claim = ClaimUtil.createClaimFromESData(claim, off, re,
 													filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user,

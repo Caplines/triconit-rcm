@@ -3,12 +3,14 @@ package com.tricon.rcm.api.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +22,7 @@ import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
+import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
@@ -39,6 +42,10 @@ public class RcmController {
 
 	@Autowired
 	Environment ev;
+	
+	@Autowired
+	@Qualifier("jwtUserDetailsService")
+	private UserDetailsService userDetailsService;
 
 	/**
 	 * Fetch Claims From Eagle Soft or Google Sheet
@@ -54,6 +61,9 @@ public class RcmController {
 		Object principal = authentication.getPrincipal();
 		((UserDetails) principal).getUsername();
 		RcmUser user = null;
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		dto.setCompanyuuid(jwtUser.getCompany().getUuid());
 		Object sucess = null;
 		sucess = claimServiceImpl.pullClaimFromSource(dto, user);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", sucess));
