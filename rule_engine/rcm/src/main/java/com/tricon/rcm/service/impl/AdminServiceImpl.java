@@ -387,7 +387,7 @@ public class AdminServiceImpl {
 
 		// if company uuid is same as capline or office is alreday exist then return
 		if (oldOffice != null || company.getName().equals(Constants.COMPANY_NAME)) {
-			return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 		}
 
 		// if login user(ADMIN) is capline then login user can add other company new
@@ -448,7 +448,7 @@ public class AdminServiceImpl {
 
 		// if office id is capline then return
 		if (office.getCompany().getName().equals(Constants.COMPANY_NAME)) {
-			return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 		}
 
 		// if login user(ADMIN) is capline then login user can edit other company office
@@ -465,7 +465,7 @@ public class AdminServiceImpl {
 				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 			}
 		}
-		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 	}
 
 	/**
@@ -484,7 +484,7 @@ public class AdminServiceImpl {
 		List<RcmUserRole> listOfRoles = new ArrayList<>();
 		// if uuid is match from login user then return
 		if (jwtUser.getUuid().equals(dto.getUuid())) {
-			return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 		}
 
 		// if user is not null and company is capline then admin can change user's roles of own company users and other company user's roles
