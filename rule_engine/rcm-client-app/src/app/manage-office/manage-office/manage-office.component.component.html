@@ -1,0 +1,82 @@
+<app-header-component [isManageOffice]="isManageOffice"></app-header-component>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm"></div>
+        <div class="col-lg-12 pt-3">
+            <ng-container *ngIf="alert.showAlertPopup">
+                <div class="alert alert-warning alert-dismissible fade show my-3 text-center" role="alert">
+                    <strong>{{alert.alertMsg}}</strong>
+                    <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </ng-container>
+            <h2 class="page-heading">Manage-Offices</h2>
+            <div class="main-container register-User">
+                <div class="form-container">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                               
+                                <label for="companyId">Company Name</label>
+                                <!-- <select class="form-control"  (change)="getOfficesByCompany($event);selectCompany($event)" [ngClass]="{'is-invalid':userDetails.controls.companyName.invalid && userDetails.controls.companyName.touched}"> -->
+                                <select class="form-control"
+                                    (change)="getOfficesByCompany($event);selectCompany($event)">
+                                    <option selected="true" hidden="true">Select Company</option>
+                                    <ng-container *ngFor="let comp of companyData">
+                                        <option value="{{comp.name}}">{{comp.name}}</option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
+                <ng-container *ngIf="officeData.length>0">
+                    <div class="table-responsive">
+                        <table class="table" id="table">
+                            <tr class="thead-dark">
+                                <th>Office Name</th>
+                                <th *ngIf="this.companyUuid !== '614c4beb-7df2-11e8-8432-8c16451459cd'">Edit</th>
+                                <th *ngIf="this.companyUuid !== '614c4beb-7df2-11e8-8432-8c16451459cd'">Save</th>
+                                <th *ngIf="this.companyUuid !== '614c4beb-7df2-11e8-8432-8c16451459cd'"><button type="button" class="btn btn-primary" (click)="addNewOffice()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus"
+                                            viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z">
+                                            </path>
+                                        </svg>
+                                        Add New Office
+                                    </button></th>
+                            </tr>
+                            <ng-container *ngFor="let office of officeData;let idx= index">
+                                <tr>
+                                    <td scope="col"> <input type="text" value="{{office.name}}" [(ngModel)]="office.name" class="form-control" [disabled]="!office.editable" [ngClass]="{'is-invalid': office.editable && office.name==''}"></td>
+                                    <td scope="col" *ngIf="this.companyUuid !== '614c4beb-7df2-11e8-8432-8c16451459cd'"><button type="button" (click)="editOfficeName(office,idx)" class="btn btn-success">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen"
+                                                viewBox="0 0 16 16">
+                                                <path
+                                                    d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z">
+                                                </path>
+                                            </svg>
+                                            Edit
+                                        </button> </td>
+                                    <td scope="col" *ngIf="this.companyUuid !== '614c4beb-7df2-11e8-8432-8c16451459cd'"><button type="button" class="btn btn-danger" [disabled]="!office.editable" (click)="saveOfficeName(office)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save"
+                                                viewBox="0 0 16 16">
+                                                <path
+                                                    d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z">
+                                                </path>
+                                            </svg>
+                                            Save
+                                        </button></td>
+                                    <td></td>
+                                    </tr>
+                                </ng-container>
+                            </table>
+                        </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>
