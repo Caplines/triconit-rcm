@@ -4,9 +4,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -37,25 +35,22 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.UserAssignOffice;
-import com.tricon.rcm.dto.RcmClaimDto;
 import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
+import com.tricon.rcm.dto.RcmClaimDto;
 import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
-import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmUserDto;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RcmUserToDto;
-import com.tricon.rcm.dto.ResetStatusDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.email.EmailUtil;
-import com.tricon.rcm.enums.RcmCompanyEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -383,33 +378,37 @@ public class AdminServiceImpl {
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
-		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyUuid());
 		RcmOffice office = new RcmOffice();
-		RcmOffice oldOffice = officeRepo.findByCompanyAndName(company, dto.getName());
+		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyUuid());
 
-		// if company uuid is same as capline or office is alreday exist then return
-		if (oldOffice != null || company.getName().equals(Constants.COMPANY_NAME)) {
-			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
-		}
+		if (company != null) {
 
-		// if login user(ADMIN) is capline then login user can add other company new
-		// office
-		if (oldOffice == null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
-			office.setName(dto.getName());
-			office.setCompany(company);
-			officeRepo.save(office);
-			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
-		} else {
-			// if login user(ADMIN) is other than capline then login user can add own new
-			// company offices
-			if (oldOffice == null && jwtUser.getCompany().getName().equals(company.getName())) {
+			RcmOffice oldOffice = officeRepo.findByCompanyAndName(company, dto.getName());
+
+			// if company uuid is same as capline or office is alreday exist then return
+			if (oldOffice != null || company.getName().equals(Constants.COMPANY_NAME)) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
+			}
+
+			// if login user(ADMIN) is capline then login user can add other company new
+			// office
+			if (oldOffice == null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
 				office.setName(dto.getName());
 				office.setCompany(company);
 				officeRepo.save(office);
 				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+			} else {
+				// if login user(ADMIN) is other than capline then login user can add own new
+				// company offices
+				if (oldOffice == null && jwtUser.getCompany().getName().equals(company.getName())) {
+					office.setName(dto.getName());
+					office.setCompany(company);
+					officeRepo.save(office);
+					return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+				}
 			}
-		}
-		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+		} 
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
 	}
 
 	/**
@@ -432,7 +431,7 @@ public class AdminServiceImpl {
 				return new GenericResponse(HttpStatus.OK, "", office);
 			}
 		}
-		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 	}
 
 	/**
@@ -456,6 +455,7 @@ public class AdminServiceImpl {
 		// if login user(ADMIN) is capline then login user can edit other company office
 		if (office != null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
 			office.setName(dto.getOfficeName());
+			office.setUpdatedDate(Timestamp.from(Instant.now()));
 			officeRepo.save(office);
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 		} else {
@@ -463,6 +463,7 @@ public class AdminServiceImpl {
 			// company offices
 			if (office != null && jwtUser.getCompany().getName().equals(office.getCompany().getName())) {
 				office.setName(dto.getOfficeName());
+				office.setUpdatedDate(Timestamp.from(Instant.now()));
 				officeRepo.save(office);
 				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 			}
@@ -509,16 +510,16 @@ public class AdminServiceImpl {
 			userRole.saveAll(listOfRoles);
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 		}
-		return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
    }
 
-	public List<RcmUserToDto> getUsersFromClaimAssignmentTable(RcmClaimDto dto) throws Exception {
+	public List<RcmUserToDto> getUsersFromClaimAssignmentTable(RcmClaimDto dto,RcmCompany company) throws Exception {
 		// first we will check any claim is assign or not in this uuid
 		// if yes then fetch all billing users data will show in popup window
 
 		List<RcmClaimAssignment> existingcUser = claimAssignmentRepo.findByAssignedToUuid(dto.getUserUuid());
 		if (existingcUser!=null && !existingcUser.isEmpty()) {
-			List<RcmUserToDto> rcmUser = userService.getUsersByTeamId(dto.getTeamId());
+			List<RcmUserToDto> rcmUser = userService.getUsersByTeamId(dto.getTeamId(),company);
 			if (rcmUser != null) {
 				rcmUser.removeIf(x -> x.getUuid().equals(dto.getUserUuid()));
 				return rcmUser;
@@ -534,7 +535,6 @@ public class AdminServiceImpl {
 		RcmClaimAssignment assignment = null;
 		RcmClaims assignClaim = null;
 		RcmClaimStatusType claimStatusType = null;
-		String msg = "";
 		if (oldClaimUserData != null && !oldClaimUserData.isEmpty()) {
 
 			assigneToUser = userRepo.findByUuid(dto.getNewClaimUserUuid());
@@ -554,14 +554,12 @@ public class AdminServiceImpl {
 								assignClaim, MessageConstants.CLAIM_REASSIGN_MESSAGE, claimStatusType);
 						claimAssignmentRepo.save(assignment);
 					} else {
-						msg = MessageConstants.SOMETHING_WENT_WRONG;
-						return msg;
+						return MessageConstants.SOMETHING_WENT_WRONG;
 					}
 				}
-				msg = MessageConstants.CLAIM_REASSIGN_SUCCESS_MESSAGE;
-				return msg;
+				return MessageConstants.CLAIM_REASSIGN_SUCCESS_MESSAGE;
 			}
 		}
-		return null;
+		return  MessageConstants.SOMETHING_WENT_WRONG;
 	}
 }
