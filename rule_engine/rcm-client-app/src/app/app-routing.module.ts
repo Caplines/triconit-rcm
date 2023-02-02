@@ -38,6 +38,11 @@ const routes: Routes = [
     loadChildren :()=> import("./manage-office/manage-office.module").then(m=>m.ManageOfficeModule),
    
   },
+  {
+    path:'claim-assignment',
+    loadChildren :()=> import("./claim-office-assignment/office-assignment.module").then(m=>m.ClaimAssignmentModule),
+   
+  },
   { path: '**', redirectTo: '/login' }
 ];
 

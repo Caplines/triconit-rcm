@@ -1,0 +1,50 @@
+
+
+<table>
+    <tr>
+        <td>
+        <select
+        name="bType" [(ngModel)]="bType"  (change)="fetchClaimAssignments()">
+            <option *ngFor="let sta of bl.bills" [value]="sta.key">{{sta.value}}</option>
+        </select>
+    </td>
+    </tr>
+
+    <tr>
+    <td>
+        <select
+        name="insType" [(ngModel)]="insType" >
+            <option *ngFor="let sta of bl.insTypes" [value]="sta.key">{{sta.value}}</option>
+        </select>
+    </td>
+    </tr>
+
+    
+</table>
+
+
+<table>
+    <tr>
+    <td>Office Name</td>
+    <td>Assigned User</td>
+    <td>Oldest Pending Date</td>
+    <td>Oldest Pending DOS</td>
+    <td>Number of Pending Claims to be Billed</td>
+    <td>No. of RemoteLite Rejections Pending to be Handled</td>
+    <td>Total (Pending For Billing & Remote Lite Rejections)</td>
+    </tr>
+
+    <tr *ngFor="let lg of claimData">
+        <td>{{lg.officeName}}</td>
+        <td>{{lg.assignedUser}}</td>
+        <td>{{lg.opdt | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+        <td>{{lg.opdos  | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+        <td>{{lg.count}}</td>
+        <td>{{lg.remoteLiteRejections}}</td>
+        <td>{{lg.remoteLiteRejections+lg.count}}</td>
+        <td></td>
+    </tr>  
+
+    <input type="button" value="Save Assingment" (click)="saveAssignments()"/>
+   
+</table>

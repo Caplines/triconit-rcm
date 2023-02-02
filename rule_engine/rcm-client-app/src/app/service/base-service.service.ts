@@ -28,6 +28,7 @@ export class BaseService {
     'fetchclaimsFromSource':"/api/fetch-claims-from-source",
     'editOfficeName': environment.API_URL+"/editOffice",
     'addNewOffice': environment.API_URL+"/addOffice",
+    'fetchclaimsAssignmentData':"/api/fetch-claims-log-assign",
   }
   token:any;
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BaseService } from './base-service.service';
 import { HttpClient } from '@angular/common/http';
 import {FreshClaimPullModel} from '../models/fresh.claim.pull.model';
+import {ClaimAssignmentPullModel} from '../models/claim-assignment-pull-model';
 
 @Injectable({
   providedIn: 'root'
@@ -30,4 +31,8 @@ export class ApplicationServiceService extends BaseService {
 
   }
 
+
+  fetchClaimAssignments(model:ClaimAssignmentPullModel,callback:any){
+    this.postData(model, this.httpUrl['fetchclaimsAssignmentData'],callback);
+  }
 }
