@@ -20,7 +20,6 @@ import com.tricon.rcm.dto.AssignUserOfficeDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
-import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 
 @Service
@@ -41,7 +40,7 @@ public class ManageOfficeServiceImpl {
 	 * @throws Exception
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse assignOfficeByAdmin(AssignOfficesToBillingUserDto dto, int teamId,RcmCompany logedIncompany) throws Exception {
+	public GenericResponse assignOfficeByAdmin(AssignOfficesToBillingUserDto dto,RcmCompany logedIncompany) throws Exception {
 		List<AssignUserOfficeDto> userOfficeData = dto.getAssignOfficeDetails();
 		List<String> listOfUserId = userOfficeData.stream().map(x -> x.getUserId()).collect(Collectors.toList());
 		List<String> listOfOfficeId = userOfficeData.stream().map(x -> x.getOfficeId()).collect(Collectors.toList());
@@ -50,10 +49,10 @@ public class ManageOfficeServiceImpl {
 		RcmUser newUser = null;
 		UserAssignOffice user = null;
 
-		if (!listOfUsers.isEmpty()) {
+		if (listOfUsers!=null && !listOfUsers.isEmpty()) {
 			for (RcmUser u : listOfUsers) {
-				if (u.getTeam().getId() != teamId || !u.getCompany().getUuid().equals(logedIncompany.getUuid())) {
-					return new GenericResponse(HttpStatus.BAD_REQUEST, "", null);
+				if (u.getTeam().getId() != dto.getTeamId() || !u.getCompany().getUuid().equals(logedIncompany.getUuid())) {
+					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 				}
 			}
 			// now we will check one office is assign to many user or not
@@ -66,11 +65,11 @@ public class ManageOfficeServiceImpl {
 			for (AssignUserOfficeDto userAndOfficeId : userOfficeData) {
 				office = new RcmOffice();
 				UserAssignOffice assignUser = userAssignRepo.findByUserUuidAndOfficeUuidAndTeamId(
-						userAndOfficeId.getUserId(), userAndOfficeId.getOfficeId(), teamId);
+						userAndOfficeId.getUserId(), userAndOfficeId.getOfficeId(),dto.getTeamId());
 				newUser = listOfUsers.stream().filter(x -> x.getUuid().equals(userAndOfficeId.getUserId())).findFirst()
 						.get();
 				if (assignUser == null) {
-					assignUser = userAssignRepo.findByOfficeUuidAndTeamId(userAndOfficeId.getOfficeId(), teamId);
+					assignUser = userAssignRepo.findByOfficeUuidAndTeamId(userAndOfficeId.getOfficeId(), dto.getTeamId());
 					if (assignUser != null) {
 						assignUser.setUser(userRepo.findByUuid(userAndOfficeId.getUserId()));
 						userAssignRepo.save(assignUser);
@@ -83,7 +82,7 @@ public class ManageOfficeServiceImpl {
 						userAssignRepo.save(user);
 					}
 				} else {
-					assignUser = userAssignRepo.findByOfficeUuidAndTeamId(userAndOfficeId.getOfficeId(), teamId);
+					assignUser = userAssignRepo.findByOfficeUuidAndTeamId(userAndOfficeId.getOfficeId(),dto.getTeamId());
 					if (assignUser != null) {
 						assignUser.setUser(userRepo.findByUuid(userAndOfficeId.getUserId()));
 						userAssignRepo.save(assignUser);

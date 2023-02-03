@@ -101,4 +101,26 @@ public enum RcmTeamEnum {
 		}
 		return null;
 	}
+	
+	public static int validateTeamId(int teamId)
+	{
+		int id=0;
+		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() ==teamId).findFirst();
+		if(teamEnum.isPresent()) {
+			 id=teamEnum.get().getId();
+			 return id;
+		}
+		return 0;
+	}
+	
+	public static String getTeamNameByTeamId(int teamId)
+	{
+		String teamName="";
+		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() ==teamId).findFirst();
+		if(teamEnum.isPresent()) {
+			 teamName=teamEnum.get().getName();
+			 return teamName;
+		}
+		return null;
+	}
 }

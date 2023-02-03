@@ -13,12 +13,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
+import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.MessageConstants;
@@ -38,6 +40,9 @@ public class UserServiceImpl {
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
 	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	RcmCompanyRepo rcmCompanyRepo;
 
 	/**
 	 * This method does update password of login user or admin
@@ -88,13 +93,14 @@ public class UserServiceImpl {
 		return null;
 	}
 
-	public List<RcmUserToDto> getUsersByTeamId(int teamId) throws Exception {
-		List<RcmUserToDto> data = null;
-		RcmTeam team = teamRepo.findById(teamId);
-		if (team != null) {
-			data = userRepo.findUsersByTeamId(team.getId());
-			return data;
-		}
+	public List<RcmUserToDto> getUsersByTeamId(int teamId,RcmCompany company) throws Exception {
+		    List<RcmUserToDto> data = null;
+			teamId=RcmTeamEnum.validateTeamId(teamId);
+			if (teamId != 0) {
+				data = userRepo.findUsersByTeamId(teamId, company.getUuid());
+				return data;
+			}
+		
 		return null;
 	}
 
