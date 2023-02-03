@@ -150,6 +150,18 @@ public class AdminServiceImpl {
 			}
 				user.setCompany(company);
 				user = userRepo.save(user);
+				
+				//if role is  TL then we will assign TL+ASSO to registerUser
+				if(dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.TEAMLEAD))){
+					roles = new RcmUserRole();
+					pk = new RcmUserRolePk();
+					pk.setUuid(user.getUuid());
+					roles.setId(pk);
+					roles.setRole(RcmTeamEnum.generateRole(team.getId(),Constants.ASSOCIATE));
+					userRole.save(roles);				
+				}
+				
 				for (String role : dto.getUserRole()) {
 					roles = new RcmUserRole();
 					pk = new RcmUserRolePk();
@@ -164,7 +176,7 @@ public class AdminServiceImpl {
 				}
 				
 				// save user data into user_assign_office table
-				if (user.getCompany().getName().equals(Constants.COMPANY_NAME) && dto.getUserRole().stream().anyMatch(x->x.equals(RcmRoleEnum.ASSO.getName()))) {
+				if (user.getCompany().getName().equals(Constants.COMPANY_NAME) && dto.getUserRole().stream().anyMatch(x->x.equals(RcmRoleEnum.ASSO.getName())||x.equals(RcmRoleEnum.TL.getName()))) {
 
 					// check office is already exist or not in given team id
 					if (user.getOffice()!=null) {

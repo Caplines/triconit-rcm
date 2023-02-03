@@ -42,6 +42,7 @@ public class Constants {
 	public static final String  ADMIN="ADMIN";
 	public static final String  SYSTEM="SYSTEM";
 	public static final String  ASSOCIATE="ASSO";
+	public static final String  TEAMLEAD="TL";
 	public static final Integer ENABLE=1;
 	public static final Integer DISABLE=0;
 	public static final Integer LENGTH=8;

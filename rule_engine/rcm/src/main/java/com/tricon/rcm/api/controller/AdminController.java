@@ -285,8 +285,12 @@ public class AdminController {
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
-	
-	@RequestMapping(value = "claimUsers", method = RequestMethod.POST)
+	/**
+	 * This Api fetches all users from Claim assignment table according to teamid
+	 * @param dto
+	 * @return
+	 */
+	@RequestMapping(value = "assignmentclaimUsers", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> claimsFromAssignmentTable(@RequestBody RcmClaimDto dto) {
 		if (dto.getUserUuid().trim().equals("")||dto.getTeamId()==null) {
