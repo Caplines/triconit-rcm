@@ -7,6 +7,7 @@ public interface FreshClaimDataDto {
 	String getOfficeName();
 	String getUuid();
 	String getClaimId();
+	String getPatientId();
 	Date getDos();
 	String getPatientName();
 	String getStatusType();

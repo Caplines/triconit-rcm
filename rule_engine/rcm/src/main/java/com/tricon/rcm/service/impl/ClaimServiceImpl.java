@@ -43,10 +43,12 @@ import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RcmClaimMainRootDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
+import com.tricon.rcm.dto.customquery.FreshClaimDetailsImplDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
@@ -179,30 +181,33 @@ public class ClaimServiceImpl {
 	}
 
 	/**
-	 * Service For Billing Pendency Dashboard (Get Fresh Claims Count Details)
+	 * Service For Billing Pendency Dashboard (Get Fresh Claims/Rebill Count Details)
 	 * 
 	 * @return
 	 */
-	public List<FreshClaimDetailsDto> fetchBillingClaimDetails() {
+	public List<FreshClaimDetailsImplDto> fetchBillingClaimDetails(int billType) {
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
-		
-		return rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(),ClaimStatusEnum.Billing.getId());
+		List<FreshClaimDetailsDto> dtoList=rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(),billType);
+		 List<FreshClaimDetailsImplDto> finalList = new ArrayList<>();
+		HashMap<String,RemoteLietStatusCount> remoteLiteMap= ruleEngineService.pullAndSaveRemoteLiteData();
+		RemoteLietStatusCount counts=null;
+		if (dtoList!=null) {
+			for(FreshClaimDetailsDto d:dtoList) {
+				FreshClaimDetailsImplDto dF= new FreshClaimDetailsImplDto();
+				BeanUtils.copyProperties(d, dF);
+				counts=remoteLiteMap.get(d.getOfficeName());
+				if (counts!=null) dF.setRemoteLiteRejections( counts.getRejectedCount());
+				finalList.add(dF);
+				
+			}
+		}
+		return finalList;
 	}
 	
-    public List<FreshClaimDetailsDto> fetchReBillingClaimDetails() {
-		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		
-		return rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(),ClaimStatusEnum.ReBilling.getId());
-	}
-
 	
 	/**
 	 * 
@@ -351,7 +356,7 @@ public class ClaimServiceImpl {
 	 * log.setNewClaimsCount(newClaimCt); commonClaimServiceImpl.save(log); }
 	 */
 	
-	public Object fetchRemoteLiteRejections(String officeUUid) {
+	public Object fetchRemoteLiteRejections() {
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
@@ -360,27 +365,29 @@ public class ClaimServiceImpl {
 		JwtUser jwtUser = (JwtUser) userDetails;
 		
 		ClaimSourceDto dto= new ClaimSourceDto();
-		dto.setOfficeuuid(officeUUid);
+		//dto.setOfficeuuid(officeUUid);
 		dto.setCompanyuuid(jwtUser.getCompany().getUuid());
 		//only for Simple Point
 		if (jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
 			
-			RcmUser user= userRepo.findByEmail(((UserDetails) principal).getUsername());
-			Object obj=ruleEngineService.pullAndSaveRemoteLiteData(dto, user, -1);
+			//RcmUser user= userRepo.findByEmail(((UserDetails) principal).getUsername());
+			Object obj=ruleEngineService.pullAndSaveRemoteLiteData();
 			return obj;
 		}
 		else return null;
 	}
 	
 	
-	 public List<FreshClaimDataDto> fetchFreshClaimDetails(int teamId) {
+	 public List<FreshClaimDataDto> fetchFreshClaimDetails(int teamId,int billingORRebill,String sub) {
 			
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			Object principal = authentication.getPrincipal();
-			final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-			JwtUser jwtUser = (JwtUser) userDetails;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
 			
-			return rcmClaimRepository.fetchFreshClaimDetails(jwtUser.getCompany().getUuid(), teamId);
+		if (sub.equals("Fresh")) return rcmClaimRepository.fetchFreshClaimDetails(jwtUser.getCompany().getUuid(), teamId);
+		else                     return rcmClaimRepository.fetchClaimDetailsWorkedByTeam(jwtUser.getCompany().getUuid(), teamId);
+			
 		}
 	 
 	 public List<FreshClaimDataDto> fetchClaimsByTeamNotFrom(int teamId) {

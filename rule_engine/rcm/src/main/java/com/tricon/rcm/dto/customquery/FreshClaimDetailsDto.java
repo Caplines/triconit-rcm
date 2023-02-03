@@ -19,4 +19,6 @@ public interface FreshClaimDetailsDto {
 	//int getRebill();
 	
 	int getRemoteLiteRejections();
+	
+	void setRemoteLiteRejections(int num);
 }
