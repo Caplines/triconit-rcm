@@ -16,7 +16,7 @@ const routes: Routes = [
   {
     path: 'fetch-claims',
     loadChildren: () => import('./fetch-claims/fetch-claims.module').then(m => m.FetchClaimsModule),
-    canActivate: [UrlPermission]
+    //canActivate: [UrlPermission]
   },
   {
     path:'register',

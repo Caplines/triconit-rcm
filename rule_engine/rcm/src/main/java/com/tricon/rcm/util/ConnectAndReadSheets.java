@@ -72,7 +72,7 @@ public class ConnectAndReadSheets {
 		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
 	}
 
-	public static RemoteLiteDataDto readRemoteLiteSheet(String spreadsheetId, String sheetName, String clientDir,
+	public static HashMap<String,RemoteLietStatusCount> readRemoteLiteSheet(String spreadsheetId, String sheetName, String clientDir,
 			String clientFolder) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
@@ -80,18 +80,14 @@ public class ConnectAndReadSheets {
 		return readFullRemoteLiteSheet(response);
 	}
 
-	private static RemoteLiteDataDto readFullRemoteLiteSheet(ValueRange range) {
+	private static HashMap<String,RemoteLietStatusCount> readFullRemoteLiteSheet(ValueRange range) {
 
 		List<List<Object>> values = range.getValues();
 
-		RemoteLietStatusCount statusCount = new RemoteLietStatusCount();
-		statusCount.setAcceptedCount(0);
-		statusCount.setDuplicateCount(0);
-		statusCount.setPrintedCount(0);
-		statusCount.setRejectedCount(0);
-
-		RemoteLiteDataDto fulldto = new RemoteLiteDataDto();
-		List<RemoteLiteDto> list = new ArrayList<>();
+		
+		HashMap<String,RemoteLietStatusCount> map= new HashMap<>();
+		//RemoteLiteDataDto fulldto = new RemoteLiteDataDto();
+		//List<RemoteLiteDto> list = new ArrayList<>();
 		ListIterator li = values.listIterator();
 		RemoteLiteDto dto = null;
 		// IVFHistorySheet vifH = null;
@@ -105,8 +101,23 @@ public class ConnectAndReadSheets {
 			try {
 				int x = -1;
 				dto = new RemoteLiteDto(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
-						obj.get(++x), obj.get(++x), obj.get(++x));
-				list.add(dto);
+						obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
+				
+				
+				
+				String officeName=dto.getOffice();
+				
+				if (map.get(officeName)==null) {
+					RemoteLietStatusCount xt=	new RemoteLietStatusCount();
+					xt.setAcceptedCount(0);
+					xt.setDuplicateCount(0);
+					xt.setPrintedCount(0);
+					xt.setRejectedCount(0);
+					map.put(officeName,xt);
+				}
+				
+				RemoteLietStatusCount statusCount=map.get(officeName);
+				
 				if (dto.getStatus().equalsIgnoreCase("Accepted")) {
 					statusCount.setAcceptedCount(statusCount.getAcceptedCount() + 1);
 				} else if (dto.getStatus().equalsIgnoreCase("Rejected")) {
@@ -116,16 +127,16 @@ public class ConnectAndReadSheets {
 				} else if (dto.getStatus().equalsIgnoreCase("Printed")) {
 					statusCount.setPrintedCount(statusCount.getPrintedCount() + 1);
 				}
-
-			} catch (Exception ex) {
+				
+				} catch (Exception ex) {
 				continue;
 			}
 
 		}
 
-		fulldto.setDataList(list);
-		fulldto.setStatusCount(statusCount);
-		return fulldto;
+		//fulldto.setDataList(list);
+		//fulldto.setStatusCount(statusCount);
+		return map;
 
 	}
 

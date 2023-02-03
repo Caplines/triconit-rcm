@@ -25,6 +25,7 @@ import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
+import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
@@ -75,41 +76,36 @@ public class RcmController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchFreshClaimLogs()));
 	}
 
-	
+	//@GetMapping("/api/fetch-remote-lite-rej/{uuid}")
 	@ApiOperation(value = "Api For RemoteLiteRejections (Billing Pendency Dashboard)", response = FreshClaimDetailsDto.class, responseContainer = "List")
-	@GetMapping("/api/fetch-remote-lite-rej/{uuid}")
-	public ResponseEntity<Object> fetchRemoteLiteRejections(@PathVariable("uuid") String officeUUid) {
+	@GetMapping("/api/fetch-remote-lite-rej")
+	public ResponseEntity<Object> fetchRemoteLiteRejections() {
 		
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchRemoteLiteRejections(officeUUid)));
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchRemoteLiteRejections()));
 	}
 	
-	@ApiOperation(value = "Api For Fetching Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDetailsDto.class, responseContainer = "List")
-	@GetMapping("/api/fetch-billing-claims")
-	public ResponseEntity<Object> fetchBillingClaimDetails() {
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchBillingClaimDetails() ));
+	@ApiOperation(value = "Api For Fetching Billing/Rebilling Claims Details (Billing Pendency Dashboard)", response = FreshClaimDetailsDto.class, responseContainer = "List")
+	@GetMapping("/api/fetch-billing-claims/{billType}")
+	public ResponseEntity<Object> fetchBillingClaimDetails(@PathVariable("billType") int billType) {
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchBillingClaimDetails(billType) ));
 	}
-	
-	@ApiOperation(value = "Api For Fetching Re- Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDetailsDto.class, responseContainer = "List")
-	@GetMapping("/api/fetch-re-billing-claims")
-	public ResponseEntity<Object> fetchReBillingClaimDetails() {
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchReBillingClaimDetails() ));
-	}
-	
 	
 	
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDataDto.class, responseContainer = "List")
-	@GetMapping("/api/fetch-fresh-claims-det")
-	public ResponseEntity<Object> fetchFreshClaimsDetials() {
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchFreshClaimDetails(RcmTeamEnum.BILLING.getId()) ));
+	@GetMapping("/api/fetch-fresh-claims-det/{type}/{subType}")
+	public ResponseEntity<Object> fetchFreshClaimsDetails(@PathVariable("type") int type,@PathVariable("subType") String subType) {
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchFreshClaimDetails(RcmTeamEnum.BILLING.getId(),type,subType) ));
 	}
 	
+	/*
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDataDto.class, responseContainer = "List")
 	@GetMapping("/api/fetch-fresh-claims-det/other")
-	public ResponseEntity<Object> fetchFreshClaimsDetialsOther() {
+	public ResponseEntity<Object> fetchFreshClaimsDetailsOther() {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchClaimsByTeamNotFrom(RcmTeamEnum.BILLING.getId())));
 	}
+	*/
 	
-	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = AssignFreshClaimLogsDto.class, responseContainer = "List")
+	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = AssignFreshClaimLogsImplDto.class, responseContainer = "List")
 	@PostMapping("/api/fetch-claims-log-assign")
 	public ResponseEntity<Object> fetchClaimsForAssignments(@RequestBody AssigmentClaimListDto dto ) {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchClaimsForAssignments(dto)));
