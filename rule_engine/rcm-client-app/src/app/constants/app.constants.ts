@@ -31,5 +31,10 @@ export class AppConstants {
 
     ]);
 
+    public  BILLING_ID=1;
+    public  RE_BILLING_ID=2;
+    
+
+
 
 }

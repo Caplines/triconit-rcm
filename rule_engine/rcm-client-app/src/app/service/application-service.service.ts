@@ -31,8 +31,19 @@ export class ApplicationServiceService extends BaseService {
 
   }
 
+  fetchAssociateClaimBillLogs(type:number,callback:any){
 
+      this.getData({}, this.httpUrl['fetchAssociateClaimLogs']+"/"+type,callback);
+  }
+
+ 
   fetchClaimAssignments(model:ClaimAssignmentPullModel,callback:any){
     this.postData(model, this.httpUrl['fetchclaimsAssignmentData'],callback);
   }
+
+  
+  fetchAssociateClaimDet(teamId:number,subtype:string,callback:any){
+    this.getData({}, this.httpUrl['fetchAssociateClaimDet']+"/"+teamId+"/"+subtype,callback);
+  }
+
 }

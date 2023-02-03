@@ -29,6 +29,8 @@ export class BaseService {
     'editOfficeName': environment.API_URL+"/editOffice",
     'addNewOffice': environment.API_URL+"/addOffice",
     'fetchclaimsAssignmentData':"/api/fetch-claims-log-assign",
+    'fetchAssociateClaimLogs':"/api/fetch-billing-claims",
+    'fetchAssociateClaimDet':"/api/fetch-fresh-claims-det"
   }
   token:any;
 
