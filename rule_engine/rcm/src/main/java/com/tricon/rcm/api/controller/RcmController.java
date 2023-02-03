@@ -25,6 +25,7 @@ import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
+import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
@@ -104,7 +105,7 @@ public class RcmController {
 	}
 	*/
 	
-	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = AssignFreshClaimLogsDto.class, responseContainer = "List")
+	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = AssignFreshClaimLogsImplDto.class, responseContainer = "List")
 	@PostMapping("/api/fetch-claims-log-assign")
 	public ResponseEntity<Object> fetchClaimsForAssignments(@RequestBody AssigmentClaimListDto dto ) {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchClaimsForAssignments(dto)));

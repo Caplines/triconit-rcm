@@ -46,6 +46,7 @@ import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
+import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsImplDto;
@@ -402,7 +403,7 @@ public class ClaimServiceImpl {
 	 
 	 
 	 
-	 public List<AssignFreshClaimLogsDto> fetchClaimsForAssignments(AssigmentClaimListDto dto) {
+	 public List<AssignFreshClaimLogsImplDto> fetchClaimsForAssignments(AssigmentClaimListDto dto) {
 			
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			Object principal = authentication.getPrincipal();
@@ -415,7 +416,7 @@ public class ClaimServiceImpl {
 				ct.add(ClaimStatusEnum.Billing.getId());
 				ct.add(ClaimStatusEnum.ReBilling.getId());
 			}
-			
+			List<AssignFreshClaimLogsImplDto> finalList = new ArrayList<>();
 			 Set<Integer> instDB=new HashSet<>();
 			 List<RcmInsuranceType>  insList=rcmInsuranceTypeRepo.findAll();
 			if (inst==null) {
@@ -436,10 +437,26 @@ public class ClaimServiceImpl {
 			List<AssignFreshClaimLogsDto> l=null;
 			try {
 			 l=rcmClaimRepository.fetchClaimsForAssignments(jwtUser.getCompany().getUuid(),ct,instDB);
+			 HashMap<String,RemoteLietStatusCount> remoteLiteMap= ruleEngineService.pullAndSaveRemoteLiteData();
+			 RemoteLietStatusCount counts=null;
+			 
+			 AssignFreshClaimLogsImplDto dF=null;
+			  if (l!=null) {
+				  for (AssignFreshClaimLogsDto logD:l) {
+					  dF= new AssignFreshClaimLogsImplDto();
+					  BeanUtils.copyProperties(logD, dF);
+					  counts= remoteLiteMap.get(logD.getOfficeName());
+					  if (counts!=null) {
+						  dF.setRemoteLiteRejections(counts.getRejectedCount()); 
+					  }
+					  finalList.add(dF);
+				  }
+				  
+			  }
 	        }catch(Exception n) {
 	        	n.printStackTrace();
 	        }
-			return l;
+			return finalList;
 		}
 	 
 	 
