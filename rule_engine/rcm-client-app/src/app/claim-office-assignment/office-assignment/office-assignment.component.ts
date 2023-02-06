@@ -29,6 +29,8 @@ export class OfficeAssignmentComponent implements OnInit {
   userByTeam:any=[];
   assignOfficeDetails:any={'assignOfficeDetails':[],'teamId':''};
   alert:any={'showAlertPopup':false,'alertMsg':''};
+  showLoader:boolean=false;
+  totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0,'totalcountAndRemLiteReject':0}
   constructor(private appService: ApplicationServiceService) { 
 
     this.claimData = [];//{} as FreshClaimPLogs;
@@ -44,6 +46,7 @@ export class OfficeAssignmentComponent implements OnInit {
 
   fetchClaimAssignments(){
     let ths=this;
+    ths.showLoader = true;
     ths.claimAssigmentPullModel.claimType=[];
     ths.claimAssigmentPullModel.insuranceType=[];
     if (ths.bType=='-1'){
@@ -60,6 +63,10 @@ export class OfficeAssignmentComponent implements OnInit {
        
        if (res.status=== 200){
         ths.claimData= res.data;
+        ths.calcCount(ths.claimData)
+        ths.calcRemLiteReject(ths.claimData)
+        ths.calcCountAndRemLiteReject(ths.claimData)
+        ths.showLoader=false;
         // let k = ths.claimData.forEach((e:any,idx:any)=>{
         //   if(!e.fname && idx % 2 == 0 ){
         //     e.fname = "Puneet"
@@ -154,4 +161,24 @@ export class OfficeAssignmentComponent implements OnInit {
  sortData(data:any,sortingColm:any,order:any,sortingType:any){
   this.appService.sortData(data,sortingColm,order,sortingType)
  }
+
+
+ calcCount(data:any){
+  data.forEach((e:any)=>{
+      this.totalClaimData.totalCount = this.totalClaimData.totalCount + e.count;
+ });
+}
+
+calcRemLiteReject(data:any){
+  data.forEach((e:any)=>{
+    this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalRemLiteReject + e.remoteLiteRejections;
+ });
+}
+
+calcCountAndRemLiteReject(data:any){
+  data.forEach((e:any)=>{
+    this.totalClaimData.totalcountAndRemLiteReject  = this.totalClaimData.totalcountAndRemLiteReject+ e.count + e.remoteLiteRejections;
+ });
+}
+
 }

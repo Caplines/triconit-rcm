@@ -100,15 +100,17 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="totalRow">
+                                            
+                                            <tr class="totalRow" >
                                                 <td>Total</td>
                                                 <td></td>
                                                 <td>10/30/2022</td>
                                                 <td>10/30/2022</td>
-                                                <td>110</td>
-                                                <td>110</td>
-                                                <td>220</td>
+                                                <td>{{totalClaimData.totalCount}}</td>
+                                                <td>{{totalClaimData.totalRemLiteReject}}</td>
+                                                <td>{{totalClaimData.totalcountAndRemLiteReject}}</td>
                                             </tr>
+                                            <tr><td *ngIf="showLoader" class="loader-data text-center" colspan="10"></td></tr>
                                             <tr *ngFor="let lg of claimData">
                                                 <td>{{lg.officeName}}</td>
                                                 <td> 
@@ -128,7 +130,6 @@
                                                 <td>{{lg.count}}</td>
                                                 <td>{{lg.remoteLiteRejections}}</td>
                                                 <td>{{lg.remoteLiteRejections+lg.count}}</td>
-                                                <td></td>
                                             </tr>
                                         </tbody>
                                     </table>
