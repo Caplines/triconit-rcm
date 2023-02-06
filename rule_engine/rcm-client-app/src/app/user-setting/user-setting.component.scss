@@ -1,13 +1,16 @@
+.form-container {
+    padding:15px;
+}
 .form-group label {
     font-weight: 600;
 }
-.search-icon {
-    margin-top:-2px;
-}
+
 .find-btn {
-    padding-top:29px;
+    padding-top: 29px;
+    padding-left: 0px;
+
     .btn {
-        height:38px;
+        height: 38px;
     }
 }
 .table-heading {
@@ -38,4 +41,8 @@
 }
 .alert-dismissible .close {
     top: -5px !important;
+}
+
+.date-range-box input {
+    margin:0px;
 }

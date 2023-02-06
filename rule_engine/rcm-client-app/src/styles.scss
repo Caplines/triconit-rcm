@@ -22,9 +22,9 @@ body {
     font-size: 22px;
     color: #2d4047;
     margin-bottom: 0px;
-    margin-top: 0px;
+    margin-top: 10px;
     padding-bottom: 10px;
-    margin-left: 5px;
+    margin-left: 15px;
     font-family: 'Open Sans', sans-serif;
     font-weight: 600;
 }
@@ -165,46 +165,6 @@ body {
     font-size: 21px;
     color: #fff;
     margin: 0px;
-}
-
-.gray-bar {
-    padding: 8px 20px;
-    clear: both;
-    background: #1c212d;
-    height: 47px;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-}
-
-.gray-bar ul {
-    margin: 0px;
-    padding: 0px;
-}
-
-.gray-bar ul li {
-    margin-left: 0px;
-}
-
-.gray-bar ul li img {
-    margin-right: 5px;
-}
-
-.gray-bar ul li a {
-    padding: 7px 12px;
-    border-radius: 5px;
-    color: #b9b9b9;
-    text-decoration: none;
-    margin-right: 0px;
-}
-
-.gray-bar ul li a:hover {
-    background: #161a24;
-}
-
-.gray-bar ul li a.active {
-    color: #33d89f;
-    background: #0c0e14;
 }
 
 .navbar.fixed-left .navbar-nav .nav-item .dropdown-toggle:after {
@@ -348,7 +308,7 @@ a.flex-center:hover {
     background: #fff;
     margin-right: 0px;
     margin-left: 0px;
-    box-shadow: 0px 1px 3px #dfdfdf;
+    box-shadow: 0px 0px 6px #d5d5d5;
     margin-bottom: 20px;
     border-radius: 0px 0px 10px 10px;
 }
@@ -674,7 +634,6 @@ a.flex-center:hover {
 
 .date-range-box {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     color: #2d4047;
     font-weight: 600;
@@ -803,6 +762,13 @@ select, select:focus {
     font-weight: 600;
     font-size: 14px;
     font-family: "Open Sans", sans-serif;
+    display: inline-flex;
+    align-items: center;
+    border: none !important;
+
+    img {
+        margin-right: 4px;
+    }
 }
 .btn-success, .btn-success:not(:disabled):not(.disabled):active, .btn-success:focus {
     color: #ffffff;
@@ -832,3 +798,66 @@ select, select:focus {
     position: relative;
 }
 
+.spinner-border {
+    width: 24px;
+    height: 24px;
+    color: #34dba1 !important;
+}
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #ced4da;
+    outline: 0;
+    box-shadow: inherit;
+}
+
+.loader-data {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: block;
+    margin: 15px auto;
+    position: relative;
+    color: #FFF;
+    left: -100px;
+    box-sizing: border-box;
+    animation: shadowRolling 2s linear infinite;
+}
+
+@keyframes shadowRolling {
+    0% {
+        box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+    }
+
+    12% {
+        box-shadow: 100px 0 #33d89f, 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+    }
+
+    25% {
+        box-shadow: 110px 0 #33d89f, 100px 0 #33d89f, 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+    }
+
+    36% {
+        box-shadow: 120px 0 #33d89f, 110px 0 #33d89f, 100px 0 #33d89f, 0px 0 rgba(255, 255, 255, 0);
+    }
+
+    50% {
+        box-shadow: 130px 0 #33d89f, 120px 0 #33d89f, 110px 0 #33d89f, 100px 0 #33d89f;
+    }
+
+    62% {
+        box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 #33d89f, 120px 0 #33d89f, 110px 0 #33d89f;
+    }
+
+    75% {
+        box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 130px 0 #33d89f, 120px 0 #33d89f;
+    }
+
+    87% {
+        box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 130px 0 #33d89f;
+    }
+
+    100% {
+        box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+    }
+}
