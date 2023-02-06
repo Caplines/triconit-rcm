@@ -128,14 +128,12 @@ public class AdminServiceImpl {
 		RcmUserRole roles = null;
 		RcmUserRolePk pk = null;
 		RcmUser user = null;
-		UserAssignOffice userAssignOffice = null;
+//		UserAssignOffice userAssignOffice = null;
 		user = userRepo.findByEmail(dto.getEmail());
 		if (user == null) {
-			RcmOffice office = officeRepo.findByUuid(dto.getOfficeId());
 			RcmCompany company = rcmCompanyRepo.findByName(dto.getCompanyName());
 			RcmTeam team = teamRepo.findById(dto.getTeamId());
 			user = convertDtotoModel(dto);
-			user.setOffice(office);
 			if (team == null) {
 				if (dto.getUserRole().stream()
 						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1)) {
@@ -176,23 +174,22 @@ public class AdminServiceImpl {
 				}
 				
 				// save user data into user_assign_office table
-				if (user.getCompany().getName().equals(Constants.COMPANY_NAME) && dto.getUserRole().stream().anyMatch(x->x.equals(RcmRoleEnum.ASSO.getName())||x.equals(RcmRoleEnum.TL.getName()))) {
-
-					// check office is already exist or not in given team id
-					if (user.getOffice()!=null) {
-					userAssignOffice = userAssignRepo.findByOfficeUuidAndTeamId(user.getOffice().getUuid(),user.getTeam().getId());
-
-					if (userAssignOffice==null) {
-						userAssignOffice=new UserAssignOffice();
-						userAssignOffice.setUser(user);
-						userAssignOffice.setOffice(user.getOffice());
-						userAssignOffice.setTeam(user.getTeam());
-						userAssignRepo.save(userAssignOffice);
-					 }
-					}
-				}
-					
-				
+//				if (user.getCompany().getName().equals(Constants.COMPANY_NAME) && dto.getUserRole().stream().anyMatch(x->x.equals(RcmRoleEnum.ASSO.getName())||x.equals(RcmRoleEnum.TL.getName()))) {
+//
+//					// check office is already exist or not in given team id
+//					if (user.getOffice()!=null) {
+//					userAssignOffice = userAssignRepo.findByOfficeUuidAndTeamId(user.getOffice().getUuid(),user.getTeam().getId());
+//
+//					if (userAssignOffice==null) {
+//						userAssignOffice=new UserAssignOffice();
+//						userAssignOffice.setUser(user);
+//						userAssignOffice.setOffice(user.getOffice());
+//						userAssignOffice.setTeam(user.getTeam());
+//						userAssignRepo.save(userAssignOffice);
+//					 }
+//					}
+//				}
+									
 				//send email to register User
 				if (user != null) {
 					String userEmail=user.getEmail();

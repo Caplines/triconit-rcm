@@ -71,7 +71,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(response);
 	}
@@ -96,7 +96,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(response);
 	}
@@ -121,7 +121,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(response);
 	}
@@ -142,7 +142,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(response);
 	}
@@ -171,7 +171,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(response);
 	}
@@ -192,7 +192,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(response);
 	}
@@ -206,7 +206,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
@@ -224,7 +224,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
@@ -238,7 +238,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
@@ -256,7 +256,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
@@ -281,9 +281,9 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+		return ResponseEntity.ok(response);
 	}
 	/**
 	 * This Api fetches all users from Claim assignment table according to teamid
@@ -313,7 +313,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
@@ -341,7 +341,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
