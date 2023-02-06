@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ApplicationServiceService  } from '../../service/application-service.service';
 import {ClaimAssignmentDataModel} from '../../models/claim-assignmen-data-model';
 import {ClaimAssignmentModel} from '../../models/claim-assignment.model';
 import {ClaimAssignmentPullModel} from '../../models/claim-assignment-pull-model';
 import {BillingList} from '../../models/billing-list-model';
 
-
 @Component({
   selector: 'claim-office-assignment',
   templateUrl: './office-assignment.component.html',
-  styleUrls: ['./office-assignment.component.scss']
+  styleUrls: ['./office-assignment.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class OfficeAssignmentComponent implements OnInit {
 
@@ -23,7 +23,12 @@ export class OfficeAssignmentComponent implements OnInit {
   insType:string="PPO";
 
   loader:boolean=false;
-  
+  isSorted:boolean=false;
+  isClaimAssign:boolean=true;
+  teamId:any;
+  userByTeam:any=[];
+  assignOfficeDetails:any={'assignOfficeDetails':[],'teamId':''};
+  alert:any={'showAlertPopup':false,'alertMsg':''};
   constructor(private appService: ApplicationServiceService) { 
 
     this.claimData = [];//{} as FreshClaimPLogs;
@@ -31,13 +36,16 @@ export class OfficeAssignmentComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchClaimAssignments();
+    // this.getCompany();
+    this.teamId = localStorage.getItem("teamId");
+    this.getUserByTeamId();
+    this.assignOfficeDetails.teamId = this.teamId;
   }
 
   fetchClaimAssignments(){
     let ths=this;
     ths.claimAssigmentPullModel.claimType=[];
     ths.claimAssigmentPullModel.insuranceType=[];
-    debugger;
     if (ths.bType=='-1'){
       ths.bl.bills.forEach(e => {
         if (e.key !='-1') 
@@ -52,7 +60,15 @@ export class OfficeAssignmentComponent implements OnInit {
        
        if (res.status=== 200){
         ths.claimData= res.data;
-
+        // let k = ths.claimData.forEach((e:any,idx:any)=>{
+        //   if(!e.fname && idx % 2 == 0 ){
+        //     e.fname = "Puneet"
+        //   }else{
+        //     if(!e.fname && idx %2 !== 0)
+        //     e.fname= "Kuldeep"
+        //   }
+        // })
+        // console.log(k)
 
        }else{
          //ERROR
@@ -61,16 +77,81 @@ export class OfficeAssignmentComponent implements OnInit {
      });
   }
 
+  getCompany(){
+    this.appService.fetchCompanyNameData((callback:any)=>{
+      if(callback){
+        console.log(callback);
+      }
+    })
+  }
 
+  getUserByTeamId(){
+    this.appService.fetchUserByTeamId(this.teamId,(callback:any)=>{
+      if(callback){
+        this.userByTeam = callback.data
+      }
+    })
+  }
+
+  selectNewAssignedUser(evt:any,officeUuid:any){
+    
+    if(this.assignOfficeDetails.assignOfficeDetails.length==0){
+      this.assignOfficeDetails.assignOfficeDetails.push(
+        {
+          'userId':evt.target.value,
+          'officeId':officeUuid
+        })
+      }else{
+        this.assignOfficeDetails.assignOfficeDetails.find((e:any)=>{
+          if(e.officeId === officeUuid){
+              e.userId = evt.target.value;
+          }
+        })
+        let officeIdExist = this.assignOfficeDetails.assignOfficeDetails.some((e:any)=>e.officeId === officeUuid);
+        if(!officeIdExist){
+          this.assignOfficeDetails.assignOfficeDetails.push(
+            {
+              'userId':evt.target.value,
+              'officeId':officeUuid
+            });
+        }
+
+      }
+      console.log(this.assignOfficeDetails.assignOfficeDetails)
+    }
   
-
   
  //
  saveAssignments(){
-  
+  this.appService.assignOffice(this.assignOfficeDetails,(callback:any)=>{
+    if(callback.status == 200){
+      this.alert.showAlertPopup = true;
+      this.alert.alertMsg = callback.message; 
+      scrollTo(0,0);
+      this.assignOfficeDetails.assignOfficeDetails= [];
+    }else{
+      this.alert.showAlertPopup = true;
+      this.alert.alertMsg = callback.message; 
+      scrollTo(0,0);
+    }
+  })
  }
 
- 
- 
+//  saveToPdf(divName:any){
+// let el:any = document.getElementById(divName);
+//  }
 
+//  assignUserToClaimData(evt:any){
+//   evt  = evt.target.value.split(",")
+//   this.claimData.forEach((e:any)=>{
+//     if(evt[1] == e.assignedUser || evt[2] === e.officeUuid){
+//       e.fname = evt[0];
+//       e.assignedUser= evt[1];
+//     }
+//   })
+//  }
+
+ sortData(data:any,sortingColm:any,order:any,sortingType:any){
+  this.appService.sortData(data,sortingColm,order,sortingType)
+ }
 }

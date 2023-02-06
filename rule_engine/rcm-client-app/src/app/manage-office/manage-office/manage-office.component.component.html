@@ -15,7 +15,7 @@
                                             (change)="getOfficesByCompany($event);selectCompany($event)">
                                         <option selected="true" hidden="true">Select Company</option>
                                         <ng-container *ngFor="let comp of companyData">
-                                            <option value="{{comp.name}}">{{comp.name}}</option>
+                                            <option *ngIf="comp.name !== 'Capline'" value="{{comp.name}}">{{comp.name}}</option>
                                         </ng-container>
                                     </select>
                                     <div class="spinner-border text-success" role="status" *ngIf="showLoader"></div>
@@ -35,15 +35,15 @@
                     </div>-->
 
 
-                                <ng-container *ngIf="officeData.length>0">
+                                <ng-container *ngIf="companyUuid" >
                                     <div class="table-responsive">
                                         <table class="table" id="table">
                                             <tr class="thead-dark">
                                                 <th>Office Name</th>
-                                                <th *ngIf="this.companyUuid !== '614c4beb-7df2-11e8-8432-8c16451459cd'">Edit</th>
-                                                <th *ngIf="this.companyUuid !== '614c4beb-7df2-11e8-8432-8c16451459cd'">Save</th>
+                                                <th >Edit</th>
+                                                <th>Save</th>
                                             </tr>
-                                            <tr *ngIf="this.companyUuid !== '614c4beb-7df2-11e8-8432-8c16451459cd'" class="totalRow">
+                                            <tr class="totalRow" >
                                                 <td colspan="3">
                                                     <button type="button" class="btn btn-success" (click)="addNewOffice()">
                                                         <img src="../assets/img/plus-white.png" alt="plus" />
@@ -53,7 +53,7 @@
                                             </tr>
                                             <tr *ngIf="alert.showAlertPopup">
                                                 <td colspan="3">
-                                                        <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+                                                        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
                                                             <strong>{{alert.alertMsg}}</strong>
                                                             <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>
@@ -62,7 +62,7 @@
                                                 </td>
                                             </tr>
                                             <ng-container *ngFor="let office of officeData;let idx= index">
-                                                <tr>
+                                                <tr >
                                                     <td scope="col"> <input type="text" value="{{office.name}}" [(ngModel)]="office.name" class="form-control" [disabled]="!office.editable" [ngClass]="{'is-invalid': office.editable && office.name==''}"></td>
                                                     <td scope="col" *ngIf="this.companyUuid !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
                                                         <button type="button" (click)="editOfficeName(office,idx)" class="btn btn-edit">

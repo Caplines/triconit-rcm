@@ -1,0 +1,79 @@
+
+.billingDropdown {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    display: flex;
+}
+
+.billingDropdown select, .billingDropdown select:focus {
+    background-color: white;
+    background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20448%22%20enable-background%3D%22new%200%200%20256%20448%22%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E.arrow%7Bfill%3A%23424242%3B%7D%3C%2Fstyle%3E%3Cpath%20class%3D%22arrow%22%20d%3D%22M255.9%20168c0-4.2-1.6-7.9-4.8-11.2-3.2-3.2-6.9-4.8-11.2-4.8H16c-4.2%200-7.9%201.6-11.2%204.8S0%20163.8%200%20168c0%204.4%201.6%208.2%204.8%2011.4l112%20112c3.1%203.1%206.8%204.6%2011.2%204.6%204.4%200%208.2-1.5%2011.4-4.6l112-112c3-3.2%204.5-7%204.5-11.4z%22%2F%3E%3C%2Fsvg%3E%0A);
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    background-size: auto 50%;
+    outline: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: none;
+    border: 1px solid #ced4da;
+    max-width: 180px;
+    margin-right: 15px;
+}
+
+.form-row.without-heading {
+    border-radius: 10px 10px 0px 0px;
+    box-shadow: 0px -1px 2px #dfdfdf;
+    padding: 0px 10px;
+}
+.dFlex {
+    display: flex;
+}
+.sorting {
+    display: inline-flex;
+    flex-flow: column;
+    margin-left: 10px;
+    margin-top: 7px;
+}
+.arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #b4b5b5;
+    margin-bottom: 4px;
+}
+
+.arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #b4b5b5;
+}
+
+.sorting .selected {
+    border-bottom-color: #2d4047;
+}
+
+.switchBox {
+    display: inline-flex;
+    background: #eee;
+    padding: 5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-radius: 30px;
+    align-items: center;
+    box-shadow: inset 0 0 10px #dddddd;
+}
+    .switchBox a {
+        color: #212529;
+        text-decoration: none;
+        padding: 4px 20px;
+    }
+        .switchBox .active {
+            background: #34dba1;
+            color: #fff;
+            border-radius: 30px;
+        }
+        

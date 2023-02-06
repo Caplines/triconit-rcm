@@ -25,7 +25,16 @@ export class AppConstants {
         [5,{
         "name":"Internal Audit Team","paths":["/user-setting"],"defaultpath":"/user-setting"
         }],
-        [5,{
+        [6,{
+        "name":"IV Team","paths":["/user-setting"],"defaultpath":"/user-setting"
+        }],
+        [7, {
+            "name": "Billing Team", "paths": ["/claim-assignment"], "defaultpath": "claim-assignment"
+        }],
+        [8,{
+        "name":"IV Team","paths":["/user-setting"],"defaultpath":"/user-setting"
+        }],
+        [9,{
         "name":"IV Team","paths":["/user-setting"],"defaultpath":"/user-setting"
         }],
 

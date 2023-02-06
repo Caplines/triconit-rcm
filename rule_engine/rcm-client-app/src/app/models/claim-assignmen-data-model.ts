@@ -6,8 +6,8 @@ export interface  ClaimAssignmentDataModel {
     count:number;
     opdt:Date;
     opdos:Date;
-    fName:string;
-    lName:string;
+    fname:string;
+    lname:string;
     assignedUser:string;
     remoteLiteRejections:number;
 

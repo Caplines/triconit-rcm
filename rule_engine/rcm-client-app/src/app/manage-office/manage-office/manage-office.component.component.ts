@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { BaseService } from 'src/app/service/base-service.service';
 import { AuthService } from '../../service/auth-service.service';
 import { TokenStorageService } from '../../service/token-storage.service';
@@ -23,17 +24,17 @@ export class ManageOfficeComponent implements OnInit {
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
 
-  constructor(private _baseService: BaseService) { }
+  constructor(private _base: BaseService,private appService:ApplicationServiceService) { }
 
   ngOnInit(): void {
     this.getcompanyData();
   }
 
   getcompanyData(){
-    this._baseService.getCompanyData((callback:any)=>{
+    this.appService.fetchCompanyNameData((callback:any)=>{
       if(callback.status){
-        this.companyData = callback.result.data.data;
-        console.log(callback.result)
+        this.companyData = callback.data.data;
+        console.log(callback)
       }
     })
   }
@@ -42,10 +43,10 @@ export class ManageOfficeComponent implements OnInit {
     this.companyData.find((e:any)=>{
       if(e.name === event.target.value){
         this.companyUuid = e.companyUuid;
-        this._baseService.getOfficeByCompany(e.companyUuid,(callback:any)=>{
+        this.appService.fetchOfficeByCompany(e.companyUuid,(callback:any)=>{
             if(callback.status){
               this.showLoader=false;
-              this.officeData = callback.result.data.data;
+              this.officeData = callback.data.data;
              this.officeData =  this.officeData.map((e:any)=>({...e,'editable':false}))
             }
         })
@@ -73,10 +74,10 @@ export class ManageOfficeComponent implements OnInit {
           "officeUuid": office.uuid,
           "officeName": office.name
         }
-        this._baseService.editOfficeName(params, (callback: any) => {
-          if (callback.status == 200 || callback.result?.data?.status == 200) {
+        this.appService.editOfficeName(params, (callback: any) => {
+          if (callback.result.status == 200 || callback.result?.data?.status == 200) {
             this.alert.showAlertPopup = true;
-            this.alert.alertMsg = callback.result.message ? callback.result.message : callback.result.data.message;
+            this.alert.alertMsg = callback.message ? callback.message : callback.result.data.message;
             console.log(callback)
             office.editable = false;
           }else{
@@ -90,10 +91,10 @@ export class ManageOfficeComponent implements OnInit {
           "companyUuid": this.companyUuid,
           "name": office.name
         }
-        this._baseService.addNewOffice(params, (callback: any) => {
-          if (callback.status == 200 || callback.result?.data?.status == 200) {
+        this.appService.addNewOffice(params, (callback: any) => {
+          if (callback.result.status == 200 || callback.result?.data?.status == 200) {
             this.alert.showAlertPopup = true;
-            this.alert.alertMsg = callback.result.message ? callback.result.message : callback.result.data.message;
+            this.alert.alertMsg = callback.message ? callback.message : callback.result.data.message;
             console.log(callback)
             office.editable = false;
           } else{
@@ -109,3 +110,4 @@ export class ManageOfficeComponent implements OnInit {
     this.officeData.unshift({'name':'','editable':true})
   }
 }
+

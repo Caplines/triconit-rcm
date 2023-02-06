@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BaseService } from '../service/base-service.service';
 import {FormBuilder,Validators} from "@angular/forms";
+import { ApplicationServiceService } from '../service/application-service.service';
 
 @Component({
   selector: 'app-register-new-user',
@@ -20,7 +21,7 @@ export class RegisterNewUserComponent implements OnInit {
   showLoader:boolean=false;
   isRegister:boolean=true;
   userRoleByTeam:any=[];
-  constructor(private router: Router, private _baseService:BaseService ,private fb : FormBuilder) {
+  constructor(private router: Router, private _baseService:BaseService ,private fb : FormBuilder, private appService: ApplicationServiceService) {
 
     this.userDetails = this.fb.group({
       'firstName' : ['',[Validators.required,Validators.minLength(3)]],
@@ -41,7 +42,7 @@ export class RegisterNewUserComponent implements OnInit {
 
   registerNewUser(){
     if(this.userDetails.value.teamId == undefined || this.userDetails.value.teamId == null){this.userDetails.controls.teamId.setValue(0);}
-    this._baseService.registerUser(this.userDetails.value,(callback:any)=>{
+    this.appService.registerUser(this.userDetails.value,(callback:any)=>{
       if(callback.status && callback.result.message !=''){
         console.log(callback)
         this.alert.showAlertPopup = true;
@@ -62,7 +63,7 @@ export class RegisterNewUserComponent implements OnInit {
   
   getTeamsData(companyName:any){
     this.showLoader=true;
-    this._baseService.getTeamsData(companyName,(callback:any)=>{
+    this.appService.fetchTeamsNameData(companyName,(callback:any)=>{
       if(callback.status){
         this.showLoader = false;
         this.teamData = callback.result.data;
@@ -72,7 +73,7 @@ export class RegisterNewUserComponent implements OnInit {
 
   getOfficeData(){
     this.showLoader=true;
-    this._baseService.getOfficeData((callback:any)=>{
+    this.appService.fetchOfficeData((callback:any)=>{
       if(callback.status){
         this.showLoader = false;
         this.officeData = callback.result.data
@@ -81,7 +82,7 @@ export class RegisterNewUserComponent implements OnInit {
   }
 
   getcompanyData(){
-    this._baseService.getCompanyData((callback:any)=>{
+    this.appService.fetchCompanyNameData((callback:any)=>{
       if(callback.status){
         this.companyData = callback.result.data.data;
       }
@@ -140,7 +141,7 @@ export class RegisterNewUserComponent implements OnInit {
   getOfficesByCompany(event:any){
       this.companyData.find((e:any)=>{
         if(e.name === event.target.value){
-          this._baseService.getOfficeByCompany(e.companyUuid,(callback:any)=>{
+          this.appService.fetchOfficeByCompany(e.companyUuid,(callback:any)=>{
               if(callback.status){
                 this.userDetails.controls.officeId.setValue('');
                 this.userDetails.controls.teamId.setValue('');
@@ -155,7 +156,7 @@ export class RegisterNewUserComponent implements OnInit {
   }
 
   getRolesByCompany(event:any){
-    this._baseService.getRolesByCompany(event.target.value,(callback:any)=>{
+    this.appService.fetchRolesByCompany(event.target.value,(callback:any)=>{
       if(callback.status){
         this.userRoles =[];
         this.userDetails.controls.userRole.setValue('');
@@ -165,7 +166,7 @@ export class RegisterNewUserComponent implements OnInit {
   }
 
   getRolesByTeam(event:any){
-    this._baseService.getRolesByTeam(event.target.value,(callback:any)=>{
+    this.appService.fetchRolesByTeam(event.target.value,(callback:any)=>{
       if(callback.status){
         this.userDetails.controls.userRole.setValue('');
         this.userRoleByTeam = callback.result.data;

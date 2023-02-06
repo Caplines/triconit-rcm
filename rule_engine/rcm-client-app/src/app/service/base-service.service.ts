@@ -10,27 +10,28 @@ import { environment } from '../../environments/environment';
 export class BaseService {
 
   httpUrl = {
-    'getTeams':environment.API_URL+"/master/getteams",
-    // 'getUserRoles':environment.API_URL+"/master/getroles",
-    'getOffices':environment.API_URL+"/master/getoffices",
-    'registerUser':environment.API_URL+"/register",
-    'findUserByUserName':environment.API_URL+"/finduser",
-    'changePassword':environment.API_URL+"/resetpassword",
-    'getAllUsers':environment.API_URL+"/getAllUsers",
-    'updateStatus':environment.API_URL+"/resetstatus",
-    'forgotPassword':environment.API_URL+"/forgotPassword",
-    'getCompany':environment.API_URL+"/getOrganization",
-    'officeByCompany':environment.API_URL+"/officeByCompany",
-    'rolesByCompanyName': environment.API_URL+"/master/defaultRolesByCname",
-    'rolesByTeam':  environment.API_URL+"/master/rolesByTeamId",
+    'getTeams':"/master/getteams",
+    'getOffices':"/master/getoffices",
+    'getCompany':"/getOrganization",
+    'getAllUsers':"/getAllUsers",
+    'officeByCompany':"/officeByCompany",
+    'rolesByCompanyName': "/master/defaultRolesByCname",
+    'rolesByTeam':  "/master/rolesByTeamId",
     'fetchclaims':"/api/fetch-claims",
     'freshclaimlogs':"/api/fetch-fresh-claims-logs",
     'fetchclaimsFromSource':"/api/fetch-claims-from-source",
-    'editOfficeName': environment.API_URL+"/editOffice",
-    'addNewOffice': environment.API_URL+"/addOffice",
     'fetchclaimsAssignmentData':"/api/fetch-claims-log-assign",
     'fetchAssociateClaimLogs':"/api/fetch-billing-claims",
-    'fetchAssociateClaimDet':"/api/fetch-fresh-claims-det"
+    'fetchAssociateClaimDet':"/api/fetch-fresh-claims-det",
+    'registerUser':environment.API_URL+"/register",
+    'findUserByUserName':environment.API_URL+"/finduser",
+    'changePassword':environment.API_URL+"/resetpassword",
+    'updateStatus':environment.API_URL+"/resetstatus",
+    'forgotPassword':environment.API_URL+"/forgotPassword",
+    'editOfficeName': environment.API_URL+"/editOffice",
+    'addNewOffice': environment.API_URL+"/addOffice",
+    'userByTeamId':"/users/team",
+    'assignOffice':"/assignOffice"
   }
   token:any;
 
@@ -95,39 +96,6 @@ export class BaseService {
 
   }
 
-  getTeamsData(params:any,callback:any){
-    return this.http.get(this.httpUrl['getTeams']+`/${params}`).pipe(map((data:any)=>{
-			data;
-			return data;
-		})).subscribe(
-			(data:any) => { callback({'status':true,'result':data}); 
-		});
-  }
-
-  getOfficeData(callback:any){
-    return this.http.get(this.httpUrl['getOffices']).pipe(map((data:any)=>{
-			return data;
-		})).subscribe(
-			(data:any) => { callback({'status':true,'result':data}); 
-		});
-  }
-
-  getCompanyData(callback:any){
-    return this.http.get(this.httpUrl['getCompany']).pipe(map((data:any)=>{
-			return data;
-		})).subscribe(
-			(data:any) => { callback({'status':true,'result':data}); 
-		});
-  }
-
-  getOfficeByCompany(params:any,callback:any){
-    return this.http.get(this.httpUrl['officeByCompany']+`/${params}`).pipe(map((data:any)=>{
-			return data;
-		})).subscribe(
-			(data:any) => { callback({'status':true,'result':data}); 
-		});
-  }
-
   registerUser(params:any,callback:any){
     let token:any = localStorage.getItem("token")
     let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ token});
@@ -155,14 +123,6 @@ export class BaseService {
     });
   }
 
-  findAllUser(page:any,callback:any){
-    return this.http.get(this.httpUrl['getAllUsers']+`/${page}`).pipe(map((data:any)=>{
-			return data;
-		})).subscribe(
-			(data:any) => { callback({'status':true,'result':data}); 
-		});
-  }
-
   updateUserStatus(params:any,callback:any){
     let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ this.token});
     return this.http.post(this.httpUrl['updateStatus'],params,cpHeaders).pipe(map(data=>{
@@ -180,23 +140,7 @@ export class BaseService {
       (data:any) => { callback({'status':true,'result':data}); 
     });
   }
-
-  getRolesByCompany(companyName:any,callback:any){
-      return this.http.get(this.httpUrl['rolesByCompanyName']+`/${companyName}`).pipe(map((data:any)=>{
-			return data;
-		})).subscribe(
-			(data:any) => { callback({'status':true,'result':data}); 
-		});
-  }
-
-  getRolesByTeam(teamId:any,callback:any){
-      return this.http.get(this.httpUrl['rolesByTeam']+`/${teamId}`).pipe(map((data:any)=>{
-			return data;
-		})).subscribe(
-			(data:any) => { callback({'status':true,'result':data}); 
-		});
-  }
-
+  
   editOfficeName(params:any,callback:any){
     let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ this.token});
     return this.http.post(this.httpUrl['editOfficeName'],params,cpHeaders).pipe(map(data=>{

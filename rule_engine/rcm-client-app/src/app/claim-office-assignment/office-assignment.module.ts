@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ClaimAssignmentRoutingModule } from './office-assignment-routing.module';
 import { OfficeAssignmentComponent } from './office-assignment/office-assignment.component';
 import { FormsModule } from '@angular/forms';
+import { HeaderModule } from '../header/header.module';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     ClaimAssignmentRoutingModule,
-    FormsModule      
+    FormsModule ,
+    HeaderModule
   ]
 })
 export class ClaimAssignmentModule { 
