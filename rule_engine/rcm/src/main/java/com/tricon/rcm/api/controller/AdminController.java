@@ -226,7 +226,7 @@ public class AdminController {
 			logger.error(e.getMessage());
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+		return ResponseEntity.ok(response);
 	}
 
 	@RequestMapping(value = "officeByCompany/{uuid}", method = RequestMethod.GET)
@@ -258,7 +258,7 @@ public class AdminController {
 			logger.error(e.getMessage());
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+		return ResponseEntity.ok(response);
 	}
 	
 	@RequestMapping(value = "editRole", method = RequestMethod.POST)

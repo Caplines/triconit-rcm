@@ -431,7 +431,7 @@ public class AdminServiceImpl {
 				office.setName(dto.getName());
 				office.setCompany(company);
 				 office=officeRepo.save(office);
-				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, office.getUuid());
+				return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED, office.getUuid());
 			} else {
 				// if login user(ADMIN) is other than capline then login user can add own new
 				// company offices
@@ -439,7 +439,7 @@ public class AdminServiceImpl {
 					office.setName(dto.getName());
 					office.setCompany(company);
 					office=officeRepo.save(office);
-					return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE,office.getUuid());
+					return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,office.getUuid());
 				}
 			}
 		} 
