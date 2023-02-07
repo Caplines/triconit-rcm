@@ -71,7 +71,8 @@ export class ManageOfficeComponent implements OnInit {
       if (office.uuid) {
         let params: any = {
           "officeUuid": office.uuid,
-          "officeName": office.name
+          "officeName": office.name,
+          'companyUuid':this.companyUuid
         }
         this.appService.editOfficeName(params, (callback: any) => {
           if (callback.result.status == 200) {
@@ -80,9 +81,9 @@ export class ManageOfficeComponent implements OnInit {
             console.log(callback)
             office.editable = false;
             office['newField']=false;
-          }else{
+          }else if(callback.result.status == 400){
             this.alert.showAlertPopup = true;
-            this.alert.alertMsg = 'Something Went Wrong'
+            this.alert.alertMsg =  callback.result.message
               console.log(callback)
           }
         })
@@ -100,7 +101,7 @@ export class ManageOfficeComponent implements OnInit {
             office.editable = false;
             office['newField']=false;
             this.officeData.push({'name':office.name,'uuid':callback.result.data});
-          } else if(callback.result.data.status == 400){
+          } else if(callback.result.status == 400){
             console.log(callback)
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
