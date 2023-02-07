@@ -49,6 +49,7 @@ export class OfficeAssignmentComponent implements OnInit {
     ths.showLoader = true;
     ths.claimAssigmentPullModel.claimType=[];
     ths.claimAssigmentPullModel.insuranceType=[];
+    ths.totalClaimData.totalCount = ths.totalClaimData.totalRemLiteReject = ths.totalClaimData.totalcountAndRemLiteReject = 0;
     if (ths.bType=='-1'){
       ths.bl.bills.forEach(e => {
         if (e.key !='-1') 
