@@ -9,5 +9,6 @@ public class RcmEditOfficeDto {
 
 	private String officeUuid;
 	private String officeName;
+	private String companyUuid;
 	
 }
