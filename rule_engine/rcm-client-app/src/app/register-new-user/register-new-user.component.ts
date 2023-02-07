@@ -101,9 +101,6 @@ export class RegisterNewUserComponent implements OnInit {
               if(e === "TL"){
                let k =  this.userRoles.indexOf("ASSO")
               this.userRoles.splice(k,1)
-              } else if(e === "ASSO") { 
-                let k =  this.userRoles.indexOf("TL")
-                k !== -1 ?  this.userRoles.splice(k,1) : '';
               }
             }
           })
