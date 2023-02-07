@@ -104,13 +104,15 @@
                                             <tr class="totalRow">
                                                 <td>Total</td>
                                                 <td></td>
-                                                <td>10/30/2022</td>
-                                                <td>10/30/2022</td>
+                                                <!-- <td>10/30/2022</td>
+                                                <td>10/30/2022</td> -->
+                                                <td></td>
+                                                <td></td>
                                                 <td>{{totalClaimData.totalCount}}</td>
                                                 <td>{{totalClaimData.totalRemLiteReject}}</td>
                                                 <td>{{totalClaimData.totalcountAndRemLiteReject}}</td>
                                             </tr>
-                                            <tr><td *ngIf="showLoader" class="loader-data text-center" colspan="10"></td></tr>
+                                            <tr *ngIf="showLoader"><td colspan="7" class="text-center"><span class="loader-data "></span> </td></tr>
                                             <ng-container *ngIf="!showLoader">
 
                                             <tr *ngFor="let lg of claimData">
@@ -118,7 +120,7 @@
                                                 <td> 
                                                     <a href="javascript:void(0);">
                                                         <select class="form-control select-editable" name="" id="" (change)="selectNewAssignedUser($event,lg.officeUuid);"
-                                                            style="border: none;font-weight: 600; color: #007bff; cursor: pointer;">
+                                                            style="">
                                                             <option value="{{lg.assignedUser}}">{{lg.fname}} {{lg.lname}}</option>
                                                             <ng-container *ngFor="let user of userByTeam;">
                                                                 <!-- <option *ngIf="lg.assignedUser !== user.uuid" value="{{user.fullName}},{{user.uuid}},{{lg.officeUuid}}">{{user.fullName}}</option> -->
@@ -141,8 +143,8 @@
 
                         </div>
 
-                        <div class="action-buttons">
-                            <button type="button" class="btn btn-success" [disabled]="assignOfficeDetails.assignOfficeDetails.length==0" (click)="saveAssignments()">Save
+                        <div class="action-buttons" *ngIf="!showLoader">
+                            <button type="button" class="btn btn-success"   [disabled]="assignOfficeDetails.assignOfficeDetails.length==0" (click)="saveAssignments()">Save
                                 Assignment</button>
                         </div>
                     </div>

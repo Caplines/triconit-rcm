@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { BaseService } from 'src/app/service/base-service.service';
@@ -24,7 +25,9 @@ export class ManageOfficeComponent implements OnInit {
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
 
-  constructor(private _base: BaseService,private appService:ApplicationServiceService) { }
+  constructor(private _base: BaseService,private appService:ApplicationServiceService ,private title : Title) { 
+    title.setTitle("Manage Office");
+  }
 
   ngOnInit(): void {
     this.getcompanyData();
@@ -80,6 +83,7 @@ export class ManageOfficeComponent implements OnInit {
             this.alert.alertMsg = callback.message ? callback.message : callback.result.data.message;
             console.log(callback)
             office.editable = false;
+            office['newField']=false;
           }else{
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = 'Something Went Wrong'
@@ -97,6 +101,7 @@ export class ManageOfficeComponent implements OnInit {
             this.alert.alertMsg = callback.message ? callback.message : callback.result.data.message;
             console.log(callback)
             office.editable = false;
+            office['newField']=false;
           } else{
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = 'Something Went Wrong'
@@ -107,7 +112,7 @@ export class ManageOfficeComponent implements OnInit {
   }
 
   addNewOffice(){
-    this.officeData.unshift({'name':'','editable':true})
+    this.officeData.unshift({'name':'','editable':true,'newField':true})
   }
 }
 

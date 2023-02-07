@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { BaseService } from '../service/base-service.service';
 
 @Component({
@@ -19,7 +20,9 @@ export class UserSettingComponent implements OnInit {
   alert:any={'showAlertPopup':false,'alertMsg':''};
   isUserSetting:boolean=true;
 
-  constructor(private _baseService: BaseService) { }
+  constructor(private _baseService: BaseService, private title: Title) { 
+    title.setTitle("User-Setting");
+  }
 
   ngOnInit(): void {
     this.userRole = localStorage.getItem("roles");

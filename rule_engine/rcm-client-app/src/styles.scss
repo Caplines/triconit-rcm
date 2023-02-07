@@ -824,6 +824,14 @@ select, select:focus {
     animation: shadowRolling 2s linear infinite;
 }
 
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.03);
+}
+
+button:disabled,button[disabled]{
+ pointer-events: none;
+}
+
 @keyframes shadowRolling {
     0% {
         box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);

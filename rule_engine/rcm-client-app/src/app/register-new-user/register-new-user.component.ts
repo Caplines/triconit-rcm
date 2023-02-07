@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder,Validators} from "@angular/forms";
+import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
 
 @Component({
@@ -19,8 +20,8 @@ export class RegisterNewUserComponent implements OnInit {
   showLoader:boolean=false;
   isRegister:boolean=true;
   userRoleByTeam:any=[];
-  constructor(private fb : FormBuilder, private appService: ApplicationServiceService) {
-
+  constructor(private fb : FormBuilder, private appService: ApplicationServiceService,private title : Title) {
+    title.setTitle("Register New User");
     this.userDetails = this.fb.group({
       'firstName' : ['',[Validators.required,Validators.minLength(3)]],
       'lastName' : ['',[Validators.required,Validators.minLength(3)]],
@@ -63,6 +64,7 @@ export class RegisterNewUserComponent implements OnInit {
       if(callback.status){
         this.showLoader = false;
         this.teamData = callback.data;
+        this.userRoleByTeam=this.userRoles=[];
       }
     })
   }
@@ -86,15 +88,26 @@ export class RegisterNewUserComponent implements OnInit {
   }
 
   selectUserRole(event:any){
-      if(this.userRoles.includes(event.target.id)){
-        this.userRoles.find((e:any,index:any)=>{
-          if(e == event.target.id){
-            this.userRoles.splice(index,1)
-          }
-        })
-      }else{
-        this.userRoles.push(event.target.id)
+    let alreadyExist = this.userRoles.some((e:any)=> e == event.target.id);
+    if(!alreadyExist){
+      this.userRoles.push(event.target.id)
+      if(event.target.id === "TL" && (!this.userRoles.includes("ASSO"))){
+        this.userRoles.push("ASSO");
       }
+    } else{
+      this.userRoles.find((e:any,index:any)=>{
+            if(e == event.target.id){
+              this.userRoles.splice(index,1)
+              if(e === "TL"){
+               let k =  this.userRoles.indexOf("ASSO")
+              this.userRoles.splice(k,1)
+              } else if(e === "ASSO") { 
+                let k =  this.userRoles.indexOf("TL")
+                k !== -1 ?  this.userRoles.splice(k,1) : '';
+              }
+            }
+          })
+    }
       this.userDetails.controls.userRole.setValue(this.userRoles);
       this.changeTeamMandatoryStatus(event.target.id);
       console.log(this.userRoles)

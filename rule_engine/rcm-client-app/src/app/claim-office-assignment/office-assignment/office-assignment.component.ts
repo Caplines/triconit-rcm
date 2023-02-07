@@ -4,6 +4,7 @@ import {ClaimAssignmentDataModel} from '../../models/claim-assignmen-data-model'
 import {ClaimAssignmentModel} from '../../models/claim-assignment.model';
 import {ClaimAssignmentPullModel} from '../../models/claim-assignment-pull-model';
 import {BillingList} from '../../models/billing-list-model';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'claim-office-assignment',
@@ -22,7 +23,6 @@ export class OfficeAssignmentComponent implements OnInit {
   bType:string="-1";
   insType:string="PPO";
 
-  loader:boolean=false;
   isSorted:boolean=false;
   isClaimAssign:boolean=true;
   teamId:any;
@@ -31,14 +31,13 @@ export class OfficeAssignmentComponent implements OnInit {
   alert:any={'showAlertPopup':false,'alertMsg':''};
   showLoader:boolean=false;
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0,'totalcountAndRemLiteReject':0}
-  constructor(private appService: ApplicationServiceService) { 
-
+  constructor(private appService: ApplicationServiceService,private title:Title) { 
+    title.setTitle("Claim-Office Assignment");
     this.claimData = [];//{} as FreshClaimPLogs;
   }
 
   ngOnInit(): void {
     this.fetchClaimAssignments();
-    // this.getCompany();
     this.teamId = localStorage.getItem("teamId");
     this.getUserByTeamId();
     this.assignOfficeDetails.teamId = this.teamId;
