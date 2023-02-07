@@ -245,19 +245,19 @@ public class AdminServiceImpl {
 	 * This Method can use only ADMIN and company is capline
 	 * @return List of user Details
 	 */
-	public GenericResponse getAllUsers(int pageNumber) throws Exception {
-		String companyUuid = "";
-		RcmCompany company = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);
+	public GenericResponse getAllUsers(int pageNumber, String cmpny) throws Exception {
 		RcmUserPaginationDto paginationDto = new RcmUserPaginationDto();
 		List<RcmUserPaginationDto> listOfUsers = new ArrayList<>();
-		if (company != null) {
-			companyUuid = company.getUuid();
+		RcmCompany company = null;
+		String companyUuid = "";
+		// get all users without company name
+		if (cmpny.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
 			if (pageNumber == -1) { // without pagination if pageNumber<0
-				List<RcmUserToDto> data = userRepo.getAllUser(companyUuid);
+				List<RcmUserToDto> data = userRepo.getAllUser();
 				return new GenericResponse(HttpStatus.OK, "", data);
 			}
 			Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
-			Page<RcmUserToDto> pageableList = userRepo.getAllUserByPagination(companyUuid, paging);
+			Page<RcmUserToDto> pageableList = userRepo.getAllUserByPagination(paging);
 			if (pageableList != null && !pageableList.isEmpty()) {
 				paginationDto.setData(pageableList.getContent());
 				paginationDto.setPageNumber(pageableList.getNumber());
@@ -267,8 +267,30 @@ public class AdminServiceImpl {
 				listOfUsers.add(paginationDto);
 				return new GenericResponse(HttpStatus.OK, "", listOfUsers);
 			}
+		} else {
+			// get all users by company name
+			company = rcmCompanyRepo.findByName(cmpny);
+			if (company != null) {
+				companyUuid = company.getUuid();
+				if (pageNumber == -1) { // without pagination if pageNumber<0
+					List<RcmUserToDto> data = userRepo.getAllUserByCompanyUuid(companyUuid);
+					return new GenericResponse(HttpStatus.OK, "", data);
+				}
+				Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
+				Page<RcmUserToDto> pageableList = userRepo.getAllUserByCompanyUuidWithPagination(companyUuid, paging);
+				if (pageableList != null && !pageableList.isEmpty()) {
+					paginationDto.setData(pageableList.getContent());
+					paginationDto.setPageNumber(pageableList.getNumber());
+					paginationDto.setTotalElements(pageableList.getTotalElements());
+					paginationDto.setPageSize(pageableList.getSize());
+					paginationDto.setHasNextElement(pageableList.hasNext());
+					listOfUsers.add(paginationDto);
+					return new GenericResponse(HttpStatus.OK, "", listOfUsers);
+				}
+			} else
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
 		}
-		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
+		return new GenericResponse(HttpStatus.OK, "", null);
 	}
 
 	/**
@@ -404,16 +426,16 @@ public class AdminServiceImpl {
 			if (oldOffice == null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
 				office.setName(dto.getName());
 				office.setCompany(company);
-				officeRepo.save(office);
-				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+				 office=officeRepo.save(office);
+				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, office.getUuid());
 			} else {
 				// if login user(ADMIN) is other than capline then login user can add own new
 				// company offices
 				if (oldOffice == null && jwtUser.getCompany().getName().equals(company.getName())) {
 					office.setName(dto.getName());
 					office.setCompany(company);
-					officeRepo.save(office);
-					return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+					office=officeRepo.save(office);
+					return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE,office.getUuid());
 				}
 			}
 		} 
@@ -465,16 +487,16 @@ public class AdminServiceImpl {
 		if (office != null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
 			office.setName(dto.getOfficeName());
 			office.setUpdatedDate(Timestamp.from(Instant.now()));
-			officeRepo.save(office);
-			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+			office=officeRepo.save(office);
+			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, office.getUuid());
 		} else {
 			// if login user(ADMIN) is other than capline then login user can edit own
 			// company offices
 			if (office != null && jwtUser.getCompany().getName().equals(office.getCompany().getName())) {
 				office.setName(dto.getOfficeName());
 				office.setUpdatedDate(Timestamp.from(Instant.now()));
-				officeRepo.save(office);
-				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+				office=officeRepo.save(office);
+				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, office.getUuid());
 			}
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);

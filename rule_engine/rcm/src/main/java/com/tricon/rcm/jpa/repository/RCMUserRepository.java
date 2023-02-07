@@ -24,12 +24,19 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	@Query(value="select u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName from rcm_user u join rcm_user_role r on u.uuid=r.uuid where r.role=?1 and u.active=1",nativeQuery=true)
 	List<RcmUserToDto> findUsersByRole(@Param("role") String role);
 	
-	@Query(value="select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName from rcm_user where company_id=?1",nativeQuery = true)
-	List<RcmUserToDto> getAllUser(@Param("uuid")  String uuid);
+	@Query(value="select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user where company_id=?1",nativeQuery = true)
+	List<RcmUserToDto> getAllUserByCompanyUuid(@Param("uuid")String uuid);
 	
 
-	@Query(value = "select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName from rcm_user where company_id=:uuid", countQuery = "select count(*) from rcm_user where company_id=:uuid", nativeQuery = true)
-	Page<RcmUserToDto> getAllUserByPagination(@Param("uuid") String uuid, Pageable page);
+	@Query(value = "select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user where company_id=:uuid", countQuery = "select count(*) from rcm_user where company_id=:uuid", nativeQuery = true)
+	Page<RcmUserToDto> getAllUserByCompanyUuidWithPagination(@Param("uuid") String uuid, Pageable page);
+	
+	@Query(value="select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user",nativeQuery = true)
+	List<RcmUserToDto> getAllUser();
+	
+
+	@Query(value = "select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user", countQuery = "select count(*) from rcm_user", nativeQuery = true)
+	Page<RcmUserToDto> getAllUserByPagination(Pageable page);
 
 	@Modifying
 	@Query(value="update rcm_user set active=:status,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where uuid in(:uuid)",nativeQuery = true)

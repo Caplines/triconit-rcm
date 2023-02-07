@@ -126,9 +126,9 @@ public class AdminController {
 		return ResponseEntity.ok(response);
 	}
 
-	@RequestMapping(value = "/getAllUsers/{pageNumber}", method = RequestMethod.GET)
+	@RequestMapping(value = "/getAllUsers/{companyName}/{pageNumber}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getAllUsers(@PathVariable("pageNumber") int pageNumber) {
+	public ResponseEntity<?> getAllUsers(@PathVariable("companyName")String companyName,@PathVariable("pageNumber") int pageNumber) {
 		GenericResponse response = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
@@ -138,7 +138,7 @@ public class AdminController {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
 		try {
-			response = serviceImpl.getAllUsers(pageNumber);
+			response = serviceImpl.getAllUsers(pageNumber,companyName);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

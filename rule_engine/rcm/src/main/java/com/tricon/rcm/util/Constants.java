@@ -48,5 +48,6 @@ public class Constants {
 	public static final Integer LENGTH=8;
 	public static final String  ROLE_ADMIN="ROLE_ADMIN";
 	public static final String PASSWORD_PATTERN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	public static final String SHOW_ALL_COMPANY_USERS="All";
 
 }
