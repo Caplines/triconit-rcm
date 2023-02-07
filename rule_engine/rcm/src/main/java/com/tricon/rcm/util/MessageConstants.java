@@ -36,7 +36,7 @@ public class MessageConstants {
 	
 	public static final String OFFICE_NOT_EXIST = "Office not exist";
 	
-	public static final String OFFICE_EXIST="Office Exist";
+	public static final String OFFICE_EXIST="Office already exist!";
 	
 	public static final String DUPLICATE_OFFICE="Duplicate office not allow";
 	
@@ -49,6 +49,8 @@ public class MessageConstants {
 	public static final String CLAIM_REASSIGN_SUCCESS_MESSAGE="Claim has been assigned";
 	
 	public static final String SOMETHING_WENT_WRONG="Something went wrong";
+	
+	public static final String NEW_OFFICE_ADDED="New office added!";
 	
 
 }

@@ -417,7 +417,11 @@ public class AdminServiceImpl {
 			RcmOffice oldOffice = officeRepo.findByCompanyAndName(company, dto.getName());
 
 			// if company uuid is same as capline or office is alreday exist then return
-			if (oldOffice != null || company.getName().equals(Constants.COMPANY_NAME)) {
+			if (oldOffice != null ) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.OFFICE_EXIST, null);
+			}
+			
+			if(company.getName().equals(Constants.COMPANY_NAME)){
 				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 			}
 
