@@ -481,12 +481,17 @@ public class AdminServiceImpl {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		RcmOffice office = officeRepo.findByUuid(dto.getOfficeUuid());
+		RcmOffice checkExistOfficeName=officeRepo.findByNameAndCompanyUuid(dto.getOfficeName(),dto.getCompanyUuid());
 
 		// if office id is capline then return
 		if (office.getCompany().getName().equals(Constants.COMPANY_NAME)) {
 			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 		}
-
+       
+		if(checkExistOfficeName!=null)
+		{
+			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.OFFICE_EXIST, null);
+		}
 		// if login user(ADMIN) is capline then login user can edit other company office
 		if (office != null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
 			office.setName(dto.getOfficeName());
