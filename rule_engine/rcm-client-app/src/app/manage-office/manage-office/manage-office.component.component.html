@@ -10,10 +10,10 @@
                         <div class="detail-box-form">
                             <div class="form-row withoutLink">
                                 <div class="date-range-box">
-                                    <label>Company Name :</label>
+                                    <label>Client Name :</label>
                                     <select class="form-control"
                                             (change)="selectCompany($event)">
-                                        <option selected="true" hidden="true">Select Company</option>
+                                        <option selected="true" hidden="true">Select Client</option>
                                         <ng-container *ngFor="let comp of companyData">
                                             <option *ngIf="comp.name !== 'Capline'" value="{{comp.companyUuid}}">{{comp.name}}</option>
                                         </ng-container>
