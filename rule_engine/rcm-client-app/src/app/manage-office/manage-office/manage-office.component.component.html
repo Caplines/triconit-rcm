@@ -12,10 +12,10 @@
                                 <div class="date-range-box">
                                     <label>Company Name :</label>
                                     <select class="form-control"
-                                            (change)="getOfficesByCompany($event);selectCompany($event)">
+                                            (change)="selectCompany($event)">
                                         <option selected="true" hidden="true">Select Company</option>
                                         <ng-container *ngFor="let comp of companyData">
-                                            <option *ngIf="comp.name !== 'Capline'" value="{{comp.name}}">{{comp.name}}</option>
+                                            <option *ngIf="comp.name !== 'Capline'" value="{{comp.companyUuid}}">{{comp.name}}</option>
                                         </ng-container>
                                     </select>
                                     <div class="spinner-border text-success" role="status" *ngIf="showLoader"></div>
@@ -65,7 +65,7 @@
                                                 <tr >
                                                     <td scope="col"> <input type="text" value="{{office.name}}" [(ngModel)]="office.name" class="form-control" [disabled]="!office.editable" [ngClass]="{'is-invalid': office.editable && office.name==''}"></td>
                                                     <td scope="col" >
-                                                        <button type="button" (click)="editOfficeName(office,idx)" class="btn btn-edit" *ngIf="!office['newField']">
+                                                        <button type="button" (click)="editOfficeName(office)" class="btn btn-edit" *ngIf="!office['newField'] && !office.editable">
                                                             <img src="../assets/img/edit.png" alt="edit" />
                                                             Edit
                                                         </button>
@@ -73,7 +73,7 @@
                                                     <td scope="col">
                                                         <button type="button" class="btn btn-edit" [disabled]="!office.editable" (click)="saveOfficeName(office)">
                                                             <img src="../assets/img/save-data-icon.png" alt="edit" style="margin-top:2px;" />
-                                                            Save
+                                                            {{office['newField'] ? 'Save' : 'Update' }}
                                                         </button>
                                                     </td>
                                                 </tr>

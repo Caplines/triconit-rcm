@@ -41,32 +41,28 @@ export class ManageOfficeComponent implements OnInit {
       }
     })
   }
-  getOfficesByCompany(event:any){
+  getOfficesByCompany(companyUuid?:any){
     this.showLoader=true;
-    this.companyData.find((e:any)=>{
-      if(e.name === event.target.value){
-        this.companyUuid = e.companyUuid;
-        this.appService.fetchOfficeByCompany(e.companyUuid,(callback:any)=>{
+        this.appService.fetchOfficeByCompany(companyUuid,(callback:any)=>{
             if(callback.status){
               this.showLoader=false;
               this.officeData = callback.data.data;
              this.officeData =  this.officeData.map((e:any)=>({...e,'editable':false}))
             }
-        })
-      }
     })
 }
-  selectCompany(e:any){
-
+  selectCompany(event:any){
+      this.companyUuid = event.target.value;
+      this.getOfficesByCompany(this.companyUuid)
   }
 
   selectOffice(e:any){
 
   }
  
-  editOfficeName(office:any,index:any){
+  editOfficeName(office:any){
       office.editable = !office.editable;
-      
+      // office['newField']= !office['newField']
       console.log(office.name)
   }
 
@@ -78,15 +74,16 @@ export class ManageOfficeComponent implements OnInit {
           "officeName": office.name
         }
         this.appService.editOfficeName(params, (callback: any) => {
-          if (callback.result.status == 200 || callback.result?.data?.status == 200) {
+          if (callback.result.status == 200) {
             this.alert.showAlertPopup = true;
-            this.alert.alertMsg = callback.message ? callback.message : callback.result.data.message;
+            this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
             console.log(callback)
             office.editable = false;
             office['newField']=false;
           }else{
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = 'Something Went Wrong'
+              console.log(callback)
           }
         })
       }
@@ -96,15 +93,19 @@ export class ManageOfficeComponent implements OnInit {
           "name": office.name
         }
         this.appService.addNewOffice(params, (callback: any) => {
-          if (callback.result.status == 200 || callback.result?.data?.status == 200) {
+          if (callback.result.status == 200) {
             this.alert.showAlertPopup = true;
-            this.alert.alertMsg = callback.message ? callback.message : callback.result.data.message;
+            this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
             console.log(callback)
             office.editable = false;
             office['newField']=false;
-          } else{
+            this.officeData.push({'name':office.name,'uuid':callback.result.data});
+          } else if(callback.result.data.status == 400){
+            console.log(callback)
             this.alert.showAlertPopup = true;
-            this.alert.alertMsg = 'Something Went Wrong'
+            this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
+          }else {
+            console.log(callback)
           }
         })
       }
