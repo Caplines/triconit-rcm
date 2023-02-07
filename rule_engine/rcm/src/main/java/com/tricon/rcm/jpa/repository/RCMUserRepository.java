@@ -19,13 +19,13 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	RcmUser findByEmail(String email);
 	
 	@Query(value="select u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName from rcm_user u where u.active=1 AND u.team_id=:teamId And u.company_id=:companyUuid",nativeQuery=true)
-	List<RcmUserToDto> findUsersByTeamId(int teamId,String companyUuid);
+	List<RcmUserToDto> findUsersByTeamId(@Param("teamId") int teamId,@Param("companyUuid")  String companyUuid);
 	
 	@Query(value="select u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName from rcm_user u join rcm_user_role r on u.uuid=r.uuid where r.role=?1 and u.active=1",nativeQuery=true)
-	List<RcmUserToDto> findUsersByRole(String role);
+	List<RcmUserToDto> findUsersByRole(@Param("role") String role);
 	
 	@Query(value="select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName from rcm_user where company_id=?1",nativeQuery = true)
-	List<RcmUserToDto> getAllUser(String uuid);
+	List<RcmUserToDto> getAllUser(@Param("uuid")  String uuid);
 	
 
 	@Query(value = "select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName from rcm_user where company_id=:uuid", countQuery = "select count(*) from rcm_user where company_id=:uuid", nativeQuery = true)
@@ -38,7 +38,7 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	@Query(value = "select uuid as Uuid,active as Active,concat(first_name,' ',last_name)as FullName,email as Email,"
 			+ "first_name as FirstName,last_name as LastName,team_id as TeamNameid from rcm_user where"
 			+ "(first_name like %:search% or email like %:search% or last_name like %:search%)",nativeQuery = true)
-	List<UserSearchDto> findByUserDetails(String search);
+	List<UserSearchDto> findByUserDetails(@Param("search")  String search);
 	
 	List<RcmUser>findByUuidIn(List<String> userId);
 }
