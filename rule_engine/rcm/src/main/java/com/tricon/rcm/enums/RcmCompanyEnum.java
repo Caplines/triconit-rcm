@@ -2,7 +2,7 @@ package com.tricon.rcm.enums;
 
 public enum RcmCompanyEnum {
 	
-	CAPLINE("Capline", new RcmRoleEnum[] { RcmRoleEnum.ADMIN }),
+	Simplepoint("Simplepoint", new RcmRoleEnum[] { RcmRoleEnum.ADMIN }),
 	UDG("UDG", new RcmRoleEnum[] {}),
 	MAYERLAND("Meyerland", new RcmRoleEnum[] {}),
 	GRANDPRARIE("Grand Prarie", new RcmRoleEnum[] {});

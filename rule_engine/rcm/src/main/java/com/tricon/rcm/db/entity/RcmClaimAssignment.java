@@ -63,6 +63,8 @@ public class RcmClaimAssignment extends BaseAuditEntity implements Serializable{
 	@JoinColumn(name = "status_id",referencedColumnName="id")
 	private RcmClaimStatusType rcmClaimStatus;
 	
+	@Column(name = "taken_back",columnDefinition = "BIT default 0")
+	private boolean takenBack;//for Condition when its taken back from him.. by any one
 	
 	@Column(name = "active",columnDefinition = "BIT default 1")
 	private boolean active;//

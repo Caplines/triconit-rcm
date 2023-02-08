@@ -20,6 +20,7 @@ import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
+import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
@@ -58,9 +59,16 @@ public class ClaimScheduler {
 			logger.info("ClaimScheduler For  " + officeDto.getName());
 			dto.setOfficeuuid(officeDto.getUuid());
 			dto.setSource(ClaimSourceEnum.EAGLESOFT.toString());
+			int log=-1;
+			//ruleEngineService.pullAndSaveInsuranceFromRE(dto,user);
+			String[] status = ruleEngineService.pullAndSaveClaimFromRE(dto,user,li,ClaimTypeEnum.P,comp,log).split("___");
 			
-			ruleEngineService.pullAndSaveInsuranceFromRE(dto,user);
-			ruleEngineService.pullAndSaveClaimFromRE(dto,user,li);
+			try {
+			if (status.length==2) log=Integer.parseInt(status[1]);
+			}catch(Exception p) {
+				
+			}
+			ruleEngineService.pullAndSaveClaimFromRE(dto,user,li,ClaimTypeEnum.S,comp,log);
 			//ruleEngineService.pullAndSaveRemoteLiteData(dto,user,logId);
 			
 			break;

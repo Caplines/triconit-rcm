@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
+import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
+import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.dto.GenericResponse;
@@ -111,6 +113,12 @@ public class RcmController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchClaimsForAssignments(dto)));
 	}
 	
+	
+	@ApiOperation(value = "Api For Fetching Billing TL Prodution Report", response = ProductionDto.class, responseContainer = "List")
+	@PostMapping("/api/bill/claim-production")
+	public ResponseEntity<Object> claimsProduction(@RequestBody ClaimProductionLogDto  dto) {
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.claimsProductionReportByTeam(RcmTeamEnum.BILLING.getId(),dto)));
+	}
 	
 	
 }

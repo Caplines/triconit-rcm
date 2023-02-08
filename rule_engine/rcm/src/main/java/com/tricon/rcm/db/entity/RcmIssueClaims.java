@@ -21,7 +21,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "rcm_issue_claims", uniqueConstraints = { @UniqueConstraint(columnNames = { "claim_id", "office_id" }) })
+@Table(name = "rcm_issue_claims", uniqueConstraints = { @UniqueConstraint(columnNames = { "claim_id", "office_id","source" }) })
 public class RcmIssueClaims extends BaseAuditEntity implements Serializable{
 
 	/**
@@ -46,5 +46,8 @@ public class RcmIssueClaims extends BaseAuditEntity implements Serializable{
 	
 	@Column(name = "resolved", nullable = false)
 	private boolean  resolved;
+	
+	@Column(name = "source", nullable = false)
+	private String  source;
 	
 }

@@ -96,6 +96,10 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "current_team_id", referencedColumnName = "id")
 	private RcmTeam currentTeamId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "first_worked_team_id", referencedColumnName = "id")
+	private RcmTeam firstWorkedTeamId;
 
 	@Column(name = "patient_birth_date")
 	private Date patientBirthDate;
@@ -130,8 +134,23 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "timely_fil_lmt_dt")
 	private String  timelyFilingLimitData;
 	
+	
+	@Column(name = "sec_member_id")
+	private String  secMemberId;
+	
+	@Column(name = "group_number")
+	private String  groupNumber;
+	
+	@Column(name = "prime_policy_holder")
+	private String  primePolicyHolder;
+	
+	@Column(name = "sec_policy_holder")
+	private String  secPolicyHolder;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "last_work_team_id", referencedColumnName = "id",nullable=true)
 	private RcmTeam lastWorkTeamId;
+	
+	
 
 }

@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 
 public class Constants {
 
-	public static final String COMPANY_NAME="Capline";//This matches with Company Table  Name Column... Same in Rule Engine 
+	public static final String COMPANY_NAME="Smilepoint";//This matches with Company Table  Name Column... Same in Rule Engine 
 	public static final String SYSTEM_USER_EMAIL="SYSTEM";//Default User  IN DB
 	public static final String RCM_MAPPING_INSURANCE="Insurance";//Entry needed in DB->rcm_mapping_table 
 	public static final String RCM_MAPPING_TIMELY_LIMIT="Timely Filling Sheet";//Entry needed in DB->rcm_mapping_table 

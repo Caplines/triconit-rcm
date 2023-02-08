@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
+import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
@@ -29,7 +30,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "count(Case When claim_status_type_id=:status and pending is true Then 'billre' End) as 'count' , "
 			+ "min(Case When claim_status_type_id=:status Then cl.created_date End)   as 'opdt', "
 			+ "min(Case When claim_status_type_id=:status Then cl.dos End)   as 'opdos', "
-			+ "off.uuid as officeUuid,0 as remoteLiteRejections FROM  rule_engine_2.office off left join rule_engine_2.rcm_claims  cl "
+			+ "off.uuid as officeUuid,0 as remoteLiteRejections FROM  office off left join rcm_claims  cl "
 			+ "on off.uuid=cl.office_id where off.company_id=:companyId " + "group by off.uuid ")
 	List<FreshClaimDetailsDto> fetchBillingOrReBillingClaimDetails(@Param("companyId") String companyId,
 			@Param("status") int status);
@@ -39,8 +40,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "Case when new_claims_count is null then 0  ELSE new_claims_count END as newClaimsCount, "
 			+ "Case when l.source is null then ''  ELSE l.source END as source, "
 			+ "Case when l.status is null then 0  ELSE l.status END as status " + " from office off left join (  "
-			+ " select created_date,created_by,new_claims_count,source,office_id,status from rule_engine_2.rcm_claim_log where id in ( "
-			+ " select max(id) as id from  rule_engine_2.rcm_claim_log log group by log.office_id))  l "
+			+ " select created_date,created_by,new_claims_count,source,office_id,status from rcm_claim_log where id in ( "
+			+ " select max(id) as id from  rcm_claim_log log group by log.office_id))  l "
 			+ " on off.uuid=l.office_id "
 			+ " inner join company cmp on cmp.uuid=off.company_id where cmp.uuid=:companyId")
 	List<FreshClaimLogDto> fetchFreshClaimLogs(@Param("companyId") String companyId);
@@ -102,12 +103,27 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " min(Case When claim_status_type_id in :status and pending=true  and cl.rcm_insurance_type in :inst Then cl.created_date End)   as 'opdt',"
 			+ " min(Case When claim_status_type_id in :status and pending=true  and cl.rcm_insurance_type in :inst Then cl.dos End) as 'opdos',0 as remoteLiteRejections, "
 			+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName " + " FROM "
-			+ "  rule_engine_2.office off left join rule_engine_2.rcm_claims  " + "  cl on off.uuid=cl.office_id "
+			+ "  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
 			+ "  where off.company_id=:companyId  group by off.uuid")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignments(@Param("companyId") String companyId,
 			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst);
+	
+	@Query(nativeQuery = true, value = 
+			" select count(distinct assign.claim_id) as total,count(distinct DATE(assign.created_date)) as days ,us.uuid as uuid,us.first_name "+
+			" as fName,us.last_name as lName from rcm_user us "+
+			" left join rcm_claim_assignment assign on us.uuid=assign.assigned_to "+
+			" and  assign.created_date between STR_TO_DATE( :startDate, '%m/%d/%Y %H:%i:%s') and STR_TO_DATE(:endDate, '%m/%d/%Y %H:%i:%s') "+
+			" left join rcm_claims cl on cl.claim_uuid=assign.claim_id  and team_id=:teamId and taken_back is false and  cl.pending is true  "+
+			" left join office off on off.uuid=cl.office_id  "+
+			" where   us.company_id=:companyId  and us.team_id=:teamId group by us.uuid ")
+	List<ProductionDto> claimProductionByTeamMember(@Param("companyId") String companyId,
+			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
 
+	
+	
+
+	
 }

@@ -39,6 +39,9 @@ public class RcmInsurance extends BaseAuditEntity implements Serializable{
 	@Column(name = "insurance_id", nullable = false)
 	private String insuranceId;
 	
+	@Column(name = "address", nullable = false)
+	private String address;
+	
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 

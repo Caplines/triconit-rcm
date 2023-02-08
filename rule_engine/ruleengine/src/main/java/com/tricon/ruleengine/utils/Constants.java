@@ -33,7 +33,7 @@ public class Constants {
 	public static final int eagleSoftFSNAMESheetID=5;
 	public static final int eagleSoftRemDedBalSheetID=8;
     */
-	public static final String COMPANY_NAME="Capline";//This matches with Company Table  Name Column...  same in rcm TOO
+	public static final String COMPANY_NAME="Smilepoint";//This matches with Company Table  Name Column...  same in rcm TOO
 	
 	//Entry from Rules Table (These values should Match from Database..)
 	public static final String RULE_ID_1="Eligibility of the patient";
@@ -129,6 +129,7 @@ public class Constants {
 	public static final String RULE_ID_85="Perio Maintenance with Prophy and Fluoride";
 	public static final String RULE_ID_86="Oral hygiene with Prophy and Fluoride";
 	public static final String RULE_ID_87="Provider Certification";
+	public static final String RULE_ID_88="D0140 with Treatment";
 	
 	
 
@@ -217,6 +218,8 @@ public class Constants {
 	public static String insurance_PPO="ppo";
 	public static String insurance_Medicare="medicare";
 	public static String insurance_Delta_Dental="delta dental";
+	public static String insurance_guardian="guardian";
+	public static String insurance_denta_quest="dentaquest";
 	public static String insurance_BCBS="bcbs";
 	public static String insurance_Humana="humana";
 	public static String insurance_Chip="chip";

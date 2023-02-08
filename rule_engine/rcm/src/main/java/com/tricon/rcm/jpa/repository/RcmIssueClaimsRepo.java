@@ -9,7 +9,7 @@ import com.tricon.rcm.db.entity.RcmOffice;
 
 public interface RcmIssueClaimsRepo extends JpaRepository<RcmIssueClaims, Integer>{
 
-	RcmIssueClaims findByClaimIdAndOffice(String claimId,RcmOffice office);
+	RcmIssueClaims findByClaimIdAndOfficeAndSource(String claimId,RcmOffice office,String source);
 	List<RcmIssueClaims> findByOfficeAndResolved(RcmOffice office, boolean resolved);
 	
 

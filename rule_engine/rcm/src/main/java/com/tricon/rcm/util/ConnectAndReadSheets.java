@@ -231,7 +231,8 @@ public class ConnectAndReadSheets {
 			try {
 				int x = -1;
 				dto = new ClaimFromSheet(obj.get(++x), obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),
-						obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x));
+						obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x)
+						,obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x));
 				list.add(dto);
 
 			} catch (Exception ex) {

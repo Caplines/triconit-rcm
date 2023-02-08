@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class ClaimFromSheet {
 	
-	private String officeName;										 				
-	private String actionRequired;
+	private String officeName;//A										 				
+	private String actionRequired;//B
 	private String patientId;
 	private String patientName;
 	private String paitentDob;
@@ -22,10 +22,16 @@ public class ClaimFromSheet {
 	private String insuranceMemberId;
 	private String insuranceCompanyName;
 	private String insuranceType;
+
+	private String insuranceAddress;//R
+	private String policyHolder;//S
+	private String groupName;//T
+	private String memberId;//U
 	public ClaimFromSheet(String officeName, String actionRequired, String patientId, String patientName,
 			String paitentDob, String subscriberName, String subscriberDob, String claimId, String dateOfService,
 			String provider, String claimType, String primaryEOB, String totalBilled, String insuranceEstimatedAmount,
-			String insuranceMemberId, String insuranceCompanyName, String insuranceType) {
+			String insuranceMemberId, String insuranceCompanyName, String insuranceType, String insuranceAddress,
+			String policyHolder, String groupName, String memberId) {
 		super();
 		this.officeName = officeName;
 		this.actionRequired = actionRequired;
@@ -44,7 +50,13 @@ public class ClaimFromSheet {
 		this.insuranceMemberId = insuranceMemberId;
 		this.insuranceCompanyName = insuranceCompanyName;
 		this.insuranceType = insuranceType;
+		this.insuranceAddress = insuranceAddress;
+		this.policyHolder = policyHolder;
+		this.groupName = groupName;
+		this.memberId = memberId;
 	}
+
+	
 	
 	
 	

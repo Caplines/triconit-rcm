@@ -54,7 +54,7 @@ public class MasterServiceImpl {
 		List<RcmTeamDto> teams = new ArrayList<>();
 		RcmTeamDto team = null;
 		if (Stream.of(RcmCompanyEnum.values()).anyMatch(x -> x.getName().equals(companyName))) {
-			if (RcmCompanyEnum.CAPLINE.getName().equals(companyName)) {
+			if (RcmCompanyEnum.Simplepoint.getName().equals(companyName)) {
 				for (RcmTeamEnum t : RcmTeamEnum.values()) {
 					team = new RcmTeamDto();
 					if (t.isSmilepoint() && t.isRoleVisible()) {
@@ -87,7 +87,7 @@ public class MasterServiceImpl {
 		List<RcmRoleDto>roles=new ArrayList<>();
 		RcmRoleDto role=null;
 		if (Stream.of(RcmCompanyEnum.values()).anyMatch(x -> x.getName().equals(companyName))) {
-		if (RcmCompanyEnum.CAPLINE.getName().equals(companyName)) {
+		if (RcmCompanyEnum.Simplepoint.getName().equals(companyName)) {
 			for (RcmRoleEnum r : RcmRoleEnum.values()) {
 				role=new RcmRoleDto();
 				if(r.isRoleVisibilityForSmilepoint()) {

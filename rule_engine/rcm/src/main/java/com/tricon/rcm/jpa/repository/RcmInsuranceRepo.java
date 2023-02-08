@@ -1,6 +1,5 @@
 package com.tricon.rcm.jpa.repository;
 
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

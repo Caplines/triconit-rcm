@@ -10,57 +10,60 @@ import lombok.Data;
 public class ClaimsFromRuleEngine {
 
 	@JsonProperty("c1")
-	String patientId;
-	
-	@JsonProperty("c2")
 	String claimId;
 	
+	@JsonProperty("c2")
+	String patientId;
+	
 	@JsonProperty("c3")
-	String empty;
+	String patientName;
 	
 	@JsonProperty("c4")
-	String tranDate;
-	
-	@JsonProperty("c5")
-	float submittedTotal;
-	
-	@JsonProperty("c6")
-	float primSubmittedTotal;
-	
-	@JsonProperty("c7")
-	float primTotalPaid;
-	
-	@JsonProperty("c8")
-	String primDateSent;
-	
-	@JsonProperty("c9")
-	float secSubmittedTotal;
-	
-	@JsonProperty("c10")
-	String secDateSent;
-	
-	@JsonProperty("c11")
-	String providerId;
-	
-	@JsonProperty("c12")
-	String primInsuranceCompanyId;
-	
-	@JsonProperty("c13")
-	String secInsuranceCompanyId;
-	
-	@JsonProperty("c14")
-	String primStatus;
-	
-	@JsonProperty("c15")
-	String secStatus;
-	
-	@JsonProperty("c16")
-	String claimType;
-	
-	@JsonProperty("c17")
 	String birthDate;
 	
+	@JsonProperty("c5")
+	String tranDate;
+	
+	@JsonProperty("c6")
+	float submittedTotal;
+	
+	@JsonProperty("c7")
+	String claimType;
+	
+	@JsonProperty("c8")
+	String primSecStatus;
+	
+	@JsonProperty("c9")
+	String providerId;
+	
+	@JsonProperty("c10")
+	float primSecSubmittedTotal;
+	
+	@JsonProperty("c11")
+	String primSecInsuranceCompanyId;
+
+	@JsonProperty("c12")
+	String insuranceCompanyName;
+	
+	@JsonProperty("c13")
+	String secMemberId;
+	
+	@JsonProperty("c14")
+	String insuranceCompanyFullAddress;
+	
+	@JsonProperty("c15")
+	String groupNumber;
+	
+	@JsonProperty("c16")
+	String primeSecPolicyHolder;
+	
+	//Now for Secondary
+	@JsonProperty("c17")
+	String primDateSent;
+	
 	@JsonProperty("c18")
-	String patientName;
+	float primTotalPaid;
+	
+
 	
 }

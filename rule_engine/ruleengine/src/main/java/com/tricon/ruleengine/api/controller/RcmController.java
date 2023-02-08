@@ -61,7 +61,8 @@ public class RcmController {
 	@Autowired
 	private UserService userService;
 
-	RcmEnv rcmEnvClaim = null;
+	RcmEnv rcmEnvPrimaryClaim = null;
+	RcmEnv rcmEnvSecondaryClaim = null;
 	RcmEnv rcmEnvInsurance = null;
 
 	@Autowired
@@ -75,8 +76,12 @@ public class RcmController {
 	@PostConstruct
 	public void init() {
 
-		rcmEnvClaim = new RcmEnv(env.getProperty("claim.unbilled.query"), env.getProperty("claim.unbilled.query.count"),
-				env.getProperty("claim.unbilled.query.selectcolumns"), env.getProperty("rmc.auth.token"));
+		rcmEnvPrimaryClaim = new RcmEnv(env.getProperty("claim.unbilled.primary.query"), env.getProperty("claim.unbilled.primary.query.count"),
+				env.getProperty("claim.unbilled.primary.query.selectcolumns"), env.getProperty("rmc.auth.token"));
+		
+		rcmEnvSecondaryClaim = new RcmEnv(env.getProperty("claim.unbilled.secondary.query"), env.getProperty("claim.unbilled.secondary.query.count"),
+				env.getProperty("claim.unbilled.secondary.query.selectcolumns"), env.getProperty("rmc.auth.token"));
+		
 		rcmEnvInsurance = new RcmEnv(env.getProperty("claim.insurance.query"),
 				env.getProperty("claim.insurance.query.count"), env.getProperty("claim.insurance.query.selectcolumns"),
 				env.getProperty("rmc.auth.token"));
@@ -86,7 +91,7 @@ public class RcmController {
 	@RequestMapping(value = "/fetch-claims", method = RequestMethod.GET)
 	public ResponseEntity<?> fetchClaims(@RequestHeader("x-api-key") String apiKey,
 			@RequestParam(value = "office", required = false) String officeUuid,
-			@RequestParam(value = "password", required = true) String password)
+			@RequestParam(value = "password", required = true) String password,@RequestParam(value = "primarySecondary", required = true) String primarySecondary)
 			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
 
 		String ids = null;
@@ -111,10 +116,19 @@ public class RcmController {
 						.getName();
 
 			}
-			GenericResponse data = (GenericResponse) googleReportsController
-					.fethESGoogleresponse(rcmEnvClaim.getQuerySelectcolumns(), rcmEnvClaim.getQuery(), ids,
-							Integer.parseInt(rcmEnvClaim.getQueryCount()), password, officeName, null, null)
+			GenericResponse data =null;
+			if (primarySecondary.equalsIgnoreCase("Primary")) {
+				data =(GenericResponse) googleReportsController
+					.fethESGoogleresponse(rcmEnvPrimaryClaim.getQuerySelectcolumns(), rcmEnvPrimaryClaim.getQuery(), ids,
+							Integer.parseInt(rcmEnvPrimaryClaim.getQueryCount()), password, officeName, null, null)
 					.getBody();
+			}else {
+				
+				data =(GenericResponse) googleReportsController
+						.fethESGoogleresponse(rcmEnvSecondaryClaim.getQuerySelectcolumns(), rcmEnvSecondaryClaim.getQuery(), ids,
+								Integer.parseInt(rcmEnvSecondaryClaim.getQueryCount()), password, officeName, null, null)
+						.getBody();
+			}
 			dd = new RcmClaimDataDto();
 			dd.setOfficeName(officeUuid);
 			dd.setData(data.getData());
@@ -127,11 +141,17 @@ public class RcmController {
 					GenericResponse data = null;
 					try {
 						RcmClaimDataDto ddd = null;
+						if (primarySecondary.equalsIgnoreCase("Primary")) {
 						data = (GenericResponse) googleReportsController.fethESGoogleresponse(
-								rcmEnvClaim.getQuerySelectcolumns(), rcmEnvClaim.getQuerySelectcolumns(), ids,
-								Integer.parseInt(rcmEnvClaim.getQueryCount()), password, n.getName(), null, null)
+								rcmEnvPrimaryClaim.getQuerySelectcolumns(), rcmEnvPrimaryClaim.getQuerySelectcolumns(), ids,
+								Integer.parseInt(rcmEnvPrimaryClaim.getQueryCount()), password, n.getName(), null, null)
 								.getBody();
-
+						}else {
+							data = (GenericResponse) googleReportsController.fethESGoogleresponse(
+									rcmEnvSecondaryClaim.getQuerySelectcolumns(), rcmEnvSecondaryClaim.getQuerySelectcolumns(), ids,
+									Integer.parseInt(rcmEnvSecondaryClaim.getQueryCount()), password, n.getName(), null, null)
+									.getBody();
+						}
 						ddd = new RcmClaimDataDto();
 						ddd.setOfficeName(n.getUuid());
 						ddd.setData(data.getData());
@@ -308,7 +328,7 @@ public class RcmController {
 
 	private boolean checkForKey(String apiKey) {
 
-		if (apiKey == null || !apiKey.equals(rcmEnvClaim.getApiKey())) {
+		if (apiKey == null || !apiKey.equals(rcmEnvPrimaryClaim.getApiKey())) {
 			RuleEngineLogger.generateLogs(clazz, "ERROR -in KEY" + new Date(), " INFO", null);
 			return false;
 
