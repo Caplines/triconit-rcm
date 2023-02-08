@@ -11,12 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "rcm_mapping_table")
+@Table(name = "rcm_mapping_table",uniqueConstraints = { @UniqueConstraint(columnNames = { "company_id", "name" }) })
 public class RcmMappingTable implements Serializable{
 	
 	/**
@@ -29,7 +30,7 @@ public class RcmMappingTable implements Serializable{
 	@Column(name = "id", unique = true, nullable = false)
 	private int id;
 	
-	@Column(name = "name", unique = true,length=100)
+	@Column(name = "name",length=100)
 	private String name;
 	
 	@Column(name = "google_sheet_id" , length=255)
