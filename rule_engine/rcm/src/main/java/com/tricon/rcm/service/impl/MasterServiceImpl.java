@@ -2,7 +2,6 @@ package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +10,6 @@ import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
-import com.tricon.rcm.enums.RcmCompanyEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
@@ -53,8 +51,7 @@ public class MasterServiceImpl {
 	public List<RcmTeamDto> getTeams(String companyName) {
 		List<RcmTeamDto> teams = new ArrayList<>();
 		RcmTeamDto team = null;
-		if (Stream.of(RcmCompanyEnum.values()).anyMatch(x -> x.getName().equals(companyName))) {
-			if (RcmCompanyEnum.Simplepoint.getName().equals(companyName)) {
+			if (Constants.COMPANY_NAME.equals(companyName)) {
 				for (RcmTeamEnum t : RcmTeamEnum.values()) {
 					team = new RcmTeamDto();
 					if (t.isSmilepoint() && t.isRoleVisible()) {
@@ -74,10 +71,7 @@ public class MasterServiceImpl {
 				}
 			}
 			return teams;
-		} else {
-			return null;
-		}
-	}
+		} 
 
 	/**
 	 * Get user roles from RcmRoleEnum
@@ -86,8 +80,7 @@ public class MasterServiceImpl {
 	public List<RcmRoleDto> getRoles(String companyName){
 		List<RcmRoleDto>roles=new ArrayList<>();
 		RcmRoleDto role=null;
-		if (Stream.of(RcmCompanyEnum.values()).anyMatch(x -> x.getName().equals(companyName))) {
-		if (RcmCompanyEnum.Simplepoint.getName().equals(companyName)) {
+		if (Constants.COMPANY_NAME.equals(companyName)) {
 			for (RcmRoleEnum r : RcmRoleEnum.values()) {
 				role=new RcmRoleDto();
 				if(r.isRoleVisibilityForSmilepoint()) {
@@ -110,8 +103,6 @@ public class MasterServiceImpl {
 			}
 		  }
 		return roles;
-		}
-		return null;
 	}
 
 	/**
@@ -144,16 +135,12 @@ public class MasterServiceImpl {
 	public List<RcmRoleDto> defaultRolesByCompanyName(String companyName) {
 		List<RcmRoleDto> roles = new ArrayList<>();
 		RcmRoleDto role = null;
-		for ( RcmCompanyEnum t : RcmCompanyEnum.values()) {
-			if (t.getName().equals(companyName)) {
-				for (RcmRoleEnum r : t.getRole()) {
-					role = new RcmRoleDto();
-					role.setRoleName(r.getFullName());
-					role.setRoleId(r.getName());
-					role.setTeamMandatory(r.isTeamMandatory());
-					roles.add(role);
-				}
-			}
+		if (Constants.COMPANY_NAME.equals(companyName)) {
+			role = new RcmRoleDto();
+			role.setRoleName(RcmRoleEnum.ADMIN.getFullName());
+			role.setRoleId(RcmRoleEnum.ADMIN.getName());
+			role.setTeamMandatory(RcmRoleEnum.ADMIN.isTeamMandatory());
+			roles.add(role);
 		}
 		return roles;
 	}
