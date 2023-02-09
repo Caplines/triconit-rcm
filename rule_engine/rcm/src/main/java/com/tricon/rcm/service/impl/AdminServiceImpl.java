@@ -488,9 +488,9 @@ public class AdminServiceImpl {
 			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 		}
        
-		if(checkExistOfficeName!=null)
+		if(checkExistOfficeName!=null &&!checkExistOfficeName.getUuid().equals(dto.getOfficeUuid()))
 		{
-			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.OFFICE_EXIST, null);
+			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.NAME_EXIST, null);
 		}
 		// if login user(ADMIN) is capline then login user can edit other company office
 		if (office != null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
