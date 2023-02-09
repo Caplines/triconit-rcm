@@ -52,5 +52,11 @@ public class MessageConstants {
 	
 	public static final String NEW_OFFICE_ADDED="New office added!";
 	
+	public static final String COMPANY_EXIST="Company already exist!";
+	
+	public static final String NAME_EXIST="Name already exist!";
+	
+	public static final String RECORD_EXIST="Record already exist!";
+	
 
 }

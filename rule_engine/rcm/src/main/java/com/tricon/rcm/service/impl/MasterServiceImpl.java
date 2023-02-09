@@ -136,11 +136,21 @@ public class MasterServiceImpl {
 		List<RcmRoleDto> roles = new ArrayList<>();
 		RcmRoleDto role = null;
 		if (Constants.COMPANY_NAME.equals(companyName)) {
+			for(String r:Constants.DEFAULT_ROLE_FOR_SMILEPOINT) {
 			role = new RcmRoleDto();
-			role.setRoleName(RcmRoleEnum.ADMIN.getFullName());
-			role.setRoleId(RcmRoleEnum.ADMIN.getName());
-			role.setTeamMandatory(RcmRoleEnum.ADMIN.isTeamMandatory());
+			role.setRoleName(RcmRoleEnum.valueOf(r).getFullName());
+			role.setRoleId(RcmRoleEnum.valueOf(r).getName());
+			role.setTeamMandatory(RcmRoleEnum.valueOf(r).isTeamMandatory());
 			roles.add(role);
+			}
+		}else {
+			for(String r:Constants.DEFAULT_ROLE_FOR_OTHERS) {
+				role = new RcmRoleDto();
+				role.setRoleName(RcmRoleEnum.valueOf(r).getFullName());
+				role.setRoleId(RcmRoleEnum.valueOf(r).getName());
+				role.setTeamMandatory(RcmRoleEnum.valueOf(r).isTeamMandatory());
+				roles.add(role);
+				}
 		}
 		return roles;
 	}

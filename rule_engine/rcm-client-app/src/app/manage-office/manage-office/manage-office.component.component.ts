@@ -100,7 +100,7 @@ export class ManageOfficeComponent implements OnInit {
             console.log(callback)
             office.editable = false;
             office['newField']=false;
-            this.officeData.push({'name':office.name,'uuid':callback.result.data});
+            //this.officeData.push({'name':office.name,'uuid':callback.result.data});
           } else if(callback.result.status == 400){
             console.log(callback)
             this.alert.showAlertPopup = true;

@@ -1,6 +1,9 @@
 package com.tricon.rcm.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class Constants {
 
@@ -49,5 +52,8 @@ public class Constants {
 	public static final String  ROLE_ADMIN="ROLE_ADMIN";
 	public static final String PASSWORD_PATTERN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	public static final String SHOW_ALL_COMPANY_USERS="All";
+	public static final List<String> MAPPING_TABLE_NAME=Arrays.asList("RCM DataBase","Timely Filling Sheet");
+	public static final List<String> DEFAULT_ROLE_FOR_SMILEPOINT=Arrays.asList("ADMIN");
+	public static final List<String> DEFAULT_ROLE_FOR_OTHERS=Collections.EMPTY_LIST;
 
 }
