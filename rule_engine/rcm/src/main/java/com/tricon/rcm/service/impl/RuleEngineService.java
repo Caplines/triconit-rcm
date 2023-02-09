@@ -220,12 +220,24 @@ public class RuleEngineService {
 									List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
 									UserAssignOffice assignedUser = userAssignOfficeRepo
 											.findByOfficeUuidAndTeamId(off.getUuid(), RcmTeamEnum.BILLING.getId());
-
+ 
+									
 									RcmInsuranceType rcmInsuranceType = null;
 									if (claims == null || claims.size() == 0) {
-										List<String> buildError=null;
+										//List<String> buildError1=null;
 										// Fresh Claims
 									
+									if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
+									  //Check for Corresponding Primary Claim in Case of secondary
+									  RcmClaims primaryClaim=	rcmClaimRepository.findByClaimIdAndOffice(re.getClaimId()+ClaimTypeEnum.P.getSuffix(), off);
+									  if (primaryClaim==null) {
+									      //no need to save this as primary is not present..
+										  saveRcmIssueClaim(re.getClaimId(), off, user, "Primary not Present", source, claimTypeEnum);
+										  continue;
+										  
+									   }
+									}
+										
 										claim = new RcmClaims();
 										List<String> error= new ArrayList<>();
 										System.out.println(re.getPrimSecInsuranceCompanyId());
@@ -266,7 +278,7 @@ public class RuleEngineService {
 													    
 										//}
 										if (error.size()>0) {
-											 saveRcmIssueClaim(re, buildError, off,user,
+											 saveRcmIssueClaim(re.getClaimId(), off,user,
 													 String.join("\n", error),source,claimTypeEnum);
 											 continue;
 										}
@@ -280,7 +292,7 @@ public class RuleEngineService {
 												systemStatusBilling, claimTypeEnum.getSuffix(), rcmInsuranceType,
 												timely,claimTypeEnum);
 										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
-										RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(re.getClaimId(), off,source);
+										RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(re.getClaimId()+claimTypeEnum.getSuffix(), off,source);
 									    if (isC!=null){
 											isC.setResolved(true);
 											rcmIssueClaimsRepo.save(isC);
@@ -715,24 +727,22 @@ public class RuleEngineService {
 		return li;
 	}
 	
-	private void saveRcmIssueClaim(ClaimsFromRuleEngine re,List<String> buildError,RcmOffice off,
+	public void saveRcmIssueClaim(String claimId,RcmOffice off,
 			RcmUser user,String error,String source,ClaimTypeEnum claimTypeEnum) {
 		
-		RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(re.getClaimId()+claimTypeEnum.getSuffix(), off,source);
-	      if (buildError==null) buildError=new ArrayList<>();
-		    buildError.add(error);
-		    if (isC==null){
+		RcmIssueClaims isC=rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(claimId+claimTypeEnum.getSuffix(), off,source);
+	        if (isC==null){
 		    	isC = new RcmIssueClaims();
-		    	isC.setClaimId(re.getClaimId()+claimTypeEnum.getSuffix());
+		    	isC.setClaimId(claimId+claimTypeEnum.getSuffix());
 		    	isC.setOffice(off);
 		    	isC.setSource(source);
 		    	isC.setResolved(false);
-		    	isC.setIssue(String.join(",", buildError));
+		    	isC.setIssue(error);
 		    	isC.setCreatedBy(user);
 		    	rcmIssueClaimsRepo.save(isC);
 		    }
 		    else {
-		    	isC.setIssue(String.join(",", buildError));
+		    	isC.setIssue(error);
 		    	isC.setResolved(false);
 		    	isC.setUpdatedBy(user);
 		    	rcmIssueClaimsRepo.save(isC);
@@ -744,7 +754,7 @@ public class RuleEngineService {
 	 * 
 	 * @return
 	 */
-	private List<InsuranceNameTypeDto> pullInsuranceMappingFromSheet(RcmCompany company) {
+	public List<InsuranceNameTypeDto> pullInsuranceMappingFromSheet(RcmCompany company) {
 
 		logger.info(" In pullInsuranceMappingFromSheet");
 		RcmMappingTable table = rcmMappingTableRepo.findByNameAndCompany(Constants.RCM_MAPPING_INSURANCE, company);
@@ -768,7 +778,7 @@ public class RuleEngineService {
 	 * @param name
 	 * @return
 	 */
-	private String getInsuranceTypeFromSheetList(List<InsuranceNameTypeDto> sheetData, String name) {
+	public String getInsuranceTypeFromSheetList(List<InsuranceNameTypeDto> sheetData, String name) {
 		String insuranceType = null;
 		if (sheetData == null) {
 			logger.error("Data From Mapping sheet not found");

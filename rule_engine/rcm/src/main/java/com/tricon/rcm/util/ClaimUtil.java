@@ -56,10 +56,13 @@ public class ClaimUtil {
 		claims.setPatientName(re.getPatientName());
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {
 			claims.setPrimInsuranceCompanyId(prim);
-			claims.setPrimeSubmittedTotal(re.getPrimSecSubmittedTotal());
+			claims.setPrimeSecSubmittedTotal(re.getPrimSecSubmittedTotal());
 			claims.setPrimStatus(re.getPrimSecStatus());
 			claims.setPrimePolicyHolder(re.getPrimeSecPolicyHolder());
-			
+			try {
+				claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getBirthDate()).getTime()));
+			} catch (Exception dt) {
+			}
 		}
          if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
         	 claims.setSecInsuranceCompanyId(sec);
@@ -106,50 +109,96 @@ public class ClaimUtil {
 	
 	public static RcmClaims createClaimFromSheetData(RcmClaims claims, RcmOffice off, ClaimFromSheet re,
 			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,String claimSuffix,
-			RcmInsuranceType rcmInsuranceType,String timelyLmt) {
-        
-        	claims.setOffice(off);
-    		claims.setClaimStatusType(cType);//;mStatus("NEED TO RELOOK");// see latter
-    		
-    		if (user!=null) claims.setCreatedBy(user);
-    		claims.setCurrentTeamId(team);
-    		claims.setFirstWorkedTeamId(team);
-    		claims.setPrimInsuranceCompanyId(prim);
-    		claims.setSecInsuranceCompanyId(sec);
-    		claims.setPatientId(re.getPatientId());
-    		claims.setPatientName(re.getPatientName());
-    		claims.setPrimeSubmittedTotal(Float.parseFloat(re.getInsuranceEstimatedAmount()));
-    		claims.setPrimStatus("");
-    		claims.setPrimTotalPaid(Float.parseFloat(re.getInsuranceEstimatedAmount()));
-    		claims.setProviderId(re.getProvider());
-    		claims.setRcmSource(ClaimSourceEnum.GOOGLESHEET.toString());
-    		//claims.setRcmStatus(Constants.CLAIM_WITH_SYSTEM);
-    		claims.setSecStatus("");
-    		claims.setSecSubmittedTotal(Float.parseFloat(re.getInsuranceEstimatedAmount()));
-    		claims.setSubmittedTotal(Float.parseFloat(re.getTotalBilled()));
-    		claims.setClaimId(re.getClaimId()+claimSuffix);
-    		claims.setTimelyFilingLimitData(timelyLmt);
-    		claims.setRcmInsuranceType(rcmInsuranceType);
-    		claims.setPending(true);
-    		try {
-    			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPaitentDob()).getTime()));
-    		} catch (Exception dt) {
-    		}
-    		try {
-    		//	claims.setPrimDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPrimDateSent()).getTime()));
-    		} catch (Exception dt) {
-    		}
+			RcmInsuranceType rcmInsuranceType,String timelyLmt,ClaimTypeEnum claimTypeEnum) {
 
-    		try {
-    			//claims.setSecDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecDateSent()).getTime()));
+		claims.setOffice(off);
+		claims.setClaimStatusType(cType);//;mStatus("NEED TO RELOOK");// see latter
+		
+		if (user!=null) claims.setCreatedBy(user);
+		claims.setCurrentTeamId(team);
+		claims.setFirstWorkedTeamId(team);
+		
+		
+		claims.setPatientId(re.getAccountId());
+		claims.setPatientName(re.getPatientName());
+		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {
+			claims.setPrimInsuranceCompanyId(prim);
+			 claims.setProviderId(re.getProviderIdProviderName());
+			 claims.setSecMemberId(re.getPrimaryMemberId());
+			 claims.setGroupNumber(re.getPrimaryGroupNumber());
+			 try {
+			 claims.setPrimeSecSubmittedTotal(Float.parseFloat(re.getPrimaryBilledAmount().replaceAll("[^0-9]", "")));
+			 }catch(Exception q) {
+				 claims.setPrimeSecSubmittedTotal(0);
+			 }
+			 claims.setPrimStatus(re.getPrimaryClaimStatus());
+			 claims.setPrimePolicyHolder(re.getPrimaryPolicyHolderName());
+			 try {
+			 claims.setSubmittedTotal(Float.parseFloat(re.getPrimaryEstAmount().replaceAll("[^0-9]", "")));
+			 }catch(Exception q) {
+				 claims.setSubmittedTotal(0);
+			 }
+			 
+			 try {
+					claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPrimaryPolicyHolderDob()).getTime()));
+				} catch (Exception dt) {
+			}
+			 claims.setPrimStatus(re.getPrimaryClaimStatus());
+		}
+         if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
+        	 claims.setSecInsuranceCompanyId(sec);
+        	 claims.setProviderId(re.getProviderIdReport());
+        	 claims.setSecMemberId(re.getSecondaryMemberId());
+        	 claims.setGroupNumber(re.getSecondaryGroupNumber());
+        	 try {
+        	 claims.setPrimeSecSubmittedTotal(Float.parseFloat(re.getSecondaryBIlledAmount().replaceAll("[^0-9]", "")));
+        	 }catch(Exception q) {
+				 claims.setPrimeSecSubmittedTotal(0);
+			 }
+     		 claims.setSecStatus(re.getSecondaryClaimStatus());
+     		 claims.setSecPolicyHolder(re.getSecondaryPolicyHolder());
+     		 try {
+     		 claims.setPrimTotalPaid(Float.parseFloat(re.getSecondaryPaid().replaceAll("[^0-9]", "")));//extra
+     		 }catch(Exception q) {
+     			claims.setPrimTotalPaid(0);
+     		 }
+    		 try {
+    			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecondaryClaimSubmissionDate()).getTime()));////extra
     		} catch (Exception dt) {
     		}
-    		try {
-    			claims.setDos(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getDateOfService()).getTime()));
-    		} catch (Exception dt) {
-    		}
+    		 
+    		 try {
+					claims.setSecPolicyHolderDob(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecondaryPolicyHolderDob()).getTime()));
+				} catch (Exception dt) {
+			}
+		}
+		
+		
+		
+		claims.setRcmSource(ClaimSourceEnum.GOOGLESHEET.toString());
+		//claims.setRcmStatus(Constants.CLAIM_WITH_SYSTEM);
+		
+		
+		claims.setClaimId(re.getClaimId()+claimSuffix);
+		claims.setTimelyFilingLimitData(timelyLmt);
+		claims.setRcmInsuranceType(rcmInsuranceType);
+		claims.setPending(true);
+	
+		try {
+			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPaitentDob()).getTime()));
+		} catch (Exception dt) {
+		}
+		
 
-        
+//		try {
+//			claims.setSecDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecDateSent()).getTime()));
+//		} catch (Exception dt) {
+//		}
+		try {
+			claims.setDos(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getDos()).getTime()));
+		} catch (Exception dt) {
+		}
+
 		return claims;
 	}
 	

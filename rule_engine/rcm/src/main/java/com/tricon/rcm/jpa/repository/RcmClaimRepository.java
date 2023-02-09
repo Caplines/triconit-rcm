@@ -19,7 +19,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 	RcmClaims findByClaimIdAndOffice(String claimId, RcmOffice office);
 
-	RcmClaims findByClaimId(String claimId);
+	//RcmClaims findByClaimId(String claimId);
 
 	RcmClaims findByClaimUuid(String claimId);
 

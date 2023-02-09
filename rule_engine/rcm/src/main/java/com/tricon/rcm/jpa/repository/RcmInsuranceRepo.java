@@ -1,5 +1,7 @@
 package com.tricon.rcm.jpa.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +14,8 @@ import com.tricon.rcm.db.entity.RcmOffice;
 public interface RcmInsuranceRepo extends JpaRepository<RcmInsurance, Integer> {
 
 	RcmInsurance findByInsuranceIdAndOffice(String insuranceId,RcmOffice office);
-	RcmInsurance findByNameAndOffice(String insurance,RcmOffice office);
+	List<RcmInsurance> findByNameAndOffice(String insurance,RcmOffice office);
+	List<RcmInsurance> findByNameAndOfficeAndActive(String insurance,RcmOffice office,boolean avtive);
 	RcmInsurance findByNameAndOfficeAndInsuranceType(String insurance,RcmOffice office,RcmInsuranceType insuranceType);
 	
 	

@@ -58,8 +58,8 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "submitted_total", precision = 5, scale = 2)
 	private float submittedTotal;// C5
 
-	@Column(name = "prime_submitted_total", precision = 5, scale = 2)
-	private float primeSubmittedTotal;// C6
+	@Column(name = "prime_sec_submitted_total", precision = 5, scale = 2)
+	private float primeSecSubmittedTotal;// C6
 
 	@Column(name = "prim_total_paid", precision = 5, scale = 2)
 	private float primTotalPaid;// C7
@@ -143,6 +143,12 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "prime_policy_holder")
 	private String  primePolicyHolder;
+	
+	@Column(name = "prime_policy_holder_dob")
+	private Date  primePolicyHolderDob;
+	
+	@Column(name = "sec_policy_holder_dob")
+	private Date  secPolicyHolderDob;
 	
 	@Column(name = "sec_policy_holder")
 	private String  secPolicyHolder;
