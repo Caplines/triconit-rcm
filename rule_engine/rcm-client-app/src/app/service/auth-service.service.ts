@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable ,map} from 'rxjs';
 import { environment } from '../../environments/environment';
 
 
@@ -35,5 +35,15 @@ export class AuthService {
       email,
       password
     }, httpOptions);
+  }
+
+   forgotPassword(params:any,callback:any){
+    let token = localStorage.getItem("token");
+    let cpHeaders:Object = new Headers({'X-Authorization': 'Bearer '+ token});
+    return this.http.post(environment.API_URL + '/forgotPassword',params,cpHeaders).pipe(map(data=>{
+      return data;
+    })).subscribe(
+      (data:any) => { callback((<any>data)); 
+    });
   }
 }

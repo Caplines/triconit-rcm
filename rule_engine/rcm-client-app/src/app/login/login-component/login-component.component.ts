@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseService } from 'src/app/service/base-service.service';
+import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { AuthService } from '../../service/auth-service.service';
 import { TokenStorageService } from '../../service/token-storage.service';
 
@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
 
-  constructor(private authService: AuthService, private tokenStorage: TokenStorageService,private router:Router,private _baseService: BaseService) { }
+  constructor(private authService: AuthService, private tokenStorage: TokenStorageService,private router:Router,private appService: ApplicationServiceService) { }
 
   ngOnInit(): void {
     /* if (this.tokenStorage.getToken()) {
@@ -85,16 +85,17 @@ export class LoginComponent implements OnInit {
   }
 
   forgotPass(){
+    console.log(12)
     if(this.forgotPassObj.email.includes("@")){
-      this._baseService.forgotPassword({"email":this.forgotPassObj.email},(callback:any)=>{
-        if(callback.status && callback.result.message === 'Password has been updated' ){
+      this.authService.forgotPassword({"email":this.forgotPassObj.email},(callback:any)=>{
+        if(callback.status == 200){
           console.log(callback)
           this.forgotPassObj.showResetEmailMsg = true;
           this.forgotPassObj.showForgotPasswordBox = false;
           this.forgotPassObj.email= '';
           this.errorMessage='';
-        } else { 
-          this.errorMessage = callback.result.message;
+        } else if(callback.status == 400) { 
+          this.errorMessage = callback.message;
           this.forgotPassObj.email= '';
         }
       })

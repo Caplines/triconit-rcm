@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { BaseService } from '../service/base-service.service';
+import { ApplicationServiceService } from '../service/application-service.service';
 
 @Component({
   selector: 'app-user-setting',
@@ -20,7 +20,7 @@ export class UserSettingComponent implements OnInit {
   alert:any={'showAlertPopup':false,'alertMsg':''};
   isUserSetting:boolean=true;
 
-  constructor(private _baseService: BaseService, private title: Title) { 
+  constructor(private appService: ApplicationServiceService, private title: Title) { 
     title.setTitle("User-Setting");
   }
 
@@ -35,16 +35,16 @@ export class UserSettingComponent implements OnInit {
 
   findUser() {
     if(this.user.email !== ''){
-      this._baseService.findUser({ "email": this.user.email }, (callback: any) => {
-        if (callback.result.status == 200 && callback.result.data) {
+      this.appService.findUser({ "email": this.user.email }, (callback: any) => {
+        if (callback.status == 200 && callback.data) {
         this.showActionPopup = true;
-        this.user = callback.result.data;
+        this.user = callback.data;
         console.log(this.user)
         
       } else {
         this.showActionPopup = false;
         this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.result.message;
+        this.alert.alertMsg = callback.message;
       }
     })
   }else{
@@ -54,11 +54,11 @@ export class UserSettingComponent implements OnInit {
 }
 
   changePassword() {
-    this._baseService.changePassword({ "uuid": this.user.uuid, "password": this.user['changedPassword'] }, (callback: any) => {
-      if (callback.result.status == 200) {
+    this.appService.changePassword({ "uuid": this.user.uuid, "password": this.user['changedPassword'] }, (callback: any) => {
+      if (callback.status == 200) {
         console.log(callback)
         this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.result.message;
+        this.alert.alertMsg = callback.message;
         localStorage.clear();
         window.location.href= "/"
       }
@@ -77,32 +77,32 @@ export class UserSettingComponent implements OnInit {
 
   // findAllUser(pageNumber:any) {
   //   this.hasNext=false;
-  //   this._baseService.findAllUser(pageNumber,(callback: any) => {
-  //     if (callback.result.status == 200 && callback.result.data) {
+  //   this.appService.findAllUser(pageNumber,(callback: any) => {
+  //     if (callback.status == 200 && callback.data) {
   //       if(this.pageNumber== -1){
-  //         this.allUser = callback.result.data;
+  //         this.allUser = callback.data;
   //       }
-  //       if(callback.result.data[0].hasNextElement){
+  //       if(callback.data[0].hasNextElement){
   //         this.pageNumber = this.pageNumber+1;
   //       }
-  //       if(callback.result.data[0].data){
-  //         this.allUser.push.apply(this.allUser,callback.result.data[0].data)
+  //       if(callback.data[0].data){
+  //         this.allUser.push.apply(this.allUser,callback.data[0].data)
   //       }
-  //       this.hasNext = callback.result.data[0].hasNextElement;
+  //       this.hasNext = callback.data[0].hasNextElement;
   //     }
   //   })
   // }
 
   // updateAlUserStatus(){
-  //     this._baseService.updateUserStatus(this.userStatusArray, (callback: any) => {
-  //       if (callback.result.status == 200) {
+  //     this.appService.updateUserStatus(this.userStatusArray, (callback: any) => {
+  //       if (callback.status == 200) {
   //         this.alert.showAlertPopup = true;
-  //         this.alert.alertMsg = callback.result.message;
+  //         this.alert.alertMsg = callback.message;
   //         this.allUser=[];
   //         this.userStatusArray.userActiveStatus=[];
   //         this.pageNumber=0;
   //       } else {
-  //         console.log(callback.result)
+  //         console.log(callback)
   //       }
   //     })
   // }
@@ -110,16 +110,16 @@ export class UserSettingComponent implements OnInit {
   updateSingleUserStatus(status:any){
     this.userStatusArray.userActiveStatus.push({'userId':this.user.uuid,'status':status})
     console.log(this.userStatusArray)
-    this._baseService.updateUserStatus(this.userStatusArray, (callback: any) => {
-      if (callback.result.status == 200) {
+    this.appService.updateUserStatus(this.userStatusArray, (callback: any) => {
+      if (callback.status == 200) {
         this.userStatusArray.userActiveStatus=[];
         this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.result.message;
+        this.alert.alertMsg = callback.message;
         this.user={};
         this.showActionPopup=false;
 
       } else {
-        console.log(callback.result)
+        console.log(callback)
       }
     })
   }

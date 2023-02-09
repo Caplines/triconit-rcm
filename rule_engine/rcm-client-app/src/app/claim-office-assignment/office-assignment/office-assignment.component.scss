@@ -87,5 +87,23 @@
       cursor: pointer;
 }
 
+.table-inner-scrollbar {
+    position: relative;
+    height:460px;
+    overflow: auto;
+}
 
-        
+.table-wrapper-scroll-y {
+    display: block;
+}
+
+.table-inner-scrollbar thead th,tbody tr.totalRow {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.table-inner-scrollbar tbody tr.totalRow{
+    position: sticky;
+    top: 50px;
+    z-index: 1;
+}

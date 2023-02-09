@@ -40,20 +40,16 @@ export class RegisterNewUserComponent implements OnInit {
 
   registerNewUser(){
     this.appService.registerUser(this.userDetails.value,(callback:any)=>{
-      if(callback.result.status && callback.result.message !=''){
+      if(callback.status == 200){
         console.log(callback)
         this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.result.message;
-        if(callback.result.message === "User has been created"){
-          this.companyData = this.userRoles = this.defaulUserRoleData = this.officeData = this.teamData = this.userRoleByTeam = [];
-          this.userDetails.reset();
-          this.getcompanyData();
-        }
-      } else { 
-        if(callback.result.message === ''){
+        this.alert.alertMsg = callback.message;
+        this.companyData = this.userRoles = this.defaulUserRoleData = this.officeData = this.teamData = this.userRoleByTeam = [];
+        this.userDetails.reset();
+        this.getcompanyData();
+      } else if(callback.status == 400) { 
           this.alert.showAlertPopup = true;
-          this.alert.alertMsg = 'Something Went Wrong';
-        }
+          this.alert.alertMsg = callback.message;
       }
     })
     }

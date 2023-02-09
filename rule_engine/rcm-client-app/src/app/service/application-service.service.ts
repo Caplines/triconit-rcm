@@ -82,6 +82,30 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params,this.httpUrl['assignOffice'],callback)
   }
 
+  registerUser(params:any,callback:any){
+    this.postData(params,this.httpUrl['registerUser'],callback)
+  }
+
+  findUser(username:any,callback:any){
+    this.postData(username,this.httpUrl['findUserByEmail'],callback)
+  }
+
+  changePassword(params:any,callback:any){
+    this.postData(params,this.httpUrl['changePassword'],callback)
+  }
+
+  updateUserStatus(params:any,callback:any){
+    this.postData(params,this.httpUrl['updateStatus'],callback)
+  }
+
+  editOfficeName(params:any,callback:any){
+    this.postData(params,this.httpUrl['editOfficeName'],callback)
+  }
+
+  addNewOffice(params:any,callback:any){
+    this.postData(params,this.httpUrl['addNewOffice'],callback)
+  }
+
   sortData(data:any,sortingColm:any,order:any,sortingType:any){
     if(sortingType === 'name'){
       if(sortingColm == 'officeAssigned'){
