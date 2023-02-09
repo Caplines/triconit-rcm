@@ -29,6 +29,7 @@ import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmCompany;
+import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
@@ -40,6 +41,7 @@ import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmClaimDto;
+import com.tricon.rcm.dto.RcmClientDto;
 import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
@@ -50,6 +52,7 @@ import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
+import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.email.EmailUtil;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -58,6 +61,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
+import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
@@ -116,6 +120,8 @@ public class AdminServiceImpl {
 	@Autowired
 	UserServiceImpl userService;
 	
+	@Autowired
+	RcmMappingTableRepo mappingTableRepo;
 
 	/**
 	 * This Method save Data of New Register User
@@ -601,5 +607,78 @@ public class AdminServiceImpl {
 			}
 		}
 		return  MessageConstants.SOMETHING_WENT_WRONG;
+	}
+	
+	@Transactional(rollbackOn = Exception.class)
+	public String addClient(RcmClientDto dto) throws Exception {
+		RcmCompany company = rcmCompanyRepo.findByName(dto.getClientName());
+		RcmMappingTable mappingTable = null;
+		if (company == null) {
+			company = new RcmCompany();
+			company.setName(dto.getClientName());
+			// check googleSheet Id is exist or not
+			List<RcmMappingTable> checkExistingRecords = mappingTableRepo
+					.findByGoogleSheetId(dto.getGoogle_sheet_id());
+			if (!checkExistingRecords.isEmpty())
+				return MessageConstants.RECORD_EXIST;
+
+			company = rcmCompanyRepo.save(company);
+			for (String name : Constants.MAPPING_TABLE_NAME) {
+				mappingTable = new RcmMappingTable();
+				mappingTable.setGoogleSheetId(dto.getGoogle_sheet_id());
+				mappingTable.setGoogleSheetSubId(dto.getGoogle_sheet_sub_id());
+				mappingTable.setGoogleSheetSubName(dto.getGoogle_sheet_sub_name());
+				mappingTable.setName(name);
+				mappingTable.setCompany(company);
+				mappingTableRepo.save(mappingTable);
+			}
+			return company.getUuid();
+		} else
+			return MessageConstants.COMPANY_EXIST;
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public String editClient(RcmClientDto dto) throws Exception {
+		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyUuid());
+		if (company==null ||company.getName().equals(Constants.COMPANY_NAME)) {
+			return MessageConstants.SOMETHING_WENT_WRONG;
+		}
+		// check company name exist or not
+		RcmCompany checkcompanyNameExistOrNot = rcmCompanyRepo.findByName(dto.getClientName());
+		if (checkcompanyNameExistOrNot != null && !checkcompanyNameExistOrNot.getUuid().equals(dto.getCompanyUuid()))
+			return MessageConstants.NAME_EXIST;
+
+		// check googleSheet Id is exist or not
+		List<RcmMappingTable> checkExistingGoogleSheetId = mappingTableRepo
+				.findByGoogleSheetId(dto.getGoogle_sheet_id());
+		if (!checkExistingGoogleSheetId.isEmpty()) {
+			if (checkExistingGoogleSheetId.stream().anyMatch(x -> x.getGoogleSheetId().equals(dto.getGoogle_sheet_id())
+					&& !x.getCompany().getUuid().equals(dto.getCompanyUuid())))
+				return MessageConstants.RECORD_EXIST;
+		}
+		List<RcmMappingTable> mappingTable = mappingTableRepo.findByCompany(company);
+		company.setName(dto.getClientName());
+		company.setUpdatedDate(Timestamp.from(Instant.now()));
+		company = rcmCompanyRepo.save(company);
+		if (mappingTable == null || mappingTable.isEmpty())
+			return MessageConstants.COMPANY_NOT_EXIST;
+		for (RcmMappingTable data : mappingTable) {
+			data.setGoogleSheetId(dto.getGoogle_sheet_id());
+			data.setGoogleSheetSubId(dto.getGoogle_sheet_sub_id());
+			data.setGoogleSheetSubName(dto.getGoogle_sheet_sub_name());
+			mappingTableRepo.save(data);
+		}
+		return company.getUuid();
+	}
+
+	public List<RcmCompanyWithGsheetDto> getClientWithGoogleSheetData() {
+		List<RcmCompanyWithGsheetDto> listOfCompany = null;
+		listOfCompany = rcmCompanyRepo.getCompanyWithGsheetData();
+		if (listOfCompany != null && !listOfCompany.isEmpty()) {
+			listOfCompany.removeIf(x->x.getCompanyName().equals(Constants.COMPANY_NAME));
+			return listOfCompany;
+		}
+
+		return listOfCompany;
 	}
 }
