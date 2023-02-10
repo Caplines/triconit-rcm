@@ -70,8 +70,8 @@ export class ApplicationServiceService extends BaseService {
     this.getData({},this.httpUrl['rolesByTeam']+`/${teamId}`,callback)
   }
 
-  fetchAllUser(page:any,callback:any){
-     this.getData({},this.httpUrl['getAllUsers']+`/${page}`,callback)
+  fetchAllUser(page:any,companyName:any,callback:any){
+     this.getData({},this.httpUrl['getAllUsers']+`/${companyName ? companyName : 'All'}/${page}`,callback)
   }
 
   fetchUserByTeamId(teamId:any,callback:any){

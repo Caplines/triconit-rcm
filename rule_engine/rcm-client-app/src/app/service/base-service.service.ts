@@ -29,7 +29,8 @@ export class BaseService {
     'editOfficeName': "/editOffice",
     'addNewOffice': "/addOffice",
     'userByTeamId':"/users/team",
-    'assignOffice':"/assignOffice"
+    'assignOffice':"/assignOffice",
+    'findAllUser':'/getAllUsers/'
   }
 
   constructor(public http: HttpClient) {

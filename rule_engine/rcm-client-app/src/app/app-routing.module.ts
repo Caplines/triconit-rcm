@@ -43,6 +43,11 @@ const routes: Routes = [
     loadChildren :()=> import("./claim-office-assignment/office-assignment.module").then(m=>m.ClaimAssignmentModule),
    
   },
+  {
+    path:'users-status',
+    loadChildren :()=> import("./users-status/users-status/users-status.module").then(m=>m.UserStatusModule),
+   
+  },
   { path: '**', redirectTo: '/login' }
 ];
 

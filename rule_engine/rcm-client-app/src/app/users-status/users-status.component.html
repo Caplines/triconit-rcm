@@ -1,0 +1,86 @@
+<div class="right-container">
+    <app-header-component [isUsersStatus]="isUserStatus"></app-header-component>
+    <ng-container *ngIf="alert.showAlertPopup">
+        <div class="alert alert-success alert-dismissible fade show my-3 text-center" role="alert">
+            <strong>{{alert.alertMsg}}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"
+                (click)="alert.showAlertPopup=false;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </ng-container>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 pt-3">
+                <h2 class="page-heading">User Status</h2>
+                <div class="main-container">
+                    <div class="form-container detail-box ">
+                        <ng-container *ngIf="userRole == 'ROLE_ADMIN' ">
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>Client Name :</label>
+                                        <select class="form-control" (change)="selectCompany($event)">
+                                            <option selected="true" hidden="true">Select Client</option>
+                                            <option >All</option>
+                                            <ng-container *ngFor="let comp of companyData">
+                                                <option  value="{{comp.name}}">
+                                                    {{comp.name}}</option>
+                                            </ng-container>
+                                        </select>
+                                        <div class="spinner-border text-success" role="status" *ngIf="showLoader"></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 find-btn"><button type="button" class="btn btn-secondary" [disabled]="isFindUserBtnDisable"
+                                        (click)="findAllUser(0)"><img src="../assets/img/user-white.png"
+                                            class="search-icon" /> Find {{companyName ? companyName : 'All'}} Users</button></div>
+                            </div>
+                            <ng-container *ngIf="allUser.length> 0">
+                                <div class="table-heading">All Users:</div>
+                                <div class="table-responsive">
+                                    <table class="table" id="table">
+                                        <tr class="thead-dark">
+                                            <th>Client Name</th>
+                                            <th>Full Name</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        <ng-container *ngFor="let user of allUser;let idx= index">
+                                            <tr *ngIf="userName != user.email">
+                                                <td scope="col">{{user.companyName}}</td>
+                                                <td scope="col">{{user.fullName}}</td>
+                                                <td scope="col" class="form-check-inline">
+                                                    &nbsp;&nbsp;&nbsp;
+                                                    <label class="form-check-label" for="enable">Enable </label>
+                                                   <input type="radio" class="form-check-input" [checked]="user.active == 1"
+                                                        name="status_{{idx}}" (change)="changeUserStatus(user.uuid,1)">
+                                                        <label class="form-check-label" for="disable">Disabled</label>
+                                                    <input type="radio" class="form-check-input" [checked]="user.active == 0"
+                                                        name="status_{{idx}}" (change)="changeUserStatus(user.uuid,0)">
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </table>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="allUser.length != 0">
+                                <div class="action-buttons text-left">
+                                    <button type="button" class="btn btn-success" (click)="updateAllUserStatus()"
+                                        [disabled]="this.userStatusArray.userActiveStatus.length === 0">Update
+                                        Status</button>
+                                    <button type="button" class="btn btn-success" (click)="loadMoreData()"
+                                        [disabled]="!hasNext">Load More Data</button>
+                                </div>
+                            </ng-container>
+
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
