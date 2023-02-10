@@ -42,6 +42,8 @@ import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmClaimDto;
 import com.tricon.rcm.dto.RcmClientDto;
+import com.tricon.rcm.dto.RcmClientGSheetDto;
+import com.tricon.rcm.dto.RcmClientResponseDto;
 import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
@@ -152,34 +154,34 @@ public class AdminServiceImpl {
 			} else {
 				user.setTeam(team);
 			}
-				user.setCompany(company);
-				user = userRepo.save(user);
-				
-				//if role is  TL then we will assign TL+ASSO to registerUser
-				if(dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.TEAMLEAD))){
-					roles = new RcmUserRole();
-					pk = new RcmUserRolePk();
-					pk.setUuid(user.getUuid());
-					roles.setId(pk);
-					roles.setRole(RcmTeamEnum.generateRole(team.getId(),Constants.ASSOCIATE));
-					userRole.save(roles);				
+			user.setCompany(company);
+			user = userRepo.save(user);
+
+			// if role is TL then we will assign TL+ASSO to registerUser
+			if (dto.getUserRole().stream().anyMatch(x -> x.equals(Constants.TEAMLEAD))) {
+				roles = new RcmUserRole();
+				pk = new RcmUserRolePk();
+				pk.setUuid(user.getUuid());
+				roles.setId(pk);
+				roles.setRole(RcmTeamEnum.generateRole(team.getId(), Constants.ASSOCIATE));
+				userRole.save(roles);
+			}
+
+			for (String role : dto.getUserRole()) {
+				roles = new RcmUserRole();
+				pk = new RcmUserRolePk();
+				pk.setUuid(user.getUuid());
+				roles.setId(pk);
+				if (role.equals(Constants.ADMIN)) {
+					roles.setRole(RcmTeamEnum.generateRole(0, role)); // If role is admin then by default teamId will
+																		// consider 0
+				} else {
+					roles.setRole(RcmTeamEnum.generateRole(team.getId(), role));
 				}
-				
-				for (String role : dto.getUserRole()) {
-					roles = new RcmUserRole();
-					pk = new RcmUserRolePk();
-					pk.setUuid(user.getUuid());
-					roles.setId(pk);
-					if (role.equals(Constants.ADMIN)) {
-						roles.setRole(RcmTeamEnum.generateRole(0, role));  //If role is admin then by default teamId will consider 0
-					} else {
-						roles.setRole(RcmTeamEnum.generateRole(team.getId(), role));
-					}
-					userRole.save(roles);
-				}
-				
-				// save user data into user_assign_office table
+				userRole.save(roles);
+			}
+
+			// save user data into user_assign_office table
 //				if (user.getCompany().getName().equals(Constants.COMPANY_NAME) && dto.getUserRole().stream().anyMatch(x->x.equals(RcmRoleEnum.ASSO.getName())||x.equals(RcmRoleEnum.TL.getName()))) {
 //
 //					// check office is already exist or not in given team id
@@ -195,19 +197,20 @@ public class AdminServiceImpl {
 //					 }
 //					}
 //				}
-									
-				//send email to register User
-				if (user != null) {
-					String userEmail=user.getEmail();
-					String emailSubject = "New Registration Confirmation";
-					String emailText = "Hi " + user.getFirstName()+ ",\n\nThanks for signing up to RCM. You can now log in to the RCM Account.\n\n"
-							+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
-					emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
-					} 
 
-				return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
+			// send email to register User
+			if (user != null) {
+				String userEmail = user.getEmail();
+				String emailSubject = "New Registration Confirmation";
+				String emailText = "Hi " + user.getFirstName()
+						+ ",\n\nThanks for signing up to RCM. You can now log in to the RCM Account.\n\n"
+						+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
+				emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
 			}
-			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_EXIST, null);
+
+			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
+		}
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_EXIST, null);
 	}
 
 	/**
@@ -307,8 +310,10 @@ public class AdminServiceImpl {
 	 */
 	@Transactional(rollbackOn = Exception.class)
 	public GenericResponse resetUserStatus(JwtUser jwtUser, RcmUserStatusDto dto) throws Exception {
-		List<String> enables = dto.getUserActiveStatus().stream().filter(x->x.getStatus()==Constants.ENABLE).map(x->x.getUserId()).collect(Collectors.toList());
-		List<String> disables = dto.getUserActiveStatus().stream().filter(x->x.getStatus()==Constants.DISABLE).map(x->x.getUserId()).collect(Collectors.toList());
+		List<String> enables = dto.getUserActiveStatus().stream().filter(x -> x.getStatus() == Constants.ENABLE)
+				.map(x -> x.getUserId()).collect(Collectors.toList());
+		List<String> disables = dto.getUserActiveStatus().stream().filter(x -> x.getStatus() == Constants.DISABLE)
+				.map(x -> x.getUserId()).collect(Collectors.toList());
 		RcmUser logInUser = userRepo.findByEmail(jwtUser.getUsername());
 		String updatedBy = logInUser.getUuid();
 		try {
@@ -616,22 +621,26 @@ public class AdminServiceImpl {
 		if (company == null) {
 			company = new RcmCompany();
 			company.setName(dto.getClientName());
-			// check googleSheet Id is exist or not
-			List<RcmMappingTable> checkExistingRecords = mappingTableRepo
-					.findByGoogleSheetId(dto.getGoogle_sheet_id());
-			if (!checkExistingRecords.isEmpty())
-				return MessageConstants.RECORD_EXIST;
-
 			company = rcmCompanyRepo.save(company);
-			for (String name : Constants.MAPPING_TABLE_NAME) {
+			for (RcmClientGSheetDto data : dto.getHeader()) {
 				mappingTable = new RcmMappingTable();
-				mappingTable.setGoogleSheetId(dto.getGoogle_sheet_id());
-				mappingTable.setGoogleSheetSubId(dto.getGoogle_sheet_sub_id());
-				mappingTable.setGoogleSheetSubName(dto.getGoogle_sheet_sub_name());
-				mappingTable.setName(name);
+				mappingTable.setGoogleSheetId(data.getGoogle_sheet_id());
+				mappingTable.setGoogleSheetSubId(data.getGoogle_sheet_sub_id());
+				mappingTable.setGoogleSheetSubName(data.getGoogle_sheet_sub_name());
+				mappingTable.setName(data.getName());
 				mappingTable.setCompany(company);
 				mappingTableRepo.save(mappingTable);
 			}
+
+			// insert constant record of RCM Database in rcm_mapping_table
+			mappingTable = new RcmMappingTable();
+			mappingTable.setGoogleSheetId(Constants.MAPPING_TABLE_GOOGLE_SHEET_ID);
+			mappingTable.setGoogleSheetSubId(Constants.MAPPING_TABLE_GOOGLE_SHEET_SUB_ID);
+			mappingTable.setGoogleSheetSubName(Constants.MAPPING_TABLE_GOOGLE_SHEET_SUB_NAME);
+			mappingTable.setName(Constants.MAPPING_TABLE_NAME);
+			mappingTable.setCompany(company);
+			mappingTableRepo.save(mappingTable);
+
 			return company.getUuid();
 		} else
 			return MessageConstants.COMPANY_EXIST;
@@ -640,45 +649,47 @@ public class AdminServiceImpl {
 	@Transactional(rollbackOn = Exception.class)
 	public String editClient(RcmClientDto dto) throws Exception {
 		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyUuid());
-		if (company==null ||company.getName().equals(Constants.COMPANY_NAME)) {
+		if (company == null || company.getName().equals(Constants.COMPANY_NAME)) {
 			return MessageConstants.SOMETHING_WENT_WRONG;
 		}
 		// check company name exist or not
 		RcmCompany checkcompanyNameExistOrNot = rcmCompanyRepo.findByName(dto.getClientName());
 		if (checkcompanyNameExistOrNot != null && !checkcompanyNameExistOrNot.getUuid().equals(dto.getCompanyUuid()))
 			return MessageConstants.NAME_EXIST;
-
-		// check googleSheet Id is exist or not
-		List<RcmMappingTable> checkExistingGoogleSheetId = mappingTableRepo
-				.findByGoogleSheetId(dto.getGoogle_sheet_id());
-		if (!checkExistingGoogleSheetId.isEmpty()) {
-			if (checkExistingGoogleSheetId.stream().anyMatch(x -> x.getGoogleSheetId().equals(dto.getGoogle_sheet_id())
-					&& !x.getCompany().getUuid().equals(dto.getCompanyUuid())))
-				return MessageConstants.RECORD_EXIST;
-		}
-		List<RcmMappingTable> mappingTable = mappingTableRepo.findByCompany(company);
 		company.setName(dto.getClientName());
 		company.setUpdatedDate(Timestamp.from(Instant.now()));
 		company = rcmCompanyRepo.save(company);
-		if (mappingTable == null || mappingTable.isEmpty())
-			return MessageConstants.COMPANY_NOT_EXIST;
-		for (RcmMappingTable data : mappingTable) {
-			data.setGoogleSheetId(dto.getGoogle_sheet_id());
-			data.setGoogleSheetSubId(dto.getGoogle_sheet_sub_id());
-			data.setGoogleSheetSubName(dto.getGoogle_sheet_sub_name());
-			mappingTableRepo.save(data);
+		for (RcmClientGSheetDto data : dto.getHeader()) {
+			RcmMappingTable mappingTable = mappingTableRepo.findByNameAndCompany(data.getName(), company);
+			if (mappingTable != null) {
+				mappingTable.setGoogleSheetId(data.getGoogle_sheet_id());
+				mappingTable.setGoogleSheetSubId(data.getGoogle_sheet_sub_id());
+				mappingTable.setGoogleSheetSubName(data.getGoogle_sheet_sub_name());
+				mappingTableRepo.save(mappingTable);
+			} else
+				return MessageConstants.DB_INSERSTION_ERROR;
 		}
 		return company.getUuid();
 	}
 
-	public List<RcmCompanyWithGsheetDto> getClientWithGoogleSheetData() {
-		List<RcmCompanyWithGsheetDto> listOfCompany = null;
-		listOfCompany = rcmCompanyRepo.getCompanyWithGsheetData();
-		if (listOfCompany != null && !listOfCompany.isEmpty()) {
-			listOfCompany.removeIf(x->x.getCompanyName().equals(Constants.COMPANY_NAME));
-			return listOfCompany;
+	public List<RcmClientResponseDto> getClientWithGoogleSheetData() {
+		List<RcmCompany> company = null;
+		List<RcmClientResponseDto> data = null;
+		RcmClientResponseDto dto = null;
+		company = rcmCompanyRepo.findAll();
+		if (company != null && !company.isEmpty()) {
+			data = new ArrayList<>();
+			for (RcmCompany cmp : company) {
+				dto = new RcmClientResponseDto();
+				List<RcmCompanyWithGsheetDto> gSheetData = mappingTableRepo.getCompanyWithGsheetData(cmp.getUuid());
+				dto.setClientName(cmp.getName());
+				dto.setCompanyUuid(cmp.getUuid());
+				dto.setHeader(gSheetData);
+				data.add(dto);
+			}
+			data.removeIf(x->x.getClientName().equals(Constants.COMPANY_NAME));
+			return data;
 		}
-
-		return listOfCompany;
+		return null;
 	}
 }

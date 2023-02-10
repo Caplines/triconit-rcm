@@ -28,6 +28,7 @@ import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmClaimDto;
 import com.tricon.rcm.dto.RcmClientDto;
+import com.tricon.rcm.dto.RcmClientResponseDto;
 import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
@@ -213,10 +214,10 @@ public class AdminController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@RequestMapping(value = "/getClient", method = RequestMethod.GET)
+	@RequestMapping(value = "/getClientDetails", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getClientDetails() {
-		List<RcmCompanyWithGsheetDto> response = null;
+		List<RcmClientResponseDto> response = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
@@ -226,6 +227,9 @@ public class AdminController {
 		}
 		try {
 			response = serviceImpl.getClientWithGoogleSheetData();
+			if(response==null) {
+				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -372,8 +376,7 @@ public class AdminController {
 	@RequestMapping(value = "addClient", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> addCompany(@RequestBody RcmClientDto dto) {
-		if (dto.getClientName().trim().equals("") || dto.getGoogle_sheet_id().trim().equals("")
-				|| dto.getGoogle_sheet_sub_id().trim().equals("") || dto.getGoogle_sheet_sub_name().trim().equals("")) {
+		if (dto.getClientName().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -398,9 +401,7 @@ public class AdminController {
 	@RequestMapping(value = "editClient", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> editCompany(@RequestBody RcmClientDto dto) {
-		if (dto.getClientName().trim().equals("") || dto.getCompanyUuid().trim().equals("")
-				|| dto.getGoogle_sheet_id().trim().equals("") || dto.getGoogle_sheet_sub_id().trim().equals("")
-				|| dto.getGoogle_sheet_sub_name().trim().equals("")) {
+		if (dto.getCompanyUuid().trim().equals("")||dto.getClientName().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
