@@ -49,7 +49,8 @@ public class ManageOfficeController {
 	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
 	@PreAuthorize("hasAnyRole('ADMIN','BILLING_TL')")
 	public ResponseEntity<?> assignOfficesToBillingUser(@RequestBody AssignOfficesToBillingUserDto dto) {
-		if (dto.getAssignOfficeDetails().isEmpty()) {
+		if (dto.getAssignOfficeDetails().isEmpty() || dto.getAssignOfficeDetails().stream()
+				.anyMatch(x -> x.getOfficeId().trim().equals("") || x.getUserId().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}

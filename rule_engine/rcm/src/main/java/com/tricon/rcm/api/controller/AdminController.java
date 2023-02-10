@@ -161,7 +161,8 @@ public class AdminController {
 		if(!jwtUser.isSmilePoint()) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
-		if (dto.getUserActiveStatus().isEmpty()) {
+		if (dto.getUserActiveStatus().isEmpty() || dto.getUserActiveStatus().stream()
+				.anyMatch(x -> x.getUserId().trim().equals("") || x.getUserId().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -376,7 +377,10 @@ public class AdminController {
 	@RequestMapping(value = "addClient", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> addCompany(@RequestBody RcmClientDto dto) {
-		if (dto.getClientName().trim().equals("")) {
+		if (dto.getClientName().trim().equals("") ||dto.getHeader().isEmpty()|| dto.getHeader().stream().anyMatch(
+				x -> x.getGoogle_sheet_id().trim().equals("") || x.getGoogle_sheet_sub_id().trim().equals("")
+				|| x.getGoogle_sheet_sub_name().trim().equals("")
+				|| x.getName().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -401,7 +405,11 @@ public class AdminController {
 	@RequestMapping(value = "editClient", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> editCompany(@RequestBody RcmClientDto dto) {
-		if (dto.getCompanyUuid().trim().equals("")||dto.getClientName().trim().equals("")) {
+		if (dto.getCompanyUuid().trim().equals("") || dto.getClientName().trim().equals("")||dto.getHeader().isEmpty()
+				|| dto.getHeader().stream()
+						.anyMatch(x -> x.getGoogle_sheet_id().trim().equals("")
+								|| x.getGoogle_sheet_sub_id().trim().equals("")
+								|| x.getGoogle_sheet_sub_name().trim().equals("") || x.getName().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}

@@ -259,14 +259,15 @@ public class AdminServiceImpl {
 		List<RcmUserPaginationDto> listOfUsers = new ArrayList<>();
 		RcmCompany company = null;
 		String companyUuid = "";
+		String ignoreUser=Constants.SYSTEM;
 		// get all users without company name
 		if (cmpny.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
 			if (pageNumber == -1) { // without pagination if pageNumber<0
-				List<RcmUserToDto> data = userRepo.getAllUser();
+				List<RcmUserToDto> data = userRepo.getAllUser(ignoreUser);
 				return new GenericResponse(HttpStatus.OK, "", data);
 			}
 			Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
-			Page<RcmUserToDto> pageableList = userRepo.getAllUserByPagination(paging);
+			Page<RcmUserToDto> pageableList = userRepo.getAllUserByPagination(paging,ignoreUser);
 			if (pageableList != null && !pageableList.isEmpty()) {
 				paginationDto.setData(pageableList.getContent());
 				paginationDto.setPageNumber(pageableList.getNumber());
@@ -282,11 +283,11 @@ public class AdminServiceImpl {
 			if (company != null) {
 				companyUuid = company.getUuid();
 				if (pageNumber == -1) { // without pagination if pageNumber<0
-					List<RcmUserToDto> data = userRepo.getAllUserByCompanyUuid(companyUuid);
+					List<RcmUserToDto> data = userRepo.getAllUserByCompanyUuid(companyUuid,ignoreUser);
 					return new GenericResponse(HttpStatus.OK, "", data);
 				}
 				Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
-				Page<RcmUserToDto> pageableList = userRepo.getAllUserByCompanyUuidWithPagination(companyUuid, paging);
+				Page<RcmUserToDto> pageableList = userRepo.getAllUserByCompanyUuidWithPagination(companyUuid, paging,ignoreUser);
 				if (pageableList != null && !pageableList.isEmpty()) {
 					paginationDto.setData(pageableList.getContent());
 					paginationDto.setPageNumber(pageableList.getNumber());
@@ -681,7 +682,8 @@ public class AdminServiceImpl {
 			data = new ArrayList<>();
 			for (RcmCompany cmp : company) {
 				dto = new RcmClientResponseDto();
-				List<RcmCompanyWithGsheetDto> gSheetData = mappingTableRepo.getCompanyWithGsheetData(cmp.getUuid());
+				List<RcmCompanyWithGsheetDto> gSheetData = mappingTableRepo.getCompanyWithGsheetData(cmp.getUuid(),
+						Constants.MAPPING_TABLE_NAME);
 				dto.setClientName(cmp.getName());
 				dto.setCompanyUuid(cmp.getUuid());
 				dto.setHeader(gSheetData);
