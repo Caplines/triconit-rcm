@@ -1,17 +1,27 @@
 
-
 <table>
-    <tr>Through ES Agent<input
-        type="checkbox"
-        [(ngModel)]="esAgent"/>
-    </tr>
+<tr><td>
+   Select Client Name <select class="form-control" id="" name="cName" [(ngModel)]="cName"
+    (change)="fetchLatesClaimLLogs()">
+    <option value="-1">Select Client Name</option>
+    <option *ngFor="let sta of clients" [value]="sta.uuid">{{sta.clientName}}</option>
+</select>
+</td></tr>
+ </table>   
 
-    <tr>Through Google Sheet<input
-        type="checkbox"
-        [(ngModel)]="googleSheet"/>
-    </tr>
+<table  *ngIf="cName!='-1'">
+    Update Through
+    <ng-container *ngIf="smilePoint.uuid==cName">
 
-    <input type="button" (click)="updateClaims()">
+        <input name="options" ng-control="options" type="radio" value="EAGLESOFT"  [(ngModel)]="sourceType" >EAGLESOFT
+
+       <input name="options" ng-control="options" type="radio" value="GOOGLESHEET" [(ngModel)]="sourceType" >GOOGLESHEET
+       
+    </ng-container>
+   
+   
+
+  
 </table>
 
 
