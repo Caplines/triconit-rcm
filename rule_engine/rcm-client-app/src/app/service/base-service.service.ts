@@ -30,7 +30,8 @@ export class BaseService {
     'addNewOffice': "/addOffice",
     'userByTeamId':"/users/team",
     'assignOffice':"/assignOffice",
-    'findAllUser':'/getAllUsers/'
+    'findAllUser':'/getAllUsers/',
+    'getAllClients':"/api/allclients"
   }
 
   constructor(public http: HttpClient) {

@@ -20,8 +20,8 @@ export class ApplicationServiceService extends BaseService {
 
   }
 
-  fetchLatesClaimLLogs(callback:any){
-    this.getData({},this.httpUrl['freshclaimlogs'],callback);
+  fetchLatesClaimLLogs(cName:any,callback:any){
+    this.getData({},this.httpUrl['freshclaimlogs']+"/"+cName,callback);
   }
 
   
@@ -148,5 +148,12 @@ export class ApplicationServiceService extends BaseService {
       });
     }
   }
+
+  
 }
+
+getAllClients(callback:any){
+  this.getData({},this.httpUrl['getAllClients'],callback)
+}
+
 }
