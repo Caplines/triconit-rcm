@@ -28,10 +28,13 @@ import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
+import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
+import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
+import com.tricon.rcm.util.Constants;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -49,6 +52,10 @@ public class RcmController {
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
 	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	RcmCommonServiceImpl rcmCommonServiceImpl;
+	
 
 	/**
 	 * Fetch Claims From Eagle Soft or Google Sheet
@@ -60,22 +67,26 @@ public class RcmController {
 	@PostMapping("/api/fetch-claims-from-source")
 	public ResponseEntity<Object> fetchClaimsFromSource(@RequestBody ClaimSourceDto dto) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		((UserDetails) principal).getUsername();
-		RcmUser user = null;
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		dto.setCompanyuuid(jwtUser.getCompany().getUuid());
+		Object [] obj =checkForSimplePointUser();
+		//only SmilePoint can do this 
+		if (!((boolean)obj[1])) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		
 		Object sucess = null;
-		sucess = claimServiceImpl.pullClaimFromSource(dto, user);
+		sucess = claimServiceImpl.pullClaimFromSource(dto, null, (JwtUser) obj[0]);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", sucess));
 	}
 
 	@ApiOperation(value = "Api For Fetching Fresh Claims Logs (Billing Pendency Dashboard)", response = FreshClaimLogDto.class, responseContainer = "List")
-	@GetMapping("/api/fetch-fresh-claims-logs")
-	public ResponseEntity<Object> fetchFreshClaimLogs() {
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchFreshClaimLogs()));
+	@GetMapping("/api/fetch-fresh-claims-logs/{uuid}")
+	public ResponseEntity<Object> fetchFreshClaimLogs(@PathVariable("uuid") String companyUuid) {
+		//only SmilePoint can do this 
+		Object [] obj =checkForSimplePointUser();
+		if (!((boolean)obj[1])) {
+					return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchFreshClaimLogs(companyUuid)));
 	}
 
 	//@GetMapping("/api/fetch-remote-lite-rej/{uuid}")
@@ -121,5 +132,26 @@ public class RcmController {
 	}
 	
 	
+	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
+	@GetMapping("/api/allclients")
+	public ResponseEntity<Object> getAllClients() {
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",rcmCommonServiceImpl.findAllClients()));
+	}
+	
+	
+	private Object[] checkForSimplePointUser() {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		((UserDetails) principal).getUsername();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		//only SmilePoint can do this 
+		if (jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+			return new Object[] {jwtUser,true};
+		}else {
+			return new Object[] {jwtUser,false};
+		}
+	}
 }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
@@ -66,6 +67,11 @@ public class RcmCommonServiceImpl {
 			return msg;
 		}
 		return msg;
+	}
+	
+	
+	public List<ClientCustomDto> findAllClients(){
+		return rcmCompanyRepo.findAllClients();
 	}
 	
 }

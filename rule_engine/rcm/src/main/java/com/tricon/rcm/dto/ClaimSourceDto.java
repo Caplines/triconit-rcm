@@ -16,5 +16,5 @@ public class ClaimSourceDto {
 	String source;
 	String password;
 	List<String> officeuuids;
-	String companyuuid;////do not pass For api "api/fetch-claims-from-source"
+	String companyuuid;///
 }

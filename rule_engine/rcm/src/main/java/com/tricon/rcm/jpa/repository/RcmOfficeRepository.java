@@ -15,4 +15,5 @@ public interface RcmOfficeRepository extends JpaRepository<RcmOffice, String> {
 	RcmOffice findByUuid(String uuid);
 	RcmOffice findByCompanyAndName(RcmCompany company,String officeName);
 	RcmOffice findByNameAndCompanyUuid(String uuid,String companyUuid);
+	List<RcmOffice> findByUuidInAndCompanyUuid(List<String> uuids,String companyUuid);
 }

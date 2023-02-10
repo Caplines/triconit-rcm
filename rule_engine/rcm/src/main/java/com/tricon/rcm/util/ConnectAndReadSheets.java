@@ -214,7 +214,7 @@ public class ConnectAndReadSheets {
 	
 	
 	public static List<ClaimFromSheet> readClaimsFromGSheet(String spreadsheetId, String sheetName,
-			String clientDir, String clientFolder) throws IOException {
+			String clientDir, String clientFolder,String clientName,List<String> officeNames) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
@@ -239,9 +239,17 @@ public class ConnectAndReadSheets {
 				  dto.setClientName(obj.get(++x));
 				  }catch(Exception m) {
 				}
+				
+				if (!clientName.equals(dto.getClientName())) continue;
 				try {
 					  dto.setOfficeName(obj.get(++x));
 					}catch(Exception m) {
+				}
+				
+				if (officeNames!=null && officeNames.size()>0) {
+					String g = dto.getOfficeName();
+					String n = officeNames.stream().filter(xx -> g.equals(xx)).findAny().orElse(null);
+					if (n==null) continue;
 				}
 				try {
 					  dto.setClaimId(obj.get(++x));

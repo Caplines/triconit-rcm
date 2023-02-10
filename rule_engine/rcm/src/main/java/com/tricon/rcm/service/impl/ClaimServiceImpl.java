@@ -138,18 +138,14 @@ public class ClaimServiceImpl {
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
 	@Transactional(rollbackFor = Exception.class)
-	public Object pullClaimFromSource(ClaimSourceDto dto, RcmUser user) {
+	public Object pullClaimFromSource(ClaimSourceDto dto, RcmUser user,JwtUser jwtUser) {
 		// go to Rule Engine.
 		Object status = null;
-		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		
 		if (dto.getSource().equals(ClaimSourceEnum.GOOGLESHEET.toString())) {
 			try {
-				if (user==null) user =userRepo.findByUuid(jwtUser.getUuid());
+				if (user==null) {
+					user =userRepo.findByUuid(jwtUser.getUuid());
+				}
 				status = pullAndSaveClaimFromSheet(dto, user);
 			} catch (Exception error) {
 
@@ -253,14 +249,9 @@ public class ClaimServiceImpl {
 	 * Fetch Claim Logs To Show "Billing Lead - Tool to update database"
 	 * @return
 	 */
-	public List<FreshClaimLogDto> fetchFreshClaimLogs() {
+	public List<FreshClaimLogDto> fetchFreshClaimLogs(String companyUuid) {
 		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		
-		return rcmClaimRepository.fetchFreshClaimLogs(jwtUser.getCompany().getUuid());
+		return rcmClaimRepository.fetchFreshClaimLogs(companyUuid);
 	}
 	
 	public Object pullAndSaveClaimFromSheet(ClaimSourceDto dto, RcmUser user) {
@@ -268,6 +259,7 @@ public class ClaimServiceImpl {
 		logger.info(" In pullClaimFromSheet");
 		String success = "";
 		RcmClaims claim = null;
+		List<ClaimLogDto> logClaimDtos= new ArrayList<>();
 		Map<String,ClaimLogDto> mapcountNew = new HashMap<>();
 		//RcmClaimLog rcmClaimLog=null;
 		String source=ClaimSourceEnum.GOOGLESHEET.toString();
@@ -283,7 +275,7 @@ public class ClaimServiceImpl {
 		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
 		RcmClaimStatusType systemStatusReBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.ReBilling.getType());
 		
-		List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(company);
+		//List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(company);
 		// int logId=-1;
 		RcmMappingTable table = rcmMappingTableRepo.findByNameAndCompany(Constants.RCM_MAPPING_RCM_DATABASE, company);
 		List<ClaimFromSheet> li = null;
@@ -292,9 +284,18 @@ public class ClaimServiceImpl {
 		RcmInsuranceType rcmInsuranceType=null;
 		RcmCompany clCompany=null;
 		RcmInsurance ins=null;
+		List<String> offNames=null; 
+		List<RcmOffice> rcmOffices=null;
+		if (dto.getOfficeuuids()!=null && dto.getOfficeuuids().size()>0) {
+			offNames= new ArrayList<>();
+			rcmOffices =officeRepo.findByUuidInAndCompanyUuid(dto.getOfficeuuids(),
+					company.getUuid());
+			rcmOffices.stream().map(RcmOffice::getName).forEach(offNames::add);
+			
+		}
 		try {
 			li = ConnectAndReadSheets.readClaimsFromGSheet(table.getGoogleSheetId(), table.getGoogleSheetSubName(),
-					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER,company.getName(),offNames);
 			if (li != null) {
 				
 			List<ClaimFromSheet>	primaryList = li.stream()
@@ -658,7 +659,7 @@ public class ClaimServiceImpl {
 			 for (Map.Entry<String,RcmClaimLog> entry : logMap.entrySet()) 
 			 {
 				 
-				 claimLogDto= new ClaimLogDto(source, entry.getValue().getOffice().getUuid(), 1, newClaimCt, new Date(), entry.getKey());
+				 claimLogDto= new ClaimLogDto(source, entry.getValue().getOffice().getUuid(), 1, newClaimCt, new Date(), entry.getValue().getOffice().getName());
 		            System.out.println("Key = " + entry.getKey() +
 		                             ", Value = " + entry.getValue());
 			    commonClaimServiceImpl.saveClaimLog(entry.getValue(), user, entry.getValue().getOffice(), ClaimSourceEnum.GOOGLESHEET.toString(), logStatus,
@@ -666,16 +667,70 @@ public class ClaimServiceImpl {
 			    mapcountNew.put(entry.getKey() , claimLogDto) ;
 			 
 		    }
+			 
+			 if (rcmOffices!=null && rcmOffices.size()>0) {
+				 for(RcmOffice p:rcmOffices) {
+					 if (mapcountNew.get(p.getUuid())==null) {
+						 
+						 RcmClaimLog l= new RcmClaimLog();
+							l.setOffice(p);
+							l.setNewClaimsCount(0);
+							l.setNewClaimsPrimaryCount(0);
+							l.setNewClaimsSecodaryCount(0);
+							
+						 claimLogDto= new ClaimLogDto(source,  p.getUuid(), 1, 0, new Date(), p.getName());
+						 commonClaimServiceImpl.saveClaimLog(l, user, p, ClaimSourceEnum.GOOGLESHEET.toString(), 1, 0, 0, 0, "success");
+				  	    mapcountNew.put(p.getUuid() , claimLogDto) ;
+					 }
+				 }
+				
+			 }
+			 if (rcmOffices==null) {
+				 //need to Store logs look for all the offices
+				 officeRepo.findByCompany(clCompany);
+				 //ClaimLogDto claimLogDto=null;
+				 for (Map.Entry<String,RcmCompany> entry : companies.entrySet()) 
+				 {
+					
+					List<RcmOffice> allOffices = officeRepo.getByCompany(entry.getValue());
+					 for(RcmOffice exo:allOffices) {
+						 
+						if (mapcountNew.get(exo.getUuid())==null){
+							
+							 RcmClaimLog l= new RcmClaimLog();
+								l.setOffice(exo);
+								l.setNewClaimsCount(0);
+								l.setNewClaimsPrimaryCount(0);
+								l.setNewClaimsSecodaryCount(0);
+							 claimLogDto= new ClaimLogDto(source, exo.getUuid(), 1, 0, new Date(), exo.getName());
+							 commonClaimServiceImpl.saveClaimLog(l, user, exo, ClaimSourceEnum.GOOGLESHEET.toString(), 1, 0, 0, 0, "success");
+					  	     mapcountNew.put(exo.getUuid() , claimLogDto) ;
+					  	    
+						}
+						 
+					 }
+					
+				 
+			    }
+				 
+				 
+			 }
 			
 			 
 			}
+			
+			for (Map.Entry<String,ClaimLogDto> entry : mapcountNew.entrySet()) {
+				
+				logClaimDtos.add(entry.getValue());
+				
+			 }
 		} catch (Exception n) {
 			logger.error("Error in Fetching Claims From Sheet.. ");
 			logger.error(n.getMessage());
 			success = n.getMessage();
 		}
 
-		return mapcountNew;
+		return logClaimDtos;
 	}
 
 	/*
