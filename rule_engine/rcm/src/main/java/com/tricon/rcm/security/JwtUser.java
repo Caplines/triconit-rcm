@@ -33,6 +33,8 @@ public class JwtUser implements UserDetails {
     private final RcmCompany company;
     
     private final boolean isSmilePoint;
+    private final boolean isTeamLead;
+    private final boolean isAssociate;
     
 
     public JwtUser(
@@ -58,6 +60,8 @@ public class JwtUser implements UserDetails {
         this.lastPasswordResetDate = lastPasswordResetDate;
         this.company =company;
         this.isSmilePoint=company!=null?(company.getName().equals(Constants.COMPANY_NAME)?true:false):false;
+        this.isTeamLead=authorities!=null?(authorities.stream().anyMatch(x->x.getAuthority().endsWith(Constants.TEAMLEAD))?true:false):false;
+        this.isAssociate=authorities!=null?(authorities.stream().anyMatch(x->x.getAuthority().endsWith(Constants.ASSOCIATE))?true:false):false;
     }
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -126,5 +130,11 @@ public class JwtUser implements UserDetails {
 	
 
 	
+	public boolean isTeamLead() {
+		return isTeamLead;
+	}
+	public boolean isAssociate() {
+		return isAssociate;
+	}
     
 }

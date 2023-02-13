@@ -58,6 +58,6 @@ public class Constants {
 	public static final String MAPPING_TABLE_GOOGLE_SHEET_SUB_ID="0";
 	public static final String MAPPING_TABLE_GOOGLE_SHEET_SUB_NAME="Paste Data Here";
 	public static final List<String> DEFAULT_ROLE_FOR_SMILEPOINT=Arrays.asList("ADMIN");
-	public static final List<String> DEFAULT_ROLE_FOR_OTHERS=Collections.EMPTY_LIST;
+	public static final List<String> DEFAULT_ROLE_FOR_OTHERS=Collections.emptyList();
 
 }

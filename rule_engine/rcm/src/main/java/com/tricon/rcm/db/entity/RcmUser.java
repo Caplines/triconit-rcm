@@ -82,4 +82,10 @@ public class RcmUser extends BaseAuditEntity implements Serializable{
 	@Column(nullable = true, length = 64)
 	private String tempPassword;
 	
+	@Transient
+	private boolean isTeamLead;
+	
+	@Transient
+	private boolean isAssociate;
+	
 }
