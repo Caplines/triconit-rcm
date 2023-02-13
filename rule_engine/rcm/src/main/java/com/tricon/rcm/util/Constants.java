@@ -52,7 +52,8 @@ public class Constants {
 	public static final String  ROLE_ADMIN="ROLE_ADMIN";
 	public static final String PASSWORD_PATTERN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	public static final String SHOW_ALL_COMPANY_USERS="All";
-	public static final String MAPPING_TABLE_NAME="RCM DataBase";
+	public static final String MAPPING_TABLE_NAME_RCM_DATABASE="RCM DataBase";
+	public static final String MAPPING_TABLE_NAME_TFS="Timely Filling Sheet";
 	public static final String MAPPING_TABLE_GOOGLE_SHEET_ID="1txTh07ssmXytBscroqVnbSRppeZjt8x1m391Hd1Fsr4";
 	public static final String MAPPING_TABLE_GOOGLE_SHEET_SUB_ID="0";
 	public static final String MAPPING_TABLE_GOOGLE_SHEET_SUB_NAME="Paste Data Here";

@@ -638,7 +638,7 @@ public class AdminServiceImpl {
 			mappingTable.setGoogleSheetId(Constants.MAPPING_TABLE_GOOGLE_SHEET_ID);
 			mappingTable.setGoogleSheetSubId(Constants.MAPPING_TABLE_GOOGLE_SHEET_SUB_ID);
 			mappingTable.setGoogleSheetSubName(Constants.MAPPING_TABLE_GOOGLE_SHEET_SUB_NAME);
-			mappingTable.setName(Constants.MAPPING_TABLE_NAME);
+			mappingTable.setName(Constants.MAPPING_TABLE_NAME_RCM_DATABASE);
 			mappingTable.setCompany(company);
 			mappingTableRepo.save(mappingTable);
 
@@ -682,8 +682,8 @@ public class AdminServiceImpl {
 			data = new ArrayList<>();
 			for (RcmCompany cmp : company) {
 				dto = new RcmClientResponseDto();
-				List<RcmCompanyWithGsheetDto> gSheetData = mappingTableRepo.getCompanyWithGsheetData(cmp.getUuid(),
-						Constants.MAPPING_TABLE_NAME);
+				List<RcmCompanyWithGsheetDto> gSheetData = mappingTableRepo.getDataFromRcmMapping(cmp.getUuid(),
+						Constants.MAPPING_TABLE_NAME_TFS);
 				dto.setClientName(cmp.getName());
 				dto.setCompanyUuid(cmp.getUuid());
 				dto.setHeader(gSheetData);
