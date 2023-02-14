@@ -35,7 +35,7 @@ public class UserController {
 	@RequestMapping(value = "/updatepassword", method = RequestMethod.POST)
 	public ResponseEntity<?> updatePasswordOfUserOrAdmin(@RequestBody PasswordResetDto dto) {
 		GenericResponse response = null;
-		if (dto.getPassword().trim().equals("")) {
+		if ((dto.getPassword()==null||dto.getPassword().trim().equals(""))||dto.getUuid()==null) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.PASSWORD_EMPTY, null));
 		}

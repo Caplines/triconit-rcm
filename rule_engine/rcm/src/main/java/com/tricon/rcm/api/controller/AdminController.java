@@ -90,7 +90,7 @@ public class AdminController {
 		if(!jwtUser.isSmilePoint()) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
-		if (dto.getPassword().trim().equals("") || dto.getUuid().trim().equals("")) {
+		if ((dto.getPassword()==null||dto.getPassword().trim().equals("")) || (dto.getUuid()==null||dto.getUuid().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -115,7 +115,7 @@ public class AdminController {
 		if(!jwtUser.isSmilePoint()) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
-		if (dto.getEmail().trim().equals("")) {
+		if (dto.getEmail()==null||dto.getEmail().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -161,7 +161,7 @@ public class AdminController {
 		if(!jwtUser.isSmilePoint()) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
-		if (dto.getUserActiveStatus().isEmpty() || dto.getUserActiveStatus().stream()
+		if (dto.getUserActiveStatus()!=null || dto.getUserActiveStatus().stream()
 				.anyMatch(x -> x.getUserId().trim().equals("") || x.getUserId().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
@@ -242,7 +242,7 @@ public class AdminController {
 	@RequestMapping(value = "addOffice", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> addOffice(@RequestBody RcmCompanyDto dto) {
-		if (dto.getName().trim().equals("") || dto.getCompanyUuid().trim().equals("")) {
+		if ((dto.getName()==null||dto.getName().trim().equals("")) || (dto.getCompanyUuid()==null||dto.getCompanyUuid().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -274,7 +274,7 @@ public class AdminController {
 	@RequestMapping(value = "editOffice", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> editOffice(@RequestBody RcmEditOfficeDto dto) {
-		if (dto.getOfficeName().trim().equals("") || dto.getOfficeUuid().trim().equals("")) {
+		if ((dto.getOfficeName()==null||dto.getOfficeName().trim().equals("")) || (dto.getOfficeUuid()==null||dto.getOfficeUuid().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -292,7 +292,7 @@ public class AdminController {
 	@RequestMapping(value = "editRole", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> editRoles(@RequestBody RcmEditRolesDto dto) {
-		if (dto.getUuid().trim().equals("")||dto.getRoles().isEmpty()) {
+		if ((dto.getUuid()==null||dto.getUuid().trim().equals(""))||dto.getRoles()!=null) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -321,7 +321,7 @@ public class AdminController {
 	@RequestMapping(value = "assignmentclaimUsers", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> claimsFromAssignmentTable(@RequestBody RcmClaimDto dto) {
-		if (dto.getUserUuid().trim().equals("")||dto.getTeamId()==null) {
+		if (dto.getTeamId()==null||dto.getUserUuid().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -349,7 +349,7 @@ public class AdminController {
 	@RequestMapping(value = "assignclaimToUser", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> claimAssignmentToUser(@RequestBody ClaimAssignmentDto dto) {
-		if (dto.getNewClaimUserUuid().trim().equals("")||dto.getOldClaimUserUuid().trim().equals("")) {
+		if ((dto.getNewClaimUserUuid()==null||dto.getNewClaimUserUuid().trim().equals(""))||(dto.getOldClaimUserUuid()==null||dto.getOldClaimUserUuid().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -377,7 +377,7 @@ public class AdminController {
 	@RequestMapping(value = "addClient", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> addCompany(@RequestBody RcmClientDto dto) {
-		if (dto.getClientName().trim().equals("") ||dto.getHeader().isEmpty()|| dto.getHeader().stream().anyMatch(
+		if ((dto.getClientName()==null||dto.getClientName().trim().equals(""))||dto.getHeader()!=null|| dto.getHeader().stream().anyMatch(
 				x -> x.getGoogle_sheet_id().trim().equals("") || x.getGoogle_sheet_sub_id().trim().equals("")
 				|| x.getGoogle_sheet_sub_name().trim().equals("")
 				|| x.getName().trim().equals(""))) {
@@ -405,7 +405,7 @@ public class AdminController {
 	@RequestMapping(value = "editClient", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> editCompany(@RequestBody RcmClientDto dto) {
-		if (dto.getCompanyUuid().trim().equals("") || dto.getClientName().trim().equals("")||dto.getHeader().isEmpty()
+		if ((dto.getCompanyUuid()==null||dto.getCompanyUuid().trim().equals("")) || (dto.getClientName()==null||dto.getClientName().trim().equals(""))||dto.getHeader()!=null
 				|| dto.getHeader().stream()
 						.anyMatch(x -> x.getGoogle_sheet_id().trim().equals("")
 								|| x.getGoogle_sheet_sub_id().trim().equals("")

@@ -27,7 +27,7 @@ public class RcmUtillController {
 
 	@RequestMapping(value = "/forgotPassword", method = RequestMethod.POST)
 	public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordDto dto) {
-		if (dto.getEmail().trim().equals("")) {
+		if (dto.getEmail()==null||dto.getEmail().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.PASSWORD_EMPTY, null));
 		}
