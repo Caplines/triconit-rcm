@@ -112,7 +112,7 @@ console.log(this.cName);
 
  fetchAllClients(){
   let ths= this;
-  ths.appService.getAllClients((res:any)=>{
+  ths.appService.getClientsName((res:any)=>{
 
     if (res.status=== 200){
       ths.clients=res.data;

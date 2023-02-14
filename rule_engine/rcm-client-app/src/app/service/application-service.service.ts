@@ -212,4 +212,12 @@ getAllClients(callback:any){
   this.getData({},this.httpUrl['getAllClients'],callback)
 }
 
+fetchBillingClaimsByUuid(uuid:string,callback:any){
+  this.getData({},this.httpUrl['fetchBillingClaimsByUuid']+"/"+uuid,callback)
+}
+
+getClientsName(callback:any){
+  this.getData({},this.httpUrl['getClientsName'],callback)
+}
+
 }

@@ -1,22 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { FetchClaimsRoutingModule } from './fetch-claims-routing.module';
-import { FetchClaimsComponent } from './fetch-claims/fetch-claims.component';
+import { BillingClaimsRoutingModule } from './billing-claims-routing.module';
+import { BillingClaimsComponent } from './billing-claims/billing-claims.component';
 import { PipesModule } from '../pipe/pipe-module'; 
-
 @NgModule({
   declarations: [
-    FetchClaimsComponent,
-    
+    BillingClaimsComponent
   ],
   imports: [
     CommonModule,
-    FetchClaimsRoutingModule,
+    BillingClaimsRoutingModule,
     PipesModule
   ]
 })
-export class FetchClaimsModule { 
+export class BillingClaimsModule { 
   constructor() { 
     
   }

@@ -31,10 +31,11 @@ export class BaseService {
     'userByTeamId':"/users/team",
     'assignOffice':"/assignOffice",
     'findAllUser':'/getAllUsers/',
-    // 'getAllClients':"/api/allclients"
+    'getClientsName':"/api/allclients",
     'getAllClients':"/getClientDetails",
     'addClients':'/addClient',
-    'editClient':'/editClient'
+    'editClient':'/editClient',
+    'fetchBillingClaimsByUuid':"/api/fetchindclaim"
   }
 
   constructor(public http: HttpClient) {

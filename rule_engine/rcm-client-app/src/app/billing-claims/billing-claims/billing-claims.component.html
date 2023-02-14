@@ -1,0 +1,70 @@
+
+
+
+<table>
+<tr>
+    <td>Office : {{claimRcm.officeName}}</td>
+    <td>Insurance Type : {{claimRcm.officeName}}</td>
+    <td>Primary Insurance : {{claimRcm.primInsurance}}</td>
+    <td>Regenerated Claim? : {{claimRcm.regenerated===true?"Yes":"No"}} </td>
+</tr>
+<tr>
+    
+    <td>Billing Status: {{claimRcm.claimStatus==appConstants.BILLING_ID?"Fresh":"Re-Billing"}}</td>
+    <td>Member ID:  {{claimRcm.secMemberId}}</td>
+    <td>Primary EOB:</td>
+    <td>Linked Claim IDs:</td>
+</tr>
+
+<tr>
+    
+    <td>ClaimType:</td>
+    <td>Patient ID: {{claimRcm.patientId}}</td>
+    <td>Secondary Insurance:</td>
+
+</tr>
+<tr>
+    
+    <td>Claim Type:</td>
+
+
+</tr>
+
+<tr>
+    
+    <td>Claim ID: {{claimRcm.claimId | claimIdPipe}}</td>
+    <td>Patient Name: {{claimRcm.patientName}}</td>
+    <td>Treating Provider :</td>
+    <td>Assignment of Benefits:</td>
+</tr>
+
+<tr>
+    
+    <td>DOS: {{claimRcm.dos}}</td>
+    <td>Patient DOB: {{claimRcm.patientDob}}</td>
+    <td>Provider on Claim: </td>
+
+</tr>
+
+<tr>
+    
+    <td>Billed Amount:</td>
+    <td>Subscriber Name:</td>
+
+
+</tr>
+
+<tr>
+    
+    <td>Estimated Amount:</td>
+    <td>Subscriber DOB:</td>
+
+
+</tr>
+
+
+
+
+
+
+</table>

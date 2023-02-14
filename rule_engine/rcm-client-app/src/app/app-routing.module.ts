@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CheckUserLoggedInState } from './urlPermission/url.checkloginstate';
 import { UrlPermission } from './urlPermission/url.permission';
 
-const routes: Routes = [
+const  routes: Routes = [
 
   {
     path:'',pathMatch:'full',redirectTo:"/login"
@@ -53,6 +53,13 @@ const routes: Routes = [
     loadChildren :()=> import("./manage-client/manage-client.module").then(m=>m.ManageClientModule),
    
   },
+
+  {
+    path:'billing-claims/:uuid',
+    loadChildren :()=> import("./billing-claims/billing-claims.module").then(m=>m.BillingClaimsModule),
+   
+  },
+
   { path: '**', redirectTo: '/login' }
 ];
 
