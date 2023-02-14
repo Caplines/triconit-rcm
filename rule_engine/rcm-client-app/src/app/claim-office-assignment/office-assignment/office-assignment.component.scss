@@ -3,6 +3,8 @@
     margin-top: 5px;
     margin-bottom: 10px;
     display: flex;
+    width: auto;
+    align-items: center;
 }
 
 .billingDropdown select, .billingDropdown select:focus {
@@ -44,7 +46,9 @@
     border-bottom: 5px solid #b4b5b5;
     margin-bottom: 4px;
 }
-
+a.arrow-down.selected{
+    border-top-color: #2d4047;
+}
 .arrow-down {
     width: 0;
     height: 0;
@@ -81,7 +85,6 @@
 .select-editable ,.select-editable:focus {
     width: 200px !important;
     background: transparent;
-    border: none !important;
     font-weight: 600;
      color: #007bff;
       cursor: pointer;

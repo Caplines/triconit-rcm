@@ -48,6 +48,11 @@ const routes: Routes = [
     loadChildren :()=> import("./users-status/users-status/users-status.module").then(m=>m.UserStatusModule),
    
   },
+  {
+    path:'manage-client',
+    loadChildren :()=> import("./manage-client/manage-client.module").then(m=>m.ManageClientModule),
+   
+  },
   { path: '**', redirectTo: '/login' }
 ];
 

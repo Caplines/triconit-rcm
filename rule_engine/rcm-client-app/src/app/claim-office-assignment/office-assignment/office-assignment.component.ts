@@ -5,6 +5,8 @@ import {ClaimAssignmentModel} from '../../models/claim-assignment.model';
 import {ClaimAssignmentPullModel} from '../../models/claim-assignment-pull-model';
 import {BillingList} from '../../models/billing-list-model';
 import { Title } from '@angular/platform-browser';
+import html2canvas from 'html2canvas';
+import jsPDF from "jspdf";
 
 @Component({
   selector: 'claim-office-assignment',
@@ -14,7 +16,7 @@ import { Title } from '@angular/platform-browser';
 })
 export class OfficeAssignmentComponent implements OnInit {
 
-  //claimAssignmentModel: ClaimAssignmentModel = new ClaimAssignmentModel();
+  // claimAssignmentModel: ClaimAssignmentModel = new ClaimAssignmentModel();
   claimAssigmentPullModel:ClaimAssignmentPullModel = new ClaimAssignmentPullModel();
   bl:BillingList = new BillingList();
 
@@ -30,6 +32,7 @@ export class OfficeAssignmentComponent implements OnInit {
   assignOfficeDetails:any={'assignOfficeDetails':[],'teamId':''};
   alert:any={'showAlertPopup':false,'alertMsg':''};
   showLoader:boolean=false;
+  showExportLoader:boolean=false;
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0,'totalcountAndRemLiteReject':0}
   constructor(private appService: ApplicationServiceService,private title:Title) { 
     title.setTitle("Claim-Office Assignment");
@@ -144,19 +147,26 @@ export class OfficeAssignmentComponent implements OnInit {
   })
  }
 
-//  saveToPdf(divName:any){
-// let el:any = document.getElementById(divName);
-//  }
+ saveToPdf(divName:any){
+   this.showExportLoader= true;
+   let m:any=document.querySelector(".table-wrapper-scroll-y");
+   m.classList.remove('table-wrapper-scroll-y')
+   m.classList.remove('table-inner-scrollbar')
+  html2canvas(<any>document.getElementById(divName)).then(canvas => {
+  const content = canvas.toDataURL('image/png');
+  let pdf= new jsPDF('p','mm','a4');
+  let width= pdf.internal.pageSize.getWidth();
+  pdf.text('Paranyan loves jsPDF',10,10)
+  let height = canvas.height  * width / canvas.width;
+  console.log(width,height)
+  pdf.addImage(content,"PNG",0,0,width,height)
+  pdf.save("output.pdf")
+  this.showExportLoader = false;
+  m.classList.add('table-wrapper-scroll-y')
+  m.classList.add('table-inner-scrollbar')
+ });
 
-//  assignUserToClaimData(evt:any){
-//   evt  = evt.target.value.split(",")
-//   this.claimData.forEach((e:any)=>{
-//     if(evt[1] == e.assignedUser || evt[2] === e.officeUuid){
-//       e.fname = evt[0];
-//       e.assignedUser= evt[1];
-//     }
-//   })
-//  }
+}
 
  sortData(data:any,sortingColm:any,order:any,sortingType:any){
   this.appService.sortData(data,sortingColm,order,sortingType)

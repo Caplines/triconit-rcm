@@ -21,7 +21,8 @@ export class HeaderComponent implements OnInit {
   @Input() isRegister:any;
   @Input() isManageOffice:any;
   @Input() isClaimAssign:any;
-  @Input() isUsersStatus:any
+  @Input() isUsersStatus:any;
+  @Input() isManageClient:any;
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
 

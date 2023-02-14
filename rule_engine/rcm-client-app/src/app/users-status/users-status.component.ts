@@ -17,7 +17,7 @@ export class UserStatusComponent implements OnInit {
   userStatusArray:any={'userActiveStatus':[]}
   alert:any={'showAlertPopup':false,'alertMsg':''};
   isUserStatus:boolean=true;
-  companyName:any;
+  companyName:any='';
   companyData:any=[];
   showLoader:boolean=false;
   isFindUserBtnDisable:boolean=false;
@@ -51,6 +51,11 @@ export class UserStatusComponent implements OnInit {
         }
         this.hasNext = callback.data[0].hasNextElement;
         this.isFindUserBtnDisable=true;
+      } else if(!callback.data){
+        this.allUser=[];
+        this.isFindUserBtnDisable=true;
+        this.alert.showAlertPopup = true;
+        this.alert.alertMsg = "No Data Found";
       }
     })
   }

@@ -106,46 +106,102 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params,this.httpUrl['addNewOffice'],callback)
   }
 
+  fetchClient(callback:any){
+    this.getData({},this.httpUrl['getAllClients'],callback)
+  }
+
+  addNewClients(params:any,callback:any){
+    this.postData(params,this.httpUrl['addClients'],callback)
+  }
+
+  editClient(params:any,callback:any){
+    this.postData(params,this.httpUrl['editClient'],callback)
+  }
+
   sortData(data:any,sortingColm:any,order:any,sortingType:any){
     if(sortingType === 'name'){
       if(sortingColm == 'officeAssigned'){
-        order === 'asc' ?  data.sort((p1:any, p2:any) => (p1.fname < p2.fname ||(p1.fname == null || p2.fname == null)) ? -1 : (p1.fname < p2.fname ||(p1.fname == null || p2.fname == null)) ? 1 : 0) : data.sort((p1:any, p2:any) => (p1.fname > p2.fname ||(p1.fname == null || p2.fname == null)) ? -1 : (p1.fname > p2.fname ||(p1.fname == null || p2.fname == null)) ? 1 : 0);
+       order === 'asc' ? data.sort((a:any, b:any) => {
+        if (a.fname === null || a.fname === "null") {
+          return 1;
+        } else if (b.fname === null || b.fname === "null") {
+          return -1;
+        } else {
+          return a.fname.localeCompare(b.fname);
+        }
+        }) : data.sort((a:any, b:any) => { 
+          if (a.fname === null || a.fname === "null") {
+            return -1;
+          } else if (b.fname === null || b.fname === "null") {
+            return 1;
+          } else {
+            return b.fname.localeCompare(a.fname);
+          }
+        })
       }
       else if(sortingColm == 'officeName'){
-        order === 'asc' ?  data.sort((p1:any, p2:any) => (p1.officeName < p2.officeName) ? -1 : (p1.officeName < p2.officeName) ? 1 : 0) : data.sort((p1:any, p2:any) => (p1.officeName > p2.officeName) ? -1 : (p1.officeName > p2.officeName) ? 1 : 0);
-   }
+        order === 'asc' ?  data.sort((a:any, b:any) => {
+          return a.officeName.localeCompare(b.officeName)
+        }) : data.sort((a:any, b:any) => {  if (a.officeName > b.officeName) {
+          return -1;
+          }
+        if (a.officeName < b.officeName) {
+          return 1;
+        }
+        return 0;
+        });
+      }
   } else if(sortingType === 'number'){
     if(sortingColm == 'count'){
-      order === 'asc' ?  data.sort((p1:any, p2:any) => (p1.count < p2.count) ? -1 : (p1.count < p2.count) ? 1 : 0) : data.sort((p1:any, p2:any) => (p1.count > p2.count) ? -1 : (p1.count > p2.count) ? 1 : 0);
+      order === 'asc' ?  data.sort((a:any, b:any) => {
+       return  a.count - b.count;
+      }) :  data.sort((a:any, b:any) => {
+        return  b.count - a.count;
+      });
    }
    else if(sortingColm === 'remoteLiteRejections'){
-      order === 'asc' ?  data.sort((p1:any, p2:any) => (p1.remoteLiteRejections < p2.remoteLiteRejections) ? -1 : (p1.remoteLiteRejections < p2.remoteLiteRejections) ? 1 : 0) : data.sort((p1:any, p2:any) => (p1.remoteLiteRejections > p2.remoteLiteRejections) ? -1 : (p1.remoteLiteRejections > p2.remoteLiteRejections) ? 1 : 0);
-   }
-   else if(sortingColm === 'countAndRemLiteReject'){
-      order === 'asc' ?  data.sort((p1:any, p2:any) => ((p1.remoteLiteRejections+p1.count) < (p2.remoteLiteRejections+p2.count)) ? -1 : ((p1.remoteLiteRejections+p1.count) < (p2.remoteLiteRejections+p2.count)) ? 1 : 0) : data.sort((p1:any, p2:any) => ((p1.remoteLiteRejections+p1.count) > (p2.remoteLiteRejections+p2.count)) ? -1 : ((p1.remoteLiteRejections+p1.count) > (p2.remoteLiteRejections+p2.count)) ? 1 : 0);
-   }
-  } else if(sortingType === 'date'){
-    if(sortingColm === 'opdt'){
-      order === 'asc' ?  data.sort((p1:any, p2:any) => {
-        let date1:any = new Date(p1.opdt);
-        let date2:any = new Date(p2.opdt);
-        return date1-date2;
-      }) : data.sort((p1:any, p2:any) =>{ 
-        let date1:any = new Date(p1.opdt);
-        let date2:any = new Date(p2.opdt);
-        return date2 - date1;
+      order === 'asc' ?  data.sort((a:any, b:any) => {
+        return  a.remoteLiteRejections - b.remoteLiteRejections;
+      }):  data.sort((a:any, b:any) => {
+        return  b.remoteLiteRejections - a.remoteLiteRejections;
       });
     }
+   else if(sortingColm === 'countAndRemLiteReject'){
+      // order === 'asc' ?  data.sort((p1:any, p2:any) => ((p1.remoteLiteRejections+p1.count) < (p2.remoteLiteRejections+p2.count)) ? -1 : ((p1.remoteLiteRejections+p1.count) < (p2.remoteLiteRejections+p2.count)) ? 1 : 0) : data.sort((p1:any, p2:any) => ((p1.remoteLiteRejections+p1.count) > (p2.remoteLiteRejections+p2.count)) ? -1 : ((p1.remoteLiteRejections+p1.count) > (p2.remoteLiteRejections+p2.count)) ? 1 : 0);
+      order === 'asc' ?  data.sort((a:any, b:any) => {
+        return (a.count + a.remoteLiteRejections) - (b.count + b.remoteLiteRejections)
+      }) : data.sort((a:any, b:any) => {
+        return (b.count + b.remoteLiteRejections) - (a.count + a.remoteLiteRejections)
+      })
+   }
+    } else if (sortingType === 'date') {
+      if (sortingColm === 'opdt') {
+        order === 'asc' ? data.sort((a: any, b: any) => {
+          if (a.opdt === null) return -1;
+          if (b.opdt === null) return 1;
+          return <any>new Date(a.opdt) - <any>new Date(b.opdt);
+        }) : data.sort((a: any, b: any) => {
+          if (a.opdt && b.opdt) {
+            return <any>new Date(b.opdt) - <any>new Date(a.opdt);
+          } else if (!a.opdt && b.opdt) {
+            return -1;
+          } else if (a.opdt && !b.opdt) {
+            return 1;
+          }
+        });
+    }
     else if(sortingColm === 'opdos'){
-      order === 'asc' ?  data.sort((p1:any, p2:any) => {
-        let date1:any = new Date(p1.opdos);
-        let date2:any = new Date(p2.opdos);
-        return date1-date2;
-      }) : data.sort((p1:any, p2:any) =>{ 
-        let date1:any = new Date(p1.opdos);
-        let date2:any = new Date(p2.opdos);
-        return date2 - date1;
-      });
+      order === 'asc' ?  data.sort((a:any, b:any) => {
+        if (a.opdos === null && b.opdos === null) return 0;
+        else if (a.opdos === null) return 1;
+        else if (b.opdos === null) return -1;
+        else return <any>new Date(a.opdos).getTime() - <any>new Date(b.opdos).getTime();
+      }) : data.sort((a:any, b:any) =>{ 
+        if (a.opdos === null && b.opdos === null) return 0;
+        else if (a.opdos === null) return 1;
+        else if (b.opdos === null) return -1;
+        else return <any>new Date(b.opdos).getTime() - <any>new Date(a.opdos).getTime();
+    });
     }
   }
 

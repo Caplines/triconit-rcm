@@ -1,0 +1,87 @@
+<div class="right-container">
+    <app-header-component [isManageClient]="isManageClient"></app-header-component>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm"></div>
+            <div class="col-lg-12 pt-3">
+                <h2 class="page-heading">Manage-Client</h2>
+                <div class="main-container">
+                    <div class="detail-box">
+                        <div class="detail-box-form">
+                            <div class="form-row withoutLink">
+                                <!-- <div class="date-range-box">
+                                    <label>Client Name :</label>
+                                    <select class="form-control"
+                                            (change)="selectCompany($event)">
+                                        <option selected="true" hidden="true">Select Client</option>
+                                        <ng-container *ngFor="let comp of companyData">
+                                            <option *ngIf="comp.name !== 'Smilepoint'" value="{{comp.companyUuid}}">{{comp.name}}</option>
+                                        </ng-container>
+                                    </select>
+                                    <div class="spinner-border text-success" role="status" *ngIf="showLoader"></div>
+                                </div> -->
+                                <ng-container >
+                                    <div class="table-responsive">
+                                        <table class="table" id="table">
+                                            <tr class="thead-dark">
+                                                <th>Client Name</th>
+                                                <th >Edit</th>
+                                                <th>Save</th>
+                                            </tr>
+                                            <tr class="totalRow" >
+                                                <td colspan="3">
+                                                    <button type="button" class="btn btn-success" (click)="addNewClient()">
+                                                        <img src="../assets/img/plus-white.png" alt="plus" />
+                                                        Add New Client
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr *ngIf="alert.showAlertPopup">
+                                                <td colspan="3">
+                                                        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                                                            <strong>{{alert.alertMsg}}</strong>
+                                                            <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                </td>
+                                            </tr>
+                                            <ng-container *ngFor="let comp of clientData;let idx= index">
+                                                <tr >
+                                                    <td scope="col">
+                                                         <input type="text" value="{{comp.clientName}}" [(ngModel)]="comp.clientName" placeholder="Enter client name" class="form-control" [disabled]="!comp.editable" [ngClass]="{'is-invalid': comp.editable && comp.clientName==''}">
+                                                         <ng-container>  
+                                                                <span *ngFor="let header of comp.header;let index= index">
+                                                                    <h3>Header: {{header.name}}</h3>
+                                                                    <input type="text" [value]="header.googleSheetId" [(ngModel)]="header.googleSheetId" class="form-control" [disabled]="!comp.editable" placeholder="Enter google_sheet_id">
+                                                                    <input type="text" [value]="header.googleSheetSubId" [(ngModel)]="header.googleSheetSubId" class="form-control" [disabled]="!comp.editable" placeholder="google_sheet_sub_id">
+                                                                    <input type="text" [value]="header.googleSheetSubName" [(ngModel)]="header.googleSheetSubName" class="form-control" [disabled]="!comp.editable" placeholder="google_sheet_sub_name">
+                                                                    <!-- <button class="btn btn-danger" (click)="addNewHeader(comp.header,index)">Add New Header</button> -->
+                                                                </span>
+                                                         </ng-container>
+                                                        </td>
+                                                    <td scope="col" >
+                                                        <button type="button" (click)="enableEditing(comp)" class="btn btn-edit" *ngIf="!comp['newField'] && !comp.editable">
+                                                            <img src="../assets/img/edit.png" alt="edit" />
+                                                            Edit
+                                                        </button>
+                                                    </td>
+                                                    <td scope="col">
+                                                        <button type="button" class="btn btn-edit" [disabled]="!comp.editable" (click)="saveClientName(comp)">
+                                                            <img src="../assets/img/save-data-icon.png" alt="edit" style="margin-top:2px;" />
+                                                            {{comp['newField'] ? 'Save' : 'Update' }}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+                                        </table>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>

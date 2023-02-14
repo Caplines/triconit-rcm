@@ -31,7 +31,10 @@ export class BaseService {
     'userByTeamId':"/users/team",
     'assignOffice':"/assignOffice",
     'findAllUser':'/getAllUsers/',
-    'getAllClients':"/api/allclients"
+    // 'getAllClients':"/api/allclients"
+    'getAllClients':"/getClientDetails",
+    'addClients':'/addClient',
+    'editClient':'/editClient'
   }
 
   constructor(public http: HttpClient) {
