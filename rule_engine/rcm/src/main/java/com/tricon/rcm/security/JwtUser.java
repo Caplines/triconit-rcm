@@ -60,8 +60,8 @@ public class JwtUser implements UserDetails {
         this.lastPasswordResetDate = lastPasswordResetDate;
         this.company =company;
         this.isSmilePoint=company!=null?(company.getName().equals(Constants.COMPANY_NAME)?true:false):false;
-        this.isTeamLead=authorities!=null?(authorities.stream().anyMatch(x->x.getAuthority().endsWith(Constants.TEAMLEAD))?true:false):false;
-        this.isAssociate=authorities!=null?(authorities.stream().anyMatch(x->x.getAuthority().endsWith(Constants.ASSOCIATE))?true:false):false;
+        this.isTeamLead=authorities!=null?(authorities.stream().anyMatch(x->x.getAuthority().endsWith(Constants.HYPHEN+Constants.TEAMLEAD))?true:false):false;
+        this.isAssociate=authorities!=null?(authorities.stream().anyMatch(x->x.getAuthority().endsWith(Constants.HYPHEN+Constants.ASSOCIATE))?true:false):false;
     }
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

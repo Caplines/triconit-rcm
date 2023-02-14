@@ -259,7 +259,7 @@ public class AdminServiceImpl {
 		List<RcmUserPaginationDto> listOfUsers = new ArrayList<>();
 		RcmCompany company = null;
 		String companyUuid = "";
-		String ignoreUser=Constants.SYSTEM;
+		String ignoreUser=Constants.SYSTEM_USER_EMAIL;
 		// get all users without company name
 		if (cmpny.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
 			if (pageNumber == -1) { // without pagination if pageNumber<0

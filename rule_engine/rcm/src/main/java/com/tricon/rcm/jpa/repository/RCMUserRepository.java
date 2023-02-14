@@ -31,7 +31,7 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	@Query(value = "select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user where company_id=:uuid AND email!=:ignoreUser", countQuery = "select count(*) from rcm_user where company_id=:uuid", nativeQuery = true)
 	Page<RcmUserToDto> getAllUserByCompanyUuidWithPagination(@Param("uuid") String uuid, Pageable page,@Param("ignoreUser")String ignoreUser);
 	
-	@Query(value="select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user email!=:ignoreUser",nativeQuery = true)
+	@Query(value="select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user where email!=:ignoreUser",nativeQuery = true)
 	List<RcmUserToDto> getAllUser(@Param("ignoreUser")String ignoreUser);
 	
 
