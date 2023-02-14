@@ -32,10 +32,10 @@ public class RcmLinkedClaims  extends BaseAuditEntity implements Serializable {
 	private int id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "claim_id",referencedColumnName="claim_id")
+	@JoinColumn(name = "claim_id",referencedColumnName="claim_uuid")
 	private RcmClaims rcmClaims;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "linked_claim_id",referencedColumnName="claim_id")
+	@JoinColumn(name = "linked_claim_id",referencedColumnName="claim_uuid")
 	private RcmClaims linkedClaims;
 }

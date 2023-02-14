@@ -21,8 +21,10 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
+import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
+import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.dto.GenericResponse;
@@ -129,6 +131,15 @@ public class RcmController {
 	@PostMapping("/api/bill/claim-production")
 	public ResponseEntity<Object> claimsProduction(@RequestBody ClaimProductionLogDto  dto) {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.claimsProductionReportByTeam(RcmTeamEnum.BILLING.getId(),dto)));
+	}
+	
+	@ApiOperation(value = "Api For Fetching Individual Claim by uuid", response = FreshClaimDataImplDto.class)
+	@GetMapping("/api/fetchindclaim/{uuid}")
+	public ResponseEntity<Object> fetchIndividualClaim(@PathVariable("uuid") String claimUuid) {
+		
+		Object[] obj=checkForSimplePointUser();
+		JwtUser jwtUser=((JwtUser) obj[0]);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchIndividualClaim(claimUuid,jwtUser.getCompany())));
 	}
 	
 	

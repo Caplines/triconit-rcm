@@ -44,9 +44,11 @@ import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
+import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
+import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
@@ -68,6 +70,7 @@ import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmIssueClaimsRepo;
+import com.tricon.rcm.jpa.repository.RcmLinkedClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
@@ -134,6 +137,9 @@ public class ClaimServiceImpl {
 	
 	@Autowired
 	RcmClaimAssignmentRepo rcmClaimAssignmentRepo;
+	
+	@Autowired
+	RcmLinkedClaimsRepo rcmLinkedClaimsRepo;
 	
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -226,7 +232,14 @@ public class ClaimServiceImpl {
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
-		List<FreshClaimDetailsDto> dtoList=rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(),billType);
+		List<FreshClaimDetailsDto> dtoList=null;
+		if ( jwtUser.isTeamLead()) {// && jwtUser.isAssociate()) ||  jwtUser.isTeamLead()
+			dtoList =rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(),billType,jwtUser.getTeamId());
+		}
+		else if (jwtUser.isAssociate()) {
+			dtoList =rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(),billType,jwtUser.getTeamId(),
+					jwtUser.getUuid());
+		}
 		 List<FreshClaimDetailsImplDto> finalList = new ArrayList<>();
 		HashMap<String,RemoteLietStatusCount> remoteLiteMap= ruleEngineService.pullAndSaveRemoteLiteData();
 		RemoteLietStatusCount counts=null;
@@ -841,6 +854,33 @@ public class ClaimServiceImpl {
 	        }
 			return finalList;
 		}
+	 
+	 
+	 
+     public FreshClaimDataImplDto fetchIndividualClaim(String  claimId,RcmCompany company) {
+    	 FreshClaimDataImplDto implDto=null;
+    	 RcmClaimDetailDto dto=  rcmClaimRepository.fetchIndividualClaim(company.getUuid(), claimId);
+    	 if (dto!=null) {
+    		 
+    		 implDto= new FreshClaimDataImplDto();
+    		 BeanUtils.copyProperties(dto, implDto);
+    		List<String> linkedClaims =rcmLinkedClaimsRepo.getLinkedClaims(dto.getUuid());
+    		String ivfId="",tpId="";
+    		
+    		ivfId=rcmClaimRepository.getIVIDofClaim(implDto.getClaimId().split("_")[0], implDto.getOfficeUuid(), implDto.getPatientId());
+    		if (ivfId!=null && !ivfId.equals("")) {
+    			tpId= rcmClaimRepository.getTreatmentPlanIdIV(ivfId, implDto.getOfficeUuid(),  implDto.getPatientId());
+    		}else {
+    			ivfId="";
+    		}
+    		implDto.setIvfId(ivfId); 
+    		implDto.setTpId(tpId);
+    		
+    		if (linkedClaims!=null) implDto.setLinkedClaims(linkedClaims);
+    	 }
+		 return implDto;
+		 
+	 }
 	 
 	 public List<ProductionDto> claimsProductionReportByTeam(int teamId,ClaimProductionLogDto dto) {
 		 

@@ -11,6 +11,7 @@ import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
+import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
@@ -25,15 +26,31 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 	List<RcmClaims> findByClaimIdInAndOffice(List<String> claimIds, RcmOffice office);
 
-	
-	@Query(nativeQuery = true, value = "SELECT off.name as officeName,"
+	String s=" SELECT off.name as officeName,"
 			+ "count(Case When claim_status_type_id=:status and pending is true Then 'billre' End) as 'count' , "
 			+ "min(Case When claim_status_type_id=:status Then cl.created_date End)   as 'opdt', "
 			+ "min(Case When claim_status_type_id=:status Then cl.dos End)   as 'opdos', "
 			+ "off.uuid as officeUuid,0 as remoteLiteRejections FROM  office off left join rcm_claims  cl "
-			+ "on off.uuid=cl.office_id where off.company_id=:companyId " + "group by off.uuid ")
+			+ "on off.uuid=cl.office_id where off.company_id=:companyId and ( cl.current_team_id=:teamId  or  current_team_id is null )" + "group by off.uuid";
+	
+	@Query(nativeQuery = true, value = s)
 	List<FreshClaimDetailsDto> fetchBillingOrReBillingClaimDetails(@Param("companyId") String companyId,
-			@Param("status") int status);
+			@Param("status") int status,@Param("teamId") int teamId);
+	
+	@Query(nativeQuery = true, value = "SELECT off.name as officeName, "
+			+ "count(Case When assign.status_id=:status and pending is true Then 'billre' End) as 'count' , "
+			+ "min(Case When  claim_status_type_id=:status Then cl.created_date End)   as 'opdt', "
+			+ "min(Case When claim_status_type_id=:status Then cl.dos End)   as 'opdos', "
+			+ "off.uuid as officeUuid,0 as remoteLiteRejections FROM  office off left join rcm_claims  cl "
+			+ " on off.uuid=cl.office_id "
+			+ " left join rcm_claim_assignment  assign on  cl.claim_uuid=assign.claim_id "
+			+ " and assign.assigned_to=:assignedTo "
+			+ " where off.company_id=:companyId "
+	         + "  and (cl.current_team_id=:teamId or  cl.current_team_id is null) "
+			+ "   and (assign.active is true or assign.active is null ) "
+			+ " group by off.uuid" )
+	List<FreshClaimDetailsDto> fetchBillingOrReBillingClaimDetails(@Param("companyId") String companyId,
+			@Param("status") int status,@Param("teamId") int teamId,@Param("assignedTo") String assignedTo);
 
 	@Query(nativeQuery = true, value = "select off.uuid as officeUuid,off.name as officeName, "
 			+ "Case when l.created_date is null then null  ELSE l.created_date END as cd, "
@@ -50,7 +67,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " claims.dos as dos ,claims.patient_name as patientName,"
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
-			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
 			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal " + " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
@@ -67,7 +84,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " claims.dos as dos ,claims.patient_name as patientName,"
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
-			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
 			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal " + " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
@@ -122,7 +139,44 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<ProductionDto> claimProductionByTeamMember(@Param("companyId") String companyId,
 			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
 
+
+	@Query(nativeQuery = true, value = " select claim_uuid uuid,cl.claim_id claimId,dos,patient_birth_date  patientDob,"+
+			" patient_id patientId,patient_name patientName,pending ,"+
+			" prim_date_sent primDateSent, prim_status primeStatus,prim_total_paid primeTotalPaid,"+
+			" rcm_source source, sec_date_sent secDateSend,sec_status secStatus,"+
+			" sec_submitted_total secSubmittedTotal,submitted_total submittedTotal, timely_fil_lmt_dt timeFilLimitDay,"+
+			" off.name officeName,off.uuid officeUuid,ct.id claimStatus,lTeam.name lastTeam,cTeam.name currentTeam,"+
+			" pins.name primInsurance,sins.name secInsurance, cl.group_number groupNumber,cl.prime_policy_holder primePolicyHolder,"+
+			" prime_sec_submitted_total primeSecSubmittedTotal,sec_policy_holder_dob secPolicyHolderDob,"+
+			" cl.created_date createdDate,assign.assigned_to assignedTo,us.email,us.first_name firstName,us.last_name lastName,"+
+			" pinst.name primaryInsType,sinst.name secondaryInsType,cmp.name clientName,cl.regenerated regenerated, " +
+			" cl.sec_member_id secMemberId"+ 
+			"  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
+			"  inner join company cmp on cmp.uuid=off.company_id"+
+			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+
+			"  left join rcm_team Cteam  on Cteam.id=cl.current_team_id"+
+			"  left join rcm_team lTeam  on lTeam.id=cl.last_work_team_id"+
+			"  left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id"+
+			"  left join rcm_insurance sins on pins.id = cl.sec_insurance_company_id"+
+			"  left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id"+
+			"  left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id"+
+			"  left join rcm_claim_assignment assign on  assign.claim_id=cl.claim_uuid and assign.active=1"+
+			"  left join rcm_user us on us.uuid=assign.assigned_to"+
+			"  where claim_uuid=:claimUuid and cmp.uuid=:companyId")
+	RcmClaimDetailDto fetchIndividualClaim(@Param("companyId")  String companyId,@Param("claimUuid")  String claimUuid) ;
 	
+	
+	
+	@Query(nativeQuery = true, value = "select ivf_form_id from reports_claim where "
+			+ " office_id=:officeId and claim_id=:claimid and  patient_id=:patientId")
+	String getIVIDofClaim(@Param("claimid") String claimid,@Param("officeId") String officeId,
+			@Param("patientId") String patientId);
+	
+	
+	@Query(nativeQuery = true, value = "select treatement_plan_id from reports where "
+			+ " office_id=:officeId and ivf_form_id=:ivId and  patient_id=:patientId")
+    String getTreatmentPlanIdIV(@Param("ivId") String ivId,@Param("officeId") String officeId,
+			@Param("patientId") String patientId);
 	
 
 	

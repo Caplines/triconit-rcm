@@ -18,8 +18,8 @@ public interface FreshClaimDataDto {
 	String getLastTeam();
 	int getClaimAge();
 	String getTimelyFilingLimitData();
-	double getBilledAmount();
-	double getPrimTotal();
-	double getSecTotal();
+	float getBilledAmount();
+	float getPrimTotal();
+	float getSecTotal();
 	
 }
