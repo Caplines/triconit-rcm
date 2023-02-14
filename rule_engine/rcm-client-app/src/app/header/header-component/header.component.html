@@ -19,7 +19,7 @@
             <li *ngIf="loggedInUserRole === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/manage-office']" [ngClass]="{'active':isManageOffice}"><img [src]="isManageOffice? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Manage Offices</a></li>
             <li *ngIf="loggedInUserRole === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/users-status']" [ngClass]="{'active':isUsersStatus}"><img [src]="isUsersStatus? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Users Status</a></li>
             <li *ngIf="loggedInUserRole === 'ROLE_ADMIN'"><a href="javascript:void(0);" [routerLink]="['/manage-client']" [ngClass]="{'active':isManageClient}"><img [src]="isManageClient? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Manage Client</a></li>
-            <li *ngIf="loggedInUserRole === 'ROLE_BILLING_ASSO,ROLE_BILLING_TL'"><a href="javascript:void(0);" [routerLink]="['/claim-assignment']" [ngClass]="{'active':isClaimAssign}"><img [src]="isClaimAssign? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency</a></li>
+            <li *ngIf="loggedInUserRole === 'ROLE_BILLING_ASSO,ROLE_BILLING_TL' || loggedInUserRole === 'ROLE_BILLING_TL,ROLE_BILLING_ASSO'"><a href="javascript:void(0);" [routerLink]="['/claim-assignment']" [ngClass]="{'active':isClaimAssign}"><img [src]="isClaimAssign? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency</a></li>
         </ul>
 
     </div>
