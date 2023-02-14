@@ -53,9 +53,9 @@
                                                          <ng-container>  
                                                                 <span *ngFor="let header of comp.header;let index= index">
                                                                     <h3>Header: {{header.name}}</h3>
-                                                                    <input type="text" [value]="header.googleSheetId" [(ngModel)]="header.googleSheetId" class="form-control" [disabled]="!comp.editable" placeholder="Enter google_sheet_id">
-                                                                    <input type="text" [value]="header.googleSheetSubId" [(ngModel)]="header.googleSheetSubId" class="form-control" [disabled]="!comp.editable" placeholder="google_sheet_sub_id">
-                                                                    <input type="text" [value]="header.googleSheetSubName" [(ngModel)]="header.googleSheetSubName" class="form-control" [disabled]="!comp.editable" placeholder="google_sheet_sub_name">
+                                                                    <input type="text" [value]="header.google_sheet_id" [(ngModel)]="header.google_sheet_id" class="form-control" [disabled]="!comp.editable" placeholder="Enter google_sheet_id">
+                                                                    <input type="text" [value]="header.google_sheet_sub_id" [(ngModel)]="header.google_sheet_sub_id" class="form-control" [disabled]="!comp.editable" placeholder="google_sheet_sub_id">
+                                                                    <input type="text" [value]="header.google_sheet_sub_name" [(ngModel)]="header.google_sheet_sub_name" class="form-control" [disabled]="!comp.editable" placeholder="google_sheet_sub_name">
                                                                     <!-- <button class="btn btn-danger" (click)="addNewHeader(comp.header,index)">Add New Header</button> -->
                                                                 </span>
                                                          </ng-container>

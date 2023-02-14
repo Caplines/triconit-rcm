@@ -161,7 +161,7 @@ public class AdminController {
 		if(!jwtUser.isSmilePoint()) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
-		if (dto.getUserActiveStatus()!=null || dto.getUserActiveStatus().stream()
+		if (dto.getUserActiveStatus().stream()
 				.anyMatch(x -> x.getUserId().trim().equals("") || x.getUserId().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
@@ -292,7 +292,7 @@ public class AdminController {
 	@RequestMapping(value = "editRole", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> editRoles(@RequestBody RcmEditRolesDto dto) {
-		if ((dto.getUuid()==null||dto.getUuid().trim().equals(""))||dto.getRoles()!=null) {
+		if ((dto.getUuid()==null||dto.getUuid().trim().equals(""))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -377,7 +377,7 @@ public class AdminController {
 	@RequestMapping(value = "addClient", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> addCompany(@RequestBody RcmClientDto dto) {
-		if ((dto.getClientName()==null||dto.getClientName().trim().equals(""))||dto.getHeader()!=null|| dto.getHeader().stream().anyMatch(
+		if ((dto.getClientName()==null||dto.getClientName().trim().equals(""))|| dto.getHeader().stream().anyMatch(
 				x -> x.getGoogle_sheet_id().trim().equals("") || x.getGoogle_sheet_sub_id().trim().equals("")
 				|| x.getGoogle_sheet_sub_name().trim().equals("")
 				|| x.getName().trim().equals(""))) {
@@ -405,7 +405,7 @@ public class AdminController {
 	@RequestMapping(value = "editClient", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> editCompany(@RequestBody RcmClientDto dto) {
-		if ((dto.getCompanyUuid()==null||dto.getCompanyUuid().trim().equals("")) || (dto.getClientName()==null||dto.getClientName().trim().equals(""))||dto.getHeader()!=null
+		if ((dto.getCompanyUuid()==null||dto.getCompanyUuid().trim().equals("")) || (dto.getClientName()==null||dto.getClientName().trim().equals(""))
 				|| dto.getHeader().stream()
 						.anyMatch(x -> x.getGoogle_sheet_id().trim().equals("")
 								|| x.getGoogle_sheet_sub_id().trim().equals("")
