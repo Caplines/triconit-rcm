@@ -50,4 +50,8 @@ public class RcmOffice implements Serializable{
 	@UpdateTimestamp
 	@Column(name = "updated_date", nullable = true)
 	private Date updatedDate;
+	
+	@Column(name = "id", unique=true)
+	private int key;
+	
 }
