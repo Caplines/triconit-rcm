@@ -1,6 +1,7 @@
 package com.tricon.rcm.service.impl;
 
 import java.sql.Timestamp;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,6 @@ import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
-import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
@@ -56,7 +56,6 @@ import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.email.EmailUtil;
-import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;

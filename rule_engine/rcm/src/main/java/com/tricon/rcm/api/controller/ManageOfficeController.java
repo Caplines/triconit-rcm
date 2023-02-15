@@ -50,7 +50,7 @@ public class ManageOfficeController {
 	@PreAuthorize("hasAnyRole('ADMIN','BILLING_TL')")
 	public ResponseEntity<?> assignOfficesToBillingUser(@RequestBody AssignOfficesToBillingUserDto dto) {
 		if (dto.getAssignOfficeDetails().stream()
-				.anyMatch(x -> x.getOfficeId().trim().equals("") || x.getUserId().trim().equals(""))) {
+				.anyMatch(x -> (x.getOfficeId()==null||x.getOfficeId().trim().equals("")) || (x.getUserId()==null||x.getUserId().trim().equals("")))) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
