@@ -75,13 +75,13 @@ export class ManageOfficeComponent implements OnInit {
           'companyUuid':this.companyUuid
         }
         this.appService.editOfficeName(params, (callback: any) => {
-          if (callback.result.status == 200) {
+          if (callback.status == 200) {
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
             console.log(callback)
             office.editable = false;
             office['newField']=false;
-          }else if(callback.result.status == 400){
+          }else if(callback.status == 400){
             this.alert.showAlertPopup = true;
             this.alert.alertMsg =  callback.result.message
               console.log(callback)
@@ -94,14 +94,14 @@ export class ManageOfficeComponent implements OnInit {
           "name": office.name
         }
         this.appService.addNewOffice(params, (callback: any) => {
-          if (callback.result.status == 200) {
+          if (callback.status == 200) {
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
             console.log(callback)
             office.editable = false;
             office['newField']=false;
             //this.officeData.push({'name':office.name,'uuid':callback.result.data});
-          } else if(callback.result.status == 400){
+          } else if(callback.status == 400){
             console.log(callback)
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
