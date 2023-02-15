@@ -13,9 +13,9 @@
     Update Through
     <ng-container *ngIf="smilePoint.uuid==cName">
 
-        <input name="options" ng-control="options" type="radio" value="EAGLESOFT"  [(ngModel)]="sourceType" >EAGLESOFT
+        <input name="options" ng-control="options" type="radio" value="EAGLESOFT"  [(ngModel)]="sourceType" (click)="sourceType='EAGLESOFT'">EAGLESOFT
 
-       <input name="options" ng-control="options" type="radio" value="GOOGLESHEET" [(ngModel)]="sourceType" >GOOGLESHEET
+       <input name="options" ng-control="options" type="radio" value="GOOGLESHEET" [(ngModel)]="sourceType" (click)="sourceType='GOOGLESHEET'">GOOGLESHEET
        
     </ng-container>
    
