@@ -3,6 +3,7 @@ package com.tricon.rcm.jpa.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmOffice;
@@ -16,4 +17,6 @@ public interface RcmOfficeRepository extends JpaRepository<RcmOffice, String> {
 	RcmOffice findByCompanyAndName(RcmCompany company,String officeName);
 	RcmOffice findByNameAndCompanyUuid(String uuid,String companyUuid);
 	List<RcmOffice> findByUuidInAndCompanyUuid(List<String> uuids,String companyUuid);
+	@Query(value="select max(id) from office",nativeQuery=true)
+	int getMaxKeyFromOffice();
 }

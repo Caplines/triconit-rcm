@@ -4,4 +4,5 @@ public interface RcmOfficeDto {
 
 	String getUuid();
 	String getName();
+	int getKey();
 }

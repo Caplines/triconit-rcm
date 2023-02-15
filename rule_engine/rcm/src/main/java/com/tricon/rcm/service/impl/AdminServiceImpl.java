@@ -438,10 +438,15 @@ public class AdminServiceImpl {
 
 			// if login user(ADMIN) is capline then login user can add other company new
 			// office
+			
+			//find max id from office table
+			int maxId=officeRepo.getMaxKeyFromOffice();
+			
 			if (oldOffice == null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
 				office.setName(dto.getName());
 				office.setCompany(company);
-				 office=officeRepo.save(office);
+				office.setKey(maxId+1);
+				office=officeRepo.save(office);
 				return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED, office.getUuid());
 			} else {
 				// if login user(ADMIN) is other than capline then login user can add own new
@@ -449,6 +454,7 @@ public class AdminServiceImpl {
 				if (oldOffice == null && jwtUser.getCompany().getName().equals(company.getName())) {
 					office.setName(dto.getName());
 					office.setCompany(company);
+					office.setKey(maxId+1);
 					office=officeRepo.save(office);
 					return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,office.getUuid());
 				}
