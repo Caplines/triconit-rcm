@@ -118,24 +118,69 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params,this.httpUrl['editClient'],callback)
   }
 
-  sortData(data:any,sortingColm:any,order:any,sortingType:any){
-    if(sortingType === 'name'){
+  sortData(data:any,sortBy:any,sortingColm:any,order:any,sortingType:any,sortType:string){
+    if(sortType === 'string'){
+        order === 'asc' ? data.sort((a:any, b:any) => {
+         if (a[sortBy] === null || a[sortBy] === "null") {
+           return 1;
+         } else if (b[sortBy] === null || b[sortBy] === "null") {
+           return -1;
+         } else {
+           return a[sortBy].localeCompare(b[sortBy]);
+         }
+         }) : data.sort((a:any, b:any) => { 
+           if (a[sortBy] === null || a[sortBy] === "null") {
+             return -1;
+           } else if (b.fname === null || b[sortBy] === "null") {
+             return 1;
+           } else {
+             return b[sortBy].localeCompare(a[sortBy]);
+           }
+         })
+       
+    }else if(sortType === 'number'){
+
+      order === 'asc' ?  data.sort((a:any, b:any) => {
+        return  a[sortBy] - b[sortBy];
+       }) :  data.sort((a:any, b:any) => {
+         return  b[sortBy] - a[sortBy];
+       });
+     
+  }else if(sortType === 'date'){
+
+    order === 'asc' ?  data.sort((a:any, b:any) => {
+      if (a[sortBy] === null && b[sortBy] === null) return 0;
+      else if (a[sortBy] === null) return 1;
+      else if (b[sortBy] === null) return -1;
+      else return <any>new Date(a[sortBy]).getTime() - <any>new Date(b[sortBy]).getTime();
+    }) : data.sort((a:any, b:any) =>{ 
+      if (a[sortBy] === null && b[sortBy] === null) return 0;
+      else if (a[sortBy] === null) return 1;
+      else if (b[sortBy] === null) return -1;
+      else return <any>new Date(b[sortBy]).getTime() - <any>new Date(a[sortBy]).getTime();
+  });
+   
+}
+
+  }
+  sortDataOld(data:any,sortBy:any,sortingColm:any,order:any,sortingType:any,sortType:string){
+    if(sortType === 'string'){
       if(sortingColm == 'officeAssigned'){
        order === 'asc' ? data.sort((a:any, b:any) => {
-        if (a.fname === null || a.fname === "null") {
+        if (a[sortBy] === null || a[sortBy] === "null") {
           return 1;
-        } else if (b.fname === null || b.fname === "null") {
+        } else if (b[sortBy] === null || b[sortBy] === "null") {
           return -1;
         } else {
-          return a.fname.localeCompare(b.fname);
+          return a[sortBy].localeCompare(b[sortBy]);
         }
         }) : data.sort((a:any, b:any) => { 
-          if (a.fname === null || a.fname === "null") {
+          if (a[sortBy] === null || a[sortBy] === "null") {
             return -1;
-          } else if (b.fname === null || b.fname === "null") {
+          } else if (b.fname === null || b[sortBy] === "null") {
             return 1;
           } else {
-            return b.fname.localeCompare(a.fname);
+            return b[sortBy].localeCompare(a[sortBy]);
           }
         })
       }
@@ -176,19 +221,17 @@ export class ApplicationServiceService extends BaseService {
    }
     } else if (sortingType === 'date') {
       if (sortingColm === 'opdt') {
-        order === 'asc' ? data.sort((a: any, b: any) => {
-          if (a.opdt === null) return -1;
-          if (b.opdt === null) return 1;
-          return <any>new Date(a.opdt) - <any>new Date(b.opdt);
-        }) : data.sort((a: any, b: any) => {
-          if (a.opdt && b.opdt) {
-            return <any>new Date(b.opdt) - <any>new Date(a.opdt);
-          } else if (!a.opdt && b.opdt) {
-            return -1;
-          } else if (a.opdt && !b.opdt) {
-            return 1;
-          }
-        });
+        order === 'asc' ?  data.sort((a:any, b:any) => {
+          if (a.opdt === null && b.opdt === null) return 0;
+          else if (a.opdt === null) return 1;
+          else if (b.opdt === null) return -1;
+          else return <any>new Date(a.opdt).getTime() - <any>new Date(b.opdt).getTime();
+        }) : data.sort((a:any, b:any) =>{ 
+          if (a.opdt === null && b.opdt === null) return 0;
+          else if (a.opdt === null) return 1;
+          else if (b.opdt === null) return -1;
+          else return <any>new Date(b.opdt).getTime() - <any>new Date(a.opdt).getTime();
+      });
     }
     else if(sortingColm === 'opdos'){
       order === 'asc' ?  data.sort((a:any, b:any) => {
