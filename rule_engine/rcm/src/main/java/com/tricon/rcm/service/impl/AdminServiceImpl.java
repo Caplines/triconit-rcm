@@ -48,6 +48,7 @@ import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmOfficeResponse;
 import com.tricon.rcm.dto.RcmUserDto;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserStatusDto;
@@ -422,6 +423,7 @@ public class AdminServiceImpl {
 		JwtUser jwtUser = (JwtUser) userDetails;
 		RcmOffice office = new RcmOffice();
 		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyUuid());
+		RcmOfficeResponse officeResponse=null;
 
 		if (company != null) {
 
@@ -443,20 +445,26 @@ public class AdminServiceImpl {
 			int maxId=officeRepo.getMaxKeyFromOffice();
 			
 			if (oldOffice == null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+				officeResponse=new RcmOfficeResponse();
 				office.setName(dto.getName());
 				office.setCompany(company);
 				office.setKey(maxId+1);
 				office=officeRepo.save(office);
-				return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED, office.getUuid());
+				officeResponse.setOfficeUuid(office.getUuid());
+				officeResponse.setId(maxId);
+				return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,officeResponse );
 			} else {
 				// if login user(ADMIN) is other than capline then login user can add own new
 				// company offices
 				if (oldOffice == null && jwtUser.getCompany().getName().equals(company.getName())) {
+					officeResponse=new RcmOfficeResponse();
 					office.setName(dto.getName());
 					office.setCompany(company);
 					office.setKey(maxId+1);
 					office=officeRepo.save(office);
-					return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,office.getUuid());
+					officeResponse.setOfficeUuid(office.getUuid());
+					officeResponse.setId(maxId);
+					return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,officeResponse);
 				}
 			}
 		} 
