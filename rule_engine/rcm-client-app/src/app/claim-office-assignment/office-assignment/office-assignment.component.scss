@@ -92,21 +92,55 @@ a.arrow-down.selected{
 
 .table-inner-scrollbar {
     position: relative;
-    height:460px;
-    overflow: auto;
+    overflow-y: auto;
+    height: calc(100vh - 330px);
 }
 
 .table-wrapper-scroll-y {
     display: block;
 }
 
-.table-inner-scrollbar thead th,tbody tr.totalRow {
+.table-inner-scrollbar thead th, tbody tr.totalRow {
     position: sticky;
     top: 0;
     z-index: 1;
+    border-top: 0px !important;
 }
-.table-inner-scrollbar tbody tr.totalRow{
+
+.table-inner-scrollbar tbody tr.totalRow {
     position: sticky;
-    top: 50px;
-    z-index: 1;
+    top: 51px;
+    z-index: 2;
 }
+.right-container {
+    min-height:initial;
+}
+.table-inner-scrollbar th:after,
+.table-inner-scrollbar th:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+}
+
+
+.table-inner-scrollbar th:after {
+    bottom: -1px;
+    border-bottom: 2px solid #b3b3b3 !important;
+}
+@media only screen and (min-width: 1830px) and (max-width: 2050px) {
+    .table-inner-scrollbar tbody tr.totalRow {
+        top: 30px;
+    }
+}
+@media screen and (max-width:1520px) {
+    .table-inner-scrollbar tbody tr.totalRow {
+        top: 73px;
+    }
+}
+@media screen and (max-width: 1370px) {
+    .table-inner-scrollbar tbody tr.totalRow {
+        top: 94px;
+    }
+}
+
