@@ -8,19 +8,11 @@ import lombok.Data;
 @Data
 public class FreshClaimDataImplDto {
 
-	String officeName;
-	String officeUuid;
-	String uuid;
-	String claimId;
-	String patientId;
-	Date dos;
-	String patientName;
 	String statusType;
 	String primaryInsurance;
 	String secondaryInsurance;
 	String prName;
 	String secName;
-	String lastTeam;
 	int claimAge;
 	String timelyFilingLimitData;
 	float billedAmount;
@@ -29,6 +21,48 @@ public class FreshClaimDataImplDto {
 	List<String> linkedClaims;
 	String ivfId;
 	String tpId;
+	
+	String uuid;
+	String claimId;
+	Date dos;
+	Date patientDob;
+	String patientId;
+	String patientName;
+	boolean pending;
+	Date primDateSent;
+	String primeStatus;
+	Float primeTotalPaid;
+	String source;
+	Date secDateSend;
+	String secStatus;
+	Float secSubmittedTotal;
+	Float submittedTotal;
+	String timeFilLimitDay;
+	String officeName;
+	String officeUuid;
+	int claimStatus;
+	String lastTeam;
+	String currentTeam;
+	String primInsurance;
+	String secInsurance;
+	String groupNumber;
+	String primePolicyHolder;
+	Float primeSecSubmittedTotal;
+	Date secPolicyHolderDob;
+	Date createdDate;
+	String assignedTo;
+	String email;
+	String firstName;
+	String lastName;
+	String primaryInsType;
+	String secondaryInsType;
+	String clientName;
+	boolean regenerated;
+	String secMemberId;
+	String providerId;
+	Date pulledDate;
+	String secPolicyHolder;
+
 	
 	
 

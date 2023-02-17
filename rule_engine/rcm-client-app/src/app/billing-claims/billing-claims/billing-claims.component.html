@@ -6,6 +6,8 @@
     <td>Office : {{claimRcm.officeName}}</td>
     <td>Insurance Type : {{claimRcm.officeName}}</td>
     <td>Primary Insurance : {{claimRcm.primInsurance}}</td>
+    <td>Primary Insurance Type: {{claimRcm.primaryInsType}}</td>
+    
     <td>Regenerated Claim? : {{claimRcm.regenerated===true?"Yes":"No"}} </td>
 </tr>
 <tr>
@@ -20,8 +22,8 @@
     
     <td>ClaimType:</td>
     <td>Patient ID: {{claimRcm.patientId}}</td>
-    <td>Secondary Insurance:</td>
-
+    <td>Secondary Insurance : {{claimRcm.secInsurance}}</td>
+    <td>Secondary Type : {{claimRcm.secondaryInsType}}</td>
 </tr>
 <tr>
     
@@ -57,14 +59,35 @@
 <tr>
     
     <td>Estimated Amount:</td>
+    <td>Submitted Total : {{claimRcm.submittedTotal}}</td>
+    <td>Sec Submitted Total : {{claimRcm.primeSecSubmittedTotal}}</td>
+    
     <td>Subscriber DOB:</td>
 
 
 </tr>
 
+<tr>
+    
+    <td>Provider Id : {{claimRcm.providerId}}</td>
+    <td>Pulled Date : {{claimRcm.pulledDate}}</td>
 
 
+</tr>
+<tr>
+    
+    <td>Sec Status : {{(claimRcm.claimId | claimTypeFilter)?claimRcm.primeStatus:claimRcm.secStatus}}</td>
+    <td> Timely filling Date : {{claimRcm.timeFilLimitDay}}</td>
+    <td> Prime Policy Holder : {{claimRcm.primePolicyHolder}}</td>
+    <td> Secondary Policy Holder : {{claimRcm.secPolicyHolder}}</td>
 
+</tr>
 
+<tr>
+    
+    <td>Group Number  : {{claimRcm.groupNumber}}</td>
+    <td>Source  : {{claimRcm.source}}</td>
+
+</tr>
 
 </table>

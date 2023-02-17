@@ -150,14 +150,15 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" prime_sec_submitted_total primeSecSubmittedTotal,sec_policy_holder_dob secPolicyHolderDob,"+
 			" cl.created_date createdDate,assign.assigned_to assignedTo,us.email,us.first_name firstName,us.last_name lastName,"+
 			" pinst.name primaryInsType,sinst.name secondaryInsType,cmp.name clientName,cl.regenerated regenerated, " +
-			" cl.sec_member_id secMemberId"+ 
+			" cl.sec_member_id secMemberId,cl.sec_policy_holder secPolicyHolder, "+ 
+			" cl.provider_id providerId,cl.created_date pulledDate "+
 			"  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+
 			"  left join rcm_team Cteam  on Cteam.id=cl.current_team_id"+
 			"  left join rcm_team lTeam  on lTeam.id=cl.last_work_team_id"+
 			"  left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id"+
-			"  left join rcm_insurance sins on pins.id = cl.sec_insurance_company_id"+
+			"  left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id"+
 			"  left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id"+
 			"  left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id"+
 			"  left join rcm_claim_assignment assign on  assign.claim_id=cl.claim_uuid and assign.active=1"+

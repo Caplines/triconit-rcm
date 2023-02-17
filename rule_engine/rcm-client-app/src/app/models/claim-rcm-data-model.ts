@@ -39,4 +39,9 @@ export interface  ClaimRcmDataModel {
     regenerated?:boolean;
     secMemberId?:string;
     linkedClaims?:Array<string>;
+	providerId?:string;
+	pulledDate?:Date;
+	timeFilLimitDay?:string;
+	secPolicyHolder?:string;
+
 }
