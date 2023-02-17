@@ -25,3 +25,33 @@
 .table .alert-dismissible {
     margin: 0px;
 }
+.addNewClientBox {
+    input {
+        background-color: #fff!important;
+    }
+
+    .addEditClientBox {
+        border-radius: 5px;
+        margin-top: 10px;
+        padding: 10px;
+        background: #ededed;
+    }
+
+    .innerInput {
+        display: flex;
+
+        input {
+            margin-right: 10px;
+            width: 290px;
+        }
+    }
+
+    .addEditClientBox h3 {
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    td {
+        background: #fbfbfb;
+    }
+}
