@@ -19,13 +19,13 @@
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="fname">First Name</label>
-                                            <input type="text" class="form-control" formControlName="firstName" [ngClass]="{'is-invalid':userDetails.controls.firstName.invalid && userDetails.controls.firstName.touched}">
+                                            <input type="text" class="form-control" maxlength="25" formControlName="firstName" [ngClass]="{'is-invalid':userDetails.controls.firstName.invalid && userDetails.controls.firstName.touched}">
                                         </div>
                                     </div>
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="lname">Last Name</label>
-                                            <input type="text" class="form-control" formControlName="lastName" [ngClass]="{'is-invalid':userDetails.controls.lastName.invalid && userDetails.controls.lastName.touched}">
+                                            <input type="text" class="form-control" maxlength="25" formControlName="lastName" [ngClass]="{'is-invalid':userDetails.controls.lastName.invalid && userDetails.controls.lastName.touched}">
                                         </div>
                                     </div>
                                     <div class="col-sm"></div>
@@ -34,13 +34,13 @@
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="email">Email</label>
-                                            <input type="email" class="form-control" formControlName="email" [ngClass]="{'is-invalid':userDetails.controls.email.invalid && userDetails.controls.email.touched}">
+                                            <input type="email" class="form-control" maxlength="100" formControlName="email" [ngClass]="{'is-invalid':userDetails.controls.email.invalid && userDetails.controls.email.touched}">
                                         </div>
                                     </div>
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="password">Password</label>
-                                            <input type="password" class="form-control" formControlName="password" [ngClass]="{'is-invalid':userDetails.controls.password.invalid && userDetails.controls.password.touched}">
+                                            <input type="password" class="form-control"  formControlName="password" [ngClass]="{'is-invalid':userDetails.controls.password.invalid && userDetails.controls.password.touched}">
                                         </div>
                                     </div>
                                     <div class="col-sm"></div>

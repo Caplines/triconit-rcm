@@ -23,10 +23,10 @@ export class RegisterNewUserComponent implements OnInit {
   constructor(private fb : FormBuilder, private appService: ApplicationServiceService,private title : Title) {
     title.setTitle("Register New User");
     this.userDetails = this.fb.group({
-      'firstName' : ['',[Validators.required,Validators.minLength(3)]],
-      'lastName' : ['',[Validators.required,Validators.minLength(3)]],
-      'email' : ['',Validators.email],
-      'password' : ['',[Validators.required,Validators.minLength(6)]],
+      'firstName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25)]],
+      'lastName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25)]],
+      'email' : ['',[Validators.email,Validators.maxLength(100),Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]],
+      'password' : ['',[Validators.required,Validators.minLength(6),Validators.maxLength(20)]],
       'companyName' : ['',Validators.required],
       'teamId' : ['',Validators.required],
       'userRole' : ['',Validators.required],

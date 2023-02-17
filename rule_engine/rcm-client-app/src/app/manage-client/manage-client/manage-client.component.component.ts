@@ -65,6 +65,8 @@ export class ManageClientComponent implements OnInit {
         if (callback.status == 200) {
           console.log(callback);
           clientDetails['companyUuid'] = callback.data;
+          clientDetails['editable']=false;
+          clientDetails['newField']=false;
           this.alert.showAlertPopup = true;
           this.alert.alertMsg = callback.message == '' ? "New Client Added" : callback.message;
         }

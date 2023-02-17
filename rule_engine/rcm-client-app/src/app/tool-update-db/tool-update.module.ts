@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ToolUpdateClaimsRoutingModule } from './tool-update-routing.module';
 import { ToolUpdateComponent } from './tool-update/tool-update.component';
 import { FormsModule } from '@angular/forms';
+import { HeaderModule } from '../header/header.module';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     ToolUpdateClaimsRoutingModule,
-    FormsModule      
+    FormsModule ,
+    HeaderModule     
   ]
 })
 export class ToolUpdateModule { 

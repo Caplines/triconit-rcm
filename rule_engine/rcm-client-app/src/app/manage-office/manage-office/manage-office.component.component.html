@@ -65,7 +65,7 @@
                                             <ng-container *ngFor="let office of officeData;let idx= index">
                                                 <tr >
                                                     <td scope="col">{{office.key}}</td>
-                                                    <td scope="col"> <input type="text" value="{{office.name}}" [(ngModel)]="office.name" class="form-control" [disabled]="!office.editable" [ngClass]="{'is-invalid': office.editable && office.name==''}"></td>
+                                                    <td scope="col"> <input type="text" value="{{office.name}}" maxlength="30" [(ngModel)]="office.name" class="form-control" [disabled]="!office.editable" [ngClass]="{'is-invalid': office.editable && office.name==''}"></td>
                                                     <td scope="col" >
                                                         <button type="button" (click)="editOfficeName(office)" class="btn btn-edit" *ngIf="!office['newField'] && !office.editable">
                                                             <img src="../assets/img/edit.png" alt="edit" />

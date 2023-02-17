@@ -7,6 +7,7 @@ import {BillingList} from '../../models/billing-list-model';
 import { Title } from '@angular/platform-browser';
 import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
+import { ngxCsv } from 'ngx-csv/ngx-csv';
 
 @Component({
   selector: 'claim-office-assignment',
@@ -191,4 +192,13 @@ calcCountAndRemLiteReject(data:any){
  });
 }
 
+exportToCsv(){
+  let options:any={
+    showLabels:true,
+    headers: ["Office Name", "Oldest Pending Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Office Assigned To (Fname)","Office Assigned To (Lname)"],
+  }
+  let excelData = this.claimData.map(({officeUuid,assignedUser,...newClaimData})=>newClaimData);
+  new ngxCsv(excelData, 'My Report',options);
+
+}
 }

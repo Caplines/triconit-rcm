@@ -49,7 +49,7 @@
                                             <ng-container *ngFor="let comp of clientData;let idx= index">
                                                 <tr [ngClass]="{'addNewClientBox':comp.header.length>0}">
                                                     <td scope="col">
-                                                         <input type="text" value="{{comp.clientName}}" [(ngModel)]="comp.clientName" placeholder="Enter client name" class="form-control" [disabled]="!comp.editable" [ngClass]="{'is-invalid': comp.editable && comp.clientName==''}">
+                                                         <input type="text" value="{{comp.clientName}}" maxlength="30" [(ngModel)]="comp.clientName" placeholder="Enter client name" class="form-control" [disabled]="!comp.editable" [ngClass]="{'is-invalid': comp.editable && comp.clientName==''}">
                                                          <ng-container>  
                                                                 <div *ngFor="let header of comp.header;let index= index" class="addEditClientBox">
                                                                     <h3>Header: {{header.name}}</h3>

@@ -1,51 +1,88 @@
+<div class="right-container">
 
-<table>
-<tr><td>
-   Select Client Name <select class="form-control" id="" name="cName" [(ngModel)]="cName"
-    (change)="fetchLatesClaimLLogs()">
-    <option value="-1">Select Client Name</option>
-    <option *ngFor="let sta of clients" [value]="sta.uuid">{{sta.clientName}}</option>
-</select>
-</td></tr>
- </table>   
+<app-header-component [isToolUpdate]="isToolUpdate"></app-header-component>
 
-<table  *ngIf="cName!='-1'">
-    Update Through
-    <ng-container *ngIf="smilePoint.uuid==cName">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 pt-3">
+            <h2 class="page-heading">Tool to update database</h2>
+            <div class="main-container">
+                <div class="detail-box">
+                    <div class="form-group">
+                        <select class="form-control"name="cName" [(ngModel)]="cName"
+                        (change)="fetchLatesClaimLLogs()">
+                        <option value="-1">Select Client Name</option>
+                        <option *ngFor="let sta of clients" [value]="sta.uuid">{{sta.clientName}}</option>
+                    </select>
+                </div>
+                    <div class="detail-box-form" *ngIf="log.length>0">
+                        <ng-container *ngIf="cName==='614c4beb-7df2-11e8-8432-8c16451459cd'">
+                            <a data-toggle="collapse"  href="javascript:void(0)"  (click)="expandCollapseBox('claimDetails')"  class="bold-b-text " [ngClass]="{'collapsed':!expandCollapse.expandClaim}" aria-expanded="true">How would you like to update the database:</a>
+                            <div class="form-row elementBlock collapse" [ngClass]="{'show':expandCollapse.expandClaim}"  id="claimDetails" >
+                            <div class="updateData">
+                                <div class="form-check-inline">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" (click)="selectSource('EAGLESOFT')">
+                                    <label class="form-check-label" for="flexRadioDefault1">Through ES Agents</label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" (click)="selectSource('GOOGLESHEET')">
+                                    <label class="form-check-label" for="flexRadioDefault2">Through Google Sheet</label>
+                                </div>
+                            </div>
+                            <div class="alert alert-info" role="alert">
+                                <img src="../../assets/img/info-icon-border.png"> If you'd like to update the database using Google Sheet, please paste the data in required format in this sheet
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="alert.showAlertPopup">
+                        <div >
+                                <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                                    <strong>{{alert.alertMsg}}</strong>
+                                    <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                        </div>
+                    </ng-container>
+                        <a data-toggle="collapse" href="javascript:void(0);" (click)="expandCollapseBox('teamRemarks')" class="bold-b-text" [ngClass]="{'collapsed':!expandCollapse.expandTeamRemarks}" aria-expanded="false">Please see below current status of the process of updation of database:</a>
+                        <div class="form-row  collapse" [ngClass]="{'show':expandCollapse.expandTeamRemarks}" id="teamRemarks" >
+                            <div class="table-responsive">
+                                <table class="table" *ngIf="log.length>0">
+                                    <thead>
+                                        <tr>
+                                                 
+                                            <th colspan="6">Office Name</th>
+                                            <th colspan="6">Source</th>
+                                            <th colspan="6">Database Updation Done?</th>
+                                            <th colspan="6">Last Updated On</th>
+                                            <th colspan="6">Total No. of New Claims Added</th>
+                                            <th colspan="6">Update Claims</th>
+                                            <th colspan="6"> <button class="btn btn-danger" (click)="selectAll(hasUpdateClaims.length==0 ? true : false)">{{hasUpdateClaims.length==0 ?  'Select All' : 'Unselect All'}}</button> </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let lg of log">
+                                            <td colspan="6">{{lg.officeName}}</td>
+                                            <td colspan="6"><img [src]="lg.source == 'GOOGLESHEET' ? '../../assets/img/google-sheet-icon.png' : '../../assets/img/rule-engine.png'" alt=""></td>
+                                            <td colspan="6"><span [ngClass]="{'yes-box': lg.status=='1' ,'no-box':lg.status=='0'}">{{lg.status=='1'? 'Yes':'No'}}</span></td>
+                                            <td colspan="6">{{lg.cd | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                                            <td colspan="6">{{lg.newClaimsCount}}</td>
+                                            <td colspan="6"><a href="javascript:void(0);"></a><input type="checkbox" [(ngModel)]="lg.update" (change)="isUpdateClaimsChecked(lg.officeUuid,lg.update)" /></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="update-button" *ngIf="!loader"><a  href="javascript:void(0);" [ngClass]="{'disabled':hasUpdateClaims.length==0}"  class="btn btn-success" (click)="pullFreshClaims()" >Update Latest Claim</a></div>
+                        </div>
 
-        <input name="options" ng-control="options" type="radio" value="EAGLESOFT"  [(ngModel)]="sourceType" (click)="sourceType='EAGLESOFT'">EAGLESOFT
+                    </div>
+                </div>
+                
+            </div>
 
-       <input name="options" ng-control="options" type="radio" value="GOOGLESHEET" [(ngModel)]="sourceType" (click)="sourceType='GOOGLESHEET'">GOOGLESHEET
-       
-    </ng-container>
-   
-   
+        </div>
+    </div>
+</div>
 
-  
-</table>
-
-
-<table>
-    <tr>
-        <td>Office Name</td>
-    <td>Database Updation Done?</td>
-    <td>Last Updated On</td>
-    <td>Source</td>
-    <td>Total No. of New Claims Added</td>
-    <td>Update </td>
-    </tr>
-
-    <tr *ngFor="let lg of log">
-        <td>{{lg.officeName}}</td>
-        <td>{{lg.status}}</td>
-        <td>{{lg.cd | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
-        <td>{{lg.source}}</td>
-        <td>{{lg.newClaimsCount}}</td>
-        <td><input
-            type="checkbox"
-            [(ngModel)]="lg.update"/></td>
-    </tr>
-
-    <input type="button" (click)="pullFreshClaims()" value="update lastest Claims"
-     *ngIf="!loader">
-</table>
+ </div>
