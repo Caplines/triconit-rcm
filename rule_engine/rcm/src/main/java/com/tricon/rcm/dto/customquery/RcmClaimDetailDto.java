@@ -19,7 +19,7 @@ public interface RcmClaimDetailDto {
 	String getSecStatus();
 	Float getSecSubmittedTotal();
 	Float getSubmittedTotal();
-	String getSimeFilLimitDay();
+	String getTimeFilLimitDay();
 	String getOfficeName();
 	String getOfficeUuid();
 	int getClaimStatus();
@@ -41,6 +41,8 @@ public interface RcmClaimDetailDto {
 	String getClientName();
 	boolean getRegenerated();
 	String getSecMemberId();
-	
+    String getProviderId();
+	Date getPulledDate();
+	String getSecPolicyHolder();
 	
 }
