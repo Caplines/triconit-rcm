@@ -24,6 +24,7 @@ export default class Utils {
        localStorage.setItem('teamId', data.teamId);
        localStorage.setItem('roles', Utils.getRoles(data.authorities));
        localStorage.setItem('name', data.firstName);
+       localStorage.setItem('cname', data.clientName);
        
    }
    
@@ -37,6 +38,8 @@ export default class Utils {
        localStorage.removeItem('token');
        localStorage.removeItem('roles');
        localStorage.removeItem('name');
+       localStorage.removeItem('clientName');
+       
    }
    /*
    static fetchUserTypeFromLocalStorage():string{
@@ -48,7 +51,31 @@ export default class Utils {
    */
    static checkAdmin(){
     let ls:any=localStorage;
-	    if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_ADMIN")>0) {
+	    if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_ADMIN")>-1) {
+	        return true;
+	     }
+        return false;
+   }
+
+   static isBillingLead(){
+    let ls:any=localStorage;
+       if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_BILLING_TL")>-1) {
+	        return true;
+	     }
+        return false;
+   }
+
+   static isBillingAsso(){
+    let ls:any=localStorage;
+       if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_BILLING_ASSO")>-1) {
+	        return true;
+	     }
+        return false;
+   }
+
+   static isSmilePoint(){
+    let ls:any=localStorage;
+       if (ls.getItem('currentUser') && ls.getItem('cname')==='Smilepoint') {
 	        return true;
 	     }
         return false;

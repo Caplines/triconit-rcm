@@ -44,6 +44,7 @@ export class LoginComponent implements OnInit {
     this.authService.login(username, password, (result: any) => {
       console.log(result);
       if (result.status == 200) {
+        console.log(result.data);
         this.tokenStorage.saveData(result.data, result.data.token);
         this.isLoginFailed = false;
         this.isLoggedIn = true;
@@ -85,7 +86,6 @@ export class LoginComponent implements OnInit {
   }
 
   forgotPass(){
-    console.log(12)
     if(this.forgotPassObj.email.includes("@")){
       this.authService.forgotPassword({"email":this.forgotPassObj.email},(callback:any)=>{
         if(callback.status == 200){

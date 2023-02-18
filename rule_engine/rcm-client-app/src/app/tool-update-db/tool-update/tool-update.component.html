@@ -56,8 +56,8 @@
                                             <th colspan="6">Database Updation Done?</th>
                                             <th colspan="6">Last Updated On</th>
                                             <th colspan="6">Total No. of New Claims Added</th>
-                                            <th colspan="6">Update Claims</th>
-                                            <th colspan="6"> <button class="btn btn-danger" (click)="selectAll(hasUpdateClaims.length==0 ? true : false)">{{hasUpdateClaims.length==0 ?  'Select All' : 'Unselect All'}}</button> </th>
+                                            <th colspan="6">Update Claims  <button class="btn btn-danger" (click)="selectAll(hasUpdateClaims.length==0 ? true : false)">{{hasUpdateClaims.length==0 ?  'Select All' : 'Unselect All'}}</button></th>
+                                           
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -68,7 +68,7 @@
                                             <td colspan="6">{{lg.cd | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
                                             <td colspan="6">{{lg.newClaimsCount}}</td>
                                             <td colspan="6"><a href="javascript:void(0);"></a><input type="checkbox" [(ngModel)]="lg.update" (change)="isUpdateClaimsChecked(lg.officeUuid,lg.update)" /></td>
-                                            <td></td>
+                                            
                                         </tr>
                                     </tbody>
                                 </table>

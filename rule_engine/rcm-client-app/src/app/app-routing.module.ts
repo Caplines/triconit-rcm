@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckUserLoggedInState } from './urlPermission/url.checkloginstate';
 import { UrlPermission } from './urlPermission/url.permission';
+import { UrlToolUpdatePermission } from './urlPermission/url.tool-update.permission';
 
 const  routes: Routes = [
 
@@ -31,6 +32,7 @@ const  routes: Routes = [
   {
     path:'tool-update',
     loadChildren :()=> import("./tool-update-db/tool-update.module").then(m=>m.ToolUpdateModule),
+    canActivate: [UrlToolUpdatePermission]
    
   },
   {

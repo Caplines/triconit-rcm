@@ -111,6 +111,8 @@ public class WebSecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return (web) -> web.ignoring().antMatchers(HttpMethod.POST, authenticationPath,"/forgotPassword").and()
 				.ignoring().antMatchers(HttpMethod.GET,"/swagger-ui.html",
+						"/login","/tool-update", "/fetch-claims","/users-status","/register","/manage-office",
+						"/manage-client","/user-setting","/claim-assignment","/billing-claims/*",
 						 "/*.html",
 			                "/index.jsp",
 			                "/favicon.ico",

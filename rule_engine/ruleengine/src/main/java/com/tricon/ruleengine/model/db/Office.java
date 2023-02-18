@@ -39,6 +39,9 @@ public class Office implements java.io.Serializable {
 	private String name;
 	private Date createdDate;
 	private Date updatedDate;
+	
+	
+	private int key;
 
 	public Office() {
 	}
@@ -111,4 +114,14 @@ public class Office implements java.io.Serializable {
 		this.updatedDate = updatedDate;
 	}
 
+	@Column(name = "id", unique=true)
+	public int getKey() {
+		return key;
+	}
+
+	public void setKey(int key) {
+		this.key = key;
+	}
+
+	
 }

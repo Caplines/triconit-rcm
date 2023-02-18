@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,7 @@ import com.tricon.rcm.util.Constants;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
+@CrossOrigin
 public class RcmController {
 
 	private final Logger logger = LoggerFactory.getLogger(RuleEngineService.class);

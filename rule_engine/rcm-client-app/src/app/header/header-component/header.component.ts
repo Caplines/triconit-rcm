@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BaseService } from 'src/app/service/base-service.service';
 import { AuthService } from '../../service/auth-service.service';
 import { TokenStorageService } from '../../service/token-storage.service';
-
+import Utils from '../../util/utils';
 
 @Component({
   selector: 'app-header-component',
@@ -40,6 +40,10 @@ export class HeaderComponent implements OnInit {
   logout(){
     localStorage.clear();
     window.location.href="/login";
+  }
+
+  get staticUtil() {
+    return Utils;
   }
 
  
