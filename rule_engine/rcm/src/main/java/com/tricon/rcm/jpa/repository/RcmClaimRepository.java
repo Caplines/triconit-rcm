@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
+import com.tricon.rcm.dto.customquery.IssueClaimDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
@@ -178,6 +179,12 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " office_id=:officeId and ivf_form_id=:ivId and  patient_id=:patientId")
     String getTreatmentPlanIdIV(@Param("ivId") String ivId,@Param("officeId") String officeId,
 			@Param("patientId") String patientId);
+	
+	@Query(nativeQuery = true, value = ""+
+			" select claim_id claimId,issue,source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "+
+			" left join office off on  off.uuid=cl.office_id "+
+			" where off.company_id=:cmpid and cl.resolved is false")
+	List<IssueClaimDto> getIssueClaims(@Param("cmpid") String ivId);
 	
 
 	

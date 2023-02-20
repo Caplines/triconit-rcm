@@ -155,6 +155,18 @@ public class RcmController {
 	}
 	
 	
+	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
+	@GetMapping("/api/issueClaims/{uuid}")
+	@PreAuthorize("hasRole('BILLING_TL')")
+	public ResponseEntity<Object> getIssueClaims(@PathVariable("uuid") String companyId) {
+		Object[] obj=checkForSimplePointUser();
+		if (!((boolean)obj[1])) {
+					return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.getIssueClaims(companyId)));
+	}
+	
+	
 	private Object[] checkForSimplePointUser() {
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
