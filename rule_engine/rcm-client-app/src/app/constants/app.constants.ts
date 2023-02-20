@@ -14,7 +14,7 @@ export class AppConstants {
             "name": "NA", "paths": ["/tool-update"], "defaultpath": "/claim-assignment"
         }],
         [2, {
-        "name":"Admin","paths":["/register"],"defaultpath":"/register"
+        "name":"Admin","paths":["/register",'/user-setting','/manage-office','/users-status','/manage-client'],"defaultpath":"/register"
         }],
         [3,{
         "name":"Patient Calling Team","paths":["/user-setting"],"defaultpath":"/user-setting"

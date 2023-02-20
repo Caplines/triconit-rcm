@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { CheckUserLoggedInState } from './urlPermission/url.checkloginstate';
 import { UrlPermission } from './urlPermission/url.permission';
 import { UrlToolUpdatePermission } from './urlPermission/url.tool-update.permission';
+import { ClaimAssignPermission } from './urlPermission/claim-assign-permission';
+import { AdminPermission } from './urlPermission/admin-permission';
 
 const  routes: Routes = [
 
@@ -22,12 +24,12 @@ const  routes: Routes = [
   {
     path:'register',
     loadChildren :()=> import("./register-new-user/register-new-user/register-new-user.module").then(m=>m.RegisterNewUserModule),
-    canActivate: [CheckUserLoggedInState]
+    canActivate: [AdminPermission]
   },
   {
     path:'user-setting',
     loadChildren:()=> import("./user-setting/user-setting/user-setting.module").then(m=>m.UserSettingModule),
-    // canActivate: [CheckUserLoggedInState]
+    canActivate: [AdminPermission]
   },
   {
     path:'tool-update',
@@ -38,22 +40,22 @@ const  routes: Routes = [
   {
     path:'manage-office',
     loadChildren :()=> import("./manage-office/manage-office.module").then(m=>m.ManageOfficeModule),
-   
+    canActivate: [AdminPermission]
   },
   {
     path:'claim-assignment',
     loadChildren :()=> import("./claim-office-assignment/office-assignment.module").then(m=>m.ClaimAssignmentModule),
-   
+    canActivate: [ClaimAssignPermission]
   },
   {
     path:'users-status',
     loadChildren :()=> import("./users-status/users-status/users-status.module").then(m=>m.UserStatusModule),
-   
+    canActivate: [AdminPermission]
   },
   {
     path:'manage-client',
     loadChildren :()=> import("./manage-client/manage-client.module").then(m=>m.ManageClientModule),
-   
+    canActivate: [AdminPermission]
   },
 
   {

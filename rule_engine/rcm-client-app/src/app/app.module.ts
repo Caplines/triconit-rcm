@@ -7,8 +7,8 @@ import { AuthService } from './service/auth-service.service';
 import { CheckUserLoggedInState } from './urlPermission/url.checkloginstate';
 import { UrlPermission } from './urlPermission/url.permission';
 import { UrlToolUpdatePermission } from './urlPermission/url.tool-update.permission';
-
-
+import { ClaimAssignPermission } from './urlPermission/claim-assign-permission';
+import { AdminPermission } from './urlPermission/admin-permission';
 import {TokenInterceptor} from './auth/token.interceptor';
 import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
 //import { FetchClaimsModule } from './fetch-claims/fetch-claims.module';
@@ -24,6 +24,7 @@ import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
     AppRoutingModule,HttpClientModule
   ],
   providers: [AuthService,CheckUserLoggedInState,UrlPermission,UrlToolUpdatePermission,
+    ClaimAssignPermission,AdminPermission,
 	  //,OfficeAndIVFormTypeResolve,
        {
           provide: HTTP_INTERCEPTORS,

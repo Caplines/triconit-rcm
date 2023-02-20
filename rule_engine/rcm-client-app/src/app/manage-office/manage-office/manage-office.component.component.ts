@@ -23,8 +23,6 @@ export class ManageOfficeComponent implements OnInit {
   companyUuid:any;
 
 
-  //https://www.bezkoder.com/angular-13-jwt-auth/
-
   constructor(private _base: BaseService,private appService:ApplicationServiceService ,private title : Title) { 
     title.setTitle("Manage Office");
   }

@@ -72,6 +72,14 @@ export default class Utils {
         return false;
    }
 
+   static isClientManager(){
+    let ls:any=localStorage;
+       if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_CLIENT_CLIENT_MANAGER")>-1) {
+	        return true;
+	     }
+        return false;
+   }
+
    static isBillingAsso(){
     let ls:any=localStorage;
        if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_BILLING_ASSO")>-1) {

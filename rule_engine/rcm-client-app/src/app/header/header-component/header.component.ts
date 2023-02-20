@@ -30,9 +30,9 @@ export class HeaderComponent implements OnInit {
   constructor(private _baseService: BaseService) { }
 
   ngOnInit(): void {
-    if(!this.loggedInUserRole){
+   // if(!this.loggedInUserRole){
       this.loggedInUserRole =  localStorage.getItem("roles")
-    }
+  //  }
     this.loggedInUserName = localStorage.getItem("name")
   }
 
