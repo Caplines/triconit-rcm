@@ -28,6 +28,13 @@ export default class Utils {
        
    }
    
+   static setRefreshToken(data:any){
+
+    localStorage.setItem("token", (<any>data)[0].token);
+    localStorage.setItem('roles', Utils.getRoles((<any>data)[1]));
+
+   }
+   
    /**
     * Reset Local Storage
     */

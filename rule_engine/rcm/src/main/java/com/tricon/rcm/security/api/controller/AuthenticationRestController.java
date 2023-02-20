@@ -59,7 +59,7 @@ public class AuthenticationRestController {
         JwtUser user = (JwtUser) userDetails;
 
         // Return the token
-        return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Sucess",
+        return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Success",
         		new JwtAuthenticationCustomResponse(token,userDetails.getUsername(),userDetails.getAuthorities(),user.getTeamId(),user.getFirstname(), user.getCompany().getName())));
         //return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
@@ -70,10 +70,12 @@ public class AuthenticationRestController {
         final String token = authToken.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(token);
         JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
-
+        
         if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate(),user.getActive())) {
             String refreshedToken = jwtTokenUtil.refreshToken(token);
-            return ResponseEntity.ok(new JwtAuthenticationResponse(refreshedToken));
+            JwtAuthenticationResponse r=new JwtAuthenticationResponse(refreshedToken);
+            
+            return ResponseEntity.ok(new Object[] {r,user.getAuthorities()});
         } else {
             return ResponseEntity.badRequest().body(null);
         }

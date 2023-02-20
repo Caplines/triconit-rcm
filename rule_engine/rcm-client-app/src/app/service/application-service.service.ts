@@ -3,15 +3,15 @@ import { BaseService } from './base-service.service';
 import { HttpClient } from '@angular/common/http';
 import {FreshClaimPullModel} from '../models/fresh.claim.pull.model';
 import {ClaimAssignmentPullModel} from '../models/claim-assignment-pull-model';
-
+import { TokenStorageService } from '../service/token-storage.service';
 @Injectable({
   providedIn: 'root'
 })
 export class ApplicationServiceService extends BaseService {
 
 
-  constructor(http: HttpClient) {
-    super(http);
+  constructor(http: HttpClient, tokenStorage: TokenStorageService) {
+    super(http,tokenStorage);
   }
 
   fetchClaimData(callback:any){

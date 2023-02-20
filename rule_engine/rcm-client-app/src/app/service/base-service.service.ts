@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, mergeMap, switchMap, catchError, timeout } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { TokenStorageService } from '../service/token-storage.service';
+import Utils from '../util/utils';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +40,7 @@ export class BaseService {
     'fetchBillingClaimsByUuid':"/api/fetchindclaim"
   }
 
-  constructor(public http: HttpClient) {
+  constructor(public http: HttpClient, private tokenStorage: TokenStorageService) {
    }
 
   generateRefreshToken() {
@@ -47,7 +49,8 @@ export class BaseService {
 
   postData(d: any, url: string, callback: any) {
     this.generateRefreshToken().pipe(switchMap(data => {
-      localStorage.setItem("token", (<any>data).token);
+     
+      Utils.setRefreshToken(data);
       return this.http.post(environment.API_URL + url, d);
     },
     )
@@ -74,7 +77,7 @@ export class BaseService {
 
   getData(d: any, url: string, callback: any) {
     this.generateRefreshToken().pipe(switchMap(data => {
-      localStorage.setItem("token", (<any>data).token);
+      Utils.setRefreshToken(data);
       return this.http.get(environment.API_URL + url, d);
     },
     )
