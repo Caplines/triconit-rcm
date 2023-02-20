@@ -44,8 +44,7 @@ export class ManageOfficeComponent implements OnInit {
         this.appService.fetchOfficeByCompany(companyUuid,(callback:any)=>{
             if(callback.status){
               this.showLoader=false;
-              this.officeData = callback.data.data;
-             this.officeData =  this.officeData.map((e:any)=>({...e,'editable':false}))
+              this.officeData = callback.data.data.map((e:any)=>({...e,'editable':false}));
             }
     })
 }
@@ -98,7 +97,13 @@ export class ManageOfficeComponent implements OnInit {
             console.log(callback)
             office.editable = false;
             office['newField']=false;
-            //this.officeData.push({'name':office.name,'uuid':callback.result.data});
+            this.officeData.forEach((e:any)=>{
+              if(e.name == office.name){
+                this.officeData.push({'name':office.name,'uuid':callback.data.officeUuid,'key':callback.data.id,'editable':false,'newField':false})
+              }
+            })
+            this.officeData.splice(0,1);
+            console.log(this.officeData)
           } else if(callback.status == 400){
             console.log(callback)
             this.alert.showAlertPopup = true;

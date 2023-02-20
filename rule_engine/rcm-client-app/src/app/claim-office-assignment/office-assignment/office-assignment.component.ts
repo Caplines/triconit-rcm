@@ -32,7 +32,7 @@ export class OfficeAssignmentComponent implements OnInit {
   userByTeam:any=[];
   assignOfficeDetails:any={'assignOfficeDetails':[],'teamId':''};
   alert:any={'showAlertPopup':false,'alertMsg':''};
-  showLoader:boolean=false;
+  loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false}
   showExportLoader:boolean=false;
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0,'totalcountAndRemLiteReject':0}
   constructor(private appService: ApplicationServiceService,private title:Title) { 
@@ -49,7 +49,7 @@ export class OfficeAssignmentComponent implements OnInit {
 
   fetchClaimAssignments(){
     let ths=this;
-    ths.showLoader = true;
+    ths.loader.showLoader = true;
     ths.claimAssigmentPullModel.claimType=[];
     ths.claimAssigmentPullModel.insuranceType=[];
     ths.totalClaimData.totalCount = ths.totalClaimData.totalRemLiteReject = ths.totalClaimData.totalcountAndRemLiteReject = 0;
@@ -70,7 +70,7 @@ export class OfficeAssignmentComponent implements OnInit {
         ths.calcCount(ths.claimData)
         ths.calcRemLiteReject(ths.claimData)
         ths.calcCountAndRemLiteReject(ths.claimData)
-        ths.showLoader=false;
+        ths.loader.showLoader=false;
         // let k = ths.claimData.forEach((e:any,idx:any)=>{
         //   if(!e.fname && idx % 2 == 0 ){
         //     e.fname = "Puneet"
@@ -149,7 +149,7 @@ export class OfficeAssignmentComponent implements OnInit {
  }
 
  saveToPdf(divName:any){
-   this.showExportLoader= true;
+   this.loader.exportPDFLoader= true;
    let m:any=document.querySelector(".table-wrapper-scroll-y");
    m.classList.remove('table-wrapper-scroll-y')
    m.classList.remove('table-inner-scrollbar')
@@ -162,7 +162,7 @@ export class OfficeAssignmentComponent implements OnInit {
   console.log(width,height)
   pdf.addImage(content,"PNG",0,0,width,height)
   pdf.save("output.pdf")
-  this.showExportLoader = false;
+  this.loader.exportPDFLoader = false;
   m.classList.add('table-wrapper-scroll-y')
   m.classList.add('table-inner-scrollbar')
  });
@@ -193,12 +193,28 @@ calcCountAndRemLiteReject(data:any){
 }
 
 exportToCsv(){
+  this.loader.exportCSVLoader=true;
   let options:any={
     showLabels:true,
-    headers: ["Office Name", "Oldest Pending Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Office Assigned To (Fname)","Office Assigned To (Lname)"],
+    headers: ["Office Name", "Oldest Pending Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Office Assigned To"],
   }
-  let excelData = this.claimData.map(({officeUuid,assignedUser,...newClaimData})=>newClaimData);
-  new ngxCsv(excelData, 'My Report',options);
-
+  let excelData:any 
+  excelData = this.claimData.forEach((e:any)=>
+  {
+    e['office Assigned To'] = e.fname+" "+e.lname;
+    e.opdos == null ? e.opdos = '' : e.opdos;
+    if(e.opdt){
+      let date:Date = new Date(e.opdt);
+      e.opdt =  `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+    }else{
+        e.opdt = '';
+    }
+  })
+  excelData = this.claimData.map(
+    ({officeUuid,assignedUser,fname,lname,...newClaimData})=> newClaimData);
+    new ngxCsv(excelData, 'My Report',options);
+    this.loader.exportCSVLoader=false;
+    this.fetchClaimAssignments();
+    
 }
 }

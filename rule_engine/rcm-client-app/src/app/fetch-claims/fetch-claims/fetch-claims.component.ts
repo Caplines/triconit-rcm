@@ -15,6 +15,9 @@ export class FetchClaimsComponent implements OnInit {
 
   log: Array<ClaimAssociateLogModel>;
   claimDetail:Array<ClaimAssociateDetailModel>;
+  isFetchClaims:boolean=true;
+  expandCollapse:any={'expandClaim':true,'expandTeamRemarks':true};
+  
 
     constructor(private appService: ApplicationServiceService,public appConstants: AppConstants) {
     this.selectedBtype=this.appConstants.BILLING_ID;
@@ -58,5 +61,14 @@ export class FetchClaimsComponent implements OnInit {
       }
      
     });
+  }
+
+  expandCollapseBox(el:any){
+    if(el === 'claimDetails'){
+      this.expandCollapse.expandClaim = !this.expandCollapse.expandClaim
+    }
+    else if(el === 'teamRemarks'){
+      this.expandCollapse.expandTeamRemarks = !this.expandCollapse.expandTeamRemarks
+    }
   }
 }

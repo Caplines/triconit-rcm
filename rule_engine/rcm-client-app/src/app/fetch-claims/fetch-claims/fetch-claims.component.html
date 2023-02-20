@@ -1,87 +1,293 @@
+<div class="right-container">
+    <app-header-component [isFetchClaims]="isFetchClaims"></app-header-component>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 pt-3">
+                <h2 class="page-heading">
+                    Billing Pendency Dashboard
+                </h2>
+                <div class="main-container">
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
 
+                            <div class="switchButtons">
+                                <div class="switchBox">
+                                    <a href="javascript:void(0);"
+                                        (click)="fetchClaimsByBillingType(appConstants.BILLING_ID)"
+                                        class="active">Billing</a>
+                                    <a href="javascript:void(0);"
+                                        (click)="fetchClaimsByBillingType(appConstants.RE_BILLING_ID)">Re-billing</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-box">
+                        <div class="detail-box-form">
+                            <div class="form-row  without-heading">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Office Name <span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Oldest Pending Date <span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Oldest Pending DOS <span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <ng-container *ngIf="selectedBtype==appConstants.BILLING_ID">
 
-<input type="button" value="Billing" (click)="fetchClaimsByBillingType(appConstants.BILLING_ID)"/><br>
-<input type="button" value="Re-Billing" (click)="fetchClaimsByBillingType(appConstants.RE_BILLING_ID)"/>
-<br>
-<table>
-<tr>
-    <td>Office Name</td>
-    <td>Oldest Pending Date</td>
-    <td>Oldest Pending DOS</td>
-    <td>
-        <ng-container *ngIf="selectedBtype==appConstants.BILLING_ID"> Number of Pending Fresh Cases</ng-container>
-        <ng-container *ngIf="selectedBtype==appConstants.RE_BILLING_ID"> Number of Pending Rebilling Cases</ng-container>
-     </td>
-    <td>Number of Pending Remotelite Rejections</td>
+                                                    <th>
+                                                        <div class="dFlex">
+                                                            Number of Pending Fresh Cases <span class="sorting">
+                                                                <a href="" class="arrow-up selected"></a>
+                                                                <a href="" class="arrow-down"></a>
+                                                            </span>
+                                                        </div>
+                                                    </th>
+                                                </ng-container>
+                                                <ng-container *ngIf="selectedBtype==appConstants.RE_BILLING_ID">
+
+                                                    <th>
+                                                        <div class="dFlex">
+                                                            Number of Pending Rebilling Cases <span class="sorting">
+                                                                <a href="" class="arrow-up selected"></a>
+                                                                <a href="" class="arrow-down"></a>
+                                                            </span>
+                                                        </div>
+                                                    </th>
+                                                </ng-container>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Number of Pending Remotelite Rejections <span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="totalRow">
+                                                <td>Total</td>
+                                                <td>10/30/2022</td>
+                                                <td>10/30/2022</td>
+                                                <td>110</td>
+                                                <td>110</td>
+                                                <td *ngIf="selectedBtype==appConstants.RE_BILLING_ID">110</td>
+                                            </tr>
+                                            <ng-container *ngFor="let lg of log">
+                                                <tr>
+                                                    <td>{{lg.officeName}}</td>
+                                                    <td>{{lg.opdt | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                                                    <td>{{lg.opdos | date: 'dd/MM/yyyy'}}</td>
+                                                    <td>{{lg.count}}</td>
+                                                    <td>{{lg.remoteLiteRejections}}</td>
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <a data-toggle="collapse" href="javascript:void(0);" class="bold-b-text " [ngClass]="{'collapsed':!expandCollapse.expandClaim}" (click)="expandCollapseBox('claimDetails')" aria-expanded="false">List
+                                of
+                                Claims:</a>
+                            <div class="form-row  collapse"  [ngClass]="{'show':expandCollapse.expandClaim}" id="ruleEngine" >
+                                <div class="listClaimBox">
+                                    <div class="form-check-inline">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                            id="flexRadioDefault1" (change)="fetchClaims('Fresh')">
+                                        <label class="form-check-label" for="flexRadioDefault1">Fresh Claims</label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                            id="flexRadioDefault2" checked="" (click)="fetchClaims('sendBack')">
+                                        <label class="form-check-label" for="flexRadioDefault2">Claims Sent back by
+                                            Other
+                                            Teams</label>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Office<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th class="width-90">
+                                                    <div class="dFlex">
+                                                        Patient ID<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th class="width-115">
+                                                    <div class="dFlex">
+                                                        Patient Name<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Date of Service<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Claim Age<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Timely Filing Limit (Days)<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Claim Type<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Action Required<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Insurance Name<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Insurance Type<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Estimated Amount<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <ng-container *ngIf="selectedSubtype!='Fresh'">
+                                                    <th>
+                                                        <div class="dFlex">
+                                                            Billing Amount<span class="sorting">
+                                                                <a href="" class="arrow-up selected"></a>
+                                                                <a href="" class="arrow-down"></a>
+                                                            </span>
+                                                        </div>
+                                                    </th>
+                                                </ng-container>
+                                                <th class="lc3Row">
+                                                    <div class="dFlex">
+                                                        Last Team that Worked on this claim<span class="sorting">
+                                                            <a href="" class="arrow-up selected"></a>
+                                                            <a href="" class="arrow-down"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngFor="let det of claimDetail">
+
+                                                <tr>
+                                                    <td>{{det.officeName}}</td>
+                                                    <td><a [routerLink]="['/billing-claims/', det.uuid]"
+                                                            target="_blank">{{det.patientId}}</a></td>
+                                                    <td><a [routerLink]="['/billing-claims/', det.uuid]"
+                                                            target="_blank">{{det.patientName}}</a></td>
+                                                    <td>{{det.dos | date: 'dd/MM/yyyy'}}</td>
+                                                    <td>{{det.claimAge}}</td>
+                                                    <td>{{det.timelyFilingLimitData}}</td>
+                                                    <!-- Claim Type START-->
+                                                    <td *ngIf="det.claimId | claimTypeFilter">Primmary</td>
+                                                    <td *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
+                                                    <!-- Claim Type END-->
+                                                    <!-- Action Required START-->
+                                                    <td *ngIf="det.statusType == appConstants.BILLING_ID">Billing</td>
+                                                    <td *ngIf="det.statusType == appConstants.RE_BILLING_ID">Re-Billing
+                                                    </td>
+                                                    <!--Action Required END -->
+                                                    <!-- Insurance Name START-->
+                                                    <td *ngIf="det.claimId | claimTypeFilter">{{det.primaryInsurance}}
+                                                    </td>
+                                                    <td *ngIf="! (det.claimId | claimTypeFilter)">
+                                                        {{det.secondaryInsurance}}</td>
+                                                    <!-- Insurance Name END -->
+                                                    <!-- Insurance Type START-->
+                                                    <td *ngIf="det.claimId | claimTypeFilter">{{det.prName}}</td>
+                                                    <td *ngIf="! (det.claimId | claimTypeFilter)">{{det.secName}}</td>
+                                                    <!-- Insurance Type START-->
+                                                    <!-- Insurance Type START-->
+                                                    <td *ngIf="det.claimId | claimTypeFilter">{{det.primTotal}}</td>
+                                                    <td *ngIf="! (det.claimId | claimTypeFilter)">{{det.secTotal}}</td>
+                                                    <!-- Insurance Type START-->
+                                                    <td *ngIf="selectedSubtype!='Fresh'">{{det.billedAmount}}</td>
+                                                    <td class="NA">{{det.lastTeam==null?'N/A':det.lastTeam}}</td>
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     
-</tr>
-<tr>
-    <td>Total</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-</tr>
-<tr *ngFor="let lg of log">
-    <td>{{lg.officeName}}</td>
-    <td>{{lg.opdt | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
-    <td>{{lg.opdos | date: 'dd/MM/yyyy'}}</td>
-    <td>{{lg.count}}</td>
-    <td>{{lg.remoteLiteRejections}}</td>
-</tr>
-</table>
-
-<br>
-List of Claims
-<br>
-<input type="button" value="Fresh Claims" (click)="fetchClaims('Fresh')"/>
-<input type="button" value="Claims Sent back by Other Teams" (click)="fetchClaims('sendBack')"/>
-<br>
-<table>
-<tr>
-    <td>Office Name</td>
-    <td>Patient ID</td>
-    <td>Patient Name</td>
-    <td>Date of Service</td>
-    <td>Claim Age</td>
-    <td>Timely Filing Limit (Days)</td>
-    <td>Claim Type</td>
-    <td>Action Required</td>
-    <td>Insurance Name</td>
-    <td>Insurance Type</td>
-    <td>Estimated Amount</td>
-    <td *ngIf="selectedSubtype!='Fresh'">Billing Amount</td>
-    <td>Last Team that Worked on this claim</td>
-</tr>
-<tr *ngFor="let det of claimDetail">
-    <td>{{det.officeName}}</td>
-    <td><a [routerLink]="['/billing-claims/', det.uuid]" target="_blank">{{det.patientId}}</a></td>
-    <td><a [routerLink]="['/billing-claims/', det.uuid]" target="_blank">{{det.patientName}}</a></td>
-    <td>{{det.dos | date: 'dd/MM/yyyy'}}</td>
-    <td>{{det.claimAge}}</td>
-    <td>{{det.timelyFilingLimitData}}</td>
-    <!-- Claim Type START-->
-    <td *ngIf="det.claimId | claimTypeFilter">Primmary</td> 
-    <td *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td> 
-    <!-- Claim Type END-->
-    <!-- Action Required START-->
-    <td *ngIf="det.statusType == appConstants.BILLING_ID">Billing</td>
-    <td *ngIf="det.statusType == appConstants.RE_BILLING_ID">Re-Billing</td>
-    <!--Action Required END -->
-    <!-- Insurance Name START-->
-    <td *ngIf="det.claimId | claimTypeFilter">{{det.primaryInsurance}}</td>
-    <td *ngIf="! (det.claimId | claimTypeFilter)">{{det.secondaryInsurance}}</td>
-    <!-- Insurance Name END -->
-    <!-- Insurance Type START-->
-    <td *ngIf="det.claimId | claimTypeFilter">{{det.prName}}</td>
-    <td *ngIf="! (det.claimId | claimTypeFilter)">{{det.secName}}</td>
-    <!-- Insurance Type START-->
-     <!-- Insurance Type START-->
-     <td *ngIf="det.claimId | claimTypeFilter">{{det.primTotal}}</td>
-     <td *ngIf="! (det.claimId | claimTypeFilter)">{{det.secTotal}}</td>
-     <!-- Insurance Type START-->
-     <td *ngIf="selectedSubtype!='Fresh'">{{det.billedAmount}}</td>
-     <td>{{det.lastTeam==null?'N/A':det.lastTeam}}</td>
-     
-</tr>
-</table>

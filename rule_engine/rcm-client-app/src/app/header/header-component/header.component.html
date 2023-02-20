@@ -21,7 +21,7 @@
             <li *ngIf="staticUtil.checkAdmin()"><a href="javascript:void(0);" [routerLink]="['/manage-client']" [ngClass]="{'active':isManageClient}"><img [src]="isManageClient? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Manage Client</a></li>
             <li *ngIf="loggedInUserRole === 'ROLE_BILLING_ASSO,ROLE_BILLING_TL' || loggedInUserRole === 'ROLE_BILLING_TL,ROLE_BILLING_ASSO'"><a href="javascript:void(0);" [routerLink]="['/claim-assignment']" [ngClass]="{'active':isClaimAssign}"><img [src]="isClaimAssign? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency</a></li>
             <li *ngIf="staticUtil.isBillingLead() && staticUtil.isSmilePoint()"><a href="javascript:void(0);" [routerLink]="['/tool-update']" [ngClass]="{'active':isToolUpdate}"><img [src]="isToolUpdate? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Tool to Update Database</a></li>
-            <li *ngIf="staticUtil.isBillingLead() || staticUtil.isBillingAsso() || staticUtil.isClientManager()"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" [ngClass]="{'active':isToolUpdate}"><img [src]="isToolUpdate? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Billing Pendency Dashboard</a></li>
+            <li *ngIf="staticUtil.isBillingLead() || staticUtil.isBillingAsso() || staticUtil.isClientManager()"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" [ngClass]="{'active':isFetchClaims}"><img [src]="isFetchClaims? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Billing Pendency Dashboard</a></li>
         </ul>
 
     </div>
