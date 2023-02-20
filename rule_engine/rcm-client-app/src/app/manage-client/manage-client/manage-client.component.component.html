@@ -52,7 +52,7 @@
                                                          <input type="text" value="{{comp.clientName}}" maxlength="30" [(ngModel)]="comp.clientName" placeholder="Enter client name" class="form-control" [disabled]="!comp.editable" [ngClass]="{'is-invalid': comp.editable && comp.clientName==''}">
                                                          <ng-container>  
                                                                 <div *ngFor="let header of comp.header;let index= index" class="addEditClientBox">
-                                                                    <h3>Header: {{header.name}}</h3>
+                                                                    <h3>{{header.name}}</h3>
                                                                     <div class="innerInput">
                                                                         <input type="text" [value]="header.google_sheet_id" [(ngModel)]="header.google_sheet_id" class="form-control" [disabled]="!comp.editable" placeholder="Enter google_sheet_id">
                                                                         <input type="text" [value]="header.google_sheet_sub_id" [(ngModel)]="header.google_sheet_sub_id" class="form-control" [disabled]="!comp.editable" placeholder="google_sheet_sub_id">

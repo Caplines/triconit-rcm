@@ -75,6 +75,8 @@ export class ManageClientComponent implements OnInit {
       this.appService.editClient(client,(callback:any)=>{
         if(callback.status==200){
           console.log(callback);
+          clientDetails['editable']=false;
+          clientDetails['newField']=false;
           this.alert.showAlertPopup=true;
           this.alert.alertMsg = callback.message == ''? "Edit Successfully" : callback.message;
         }
