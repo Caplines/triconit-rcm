@@ -263,4 +263,9 @@ getClientsName(callback:any){
   this.getData({},this.httpUrl['getClientsName'],callback)
 }
 
+
+fetchIssueClaims(cid:string,callback:any){
+  this.getData({},this.httpUrl['issueclaim']+"/"+cid,callback)
+}
+
 }

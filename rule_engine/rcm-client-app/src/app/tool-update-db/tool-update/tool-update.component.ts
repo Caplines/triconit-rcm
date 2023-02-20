@@ -3,6 +3,7 @@ import { ApplicationServiceService  } from '../../service/application-service.se
 import {FreshClaimPullModel} from '../../models/fresh.claim.pull.model';
 import {FreshClaimPLogs} from '../../models/fresh.claim.log';
 import {ClientModel} from '../../models/client.model';
+import {IssueClaimModel} from '../../models/issue.claim.model';
 import { Title } from '@angular/platform-browser';
 
 @Component({
@@ -16,6 +17,7 @@ export class ToolUpdateComponent implements OnInit {
 
   log : Array<FreshClaimPLogs>;
   clients : Array<ClientModel>;
+  issueCl : Array<IssueClaimModel>;
   smilePoint: ClientModel;
   esAgent:any;
   googleSheet:any;
@@ -32,6 +34,7 @@ export class ToolUpdateComponent implements OnInit {
     this.log = [];//{} as FreshClaimPLogs;
     this.clients = [];
     this.smilePoint={};
+    this.issueCl=[];
     title.setTitle("RCM - Tool to update database.");
   }
 
@@ -195,5 +198,17 @@ selectAll(isAllSelected:any){
     })
   }
 }
+
+fetchIssueClaims(){
+
+let ths= this;
+ths.appService.fetchIssueClaims(ths.cName,(res:any)=>{
+
+  if (res.status=== 200){
+    ths.issueCl=res.data;
+    }
+ });
+
+ }
 
 }

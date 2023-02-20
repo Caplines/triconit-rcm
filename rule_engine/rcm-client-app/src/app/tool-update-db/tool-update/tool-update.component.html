@@ -14,6 +14,7 @@
                         <option value="-1">Select Client Name</option>
                         <option *ngFor="let sta of clients" [value]="sta.uuid">{{sta.clientName}}</option>
                     </select>
+                  <!--  <div  *ngIf="cName!='-1'" (click)="fetchIssueClaims()">Issue Claims</div> -->
                 </div>
                     <div class="detail-box-form" *ngIf="log.length>0">
                         <ng-container *ngIf="cName==='614c4beb-7df2-11e8-8432-8c16451459cd'">

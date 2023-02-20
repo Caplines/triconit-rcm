@@ -37,7 +37,8 @@ export class BaseService {
     'getAllClients':"/getClientDetails",
     'addClients':'/addClient',
     'editClient':'/editClient',
-    'fetchBillingClaimsByUuid':"/api/fetchindclaim"
+    'fetchBillingClaimsByUuid':"/api/fetchindclaim",
+    'issueclaim':"/api/issueClaims"
   }
 
   constructor(public http: HttpClient, private tokenStorage: TokenStorageService) {
