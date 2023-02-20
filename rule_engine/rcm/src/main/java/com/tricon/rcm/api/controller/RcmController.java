@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -69,6 +70,7 @@ public class RcmController {
 	 */
 	@ApiOperation(value = "Api For Fetching Claims From  ES or GSheet", response = String.class, responseContainer = "Map")
 	@PostMapping("/api/fetch-claims-from-source")
+	@PreAuthorize("hasRole('BILLING_TL')")
 	public ResponseEntity<Object> fetchClaimsFromSource(@RequestBody ClaimSourceDto dto) {
 
 		Object [] obj =checkForSimplePointUser();
@@ -124,6 +126,7 @@ public class RcmController {
 	
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = AssignFreshClaimLogsImplDto.class, responseContainer = "List")
 	@PostMapping("/api/fetch-claims-log-assign")
+	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
 	public ResponseEntity<Object> fetchClaimsForAssignments(@RequestBody AssigmentClaimListDto dto ) {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.fetchClaimsForAssignments(dto)));
 	}
