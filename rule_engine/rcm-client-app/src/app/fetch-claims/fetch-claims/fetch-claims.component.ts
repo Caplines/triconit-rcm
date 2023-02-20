@@ -16,8 +16,11 @@ export class FetchClaimsComponent implements OnInit {
   log: Array<ClaimAssociateLogModel>;
   claimDetail:Array<ClaimAssociateDetailModel>;
   isFetchClaims:boolean=true;
-  expandCollapse:any={'expandClaim':true,'expandTeamRemarks':true};
-  
+  expandCollapse:boolean=true;
+  switchBox:any={'billing':true,'reBilling':false};
+  isSorted:boolean=false;
+  loader:any={'billingLoader':false,'listClaimLoader':false};
+  totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0}
 
     constructor(private appService: ApplicationServiceService,public appConstants: AppConstants) {
     this.selectedBtype=this.appConstants.BILLING_ID;
@@ -34,13 +37,25 @@ export class FetchClaimsComponent implements OnInit {
 
   
 
-  
+   
   fetchClaimsByBillingType(type:number){
+    this.loader.billingLoader=true;
+    if(type==1){
+      this.switchBox.billing= true;
+      this.switchBox.reBilling=false;
+    }else{ 
+      this.switchBox.billing= false;
+      this.switchBox.reBilling=true;
+    }
     let ths=this;
     this.selectedBtype=type;
+    this.totalClaimData.totalRemLiteReject=this.totalClaimData.totalCount=0;
     ths.appService.fetchAssociateClaimBillLogs(type,(res:any)=>{
       if (res.status=== 200){
        ths.log= res.data;
+       ths.calcCount(ths.log)
+       ths.calcRemLiteReject(ths.log)
+       this.loader.billingLoader=false;
 
       }else{
         //ERROR
@@ -50,12 +65,13 @@ export class FetchClaimsComponent implements OnInit {
   }
 
   fetchClaims(subType:string){
-
+    this.loader.listClaimLoader=true;
     let ths=this;
     ths.appService.fetchAssociateClaimDet(ths.selectedBtype,subType,(res:any)=>{
       if (res.status=== 200){
        ths.claimDetail= res.data;
-
+       
+       ths.loader.listClaimLoader=false;
       }else{
         //ERROR
       }
@@ -63,12 +79,18 @@ export class FetchClaimsComponent implements OnInit {
     });
   }
 
-  expandCollapseBox(el:any){
-    if(el === 'claimDetails'){
-      this.expandCollapse.expandClaim = !this.expandCollapse.expandClaim
-    }
-    else if(el === 'teamRemarks'){
-      this.expandCollapse.expandTeamRemarks = !this.expandCollapse.expandTeamRemarks
-    }
+  sortData(data:any,sortProp:string,order:any,sortType:string){ 
+    this.appService.sortData(data,sortProp,order,sortType);
+  }
+
+  calcCount(data:any){
+    data.forEach((e:any)=>{
+      this.totalClaimData.totalCount = this.totalClaimData.totalCount + e.count;
+ });
+  }
+  calcRemLiteReject(data:any){
+    data.forEach((e:any)=>{
+      this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalRemLiteReject + e.remoteLiteRejections;
+   });
   }
 }

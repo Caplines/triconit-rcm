@@ -118,7 +118,7 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params,this.httpUrl['editClient'],callback)
   }
 
-  sortData(data:any,sortBy:any,sortingColm:any,order:any,sortingType:any,sortType:string){
+  sortData(data:any,sortBy:any,order:any,sortType:string){
     if(sortType === 'string'){
         order === 'asc' ? data.sort((a:any, b:any) => {
          if (a[sortBy] === null || a[sortBy] === "null") {

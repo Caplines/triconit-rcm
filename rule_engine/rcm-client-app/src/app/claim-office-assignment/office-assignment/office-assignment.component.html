@@ -48,8 +48,8 @@
                                                     <div class="dFlex">
                                                         Office Name
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'officeName','officeName','asc','name','string'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'officeName','officeName','desc','name','string');isSorted = true"></a>
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'officeName','asc','string'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'officeName','desc','string');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -57,8 +57,8 @@
                                                     <div class="dFlex">
                                                         Office Assigned To
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'fname','officeAssigned','asc','name','string'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'fname','officeAssigned','desc','name','string');isSorted = true"></a>
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'fname','asc','string'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'fname','desc','string');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -66,8 +66,8 @@
                                                     <div class="dFlex">
                                                         Oldest Pending Date
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'opdt','opdt','asc','date','date'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'opdt','opdt','desc','date','date');isSorted = true"></a>
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'opdt','asc','date'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'opdt','desc','date');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -75,8 +75,8 @@
                                                     <div class="dFlex">
                                                         Oldest Pending DOS
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'opdos','opdos','asc','date','date'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'opdos','opdos','desc','date','date');isSorted = true"></a>
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'opdos','asc','date'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'opdos','desc','date');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -84,8 +84,8 @@
                                                     <div class="dFlex">
                                                         Number of Pending Claims to be Billed
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'count','count','asc','number','number'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'count','count','desc','number','number');isSorted = true"></a>
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'count','asc','number'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'count','desc','number');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -93,8 +93,8 @@
                                                     <div class="dFlex">
                                                         No. of RemoteLite Rejections Pending to be Handled
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'remoteLiteRejections','remoteLiteRejections','asc','number','number'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'remoteLiteRejections','remoteLiteRejections','desc','number','number');isSorted = true"></a>
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'remoteLiteRejections','asc','number'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'remoteLiteRejections','desc','number');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -102,8 +102,8 @@
                                                     <div class="dFlex">
                                                         Total (Pending For Billing & Remote Lite Rejections)
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'remoteLiteRejections','countAndRemLiteReject','asc','number','number'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'remoteLiteRejections','countAndRemLiteReject','desc','number','number');isSorted = true"></a>
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'remoteLiteRejections','asc','number'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'remoteLiteRejections','desc','number');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>

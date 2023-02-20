@@ -169,9 +169,9 @@ export class OfficeAssignmentComponent implements OnInit {
 
 }
 
- sortData(data:any,sortProp:string,sortingColm:any,order:any,sortingType:any,sortType:string){
-  this.appService.sortData(data,sortProp,sortingColm,order,sortingType,sortType);
- }
+sortData(data:any,sortProp:string,order:any,sortType:string){
+  this.appService.sortData(data,sortProp,order,sortType);
+}
 
 
  calcCount(data:any){
