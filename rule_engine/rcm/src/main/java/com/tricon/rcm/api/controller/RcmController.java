@@ -23,6 +23,7 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
+import com.tricon.rcm.dto.ClaimRemarkDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
@@ -35,6 +36,7 @@ import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
+import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
@@ -194,6 +196,28 @@ public class RcmController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.getIvfDataFromRE(jwtUser.getCompany().getUuid(), claimuuid)));
 	}
+	
+	
+	@ApiOperation(value = "Api For Fetching Claims Remarks", response = ClaimRemarksDto.class ,responseContainer = "List")
+	@GetMapping("/api/remarks/{claimuuid}")
+	public ResponseEntity<Object> fetchClaimRemarks(@PathVariable("claimuuid") String claimuuid) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.fetchClaimRemarks(jwtUser.getCompany().getUuid(), claimuuid,jwtUser.getTeamId())));
+	}
+	
+	@ApiOperation(value = "Api For Saving Claims Remarks", response = ClaimRemarksDto.class ,responseContainer = "List")
+	@PostMapping("/api/save-remarks")
+	public ResponseEntity<Object> saveRemark(@RequestBody ClaimRemarkDto dto) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.saveClaimRemark(jwtUser,dto)));
+	}
+	
 
 	private Object[] checkForSimplePointUser() {
 

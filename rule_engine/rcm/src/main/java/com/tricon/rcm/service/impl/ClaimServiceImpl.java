@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
+import com.tricon.rcm.db.entity.RcmClaimComment;
 import com.tricon.rcm.db.entity.RcmClaimLog;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
@@ -44,6 +45,7 @@ import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
+import com.tricon.rcm.dto.ClaimRemarkDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
@@ -58,6 +60,7 @@ import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
+import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsImplDto;
@@ -67,6 +70,7 @@ import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimCommentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLogRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
@@ -129,6 +133,9 @@ public class ClaimServiceImpl {
 	@Autowired
 	RcmClaimLogRepo rcmClaimLogRepo;
 
+	@Autowired
+	RcmClaimCommentRepo rcmClaimCommentRepo;
+	
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
 	private UserDetailsService userDetailsService;
@@ -954,6 +961,37 @@ public class ClaimServiceImpl {
 					"f015515d-7df2-11e8-8432-8c16451459cd");
 		}
 		//return null;
+	}
+	
+	
+	public List<ClaimRemarksDto>  fetchClaimRemarks(String companyId, String claimuuid,int teamId) {
+
+		List<ClaimRemarksDto> list = rcmClaimCommentRepo.fetchClaimRemarks(claimuuid,teamId);
+		
+		return list;
+	}
+	
+	public String saveClaimRemark(JwtUser jwtUser, ClaimRemarkDto dto) {
+
+		RcmClaimComment comment= new RcmClaimComment();
+		RcmUser user= userRepo.findByUuid(jwtUser.getUuid());
+		RcmClaims claim= rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+		
+		
+		if (officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid().equals(user.getCompany().getUuid())) {
+			comment.setCommentedBy(user);
+			comment.setCreatedBy(user);
+			comment.setClaims(claim);
+			comment.setComments(dto.getRemark());
+			comment.setActive(true);
+			comment.setTeamId(rcmTeamRepo.findById(jwtUser.getTeamId()));
+			return rcmClaimCommentRepo.save(comment).getUuid();
+		}
+		
+		else return "wrong team";
+		
+		
+		
 	}
 	
 	public List<RuleEngineClaimDto> getRuleEngineClaimReport(String officeId, String companyId, String patientId,
