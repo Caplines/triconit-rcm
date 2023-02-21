@@ -47,7 +47,7 @@ public class ManageOfficeController {
 	private UserServiceImpl userService;
 	
 	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
-	@PreAuthorize("hasAnyRole('ADMIN','BILLING_TL')")
+	@PreAuthorize("hasRole('BILLING_TL')")
 	public ResponseEntity<?> assignOfficesToBillingUser(@RequestBody AssignOfficesToBillingUserDto dto) {
 		if (dto.getAssignOfficeDetails().stream()
 				.anyMatch(x -> (x.getOfficeId()==null||x.getOfficeId().trim().equals("")) || (x.getUserId()==null||x.getUserId().trim().equals("")))) {
@@ -70,7 +70,7 @@ public class ManageOfficeController {
 	}
 	
 	@RequestMapping(value = "/users/team/{teamId}", method = RequestMethod.GET)
-	@PreAuthorize("hasAnyRole('ADMIN','BILLING_TL')")
+	@PreAuthorize("hasRole('BILLING_TL')")
 	public ResponseEntity<?> getUsersByTeamId(@PathVariable("teamId")int teamId) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
