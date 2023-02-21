@@ -40,6 +40,7 @@ import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
+import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
@@ -47,9 +48,11 @@ import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
+import com.tricon.rcm.dto.customquery.IVFDto;
 import com.tricon.rcm.dto.customquery.IssueClaimDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
+import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
@@ -920,6 +923,7 @@ public class ClaimServiceImpl {
 
 	/**
 	 * get all issue in Claims That are fetched from Source
+	 * 
 	 * @param companyId
 	 * @return
 	 */
@@ -927,5 +931,36 @@ public class ClaimServiceImpl {
 
 		return rcmClaimRepository.getIssueClaims(companyId);
 	}
+
+	public CaplineIVFFormDto getIvfDataFromRE(String companyId, String claimuuid) {
+
+		RcmClaims claims = rcmClaimRepository.findByClaimUuid(claimuuid);
+
+		if (claims != null) {
+			RcmOffice off = claims.getOffice();
+			IVFDto iVFDto = rcmClaimRepository.getLatestIvfNumberForClaim(off.getUuid(),
+					claims.getPatientId(), claimuuid);
+			if (iVFDto != null) {
+				return ruleEngineService.pullIVFDataFromRE(iVFDto.getIvId(), claims.getPatientId(), companyId,
+						off.getUuid());
+			}else {
+				//For testing..
+				return ruleEngineService.pullIVFDataFromRE("196041", "7431", companyId,
+						"f015515d-7df2-11e8-8432-8c16451459cd");
+			}
+		}else {
+			//For testing..
+			return ruleEngineService.pullIVFDataFromRE("196041", "7431", companyId,
+					"f015515d-7df2-11e8-8432-8c16451459cd");
+		}
+		//return null;
+	}
+	
+	public List<RuleEngineClaimDto> getRuleEngineClaimReport(String officeId, String companyId, String patientId,
+			String claimId) {
+        
+		return rcmClaimRepository.getRuleEngineClaimReport(officeId, companyId, patientId, claimId);
+	}
+
 
 }

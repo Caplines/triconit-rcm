@@ -1,0 +1,56 @@
+package com.tricon.rcm.dto;
+
+public class ToothHistoryDto {
+	
+	String historyCode;
+	String historyDos;
+	String historyTooth;
+	String surfaceTooth;
+	String className;
+	
+	public ToothHistoryDto() {
+		super();
+	}
+	
+	public ToothHistoryDto(String historyCode, String historyDos, String historyTooth,String surfaceTooth) {
+		super();
+		this.historyCode = historyCode;
+		this.historyDos = historyDos;
+		this.historyTooth = historyTooth;
+		this.surfaceTooth = surfaceTooth;
+	}
+	public String getHistoryCode() {
+		return historyCode;
+	}
+	public void setHistoryCode(String historyCode) {
+		this.historyCode = historyCode;
+	}
+	public String getHistoryDos() {
+		return historyDos;
+	}
+	public void setHistoryDos(String historyDos) {
+		this.historyDos = historyDos;
+	}
+	public String getHistoryTooth() {
+		return historyTooth;
+	}
+	public void setHistoryTooth(String historyTooth) {
+		
+		this.historyTooth = historyTooth;
+	}
+	public String getSurfaceTooth() {
+		return surfaceTooth;
+	}
+	public void setSurfaceTooth(String surfaceTooth) {
+		this.surfaceTooth = surfaceTooth;
+	}
+	public String getClassName() {
+		return className;
+	}
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	
+	
+}

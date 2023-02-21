@@ -3,6 +3,7 @@ import { BaseService } from './base-service.service';
 import { HttpClient } from '@angular/common/http';
 import {FreshClaimPullModel} from '../models/fresh.claim.pull.model';
 import {ClaimAssignmentPullModel} from '../models/claim-assignment-pull-model';
+import {ClaimRulesPullDataModel}from '../models/claim-rules-pull-data-model';
 import { TokenStorageService } from '../service/token-storage.service';
 @Injectable({
   providedIn: 'root'
@@ -267,5 +268,16 @@ getClientsName(callback:any){
 fetchIssueClaims(cid:string,callback:any){
   this.getData({},this.httpUrl['issueclaim']+"/"+cid,callback)
 }
+
+fetchivfDataForClaim(cuuid:string,callback:any){
+  this.getData({},this.httpUrl['ivfdata']+"/"+cuuid,callback)
+}
+
+
+
+getClaimRuleData(params:ClaimRulesPullDataModel,callback:any){
+  this.postData(params,this.httpUrl['claimRuleData'],callback)
+}
+
 
 }
