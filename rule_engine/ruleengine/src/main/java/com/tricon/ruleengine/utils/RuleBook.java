@@ -6144,7 +6144,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 									messageSource.getMessage("rule61.error.messagenohist",  new Object[] {maxCountExtraction, "Extractions"}, locale), 
 									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 					}
-					
+
 					
 				}
 				
@@ -12905,6 +12905,93 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 		return dList;
 	}
 
+	// D0140 with Treatment
+	public List<TPValidationResponseDto> Rule88(Object ivfSheet,List<Object> tpList, MessageSource messageSource, Rules rule,
+			BufferedWriter bw) {
+		
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new TreeSet<>();
+		Set<String> surfaces=new TreeSet<>();
+    	Set<String> teethC=new TreeSet<>();
+    	Set<String> issueCodes=new TreeSet<>();
+    	boolean pass=true;
+    	boolean presentD0140=false;
+    	String amount="";
+    	RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_88,
+				Constants.rule_log_debug, bw);
+        try {
+		/*String ER_MSG=Constants.TP;
+		
+		if (userType==Constants.userType_CL) {
+			ER_MSG=Constants.CL;
+		}*/
+        	IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		  //only for dentaquest and  guardian
+		   if (ivf.getInsName().toLowerCase().contains(Constants.insurance_denta_quest) ||
+				   ivf.getInsName().toLowerCase().contains(Constants.insurance_guardian)  ) {
+			                                     //D2950,D6740,D6245
+		   List<String> checkList=Arrays.asList("D0220", "D0230", "D0272", "D0274", "D0330","D0210");
+			for (Object obj : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				String code=tp.getServiceCode();
+				String estIns =tp.getEstInsurance();
+				surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+				teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+				fcodes.add(code);
+				
+				if(estIns.equals("") || estIns.equals("0") || estIns.equals("0.00")
+						||	estIns.equals("0.0")) {
+					RuleEngineLogger.generateLogs(clazz, code + "- Fees - " + estIns,
+							Constants.rule_log_debug, bw);
+					continue;//need to ask.
+				}
+				if (code.equalsIgnoreCase("D0140")) {
+					presentD0140=true;
+					amount=estIns;
+				}
+				//only other codes Present
+				if (!checkList.contains(code)) {
+					pass=false;
+					issueCodes.add(code);
+				}
+				
+			 }
+		    }
+			if (presentD0140) {
+				if (pass) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule88.pass.message", new Object[] {  }, locale),
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				}else {
+					 if (ivf.getInsName().toLowerCase().contains(Constants.insurance_denta_quest)){
+					   dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule88.error.message", new Object[] { amount }, locale),
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+					 }else {
+						 dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule88.error_guard.message", new Object[] { amount }, locale),
+									Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes))); 
+					 }
+					
+				}
+			}else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule88.pass.message", new Object[] {  }, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+			
+			}
+		
+		
+		
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+			return dList;
+		}
+		return dList;
+	}
 	//Insurance and Address
     /**
      * 

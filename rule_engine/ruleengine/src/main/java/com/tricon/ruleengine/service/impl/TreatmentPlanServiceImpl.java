@@ -2234,6 +2234,24 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						Constants.rule_log_debug, bw);
 			
 		//END Provider Certification 
+		
+		//  D0140 with Treatment
+		
+				rule = getRulesFromList(rules, Constants.RULE_ID_88);
+					dtoRL = rb.Rule88(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+					if (dtoRL != null) {
+						list.addAll(dtoRL);
+						for (TPValidationResponseDto t : dtoRL) {
+							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+								t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+								// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+						}
+				}
+						
+				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_88,
+								Constants.rule_log_debug, bw);
+					
+		 //END  D0140 with Treatment 
 
 		// RULE_ID_79 "Insurance and Address"
 		/*
@@ -2428,6 +2446,26 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							Constants.rule_log_debug, bw);
 				
 			//END Provider Certification 
+			
+			
+		  // D0140 with Treatment
+			
+			rule = getRulesFromList(rules, Constants.RULE_ID_88);
+						dtoRL = rb.Rule88(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+						if (dtoRL != null) {
+							list.addAll(dtoRL);
+							for (TPValidationResponseDto t : dtoRL) {
+								dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+									t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+							}
+					}
+							
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_88,
+									Constants.rule_log_debug, bw);
+						
+	    //END  D0140 with Treatment 
+					
 		        
 		// END "Bridge Clause"
 
@@ -2954,6 +2992,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rd.setCreatedBy(user);
 				rd.setReports(reports);
 				rd.setIvDate("");
+				rd.setCodes(d.getServiceCode());
+				rd.setSurface(d.getSurface());
+				rd.setTooth(d.getTooth());
 				rd.setIgnoredServiceData(ignoredValues);
 				try {
 				  if (ivfSheet.getGeneralDateIVwasDone()!=null && !ivfSheet.getGeneralDateIVwasDone().equals("")){
@@ -3010,6 +3051,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						rd.setRules(getRulesFromListByid(rules, d.getRuleId()));
 						rd.setIvDate("");
 						rd.setIgnoredServiceData(ignoredValues);
+						rd.setCodes(d.getServiceCode());
+						rd.setSurface(d.getSurface());
+						rd.setTooth(d.getTooth());
 						try {
 						if (ivfSheet.getGeneralDateIVwasDone()!=null && !ivfSheet.getGeneralDateIVwasDone().equals("")){
 							rd.setIvDate(Constants.SIMPLE_DATE_FORMAT.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse(ivfSheet.getGeneralDateIVwasDone())));

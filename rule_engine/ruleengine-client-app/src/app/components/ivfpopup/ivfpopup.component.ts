@@ -64,7 +64,8 @@ export class IVFPopupComponent implements OnInit {
 				    ths.ivfmData[key].forEach(function(a,i) {
 				    	
 				    	if (a.resultType.toLowerCase().indexOf("pass")>=0
-				    		|| a.resultType.toLowerCase().indexOf("not applicable")>=0	){
+				    		|| a.resultType.toLowerCase().indexOf("not applicable")>=0
+				    		|| a.resultType.toLowerCase().indexOf("not needed")>=0){
 				    		ths.countP= ths.countP+1;
 				    		ths.ivfmData[key].countP=ths.countP;
 				    	}

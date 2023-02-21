@@ -15,7 +15,8 @@ export class ResultTypeFilterPipe implements PipeTransform {
         }
         let x=items.filter(function(item){
      	   return fil.filter(function(fil1){
-     	      return item.resultType.toLowerCase() == fil1;
+     	      return (item.resultType.toLowerCase() == fil1 || (fil1=='pass' && (item.resultType.toLowerCase()=='not needed'
+     	    	  || item.resultType.toLowerCase()=='not applicable'))) ;
      	   }).length != 0
      	});
         return x;
