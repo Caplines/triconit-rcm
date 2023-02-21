@@ -56,6 +56,16 @@ public class ReportClaimDetail extends BaseAudit implements java.io.Serializable
 
 	@Column(name = "ignored_service_data", columnDefinition = "text")
 	private String ignoredServiceData;
+	
+	
+	@Column(name = "surface", columnDefinition = "text", nullable=true)
+	private String surface;
+	
+	@Column(name = "tooth", columnDefinition = "text", nullable=true)
+	private String tooth;
+	
+	@Column(name = "codes", columnDefinition = "text", nullable=true)
+	private String codes;
 
 	public ReportClaimDetail() {
 	}
@@ -157,6 +167,30 @@ public class ReportClaimDetail extends BaseAudit implements java.io.Serializable
 
 	public void setIgnoredServiceData(String ignoredServiceData) {
 		this.ignoredServiceData = ignoredServiceData;
+	}
+
+	public String getSurface() {
+		return surface;
+	}
+
+	public void setSurface(String surface) {
+		this.surface = surface;
+	}
+
+	public String getTooth() {
+		return tooth;
+	}
+
+	public void setTooth(String tooth) {
+		this.tooth = tooth;
+	}
+
+	public String getCodes() {
+		return codes;
+	}
+
+	public void setCodes(String codes) {
+		this.codes = codes;
 	}
 
 	

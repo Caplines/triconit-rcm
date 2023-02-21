@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.ruleengine.dao.OfficeDao;
+import com.tricon.ruleengine.dto.CaplineIVFFormDto;
+import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.OfficeDto;
 import com.tricon.ruleengine.dto.RcmClaimDataDto;
@@ -32,6 +35,7 @@ import com.tricon.ruleengine.dto.ScrappingFullDataDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.service.CompanyService;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.ScrappingFullDataService;
@@ -61,6 +65,9 @@ public class RcmController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	OfficeDao od;
+
 	RcmEnv rcmEnvPrimaryClaim = null;
 	RcmEnv rcmEnvSecondaryClaim = null;
 	RcmEnv rcmEnvInsurance = null;
@@ -68,20 +75,25 @@ public class RcmController {
 	@Autowired
 	ScrappingFullDataService fullService;
 
+	@Autowired
+	CaplineIVFGoogleFormService civf;
+
 	static Class<?> clazz = RcmController.class;
-	
+
 	@Autowired
 	EagleSoftDBAccessService es;
 
 	@PostConstruct
 	public void init() {
 
-		rcmEnvPrimaryClaim = new RcmEnv(env.getProperty("claim.unbilled.primary.query"), env.getProperty("claim.unbilled.primary.query.count"),
+		rcmEnvPrimaryClaim = new RcmEnv(env.getProperty("claim.unbilled.primary.query"),
+				env.getProperty("claim.unbilled.primary.query.count"),
 				env.getProperty("claim.unbilled.primary.query.selectcolumns"), env.getProperty("rmc.auth.token"));
-		
-		rcmEnvSecondaryClaim = new RcmEnv(env.getProperty("claim.unbilled.secondary.query"), env.getProperty("claim.unbilled.secondary.query.count"),
+
+		rcmEnvSecondaryClaim = new RcmEnv(env.getProperty("claim.unbilled.secondary.query"),
+				env.getProperty("claim.unbilled.secondary.query.count"),
 				env.getProperty("claim.unbilled.secondary.query.selectcolumns"), env.getProperty("rmc.auth.token"));
-		
+
 		rcmEnvInsurance = new RcmEnv(env.getProperty("claim.insurance.query"),
 				env.getProperty("claim.insurance.query.count"), env.getProperty("claim.insurance.query.selectcolumns"),
 				env.getProperty("rmc.auth.token"));
@@ -91,7 +103,8 @@ public class RcmController {
 	@RequestMapping(value = "/fetch-claims", method = RequestMethod.GET)
 	public ResponseEntity<?> fetchClaims(@RequestHeader("x-api-key") String apiKey,
 			@RequestParam(value = "office", required = false) String officeUuid,
-			@RequestParam(value = "password", required = true) String password,@RequestParam(value = "primarySecondary", required = true) String primarySecondary)
+			@RequestParam(value = "password", required = true) String password,
+			@RequestParam(value = "primarySecondary", required = true) String primarySecondary)
 			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
 
 		String ids = null;
@@ -116,17 +129,18 @@ public class RcmController {
 						.getName();
 
 			}
-			GenericResponse data =null;
+			GenericResponse data = null;
 			if (primarySecondary.equalsIgnoreCase("Primary")) {
-				data =(GenericResponse) googleReportsController
-					.fethESGoogleresponse(rcmEnvPrimaryClaim.getQuerySelectcolumns(), rcmEnvPrimaryClaim.getQuery(), ids,
-							Integer.parseInt(rcmEnvPrimaryClaim.getQueryCount()), password, officeName, null, null)
-					.getBody();
-			}else {
-				
-				data =(GenericResponse) googleReportsController
-						.fethESGoogleresponse(rcmEnvSecondaryClaim.getQuerySelectcolumns(), rcmEnvSecondaryClaim.getQuery(), ids,
-								Integer.parseInt(rcmEnvSecondaryClaim.getQueryCount()), password, officeName, null, null)
+				data = (GenericResponse) googleReportsController
+						.fethESGoogleresponse(rcmEnvPrimaryClaim.getQuerySelectcolumns(), rcmEnvPrimaryClaim.getQuery(),
+								ids, Integer.parseInt(rcmEnvPrimaryClaim.getQueryCount()), password, officeName, null,
+								null)
+						.getBody();
+			} else {
+
+				data = (GenericResponse) googleReportsController.fethESGoogleresponse(
+						rcmEnvSecondaryClaim.getQuerySelectcolumns(), rcmEnvSecondaryClaim.getQuery(), ids,
+						Integer.parseInt(rcmEnvSecondaryClaim.getQueryCount()), password, officeName, null, null)
 						.getBody();
 			}
 			dd = new RcmClaimDataDto();
@@ -142,14 +156,18 @@ public class RcmController {
 					try {
 						RcmClaimDataDto ddd = null;
 						if (primarySecondary.equalsIgnoreCase("Primary")) {
-						data = (GenericResponse) googleReportsController.fethESGoogleresponse(
-								rcmEnvPrimaryClaim.getQuerySelectcolumns(), rcmEnvPrimaryClaim.getQuerySelectcolumns(), ids,
-								Integer.parseInt(rcmEnvPrimaryClaim.getQueryCount()), password, n.getName(), null, null)
-								.getBody();
-						}else {
-							data = (GenericResponse) googleReportsController.fethESGoogleresponse(
-									rcmEnvSecondaryClaim.getQuerySelectcolumns(), rcmEnvSecondaryClaim.getQuerySelectcolumns(), ids,
-									Integer.parseInt(rcmEnvSecondaryClaim.getQueryCount()), password, n.getName(), null, null)
+							data = (GenericResponse) googleReportsController
+									.fethESGoogleresponse(rcmEnvPrimaryClaim.getQuerySelectcolumns(),
+											rcmEnvPrimaryClaim.getQuerySelectcolumns(), ids,
+											Integer.parseInt(rcmEnvPrimaryClaim.getQueryCount()), password, n.getName(),
+											null, null)
+									.getBody();
+						} else {
+							data = (GenericResponse) googleReportsController
+									.fethESGoogleresponse(rcmEnvSecondaryClaim.getQuerySelectcolumns(),
+											rcmEnvSecondaryClaim.getQuerySelectcolumns(), ids,
+											Integer.parseInt(rcmEnvSecondaryClaim.getQueryCount()), password,
+											n.getName(), null, null)
 									.getBody();
 						}
 						ddd = new RcmClaimDataDto();
@@ -258,14 +276,13 @@ public class RcmController {
 	@GetMapping("/diagnostic_check_for_rcm")
 	public ResponseEntity<Object> diagnosticCheckForRCM(@RequestHeader("x-api-key") String apiKey,
 			@RequestParam(value = "office", required = true) String officeUuid) {
-		String mess =null;
+		String mess = null;
 		try {
 
 			if (!checkForKey(apiKey))
-				return ResponseEntity
-						.ok(new GenericResponse(HttpStatus.OK, "Diagnostic Not Run", "Key Error"));
+				return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Diagnostic Not Run", "Key Error"));
 			Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
-			mess = es.doDiagnosticCheck(officeUuid,cmp.getUuid())[0];
+			mess = es.doDiagnosticCheck(officeUuid, cmp.getUuid())[0];
 		} catch (Exception n) {
 
 		}
@@ -324,6 +341,34 @@ public class RcmController {
 		RuleEngineLogger.generateLogs(clazz, "ScrappingController", Constants.rule_log_debug, null);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "remote-lite-details", remoteList));
 
+	}
+
+	@RequestMapping(value = "/ivf-data-for-rcm", method = RequestMethod.GET)
+	public ResponseEntity<?> claimData(@RequestHeader("x-api-key") String apiKey,
+			@RequestParam(value = "office", required = true) String officeUuid,
+			@RequestParam(value = "cmpId", required = true) String cmpId,
+			@RequestParam(value = "ivId", required = true) String ivId,
+			@RequestParam(value = "patientId", required = true) String patientId)
+			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+
+		List<CaplineIVFFormDto> d = null;
+		// Office office = null;
+		RuleEngineLogger.generateLogs(clazz, "ENTER IVF DATA From  Rule Engine" + new Date(), " INFO", null);
+
+		if (!checkForKey(apiKey)) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created", "Key Error"));
+		}
+
+		CaplineIVFQueryFormDto dto = new CaplineIVFQueryFormDto();
+		Office office = od.getOfficeByUuid(officeUuid, cmpId);
+		dto.setUniqueID(ivId);
+		dto.setPatientIdDB(patientId);
+		try {
+			d = (List<CaplineIVFFormDto>) civf.searchIVFData(dto, office);
+		} catch (Exception n) {
+
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "IVF DATA Fetched Successfully", d));
 	}
 
 	private boolean checkForKey(String apiKey) {
