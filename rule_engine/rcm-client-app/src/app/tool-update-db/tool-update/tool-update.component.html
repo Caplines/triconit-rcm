@@ -8,14 +8,46 @@
             <h2 class="page-heading">Tool to update database</h2>
             <div class="main-container">
                 <div class="detail-box">
-                    <div class="form-group">
+                    <div class="form-group clientNameBox">
                         <select class="form-control"name="cName" [(ngModel)]="cName"
                         (change)="fetchLatesClaimLLogs()">
                         <option value="-1">Select Client Name</option>
                         <option *ngFor="let sta of clients" [value]="sta.uuid">{{sta.clientName}}</option>
                     </select>
-                  <!--  <div  *ngIf="cName!='-1'" (click)="fetchIssueClaims()">Issue Claims</div> -->
+                   <div class="issue-claim" *ngIf="cName!='-1'"><button class="btn btn-outline-primary" id="myBtn"  (click)="fetchIssueClaims()">Issue Claims</button></div>
                 </div>
+                 <!-- Modal -->
+                        <div id="myModal" class="modal">
+                            <div class="modal-content">
+                                <span class="close">&times;</span>
+                                <div class="table-responsive">
+                                    <table class="table" *ngIf="issueCl.length>0">
+                                        <thead>
+                                            <tr>
+                                                     
+                                                <th colspan="6">Office Name</th>
+                                                <th colspan="6" >Claim Id</th>
+                                                <th colspan="6">Created Date</th>
+                                                <th colspan="6" style="min-width: 170px;">Issue</th>
+                                                <th colspan="6">source</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let lg of issueCl">
+                                                <td colspan="6">{{lg.officeName}}</td>
+                                                <td colspan="6">{{lg.claimId}}</td>
+                                                <td colspan="6">{{lg.createdDate | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                                                <td colspan="6">{{lg.issue}}</td>
+                                                <td colspan="6">{{lg.source}}</td>
+                                                
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="text-center text-light bg-dark p-3 mb-2" *ngIf="issueCl.length==0">No Data !</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal End -->
                     <div class="detail-box-form" *ngIf="log.length>0">
                         <ng-container *ngIf="cName==='614c4beb-7df2-11e8-8432-8c16451459cd'">
                             <a data-toggle="collapse"  href="javascript:void(0)"  (click)="expandCollapseBox('claimDetails')"  class="bold-b-text " [ngClass]="{'collapsed':!expandCollapse.expandClaim}" aria-expanded="true">How would you like to update the database:</a>
@@ -52,12 +84,12 @@
                                     <thead>
                                         <tr>
                                                  
-                                            <th colspan="6">Office Name</th>
+                                            <th colspan="6" style="min-width: 170px;">Office Name</th>
                                             <th colspan="6">Source</th>
                                             <th colspan="6">Database Updation Done?</th>
                                             <th colspan="6">Last Updated On</th>
                                             <th colspan="6">Total No. of New Claims Added</th>
-                                            <th colspan="6">Update Claims  <button class="btn btn-danger" (click)="selectAll(hasUpdateClaims.length==0 ? true : false)">{{hasUpdateClaims.length==0 ?  'Select All' : 'Unselect All'}}</button></th>
+                                            <th colspan="6">Update Claims  <button class="btn btn-danger" style="min-width: 105px;justify-content: center;" (click)="selectAll(hasUpdateClaims.length==0 ? true : false)">{{hasUpdateClaims.length==0 ?  'Select All' : 'Unselect All'}}</button></th>
                                            
                                         </tr>
                                     </thead>

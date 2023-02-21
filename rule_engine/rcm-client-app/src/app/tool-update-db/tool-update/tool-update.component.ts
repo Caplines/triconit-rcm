@@ -41,6 +41,20 @@ export class ToolUpdateComponent implements OnInit {
   ngOnInit(): void {
     this.fetchAllClients();
    // this.fetchLatesClaimLLogs();
+   
+  }
+
+  modal(){
+    let modal:any = document.getElementById("myModal");
+    let btn:any = document.getElementById("myBtn");
+    let span:any = document.getElementsByClassName("close")[0];
+    btn.addEventListener('click',(e:any)=>{
+      modal.style.display = "block";
+    })
+    span.addEventListener('click',(e:any)=>{
+      modal.style.display = "none";
+    })
+   
   }
 
   fetchLatesClaimLLogs(){
@@ -206,9 +220,12 @@ ths.appService.fetchIssueClaims(ths.cName,(res:any)=>{
 
   if (res.status=== 200){
     ths.issueCl=res.data;
+      this.modal();
     }
  });
 
  }
+
+
 
 }
