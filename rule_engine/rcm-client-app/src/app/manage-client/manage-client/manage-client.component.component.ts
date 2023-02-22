@@ -57,7 +57,9 @@ export class ManageClientComponent implements OnInit {
   }
 
 
-  saveClientName(clientDetails: any) {
+  saveClientName(clientDetails: any,index:any) {
+    console.log(index);
+    if(clientDetails.header[index].google_sheet_id !=='' && clientDetails.clientName !=='' && clientDetails.header[index].google_sheet_sub_id!=='' &&  clientDetails.header[index].google_sheet_sub_name !==''){
     let { editable, newField, ...client } = clientDetails;
     if (!client.companyUuid) {
 
@@ -82,6 +84,7 @@ export class ManageClientComponent implements OnInit {
         }
       })
     }
+  }
 
     // if (office.name) {
     //   if (office.uuid) {

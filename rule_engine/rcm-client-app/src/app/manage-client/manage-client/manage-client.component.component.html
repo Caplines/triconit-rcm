@@ -69,7 +69,7 @@
                                                         </button>
                                                     </td>
                                                     <td scope="col">
-                                                        <button type="button" class="btn btn-edit" [disabled]="!comp.editable" (click)="saveClientName(comp)">
+                                                        <button type="button" class="btn btn-edit" [disabled]="!comp.editable" (click)="saveClientName(comp,idx)">
                                                             <img src="../assets/img/save-data-icon.png" alt="edit" style="margin-top:2px;" />
                                                             {{comp['newField'] ? 'Save' : 'Update' }}
                                                         </button>
