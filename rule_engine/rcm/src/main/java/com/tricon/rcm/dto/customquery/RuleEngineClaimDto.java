@@ -14,6 +14,9 @@ public interface RuleEngineClaimDto {
 	String getCodes();
 	String getOfficeName();
 	String getInsuranceType();
+	String getRuleId();
+	String getRuleName();
+	
 
 	
 	

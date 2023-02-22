@@ -190,9 +190,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	
 	@Query(nativeQuery = true, value = ""+
-			" select r.claim_id claimId,r.patient_name patientName,patient_id patientId,r.ivf_form_id ivId,rd.iv_date ivDate,rd.date_of_service"+
+			" select r.claim_id claimId,rd.rule_id ruleId,rs.name ruleName,r.patient_name patientName,patient_id patientId,r.ivf_form_id ivId,rd.iv_date ivDate,rd.date_of_service"+
 			" dos,rd.error_message message,rd.message_type mType,"+
-			" rd.surface surface,rd.tooth tooth,rd.codes codes,off.name officeName,rd.insurance_type insuranceType from reports_claim r"+
+			" rd.surface surface,rd.tooth tooth,rd.codes codes,off.name officeName,rd.insurance_type insuranceType from reports_claim r "+
 			" inner join ("+
 			" SELECT rd.group_run,rd.report_id,iv_date FROM reports_claim r inner join report_claim_detail rd"+
 			" on rd.report_id=r.id "+
@@ -200,7 +200,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			"  r.office_id=:office_id order by STR_TO_DATE( iv_date, '%m/%d/%Y'),rd.group_run desc limit 1) r1 "+
 			"  on r.id=r1.report_id and r.group_run=r1.group_run "+
 			" inner join report_claim_detail rd "+
-			" on r.id=rd.report_id and rd.group_run=r1.group_run inner join office off on off.uuid=r.office_id "+
+			" on r.id=rd.report_id and rd.group_run=r1.group_run inner join office off on off.uuid=r.office_id "
+			+ " inner join rules rs on rs.id=rd.rule_id "
+			+ ""+
 			"  where r.claim_id=:claim_id and r.office_id=:office_id and r.patient_id=:patientid and off.company_id=:cmp_id ")
 	List<RuleEngineClaimDto> getRuleEngineClaimReport(@Param("office_id") String officeId,@Param("cmp_id") String companyId,
 			@Param("patientid") String patientId,@Param("claim_id") String claimId);

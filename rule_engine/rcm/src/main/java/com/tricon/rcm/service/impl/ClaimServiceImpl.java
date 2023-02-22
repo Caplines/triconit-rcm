@@ -28,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimComment;
 import com.tricon.rcm.db.entity.RcmClaimLog;
+import com.tricon.rcm.db.entity.RcmClaimRuleRemark;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
+import com.tricon.rcm.db.entity.RcmClaimSubmissionDetails;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsurance;
@@ -37,6 +39,7 @@ import com.tricon.rcm.db.entity.RcmIssueClaims;
 import com.tricon.rcm.db.entity.RcmLogs;
 import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
+import com.tricon.rcm.db.entity.RcmRules;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
@@ -46,7 +49,9 @@ import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimRemarkDto;
+import com.tricon.rcm.dto.ClaimRuleRemarkDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
+import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
@@ -54,6 +59,7 @@ import com.tricon.rcm.dto.customquery.IVFDto;
 import com.tricon.rcm.dto.customquery.IssueClaimDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
+import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
@@ -61,6 +67,7 @@ import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
+import com.tricon.rcm.dto.customquery.ClaimRuleRemarksDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsImplDto;
@@ -73,7 +80,9 @@ import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimCommentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLogRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
+import com.tricon.rcm.jpa.repository.RcmClaimRuleRemarkRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimSubmissionDetailsRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
@@ -81,6 +90,7 @@ import com.tricon.rcm.jpa.repository.RcmIssueClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmLinkedClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmRuleRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
@@ -135,7 +145,10 @@ public class ClaimServiceImpl {
 
 	@Autowired
 	RcmClaimCommentRepo rcmClaimCommentRepo;
-	
+
+	@Autowired
+	RcmClaimRuleRemarkRepo rcmClaimRuleRemarkRepo;
+
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
 	private UserDetailsService userDetailsService;
@@ -151,6 +164,13 @@ public class ClaimServiceImpl {
 
 	@Autowired
 	RcmLinkedClaimsRepo rcmLinkedClaimsRepo;
+
+	@Autowired
+	RcmRuleRepo rcmRuleRepo;
+	
+	@Autowired
+	RcmClaimSubmissionDetailsRepo rcmClaimSubmissionDetailsRepo;
+	
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -945,40 +965,53 @@ public class ClaimServiceImpl {
 
 		if (claims != null) {
 			RcmOffice off = claims.getOffice();
-			IVFDto iVFDto = rcmClaimRepository.getLatestIvfNumberForClaim(off.getUuid(),
-					claims.getPatientId(), claimuuid);
+			IVFDto iVFDto = rcmClaimRepository.getLatestIvfNumberForClaim(off.getUuid(), claims.getPatientId(),
+					claimuuid);
 			if (iVFDto != null) {
 				return ruleEngineService.pullIVFDataFromRE(iVFDto.getIvId(), claims.getPatientId(), companyId,
 						off.getUuid());
-			}else {
-				//For testing..
+			} else {
+				// For testing..
 				return ruleEngineService.pullIVFDataFromRE("196041", "7431", companyId,
 						"f015515d-7df2-11e8-8432-8c16451459cd");
 			}
-		}else {
-			//For testing..
+		} else {
+			// For testing..
 			return ruleEngineService.pullIVFDataFromRE("196041", "7431", companyId,
 					"f015515d-7df2-11e8-8432-8c16451459cd");
 		}
-		//return null;
+		// return null;
 	}
-	
-	
-	public List<ClaimRemarksDto>  fetchClaimRemarks(String companyId, String claimuuid,int teamId) {
 
-		List<ClaimRemarksDto> list = rcmClaimCommentRepo.fetchClaimRemarks(claimuuid,teamId);
-		
+	public List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(String companyId, String claimuuid, int teamId) {
+
+		List<ClaimRemarksDto> list = rcmClaimCommentRepo.fetchClaimRemarksOtherTeam(claimuuid, teamId);
+
 		return list;
 	}
-	
+
+	public List<ClaimRuleRemarksDto> fetchClaimRuleRemark(JwtUser jwtUser, String claimuuid) {
+
+		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		List<ClaimRuleRemarksDto> list = null;
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimuuid);
+		if (officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid()
+				.equals(user.getCompany().getUuid())) {
+			list = rcmClaimRuleRemarkRepo.fetchClaimRuleRemarks(claimuuid, RcmTeamEnum.BILLING.getId());
+		} else {
+			logger.error("Wrong Clinet");
+		}
+		return list;
+	}
+
 	public String saveClaimRemark(JwtUser jwtUser, ClaimRemarkDto dto) {
 
-		RcmClaimComment comment= new RcmClaimComment();
-		RcmUser user= userRepo.findByUuid(jwtUser.getUuid());
-		RcmClaims claim= rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
-		
-		
-		if (officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid().equals(user.getCompany().getUuid())) {
+		RcmClaimComment comment = new RcmClaimComment();
+		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+
+		if (officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid()
+				.equals(user.getCompany().getUuid())) {
 			comment.setCommentedBy(user);
 			comment.setCreatedBy(user);
 			comment.setClaims(claim);
@@ -987,18 +1020,96 @@ public class ClaimServiceImpl {
 			comment.setTeamId(rcmTeamRepo.findById(jwtUser.getTeamId()));
 			return rcmClaimCommentRepo.save(comment).getUuid();
 		}
-		
-		else return "wrong team";
-		
-		
-		
+
+		else
+			return "wrong Client Name";
+
 	}
-	
+
+	public String saveClaimRuleRemark(JwtUser jwtUser, ClaimRuleRemarkDto dto) {
+
+		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+
+		if (officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid()
+				.equals(user.getCompany().getUuid())) {
+			dto.getData().forEach(s -> {
+				RcmRules rule = rcmRuleRepo.findById(s.getRuleId()).get();
+				RcmClaimRuleRemark remark = rcmClaimRuleRemarkRepo.findByRuleAndClaim(rule, claim);
+
+				if (remark == null) {
+					remark = new RcmClaimRuleRemark();
+					remark.setCreatedBy(user);
+				} else {
+					remark.setUpdatedBy(user);
+					remark.setUpdatedDate(new Date());
+				}
+				remark.setCommentedBy(user);
+				remark.setClaim(claim);
+				remark.setRemarks(s.getRemark());
+				remark.setRule(rule);
+				remark.setActive(true);
+				remark.setTeamId(rcmTeamRepo.findById(jwtUser.getTeamId()));
+				rcmClaimRuleRemarkRepo.save(remark);
+			});
+
+			return "Remarks Saved";
+		}
+
+		else
+			return "wrong Client Name";
+
+	}
+
 	public List<RuleEngineClaimDto> getRuleEngineClaimReport(String officeId, String companyId, String patientId,
 			String claimId) {
-        
+
 		return rcmClaimRepository.getRuleEngineClaimReport(officeId, companyId, patientId, claimId);
 	}
 
+	public RcmClaimSubmissionDto fetchClaimSubmissionDetails(JwtUser jwtUser, String claimuuid) {
+
+		RcmClaimSubmissionDto d = rcmClaimSubmissionDetailsRepo.findByClaimUuidAndCompanyId(claimuuid,jwtUser.getCompany().getUuid());
+
+		return d;
+	}
+
+	public String saveClaimSubmissionDetails(JwtUser jwtUser, ClaimSubmissionDto dto) {
+
+		RcmClaimSubmissionDetails det = null;
+		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+
+		if (officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid()
+				.equals(user.getCompany().getUuid())) {
+			det = rcmClaimSubmissionDetailsRepo.findByClaim(claim);
+			if (det!=null) {
+				det.setSubmittedBy(user);
+				det.setUpdatedBy(user);
+				det.setUpdatedDate(new Date());
+			}else {
+				det = new RcmClaimSubmissionDetails();
+				det.setSubmittedBy(user);
+			}
+			
+			det.setCreatedBy(user);
+			det.setClaim(claim);
+			det.setEsDate(dto.getEsDate());
+			det.setPreauth(dto.isPreauth());
+			det.setPreauthNo(dto.getProviderRefNo());
+			det.setChannel(dto.getChannel());
+			det.setClaimNumber(dto.getClaimNumber());
+			det.setProviderRefNo(dto.getProviderRefNo());
+			det.setRefferalLetter(dto.isRefferalLetter());
+			det.setAttachmentSend(dto.isAttachmentSend());
+			det.setEsTime(dto.getEsTime());
+			
+			return rcmClaimSubmissionDetailsRepo.save(det).getId();
+		}
+
+		else
+			return "wrong Client Name";
+
+	}
 
 }

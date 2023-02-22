@@ -19,27 +19,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimRemarkDto;
+import com.tricon.rcm.dto.ClaimRuleRemarkDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
+import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
-import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
-import com.tricon.rcm.dto.customquery.ProductionDto;
-import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
-import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
-import com.tricon.rcm.enums.RcmTeamEnum;
-import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.dto.GenericResponse;
-import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
+import com.tricon.rcm.dto.customquery.ClaimRuleRemarksDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
+import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
+import com.tricon.rcm.dto.customquery.ProductionDto;
+import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
+import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
+import com.tricon.rcm.enums.RcmTeamEnum;
+import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
@@ -198,17 +199,17 @@ public class RcmController {
 	}
 	
 	
-	@ApiOperation(value = "Api For Fetching Claims Remarks", response = ClaimRemarksDto.class ,responseContainer = "List")
-	@GetMapping("/api/remarks/{claimuuid}")
-	public ResponseEntity<Object> fetchClaimRemarks(@PathVariable("claimuuid") String claimuuid) {
+	@ApiOperation(value = "Api For Fetching Claims (Other team )Remarks", response = ClaimRemarksDto.class ,responseContainer = "List")
+	@GetMapping("/api/remarks-other/{claimuuid}")
+	public ResponseEntity<Object> fetchClaimRemarksOtherTeam(@PathVariable("claimuuid") String claimuuid) {
 		Object[] obj = checkForSimplePointUser();
 		JwtUser jwtUser = (JwtUser) obj[0];
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchClaimRemarks(jwtUser.getCompany().getUuid(), claimuuid,jwtUser.getTeamId())));
+				claimServiceImpl.fetchClaimRemarksOtherTeam(jwtUser.getCompany().getUuid(), claimuuid,jwtUser.getTeamId())));
 	}
 	
-	@ApiOperation(value = "Api For Saving Claims Remarks", response = ClaimRemarksDto.class ,responseContainer = "List")
+	@ApiOperation(value = "Api For Saving Claims Remarks", response = String.class)
 	@PostMapping("/api/save-remarks")
 	public ResponseEntity<Object> saveRemark(@RequestBody ClaimRemarkDto dto) {
 		Object[] obj = checkForSimplePointUser();
@@ -217,6 +218,55 @@ public class RcmController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.saveClaimRemark(jwtUser,dto)));
 	}
+	
+	
+	@ApiOperation(value = "Api For Fetching Claims Rule Remarks", response = ClaimRuleRemarksDto.class ,responseContainer = "List")
+	@GetMapping("/api/fetch-claim-rule-remarks/{claimuuid}")
+	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> fetchClaimRuleRemark(@PathVariable("claimuuid") String claimuuid) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.fetchClaimRuleRemark(jwtUser,claimuuid)));
+	}
+	
+	
+	@ApiOperation(value = "Api For Saving Claims Rule Remarks", response = String.class)
+	@PostMapping("/api/save-claim-rule-remarks")
+	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> saveClaimRuleRemark(@RequestBody ClaimRuleRemarkDto dto) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.saveClaimRuleRemark(jwtUser,dto)));
+	}
+	
+	
+	@ApiOperation(value = "Api For Fetching Claims Submission detail", response = RcmClaimSubmissionDto.class)
+	@GetMapping("/api/fetch-claim-sub-det/{claimuuid}")
+	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> fetchClaimSubDetails(@PathVariable("claimuuid") String claimuuid) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.fetchClaimSubmissionDetails(jwtUser,claimuuid)));
+	}
+	
+	@ApiOperation(value = "Api For Saving Claims Submission  Details", response = String.class)
+	@PostMapping("/api/save-claim-sub-det")
+	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> saveClaimSubDetails(@RequestBody ClaimSubmissionDto dto) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.saveClaimSubmissionDetails(jwtUser,dto)));
+	}
+	
+	
 	
 
 	private Object[] checkForSimplePointUser() {
