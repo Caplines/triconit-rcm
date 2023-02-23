@@ -410,7 +410,11 @@ public class Constants {
 	public static final List<String> codesToCheckForProviderCertStatus= Arrays.asList("D0145", "D9230", "D9248");
 	
 	
-	
+	public static final String RULE_TYPE_RULE_ENGINE="R";
+	public static final String RULE_TYPE_RCM="C";
+	public static final String RULE_TYPE_RULE_ENGINE_AND_RCM=RULE_TYPE_RULE_ENGINE+","+RULE_TYPE_RCM;
+	public static final String RULE_TYPE_MANUAL="MANUAL";
+	public static final String RULE_TYPE_AUTO="AUTO";
 	
 	
 }

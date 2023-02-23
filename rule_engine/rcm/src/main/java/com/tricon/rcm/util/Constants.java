@@ -40,6 +40,11 @@ public class Constants {
 	public static String NO_DATA="-NO-DATA-";
 	public static String OfficeNeedToTakeInfo_o="OfficeNeedToTakeInfo";
 	public static String OfficeNeedToTakeInfo_r="Office Need To Take Info";
+	public static final String RULE_TYPE_RULE_ENGINE="R";
+	public static final String RULE_TYPE_RCM="C";
+	public static final String RULE_TYPE_RULE_ENGINE_AND_RCM=RULE_TYPE_RULE_ENGINE+","+RULE_TYPE_RCM;
+	public static final String RULE_TYPE_MANUAL="MANUAL";
+	public static final String RULE_TYPE_AUTO="AUTO";
 	//Taken From Rule Engine - END
 	
 	public static final String ROLE_PREFIX="ROLE_";

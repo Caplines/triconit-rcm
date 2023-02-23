@@ -1,7 +1,10 @@
 package com.tricon.ruleengine.dao.impl;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
@@ -21,6 +24,7 @@ import com.tricon.ruleengine.model.db.ReportDetail;
 import com.tricon.ruleengine.model.db.Reports;
 import com.tricon.ruleengine.model.db.ReportsClaim;
 import com.tricon.ruleengine.model.db.Rules;
+import com.tricon.ruleengine.utils.Constants;
 
 /**
  * @author Deepak.Dogra
@@ -37,7 +41,21 @@ public class TreatmentValidationDaoImpl extends BaseDaoImpl implements Treatment
 	@Override
 	public List<Rules> getAllActiveRules() {
 		
-	 List<Rules> list = (List<Rules>)(List<?>)getEntitiesByColumnName(Rules.class, "active", 1);	
+	 List<Rules> list = null;//(List<Rules>)(List<?>)getEntitiesByColumnName(Rules.class, "active", 1);	
+	 
+		Session session = getSession();
+		try {
+			Criteria criteria = session.createCriteria(Rules.class);
+			Set<String> types = Arrays.asList( new String[] {Constants.RULE_TYPE_RULE_ENGINE, Constants.RULE_TYPE_RULE_ENGINE_AND_RCM }).stream().collect(Collectors.toSet());
+			criteria.add(Restrictions.eq("active", 1));
+			criteria.add(Restrictions.eq("manualAuto", Constants.RULE_TYPE_AUTO));
+			criteria.add(Restrictions.in("ruleType",types));
+			list =  criteria.list();
+			
+		} finally {
+			closeSession(session);
+
+		}
 	 return list;
 	}
 

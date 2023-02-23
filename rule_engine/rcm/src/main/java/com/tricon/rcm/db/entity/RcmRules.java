@@ -31,6 +31,10 @@ public class RcmRules implements java.io.Serializable {
 	private String description;
 	@Column(name = "active")
 	private int active;
+	@Column(name = "rule_type")//R= Rule Engine C= Rcm Example (R,C) or R or C
+	private String ruleType;
+	@Column(name = "manual_auto")
+	private String manualAuto;
 
 	public int getId() {
 		return this.id;
@@ -72,4 +76,21 @@ public class RcmRules implements java.io.Serializable {
 		this.shortName = shortName;
 	}
 
+	public String getRuleType() {
+		return ruleType;
+	}
+
+	public void setRuleType(String ruleType) {
+		this.ruleType = ruleType;
+	}
+
+	public String getManualAuto() {
+		return manualAuto;
+	}
+
+	public void setManualAuto(String manualAuto) {
+		this.manualAuto = manualAuto;
+	}
+
+	
 }
