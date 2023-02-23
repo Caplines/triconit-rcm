@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimComment;
 import com.tricon.rcm.db.entity.RcmClaimLog;
+import com.tricon.rcm.db.entity.RcmClaimNoteType;
+import com.tricon.rcm.db.entity.RcmClaimNotes;
 import com.tricon.rcm.db.entity.RcmClaimRuleRemark;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaimSubmissionDetails;
@@ -36,7 +38,7 @@ import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsurance;
 import com.tricon.rcm.db.entity.RcmInsuranceType;
 import com.tricon.rcm.db.entity.RcmIssueClaims;
-import com.tricon.rcm.db.entity.RcmLogs;
+
 import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmRules;
@@ -45,20 +47,22 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
+import com.tricon.rcm.dto.ClaimAllNotesDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
+import com.tricon.rcm.dto.ClaimNotesDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimRemarkDto;
 import com.tricon.rcm.dto.ClaimRuleRemarkDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
-import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.IVFDto;
 import com.tricon.rcm.dto.customquery.IssueClaimDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
+import com.tricon.rcm.dto.customquery.RcmClaimNoteDto;
 import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
@@ -79,6 +83,7 @@ import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimCommentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLogRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimNotesRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimRuleRemarkRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
@@ -90,6 +95,7 @@ import com.tricon.rcm.jpa.repository.RcmIssueClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmLinkedClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmClaimNoteTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmRuleRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
@@ -171,7 +177,12 @@ public class ClaimServiceImpl {
 	@Autowired
 	RcmClaimSubmissionDetailsRepo rcmClaimSubmissionDetailsRepo;
 	
-
+	@Autowired
+	RcmClaimNotesRepo rcmClaimNotesRepo;
+	
+	@Autowired
+	RcmClaimNoteTypeRepo rcmClaimNoteTypeRepo;
+	
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
 	@Transactional(rollbackFor = Exception.class)
@@ -1105,6 +1116,55 @@ public class ClaimServiceImpl {
 			det.setEsTime(dto.getEsTime());
 			
 			return rcmClaimSubmissionDetailsRepo.save(det).getId();
+		}
+
+		else
+			return "wrong Client Name";
+
+	}
+	
+	public ClaimAllNotesDto fetchClaimNotes(JwtUser jwtUser, String claimuuid) {
+
+		ClaimAllNotesDto dto = new ClaimAllNotesDto();
+		List<RcmClaimNoteDto> d = rcmClaimNotesRepo.fetchClaimNotes(claimuuid,RcmTeamEnum.BILLING.getId());
+		dto.setNt(d);
+		List<RcmClaimNoteDto> all =rcmClaimNoteTypeRepo.fetchAllNotes(true);
+		dto.setNoteType(all);
+		return dto;
+	}
+
+	public String saveClaimNotes(JwtUser jwtUser, ClaimNotesDto dto) {
+
+		//RcmClaimNotes notes = null;
+		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+
+		if (officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid()
+				.equals(user.getCompany().getUuid())) {
+			
+			dto.getData().forEach(s->{
+				RcmClaimNoteType noteType= rcmClaimNoteTypeRepo.findById(s.getNoteId()).get();
+				RcmClaimNotes  notes = rcmClaimNotesRepo.findByClaimAndNoteType(claim,noteType);
+				if (notes!=null) {
+					notes.setNotesBy(user);
+					notes.setUpdatedBy(user);
+					notes.setUpdatedDate(new Date());
+				}else {
+					notes = new RcmClaimNotes();
+					notes.setNotesBy(user);
+					notes.setNoteType(noteType);
+					notes.setCreatedBy(user);
+				}
+				notes.setClaim(claim);
+				notes.setNote(s.getNote());
+				notes.setTeamId(rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId()));
+				
+				rcmClaimNotesRepo.save(notes);
+				
+			});
+			
+			return "Done";
 		}
 
 		else

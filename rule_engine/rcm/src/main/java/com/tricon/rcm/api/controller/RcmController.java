@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
+import com.tricon.rcm.dto.ClaimAllNotesDto;
+import com.tricon.rcm.dto.ClaimNotesDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimRemarkDto;
 import com.tricon.rcm.dto.ClaimRuleRemarkDto;
@@ -266,7 +268,27 @@ public class RcmController {
 				claimServiceImpl.saveClaimSubmissionDetails(jwtUser,dto)));
 	}
 	
+	@ApiOperation(value = "Api For Fetching Claims Notes", response = ClaimAllNotesDto.class)
+	@GetMapping("/api/fetch-claim-notes/{claimuuid}")
+	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> fetchClaimNotes(@PathVariable("claimuuid") String claimuuid) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.fetchClaimNotes(jwtUser,claimuuid)));
+	}
 	
+	@ApiOperation(value = "Api For Saving Claims Notes", response = String.class)
+	@PostMapping("/api/save-claim-notes")
+	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> saveClaimNotes(@RequestBody ClaimNotesDto dto) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.saveClaimNotes(jwtUser,dto)));
+	}
 	
 
 	private Object[] checkForSimplePointUser() {
