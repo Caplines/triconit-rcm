@@ -9,5 +9,6 @@ import com.tricon.rcm.db.entity.RcmRules;
 public interface RcmRuleRepo extends JpaRepository<RcmRules, Integer>{
 
 	
-	RcmRules findByRuleTypeInAndActiveAndManualAuto(List<String> type,int active,String manualAuto);	
+	List<RcmRules> findByRuleTypeInAndActiveAndManualAuto(List<String> type,int active,String manualAuto);	
+	List<RcmRules> findByRuleTypeInAndActive(List<String> type,int active);
 }
