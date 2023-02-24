@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { BillingClaimsRoutingModule } from './billing-claims-routing.module';
 import { BillingClaimsComponent } from './billing-claims/billing-claims.component';
 import { PipesModule } from '../pipe/pipe-module'; 
+import { ReportModule } from '../report/report.module';
 @NgModule({
   declarations: [
     BillingClaimsComponent
@@ -11,7 +12,8 @@ import { PipesModule } from '../pipe/pipe-module';
   imports: [
     CommonModule,
     BillingClaimsRoutingModule,
-    PipesModule
+    PipesModule,
+    ReportModule
   ]
 })
 export class BillingClaimsModule { 

@@ -22,6 +22,7 @@
             <li *ngIf="staticUtil.isBillingLead() && staticUtil.isSmilePoint()"><a href="javascript:void(0);" [routerLink]="['/claim-assignment']" [ngClass]="{'active':isClaimAssign}"><img [src]="isClaimAssign? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency</a></li>
             <li *ngIf="staticUtil.isBillingLead() && staticUtil.isSmilePoint()"><a href="javascript:void(0);" [routerLink]="['/tool-update']" [ngClass]="{'active':isToolUpdate}"><img [src]="isToolUpdate? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Tool to Update Database</a></li>
             <li *ngIf="staticUtil.isBillingLead() || staticUtil.isBillingAsso() || staticUtil.isClientManager()"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" [ngClass]="{'active':isFetchClaims}"><img [src]="isFetchClaims? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Billing Pendency Dashboard</a></li>
+            <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" [ngClass]="{'active':isUpdatePass}"><img [src]="isUpdatePass? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Update Password</a></li>
         </ul>
 
     </div>

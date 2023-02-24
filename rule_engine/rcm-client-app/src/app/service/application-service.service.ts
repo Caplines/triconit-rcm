@@ -95,6 +95,10 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params,this.httpUrl['changePassword'],callback)
   }
 
+  updatepassword(params:any,callback:any){
+    this.postData(params,this.httpUrl['updatePass'],callback)
+  }
+
   updateUserStatus(params:any,callback:any){
     this.postData(params,this.httpUrl['updateStatus'],callback)
   }

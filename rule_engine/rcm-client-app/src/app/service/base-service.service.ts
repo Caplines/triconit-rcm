@@ -40,7 +40,8 @@ export class BaseService {
     'fetchBillingClaimsByUuid':"/api/fetchindclaim",
     'issueclaim':"/api/issueClaims",
     'ivfdata':"/api/ivfdata",
-    'claimRuleData':"/api/rules-data"
+    'claimRuleData':"/api/rules-data",
+    'updatePass':"/updatepassword"
     
   }
 

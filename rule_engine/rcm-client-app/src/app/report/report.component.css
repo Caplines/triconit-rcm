@@ -1,0 +1,108 @@
+.colorred
+{
+	color:#ff0000;
+}
+.newff{
+	color:#0000ff;
+}
+
+.yellow{
+	background:#efff00;
+}
+table#data-scroll-t th, table#data-scroll-tre th{
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  line-height: 32px;
+  text-align: center;
+  background: #BBDEFB;
+  z-index:1;
+  width:10%;
+  border:1px solid;
+  
+}
+table#data-scroll-t tr, table#data-scroll-tre tr{
+  border:1px solid;
+  
+}
+table#data-scroll-t td, table#data-scroll-tre td{
+  border:1px solid;
+  
+}
+#data-scroll-t .data-scroll-thd ,#data-scroll-tre .data-scroll-thdtre{
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+ font-weight: 300;
+}
+
+table#data-scroll-t,table#data-scroll-tre {
+  border-collapse: collapse;
+  width:100%
+}
+
+th#table#data-scroll-thd ,th#table#data-scroll-thdtre {
+  background-color: #1976D2;
+  color: #fff;
+}
+
+th#table#data-scroll-thd,
+td#table#data-scroll-thdtre {
+  padding: 1.1em 1.5em;
+}
+
+table#data-scroll-t tr,table#data-scroll-tre tr {
+  color: #212121;
+}
+
+table#data-scroll-t tr:nth-child(odd) {
+  background-color: #BBDEFB;
+}
+
+table#data-scroll-t1 th, table#data-scroll-t1re th{
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  line-height: 32px;
+  text-align: center;
+  background: #BBDEFB;
+  z-index:1;
+  width:10%;
+  border:1px solid;
+  
+}
+table#data-scroll-t1 tr, table#data-scroll-t1re tr{
+  border:1px solid;
+  
+}
+table#data-scroll-t1 td, table#data-scroll-t1re td{
+  border:1px solid;
+  
+}
+#data-scroll-t1 .data-scroll-t1hd ,#data-scroll-t1re .data-scroll-t1hdtre{
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+ font-weight: 300;
+}
+
+table#data-scroll-t1,table#data-scroll-t1re {
+  border-collapse: collapse;
+  width:100%
+}
+
+th#table#data-scroll-t1hd ,th#table#data-scroll-t1hdtre {
+  background-color: #1976D2;
+  color: #fff;
+}
+
+th#table#data-scroll-t1hd,
+td#table#data-scroll-t1hdtre {
+  padding: 1.1em 1.5em;
+}
+
+table#data-scroll-t1 tr,table#data-scroll-t1re tr {
+  color: #212121;
+}
+
+table#data-scroll-t1 tr:nth-child(odd) {
+  background-color: #BBDEFB;
+}

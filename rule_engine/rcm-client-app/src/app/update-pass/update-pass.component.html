@@ -1,0 +1,46 @@
+<div class="right-container">
+    <app-header-component [isUpdatePass]="isUpdatePass"></app-header-component>
+    <ng-container *ngIf="alert.showAlertPopup">
+        <div class="alert alert-success alert-dismissible fade show my-3 text-center" role="alert">
+            <strong>{{alert.alertMsg}}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"
+                (click)="alert.showAlertPopup=false;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </ng-container>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 pt-3">
+                <h2 class="page-heading">Update Password</h2>
+                <div class="main-container">
+                    <div class="form-container detail-box ">
+                        <ng-container>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="changepass">Enter the  Password :</label>
+                                        <input type="text" class="form-control" [(ngModel)]="user['changedPassword']"
+                                            [ngClass]="{'is-invalid': user.changedPassword && (user.changedPassword=='' || user.changedPassword.length<6)}"
+                                            required="true">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="changepass">Confirm Password :</label>
+                                        <input type="text" class="form-control" [(ngModel)]="user['confirmPass']"
+                                            [ngClass]="{'is-invalid': user.changedPassword && user.changedPassword!==user.confirmPass}"
+                                            required="true">
+                                    </div>
+                                    <div class="find-btn">
+                                        <button type="button" class="btn btn-success" (click)="changePassword()">Change
+                                            Password</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

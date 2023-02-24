@@ -18,6 +18,8 @@
     "importHelpers": true,
     "target": "es2020",
     "module": "es2020",
+    "strictNullChecks":false,
+    "skipLibCheck": true,
     "lib": [
       "es2020",
       "dom"
@@ -27,6 +29,7 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictTemplates": true,
+   
   }
 }

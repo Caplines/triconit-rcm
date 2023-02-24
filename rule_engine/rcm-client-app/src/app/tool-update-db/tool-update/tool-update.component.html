@@ -19,7 +19,9 @@
                  <!-- Modal -->
                         <div id="myModal" class="modal">
                             <div class="modal-content">
-                                <span class="close">&times;</span>
+                                <div class="close-modal">
+                                    <h5>{{issueClientName}} Issues</h5> <span (click)="closeModal()">&times;</span>
+                                </div>
                                 <div class="table-responsive">
                                     <table class="table" *ngIf="issueCl.length>0">
                                         <thead>

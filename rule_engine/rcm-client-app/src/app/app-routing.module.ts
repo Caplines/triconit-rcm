@@ -61,7 +61,14 @@ const  routes: Routes = [
   {
     path:'billing-claims/:uuid',
     loadChildren :()=> import("./billing-claims/billing-claims.module").then(m=>m.BillingClaimsModule),
-   
+  },
+  {
+    path:'billing-claims/:uuid/ivf',
+    loadChildren:()=>import("./report/report.module").then(m=>m.ReportModule)
+  },
+  {
+    path:'update-pass',
+    loadChildren:()=>import("./update-pass/update-pass/update-pass.module").then(m=>m.UpdatePasswordModule)
   },
 
   { path: '**', redirectTo: '/login' }

@@ -28,6 +28,8 @@ export class ToolUpdateComponent implements OnInit {
   expandCollapse:any={'expandClaim':true,'expandTeamRemarks':true}
   hasUpdateClaims:any=[];
   alert:any={'showAlertPopup':false,'alertMsg':''}
+  issueClientName:string='';
+  ele:any={'modal':'','span':''}
   
   constructor(private appService: ApplicationServiceService,private title:Title) { 
 
@@ -45,17 +47,21 @@ export class ToolUpdateComponent implements OnInit {
   }
 
   modal(){
-    let modal:any = document.getElementById("myModal");
-    let btn:any = document.getElementById("myBtn");
-    let span:any = document.getElementsByClassName("close")[0];
-    btn.addEventListener('click',(e:any)=>{
-      modal.style.display = "block";
-    })
-    span.addEventListener('click',(e:any)=>{
-      modal.style.display = "none";
-    })
-   
+      for(let cli of this.clients){
+        if(cli.uuid===this.cName){
+          this.issueClientName = cli.clientName;
+          break;
+      }
+    }
+      this.ele.modal = document.getElementById("myModal");
+      this.ele.span = document.getElementsByClassName("close")[0];
+      this.ele.modal.style.display = "block";
   }
+
+    closeModal(){
+      this.ele.modal.style.display = "none";
+    }
+   
 
   fetchLatesClaimLLogs(){
    

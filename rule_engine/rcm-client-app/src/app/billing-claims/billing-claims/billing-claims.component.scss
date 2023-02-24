@@ -1,0 +1,64 @@
+.error-message-api{
+    color: red;
+}
+
+.success-message-api{
+    color: green;
+}
+
+.table thead th:first-child{
+    width: 375px;
+}
+    .table thead th:nth-child(2){
+        width: 150px;
+        text-align: center;
+    }
+    .table thead th:nth-child(3){
+        width: 150px;
+        text-align: center;
+    }
+    .table thead th:nth-child(4){
+        width: 150px;
+        text-align: center;
+    }
+    .table thead th:nth-child(5){
+        width: 720px;
+    }
+
+.rule-detail{
+    margin: 5px 0px;
+    text-align: center;
+    color: #4e6b8e;
+    font-size: 16px;
+     font-weight: 600;
+}
+
+.table thead tr.total-row{
+    background-color: #345373 !important;
+    color:#fff;
+}
+
+.table thead th{
+    vertical-align: middle !important;
+}
+
+.link-to-related-doc{
+    font-size: 16px;
+}
+    .link-to-related-doc .title{
+        padding: 4px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        background-color: #004687;
+        font-size: 16px; 
+        color: white;
+    }
+
+.claim-detail-container .title {
+    padding: 4px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    background-color: #004687;
+    font-size: 16px; 
+    color: white;
+} 
