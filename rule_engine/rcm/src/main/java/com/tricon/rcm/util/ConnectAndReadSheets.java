@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -35,11 +37,14 @@ import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.dto.RemoteLiteDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
+import com.tricon.rcm.service.impl.RuleEngineService;
 
 @Configuration
 public class ConnectAndReadSheets {
 
 	static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
+	
+	private final static Logger logger = LoggerFactory.getLogger(ConnectAndReadSheets.class);
 
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -170,7 +175,10 @@ public class ConnectAndReadSheets {
 			}
 
 		}
-
+		logger.info("readInsuranceMappingSheetFull");
+		if (list!=null) {
+			logger.info("Size-->"+ list.size());
+		}
 		return list;
 
 	}
@@ -207,14 +215,17 @@ public class ConnectAndReadSheets {
 			}
 
 		}
-
+		logger.info("readTimelyFilingLimitMappingSheetFull");
+		if (list!=null) {
+			logger.info("Size-->"+ list.size());
+		}
 		return list;
 
 	}
 	
 	
 	public static List<ClaimFromSheet> readClaimsFromGSheet(String spreadsheetId, String sheetName,
-			String clientDir, String clientFolder,String clientName,List<String> officeNames) throws IOException {
+			String clientDir, String clientFolder,String clientName,List<String> officeNames,List<String> officeNamesWithKey) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
@@ -249,6 +260,17 @@ public class ConnectAndReadSheets {
 				if (officeNames!=null && officeNames.size()>0) {
 					String g = dto.getOfficeName();
 					String n = officeNames.stream().filter(xx -> g.equals(xx)).findAny().orElse(null);
+					if (n==null) continue;
+				}
+				
+				try {
+					 dto.setOfficeKey("0");
+					  dto.setOfficeKey(obj.get(++x));
+					}catch(Exception m) {
+				}
+				if (officeNamesWithKey!=null && officeNamesWithKey.size()>0) {
+					String g = dto.getOfficeName()+dto.getOfficeKey();
+					String n = officeNamesWithKey.stream().filter(xx -> g.equals(xx)).findAny().orElse(null);
 					if (n==null) continue;
 				}
 				try {

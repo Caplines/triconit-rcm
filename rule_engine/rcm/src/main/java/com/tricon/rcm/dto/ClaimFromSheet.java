@@ -7,6 +7,7 @@ public class ClaimFromSheet {
 	
 	private String clientName;
 	private String officeName;
+	private String officeKey;
 	private String claimId;
 	private String accountId;// same as PatientId
 	private String patientName;
@@ -44,7 +45,7 @@ public class ClaimFromSheet {
 	public ClaimFromSheet() {
 		
 	}
-	public ClaimFromSheet(String clientName, String officeName, String claimId, String accountId, String patientName,
+	public ClaimFromSheet(String clientName, String officeName,String officeKey, String claimId, String accountId, String patientName,
 			String paitentDob, String dos, String primaryBilledAmount, String claimTypeP, String primaryClaimStatus,
 			String providerIdProviderName, String primaryEstAmount, String primaryInsuranceCompany,
 			String insuranceName, String primaryMemberId, String primaryInsuranceAddress, String primaryGroupNumber,
@@ -56,6 +57,7 @@ public class ClaimFromSheet {
 		super();
 		this.clientName = clientName;
 		this.officeName = officeName;
+		this.officeKey = officeKey;
 		this.claimId = claimId;
 		this.accountId = accountId;
 		this.patientName = patientName;

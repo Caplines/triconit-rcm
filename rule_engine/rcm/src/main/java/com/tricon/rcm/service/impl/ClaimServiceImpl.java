@@ -358,16 +358,25 @@ public class ClaimServiceImpl {
 		RcmCompany clCompany = null;
 		RcmInsurance ins = null;
 		List<String> offNames = null;
+		List<String> offNameKeys = null;
+		
 		List<RcmOffice> rcmOffices = null;
 		if (dto.getOfficeuuids() != null && dto.getOfficeuuids().size() > 0) {
 			offNames = new ArrayList<>();
+			offNameKeys = new ArrayList<>();
 			rcmOffices = officeRepo.findByUuidInAndCompanyUuid(dto.getOfficeuuids(), company.getUuid());
-			rcmOffices.stream().map(RcmOffice::getName).forEach(offNames::add);
+			//rcmOffices.stream().map(RcmOffice::getName).forEach(offNames::add);
+			for(RcmOffice s: rcmOffices) {
+				offNames.add(s.getName());
+				offNameKeys.add(s.getName()+s.getKey());
+			}
+			
+			
 
 		}
 		try {
 			li = ConnectAndReadSheets.readClaimsFromGSheet(table.getGoogleSheetId(), table.getGoogleSheetSubName(),
-					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, company.getName(), offNames);
+					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, company.getName(), offNames,offNameKeys);
 			if (li != null) {
 
 				List<ClaimFromSheet> primaryList = li.stream()
@@ -401,12 +410,17 @@ public class ClaimServiceImpl {
 								continue;
 							}
 						}
-
-						RcmOffice off = officeRepo.findByCompanyAndName(companies.get(re.getClientName()),
+                        int key=0;
+                        try {
+                        	key =Integer.parseInt(re.getOfficeKey());
+                        }catch(Exception  p) {
+                        	
+                        }
+						RcmOffice off = officeRepo.findByCompanyAndKeyAndName(companies.get(re.getClientName()),key,
 								re.getOfficeName());
 						if (off == null) {
 							ruleEngineService.saveRcmIssueClaim(re.getClaimId(), null, user,
-									"Wrong Office Name-" + re.getOfficeName() + "For " + re.getClientName(), source,
+									"Wrong Office Name/Key -" + re.getOfficeName() + "For " + re.getClientName(), source,
 									claimTypeEnum);
 							continue;
 						}
