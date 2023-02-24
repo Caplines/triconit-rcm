@@ -20,7 +20,7 @@ export class ManageOfficeComponent implements OnInit {
   officeData:any=[];
   showLoader:boolean=false;
   alert:any={'showAlertPopup':false,'alertMsg':''}
-  companyUuid:any;
+  selectedCompany:any;
 
 
   constructor(private _base: BaseService,private appService:ApplicationServiceService ,private title : Title) { 
@@ -35,7 +35,7 @@ export class ManageOfficeComponent implements OnInit {
     this.appService.fetchCompanyNameData((callback:any)=>{
       if(callback.status){
         this.companyData = callback.data.data;
-        console.log(callback)
+      
       }
     })
   }
@@ -49,8 +49,9 @@ export class ManageOfficeComponent implements OnInit {
     })
 }
   selectCompany(event:any){
-      this.companyUuid = event.target.value;
-      this.getOfficesByCompany(this.companyUuid)
+    
+      this.selectedCompany =this.companyData.filter((el:any) => el.companyUuid==event.target.value)[0];
+      this.getOfficesByCompany(this.selectedCompany.companyUuid);
   }
 
   selectOffice(e:any){
@@ -60,7 +61,7 @@ export class ManageOfficeComponent implements OnInit {
   editOfficeName(office:any){
       office.editable = !office.editable;
       // office['newField']= !office['newField']
-      console.log(office.name)
+      
   }
 
   saveOfficeName(office: any) {
@@ -69,32 +70,30 @@ export class ManageOfficeComponent implements OnInit {
         let params: any = {
           "officeUuid": office.uuid,
           "officeName": office.name,
-          'companyUuid':this.companyUuid
+          'companyUuid':this.selectedCompany.companyUuid
         }
         this.appService.editOfficeName(params, (callback: any) => {
           if (callback.status == 200) {
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
-            console.log(callback)
             office.editable = false;
             office['newField']=false;
           }else if(callback.status == 400){
             this.alert.showAlertPopup = true;
-            this.alert.alertMsg =  callback.result.message
-              console.log(callback)
+            this.alert.alertMsg =  callback.result.message;
+              
           }
         })
       }
       else {
         let params: any = {
-          "companyUuid": this.companyUuid,
+          "companyUuid": this.selectedCompany.companyUuid,
           "name": office.name
         }
         this.appService.addNewOffice(params, (callback: any) => {
           if (callback.status == 200) {
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
-            console.log(callback)
             office.editable = false;
             office['newField']=false;
             this.officeData.forEach((e:any)=>{
@@ -103,14 +102,12 @@ export class ManageOfficeComponent implements OnInit {
               }
             })
             this.officeData.splice(0,1);
-            console.log(this.officeData)
+           
           } else if(callback.status == 400){
-            console.log(callback)
             this.alert.showAlertPopup = true;
             this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
           }else {
-            console.log(callback)
-          }
+           }
         })
       }
     }

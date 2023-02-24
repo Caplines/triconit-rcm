@@ -31,7 +31,6 @@ export class AdminPermission implements CanActivate {
         this.router.navigate([teamM.defaultpath]);
         return false;
       }
-      console.log("Utils.isSmilePoint() && Utils.checkAdmin()",Utils.isSmilePoint() && Utils.checkAdmin());
       if (Utils.isSmilePoint() && Utils.checkAdmin()){
         return true;
       }

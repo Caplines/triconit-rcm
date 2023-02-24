@@ -162,7 +162,7 @@ this.sourceType="";
   let ths= this;
   console.log(ths.sourceType);
    if (ths.sourceType=='') ths.freshClaimPullModel.source='GOOGLESHEET';
-   else  ths.freshClaimPullModel.source='EAGLESOFT';
+   else  ths.freshClaimPullModel.source=ths.sourceType;
  /* if (ths.esAgent || ths.googleSheet){
     if (ths.esAgent) ths.freshClaimPullModel.source="EAGLESOFT";
     else ths.freshClaimPullModel.source="GOOGLESHEET";

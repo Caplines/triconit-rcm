@@ -15,7 +15,7 @@
                                             (change)="selectCompany($event)">
                                         <option selected="true" hidden="true">Select Client</option>
                                         <ng-container *ngFor="let comp of companyData">
-                                            <option *ngIf="comp.name !== 'Smilepoint'" value="{{comp.companyUuid}}">{{comp.name}}</option>
+                                            <option *ngIf="comp.name !== ''" value="{{comp.companyUuid}}">{{comp.name}}</option>
                                         </ng-container>
                                     </select>
                                     <div class="spinner-border text-success" role="status" *ngIf="showLoader"></div>
@@ -35,16 +35,16 @@
                     </div>-->
 
 
-                                <ng-container *ngIf="companyUuid" >
+                                <ng-container *ngIf="selectedCompany?.companyUuid" >
                                     <div class="table-responsive">
                                         <table class="table" id="table">
                                             <tr class="thead-dark">
-                                                <th>Id</th>
-                                                <th>Office Name</th>
-                                                <th >Edit</th>
-                                                <th>Save</th>
+                                                <th>KEY</th>
+                                                <th>Office Name <span *ngIf="selectedCompany?.name=='Smilepoint'">(View only)</span></th>
+                                                <th *ngIf="selectedCompany?.name!='Smilepoint'">Edit</th>
+                                                <th *ngIf="selectedCompany?.name!='Smilepoint'">Save</th>
                                             </tr>
-                                            <tr class="totalRow" >
+                                            <tr class="totalRow" *ngIf="selectedCompany?.name!='Smilepoint'">
                                                 <td colspan="4">
                                                     <button type="button" class="btn btn-success" (click)="addNewOffice()">
                                                         <img src="../assets/img/plus-white.png" alt="plus" />
@@ -66,13 +66,13 @@
                                                 <tr >
                                                     <td scope="col">{{office.key}}</td>
                                                     <td scope="col"> <input type="text" value="{{office.name}}" maxlength="30" [(ngModel)]="office.name" class="form-control" [disabled]="!office.editable" [ngClass]="{'is-invalid': office.editable && office.name==''}"></td>
-                                                    <td scope="col" >
+                                                    <td scope="col" *ngIf="selectedCompany?.name!='Smilepoint'">
                                                         <button type="button" (click)="editOfficeName(office)" class="btn btn-edit" *ngIf="!office['newField'] && !office.editable">
                                                             <img src="../assets/img/edit.png" alt="edit" />
                                                             Edit
                                                         </button>
                                                     </td>
-                                                    <td scope="col">
+                                                    <td scope="col" *ngIf="selectedCompany?.name!='Smilepoint'">
                                                         <button type="button" class="btn btn-edit" [disabled]="!office.editable" (click)="saveOfficeName(office)">
                                                             <img src="../assets/img/save-data-icon.png" alt="edit" style="margin-top:2px;" />
                                                             {{office['newField'] ? 'Save' : 'Update' }}
