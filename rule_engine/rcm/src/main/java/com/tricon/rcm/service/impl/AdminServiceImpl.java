@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
-import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
@@ -55,6 +54,7 @@ import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
+import com.tricon.rcm.dto.customquery.RcmClaimAssignmentDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.email.EmailUtil;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -582,9 +582,9 @@ public class AdminServiceImpl {
 		// first we will check any claim is assign or not in this uuid
 		// if yes then fetch all billing users data will show in popup window
 
-		List<RcmClaimAssignment> existingcUser = claimAssignmentRepo.findByAssignedToUuid(dto.getUserUuid());
-		if (existingcUser!=null && !existingcUser.isEmpty()) {
-			List<RcmUserToDto> rcmUser = userService.getUsersByTeamId(dto.getTeamId(),company);
+		RcmClaimAssignmentDto existingUsersClaimCounts = claimAssignmentRepo.findExistingUsersAssignClaimCounts(dto.getUserUuid());
+		if (existingUsersClaimCounts != null && existingUsersClaimCounts.getExistingClaimsCounts() >= 1) {
+			List<RcmUserToDto> rcmUser = userService.getUsersByTeamId(dto.getTeamId(), company);
 			if (rcmUser != null) {
 				rcmUser.removeIf(x -> x.getUuid().equals(dto.getUserUuid()));
 				return rcmUser;
@@ -594,11 +594,11 @@ public class AdminServiceImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public String claimAssignmentToUser(ClaimAssignmentDto dto, JwtUser jwtUser)throws Exception {
-		List<RcmClaimAssignment> oldClaimUserData = claimAssignmentRepo.findByAssignedToUuid(dto.getOldClaimUserUuid());
+	public String claimAssignmentToUser(ClaimAssignmentDto dto, JwtUser jwtUser) throws Exception {
+		List<RcmClaimAssignment> oldClaimUserData = claimAssignmentRepo
+				.findExistingUserClaimsWithPendingState(dto.getOldClaimUserUuid());
 		RcmUser assigneByUser = null, assigneToUser = null;
 		RcmClaimAssignment assignment = null;
-		RcmClaims assignClaim = null;
 		RcmClaimStatusType claimStatusType = null;
 		if (oldClaimUserData != null && !oldClaimUserData.isEmpty()) {
 
@@ -609,23 +609,18 @@ public class AdminServiceImpl {
 				for (RcmClaimAssignment assign : oldClaimUserData) {
 					assignment = new RcmClaimAssignment();
 					claimStatusType = assign.getRcmClaimStatus();
-					assignClaim = rcmClaimRepository.findByClaimUuid(assign.getClaims().getClaimUuid());
-					if (assignClaim != null && assignClaim.isPending()) {
-						// change comment and active status of oldClaim user whose claim is pending
-						claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REMOVE_MESSAGE,
-								assigneByUser, false, dto.getOldClaimUserUuid(), assignClaim.getClaimUuid());
-						// now insert old user claims will assign to new user whose claim is pending
-						assignment = ClaimUtil.createAssginmentData(assignment, assigneByUser, assigneToUser, null,
-								assignClaim, MessageConstants.CLAIM_REASSIGN_MESSAGE, claimStatusType);
-						claimAssignmentRepo.save(assignment);
-					} else {
-						return MessageConstants.SOMETHING_WENT_WRONG;
-					}
+					// change comment and active status of oldClaim user whose claim is pending
+					claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REMOVE_MESSAGE,
+							assigneByUser, false, dto.getOldClaimUserUuid(), assign.getClaims().getClaimUuid());
+					// now insert old user claims will assign to new user whose claim is pending
+					assignment = ClaimUtil.createAssginmentData(assignment, assigneByUser, assigneToUser, null,
+							assign.getClaims(), MessageConstants.CLAIM_REASSIGN_MESSAGE, claimStatusType);
+					claimAssignmentRepo.save(assignment);
 				}
 				return MessageConstants.CLAIM_REASSIGN_SUCCESS_MESSAGE;
 			}
 		}
-		return  MessageConstants.SOMETHING_WENT_WRONG;
+		return MessageConstants.SOMETHING_WENT_WRONG;
 	}
 	
 	@Transactional(rollbackOn = Exception.class)

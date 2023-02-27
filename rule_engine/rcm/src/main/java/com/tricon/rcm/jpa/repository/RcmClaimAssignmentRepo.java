@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.dto.customquery.RcmClaimAssignmentDto;
 
 public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment, Integer>{
 
@@ -22,4 +23,10 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	RcmClaimAssignment findByAssignedToUuidAndClaimsClaimUuidAndActive(String assignTo,String claimUUid,boolean active);
 	
 	RcmClaimAssignment findByClaimsClaimUuidAndActive(String claimUUid,boolean active);
+	
+	@Query(value ="select count(assigned_to) as ExistingClaimsCounts from rcm_claim_assignment where assigned_to=:assignTo",nativeQuery=true)
+	RcmClaimAssignmentDto findExistingUsersAssignClaimCounts(@Param("assignTo")String assignTo);
+	
+	@Query(value ="select * from rcm_claim_assignment ra join rcm_claims rc where rc.claim_uuid=ra.claim_id and ra.assigned_to=:assignTo and rc.pending is true",nativeQuery=true)
+	List<RcmClaimAssignment>findExistingUserClaimsWithPendingState(String assignTo);
 }
