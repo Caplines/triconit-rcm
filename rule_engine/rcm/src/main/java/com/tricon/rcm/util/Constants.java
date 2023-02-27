@@ -32,7 +32,7 @@ public class Constants {
 	
 	public static final String ClAIM_PULLED_SUCCESS="ClAIM PULLED SUCCESS";
 	
-	public static final String SYSTEM_INITIAL_COMMENT="Please Work o New Claim";
+	public static final String SYSTEM_INITIAL_COMMENT="Please Work on New Claim";
 	
 	//Taken From Rule Engine
     public static String socketworkingFine="Connection to office working fine. Agent is running successfully.";

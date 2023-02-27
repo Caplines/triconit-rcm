@@ -24,5 +24,8 @@ public interface RcmClaimCommentRepo extends JpaRepository<RcmClaimComment, Stri
 			+ " where com.claim_id=:claim_id and com.team_id =:teamId order by com.created_date desc "
 			+ "")
 	List<ClaimRemarksDto> fetchClaimRemarksSameTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
-
+ 
+	RcmClaimComment findByCommentedByUuidAndClaimsClaimUuid(String commentedBy,String claimuuid);
+	
+	RcmClaimComment findByClaimsClaimUuid(String claimuuid);
 }

@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
+import com.tricon.rcm.dto.ClaimAssignDto;
+import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.ClaimNotesDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
@@ -308,12 +310,36 @@ public class RcmController {
 	@ApiOperation(value = "Api For Saving Claims Manual Rules", response = String.class)
 	@PostMapping("/api/save-claim-rule-val-datas")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> saveClaimAutoRules(@RequestBody ClaimRuleValidationsDto dto) {
+	public ResponseEntity<Object> saveClaimManualRules(@RequestBody ClaimRuleValidationsDto dto) {
 		Object[] obj = checkForSimplePointUser();
 		JwtUser jwtUser = (JwtUser) obj[0];
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.saveClaimManualRules(jwtUser,dto)));
+	}
+	
+	
+	@ApiOperation(value = "Api For Saving Full Claim", response = String.class)
+	@PostMapping("/api/save-full-claim")
+	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> saveFullClaim(@RequestBody ClaimEditDto dto) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.saveFullClaim(jwtUser,dto)));
+	}
+	
+	
+	@ApiOperation(value = "Api For Assigning Claim to other user/Team for Preview", response = String.class)
+	@PostMapping("/api/assign-other-team-or-lead")
+	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> assignToOtherOrTeamLead(@RequestBody ClaimAssignDto dto) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.assignToOtherOrTeamLead(jwtUser,dto)));
 	}
 	
 

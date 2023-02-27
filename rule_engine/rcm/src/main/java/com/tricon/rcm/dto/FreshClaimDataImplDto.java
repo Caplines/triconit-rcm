@@ -63,6 +63,20 @@ public class FreshClaimDataImplDto {
 	Date pulledDate;
 	String secPolicyHolder;
 
+	//AssignedTo
+	int assignedToTeam;
+	String assignedToUuid;
+	String assignedToName;
+	String assignedByRemark;
+	
+	int assignedByTeam;
+	String assignedByName;
+	String assignedByUuid;
+	
+	
+	String claimRemarks;
+	
+	
 	
 	
 
