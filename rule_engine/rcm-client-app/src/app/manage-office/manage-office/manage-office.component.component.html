@@ -54,7 +54,7 @@
                                             </tr>
                                             <tr *ngIf="alert.showAlertPopup">
                                                 <td colspan="4">
-                                                        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                                                        <div class="alert fade show text-center" [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">
                                                             <strong>{{alert.alertMsg}}</strong>
                                                             <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>

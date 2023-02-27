@@ -17,7 +17,7 @@ export class UserSettingComponent implements OnInit {
   pageNumber:number = 0;
   hasNext:boolean=false;
   userStatusArray:any={'userActiveStatus':[]}
-  alert:any={'showAlertPopup':false,'alertMsg':''};
+  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   isUserSetting:boolean=true;
 
   constructor(private appService: ApplicationServiceService, private title: Title) { 
@@ -43,12 +43,12 @@ export class UserSettingComponent implements OnInit {
         
       } else {
         this.showActionPopup = false;
-        this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.message;
+        this.showAlertPopup(callback);
       }
     })
   }else{
     this.alert.showAlertPopup = true;
+    this.alert.isError=true;
     this.alert.alertMsg = "Field Cannot Be Empty";
   }
 }
@@ -57,8 +57,7 @@ export class UserSettingComponent implements OnInit {
     this.appService.changePassword({ "uuid": this.user.uuid, "password": this.user['changedPassword'] }, (callback: any) => {
       if (callback.status == 200) {
         console.log(callback)
-        this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.message;
+        this.showAlertPopup(callback);
         localStorage.clear();
         window.location.href= "/"
       }
@@ -113,8 +112,7 @@ export class UserSettingComponent implements OnInit {
     this.appService.updateUserStatus(this.userStatusArray, (callback: any) => {
       if (callback.status == 200) {
         this.userStatusArray.userActiveStatus=[];
-        this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.message;
+        this.showAlertPopup(callback);
         this.user={};
         this.showActionPopup=false;
 
@@ -137,7 +135,12 @@ export class UserSettingComponent implements OnInit {
       this.userStatusArray.userActiveStatus.push({ 'userId': userId, 'status': status });
     }
   }
-   
+
+  showAlertPopup(res:any){
+    this.alert.showAlertPopup = true;
+    res.status==400 ? this.alert.isError=true : this.alert.isError=false;
+    this.alert.alertMsg = res.message ? res.message : res.result.message;
+  }
 
   // loadMoreData(){
   //   if(this.hasNext){

@@ -31,7 +31,7 @@ export class OfficeAssignmentComponent implements OnInit {
   teamId:any;
   userByTeam:any=[];
   assignOfficeDetails:any={'assignOfficeDetails':[],'teamId':''};
-  alert:any={'showAlertPopup':false,'alertMsg':''};
+  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false}
   showExportLoader:boolean=false;
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0,'totalcountAndRemLiteReject':0}
@@ -136,13 +136,11 @@ export class OfficeAssignmentComponent implements OnInit {
  saveAssignments(){
   this.appService.assignOffice(this.assignOfficeDetails,(callback:any)=>{
     if(callback.status == 200){
-      this.alert.showAlertPopup = true;
-      this.alert.alertMsg = callback.message; 
+      this.showAlertPopup(callback);
       scrollTo(0,0);
       this.assignOfficeDetails.assignOfficeDetails= [];
     }else{
-      this.alert.showAlertPopup = true;
-      this.alert.alertMsg = callback.message; 
+      this.showAlertPopup(callback);
       scrollTo(0,0);
     }
   })
@@ -216,5 +214,11 @@ exportToCsv(){
     this.loader.exportCSVLoader=false;
     this.fetchClaimAssignments();
     
+}
+
+showAlertPopup(res:any){
+  this.alert.showAlertPopup = true;
+  res.status==400 ? this.alert.isError=true : this.alert.isError=false;
+  this.alert.alertMsg = res.message ? res.message : res.result.message;
 }
 }

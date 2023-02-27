@@ -110,7 +110,9 @@ this.sourceType="";
       console.log("Please select Source");
       scrollTo(0,0)
       this.alert.showAlertPopup= true;
-      this.alert.alertMsg= "Please Select Source to Update Database from"
+      this.alert.isError=true;
+      this.alert.alertMsg= "Please Select Source to Update Database from";
+      
       return;
     } 
     ths.setSource();
@@ -135,8 +137,8 @@ this.sourceType="";
              console.log(d);
              
           });
-          this.alert.showAlertPopup=true;
-          this.alert.alertMsg=res.message;
+          res.message == '' ? res.message = "Updated Successfully" : res.message;
+          this.showAlertPopup(res);
           ths.log.forEach(e => {
             if (e.update) e.update=false;
             this.hasUpdateClaims=[];
@@ -232,6 +234,10 @@ ths.appService.fetchIssueClaims(ths.cName,(res:any)=>{
 
  }
 
-
+ showAlertPopup(res:any){
+  this.alert.showAlertPopup = true;
+  res.status==400 ? this.alert.isError=true : this.alert.isError=false;
+  this.alert.alertMsg = res.message ? res.message : res.result.message;
+}
 
 }

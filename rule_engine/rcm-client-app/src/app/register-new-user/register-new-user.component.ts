@@ -16,7 +16,7 @@ export class RegisterNewUserComponent implements OnInit {
   defaulUserRoleData:any=[];
   companyData:any=[];
   userRoles:any=[];
-  alert:any={'showAlertPopup':false,'alertMsg':''}
+  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   showLoader:boolean=false;
   isRegister:boolean=true;
   userRoleByTeam:any=[];
@@ -42,14 +42,12 @@ export class RegisterNewUserComponent implements OnInit {
     this.appService.registerUser(this.userDetails.value,(callback:any)=>{
       if(callback.status == 200){
         console.log(callback)
-        this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.message;
+        this.showAlertPopup(callback);
         this.companyData = this.userRoles = this.defaulUserRoleData = this.officeData = this.teamData = this.userRoleByTeam = [];
         this.userDetails.reset();
         this.getcompanyData();
       } else if(callback.status == 400) { 
-          this.alert.showAlertPopup = true;
-          this.alert.alertMsg = callback.message;
+        this.showAlertPopup(callback);
       }
     })
     }
@@ -180,6 +178,12 @@ export class RegisterNewUserComponent implements OnInit {
       }
     })
   }
+  }
+
+  showAlertPopup(res:any){
+    this.alert.showAlertPopup = true;
+    res.status==400 ? this.alert.isError=true : this.alert.isError=false;
+    this.alert.alertMsg = res.message ? res.message : res.result.message;
   }
 
 }

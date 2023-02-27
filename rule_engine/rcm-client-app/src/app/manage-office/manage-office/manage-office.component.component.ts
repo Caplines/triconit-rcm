@@ -1,10 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { BaseService } from 'src/app/service/base-service.service';
-import { AuthService } from '../../service/auth-service.service';
-import { TokenStorageService } from '../../service/token-storage.service';
 
 
 @Component({
@@ -19,11 +16,11 @@ export class ManageOfficeComponent implements OnInit {
   companyData:any=[];
   officeData:any=[];
   showLoader:boolean=false;
-  alert:any={'showAlertPopup':false,'alertMsg':''}
+  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   selectedCompany:any;
 
 
-  constructor(private _base: BaseService,private appService:ApplicationServiceService ,private title : Title) { 
+  constructor(private appService:ApplicationServiceService ,private title : Title) { 
     title.setTitle("Manage Office");
   }
 
@@ -74,14 +71,11 @@ export class ManageOfficeComponent implements OnInit {
         }
         this.appService.editOfficeName(params, (callback: any) => {
           if (callback.status == 200) {
-            this.alert.showAlertPopup = true;
-            this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
+            this.showAlertPopup(callback);
             office.editable = false;
             office['newField']=false;
           }else if(callback.status == 400){
-            this.alert.showAlertPopup = true;
-            this.alert.alertMsg =  callback.result.message;
-              
+            this.showAlertPopup(callback);
           }
         })
       }
@@ -92,8 +86,7 @@ export class ManageOfficeComponent implements OnInit {
         }
         this.appService.addNewOffice(params, (callback: any) => {
           if (callback.status == 200) {
-            this.alert.showAlertPopup = true;
-            this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
+            this.showAlertPopup(callback);
             office.editable = false;
             office['newField']=false;
             this.officeData.forEach((e:any)=>{
@@ -102,10 +95,8 @@ export class ManageOfficeComponent implements OnInit {
               }
             })
             this.officeData.splice(0,1);
-           
           } else if(callback.status == 400){
-            this.alert.showAlertPopup = true;
-            this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
+            this.showAlertPopup(callback);
           }else {
            }
         })
@@ -115,6 +106,12 @@ export class ManageOfficeComponent implements OnInit {
 
   addNewOffice(){
     this.officeData.unshift({'name':'','editable':true,'newField':true})
+  }
+
+  showAlertPopup(res:any){
+    this.alert.showAlertPopup = true;
+    res.status==400 ? this.alert.isError=true : this.alert.isError=false;
+    this.alert.alertMsg = res.message ? res.message : res.result.message;
   }
 }
 

@@ -13,7 +13,7 @@ export class UpdatePasswordComponent implements OnInit {
   userRole: any;
   userName:any;
   pageNumber:number = 0;
-  alert:any={'showAlertPopup':false,'alertMsg':''};
+  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   isUpdatePass:boolean=true;
 
   constructor(private appService: ApplicationServiceService, private title: Title) { 
@@ -34,19 +34,23 @@ export class UpdatePasswordComponent implements OnInit {
       this.appService.updatepassword({ "uuid": this.user.uuid, "password": this.user['changedPassword'] }, (callback: any) => {
         if (callback.status == 200) {
         console.log(callback)
-        this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.message;
+        this.showAlertPopup(callback);
         localStorage.clear();
         window.location.href= "/"
       } else if(callback.status==400){
-        this.alert.showAlertPopup = true;
-        this.alert.alertMsg = callback.message;
+        this.showAlertPopup(callback);
       }
     })
   }else { 
     this.alert.showAlertPopup = true;
+    this.alert.isError=true;
     this.alert.alertMsg = "Please Check Field Again !";
   }
   }
 
+  showAlertPopup(res:any){
+    this.alert.showAlertPopup = true;
+    res.status==400 ? this.alert.isError=true : this.alert.isError=false;
+    this.alert.alertMsg = res.message ? res.message : res.result.message;
+  }
 }

@@ -1,7 +1,7 @@
 <div class="right-container">
     <app-header-component [isUpdatePass]="isUpdatePass"></app-header-component>
     <ng-container *ngIf="alert.showAlertPopup">
-        <div class="alert alert-success alert-dismissible fade show my-3 text-center" role="alert">
+        <div class="alert fade show text-center my-3" [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">
             <strong>{{alert.alertMsg}}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"
                 (click)="alert.showAlertPopup=false;">
@@ -22,17 +22,17 @@
                                     <div class="form-group">
                                         <label for="changepass">Enter the  Password :</label>
                                         <input type="text" class="form-control" [(ngModel)]="user['changedPassword']"
-                                            [ngClass]="{'is-invalid': user.changedPassword && (user.changedPassword=='' || user.changedPassword.length<6)}"
-                                            required="true">
+                                            [ngClass]="{'is-invalid': user['changedPassword'] && (user['changedPassword']=='' || user['changedPassword'].length<6)}"
+                                            >
                                     </div>
                                     <div class="form-group">
                                         <label for="changepass">Confirm Password :</label>
                                         <input type="text" class="form-control" [(ngModel)]="user['confirmPass']"
-                                            [ngClass]="{'is-invalid': user.changedPassword && user.changedPassword!==user.confirmPass}"
-                                            required="true">
+                                            [ngClass]="{'is-invalid': user['confirmPass'] && user['changedPassword']!==user['confirmPass']}"
+                                            >
                                     </div>
                                     <div class="find-btn">
-                                        <button type="button" class="btn btn-success" (click)="changePassword()">Change
+                                        <button type="button" class="btn btn-success" [disabled]="user['changedPassword'].length<6 || user['confirmPass'].length<6 && (user['changedPassword'] !== user['confirmPass']) " (click)="changePassword()">Change
                                             Password</button>
                                     </div>
                                 </div>

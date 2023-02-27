@@ -15,7 +15,7 @@ export class UserStatusComponent implements OnInit {
   pageNumber:number = 0;
   hasNext:boolean=false;
   userStatusArray:any={'userActiveStatus':[]}
-  alert:any={'showAlertPopup':false,'alertMsg':''};
+  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   isUserStatus:boolean=true;
   companyName:any='';
   companyData:any=[];
@@ -55,6 +55,7 @@ export class UserStatusComponent implements OnInit {
         this.allUser=[];
         this.isFindUserBtnDisable=true;
         this.alert.showAlertPopup = true;
+        this.alert.isError=true;
         this.alert.alertMsg = "No Data Found";
       }
     })
@@ -63,8 +64,7 @@ export class UserStatusComponent implements OnInit {
   updateAllUserStatus(){
       this.appService.updateUserStatus(this.userStatusArray, (callback: any) => {
         if (callback.status == 200) {
-          this.alert.showAlertPopup = true;
-          this.alert.alertMsg = callback.message;
+          this.showAlertPopup(callback);
           this.allUser=[];
           this.userStatusArray.userActiveStatus=[];
           this.pageNumber=0;
@@ -72,6 +72,7 @@ export class UserStatusComponent implements OnInit {
           this.companyName='';
           this.isFindUserBtnDisable=false;
         } else {
+          this.showAlertPopup(callback);
           console.log(callback)
         }
       })
@@ -112,4 +113,11 @@ loadMoreData(){
     this.findAllUser(this.pageNumber)
   }
 }
+
+showAlertPopup(res:any){
+  this.alert.showAlertPopup = true;
+  res.status==400 ? this.alert.isError=true : this.alert.isError=false;
+  this.alert.alertMsg = res.message ? res.message : res.result.message;
+}
+
 }

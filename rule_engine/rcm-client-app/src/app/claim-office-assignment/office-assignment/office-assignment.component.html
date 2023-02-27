@@ -2,7 +2,7 @@
     <app-header-component [isClaimAssign]="isClaimAssign"></app-header-component>
     <div class="container-fluid">
         <ng-container *ngIf="alert.showAlertPopup">
-            <div class="alert alert-success alert-dismissible fade show my-3 text-center" role="alert">
+            <div class="alert fade show text-center my-3" [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">
                 <strong>{{alert.alertMsg}}</strong>
                 <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>

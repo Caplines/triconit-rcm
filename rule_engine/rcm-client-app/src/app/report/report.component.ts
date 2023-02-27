@@ -9,8 +9,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 export class ReportComponent implements OnInit {
 	reportDataInd: any;
 
-	constructor() {
-	}
+	constructor() {}
 
 	ngOnInit() {
 		this.reportDataInd = {

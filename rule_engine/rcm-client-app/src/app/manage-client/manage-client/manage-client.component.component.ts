@@ -16,7 +16,7 @@ export class ManageClientComponent implements OnInit {
   clientData:any=[];
   officeData:any=[];
   showLoader:boolean=false;
-  alert:any={'showAlertPopup':false,'alertMsg':''}
+  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   companyUuid:any;
 
 
@@ -52,7 +52,6 @@ export class ManageClientComponent implements OnInit {
  
   enableEditing(office:any){
       office.editable = !office.editable;
-      // office['newField']= !office['newField']
       console.log(office.name)
   }
 
@@ -69,8 +68,10 @@ export class ManageClientComponent implements OnInit {
           clientDetails['companyUuid'] = callback.data;
           clientDetails['editable']=false;
           clientDetails['newField']=false;
-          this.alert.showAlertPopup = true;
-          this.alert.alertMsg = callback.message == '' ? "New Client Added" : callback.message;
+          callback.message == '' ? callback.message = "New Client Added" : callback.message;
+          this.showAlertPopup(callback);
+        } else{
+          this.showAlertPopup(callback);
         }
       })
     } else{
@@ -79,57 +80,15 @@ export class ManageClientComponent implements OnInit {
           console.log(callback);
           clientDetails['editable']=false;
           clientDetails['newField']=false;
-          this.alert.showAlertPopup=true;
-          this.alert.alertMsg = callback.message == ''? "Edit Successfully" : callback.message;
+          callback.message == ''? callback.message = "Edit Successfully" : callback.message;
+          this.showAlertPopup(callback);
+        }else{
+          this.showAlertPopup(callback);
         }
       })
     }
   }
 
-    // if (office.name) {
-    //   if (office.uuid) {
-    //     let params: any = {
-    //       "officeUuid": office.uuid,
-    //       "officeName": office.name,
-    //       'companyUuid':this.companyUuid
-    //     }
-    //     this.appService.editOfficeName(params, (callback: any) => {
-    //       if (callback.result.status == 200) {
-    //         this.alert.showAlertPopup = true;
-    //         this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
-    //         console.log(callback)
-    //         office.editable = false;
-    //         office['newField']=false;
-    //       }else if(callback.result.status == 400){
-    //         this.alert.showAlertPopup = true;
-    //         this.alert.alertMsg =  callback.result.message
-    //           console.log(callback)
-    //       }
-    //     })
-    //   }
-    //   else {
-    //     let params: any = {
-    //       "companyUuid": this.companyUuid,
-    //       "name": office.name
-    //     }
-    //     this.appService.addNewOffice(params, (callback: any) => {
-    //       if (callback.result.status == 200) {
-    //         this.alert.showAlertPopup = true;
-    //         this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
-    //         console.log(callback)
-    //         office.editable = false;
-    //         office['newField']=false;
-    //         //this.officeData.push({'name':office.name,'uuid':callback.result.data});
-    //       } else if(callback.result.status == 400){
-    //         console.log(callback)
-    //         this.alert.showAlertPopup = true;
-    //         this.alert.alertMsg = callback.message ? callback.message : callback.result.message;
-    //       }else {
-    //         console.log(callback)
-    //       }
-    //     })
-    //   }
-    // }
   }
 
   addNewClient(){
@@ -145,6 +104,11 @@ export class ManageClientComponent implements OnInit {
   })
   }
 
+  showAlertPopup(res:any){
+    this.alert.showAlertPopup = true;
+    res.status==400 ? this.alert.isError=true : this.alert.isError=false;
+    this.alert.alertMsg = res.message ? res.message : res.result.message;
+  }
 
   // addNewHeader(header:any,idx:any){
   //   console.log(header,idx)
