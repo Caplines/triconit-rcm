@@ -16,7 +16,6 @@ export class UserStatusComponent implements OnInit {
   hasNext:boolean=false;
   userStatusArray:any={'userActiveStatus':[]}
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
-  isUserStatus:boolean=true;
   companyName:any='';
   companyData:any=[];
   showLoader:boolean=false;

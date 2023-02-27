@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule} from "@angular/forms"
 import { RegisterNewUserRoutingModule } from './register-new-user-routing.module';
 import { RegisterNewUserComponent } from '../register-new-user.component';
-import { HeaderModule } from 'src/app/header/header.module';
+import { HeaderComponent } from 'src/app/header/header-component/header.component';
 
 @NgModule({
   declarations: [RegisterNewUserComponent],
@@ -12,7 +12,7 @@ import { HeaderModule } from 'src/app/header/header.module';
     RegisterNewUserRoutingModule,
     FormsModule,
     ReactiveFormsModule ,
-    HeaderModule
+    HeaderComponent
   ]
 })
 export class RegisterNewUserModule { }

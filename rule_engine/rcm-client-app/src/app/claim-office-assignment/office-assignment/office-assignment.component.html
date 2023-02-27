@@ -1,5 +1,4 @@
 <div class="right-container">
-    <app-header-component [isClaimAssign]="isClaimAssign"></app-header-component>
     <div class="container-fluid">
         <ng-container *ngIf="alert.showAlertPopup">
             <div class="alert fade show text-center my-3" [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">

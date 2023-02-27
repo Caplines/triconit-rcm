@@ -18,7 +18,6 @@ export class RegisterNewUserComponent implements OnInit {
   userRoles:any=[];
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   showLoader:boolean=false;
-  isRegister:boolean=true;
   userRoleByTeam:any=[];
   constructor(private fb : FormBuilder, private appService: ApplicationServiceService,private title : Title) {
     title.setTitle("Register New User");

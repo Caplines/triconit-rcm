@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from "../service/auth-service.service";
 //import { HttpModule , XSRFStrategy, CookieXSRFStrategy, Http} from "@angular/http";
 import { FormsModule } from '@angular/forms';
-import { HeaderModule } from '../header/header.module';
 import { ManageClientComponent } from './manage-client/manage-client.component.component';
 import { ManageClientRoutingModule } from './manage-client-routing.module';
+import { HeaderComponent } from '../header/header-component/header.component';
 
 
 @NgModule({
@@ -16,7 +16,7 @@ import { ManageClientRoutingModule } from './manage-client-routing.module';
   imports: [
     CommonModule,
     ManageClientRoutingModule, FormsModule,
-    HeaderModule
+    HeaderComponent
 
   ],
   providers: [AuthService]

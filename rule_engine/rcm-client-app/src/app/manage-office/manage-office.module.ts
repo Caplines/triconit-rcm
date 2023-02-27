@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 import { ManageOfficeComponent } from './manage-office/manage-office.component.component';
 import { ManageOfficeRoutingModule } from './manage-office-routing.module';
-import { HeaderModule } from '../header/header.module';
+import { HeaderComponent } from '../header/header-component/header.component';
 
 
 @NgModule({
@@ -18,7 +18,7 @@ import { HeaderModule } from '../header/header.module';
   imports: [
     CommonModule,
     ManageOfficeRoutingModule, FormsModule,
-    HeaderModule
+    HeaderComponent
 
   ],
   providers: [AuthService]

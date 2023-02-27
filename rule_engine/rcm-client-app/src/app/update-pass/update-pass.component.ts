@@ -14,7 +14,6 @@ export class UpdatePasswordComponent implements OnInit {
   userName:any;
   pageNumber:number = 0;
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
-  isUpdatePass:boolean=true;
 
   constructor(private appService: ApplicationServiceService, private title: Title) { 
     title.setTitle("Update-Password");

@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import {FormsModule} from "@angular/forms"
-import { HeaderModule } from 'src/app/header/header.module';
 import { UpdatePasswordComponent,} from '../update-pass.component';
 import { UpdatePasswordRoutingModule} from './update-pass-routing.module';
+import { HeaderComponent } from 'src/app/header/header-component/header.component';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { UpdatePasswordRoutingModule} from './update-pass-routing.module';
     CommonModule,
     UpdatePasswordRoutingModule,
     FormsModule,
-    HeaderModule
+    HeaderComponent
   ]
 })
 export class UpdatePasswordModule { }

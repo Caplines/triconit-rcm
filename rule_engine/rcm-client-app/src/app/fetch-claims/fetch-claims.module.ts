@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FetchClaimsRoutingModule } from './fetch-claims-routing.module';
 import { FetchClaimsComponent } from './fetch-claims/fetch-claims.component';
 import { PipesModule } from '../pipe/pipe-module'; 
-import { HeaderModule } from '../header/header.module';
+import { HeaderComponent } from '../header/header-component/header.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +15,7 @@ import { HeaderModule } from '../header/header.module';
     CommonModule,
     FetchClaimsRoutingModule,
     PipesModule,
-    HeaderModule
+    HeaderComponent
   ]
 })
 export class FetchClaimsModule { 

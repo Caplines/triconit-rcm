@@ -24,7 +24,6 @@ export class ToolUpdateComponent implements OnInit {
   loader:boolean=false;
   cName:string="-1";
   sourceType:string="";
-  isToolUpdate:boolean=true;
   expandCollapse:any={'expandClaim':true,'expandTeamRemarks':true}
   hasUpdateClaims:any=[];
   alert:any={'showAlertPopup':false,'alertMsg':''}

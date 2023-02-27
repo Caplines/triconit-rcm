@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import {UserSettingRoutingModule} from "./user-setting-routing.module"
 import { UserSettingComponent } from '../user-setting.component';
 import {FormsModule} from "@angular/forms"
-import { HeaderModule } from 'src/app/header/header.module';
+import { HeaderComponent } from 'src/app/header/header-component/header.component';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { HeaderModule } from 'src/app/header/header.module';
     CommonModule,
     UserSettingRoutingModule,
     FormsModule,
-    HeaderModule
+    HeaderComponent
   ]
 })
 export class UserSettingModule { }

@@ -11,6 +11,7 @@ import { ClaimAssignPermission } from './urlPermission/claim-assign-permission';
 import { AdminPermission } from './urlPermission/admin-permission';
 import {TokenInterceptor} from './auth/token.interceptor';
 import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HeaderComponent } from './header/header-component/header.component';
 //import { FetchClaimsModule } from './fetch-claims/fetch-claims.module';
 //import { FormsModule } from '@angular/forms';
 
@@ -21,7 +22,7 @@ import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,HttpClientModule
+    AppRoutingModule,HttpClientModule,HeaderComponent
   ],
   providers: [AuthService,CheckUserLoggedInState,UrlPermission,UrlToolUpdatePermission,
     ClaimAssignPermission,AdminPermission,

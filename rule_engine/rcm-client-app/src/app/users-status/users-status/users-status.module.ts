@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import {FormsModule} from "@angular/forms"
-import { HeaderModule } from 'src/app/header/header.module';
 import { UserStatusComponent } from '../users-status.component';
 import { UserStatusRoutingModule } from './users-status-routing.module';
+import { HeaderComponent } from 'src/app/header/header-component/header.component';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { UserStatusRoutingModule } from './users-status-routing.module';
     CommonModule,
     UserStatusRoutingModule,
     FormsModule,
-    HeaderModule
+    HeaderComponent
   ]
 })
 export class UserStatusModule { }

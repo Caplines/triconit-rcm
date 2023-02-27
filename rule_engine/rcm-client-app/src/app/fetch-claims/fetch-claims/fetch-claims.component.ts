@@ -15,7 +15,6 @@ export class FetchClaimsComponent implements OnInit {
 
   log: Array<ClaimAssociateLogModel>;
   claimDetail:Array<ClaimAssociateDetailModel>;
-  isFetchClaims:boolean=true;
   expandCollapse:boolean=true;
   switchBox:any={'billing':true,'reBilling':false};
   isSorted:boolean=false;

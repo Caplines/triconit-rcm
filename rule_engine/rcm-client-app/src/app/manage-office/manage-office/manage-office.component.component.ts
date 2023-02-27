@@ -12,7 +12,6 @@ import { BaseService } from 'src/app/service/base-service.service';
 })
 export class ManageOfficeComponent implements OnInit {
  
-  isManageOffice:boolean=true;
   companyData:any=[];
   officeData:any=[];
   showLoader:boolean=false;

@@ -18,7 +18,6 @@ export class UserSettingComponent implements OnInit {
   hasNext:boolean=false;
   userStatusArray:any={'userActiveStatus':[]}
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
-  isUserSetting:boolean=true;
 
   constructor(private appService: ApplicationServiceService, private title: Title) { 
     title.setTitle("User-Setting");
