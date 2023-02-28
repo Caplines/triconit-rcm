@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
+import Utils from '../util/utils';
 
 @Component({
   selector: 'app-user-setting',
@@ -146,4 +147,8 @@ export class UserSettingComponent implements OnInit {
   //     this.findAllUser(this.pageNumber)
   //   }
   // }
+
+  isAdmin(){
+   return Utils.checkAdmin();
+  }
 }

@@ -24,13 +24,13 @@ export class AdminPermission implements CanActivate {
       let teamM: TeamModel=  (<TeamModel>team);
 
       
-      let ph= teamM.paths.find(x => 
-           x === state.url);
-     //in case wrong url is accessed
-      if (typeof ph=="undefined"){
-        this.router.navigate([teamM.defaultpath]);
-        return false;
-      }
+    //   let ph= teamM.paths.find(x => 
+    //        x === state.url);
+    //  //in case wrong url is accessed
+    //   if (typeof ph=="undefined"){
+    //     this.router.navigate([teamM.defaultpath]);
+    //     return false;
+    //   }
       if (Utils.isSmilePoint() && Utils.checkAdmin()){
         return true;
       }

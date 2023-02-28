@@ -41,8 +41,8 @@ export class BaseService {
     'issueclaim':"/api/issueClaims",
     'ivfdata':"/api/ivfdata",
     'claimRuleData':"/api/rules-data",
-    'updatePass':"/updatepassword"
-    
+    'updatePass':"/updatepassword",
+    'productionData':"/api/bill/claim-production"
   }
 
   constructor(public http: HttpClient, private tokenStorage: TokenStorageService) {

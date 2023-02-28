@@ -15,7 +15,7 @@
                 <h2 class="page-heading">User Status</h2>
                 <div class="main-container">
                     <div class="form-container detail-box ">
-                        <ng-container *ngIf="userRole == 'ROLE_ADMIN' ">
+                        <ng-container *ngIf="isAdmin()">
 
                             <div class="row">
                                 <div class="col-sm-3">

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
+import Utils from '../util/utils';
 
 @Component({
   selector: 'app-users-status',
@@ -118,5 +119,9 @@ showAlertPopup(res:any){
   res.status==400 ? this.alert.isError=true : this.alert.isError=false;
   this.alert.alertMsg = res.message ? res.message : res.result.message;
 }
+
+isAdmin(){
+  return Utils.checkAdmin();
+ }
 
 }

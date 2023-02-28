@@ -70,6 +70,11 @@ const  routes: Routes = [
     path:'update-pass',
     loadChildren:()=>import("./update-pass/update-pass/update-pass.module").then(m=>m.UpdatePasswordModule)
   },
+  {
+    path:'production',
+    loadChildren :()=> import("./production/production.module").then(m=>m.ProductionModule),
+    //canActivate: [AdminPermission]
+   },
 
   { path: '**', redirectTo: '/login' }
 ];

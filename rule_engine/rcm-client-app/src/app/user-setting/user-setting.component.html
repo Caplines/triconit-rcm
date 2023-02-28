@@ -14,13 +14,13 @@
                 <h2 class="page-heading">User Setting</h2>
                 <div class="main-container">
                     <div class="form-container detail-box ">
-                        <ng-container *ngIf="userRole != 'ROLE_ADMIN' ">
+                        <ng-container *ngIf="!isAdmin()">
                             <label for="changePass">Change User Password</label>
                             <input type="password" [(ngModel)]="user.changedPassword">
                             <button type="button" (click)="changePassword()">Change Password</button>
                         </ng-container>
 
-                        <ng-container *ngIf="userRole == 'ROLE_ADMIN' ">
+                        <ng-container *ngIf="isAdmin()">
                             <!--<div class="date-range-box">
                                 <label for="findUser">Find User By Email : </label>
                                 <div class="input-group">

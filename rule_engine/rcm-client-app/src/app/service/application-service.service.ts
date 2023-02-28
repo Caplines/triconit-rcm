@@ -283,5 +283,8 @@ getClaimRuleData(params:ClaimRulesPullDataModel,callback:any){
   this.postData(params,this.httpUrl['claimRuleData'],callback)
 }
 
+saveProductionData(params:any,callback:any){
+  this.postData(params,this.httpUrl['productionData'],callback)
+}
 
 }

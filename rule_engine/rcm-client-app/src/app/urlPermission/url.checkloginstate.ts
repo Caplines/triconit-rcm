@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AppConstants } from '../constants/app.constants';
 import { TeamModel } from '../models/team.model';
+import Utils from '../util/utils';
 
 @Injectable()
 export class CheckUserLoggedInState implements CanActivate {
@@ -16,6 +17,11 @@ export class CheckUserLoggedInState implements CanActivate {
       let ntKey: Number = new Number(ut).valueOf();
       let team: any = this.appConstants.TEAMS_CONFIG.get(ntKey);
       let teamM: TeamModel = (<TeamModel>team);
+      if (Utils.isSmilePoint() && Utils.checkAdmin()){
+        this.router.navigate([this.appConstants.TEAMS_CONFIG.get(2).defaultpath]);
+        return true;
+      }
+
       let ph = teamM.paths.find(x =>
         x === state.url);
       //in case wrong url is accessed
