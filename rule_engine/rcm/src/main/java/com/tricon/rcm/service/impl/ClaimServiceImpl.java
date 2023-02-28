@@ -969,13 +969,13 @@ public class ClaimServiceImpl {
 			RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByClaimsClaimUuidAndActive(claimUuid, true);
 			if (assign != null) {
 				RcmUser assBy = assign.getAssignedBy();
-				assBy =userRepo.findByUuid(assBy.getUuid());
+				assBy = userRepo.findByUuid(assBy.getUuid());
 				implDto.setAssignedByName(assBy.getFirstName() + " " + assBy.getLastName());
 				implDto.setAssignedByUuid(assBy.getUuid());
 				implDto.setAssignedByTeam(assBy.getTeam().getId());
 				implDto.setAssignedByRemark(assign.getCommentAssignedBy());
 				RcmUser assTo = assign.getAssignedTo();
-				assTo =userRepo.findByUuid(assTo.getUuid());
+				assTo = userRepo.findByUuid(assTo.getUuid());
 				implDto.setAssignedToName(assTo.getFirstName() + " " + assTo.getLastName());
 				implDto.setAssignedToUuid(assTo.getUuid());
 				implDto.setAssignedToTeam(assTo.getTeam().getId());
@@ -1169,17 +1169,18 @@ public class ClaimServiceImpl {
 				.equals(user.getCompany().getUuid())) {
 			if (!claim.isPending())
 				return "Claim Already Submitted";
-			return saveClaimSubmissionDetails(user, claim,dto);
+			return saveClaimSubmissionDetails(user, claim, dto);
 		}
 
 		else
 			return "wrong Client Name";
 
 	}
-	
-	private String saveClaimSubmissionDetails(RcmUser user,RcmClaims claim,ClaimSubmissionDto dto) {
+
+	private String saveClaimSubmissionDetails(RcmUser user, RcmClaims claim, ClaimSubmissionDto dto) {
 		RcmClaimSubmissionDetails det = rcmClaimSubmissionDetailsRepo.findByClaim(claim);
-		if (dto==null) return "";
+		if (dto == null)
+			return "";
 		if (det != null) {
 			det.setSubmittedBy(user);
 			det.setUpdatedBy(user);
@@ -1369,6 +1370,15 @@ public class ClaimServiceImpl {
 
 	}
 
+	public String fetchClaimRemark(JwtUser jwtUser, String claimuuid) {
+
+		RcmClaimComment d = rcmClaimCommentRepo.findByClaimsClaimUuid(claimuuid);
+		if (d != null) {
+			return d.getComments();
+		}
+		return "";
+	}
+
 	public String saveFullClaim(JwtUser jwtUser, ClaimEditDto dto) {
 
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
@@ -1389,7 +1399,7 @@ public class ClaimServiceImpl {
 				saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, jwtUser);
 				saveClaimRuleRemark(dto.getRuleRemarkDto(), user, claim, jwtUser);
 				saveClaimRemark(dto.getClaimRemark(), claim, user, jwtUser);
-				
+
 				saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
 			}
 

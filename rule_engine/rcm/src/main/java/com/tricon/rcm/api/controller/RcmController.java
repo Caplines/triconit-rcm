@@ -318,6 +318,16 @@ public class RcmController {
 				claimServiceImpl.saveClaimManualRules(jwtUser,dto)));
 	}
 	
+	@ApiOperation(value = "Api For Fetching Claims Remark (Only 1 for now)", response = String.class)
+	@GetMapping("/api/fetch-claim-remark/{claimuuid}")
+	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> fetchClaimRemark(@PathVariable("claimuuid") String claimuuid) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.fetchClaimRemark(jwtUser,claimuuid)));
+	}
 	
 	@ApiOperation(value = "Api For Saving Full Claim", response = String.class)
 	@PostMapping("/api/save-full-claim")
