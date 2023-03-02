@@ -147,10 +147,20 @@ public class AdminServiceImpl {
 			user = convertDtotoModel(dto);
 			if (team == null) {
 				if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1)) {} 
-				else if(dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1)) {}
-				else {
+						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1)) {
+				} else if (dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1)) {
+				}
+
+				else if (dto.getUserRole().size() == 2) {
+					for (String r : dto.getUserRole()) {
+
+						if (r.equals(Constants.UPLOAD_CLAIMS) || r.equals(Constants.ADMIN))
+							continue;
+						else
+							return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);
+					}
+				} else {
 					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);
 				}
 			} else {
