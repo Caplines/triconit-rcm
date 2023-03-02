@@ -55,6 +55,7 @@ export class UserStatusComponent implements OnInit {
         this.allUser=[];
         this.isFindUserBtnDisable=true;
         this.alert.showAlertPopup = true;
+        setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
         this.alert.isError=true;
         this.alert.alertMsg = "No Data Found";
       }
@@ -116,6 +117,7 @@ loadMoreData(){
 
 showAlertPopup(res:any){
   this.alert.showAlertPopup = true;
+  setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
   res.status==400 ? this.alert.isError=true : this.alert.isError=false;
   this.alert.alertMsg = res.message ? res.message : res.result.message;
 }

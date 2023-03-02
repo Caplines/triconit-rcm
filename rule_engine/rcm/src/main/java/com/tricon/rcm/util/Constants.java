@@ -50,6 +50,7 @@ public class Constants {
 	public static final String ROLE_PREFIX="ROLE_";
 	public static final String  HYPHEN="_";
 	public static final String  ADMIN="ADMIN";
+	public static final String  UPLOAD_CLAIMS="UPLOAD_CLAIMS";
 	public static final String  SYSTEM="SYSTEM";
 	public static final String  ASSOCIATE="ASSO";
 	public static final String  TEAMLEAD="TL";
@@ -64,7 +65,7 @@ public class Constants {
 	public static final String MAPPING_TABLE_GOOGLE_SHEET_ID="1txTh07ssmXytBscroqVnbSRppeZjt8x1m391Hd1Fsr4";
 	public static final String MAPPING_TABLE_GOOGLE_SHEET_SUB_ID="0";
 	public static final String MAPPING_TABLE_GOOGLE_SHEET_SUB_NAME="Paste Data Here";
-	public static final List<String> DEFAULT_ROLE_FOR_SMILEPOINT=Arrays.asList("ADMIN");
+	public static final List<String> DEFAULT_ROLE_FOR_SMILEPOINT=Arrays.asList("ADMIN","UPLOAD_CLAIMS");
 	public static final List<String> DEFAULT_ROLE_FOR_OTHERS=Collections.emptyList();
 
 }

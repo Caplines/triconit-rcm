@@ -55,9 +55,8 @@ export class ManageClientComponent implements OnInit {
   }
 
 
-  saveClientName(clientDetails: any,index:any) {
-    console.log(index);
-    if(clientDetails.header[index].google_sheet_id !=='' && clientDetails.clientName !=='' && clientDetails.header[index].google_sheet_sub_id!=='' &&  clientDetails.header[index].google_sheet_sub_name !==''){
+  saveClientName(clientDetails: any) {
+    if(clientDetails.header[0].google_sheet_id !=='' && clientDetails.clientName !=='' && clientDetails.header[0].google_sheet_sub_id!=='' &&  clientDetails.header[0].google_sheet_sub_name !==''){
     let { editable, newField, ...client } = clientDetails;
     if (!client.companyUuid) {
 
@@ -105,6 +104,7 @@ export class ManageClientComponent implements OnInit {
 
   showAlertPopup(res:any){
     this.alert.showAlertPopup = true;
+    setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
     res.status==400 ? this.alert.isError=true : this.alert.isError=false;
     this.alert.alertMsg = res.message ? res.message : res.result.message;
   }

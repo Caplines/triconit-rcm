@@ -124,6 +124,9 @@ public class AdminServiceImpl {
 	
 	@Autowired
 	RcmMappingTableRepo mappingTableRepo;
+	
+	@Autowired
+	RcmUtilServiceImpl utilService;
 
 	/**
 	 * This Method save Data of New Register User
@@ -144,11 +147,10 @@ public class AdminServiceImpl {
 			user = convertDtotoModel(dto);
 			if (team == null) {
 				if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1)) {
-					team = new RcmTeam();
-					team.setId(RcmTeamEnum.ADMIN.getId());
-					user.setTeam(team);
-				} else {
+						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1)) {} 
+				else if(dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1)) {}
+				else {
 					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);
 				}
 			} else {
@@ -175,7 +177,12 @@ public class AdminServiceImpl {
 				if (role.equals(Constants.ADMIN)) {
 					roles.setRole(RcmTeamEnum.generateRole(0, role)); // If role is admin then by default teamId will
 																		// consider 0
-				} else {
+				} 
+				else if (role.equals(Constants.UPLOAD_CLAIMS)) {
+					roles.setRole(RcmTeamEnum.generateRole(0, role)); // If role is upload_claims then by default teamId will
+																		// consider 0
+				}
+				else {
 					roles.setRole(RcmTeamEnum.generateRole(team.getId(), role));
 				}
 				userRole.save(roles);
@@ -203,14 +210,14 @@ public class AdminServiceImpl {
 				String userEmail = user.getEmail();
 				String emailSubject = "New Registration Confirmation";
 				String emailText = "Hi " + user.getFirstName()
-						+ ",\n\nThanks for signing up to RCM. You can now log in to the RCM Account.\n\n"
+						+ ",\n\nThanks for signing up to RCM. You can now log into the RCM Account.\n\n"
 						+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
 				emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
 			}
 
 			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 		}
-		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_EXIST, null);
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_EXIST_WITH_EMAIL, null);
 	}
 
 	/**
@@ -242,7 +249,7 @@ public class AdminServiceImpl {
 			RcmUserDto data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
-			data.setTeamNameId(user.getTeam().getId());
+			data.setTeamNameId(utilService.checkTeamNullOrNot(user.getTeam()));
 			data.setRoles(user.getRoles().stream().map(x->x.getRole()).collect(Collectors.toList()));;
 			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_EXIST, data);
 		}
@@ -613,6 +620,13 @@ public class AdminServiceImpl {
 					claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REMOVE_MESSAGE,
 							assigneByUser, false, dto.getOldClaimUserUuid(), assign.getClaims().getClaimUuid());
 					// now insert old user claims will assign to new user whose claim is pending
+					
+					//if assignTo user already with same claimId then his status will be
+					RcmClaimAssignment checkExistingClaimEntryStatus=claimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(assigneToUser.getUuid(),assign.getClaims().getClaimUuid(),true);
+					if(checkExistingClaimEntryStatus!=null) {
+					claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REASSIGN_MESSAGE,
+							assigneByUser, false, checkExistingClaimEntryStatus.getAssignedTo().getUuid(), checkExistingClaimEntryStatus.getClaims().getClaimUuid()); }
+					
 					assignment = ClaimUtil.createAssginmentData(assignment, assigneByUser, assigneToUser, null,
 							assign.getClaims(), MessageConstants.CLAIM_REASSIGN_MESSAGE, claimStatusType);
 					claimAssignmentRepo.save(assignment);

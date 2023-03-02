@@ -58,5 +58,7 @@ public class MessageConstants {
 	
 	public static final String RECORD_EXIST="Record already exist!";
 	
+	public static final String USER_EXIST_WITH_EMAIL = "User already registered with this email ID";
+	
 
 }

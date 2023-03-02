@@ -18,7 +18,11 @@ public enum RcmTeamEnum {
 	IV_TEAM(6, "IV_TEAM","IV Team", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
 	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
 	LC3(8, "LC3","LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	CLIENT(9, "CLIENT","Client", new RcmRoleEnum[] { RcmRoleEnum.CLIENT_MANAGER},false,true,true);
+	CLIENT(9, "CLIENT","Client", new RcmRoleEnum[] { RcmRoleEnum.CLIENT_MANAGER,RcmRoleEnum.CLIENT_VIEW_ONLY},false,true,true),
+	AGING(10, "AGING","Aging", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
+	POSTING(11, "POSTING","Posting", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
+	QUALITY(12, "QUALITY","Quality", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
+	UPLOAD_CLAIMS(13, "UPLOAD_CLAIMS","Upload Claims", new RcmRoleEnum[] {RcmRoleEnum.UPLOAD_CLAIMS},true,false,false);
 	
 	final private int id;
 	final private String name;

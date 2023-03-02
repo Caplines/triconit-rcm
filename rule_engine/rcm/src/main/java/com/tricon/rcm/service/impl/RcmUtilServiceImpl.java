@@ -7,6 +7,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ForgotPasswordDto;
 import com.tricon.rcm.dto.GenericResponse;
@@ -56,6 +58,11 @@ public class RcmUtilServiceImpl {
 			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
 		}
 		return new GenericResponse(HttpStatus.OK, "", null);
+	}
+	
+	public int checkTeamNullOrNot(RcmTeam team) {
+		
+		return team==null?-1:team.getId();
 	}
 
 }

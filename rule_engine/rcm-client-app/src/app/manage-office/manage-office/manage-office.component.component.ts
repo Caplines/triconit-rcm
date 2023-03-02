@@ -109,6 +109,7 @@ export class ManageOfficeComponent implements OnInit {
 
   showAlertPopup(res:any){
     this.alert.showAlertPopup = true;
+    setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
     res.status==400 ? this.alert.isError=true : this.alert.isError=false;
     this.alert.alertMsg = res.message ? res.message : res.result.message;
   }

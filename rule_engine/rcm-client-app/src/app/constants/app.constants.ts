@@ -35,7 +35,19 @@ export class AppConstants {
         "name":"IV Team","paths":["/user-setting"],"defaultpath":"/user-setting"
         }],
         [9,{
-        "name":"IV Team","paths":["/user-setting"],"defaultpath":"/user-setting"
+        "name":"Client","paths":["/user-setting"],"defaultpath":"/user-setting"
+        }],
+        [10,{
+            "name":"Aging","paths":["/user-setting"],"defaultpath":"/user-setting"
+        }],
+        [11,{
+            "name":"Posting","paths":["/user-setting"],"defaultpath":"/user-setting"
+        }],
+        [12,{
+            "name":"Quality","paths":["/user-setting"],"defaultpath":"/user-setting"
+        }],
+        [13,{
+            "name":"Upload Claims","paths":["/user-setting"],"defaultpath":"/user-setting"
         }],
 
     ]);
