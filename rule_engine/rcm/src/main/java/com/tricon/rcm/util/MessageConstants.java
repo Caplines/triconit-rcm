@@ -8,7 +8,7 @@ public class MessageConstants {
 
 	public static final String DB_INSERSTION_ERROR = "Error while inserting data";
 
-	public static final String RECORDS_UPDATE = "Records has been updated";
+	public static final String RECORDS_UPDATE = "Record has been updated";
 
 	public static final String USER_NOT_EXIST = "User does not exist";
 
@@ -62,7 +62,9 @@ public class MessageConstants {
 	
 	public static final String TEAM_NOT_REQUIRED = "Team is not required for this role";
 	
-	public static final String ADMIN_NOT_ASSOCIATED_WITH_ROLES="ADMIN role can not associated with other roles";
+	public static final String ADMIN_NOT_ASSOCIATED_WITH_ROLES="Admin role can not associate with other roles";
+	
+	public static final String ROLES_REQUIRED="Please select the Roles";
 	
 
 }

@@ -24,5 +24,6 @@ public class UserRegistrationDto {
 	private String password;
 	private int teamId=0;
 	private List<String> userRole;
+	@NotEmpty(message = "Please provide a company")
 	private String companyName;
 }

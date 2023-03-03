@@ -723,7 +723,7 @@ public class AdminServiceImpl {
 		return company.getUuid();
 	}
 
-	public List<RcmClientResponseDto> getClientWithGoogleSheetData() {
+	public List<RcmClientResponseDto> getClientWithGoogleSheetData() throws Exception{
 		List<RcmCompany> company = null;
 		List<RcmClientResponseDto> data = null;
 		RcmClientResponseDto dto = null;

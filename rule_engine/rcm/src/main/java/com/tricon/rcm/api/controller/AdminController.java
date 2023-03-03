@@ -60,6 +60,10 @@ public class AdminController {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
+		if (dto.getUserRole().isEmpty()) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLES_REQUIRED, null));
+		}
 		GenericResponse response = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
