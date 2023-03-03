@@ -146,24 +146,42 @@ public class AdminServiceImpl {
 			RcmTeam team = teamRepo.findById(dto.getTeamId());
 			user = convertDtotoModel(dto);
 			if (team == null) {
+				
+				//FOR SINGLE ADMIN ROLE whose TEAM IS NULL
 				if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1)) {
-				} else if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1)) {
-				}
-
+						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1)) {} 	
+				
+				//FOR SINGLE UPLOAD_CLAIMS ROLE whose TEAM IS NULL			
+				else if (dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1)) {}
+				
+				//FOR ADMIN ROLE WITH UPLOAD_CLAIMS ROLE whose TEAM IS NULL
 				else if (dto.getUserRole().size() == 2) {
 					for (String r : dto.getUserRole()) {
-
 						if (r.equals(Constants.UPLOAD_CLAIMS) || r.equals(Constants.ADMIN))
 							continue;
 						else
 							return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);
 					}
-				} else {
-					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);
-				}
+				} else 
+					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);				
 			} else {
+				//ADMIN ROLE CAN NOT ASSOCIATED WITH OTHER ROLES
+				if(dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size()>1)){
+					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ADMIN_NOT_ASSOCIATED_WITH_ROLES, null);
+				}
+				//FOR SINGLE ADMIN ROLE TEAM IS NOT REQUIRED 
+				else if (dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1 && team!=null)) {
+					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
+				} 
+				//FOR SINGLE UPLOAD_CLAIMS ROLE TEAM IS NOT REQUIRED 	
+				else if (dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1 && team!=null)) {
+					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
+				}
+				else
 				user.setTeam(team);
 			}
 			user.setCompany(company);
@@ -220,7 +238,7 @@ public class AdminServiceImpl {
 				String userEmail = user.getEmail();
 				String emailSubject = "New Registration Confirmation";
 				String emailText = "Hi " + user.getFirstName()
-						+ ",\n\nThanks for signing up to RCM. You can now log into the RCM Account.\n\n"
+						+ ",\n\nThanks for signing up to RCM. You can now login into the RCM Account.\n\n"
 						+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
 				emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
 			}
