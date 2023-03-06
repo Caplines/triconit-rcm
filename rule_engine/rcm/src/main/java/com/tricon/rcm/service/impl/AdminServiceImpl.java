@@ -179,7 +179,7 @@ public class AdminServiceImpl {
 				//FOR SINGLE UPLOAD_CLAIMS ROLE TEAM IS NOT REQUIRED 	
 				else if (dto.getUserRole().stream()
 						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1 && team!=null)) {
-					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
+					//return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
 				}
 				else
 				user.setTeam(team);
