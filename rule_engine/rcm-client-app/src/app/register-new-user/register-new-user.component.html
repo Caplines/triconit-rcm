@@ -1,4 +1,4 @@
-﻿        <div class="right-container" [ngClass]="{'setPadding':setPaddingContainer}">
+﻿        <div class="right-container" [ngClass]="{'setPadding':appService.setPaddingContainer}">
         <ng-container *ngIf="alert.showAlertPopup">
             <div class="alert fade show my-3 text-center" [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">
                 <strong>{{alert.alertMsg}}</strong>

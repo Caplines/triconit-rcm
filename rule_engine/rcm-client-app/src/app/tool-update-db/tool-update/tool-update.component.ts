@@ -30,7 +30,7 @@ export class ToolUpdateComponent implements OnInit {
   issueClientName:string='';
   ele:any={'modal':'','span':''}
   
-  constructor(private appService: ApplicationServiceService,private title:Title) { 
+  constructor(public appService: ApplicationServiceService,private title:Title) { 
 
     this.log = [];//{} as FreshClaimPLogs;
     this.clients = [];
@@ -41,6 +41,7 @@ export class ToolUpdateComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAllClients();
+    this.appService.setPaddingRightContainer();
    // this.fetchLatesClaimLLogs();
    
   }

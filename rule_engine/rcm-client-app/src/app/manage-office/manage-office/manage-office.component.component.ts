@@ -19,7 +19,7 @@ export class ManageOfficeComponent implements OnInit {
   selectedCompany:any;
 
 
-  constructor(private appService:ApplicationServiceService ,private title : Title) { 
+  constructor(public appService:ApplicationServiceService ,private title : Title) { 
     title.setTitle("Manage Office");
   }
 

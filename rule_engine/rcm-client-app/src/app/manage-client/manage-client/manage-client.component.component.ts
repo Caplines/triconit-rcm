@@ -21,12 +21,13 @@ export class ManageClientComponent implements OnInit {
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
 
-  constructor(private _base: BaseService,private appService:ApplicationServiceService ,private title : Title) { 
+  constructor(private _base: BaseService,public appService:ApplicationServiceService ,private title : Title) { 
     title.setTitle("Manage Office");
   }
 
   ngOnInit(): void {
     this.getcompanyData();
+    this.appService.setPaddingRightContainer();
   }
 
   getcompanyData(){

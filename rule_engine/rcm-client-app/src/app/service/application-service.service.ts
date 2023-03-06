@@ -9,7 +9,7 @@ import { TokenStorageService } from '../service/token-storage.service';
   providedIn: 'root'
 })
 export class ApplicationServiceService extends BaseService {
-
+  setPaddingContainer:boolean=false;
 
   constructor(http: HttpClient, tokenStorage: TokenStorageService) {
     super(http,tokenStorage);
@@ -285,6 +285,14 @@ getClaimRuleData(params:ClaimRulesPullDataModel,callback:any){
 
 saveProductionData(params:any,callback:any){
   this.postData(params,this.httpUrl['productionData'],callback)
+}
+
+setPaddingRightContainer(){
+  let m:any = document.getElementsByClassName("gray-bar");
+  console.log(m[0].clientHeight)
+  if(m[0].clientHeight>55){
+    return this.setPaddingContainer=true;
+  }
 }
 
 }

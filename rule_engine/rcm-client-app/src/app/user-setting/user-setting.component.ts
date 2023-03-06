@@ -20,13 +20,14 @@ export class UserSettingComponent implements OnInit {
   userStatusArray:any={'userActiveStatus':[]}
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
 
-  constructor(private appService: ApplicationServiceService, private title: Title) { 
+  constructor(public appService: ApplicationServiceService, private title: Title) { 
     title.setTitle("User-Setting");
   }
 
   ngOnInit(): void {
     this.userRole = localStorage.getItem("roles");
     this.userName = localStorage.getItem("currentUser")
+    this.appService.setPaddingRightContainer();
   }
   logout() {
     localStorage.clear();

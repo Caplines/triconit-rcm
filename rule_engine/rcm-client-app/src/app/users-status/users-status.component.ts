@@ -22,7 +22,7 @@ export class UserStatusComponent implements OnInit {
   showLoader:boolean=false;
   isFindUserBtnDisable:boolean=false;
 
-  constructor(private appService: ApplicationServiceService, private title: Title) { 
+  constructor(public appService: ApplicationServiceService, private title: Title) { 
     title.setTitle("User-Status");
   }
 
@@ -30,6 +30,7 @@ export class UserStatusComponent implements OnInit {
     this.userRole = localStorage.getItem("roles");
     this.userName = localStorage.getItem("currentUser")
     this.getcompanyData();
+    this.appService.setPaddingRightContainer();
   }
   logout() {
     localStorage.clear();
