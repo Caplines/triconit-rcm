@@ -85,6 +85,12 @@ export class ManageClientComponent implements OnInit {
         }
       })
     }
+  } else{ 
+    this.alert.showAlertPopup = true;
+    this.alert.isError = true;
+    this.alert.alertMsg = "Field Cannot Be Empty";
+    setTimeout(() => {this.alert.showAlertPopup=false;}, 2500);
+    scrollTo(0,0);
   }
 
   }
@@ -107,6 +113,7 @@ export class ManageClientComponent implements OnInit {
     setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
     res.status==400 ? this.alert.isError=true : this.alert.isError=false;
     this.alert.alertMsg = res.message ? res.message : res.result.message;
+    scrollTo(0,0);
   }
 
   // addNewHeader(header:any,idx:any){

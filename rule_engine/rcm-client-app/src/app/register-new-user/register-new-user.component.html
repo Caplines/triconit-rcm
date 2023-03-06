@@ -51,7 +51,7 @@
                                             <small class="text-danger" *ngIf="userDetails.controls['password'].touched && userDetails.controls['password'].errors?.required">* Please Provide Your Password.</small>
                                             <small class="text-danger" *ngIf="userDetails.controls['password'].touched && userDetails.controls['password']?.errors?.minlength">* Must be atleast 6 characters.</small>
                                             <small class="text-danger" *ngIf="userDetails.controls['password'].touched && userDetails.controls['password']?.errors?.maxlength">* Length cannot exceed 20.</small>
-                                           <span (click)="showPassword = !showPassword">
+                                           <!-- <span (click)="showPassword = !showPassword">
                                             <ng-container *ngIf="showPassword">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
                                                     <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
@@ -65,7 +65,7 @@
                                                     <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z"/>
                                                 </svg>
                                             </ng-container>
-                                            </span> 
+                                            </span>  -->
                                         </div>
                                         <ng-container *ngIf="userDetails.controls.password.invalid && userDetails.controls.password.touched">
                                             <div  class="popover fade show bs-popover-right" style="left: 316px ; width: 300px !important;"><div class="arrow" style="top: 34px;"></div><h3 class="popover-header">Password Tips</h3><div class="popover-body">
@@ -98,13 +98,6 @@
                                             <div class="form-group">
                                                 <label for="userRole">User Role :</label>
                                                 <ng-container *ngFor="let userRole of defaulUserRoleData;let idx=index;">
-                                                    <!-- <div class="form-check  form-check-inline custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox" name="role" id="{{userRole.roleId}}"
-                                                            (change)="selectUserRole($event)">
-                                                        <label class="custom-control-label" for="{{userRole.roleId}}">
-                                                            {{userRole.roleName}}
-                                                        </label>
-                                                    </div> -->
                                                     <ng-container *ngIf="userRole.roleId == 'ADMIN'">
                                                         {{userRole.roleName}}
                                                         <div style="display: flex;">
@@ -153,8 +146,8 @@
                                         <div class="form-group">
                                             <label for="teamId">Team Name</label>
                                             <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
-                                            <select class="form-control" (change)="selectTeamName($event);getRolesByTeam($event);" [ngClass]="{'is-invalid':userDetails.controls.teamId.invalid && userDetails.controls.teamId.touched,'disabled':teamData.length==0,'is-valid':userDetails.controls.teamId.valid}">
-                                        <option selected="true" hidden="true" value="">Select Team</option>
+                                            <select class="form-control" id="select" (change)="selectTeamName($event);getRolesByTeam($event);" [ngClass]="{'is-invalid':userDetails.controls.teamId.invalid && userDetails.controls.teamId.touched && userDetails.teamId.value == '','is-valid': userDetails.controls.teamId.touched && userDetails.controls.teamId.valid}">
+                                        <option selected="true"  value="">Select Team</option>
                                         <option *ngFor="let team of teamData" value="{{team.teamId}}">{{team.teamName}}</option>
                                     </select>
                                 </div>

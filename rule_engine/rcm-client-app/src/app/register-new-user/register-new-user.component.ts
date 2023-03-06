@@ -70,7 +70,11 @@ export class RegisterNewUserComponent implements OnInit {
     checkFieldsAreValid(){
       if(this.userDetails.value.teamId != null && (this.userDetails.value.userRole == '' || this.userDetails.value.userRole == null || this.userDetails.value.userRole.length==0)){
         return {'status':false,'field':'userRole'};
-      } else{
+      }
+      if(this.userDetails.value.teamId !=null && this.userDetails.value.teamId != '' && (this.userRoles.includes('UPLOAD_CLAIMS') && (!this.userRoles.includes("TL") && !this.userRoles.includes("ASSO")))){
+        return {'status':false,'field':'userRole'};
+      }
+       else{
         return {'status':true};
       }
       
@@ -107,7 +111,7 @@ export class RegisterNewUserComponent implements OnInit {
   }
 
   selectDefaultUserRole(event:any){
-    console.log(event.target.checked)
+    
     if((event.target.value == "true" && event.target.id == "ADMIN") || (event.target.checked == true && event.target.id=="UPLOAD_CLAIMS")){
       if(this.userRoles.length==0){
         this.userRoles.push(event.target.id);
@@ -150,6 +154,32 @@ export class RegisterNewUserComponent implements OnInit {
       }
     }
     this.userDetails.controls.userRole.setValue(this.userRoles);
+    if (this.userRoles.includes("ADMIN")) {
+      this.userDetails.controls.teamId.setValidators('');
+      this.userDetails.controls.teamId.updateValueAndValidity();
+    } if ((event.target.checked == true && event.target.id == "UPLOAD_CLAIMS")) {
+      this.userDetails.controls.teamId.setValidators('');
+      this.userDetails.controls.teamId.setValue('');
+      let select_box: any = document.getElementById("select");
+      select_box.selectedIndex = 0;
+      this.userDetails.controls.teamId.updateValueAndValidity();
+    }
+    if ((event.target.checked == false && event.target.id == "UPLOAD_CLAIMS")) {
+      this.userDetails.controls.teamId.setValidators('');
+      this.userDetails.controls.teamId.setValue('');
+      let select_box: any = document.getElementById("select");
+      select_box.selectedIndex = 0;
+      this.userDetails.controls.teamId.updateValueAndValidity();
+    }
+    if (event.target.checked == false && (this.userRoles.includes("TL") || this.userRoles.includes("ASSO"))) {
+      this.userDetails.controls.teamId.setValidators(Validators.required);
+      this.userDetails.controls.teamId.updateValueAndValidity();
+    }
+    if (event.target.checked == true && (this.userRoles.includes("TL") || this.userRoles.includes("ASSO"))) {
+      this.userDetails.controls.teamId.setValidators(Validators.required);
+      this.userDetails.controls.teamId.updateValueAndValidity();
+    }
+
     console.log(this.userRoles);
   }
 
@@ -237,6 +267,10 @@ export class RegisterNewUserComponent implements OnInit {
     }
   }
     this.userDetails.controls.userRole.setValue(this.userRoles);
+    if(this.userRoles.includes("TL") || this.userRoles.includes("ASSO")){
+      this.userDetails.controls.teamId.setValidators(Validators.required);
+      this.userDetails.controls.teamId.updateValueAndValidity();
+    }
       console.log(this.userRoles)
   }
 
@@ -273,6 +307,13 @@ export class RegisterNewUserComponent implements OnInit {
 
   selectTeamName(e:any){
     this.userDetails.controls.teamId.setValue(e.target.value);
+    if(this.userRoles.includes("TL")||this.userRoles.includes("ASSO"))
+    {
+      let indAsso = this.userRoles.indexOf("ASSO");
+      indAsso !== -1 ? this.userRoles.splice(indAsso,1) : '';
+      let indTL = this.userRoles.indexOf("TL");
+      indTL  !== -1 ? this.userRoles.splice(indTL,1) : '';
+    }
   }
 
   getRolesByCompany(event:any){
@@ -299,6 +340,7 @@ export class RegisterNewUserComponent implements OnInit {
     this.alert.showAlertPopup = true;
     res.status==400 ? this.alert.isError=true : this.alert.isError=false;
     this.alert.alertMsg = res.message ? res.message : res.result.message;
+    setTimeout(() => {this.alert.showAlertPopup=false;}, 2500);
     scrollTo(0,0);
   }
 
