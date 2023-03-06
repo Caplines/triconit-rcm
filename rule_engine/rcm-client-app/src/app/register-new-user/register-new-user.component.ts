@@ -72,9 +72,9 @@ export class RegisterNewUserComponent implements OnInit {
       if(this.userDetails.value.teamId != null && (this.userDetails.value.userRole == '' || this.userDetails.value.userRole == null || this.userDetails.value.userRole.length==0)){
         return {'status':false,'field':'userRole'};
       }
-      if(this.userDetails.value.teamId !=null && this.userDetails.value.teamId != '' && (this.userRoles.includes('UPLOAD_CLAIMS') && (!this.userRoles.includes("TL") && !this.userRoles.includes("ASSO")))){
-        return {'status':false,'field':'userRole'};
-      }
+      // if(this.userDetails.value.teamId !=null && this.userDetails.value.teamId != '' && (this.userRoles.includes('UPLOAD_CLAIMS') && (!this.userRoles.includes("TL") && !this.userRoles.includes("ASSO")))){
+      //   return {'status':false,'field':'userRole'};
+      // }
        else{
         return {'status':true};
       }
