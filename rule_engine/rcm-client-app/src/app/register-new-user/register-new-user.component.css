@@ -37,3 +37,15 @@
     padding: 0.5rem 0.75rem;
     color: #212529;
 }
+.user-role-box{
+    display:flex;
+    align-items: center;
+    margin-top: 7px;
+}
+.user-role-box label{
+    margin-bottom: 0px !important;
+}
+
+.setPadding{
+    padding-top:115px !important;
+}

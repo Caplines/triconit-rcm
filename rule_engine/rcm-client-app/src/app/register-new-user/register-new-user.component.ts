@@ -20,6 +20,7 @@ export class RegisterNewUserComponent implements OnInit {
   showLoader:boolean=false;
   userRoleByTeam:any=[];
   showPassword:boolean=false;
+  setPaddingContainer:boolean=false;
   constructor(private fb : FormBuilder, private appService: ApplicationServiceService,private title : Title) {
     title.setTitle("Register New User");
     this.userDetails = this.fb.group({
@@ -37,6 +38,7 @@ export class RegisterNewUserComponent implements OnInit {
   ngOnInit(): void {
     this.getcompanyData();
     this.userDetails.reset();
+    this.setPaddingRightContainer();
   }
 
   registerNewUser(){
@@ -314,6 +316,14 @@ export class RegisterNewUserComponent implements OnInit {
       let indTL = this.userRoles.indexOf("TL");
       indTL  !== -1 ? this.userRoles.splice(indTL,1) : '';
     }
+    if(this.userRoles.includes("CLIENT_MANAGER") || this.userRoles.includes("CLIENT_VIEW_ONLY")){
+      let cm = this.userRoles.indexOf("CLIENT_MANAGER");
+      cm !== -1 ? this.userRoles.splice(cm,1) : '';
+      let cvo = this.userRoles.indexOf("CLIENT_VIEW_ONLY");
+      cvo  !== -1 ? this.userRoles.splice(cvo,1) : '';
+      this.userRoles=[];
+    }
+    this.getRolesByTeam(e);
   }
 
   getRolesByCompany(event:any){
@@ -344,4 +354,11 @@ export class RegisterNewUserComponent implements OnInit {
     scrollTo(0,0);
   }
 
+  setPaddingRightContainer(){
+    let m:any = document.getElementsByClassName("gray-bar");
+    console.log(m[0].clientHeight)
+    if(m[0].clientHeight>55){
+      this.setPaddingContainer=true;
+    }
+  }
 }

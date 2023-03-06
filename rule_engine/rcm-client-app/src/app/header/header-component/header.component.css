@@ -86,9 +86,9 @@
     padding: 8px 20px;
     clear: both;
     background: #1c212d;
-    height: 47px;
     display: flex;
     align-items: center;
+    text-align: left;
     font-size: 14px;
 }
 
