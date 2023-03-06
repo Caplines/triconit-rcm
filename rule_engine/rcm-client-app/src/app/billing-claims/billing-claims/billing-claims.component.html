@@ -1,25 +1,25 @@
-
+<!-- 
 <div class="claim-detail-container my-2">
     <div class="title">Claim Details:</div>
 <table class="table table-striped table-bordered">
 <tr class="totalRow">
-    <th>Office : {{claimRcm.officeName}}</th>
-    <th>Insurance Type : {{claimRcm.officeName}}</th>
-    <th>Primary Insurance : {{claimRcm.primInsurance}}</th>
+    <th>Office : </th>
+    <th>Insurance Type : </th>
+    <th>Primary Insurance : </th>
     <th>Primary Insurance Type: {{claimRcm.primaryInsType}}</th>
-    <th>Regenerated Claim? : {{claimRcm.regenerated===true?"Yes":"No"}} </th>
+    <th>Regenerated Claim? :  </th>
 </tr>
 <tr>
-    <td>Billing Status: {{claimRcm.claimStatus==appConstants.BILLING_ID?"Fresh":"Re-Billing"}}</td>
-    <td>Member ID:  {{claimRcm.secMemberId}}</td>
+    <td>Billing Status: </td>
+    <td>Member ID: </td>
     <td>Primary EOB:</td>
     <td>Linked Claim IDs:</td>
     <td></td>
 </tr>
 <tr>
     <td>ClaimType:</td>
-    <td>Patient ID: {{claimRcm.patientId}}</td>
-    <td>Secondary Insurance : {{claimRcm.secInsurance}}</td>
+    <td>Patient ID: </td>
+    <td>Secondary Insurance : </td>
     <td>Secondary Type : {{claimRcm.secondaryInsType}}</td>
     <td></td>
 </tr>
@@ -33,8 +33,8 @@
 
 </tr>
 <tr>
-    <td>Claim ID: {{claimRcm.claimId | claimIdPipe}}</td>
-    <td>Patient Name: {{claimRcm.patientName}}</td>
+    <td>Claim ID:</td>
+    <td>Patient Name: </td>
     <td>Treating Provider :</td>
     <td>Assignment of Benefits:</td>
     <td></td>
@@ -42,8 +42,8 @@
 
 <tr>
     
-    <td>DOS: {{claimRcm.dos}}</td>
-    <td>Patient DOB: {{claimRcm.patientDob}}</td>
+    <td>DOS: </td>
+    <td>Patient DOB: </td>
     <td>Provider on Claim: </td>
     <td></td>
     <td></td>
@@ -100,63 +100,585 @@
 
 
 </table>
-</div>
+</div> -->
 
 
-<div class="link-to-related-doc my-3">
-    <div  class="title">Links to Related Documents:</div>
-    <table class="table table-striped table-bordered">
-        <tr>
-            <th>IV ID : 213654</th>
-            <th>Date of IV : 12/19/2022</th>
-            <td><a routerLink="ivf" target="_blank">IV Link</a></td>
-        </tr>
-        <tr>
-            <th>Signed Tx Plan ID: 456321</th>
-            <th>Date of Tx. Plan: 12/19/2022</th>
-            <td><a routerLink="">Treatment Plan Link</a></td>
-        </tr>
-    </table>
-</div>
 
-<div class="mx-1 my-2">
-    <!-- <button class="btn btn-info" (click)="getIVFData()"> IVF DATA </button> -->
-    <button class="btn btn-success mx-1"  (click)="getRulesData()"> Rule DATA  </button>
-</div>
-<ng-container *ngIf="ruleData.length>0">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 pt-3">
+            <h2 class="page-heading">Claim Details</h2>
+            <div class="main-container">
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-light active">
+                                <input type="radio" name="options" id="option1" autocomplete="off" checked> Primary
+                            </label>
+                            <label class="btn btn-light">
+                                <input type="radio" name="options" id="option2" autocomplete="off"> Secondary
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-box-form">
+                        <a data-toggle="collapse" (click)="showHide(0)" class="bold-b-text"  aria-expanded="true">Claim Details:</a>
+                        <div class="form-row collapse show" id="claimDetails" >
+                            <div class="col-md-3 mb-2">
+                                <div class="custom-row">
+                                    <label for="" class="">Office :</label>
+                                    <div>{{claimRcm.officeName}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Billing Status :</label>
+                                    <div>{{claimRcm.claimStatus==appConstants.BILLING_ID?"Fresh":"Re-Billing"}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">ClaimType :</label>
+                                    <div></div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Claim ID :</label>
+                                    <div>{{claimRcm.claimId | claimIdPipe}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">DOS :</label>
+                                    <div>{{claimRcm.dos}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Billed Amount :</label>
+                                    <div></div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Estimated Amount :</label>
+                                    <div></div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="custom-row">
+                                    <label for="" class="">Insurance Type :</label>
+                                    <div>{{claimRcm.officeName}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Member ID :</label>
+                                    <div> {{claimRcm.secMemberId}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Patient ID :</label>
+                                    <div>{{claimRcm.patientId}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Patient Name :</label>
+                                    <div>{{claimRcm.patientName}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Patient DOB :</label>
+                                    <div>{{claimRcm.patientDob}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Subscriber Name :</label>
+                                    <div></div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Subscriber DOB :</label>
+                                    <div></div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="custom-row">
+                                    <label for="" class="">Primary Insurance :</label>
+                                    <div class="NA">{{claimRcm.primInsurance}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Primary EOB :</label>
+                                    <div></div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Secondary Insurance :</label>
+                                    <div>{{claimRcm.secInsurance}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Treating Provider :</label>
+                                    <div></div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Provider on Claim :</label>
+                                    <div></div>
+                                </div>
 
-<div class="rule-detail" >
-<span>Claim ID: <span>{{ruleData[0].claimId}} of {{ruleData[0].officeName}} office</span></span>
-<span> | Pt.ID: <span>{{ruleData[0].patientId}}</span></span>
-<span> | IV.ID: <span>{{ruleData[0].ivId}}</span></span>
-<span> | Pt.Name: <span>{{ruleData[0].patientName}}</span></span>
-<span> | DOS: <span>{{ruleData[0].dos | date }}</span></span>
-<span> | Tx plan Date: <span>{{ruleData[0].dos | date }}</span></span>
-<span> | Ins.Type : <span>{{ruleData[0].insuranceType}}</span></span>
-</div>
-<table class="table table-striped table-bordered">
-        <thead>
-            <tr class="total-row">
-                <th> Rule Name <button type="button" class="btn btn-success" (click)="switchType('pass')">Pass: {{count.pass}}</button> <button type="button" class="btn btn-danger mx-1" (click)="switchType('fail')">Fail: {{count.fail}}</button><button type="button" class="btn btn-info" (click)="switchType('alert')">Alert: {{count.alert}}</button> </th>
-                <th> Service Codes</th>
-                <th> Tooth#</th>
-                <th> Surface#</th>
-                <th> Messages</th>
-                <th> Remark</th>
-            </tr>
-           
-        </thead>
-        <tbody>
-            <tr *ngFor="let rule of ruleData;let idx=index">
-                <ng-container *ngIf="rule.mtype==mtype">
-                    <td>{{rule.ruleName}}</td>
-                    <td>{{rule.codes}}</td>
-                    <td>{{rule.tooth}} </td>
-                    <td>{{rule.surface}}</td>
-                    <td [innerHTML]="rule.message"></td>
-                    <td> <input type="text" maxlength="30" minlength="3" [required]="mtype==1"> </td>
-                </ng-container>
-            </tr>
-    </tbody>
-</table>
-</ng-container>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="custom-row">
+                                    <label for="" class="">Regenerated Claim? :</label>
+                                    <div [ngClass]="{'yes':claimRcm.regenerated,'no':!claimRcm.regenerated}">{{claimRcm.regenerated===true?"Yes":"No"}}</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Linked Claim IDs :</label>
+                                    <div></div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Claim Type :</label>
+                                    <div></div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text " aria-expanded="false">Links to Related Documents:</a>
+                        <div class="form-row collapse show" id="linksToDocuments" >
+                            <div class="col-md-3 mb-2">
+                                <div class="custom-row">
+                                    <label for="" class="">IV ID :</label>
+                                    <div>213654</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Signed Tx Plan ID :</label>
+                                    <div>456321</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="custom-row">
+                                    <label for="" class="">Date of IV :</label>
+                                    <div>12/19/2022</div>
+                                </div>
+                                <div class="custom-row">
+                                    <label for="" class="">Date of Tx. Plan :</label>
+                                    <div>12/19/2022</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div><a routerLink="ivf" target="_blank" class="flex-center">IV Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
+                                <div><a routerLink="treatmentPlan" target="_blank"class="flex-center">Treatment Plan Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
+                            </div>
+                        </div>
+                        <a data-toggle="collapse" (click)="showHide(2)" class="bold-b-text " aria-expanded="false">Remarks by Other RCM Teams:</a>
+                        <div class="form-row  collapse show" id="teamRemarks" >
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No.</th>
+                                            <th>Team Name</th>
+                                            <th>Date of Remarks</th>
+                                            <th class="remark">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>01</td>
+                                            <td>CDP Team</td>
+                                            <td>12/19/2022</td>
+                                            <td>Button to Submit their response or escalate the claim to some other teamButton to Submit their response or escalate the claim to some other team</td>
+                                        </tr>
+                                        <tr>
+                                            <td>02</td>
+                                            <td>CDP Team</td>
+                                            <td>12/19/2022</td>
+                                            <td>TeamButton to Submit their response or escalate the claim to some other team</td>
+                                        </tr>
+                                        <tr>
+                                            <td>03</td>
+                                            <td>Posting Team</td>
+                                            <td>11/1/2022</td>
+                                            <td>TeamButton to Submit their response or escalate the claim to some other team</td>
+                                        </tr>
+                                        <tr>
+                                            <td>04</td>
+                                            <td>Aging Team</td>
+                                            <td>10/1/2022</td>
+                                            <td>Button to Submit their response or escalate the claim to some other teamButton to Submit their response or escalate the claim to some other team</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <a data-toggle="collapse" (click)="showHide(3)" class="bold-b-text " aria-expanded="false">Additional Requirements for Rebilled Claims:</a>
+                        <div class="form-row  collapse show" id="rebilledClaims" >
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No.</th>
+                                            <th>Team Name</th>
+                                            <th>Date</th>
+                                            <th>Requirement</th>
+                                            <th>Requirment Details</th>
+                                            <th>Done?</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>01</td>
+                                            <td>CDP Team</td>
+                                            <td>12/19/2022</td>
+                                            <td>Send clearer X-Ray</td>
+                                            <td>Tooth No. 13</td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>02</td>
+                                            <td>CDP Team</td>
+                                            <td>12/08/2022</td>
+                                            <td>Send Pano</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>03</td>
+                                            <td>CDP Team</td>
+                                            <td>12/19/2022</td>
+                                            <td>Rebill with detailed Narrative</td>
+                                            <td>Narrative show show medical necessity for RCT on Tooth No. 20</td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <a data-toggle="collapse" (click)="showHide(4)" class="bold-b-text " aria-expanded="false">Claim Level Validations (Automated):</a>
+                        <div class="form-row  collapse show" id="claimValidations" >
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Number</th>
+                                            <th>Name</th>
+                                            <th>Scope</th>
+                                            <th>Description</th>
+                                            <th>Passed/Failed</th>
+                                            <th>Fail Message</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>BCV-01</td>
+                                            <td>ES vs. IV Comparison</td>
+                                            <td>Full Claim</td>
+                                            <td>Confirm Patient & Subscriber details are same in ES and IV</td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td>xxxx</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>BCV-02</td>
+                                            <td><a href="#">Treating vs. Billing Provider</a></td>
+                                            <td>Full Claim</td>
+                                            <td>Is the Treating Provider same as the Provider on Claim?</td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td>xxxx</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>BCV-03</td>
+                                            <td>Credentialing Status</td>
+                                            <td>12/19/2022</td>
+                                            <td>Is Provider on Claim credentialed with Insurance Network?</td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td>xxxx</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <a data-toggle="collapse" (click)="showHide(5)" class="bold-b-text " aria-expanded="false">Claim Level Validations (Manual):</a>
+                        <div class="form-row  collapse show" id="claimValidationsManual" >
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td>BCV-04</td>
+                                            <td>Provider Notes</td>
+                                            <td>Full Claim</td>
+                                            <td>Are Provider Notes available in ES?</td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="text-right">Copy and Paste Provider Notes</td>
+                                            <td colspan="4"><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text " aria-expanded="false">Rule Engine Validations:</a>
+                        <div class="form-row  collapse show" id="ruleEngine" >
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Number</th>
+                                            <th>Name</th>
+                                            <th>Service Codes</th>
+                                            <th>Description</th>
+                                            <th>Applicable to the claim?</th>
+                                            <th>Passed/Failed</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>REV-01</td>
+                                            <td>Frequency Limitations</td>
+                                            <td>D2391, D2392</td>
+                                            <td>Confirm Patient & Subscriber details are same in ES and IV</td>
+                                            <td>Yes</td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr class="disable">
+                                            <td>REV-01</td>
+                                            <td>Frequency Limitations</td>
+                                            <td>D2391, D2392</td>
+                                            <td>Confirm Patient & Subscriber details are same in ES and IV</td>
+                                            <td>Yes</td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>REV-01</td>
+                                            <td>Frequency Limitations</td>
+                                            <td>D2391, D2392</td>
+                                            <td>Confirm Patient & Subscriber details are same in ES and IV</td>
+                                            <td>Yes</td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="mx-1 my-2">
+                            <button class="btn btn-success mx-1"  (click)="getRulesData()"> Rule DATA  </button>
+                        </div>
+                        <ng-container *ngIf="ruleData.length>0">
+                        
+                        <div class="rule-detail" >
+                        <span>Claim ID: <span>{{ruleData[0].claimId}} of {{ruleData[0].officeName}} office</span></span>
+                        <span> | Pt.ID: <span>{{ruleData[0].patientId}}</span></span>
+                        <span> | IV.ID: <span>{{ruleData[0].ivId}}</span></span>
+                        <span> | Pt.Name: <span>{{ruleData[0].patientName}}</span></span>
+                        <span> | DOS: <span>{{ruleData[0].dos | date }}</span></span>
+                        <span> | Tx plan Date: <span>{{ruleData[0].dos | date }}</span></span>
+                        <span> | Ins.Type : <span>{{ruleData[0].insuranceType}}</span></span>
+                        </div>
+                        <table class="table table-striped table-bordered">
+                                <thead>
+                                    <tr class="total-row">
+                                        <th> Rule Name <button type="button" class="btn btn-success" (click)="switchType('pass')">Pass: {{count.pass}}</button> <button type="button" class="btn btn-danger mx-1" (click)="switchType('fail')">Fail: {{count.fail}}</button><button type="button" class="btn btn-info" (click)="switchType('alert')">Alert: {{count.alert}}</button> </th>
+                                        <th> Service Codes</th>
+                                        <th> Tooth#</th>
+                                        <th> Surface#</th>
+                                        <th> Messages</th>
+                                        <th> Remark</th>
+                                    </tr>
+                                   
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let rule of ruleData;let idx=index">
+                                        <ng-container *ngIf="rule.mtype==mtype">
+                                            <td>{{rule.ruleName}}</td>
+                                            <td>{{rule.codes}}</td>
+                                            <td>{{rule.tooth}} </td>
+                                            <td>{{rule.surface}}</td>
+                                            <td [innerHTML]="rule.message"></td>
+                                            <td> <input type="text" maxlength="30" minlength="3" [required]="mtype==1"> </td>
+                                        </ng-container>
+                                    </tr>
+                            </tbody>
+                        </table>
+                        </ng-container>
+                        <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text " aria-expanded="false">Service Code Level Validations:</a>
+                        <div class="form-row  collapse show" id="serviceCodeValidations" >
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Number</th>
+                                            <th>Name</th>
+                                            <th>Service Codes</th>
+                                            <th style="width:40%">Description</th>
+                                            <th>Passed/Failed</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>SCV-01</td>
+                                            <td>Narratives</td>
+                                            <td>D2391, D2392</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-02</td>
+                                            <td>Xrays (Bitewings and/or PA's)</td>
+                                            <td>Dxxxx</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-03</td>
+                                            <td>FMX</td>
+                                            <td>Dxxxx</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-04</td>
+                                            <td>Pano</td>
+                                            <td>Dxxxx, Dyyyy</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-05</td>
+                                            <td>Pano</td>
+                                            <td>Dxxxx, Dyyyy</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-06</td>
+                                            <td>Pano</td>
+                                            <td>Dxxxx, Dyyyy</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-07</td>
+                                            <td>Pano</td>
+                                            <td>Dxxxx, Dyyyy</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-08</td>
+                                            <td>Pano</td>
+                                            <td>Dxxxx, Dyyyy</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-09</td>
+                                            <td>Pano</td>
+                                            <td>Dxxxx, Dyyyy</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-10</td>
+                                            <td>Pano</td>
+                                            <td>Dxxxx, Dyyyy</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-11</td>
+                                            <td>Pano</td>
+                                            <td>Dxxxx, Dyyyy</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SCV-12</td>
+                                            <td>Pano</td>
+                                            <td>Dxxxx, Dyyyy</td>
+                                            <td></td>
+                                            <td>0 Yes  |  0 No</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                        <a data-toggle="collapse" (click)="showHide(8)" class="bold-b-text " aria-expanded="false">Enter Claim Submission Details:</a>
+                        <div class="form-row  collapse show" id="claimSubmissionDetails" >
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Number</th>
+                                            <th>Description</th>
+                                            <th>Options</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>01</td>
+                                            <td>Date & Time of Claim Processing in Eaglesoft</td>
+                                            <td>Date & Time</td>
+                                        </tr>
+                                        <tr>
+                                            <td>02</td>
+                                            <td>Channel used to submit the Claim Insurance (Submission type)</td>
+                                            <td>0 RemoteLite  |  0 Fax  |  0 Mail  |  0 Portal</td>
+                                        </tr>
+                                        <tr>
+                                            <td>03</td>
+                                            <td>Attachment sent with claim </td>
+                                            <td>0 Yes  |  0 No</td>
+                                        </tr>
+                                        <tr>
+                                            <td>04</td>
+                                            <td>Preauth </td>
+                                            <td>0 Yes  |  0 No</td>
+                                        </tr>
+                                        <tr>
+                                            <td>05</td>
+                                            <td>Refferal Letter </td>
+                                            <td>0 Yes  |  0 No</td>
+                                        </tr>
+                                        <tr>
+                                            <td>06</td>
+                                            <td>Claim #</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>07</td>
+                                            <td>Preauth #</td>
+                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <strong>Remarks if needed</strong>
+                                <div><textarea class="form-control" id="" rows="3"></textarea></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-success">Save For Later Processing</button>
+                        <button type="button" class="btn btn-success">Mark as Submittted</button>
+                        <button type="button" class="btn btn-success">Assign to Another Team</button>
+                    </div>
+                </div>
+                
+            </div>
+
+        </div>
+    </div>
+ </div>

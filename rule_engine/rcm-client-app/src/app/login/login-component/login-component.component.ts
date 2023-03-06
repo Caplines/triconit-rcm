@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { AuthService } from '../../service/auth-service.service';
 import { TokenStorageService } from '../../service/token-storage.service';
-
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login-component',
@@ -26,6 +26,8 @@ export class LoginComponent implements OnInit {
     showForgotPasswordBox:false,
     showResetEmailMsg:false
   }
+  isRecaptchaSolved:boolean=false;
+	siteKey:any = environment.recaptcha.siteKey;
 
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
@@ -93,6 +95,10 @@ export class LoginComponent implements OnInit {
           this.forgotPassObj.showResetEmailMsg = true;
           this.forgotPassObj.showForgotPasswordBox = false;
           this.forgotPassObj.email= '';
+          setTimeout(() => {
+            this.forgotPassObj.showResetEmailMsg = false;
+          this.forgotPassObj.showForgotPasswordBox = false;
+          }, 2500);
           this.errorMessage='';
         } else if(callback.status == 400) { 
           this.errorMessage = callback.message;
@@ -104,4 +110,12 @@ export class LoginComponent implements OnInit {
       this.forgotPassObj.email= '';
     }
   }
+
+  resolved(captchaResponse: string) {
+		if(captchaResponse != null){
+			this.isRecaptchaSolved = true;
+		}else {
+			this.isRecaptchaSolved = false;
+		}
+	}
 }

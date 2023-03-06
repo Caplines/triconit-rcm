@@ -19,13 +19,15 @@ export class RegisterNewUserComponent implements OnInit {
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   showLoader:boolean=false;
   userRoleByTeam:any=[];
+  showPassword:boolean=false;
   constructor(private fb : FormBuilder, private appService: ApplicationServiceService,private title : Title) {
     title.setTitle("Register New User");
     this.userDetails = this.fb.group({
-      'firstName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25)]],
-      'lastName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25)]],
-      'email' : ['',[Validators.email,Validators.maxLength(100),Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]],
-      'password' : ['',[Validators.required,Validators.minLength(6),Validators.maxLength(20)]],
+      'firstName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
+      'lastName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
+      'email' : ['',[Validators.required,Validators.email,Validators.maxLength(100),Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]],
+      'password': [ '', [ Validators.required, Validators.minLength(6), Validators.maxLength(20),]
+     ],
       'companyName' : ['',Validators.required],
       'teamId' : ['',Validators.required],
       'userRole' : ['',Validators.required],
@@ -38,6 +40,11 @@ export class RegisterNewUserComponent implements OnInit {
   }
 
   registerNewUser(){
+    let isValid:any = this.checkFieldsAreValid();
+    if(isValid.status && this.userDetails.valid){
+      if(this.userRoles.includes("ADMIN") && (!this.userRoles.includes("TL") || !this.userRoles.includes("ASSO"))){
+        this.userDetails.value.teamId="";
+      }
     this.appService.registerUser(this.userDetails.value,(callback:any)=>{
       if(callback.status == 200){
         console.log(callback)
@@ -49,15 +56,34 @@ export class RegisterNewUserComponent implements OnInit {
         this.showAlertPopup(callback);
       }
     })
+  }
+  else{
+        if(isValid.field !== undefined && isValid.field == 'userRole'){
+          this.showAlertPopup({'status':400,'message':"Please Select User Role"})
+        }
+        else{
+          this.showAlertPopup({'status':400,'message':"Please Check Fields Again"})
+          }
+  }
     }
-  
+
+    checkFieldsAreValid(){
+      if(this.userDetails.value.teamId != null && (this.userDetails.value.userRole == '' || this.userDetails.value.userRole == null || this.userDetails.value.userRole.length==0)){
+        return {'status':false,'field':'userRole'};
+      } else{
+        return {'status':true};
+      }
+      
+    }
+
   getTeamsData(event:any){
     this.showLoader=true;
     this.appService.fetchTeamsNameData(event.target.value,(callback:any)=>{
       if(callback.status){
         this.showLoader = false;
         this.teamData = callback.data;
-        this.userRoleByTeam=this.userRoles=[];
+        this.userRoleByTeam=[];
+        console.log(this.userRoles)
       }
     })
   }
@@ -80,26 +106,137 @@ export class RegisterNewUserComponent implements OnInit {
     })
   }
 
-  selectUserRole(event:any){
-    let alreadyExist = this.userRoles.some((e:any)=> e == event.target.id);
-    if(!alreadyExist){
-      this.userRoles.push(event.target.id)
-      if(event.target.id === "TL" && (!this.userRoles.includes("ASSO"))){
-        this.userRoles.push("ASSO");
-      }
-    } else{
-      this.userRoles.find((e:any,index:any)=>{
-            if(e == event.target.id){
-              this.userRoles.splice(index,1)
-              if(e === "TL"){
-               let k =  this.userRoles.indexOf("ASSO")
-               k !== -1 ? this.userRoles.splice(k,1) : '';
-              }
+  selectDefaultUserRole(event:any){
+    console.log(event.target.checked)
+    if((event.target.value == "true" && event.target.id == "ADMIN") || (event.target.checked == true && event.target.id=="UPLOAD_CLAIMS")){
+      if(this.userRoles.length==0){
+        this.userRoles.push(event.target.id);
+      }else { 
+        let alreadyExist = this.userRoles.some((e:any)=> e == event.target.id);
+        if(!alreadyExist){
+          this.userRoles.push(event.target.id);
+        }else{
+          for(let i=0;i<this.userRoles.length;i++){
+            if(this.userRoles[i] == event.target.id){
+              this.userRoles.splice(i,1);
+              break;
             }
-          })
+          }
+        }
+      }
+      if(event.target.id == "ADMIN"){
+        let indAsso = this.userRoles.indexOf("ASSO");
+        indAsso !== -1 ? this.userRoles.splice(indAsso,1) : '';
+        let indTL = this.userRoles.indexOf("TL");
+        indTL  !== -1 ? this.userRoles.splice(indTL,1) : '';
+        this.teamData=this.userRoleByTeam=[];
+      }
+    }else if((event.target.value == 'false' && event.target.id == "ADMIN") || (event.target.checked == false && event.target.id=="UPLOAD_CLAIMS")){
+      for(let i=0;i<this.userRoles.length;i++){
+        if(this.userRoles[i] == event.target.id){
+          this.userRoles.splice(i,1);
+          break;
+        }
+      }
+      if(event.target.id == "ADMIN"){
+        let evt:any =  {'target':{'value':this.userDetails.controls.companyName.value}}
+        this.getTeamsData(evt);
+        if(this.userRoles.includes("TL") || this.userRoles.includes("ASSO")){
+          let indAsso = this.userRoles.indexOf("ASSO");
+          indAsso !== -1 ? this.userRoles.splice(indAsso,1) : '';
+          let indTL = this.userRoles.indexOf("TL");
+          indTL  !== -1 ? this.userRoles.splice(indTL,1) : '';
+        }
+      }
     }
-      this.userDetails.controls.userRole.setValue(this.userRoles);
-      this.changeTeamMandatoryStatus(event.target.id);
+    this.userDetails.controls.userRole.setValue(this.userRoles);
+    console.log(this.userRoles);
+  }
+
+  selectUserRole(event:any){
+    if(this.userRoles.length>0){
+      if(event.target.id == "TL"){
+        let alreadyExist = this.userRoles.some((e:any)=> e == event.target.id);
+        if(!alreadyExist){
+          this.userRoles.push(event.target.id);
+          if(!this.userRoles.includes("ASSO")){
+            this.userRoles.push("ASSO");
+          }
+        } else{
+          for(let i=0;i<this.userRoles.length;i++){
+            if(this.userRoles[i] == event.target.id){
+              this.userRoles.splice(i,1);
+              if(event.target.id == "TL"){
+                let indAsso = this.userRoles.indexOf("ASSO")
+                indAsso !== -1 ? this.userRoles.splice(indAsso,1) : '';
+              }
+              break;
+            }
+          }
+        }
+      }else{
+        if(this.userRoles.includes("ASSO")){
+          for(let i=0;i<this.userRoles.length;i++){
+            if(this.userRoles[i] == event.target.id){
+              this.userRoles.splice(i,1);
+              break;
+            }
+          }
+        }else{
+         let alreadyExist = this.userRoles.some((e:any)=> e == event.target.id);
+        if(!alreadyExist){
+          this.userRoles.push(event.target.id);
+        } else{
+          for(let i=0;i<this.userRoles.length;i++){
+            if(this.userRoles[i] == event.target.id){
+              this.userRoles.splice(i,1);
+              break;
+            }
+          }
+        }
+        }
+      }
+    }else if(this.userRoles.length == 0){
+      if(event.target.id == "TL"){
+        let alreadyExist = this.userRoles.some((e:any)=> e == event.target.id);
+        if(!alreadyExist){
+          this.userRoles.push(event.target.id);
+          if(!this.userRoles.includes("ASSO")){
+            this.userRoles.push("ASSO");
+          }
+        } else{
+          for(let i=0;i<this.userRoles.length;i++){
+            if(this.userRoles[i] == event.target.id){
+              this.userRoles.splice(i,1);
+              break;
+            }
+          }
+        }
+    }
+    else{
+      if(this.userRoles.includes("ASSO")){
+        for(let i=0;i<this.userRoles.length;i++){
+          if(this.userRoles[i] == event.target.id){
+            this.userRoles.splice(i,1);
+            break;
+          }
+        }
+      }else{
+        let alreadyExist = this.userRoles.some((e:any)=> e == event.target.id);
+        if(!alreadyExist){
+          this.userRoles.push(event.target.id);
+        } else{
+          for(let i=0;i<this.userRoles.length;i++){
+            if(this.userRoles[i] == event.target.id){
+              this.userRoles.splice(i,1);
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+    this.userDetails.controls.userRole.setValue(this.userRoles);
       console.log(this.userRoles)
   }
 
@@ -126,32 +263,17 @@ export class RegisterNewUserComponent implements OnInit {
 
   selectCompany(e:any){
     this.userDetails.controls.companyName.setValue(e.target.value);
+    if(this.userDetails.controls.companyName.value !== "Smilepoint"){
+      this.getTeamsData(e);
+    }else{
+      this.teamData = this.userRoles=this.userRoleByTeam=[];
+      this.userDetails.controls.teamId.setValue('');
+    }
   }
-
-  // selectOffice(e:any){
-  //   this.userDetails.controls.officeId.setValue(e.target.value);
-  // }
 
   selectTeamName(e:any){
     this.userDetails.controls.teamId.setValue(e.target.value);
   }
-
-  // getOfficesByCompany(event:any){
-  //     this.companyData.find((e:any)=>{
-  //       if(e.name === event.target.value){
-  //         this.appService.fetchOfficeByCompany(e.companyUuid,(callback:any)=>{
-  //             if(callback.status){
-  //               // this.userDetails.controls.officeId.setValue('');
-  //               this.userDetails.controls.teamId.setValue('');
-  //               this.officeData = callback.data.data;
-  //               this.getTeamsData(event.target.value);
-  //               this.userRoles= [];
-  //               this.userRoleByTeam=[];
-  //             }
-  //         })
-  //       }
-  //     })
-  // }
 
   getRolesByCompany(event:any){
     this.appService.fetchRolesByCompany(event.target.value,(callback:any)=>{
@@ -168,12 +290,6 @@ export class RegisterNewUserComponent implements OnInit {
       this.appService.fetchRolesByTeam(event.target.value,(callback:any)=>{
         if(callback.status){
           this.userRoleByTeam = callback.data;
-          if(this.userRoles.includes("ADMIN")){
-          this.userRoles=[];
-          this.userRoles.push("ADMIN")
-        } else{
-          this.userRoles=[];
-        }
       }
     })
   }
@@ -183,6 +299,7 @@ export class RegisterNewUserComponent implements OnInit {
     this.alert.showAlertPopup = true;
     res.status==400 ? this.alert.isError=true : this.alert.isError=false;
     this.alert.alertMsg = res.message ? res.message : res.result.message;
+    scrollTo(0,0);
   }
 
 }

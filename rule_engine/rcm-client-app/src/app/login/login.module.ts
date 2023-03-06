@@ -8,6 +8,7 @@ import { TokenInterceptor } from '../auth/token.interceptor';
 //import { HttpModule , XSRFStrategy, CookieXSRFStrategy, Http} from "@angular/http";
 import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
+import {RecaptchaModule } from 'ng-recaptcha';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule } from '@angu
   ],
   imports: [
     CommonModule,
-    LoginRoutingModule, FormsModule
+    LoginRoutingModule, FormsModule, RecaptchaModule
 
   ],
   providers: [AuthService]

@@ -22,8 +22,8 @@
             <li *ngIf="staticUtil.isBillingLead() && staticUtil.isSmilePoint()"><a href="javascript:void(0);" [routerLink]="['/claim-assignment']"  routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency</a></li>
             <li *ngIf="staticUtil.isBillingLead() && staticUtil.isSmilePoint()"><a href="javascript:void(0);" [routerLink]="['/tool-update']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Tool to Update Database</a></li>
             <li *ngIf="staticUtil.isBillingLead() || staticUtil.isBillingAsso() || staticUtil.isClientManager()"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Billing Pendency Dashboard</a></li>
-            <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Update Password</a></li> -->
-           <li ><a href="javascript:void(0);" [routerLink]="['/production']"routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Production</a></li> -->
+            <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Update Password</a></li> 
+           <li ><a href="javascript:void(0);" [routerLink]="['/production']"routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Production</a></li>
         </ul>
 
     </div>

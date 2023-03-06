@@ -16,3 +16,24 @@
     top: 0.18rem;
     left: -1.3rem;
 }
+
+.bs-popover-right .arrow{
+    left: calc((0.5rem + 1px) * -1);
+    width: 0.5rem;
+    height: 1rem;
+    margin: 0.3rem 0;
+}
+.popover-header{
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+    color: inherit;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #ebebeb;
+    border-top-left-radius: calc(0.3rem - 1px);
+    border-top-right-radius: calc(0.3rem - 1px);
+}
+.popover-body {
+    padding: 0.5rem 0.75rem;
+    color: #212529;
+}

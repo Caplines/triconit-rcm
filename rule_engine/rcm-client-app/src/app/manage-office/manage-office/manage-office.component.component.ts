@@ -100,6 +100,12 @@ export class ManageOfficeComponent implements OnInit {
            }
         })
       }
+    } else{
+      this.alert.showAlertPopup = true;
+      this.alert.isError = true;
+      this.alert.alertMsg = "Field Cannot Be Empty";
+      setTimeout(() => {this.alert.showAlertPopup=false;}, 2500);
+
     }
   }
 

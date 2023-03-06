@@ -38,7 +38,7 @@ export class BillingClaimsComponent implements OnInit {
       this.claimUUid=params.get('uuid') || '';
        this.fetchClaimsByUuid(this.claimUUid);
       });
-
+      this.getSubmissionData();
    
   }
 
@@ -1150,5 +1150,22 @@ export class BillingClaimsComponent implements OnInit {
      }else if(type==='alert'){
         this.mtype=3
      }
+  }
+
+  getSubmissionData(){
+    //   this.appService.fetchSubmissionData(this.claimUUid,(res:any)=>{
+    //     console.log(res)
+    //   })   
+
+  }
+
+  showHide(index:any){
+    let el:any = document.querySelectorAll(".bold-b-text");
+    for(let i =0 ; i<el.length ; i++){
+        if(i == index){
+            el[i].classList.toggle("collapsed");
+            el[i].nextElementSibling.classList.toggle("show");
+        }
+    }
   }
 }
