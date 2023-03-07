@@ -8,7 +8,8 @@ import { TokenInterceptor } from '../auth/token.interceptor';
 //import { HttpModule , XSRFStrategy, CookieXSRFStrategy, Http} from "@angular/http";
 import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
-import {RecaptchaModule } from 'ng-recaptcha';
+import { RECAPTCHA_SETTINGS, RecaptchaFormsModule, RecaptchaModule, RecaptchaSettings } from 'ng-recaptcha';
+import { environment } from '../../environments/environment';
 
 @NgModule({
   declarations: [
@@ -16,15 +17,14 @@ import {RecaptchaModule } from 'ng-recaptcha';
   ],
   imports: [
     CommonModule,
-    LoginRoutingModule, FormsModule, RecaptchaModule
-
+    LoginRoutingModule, FormsModule,RecaptchaModule
   ],
-  providers: [AuthService]
-    //OfficeResolve,
-   /* {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true
-    }]*/
+  providers: [AuthService ,{
+    provide: RECAPTCHA_SETTINGS,
+    useValue: {
+      siteKey: environment.recaptcha.siteKey,
+    } as RecaptchaSettings,
+  }]
+
 })
 export class LoginModule { }

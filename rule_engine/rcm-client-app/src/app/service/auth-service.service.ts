@@ -16,18 +16,16 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(username: string, password: string, callback: any): void {
+  login(username: string, password: string,token: string, callback: any): void {
     this.http.post(environment.API_URL + '/account/login',
-      { "username": username, "password": password }).subscribe
-      (data => {
-        callback((<any>data));
-      },(error: any) => {
-        console.log(error);
+      { "username": username, "password": password ,"token":token}).subscribe({
+        next: data => {callback((<any>data));},
+        error: error => {
         callback((<any>error));
       }
-      );
+    })
+    };
 
-  }
 
   register(username: string, email: string, password: string): Observable<any> {
     return this.http.post(environment.API_URL + 'signup', {

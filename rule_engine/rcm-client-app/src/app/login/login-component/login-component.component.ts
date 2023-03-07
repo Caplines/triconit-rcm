@@ -15,6 +15,7 @@ export class LoginComponent implements OnInit {
   form: any = {
     username: null,
     password: null,
+    token: null
   };
   isLoggedIn = false;
   isLoginFailed = false;
@@ -27,7 +28,7 @@ export class LoginComponent implements OnInit {
     showResetEmailMsg:false
   }
   isRecaptchaSolved:boolean=false;
-	siteKey:any = environment.recaptcha.siteKey;
+	//siteKey:any = environment.recaptcha.siteKey;
 
 
   //https://www.bezkoder.com/angular-13-jwt-auth/
@@ -42,11 +43,11 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const { username, password } = this.form;
-    this.authService.login(username, password, (result: any) => {
+    const { username, password ,token} = this.form;
+    if (!this.isRecaptchaSolved) return ;
+    this.authService.login(username, password,token, (result: any) => {
       console.log(result);
       if (result.status == 200) {
-        console.log(result.data);
         this.tokenStorage.saveData(result.data, result.data.token);
         this.isLoginFailed = false;
         this.isLoggedIn = true;
@@ -112,6 +113,8 @@ export class LoginComponent implements OnInit {
   }
 
   resolved(captchaResponse: string) {
+    this.form.token =captchaResponse;
+
 		if(captchaResponse != null){
 			this.isRecaptchaSolved = true;
 		}else {
