@@ -30,8 +30,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<RcmClaims> findByClaimIdInAndOffice(List<String> claimIds, RcmOffice office);
 
 	String s=" SELECT off.name as officeName,"
-			+ "count(Case When claim_status_type_id=:status and pending is true Then 'billre' End) as 'count' , "
-			+ "min(Case When claim_status_type_id=:status Then cl.created_date End)   as 'opdt', "
+			+ "sum(Case When claim_status_type_id=:status and pending is true Then 1 ELSE 0 End) as 'count' , "
+			+ "min(Case When claim_status_type_id=:status Then date (cl.created_date) End)   as 'opdt', "
 			+ "min(Case When claim_status_type_id=:status Then cl.dos End)   as 'opdos', "
 			+ "off.uuid as officeUuid,0 as remoteLiteRejections FROM  office off left join rcm_claims  cl "
 			+ "on off.uuid=cl.office_id where off.company_id=:companyId and ( cl.current_team_id=:teamId  or  current_team_id is null )" + "group by off.uuid";
@@ -41,8 +41,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("status") int status,@Param("teamId") int teamId);
 	
 	@Query(nativeQuery = true, value = "SELECT off.name as officeName, "
-			+ "count(Case When assign.status_id=:status and pending is true Then 'billre' End) as 'count' , "
-			+ "min(Case When  claim_status_type_id=:status Then cl.created_date End)   as 'opdt', "
+			+ "sum (Case When assign.status_id=:status and pending is true Then 1 ELSE 0 End) as 'count' , "
+			+ "min(Case When  claim_status_type_id=:status Then date(cl.created_date) End)   as 'opdt', "
 			+ "min(Case When claim_status_type_id=:status Then cl.dos End)   as 'opdos', "
 			+ "off.uuid as officeUuid,0 as remoteLiteRejections FROM  office off left join rcm_claims  cl "
 			+ " on off.uuid=cl.office_id "
@@ -171,16 +171,26 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	
 	
-	@Query(nativeQuery = true, value = "select ivf_form_id from reports_claim where "
-			+ " office_id=:officeId and claim_id=:claimid and  patient_id=:patientId")
-	String getIVIDofClaim(@Param("claimid") String claimid,@Param("officeId") String officeId,
+	@Query(nativeQuery = true, value = "select ivf_form_id,date_of_service from reports_claim where "
+			+ " office_id=:officeId and claim_id=:claimid and  patient_id=:patientId limit 1 ")
+	Object getIVIdOfClaim(@Param("claimid") String claimid,@Param("officeId") String officeId,
 			@Param("patientId") String patientId);
 	
-	
+	/*
 	@Query(nativeQuery = true, value = "select treatement_plan_id from reports where "
 			+ " office_id=:officeId and ivf_form_id=:ivId and  patient_id=:patientId")
     String getTreatmentPlanIdIV(@Param("ivId") String ivId,@Param("officeId") String officeId,
 			@Param("patientId") String patientId);
+	*/		
+	@Query(nativeQuery = true, value = ""
+			+" SELECT treatement_plan_id FROM reports r inner join report_detail rd on rd.report_id=r.id "
+			+" where office_id=:officeId and patient_id=:patientId "
+			+" and treatement_plan_id not in ('PREBATCHMODE','SEALANTMODE') and iv_date is not null "
+			+" and STR_TO_DATE(iv_date, '%m/%d/%Y')<:dos "
+			+" order by STR_TO_DATE(iv_date, '%m/%d/%Y') desc limit 1"
+			)
+    String getLatestTPIdForPatientDosAndIV(@Param("officeId") String officeId,
+			@Param("patientId") String patientId,@Param("dos") String dos);
 	
 	@Query(nativeQuery = true, value = ""+
 			" select claim_id claimId,issue,source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "+
@@ -218,7 +228,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("patientid") String patientId,@Param("claim_id") String claimId);
 	
 	
-	
+	@Query(nativeQuery = true, value = "select claim_uuid,pending from rcm_claims where "
+			+ " office_id=:officeId and claim_id=:claimid ")
+	Object getClaimsUuidClaimId(@Param("claimid") String claimid,@Param("officeId") String officeId);
 
 	
 }

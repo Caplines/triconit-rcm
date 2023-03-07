@@ -127,6 +127,9 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "pending",columnDefinition = "BIT default 0")
 	private boolean pending;//
 	
+	@Column(name = "pulled_claims_service_data_from_es",columnDefinition = "BIT default 0")
+	private boolean pulledClaimsServiceDataFromEs;//,mean we have fetched data from and Service Code sheet. 
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "rcm_insurance_type", referencedColumnName = "id")
 	private RcmInsuranceType rcmInsuranceType;

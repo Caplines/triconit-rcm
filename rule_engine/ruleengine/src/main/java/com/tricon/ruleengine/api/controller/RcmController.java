@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -32,6 +33,7 @@ import com.tricon.ruleengine.dto.RcmClaimRootDto;
 import com.tricon.ruleengine.dto.RcmEnv;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
+import com.tricon.ruleengine.dto.TreatmentClaimDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.Office;
@@ -39,6 +41,7 @@ import com.tricon.ruleengine.service.CaplineIVFGoogleFormService;
 import com.tricon.ruleengine.service.CompanyService;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.ScrappingFullDataService;
+import com.tricon.ruleengine.service.TreatmentPlanService;
 import com.tricon.ruleengine.service.UserService;
 import com.tricon.ruleengine.utils.Constants;
 
@@ -74,6 +77,9 @@ public class RcmController {
 
 	@Autowired
 	ScrappingFullDataService fullService;
+	
+	@Autowired
+	TreatmentPlanService tPService;
 
 	@Autowired
 	CaplineIVFGoogleFormService civf;
@@ -371,6 +377,34 @@ public class RcmController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "IVF DATA Fetched Successfully", d));
 	}
 
+	@RequestMapping(value = "/claim-data-form-es", method = RequestMethod.GET)
+	public ResponseEntity<?> claimDataFromES(@RequestHeader("x-api-key") String apiKey,
+			@RequestParam(value = "office", required = true) String officeUuid,
+			@RequestParam(value = "cmpId", required = true) String cmpId,
+			@RequestParam(value = "claimId", required = true) String claimId)
+			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+
+		RuleEngineLogger.generateLogs(clazz, "ENTER Claim Data From ES" + new Date(), " INFO", null);
+
+		if (!checkForKey(apiKey)) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created", "Key Error"));
+		}
+
+		TreatmentClaimDto dto = new TreatmentClaimDto();
+		Office office = od.getOfficeByUuid(officeUuid, cmpId);
+		dto.setOfficeId(office.getUuid());
+		dto.setDataId(claimId);
+		dto.setType(Constants.userType_CL);
+		Object data=null;
+		try {
+			data =tPService.getTreatmentClaimData(dto);
+			
+		} catch (Exception n) {
+
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Claim DATA Fetched Successfully", data));
+	}
+	
 	private boolean checkForKey(String apiKey) {
 
 		if (apiKey == null || !apiKey.equals(rcmEnvPrimaryClaim.getApiKey())) {

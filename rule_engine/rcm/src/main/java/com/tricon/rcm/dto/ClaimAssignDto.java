@@ -9,6 +9,6 @@ public class ClaimAssignDto {
 	boolean toLead;
 	int otherTeamId;
 	String remark;
-	
+	String teamLeadUuid;
 	
 }

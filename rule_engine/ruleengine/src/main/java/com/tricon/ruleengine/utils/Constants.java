@@ -102,7 +102,7 @@ public class Constants {
 	public static final String RULE_ID_64="IntraOral Periapical";
 	public static final String RULE_ID_65="Nitrous Oxide";
 	public static final String RULE_ID_66="COB Primary";
-	public static final String RULE_ID_67="Percentage coverage check(OS)";//Only for OS FORM..
+	public static final String RULE_ID_67="Percentage coverage check(OS)";//Only for OS FORM..z
 	
 	//68 to 73c is common in error_en.properties
 	public static final String RULE_ID_68="Sealant Eligibility Frequency";//Only Sealants .. 
@@ -131,6 +131,7 @@ public class Constants {
 	public static final String RULE_ID_87="Provider Certification";
 	public static final String RULE_ID_88="D0140 with Treatment";
 	
+	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
 
 	//public static final String RULE_ID_79="Provider Name";	

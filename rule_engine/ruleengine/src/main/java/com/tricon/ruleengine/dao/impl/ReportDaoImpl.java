@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.dao.impl;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -73,29 +75,44 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 		"rd.rule_id as rule_id,rd.error_message as error_message,rl.name as rule_name FROM " + 
 		            t+",rules as rl " + 
 			 		" ,user as us ,office as offi where rep.office_id='"+dto.getOfficeId()+"' and " + 
-			 		" rep.id=rd.report_id and rl.id=rd.rule_id " + 
+			 		" rep.id=rd.report_id and rl.id=rd.rule_id and rd.rule_id is not null  " + 
 			 		" and us.uuid=rd.created_by and offi.uuid=rep.office_id ";
 			 if (dto.getIvformTypeId()!=null && !dto.getIvformTypeId().equals("")) {
 				 queryString= queryString + " and iv_form_type_id="+dto.getIvformTypeId()+" " ;
 			 }
-			 if (dto.getReportType().equals(ReportTypeEnum.ReportType.Date.toString())) {
-				 queryString= queryString + " and "
+			 //Move  ReportTypeEnum.ReportType.Date and ReportTypeEnum.ReportType.DateFromTo in same 
+			 //if is there the do union all for (rep.created_date logic latter
+			 //From front end pass different dates in loop
+			 if (dto.getReportType().equals(ReportTypeEnum.ReportType.Date.toString()) || dto.getReportType().equals(ReportTypeEnum.ReportType.DateFromTo.toString())) {
+				/* queryString= queryString + " and "
 				 		+ " ( DATE_FORMAT(rep.created_date,'%m/%d/%Y')='"+dto.getReportField1()+"'"
 					     + " or DATE_FORMAT(rd.created_date,'%m/%d/%Y')='"+dto.getReportField1()+"' )";
-					 
+				*/
+				 //02/10/2023
+				Date d= Constants.SIMPLE_DATE_FORMAT.parse(dto.getReportField1());
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(d);
+				int month = cal.get(Calendar.MONTH);
+				int yy = cal.get(Calendar.YEAR);
+				int dt = cal.get(Calendar.DATE);
+				
+				 queryString= queryString + " and "
+				 + " rd.created_date  >= '"+yy+"-"+month+"-"+dt+"' AND rd.created_date <= '"+yy+"-"+month+"-"+dt+" 23:59:59' ";
+				 
 			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.DateFromTo.toString())) {
+				 //Not used
 				 queryString= queryString+	"  and (" + 
 							"  (rd.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"  and STR_TO_DATE('"+dto.getReportField1()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 							"                 or" + 
 							"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+							"  and STR_TO_DATE('"+dto.getReportField1()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
 							"                 or" + 
 							"  (rep.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+							"  and STR_TO_DATE('"+dto.getReportField1()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
 							"                 or" + 
 							"  (rep.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
+							"  and STR_TO_DATE('"+dto.getReportField1()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" +
 							
 							"" + 
 							" )" ;
@@ -106,21 +123,35 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				 queryString= queryString+	"  and rd.created_by='"+dto.getEmployerName()+"'" ;
 				 
 			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.DateFromToUserName.toString())) {
+				 
+				 Date d= Constants.SIMPLE_DATE_FORMAT.parse(dto.getReportField1());
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(d);
+					int month = cal.get(Calendar.MONTH);
+					int yy = cal.get(Calendar.YEAR);
+					int dt = cal.get(Calendar.DATE);
+					
+					 queryString= queryString + " and "
+					 + " rd.created_date  >= '"+yy+"-"+month+"-"+dt+"' AND rd.created_date <= '"+yy+"-"+month+"-"+dt+" 23:59:59' ";
+					 
+				 queryString= queryString+	"  and rd.created_by='"+dto.getEmployerName()+"'" ;
+				 
+				 /*
 				 queryString= queryString+	"  and (" + 
 							"  (rd.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"  and STR_TO_DATE('"+dto.getReportField1()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 							"                 or" + 
 							"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"  and STR_TO_DATE('"+dto.getReportField1()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 							"                 or" + 
 							"  (rep.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"  and STR_TO_DATE('"+dto.getReportField1()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 							"                 or" + 
 							"  (rep.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"  and STR_TO_DATE('"+dto.getReportField1()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 							"" + 
 							" )  and rd.created_by='"+dto.getEmployerName() +"'" ;
-				 
+				    */
 				 
 						 
 			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.ruledatasheet.toString())) {
@@ -128,6 +159,8 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				 if (dto.getReportField2()==null) dto.setReportField2("");
 				  
 				 if (!dto.getReportField1().equals("") && !dto.getReportField2().equals("")) {
+					 
+					 //see date logic from above
 				 queryString= queryString+	"  and (" + 
 							"  (rd.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
 							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
@@ -152,7 +185,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.IvfId.toString())) {
 				 queryString= queryString + "and  rep.ivf_form_id='"+dto.getReportField1()+"'";
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.PatientName.toString())) {
-				 queryString= queryString + "and  upper(rep.patient_name) like '%"+dto.getReportField1().toUpperCase()+"%'";
+				 queryString= queryString + "and  rep.patient_name = '"+dto.getReportField1()+"'";
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.TreatmentId.toString())) {
 				 queryString= queryString + "and  "+z+"='"+dto.getReportField1()+"'";
 						 

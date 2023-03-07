@@ -50,11 +50,13 @@ import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
+import com.tricon.rcm.dto.ClaimDetailDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RcmClaimDataDto;
+import com.tricon.rcm.dto.RcmClaimDetMainRootDto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -719,6 +721,33 @@ public class RuleEngineService {
 
 		return dto;
 	}
+	
+	public List<ClaimDetailDto> pullClaimDetailFromFromRE(String claimId, String companyId, String officeId) {
+
+		logger.info(" In pull ClaimDetail From RE");
+		List<ClaimDetailDto> dto = null;
+		try {
+			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			String param = "?cmpId=" + companyId;
+			param = param + "&office=" + officeId;
+			param = param + "&claimId=" + claimId;
+			// Call Rule Engine API..
+			ResponseEntity<RcmClaimDetMainRootDto> result = restTemplate.exchange(ev.getProperty("rcm.claimESdataurl") + param,
+					HttpMethod.GET, entity, RcmClaimDetMainRootDto.class);
+
+			RcmClaimDetMainRootDto rootDto = result.getBody();
+			if (rootDto.getData() != null && rootDto.getData().size() > 0) {
+				dto = rootDto.getData().get(claimId);
+			}
+
+		} catch (Exception n) {
+			logger.error("Error in " + claimId);
+			logger.error(n.getMessage());
+		}
+
+		return dto;
+	}
+	
 
 	public void saveRcmIssueClaim(String claimId, RcmOffice off, RcmUser user, String error, String source,
 			ClaimTypeEnum claimTypeEnum) {

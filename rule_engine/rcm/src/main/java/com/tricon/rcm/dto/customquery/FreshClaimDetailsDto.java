@@ -8,9 +8,9 @@ public interface FreshClaimDetailsDto {
 
 	String getOfficeName();
 
-	Date getOpdt();
+	String getOpdt();
 
-	Date getOpdos();
+	String getOpdos();
 
 	//String getSource();
 

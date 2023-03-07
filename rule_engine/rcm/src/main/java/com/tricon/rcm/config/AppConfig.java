@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -69,5 +71,15 @@ public class AppConfig {
 	{
 		return new JpaTransactionManager(jpaEntityManagerFactory);
 	}
+	
+	
+	@Bean
+    public MessageSource messageSource() {
+    	ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        //messageSource.setBasenames("i18/users", "i18/errormsg");
+    	messageSource.setBasenames("i18n/error");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
 }
 

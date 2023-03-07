@@ -26,6 +26,7 @@ import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
+import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.ClaimNotesDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimRemarkDto;
@@ -166,9 +167,20 @@ public class RcmController {
 		Object[] obj = checkForSimplePointUser();
 		JwtUser jwtUser = ((JwtUser) obj[0]);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchIndividualClaim(claimUuid, jwtUser.getCompany())));
+				claimServiceImpl.fetchIndividualClaim(claimUuid, jwtUser)));
 	}
 
+    @ApiOperation(value = "Api For Fetching Service Code Validation Data by uuid", response = RcmClaimsServiceRuleValidationDto.class , responseContainer = "List")
+	@GetMapping("/api/fetchservicecodeval/{uuid}")
+	public ResponseEntity<Object> fetchServiceValidationFromGSheet(@PathVariable("uuid") String claimUuid) {
+
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = ((JwtUser) obj[0]);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.readServiceValidationFromGSheet(claimUuid, jwtUser)));
+	}
+	
+   
 	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
 	@GetMapping("/api/allclients")
 	public ResponseEntity<Object> getAllClients() {
@@ -350,6 +362,19 @@ public class RcmController {
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.assignToOtherOrTeamLead(jwtUser,dto)));
+	}
+	
+	
+
+	@ApiOperation(value = "Api For Running Automated  rules on Claims", response = String.class)
+	@GetMapping("/api/run-auto-rules/{claimuuid}")
+	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> runAutomatedRules(@PathVariable("claimuuid") String claimuuid) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.runAutomatedRules(jwtUser,claimuuid)));
 	}
 	
 

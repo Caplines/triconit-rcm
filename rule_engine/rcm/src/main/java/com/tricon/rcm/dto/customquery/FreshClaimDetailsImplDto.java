@@ -5,7 +5,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class FreshClaimDetailsImplDto implements FreshClaimDetailsDto {
+public class FreshClaimDetailsImplDto  {
 	
 	String officeUuid;
 

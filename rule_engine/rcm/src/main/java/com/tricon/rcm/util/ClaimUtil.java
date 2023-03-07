@@ -87,6 +87,8 @@ public class ClaimUtil {
 		claims.setTimelyFilingLimitData(timelyLmt);
 		claims.setRcmInsuranceType(rcmInsuranceType);
 		claims.setPending(true);
+		claims.setPulledClaimsServiceDataFromEs(false);
+		
 		if (!re.getSecMemberId().equals(Constants.NO_DATA))claims.setSecMemberId(re.getSecMemberId());
 		if (!re.getGroupNumber().equals(Constants.NO_DATA))claims.setGroupNumber(re.getGroupNumber());
 		try {
