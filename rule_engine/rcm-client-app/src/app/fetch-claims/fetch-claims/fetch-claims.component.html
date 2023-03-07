@@ -85,8 +85,8 @@
                                         <tbody>
                                             <tr class="totalRow">
                                                 <td>Total</td>
-                                                <td>10/30/2022</td>
-                                                <td>10/30/2022</td>
+                                                <td></td>
+                                                <td></td>
                                                 <td >{{totalClaimData.totalCount}}</td>
                                                 <td *ngIf="selectedBtype==appConstants.BILLING_ID">{{totalClaimData.totalRemLiteReject}}</td>
                                                 <td *ngIf="selectedBtype==appConstants.RE_BILLING_ID">{{totalClaimData.totalRemLiteReject}}</td>
@@ -97,8 +97,8 @@
                                             <ng-container *ngFor="let lg of log">
                                                 <tr>
                                                     <td>{{lg.officeName}}</td>
-                                                    <td>{{lg.opdt | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
-                                                    <td>{{lg.opdos | date: 'dd/MM/yyyy'}}</td>
+                                                    <td>{{lg.opdt | date: 'MM/dd/yyyy'}}</td>
+                                                    <td>{{lg.opdos | date: 'MM/dd/yyyy'}}</td>
                                                     <td>{{lg.count}}</td>
                                                     <td>{{lg.remoteLiteRejections}}</td>
                                                 </tr>
