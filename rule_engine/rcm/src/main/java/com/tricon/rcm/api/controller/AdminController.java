@@ -441,7 +441,7 @@ public class AdminController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@RequestMapping(value = "isClaimStatusActive/{uuid}", method = RequestMethod.GET)
+	@RequestMapping(value = "claim_assign_to_user/{uuid}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> claimStatusOfUser(@PathVariable("uuid") String uuid) {
 		RcmClaimResponseDto response = null;
