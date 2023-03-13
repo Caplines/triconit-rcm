@@ -131,3 +131,38 @@ export interface ClaimRuleRemarkModel{
 	ruleId?:number;
 
 }
+
+export class ClaimRuleRemarkModelS implements ClaimRuleRemarkModel{
+	remark?:string;
+	cd?:Date;
+	fName?:string;
+	lLName?:string;
+	ruleId?:number;
+	
+	constructor(remark: string,cd:Date,fName :string,lLName:string,ruleId:number) {
+	  this.remark = remark;
+	  this.cd = cd;
+	  this.fName = fName;
+	  this.lLName = lLName;
+	  this.ruleId = ruleId;
+	}
+}
+export interface RuleEngineValModel{
+
+	message?:string;
+    surface?:string;
+    ruleName?:string;
+    ivDate?:string;
+    tooth?:string;
+    mtype?:string;
+    officeName?:string;
+    patientId?:string;
+    claimId?:string;
+    insuranceType?:string;
+    codes?:string;
+    ruleId?:string;
+    ivId?:string;
+    dos?:string;
+    patientName?:string;
+	remark?:string;//Used For Saving Remark
+}

@@ -1164,6 +1164,8 @@ public class ClaimServiceImpl {
 				}
 				dto.setClaimFound(true);
 				rcmClaimRepository.save(claim);
+			}else {
+				dto.setClaimFound(true);
 			}
 			
 			
