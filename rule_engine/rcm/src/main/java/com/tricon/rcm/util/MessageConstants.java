@@ -66,5 +66,8 @@ public class MessageConstants {
 	
 	public static final String ROLES_REQUIRED="Please select the Roles";
 	
+	public static final String ROLE_CAN_NOT_BE_CHANGE = "Role can't be change because claim is assign to this user";
+	
+	public static final String ROLE_NOT_MATCH = "Given role does't match";
 
 }

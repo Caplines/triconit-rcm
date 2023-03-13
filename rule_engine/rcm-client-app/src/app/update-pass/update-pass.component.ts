@@ -43,6 +43,7 @@ export class UpdatePasswordComponent implements OnInit {
     })
   }else { 
     this.alert.showAlertPopup = true;
+    setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
     this.alert.isError=true;
     this.alert.alertMsg = "Please Check Field Again !";
   }

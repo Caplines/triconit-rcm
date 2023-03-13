@@ -6,9 +6,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
+import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmUserToDto;
+import com.tricon.rcm.security.JwtUser;
+import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.UserServiceImpl;
 import com.tricon.rcm.util.MessageConstants;
 
@@ -30,6 +38,13 @@ public class UserController {
 
 	@Autowired
 	private UserServiceImpl userService;
+	
+	@Autowired
+	RcmCommonServiceImpl commonService;
+	
+	@Autowired
+	@Qualifier("jwtUserDetailsService")
+	private UserDetailsService userDetailsService;
 
 	@RequestMapping(value = "/updatepassword", method = RequestMethod.POST)
 	public ResponseEntity<?> updatePasswordOfUserOrAdmin(@RequestBody PasswordResetDto dto) {
@@ -57,6 +72,23 @@ public class UserController {
 			if(response==null) {
 				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@RequestMapping(value = "getOffices", method = RequestMethod.GET)
+	public ResponseEntity<?> officesByUuid() {
+		List<RcmOfficeDto> response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		try {
+			response = commonService.getOfficesByUuid(jwtUser.getCompany().getUuid());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

@@ -40,6 +40,7 @@ import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmClaimDto;
+import com.tricon.rcm.dto.RcmClaimResponseDto;
 import com.tricon.rcm.dto.RcmClientDto;
 import com.tricon.rcm.dto.RcmClientGSheetDto;
 import com.tricon.rcm.dto.RcmClientResponseDto;
@@ -57,6 +58,7 @@ import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.dto.customquery.RcmClaimAssignmentDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.email.EmailUtil;
+import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
@@ -520,11 +522,7 @@ public class AdminServiceImpl {
 		//if login user is capline then fetch all companies offices otherwise login user can fetch own company offices by uuid
 		if (jwtUser.getCompany().getUuid().equals(uuid)
 				|| jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
-			RcmCompany company = rcmCompanyRepo.findByUuid(uuid);
-			if (company != null) {
-				List<RcmOfficeDto> office = officeRepo.findByCompany(company);
-				return new GenericResponse(HttpStatus.OK, "", office);
-			}
+			return new GenericResponse(HttpStatus.OK, "",commonService.getOfficesByUuid(uuid));
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 	}
@@ -592,19 +590,40 @@ public class AdminServiceImpl {
 
 		// if user is not null and company is capline then admin can change user's roles of own company users and other company user's roles
 		if (existingUser != null) {
+			int teamId=utilService.checkTeamNullOrNot(existingUser.getTeam());
+			
+			// If team Id is -1(User is ADMIN,UPLOAD Claim Only) then it can not use this editRole Functionality
+			if (teamId==-1) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
+			}
+			
+			//ADMIN Role can not associate with other roles
+			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.ADMIN))) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ADMIN_NOT_ASSOCIATED_WITH_ROLES, null);
+			}
+			
 			List<RcmUserRole> existingRoles = existingUser.getRoles().stream().collect(Collectors.toList());
 			if (existingRoles != null) {
 				// remove all existingRoles include ADMIN
 				userRole.deleteAll(existingRoles);
 			}
-
+			
+			// if role is TL then we will assign TL+ASSO to editUser
+			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.TEAMLEAD))) {
+				rcmRole = new RcmUserRole();
+				pk = new RcmUserRolePk();
+				pk.setUuid(existingUser.getUuid());
+				rcmRole.setId(pk);
+				rcmRole.setRole(RcmTeamEnum.generateRole(teamId,Constants.ASSOCIATE));
+				userRole.save(rcmRole);
+			}
 			// add new roles
 			for (String role : dto.getRoles()) {
 				rcmRole = new RcmUserRole();
 				pk = new RcmUserRolePk();
 				pk.setUuid(existingUser.getUuid());
 				rcmRole.setId(pk);
-				rcmRole.setRole(Constants.ROLE_PREFIX.concat(role));
+				rcmRole.setRole(RcmTeamEnum.generateRole(teamId, role));
 				listOfRoles.add(rcmRole);
 			}
 			userRole.saveAll(listOfRoles);
@@ -617,8 +636,8 @@ public class AdminServiceImpl {
 		// first we will check any claim is assign or not in this uuid
 		// if yes then fetch all billing users data will show in popup window
 
-		RcmClaimAssignmentDto existingUsersClaimCounts = claimAssignmentRepo.findExistingUsersAssignClaimCounts(dto.getUserUuid());
-		if (existingUsersClaimCounts != null && existingUsersClaimCounts.getExistingClaimsCounts() >= 1) {
+	int existingUsersClaimCounts = claimAssignmentRepo.findExistingUsersAssignClaimCounts(dto.getUserUuid());
+		if (existingUsersClaimCounts >= 1) {
 			List<RcmUserToDto> rcmUser = userService.getUsersByTeamId(dto.getTeamId(), company);
 			if (rcmUser != null) {
 				rcmUser.removeIf(x -> x.getUuid().equals(dto.getUserUuid()));
@@ -743,5 +762,13 @@ public class AdminServiceImpl {
 			return data;
 		}
 		return null;
+	}
+
+	public RcmClaimResponseDto checkExistingUserClaimStatusActiveOrNot(String userUuid) throws Exception {
+		int existingUsersClaimCounts = claimAssignmentRepo.findExistingUserAssignClaimCountsAndActiveStatus(userUuid);
+		if (existingUsersClaimCounts >= 1) {
+			return new RcmClaimResponseDto(MessageConstants.ROLE_CAN_NOT_BE_CHANGE, Constants.DISABLE);
+		}
+		return new RcmClaimResponseDto("", Constants.ENABLE);
 	}
 }

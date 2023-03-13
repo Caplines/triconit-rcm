@@ -27,6 +27,7 @@ import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmClaimDto;
+import com.tricon.rcm.dto.RcmClaimResponseDto;
 import com.tricon.rcm.dto.RcmClientDto;
 import com.tricon.rcm.dto.RcmClientResponseDto;
 import com.tricon.rcm.dto.RcmCompanyDto;
@@ -35,6 +36,7 @@ import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
+import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.AdminServiceImpl;
 import com.tricon.rcm.util.Constants;
@@ -299,6 +301,11 @@ public class AdminController {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
+		if(dto.getRoles().stream().map(x->RcmRoleEnum.validateRoles(x)).anyMatch(x->x==null)) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLE_NOT_MATCH, null));
+		}
+		
 		GenericResponse response = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
@@ -434,5 +441,24 @@ public class AdminController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	
+	@RequestMapping(value = "isClaimStatusActive/{uuid}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> claimStatusOfUser(@PathVariable("uuid") String uuid) {
+		RcmClaimResponseDto response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.UNAUTHORIZED, "Not Authorize", null));
+		}
+		try {
+			response = serviceImpl.checkExistingUserClaimStatusActiveOrNot(uuid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 }

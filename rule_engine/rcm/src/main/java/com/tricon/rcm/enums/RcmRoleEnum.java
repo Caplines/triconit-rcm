@@ -1,5 +1,7 @@
 package com.tricon.rcm.enums;
 
+import java.util.Arrays;
+import java.util.Optional;
 
 public enum RcmRoleEnum {
 
@@ -43,5 +45,13 @@ public enum RcmRoleEnum {
 		return isTeamMandatory;
 	}
 	
-
+	public static String validateRoles(String role)
+	{
+		Optional<RcmRoleEnum> roles = Arrays.stream(values()).filter(x -> x.getName().equals(role)).findFirst();
+		if(roles.isPresent()) {
+			 
+			 return roles.get().getName();
+		}
+		return null;
+	}
 }

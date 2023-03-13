@@ -38,6 +38,7 @@ export class UserSettingComponent implements OnInit {
     if(this.user.email !== ''){
       this.appService.findUser({ "email": this.user.email }, (callback: any) => {
         if (callback.status == 200 && callback.data) {
+        this.showAlertPopup(callback);
         this.showActionPopup = true;
         this.user = callback.data;
         console.log(this.user)

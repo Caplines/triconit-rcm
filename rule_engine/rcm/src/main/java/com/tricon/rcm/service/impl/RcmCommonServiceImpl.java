@@ -7,10 +7,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -33,6 +35,9 @@ public class RcmCommonServiceImpl {
 	
 	@Autowired
 	RCMUserRepository userRepo;
+	
+	@Autowired
+	RcmOfficeRepository officeRepo;
 		
 	
 	public List<RcmOfficeDto> getAllOffices(){
@@ -74,4 +79,17 @@ public class RcmCommonServiceImpl {
 		return rcmCompanyRepo.findAllClients();
 	}
 	
+	/**
+	 * Fetchs all offices of Login user's company
+	 * @param companyUuid
+	 * @return
+	 */
+	public List<RcmOfficeDto> getOfficesByUuid(String companyUuid) {
+		RcmCompany company = rcmCompanyRepo.findByUuid(companyUuid);
+		if (company != null) {
+			List<RcmOfficeDto> office = officeRepo.findByCompany(company);
+			return office;
+		}
+		return null;
+	}
 }
