@@ -178,6 +178,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/remote-lite-details",
                 "/diagnostic_check_for_rcm",
                 "/diagnostic_check_for_rcm",
+                "/claim-data-form-es",
                 "/ivf-data-for-rcm",
                 "/allrulereport",
                 "/",

@@ -127,6 +127,9 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "pending",columnDefinition = "BIT default 0")
 	private boolean pending;//
 	
+	@Column(name = "auto_rule_run",columnDefinition = "BIT default 0")
+	private boolean autoRuleRun;//
+	
 	@Column(name = "pulled_claims_service_data_from_es",columnDefinition = "BIT default 0")
 	private boolean pulledClaimsServiceDataFromEs;//,mean we have fetched data from and Service Code sheet. 
 	
@@ -160,6 +163,20 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@JoinColumn(name = "last_work_team_id", referencedColumnName = "id",nullable=true)
 	private RcmTeam lastWorkTeamId;
 	
+	
+	//From ES- Start
+	@Column(name = "date_last_updated_es")
+	private String dateLastUpdatedES;// This is DOS but not considered-- we have use Current Date as DOS in TP but in Claim we will consider this .
+	
+	@Column(name = "status_es")
+	private String statusES;
+	
+	@Column(name = "est_secondary_es")
+	private String estSecondaryES;
+	
+	@Column(name = "description_es")
+	private String descriptionES;
+	//From ES - END
 	
 
 }

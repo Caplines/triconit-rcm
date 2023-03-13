@@ -42,7 +42,14 @@ export class BaseService {
     'ivfdata':"/api/ivfdata",
     'claimRuleData':"/api/rules-data",
     'updatePass':"/updatepassword",
-    'productionData':"/api/bill/claim-production"
+    'productionData':"/api/bill/claim-production",
+    'claimNotes':"/api/fetch-claim-notes",
+    'saveClaim':"/api/save-full-claim",
+    'servicelevelval':"/api/fetchservicecodeval",
+    'submissionDetails':'/api/fetch-claim-sub-det',
+    'ruleclaimdata':"/api/fetch-claim-rule-val-data",
+    'ruleRemark':"/api/fetch-claim-rule-remarks",
+    'autorules':"/api/run-auto-rules"
   }
 
   constructor(public http: HttpClient, private tokenStorage: TokenStorageService) {

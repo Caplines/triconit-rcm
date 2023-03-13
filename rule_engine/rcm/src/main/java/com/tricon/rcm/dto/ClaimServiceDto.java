@@ -7,6 +7,6 @@ public class ClaimServiceDto {
 
 	String remarkUuid;
 	String remark;
-	int messageStatus;
+	int messageType;
 	
 }

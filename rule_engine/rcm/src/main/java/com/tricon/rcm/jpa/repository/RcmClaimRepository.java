@@ -144,7 +144,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 
 	@Query(nativeQuery = true, value = " select claim_uuid uuid,cl.claim_id claimId,dos,patient_birth_date  patientDob,"+
-			" patient_id patientId,patient_name patientName,pending ,"+
+			" patient_id patientId,patient_name patientName,pending , auto_rule_run autoRuleRun,"+
+			" date_last_updated_es dateLastUpdatedES, status_es statusES,est_secondary_es estSecondaryES,description_es descriptionES, "+
 			" prim_date_sent primDateSent, prim_status primeStatus,prim_total_paid primeTotalPaid,"+
 			" rcm_source source, sec_date_sent secDateSend,sec_status secStatus,"+
 			" sec_submitted_total secSubmittedTotal,submitted_total submittedTotal, timely_fil_lmt_dt timeFilLimitDay,"+
@@ -171,7 +172,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	
 	
-	@Query(nativeQuery = true, value = "select ivf_form_id,date_of_service from reports_claim where "
+	@Query(nativeQuery = true, value = "select ivf_form_id,date_of_service from reports_claim r inner join " + 
+			"report_claim_detail rd on rd.report_id=r.id where "
 			+ " office_id=:officeId and claim_id=:claimid and  patient_id=:patientId limit 1 ")
 	Object getIVIdOfClaim(@Param("claimid") String claimid,@Param("officeId") String officeId,
 			@Param("patientId") String patientId);

@@ -12,7 +12,7 @@ public class ClaimEditDto {
 	List<ClaimNoteDto> claimNoteDtoList;
 	List<RuleRemarkDto> ruleRemarkDto;
 	ClaimSubmissionDto submissionDto;
-	List<ClaimServiceDto> serviceCodeValidationDto;
+	List<ClaimServiceDto> serCVDto;
 	String claimRemark;
 	boolean submission;
 }

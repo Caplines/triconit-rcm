@@ -607,6 +607,15 @@ public class ConnectAndReadSheets {
 		return map1;
 	}
 
+	/**
+	 * 
+	 * @param spreadsheetId
+	 * @param sheetName
+	 * @param clientDir
+	 * @param clientFolder
+	 * @return Object[] with 2 List form the Sheet
+	 * @throws IOException
+	 */
 	public static Object[] readProviderGSheet(String spreadsheetId, String sheetName, String clientDir,
 			String clientFolder) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))

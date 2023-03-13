@@ -1,7 +1,5 @@
 package com.tricon.rcm.api.controller;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -263,6 +261,27 @@ public class RcmController {
 				claimServiceImpl.saveClaimRuleRemark(jwtUser,dto)));
 	}
 	
+	@ApiOperation(value = "Api For Fetching Claims Automated and Manual Rules Data", response = ClaimRuleVaidationValueDto.class ,responseContainer = "List")
+	@GetMapping("/api/fetch-claim-rule-val-data/{claimuuid}")
+	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> fetchClaimAutoRules(@PathVariable("claimuuid") String claimuuid) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.fetchClaimAllRulesData(jwtUser,claimuuid)));
+	}
+	
+	@ApiOperation(value = "Api For Saving Claims Manual Rules", response = String.class)
+	@PostMapping("/api/save-claim-rule-val-datas")
+	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> saveClaimManualRules(@RequestBody ClaimRuleValidationsDto dto) {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.saveClaimManualRules(jwtUser,dto)));
+	}
 	
 	@ApiOperation(value = "Api For Fetching Claims Submission detail", response = RcmClaimSubmissionDto.class)
 	@GetMapping("/api/fetch-claim-sub-det/{claimuuid}")
@@ -308,28 +327,6 @@ public class RcmController {
 				claimServiceImpl.saveClaimNotes(jwtUser,dto)));
 	}
 	
-	@ApiOperation(value = "Api For Fetching Claims Automated Rules Data", response = ClaimRuleVaidationValueDto.class ,responseContainer = "List")
-	@GetMapping("/api/fetch-claim-rule-val-data/{claimuuid}")
-	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> fetchClaimAutoRules(@PathVariable("claimuuid") String claimuuid) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchClaimAllRulesData(jwtUser,claimuuid)));
-	}
-	
-	@ApiOperation(value = "Api For Saving Claims Manual Rules", response = String.class)
-	@PostMapping("/api/save-claim-rule-val-datas")
-	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> saveClaimManualRules(@RequestBody ClaimRuleValidationsDto dto) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.saveClaimManualRules(jwtUser,dto)));
-	}
-	
 	@ApiOperation(value = "Api For Fetching Claims Remark (Only 1 for now)", response = String.class)
 	@GetMapping("/api/fetch-claim-remark/{claimuuid}")
 	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
@@ -367,14 +364,15 @@ public class RcmController {
 	
 
 	@ApiOperation(value = "Api For Running Automated  rules on Claims", response = String.class)
-	@GetMapping("/api/run-auto-rules/{claimuuid}")
+	@GetMapping("/api/run-auto-rules/{claimuuid}/{reRun}")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> runAutomatedRules(@PathVariable("claimuuid") String claimuuid) {
+	public ResponseEntity<Object> runAutomatedRules(@PathVariable("claimuuid") String claimuuid,
+			@PathVariable("reRun") boolean reRun) {
 		Object[] obj = checkForSimplePointUser();
 		JwtUser jwtUser = (JwtUser) obj[0];
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.runAutomatedRules(jwtUser,claimuuid)));
+				claimServiceImpl.runAutomatedRules(jwtUser,claimuuid,reRun)));
 	}
 	
 

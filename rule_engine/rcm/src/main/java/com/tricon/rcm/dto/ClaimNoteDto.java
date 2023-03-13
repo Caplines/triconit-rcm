@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class ClaimNoteDto {
 
-	String key;
+	String value;
 	int id;
 	
 	

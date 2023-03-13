@@ -4218,6 +4218,18 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	}
 	
   
+  public Object getTreatmentClaimDataForRCM(TreatmentClaimDto dto,String cmpId) {
+	  dbAccesService.setUpSSLCertificates();
+	  Map<String, List<Object>> tMap=null;
+	  String trids[] = dto.getDataId().split(",");
+	  Office off = od.getOfficeByUuid(dto.getOfficeId(),cmpId);
+	  EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+	  if (dto.getType()==Constants.userType_TR) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,null);
+	  if (dto.getType()==Constants.userType_CL) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getClaimData(trids, esDB,null);
+      return tMap;
+   }
+  
+  
   public Object getTreatmentClaimData(TreatmentClaimDto dto) {
 	  dbAccesService.setUpSSLCertificates();
 	  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

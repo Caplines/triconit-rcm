@@ -80,5 +80,15 @@ public class FreshClaimDataImplDto {
 	
 	boolean  rcmToolChecksValidationsSheet;
 	
+	boolean primary;
+	
+	boolean allowEdit;
+	
+	boolean autoRuleRun;
 
+	String dateLastUpdatedES;// This is DOS but not considered-- we have use Current Date as DOS in TP but in Claim we will consider this .
+	String statusES;
+	String estSecondaryES;
+	String descriptionES;
+		
 }

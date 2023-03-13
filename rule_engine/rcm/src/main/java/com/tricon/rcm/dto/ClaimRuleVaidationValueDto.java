@@ -9,5 +9,6 @@ public class ClaimRuleVaidationValueDto {
 	String message;
 	int messageType;
 	String ruleName;
+	String ruleDesc;
 	String manualAuto;
 }

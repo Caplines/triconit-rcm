@@ -260,10 +260,6 @@ getAllClients(callback:any){
   this.getData({},this.httpUrl['getAllClients'],callback)
 }
 
-fetchBillingClaimsByUuid(uuid:string,callback:any){
-  this.getData({},this.httpUrl['fetchBillingClaimsByUuid']+"/"+uuid,callback)
-}
-
 getClientsName(callback:any){
   this.getData({},this.httpUrl['getClientsName'],callback)
 }
@@ -277,11 +273,6 @@ fetchivfDataForClaim(cuuid:string,callback:any){
   this.getData({},this.httpUrl['ivfdata']+"/"+cuuid,callback)
 }
 
-
-
-getClaimRuleData(params:ClaimRulesPullDataModel,callback:any){
-  this.postData(params,this.httpUrl['claimRuleData'],callback)
-}
 
 saveProductionData(params:any,callback:any){
   this.postData(params,this.httpUrl['productionData'],callback)

@@ -51,5 +51,7 @@ public interface TreatmentPlanService {
 	
 	public Object getTreatmentClaimData(TreatmentClaimDto dto);
 	
+	public Object getTreatmentClaimDataForRCM(TreatmentClaimDto dto,String companyId);
+	
 	
 }

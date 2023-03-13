@@ -269,7 +269,7 @@
 	<div *ngIf="showReportData">
 		<div *ngIf="!showDetailsData">
 			<div class="close-btn">
-				<a href="javascript:void(0)" (click)="showReportData=false;"> Go
+				<a href="javascript:void(0)" (click)="goBack()"  *ngIf="!showLoadingMoreDate"> Go
 					Back </a>
 			</div>
 			<ng-container *ngIf="report.reportType=='ruledatasheet'">
@@ -297,7 +297,11 @@
 							<tr>
 						</tbody>
 					</table>
+					
 				</div>
+				<ng-container *ngIf="report.reportType=='DateFromTo' || report.reportType=='DateFromToUserName'">
+					<div *ngIf="showLoadingMoreDate" class="loader"></div>
+			        </ng-container>
 			</ng-container>
 			<ng-container *ngIf="report.reportType=='sealantElig'">
 				<div class="form-horizontal">
@@ -501,8 +505,14 @@
 					</tr>
 
 				</table>
-
-
+                 <table class="table  table-striped" style="border: 2px solid #e0003f;" *ngIf="reportDataInd.basicInfo3.toLowerCase()=='guardian'">
+					<tr>
+						<td><span style="text-align: center; color: red">Alert Message:</span> <span class="newff">
+						 D0140 only Covered with x rays, If performed with other treatment amounts to be collected from patient and WO to insurance at $0.
+						</span></td>
+					
+					</tr>
+                 </table>
 
 				<span>
 					<p style="text-align: center">Policy/Plan Information</p>

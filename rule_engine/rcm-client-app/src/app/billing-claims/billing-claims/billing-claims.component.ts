@@ -1,8 +1,13 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ApplicationServiceService  } from '../../service/application-service.service';
+import { ClaimService  } from '../../service/claim.service';
+
 import { AppConstants } from '../../constants/app.constants';
-import { ClaimRcmDataModel } from '../../models/claim-rcm-data-model';
+import { ClaimRcmDataModel ,ClaimEditModel,ServiceLevelCodeModel ,SubmissionDetailModel,
+    ClaimRuleModel ,ClaimRuleRemarkModel} from '../../models/claim-rcm-data-model';
 import {ClaimRulesPullDataModel} from '../../models/claim-rules-pull-data-model';
+
+import { Title } from '@angular/platform-browser';
 
 import { ActivatedRoute } from '@angular/router';
 @Component({
@@ -17,16 +22,23 @@ export class BillingClaimsComponent implements OnInit {
 
   claimRcm: ClaimRcmDataModel;
   claimARulesPullDataModel:ClaimRulesPullDataModel={};
-
+  claimEditModel:ClaimEditModel;
+  claimServiceLevelModel:ServiceLevelCodeModel;
+  submissionDto:SubmissionDetailModel={};
+  claimRules:Array<ClaimRuleModel>=[];
+  claimRuleRemarks:Array<ClaimRuleRemarkModel>=[];
+  
   claimUUid:string="";
   ruleData:any=[];
   count:any={'pass':0,'fail':0,'alert':0};
   mtype:number=1;
   ivfData:any=[];
 
-    constructor(private appService: ApplicationServiceService,public appConstants: AppConstants,
-      private route: ActivatedRoute) {
+    constructor(public appService: ApplicationServiceService,public appConstants: AppConstants,
+        private claimService: ClaimService,
+      private route: ActivatedRoute,private title : Title) {
    this.claimRcm ={claimId:""};
+   title.setTitle("RCM tool - Claim Detail");
 
    }
 
@@ -34,26 +46,58 @@ export class BillingClaimsComponent implements OnInit {
   ngOnInit(): void {
 
     this.route.paramMap.subscribe(params => {
-      console.log(params.get('uuid'))
       this.claimUUid=params.get('uuid') || '';
        this.fetchClaimsByUuid(this.claimUUid);
       });
-      this.getSubmissionData();
+    
    
   }
 
   fetchClaimsByUuid(uuid:string){
 
     let ths=this;
-    ths.appService.fetchBillingClaimsByUuid(uuid,(res:any)=>{
+    ths.claimService.fetchBillingClaimsByUuid(uuid,(res:any)=>{
       if (res.status=== 200){
        ths.claimRcm= res.data;
-      
+       ths.fetchClaimNotes();
+       ths.getServiceLevelCodes();
+       ths.getSubmissionDetails();
+       ths.getClaimRuleData();
+       ths.runAutoRules(false);
       }
      
     });
   }
 
+  fetchClaimNotes(){
+    this.claimService.fetchClaimNotes(this.claimRcm.uuid,(res:any)=>{
+        if (res.status=== 200){
+           // ths.claimRcm= res.data;
+           this.claimRcm.claimNotes=res.data;
+           
+           }
+    })
+   
+  }
+  fetchClaim(uuid:string,primary:boolean,type:string){
+    let ths= this;
+    if (type === 'Primary' &&  primary ) return;//NO Need to reclick
+    if (type === 'Secondary' &&  !primary ) return;////NO Need to reclick
+    if (uuid){
+        ths.resetOldApiData();
+        ths.fetchClaimsByUuid(uuid);
+        
+      }
+  }
+
+  resetOldApiData(){
+    let ths= this;
+    ths.claimRcm = {claimId:""};
+    ths.claimServiceLevelModel={claimFound:false};
+    ths.submissionDto={};
+    ths.claimRules=[];
+    ths.claimRuleRemarks=[];
+  }
   getIVFData(){
 
     let ths=this;
@@ -67,6 +111,30 @@ export class BillingClaimsComponent implements OnInit {
     ths.ivfData = 'dsf'
   }
 
+  saveClaim(type:string){
+    let ths = this;
+    ths.claimEditModel={};
+    ths.claimEditModel.claimUuid=ths.claimRcm.uuid;
+    ths.claimEditModel.claimNoteDtoList=ths.claimRcm.claimNotes;
+    ths.claimEditModel.claimRemark=ths.claimRcm.claimRemarks;
+    ths.claimEditModel.serCVDto=ths.claimServiceLevelModel.dto;
+    ths.claimEditModel.submissionDto=ths.submissionDto;
+    ths.claimEditModel.ruleRemarkDto=[];
+    ths.claimRules.forEach(x=>{
+        if (x.remark!=null) ths.claimEditModel.ruleRemarkDto.push(x);
+      });
+    if (type==='latter'){
+        ths.claimService.saveClaimData(ths.claimEditModel,()=>{
+
+        });
+    }
+    else if (type==='submit'){
+
+    } 
+    else if (type==='assign'){
+
+    } 
+  }
   getRulesData(){
     
     let ths=this;
@@ -1131,15 +1199,6 @@ export class BillingClaimsComponent implements OnInit {
       }
     });
 
-    // ths.appService.getClaimRuleData( ths.claimARulesPullDataModel,(res:any)=>{
-    //   if (res.status=== 200){
-       
-    //     } else{
-         
-    //     }
-          
-     
-    // });
   }
 
   switchType(type:any){
@@ -1152,12 +1211,7 @@ export class BillingClaimsComponent implements OnInit {
      }
   }
 
-  getSubmissionData(){
-    //   this.appService.fetchSubmissionData(this.claimUUid,(res:any)=>{
-    //     console.log(res)
-    //   })   
 
-  }
 
   showHide(index:any){
     let el:any = document.querySelectorAll(".bold-b-text");
@@ -1167,5 +1221,87 @@ export class BillingClaimsComponent implements OnInit {
             el[i].nextElementSibling.classList.toggle("show");
         }
     }
+  }
+
+  getServiceLevelCodes(){
+    let ths=this;
+    ths.claimService.getServiceLevelCodes(ths.claimRcm.uuid,(res:any)=>{
+        if (res.status=== 200){
+           
+            ths.claimServiceLevelModel=res.data;
+        }
+    })
+
+  }
+
+  getSubmissionDetails(){
+    let ths=this;
+    ths.claimService.getSubmissionDetails(ths.claimRcm.uuid,(res:any)=>{
+        if (res.status=== 200){
+            ths.submissionDto=res.data;
+            if (ths.submissionDto==null) ths.submissionDto={};
+        }
+    })
+  }
+
+  getRulesClaimdata(){
+    let ths=this;
+    ths.claimService.getRulesClaimdata(ths.claimRcm.uuid,(res:any)=>{
+        if (res.status=== 200){
+            ths.claimRules=res.data;
+            ths.getRuleRemarks();
+           // if (ths.submissionDto==null) ths.submissionDto={};
+        }
+    })
+  }
+
+  getRuleRemarks(){
+    
+    let ths=this;
+    ths.claimService.getRuleRemarks(ths.claimRcm.uuid,(res:any)=>{
+        if (res.status=== 200){
+            ths.claimRuleRemarks=res.data;
+            if (ths.claimRuleRemarks.length>0){
+                //put in 
+                ths.claimRules.forEach(x=>{
+                  let filter:Array<ClaimRuleRemarkModel>=  ths.claimRuleRemarks.filter(s=>s.ruleId===x.ruleId);
+                  if (filter && filter.length==1){
+                    x.remark=filter[0].remark;
+                  }
+                });
+                
+            }
+           
+        }
+    })
+
+  }
+
+  runAutoRules(reReun:boolean){
+    
+    let ths=this;
+    ths.claimService.runAutoRules(ths.claimRcm.uuid,reReun,(res:any)=>{
+        if (res.status=== 200){
+            ths.getRulesClaimdata();
+        }
+    })
+  }
+
+  getClaimRuleData(){
+    let ths=this;
+    ths.claimARulesPullDataModel.claimId="15927";///ths.claimRcm.claimId.split("_")[0];
+    ths.claimARulesPullDataModel.officeId="cc450da8-aaae-11e8-8544-8c16451459cd";//ths.claimRcm.officeUuid;
+    ths.claimARulesPullDataModel.patientId="6602";//ths.claimRcm.patientId;
+
+    ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel,(res:any)=>{
+        if (res.status=== 200){
+            ths.getRulesClaimdata();
+        }
+    })
+  }
+
+
+  passFail(t:any,type:number){
+      t=type;
   }
 }

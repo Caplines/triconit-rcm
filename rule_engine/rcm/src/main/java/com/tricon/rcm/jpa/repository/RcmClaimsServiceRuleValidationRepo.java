@@ -18,7 +18,7 @@ public interface RcmClaimsServiceRuleValidationRepo extends JpaRepository<RcmCla
    RcmClaimsServiceRuleValidation	findByClaimClaimUuidAndRemarkUuid(String claimUuid,String remarkUuid);
    
    @Modifying
-   @Query(value="update rcm_claims_service_rule_val set active = false where claim_id=: claimUuid",nativeQuery = true)
+   @Query(value="update rcm_claims_service_rule_val set active = false where claim_id =:claimUuid",nativeQuery = true)
    void deactivateOldClaimData(@Param("claimUuid") String claimUuid);
    
 

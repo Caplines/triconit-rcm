@@ -20,6 +20,7 @@ public class ClaimDetailDto {
 	String surface;
 	String tooth;
 	ClaimPatientDetail pd;
+	ClaimDataDetails details;
 }
 
 

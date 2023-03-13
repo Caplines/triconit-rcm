@@ -19,11 +19,6 @@ import { HeaderComponent } from '../header/header-component/header.component';
   ],
   providers: [AuthService],
   exports:[ReportComponent]
-    //OfficeResolve,
-   /* {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true
-    }]*/
+
 })
 export class ReportModule { }

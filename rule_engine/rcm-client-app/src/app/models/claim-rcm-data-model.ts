@@ -43,5 +43,91 @@ export interface  ClaimRcmDataModel {
 	pulledDate?:Date;
 	timeFilLimitDay?:string;
 	secPolicyHolder?:string;
+	assoicatedClaimUuid?:string;
+	assoicatedClaimStatus?:string;
+    primary?:boolean;
+	claimNotes?:Array<ClaimNotesModel>;
+	claimRemarks?:string;
+	allowEdit?:boolean;
+	assignedToName?:string;
+	dateLastUpdatedES?:string;
+	statusES?:string;
+	estSecondaryES?:string;
+	descriptionES?:string;
+}
+
+
+export interface  ClaimNotesModel {
+ 
+	key?:string;
+    value?:string;
+    id?:number;
+}
+
+
+export interface  ClaimEditModel {
+ 
+	claimUuid?:string;
+	claimNoteDtoList?:Array<ClaimNotesModel>;
+	claimRemark?:string;
+	serCVDto?:Array<ServiceLevelCodeDataModel>;
+	submissionDto?:SubmissionDetailModel;
+	ruleRemarkDto?:Array<ClaimRuleRemarkModel>;
+
+}
+
+export interface ServiceLevelCodeDataModel{
+
+	remarkUuid?:string;
+	serviceCode?:string;
+	name?:string;
+	description?:string;
+	value?:string;
+	messageType?:number;
+	remark?:string;
+}
+
+export interface ServiceLevelCodeModel{
+
+	claimFound:boolean;
+	dto?:Array<ServiceLevelCodeDataModel>;
+	esDate?:string;
+
+}
+
+export interface SubmissionDetailModel{
+
+	claimUuid?:string;
+	esDate?:Date;
+	channel?:string;
+	attachmentSend?:boolean;
+	preauth?:boolean;
+	refferalLetter?:boolean;
+	claimNumber?:string;
+	preauthNo?:string;
+	providerRefNo?:string;
+	esTime?:string;
+}
+
+export interface ClaimRuleModel{
+
+	ruleId?:number;
+	message:string;
+	messageType:number;
+	ruleName:string;
+	ruleDesc:string;
+	manualAuto:string;
+	remark?:string;
+}
+
+
+
+export interface ClaimRuleRemarkModel{
+
+	remark?:string;
+	cd?:Date;
+	fName?:string;
+	lLName?:string;
+	ruleId?:number;
 
 }

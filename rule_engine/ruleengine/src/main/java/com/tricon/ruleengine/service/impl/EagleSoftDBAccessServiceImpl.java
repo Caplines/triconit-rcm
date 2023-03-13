@@ -464,7 +464,8 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 				}
 
 			} catch (Exception e) {
-				RuleEngineLogger.generateLogs(clazz, "Treatment Plan DATA- ERROR- " + e.getMessage(),
+				e.printStackTrace();
+				RuleEngineLogger.generateLogs(clazz, "Claim Data DATA- ERROR- " + e.getMessage(),
 						Constants.rule_log_debug, bw);
 
 			}

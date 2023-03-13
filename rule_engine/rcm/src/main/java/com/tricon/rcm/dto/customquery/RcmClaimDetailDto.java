@@ -2,6 +2,8 @@ package com.tricon.rcm.dto.customquery;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 public interface RcmClaimDetailDto {
 
 	String getUuid();
@@ -44,5 +46,10 @@ public interface RcmClaimDetailDto {
     String getProviderId();
 	Date getPulledDate();
 	String getSecPolicyHolder();
+	boolean getAutoRuleRun();
 	
+    String getDateLastUpdatedES();// This is DOS but not considered-- we have use Current Date as DOS in TP but in Claim we will consider this .
+	String getStatusES();
+	String getEstSecondaryES();
+	String getDescriptionES();
 }

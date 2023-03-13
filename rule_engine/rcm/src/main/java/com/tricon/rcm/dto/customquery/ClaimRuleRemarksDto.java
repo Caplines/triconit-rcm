@@ -1,10 +1,12 @@
 package com.tricon.rcm.dto.customquery;
 
+import java.util.Date;
+
 public interface ClaimRuleRemarksDto {
 
-	String getComment();
-	String getCd();
+	String getRemark();
+	Date getCd();
 	String getFName();
 	String getLName();
-	String getRuleId();
+	int getRuleId();
 }

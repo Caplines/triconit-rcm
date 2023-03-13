@@ -397,7 +397,7 @@ public class RcmController {
 		dto.setType(Constants.userType_CL);
 		Object data=null;
 		try {
-			data =tPService.getTreatmentClaimData(dto);
+			data =tPService.getTreatmentClaimDataForRCM(dto,cmpId);
 			
 		} catch (Exception n) {
 

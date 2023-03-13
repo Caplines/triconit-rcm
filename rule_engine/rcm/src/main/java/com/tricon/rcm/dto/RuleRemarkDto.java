@@ -7,4 +7,5 @@ public class RuleRemarkDto {
 
 	int ruleId;
 	String remark;
+	int messageType;
 }
