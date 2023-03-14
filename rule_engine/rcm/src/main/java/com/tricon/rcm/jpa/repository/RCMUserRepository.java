@@ -21,8 +21,8 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	@Query(value="select u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName from rcm_user u where u.active=1 AND u.team_id=:teamId And u.company_id=:companyUuid",nativeQuery=true)
 	List<RcmUserToDto> findUsersByTeamId(@Param("teamId") int teamId,@Param("companyUuid")  String companyUuid);
 	
-	@Query(value="select u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName from rcm_user u join rcm_user_role r on u.uuid=r.uuid where r.role=:role and u.active=1",nativeQuery=true)
-	List<RcmUserToDto> findUsersByRole(@Param("role") String role);
+	@Query(value="select u.uuid as Uuid,u.first_name as FirstName,u.last_name as LastName from rcm_user u inner join rcm_user_role r on u.uuid=r.uuid where r.role=:role and u.active=1 and u.company_id=:clientUuid",nativeQuery=true)
+	List<RcmUserToDto> findUsersByRole(@Param("role") String role,@Param("clientUuid")String clientUuid);
 	
 	@Query(value="select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user where company_id=:uuid AND email!=:ignoreUser",nativeQuery = true)
 	List<RcmUserToDto> getAllUserByCompanyUuid(@Param("uuid")String uuid,@Param("ignoreUser")String ignoreUser);

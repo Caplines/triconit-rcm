@@ -1,5 +1,6 @@
 package com.tricon.rcm.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -17,6 +18,8 @@ import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -43,6 +46,9 @@ public class UserServiceImpl {
 	
 	@Autowired
 	RcmCompanyRepo rcmCompanyRepo;
+	
+	@Autowired
+	MasterServiceImpl masterService;
 
 	/**
 	 * This method does update password of login user or admin
@@ -80,17 +86,15 @@ public class UserServiceImpl {
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
-		RcmUser loginUser = userRepo.findByEmail(jwtUser.getUsername());
 		List<RcmUserToDto> data = null;
-		if (loginUser != null) {
-			RcmTeam team = loginUser.getTeam();
-			if (team != null) {
-				data = userRepo.findUsersByRole(RcmTeamEnum.generateRole(team.getId(), role));
-				data.removeIf(x->x.getUuid().equals(loginUser.getUuid()));
-				return data;
-			}
+		if (jwtUser.getTeamId() == -1) {
+			return null;
 		}
-		return null;
+		data = userRepo.findUsersByRole(RcmTeamEnum.generateRole(jwtUser.getTeamId(), role),
+				jwtUser.getCompany().getUuid());
+		data.removeIf(x -> x.getUuid().equals(jwtUser.getUuid()));
+		return data;
+
 	}
 
 	public List<RcmUserToDto> getUsersByTeamId(int teamId,RcmCompany company) throws Exception {
@@ -104,4 +108,18 @@ public class UserServiceImpl {
 		return null;
 	}
 
+	/**
+	 * This api fetches all teamName of loginUser's teamId only exclude loginUser TeamId
+	 * @param jwtUser
+	 * @return
+	 */
+	public List<RcmTeamDto> getTeamNameByOtherUserTeamId(JwtUser jwtUser) {
+		int teamId = RcmTeamEnum.validateTeamId(jwtUser.getTeamId());
+		if (teamId != 0) {
+			List<RcmTeamDto> teamName = masterService.getTeams(jwtUser.getCompany().getName());
+			teamName.removeIf(x -> x.getTeamId() == jwtUser.getTeamId());
+			return teamName;
+		}
+		return null;
+	}
 }

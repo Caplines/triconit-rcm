@@ -12,5 +12,7 @@ public interface RcmUserToDto {
 	   String getEmail();
 	   String getFullName();
 	   String getCompanyName();
+	   String getFirstName();
+	   String getLastName();
 	
 }
