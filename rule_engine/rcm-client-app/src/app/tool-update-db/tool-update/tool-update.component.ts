@@ -5,6 +5,9 @@ import {FreshClaimPLogs} from '../../models/fresh.claim.log';
 import {ClientModel} from '../../models/client.model';
 import {IssueClaimModel} from '../../models/issue.claim.model';
 import { Title } from '@angular/platform-browser';
+import html2canvas from 'html2canvas';
+import jsPDF from "jspdf";
+import { ngxCsv } from 'ngx-csv/ngx-csv';
 
 @Component({
   selector: 'tool-update-db',
@@ -15,7 +18,8 @@ export class ToolUpdateComponent implements OnInit {
 
   freshClaimPullModel: FreshClaimPullModel = new FreshClaimPullModel();
 
-  log : Array<FreshClaimPLogs>;
+  // log : Array<FreshClaimPLogs>;
+  log : any=[];
   clients : Array<ClientModel>;
   issueCl : Array<IssueClaimModel>;
   smilePoint: ClientModel;
@@ -27,7 +31,7 @@ export class ToolUpdateComponent implements OnInit {
   expandCollapse:any={'expandClaim':true,'expandTeamRemarks':true}
   hasUpdateClaims:any=[];
   alert:any={'showAlertPopup':false,'alertMsg':''}
-  issueClientName:string='';
+  issueClientName:any='';
   ele:any={'modal':'','span':''}
   
   constructor(public appService: ApplicationServiceService,private title:Title) { 
@@ -116,7 +120,7 @@ this.sourceType="";
       return;
     } 
     ths.setSource();
-    ths.log.forEach(e => {
+    ths.log.forEach((e:any) => {
       if (e.update) ths.freshClaimPullModel.officeuuids.push(e.officeUuid);
 
     });
@@ -128,7 +132,7 @@ this.sourceType="";
           ths.loader=false;
           res.data.forEach((d:FreshClaimPLogs) => {
              
-             let filteredData:Array<FreshClaimPLogs> = ths.log.filter((l) => l.officeUuid === d.officeUuid);
+             let filteredData:Array<FreshClaimPLogs> = ths.log.filter((l:any) => l.officeUuid === d.officeUuid);
              filteredData[0].source=d.source;
              filteredData[0].officeName=d.officeName;
              filteredData[0].cd=d.cd;
@@ -139,7 +143,7 @@ this.sourceType="";
           });
           res.message == '' ? res.message = "Updated Successfully" : res.message;
           this.showAlertPopup(res);
-          ths.log.forEach(e => {
+          ths.log.forEach((e:any) => {
             if (e.update) e.update=false;
             this.hasUpdateClaims=[];
           });
@@ -233,6 +237,48 @@ ths.appService.fetchIssueClaims(ths.cName,(res:any)=>{
  });
 
  }
+
+
+  saveToPdf(divName: any) {
+    html2canvas(<any>document.getElementById(divName)).then(canvas => {
+      const content = canvas.toDataURL('image/png');
+      let pdf = new jsPDF('p', 'mm', 'a4');
+      let width = pdf.internal.pageSize.getWidth();
+      let height = canvas.height * width / canvas.width;
+      pdf.addImage(content, "PNG", 0, 0, width, height)
+      pdf.save("output.pdf")
+    });
+
+  }
+
+  exportToCsv() {
+    let options: any = {
+      showLabels: true,
+      headers: ["Total No. of New Claims Added","Office UUID","Office Name", "Source", "Database Updation Done",, "Last Updated On"]
+    }
+    let excelData: any;
+    excelData= {...this.log};
+    excelData = [excelData];  
+    excelData = Object.values(excelData[0]);
+        for(let i=0;i<excelData.length;i++){
+        if(excelData[i].cd){
+          let date:Date = new Date(excelData[i].cd);
+          excelData[i].cd = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+        } else {
+          excelData[i].cd='';
+        }
+        if(excelData[i].status == 1 && excelData[i].status != "YES"){
+          excelData[i].status = "YES";
+        } else if(excelData[i].status == 0 && excelData[i].status != "NO"){
+          excelData[i].status = "NO";
+        }
+        if(excelData[i].source == ""){
+          excelData[i].source = "EAGLESOFT"
+        }
+        }
+    new ngxCsv(excelData, 'Tool to Update', options);
+
+  }
 
  showAlertPopup(res:any){
   this.alert.showAlertPopup = true;

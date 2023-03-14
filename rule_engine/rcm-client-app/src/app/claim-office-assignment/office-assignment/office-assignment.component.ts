@@ -197,7 +197,7 @@ exportToCsv(){
     showLabels:true,
     headers: ["Office Name", "Oldest Pending Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Office Assigned To"],
   }
-  let excelData:any 
+  let excelData:any;
   excelData = this.claimData.forEach((e:any)=>
   {
     e['office Assigned To'] = e.fname+" "+e.lname;

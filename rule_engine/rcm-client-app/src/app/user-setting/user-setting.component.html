@@ -52,6 +52,7 @@
                                                 <option selected="true" hidden="true">Action</option>
                                                 <option value="changePass">Change Password</option>
                                                 <option value="status" *ngIf="this.user.email !== userName">Enable / Disable Status</option>
+                                                <option value="role" >Enable / Disable Role</option>
                                             </select>
                                     </div>
                                 </div>
@@ -81,6 +82,31 @@
                                             <div class="form-check-inline">
                                                 <input type="radio" [checked]="user.active == 0" id="disable" class="form-check-input" name="status" (change)="updateSingleUserStatus(0)">
                                                 <label class="form-check-label" for="disable">Disabled</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" *ngIf="user.showRole">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="status">Enable Disable Role :</label>
+                                        <div>
+                                            <ng-container *ngFor="let role of user.roles">
+                                                <div class="form-check-inline">
+                                                    <div class="form-check  form-check-inline custom-checkbox">
+                                                        <!-- <input class="custom-control-input" type="checkbox" [id]="data" [checked]="data" value="{{data}}"
+                                                        (change)="selectUserRole($event)"> -->
+                                                        <input class="custom-control-input" type="checkbox" [id]="role" [checked]="selectedRoles.includes(role)"
+                                                        (change)="onCheckboxChange($event, role)">
+                                                        <label class="custom-control-label" [for]="role">
+                                                            {{role}}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                            <div class="p-1 m-2">
+                                                <button type="button" class="btn btn-success" (click)="editRole()">Edit Role</button>
                                             </div>
                                         </div>
                                     </div>

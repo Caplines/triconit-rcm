@@ -8,64 +8,43 @@ import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 
 @Component({
-  selector: 'app-fetch-claims',
-  templateUrl: './fetch-claims.component.html',
-  styleUrls: ['./fetch-claims.component.scss']
+  selector: 'app-list-of-claims',
+  templateUrl: './list-of-claims.component.html',
+  styleUrls: ['./list-of-claims.component.scss']
 })
-export class FetchClaimsComponent implements OnInit {
+export class ListOfClaimsComponent implements OnInit {
 
   selectedBtype:number=0;
   selectedSubtype:string="Fresh";
-
-  log: Array<ClaimAssociateLogModel>;
   claimDetail:Array<ClaimAssociateDetailModel>;
   expandCollapse:boolean=true;
   switchBox:any={'billing':true,'reBilling':false};
   isSorted:boolean=false;
   loader:any={'billingLoader':false,'listClaimLoader':false};
-  totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0}
+  showFilteredDropdown:boolean=false;
+  filteredItems: any = [];
+  filteredOfficeName:any=[];
+  selectedCheckboxOptions:any = [];
 
     constructor(private appService: ApplicationServiceService,public appConstants: AppConstants) {
     this.selectedBtype=this.appConstants.BILLING_ID;
-    this.log =this.claimDetail= [];
 
    }
 
   
   ngOnInit(): void {
-
-    this.fetchClaimsByBillingType(this.selectedBtype);
     this.fetchClaims(this.selectedSubtype);
   }
 
-  
-
-   
-  fetchClaimsByBillingType(type:number){
-    this.loader.billingLoader=true;
-    if(type==1){
-      this.switchBox.billing= true;
-      this.switchBox.reBilling=false;
-    }else{ 
-      this.switchBox.billing= false;
-      this.switchBox.reBilling=true;
+fetchOfficeByUuid(){
+  this.appService.fetchOfficeByUuid((res:any)=>{
+    if(res.status){
+      this.showFilterOptionOfficeName(res.data);
     }
-    let ths=this;
-    this.selectedBtype=type;
-    this.totalClaimData.totalRemLiteReject=this.totalClaimData.totalCount=0;
-    ths.appService.fetchAssociateClaimBillLogs(type,(res:any)=>{
-      if (res.status=== 200){
-       ths.log= res.data;
-       ths.calcCount(ths.log)
-       ths.calcRemLiteReject(ths.log)
-       this.loader.billingLoader=false;
+  })
+}
 
-      }else{
-        //ERROR
-      }
-     
-    });
-  }
+
 
   fetchClaims(subType:string){
     this.loader.listClaimLoader=true;
@@ -73,8 +52,10 @@ export class FetchClaimsComponent implements OnInit {
     ths.appService.fetchAssociateClaimDet(ths.selectedBtype,subType,(res:any)=>{
       if (res.status=== 200){
        ths.claimDetail= res.data;
-       
-       ths.loader.listClaimLoader=false;
+        ths.loader.listClaimLoader=false;
+        this.filterOfficeName();
+        this.fetchOfficeByUuid();
+
       }else{
         //ERROR
       }
@@ -86,18 +67,29 @@ export class FetchClaimsComponent implements OnInit {
     this.appService.sortData(data,sortProp,order,sortType);
   }
 
-  calcCount(data:any){
-    data.forEach((e:any)=>{
-      this.totalClaimData.totalCount = this.totalClaimData.totalCount + e.count;
- });
-  }
-  calcRemLiteReject(data:any){
-    data.forEach((e:any)=>{
-      this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalRemLiteReject + e.remoteLiteRejections;
-   });
+  showFilterOptionOfficeName(data:any){
+    this.filteredOfficeName = data;
+    this.filteredOfficeName.forEach((e:any) => {
+      this.claimDetail.forEach((ele:any)=>{
+        if(e.name == ele.officeName){
+          e['checked'] = !e['checked'];
+        }
+      })
+    });
   }
 
-  
+  filterOfficeName(e?:any) {
+    if(!e){
+      this.filteredItems = this.claimDetail;
+    }else{
+      this.filteredItems = this.claimDetail.filter((item:any) => {
+        return this.filteredOfficeName.some((checkbox:any) => {
+          return checkbox.checked && checkbox.name === item.officeName;
+        });
+      });
+    }
+  }
+
   saveToPdf(divName: any) {
     html2canvas(<any>document.getElementById(divName)).then(canvas => {
       const content = canvas.toDataURL('image/png');
@@ -112,10 +104,10 @@ export class FetchClaimsComponent implements OnInit {
   exportToCsv() {
     let options: any = {
       showLabels: true,
-      headers: ["Office UUID","Office Name","Oldest Pending Date","Oldest Pending DOS",`${this.selectedBtype==this.appConstants.BILLING_ID? 'Number of Pending Fresh Cases' : 'Number of Pending Rebilling Cases'}`, "Number of Pending Remotelite Rejections"]
+      headers: ["Office Name","Patient ID",'Date of Service', "Timely Filing Limit (Days)","Patient Name","Insurance Name","Claim Age","Insurance Type","Estimated Amount","Claim Type","Action Required"]
     }
     let excelData: any;
-    excelData= {...this.log};  
+    excelData= {...this.filteredItems};  
     excelData = [excelData];  
     excelData = Object.values(excelData[0]);
         for(let i=0;i<excelData.length;i++){
@@ -131,9 +123,22 @@ export class FetchClaimsComponent implements OnInit {
         } else {
           excelData[i].opdt='';
         }
+        if(excelData[i].statusType==this.appConstants.BILLING_ID){
+          excelData[i]['actionRequired'] = "BILLING"
+        }else{
+          excelData[i]['actionRequired'] = "RE-BILLING"
         }
-    new ngxCsv(excelData, 'Fetch-Claims', options);
+        if(excelData[i].claimId.endsWith("_P")){
+          excelData[i]['claimType'] = "Primary";
+        }else{
+          excelData[i]['claimType'] = "Secondary";
+        }
+        }
+        console.log(excelData)
+      excelData = excelData.map(
+     ({claimId,lastTeam,opdos,opdt,secName,secTotal,uuid,secondaryInsurance,billedAmount,statusType,...newClaimData}:any)=> newClaimData);    
+      new ngxCsv(excelData, 'List-of-Claims', options);
+     this.fetchClaims(this.selectedSubtype);
 
   }
-
 }

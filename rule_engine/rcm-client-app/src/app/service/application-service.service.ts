@@ -278,6 +278,18 @@ saveProductionData(params:any,callback:any){
   this.postData(params,this.httpUrl['productionData'],callback)
 }
 
+isClaimStatusActive(callback:any){
+  this.getData({},this.httpUrl['claimStatus'],callback)
+}
+
+editRole(params:any,callback:any){
+  this.postData(params,this.httpUrl['editRoles'],callback)
+}
+
+fetchOfficeByUuid(callback:any){
+  this.getData({},this.httpUrl['getOfficesByUuid'],callback)
+}
+
 setPaddingRightContainer(){
   let m:any = document.getElementsByClassName("gray-bar");
   console.log(m[0].clientHeight)

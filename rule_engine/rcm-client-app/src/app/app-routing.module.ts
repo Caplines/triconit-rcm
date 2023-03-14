@@ -75,6 +75,10 @@ const  routes: Routes = [
     loadChildren :()=> import("./production/production.module").then(m=>m.ProductionModule),
     //canActivate: [AdminPermission]
    },
+  {
+    path:'list-of-claims',
+    loadChildren :()=> import("./list-of-claims/list-of-claims.module").then(m=>m.ListOfClaimsModule),
+   },
 
   { path: '**', redirectTo: '/login' }
 ];

@@ -10,15 +10,15 @@ import Utils from '../util/utils';
 })
 export class UserSettingComponent implements OnInit {
 
-  user: any = { 'email': '', 'showChangePassword': false, 'showStatus': false, 'changedPassword': '', 'uuid': '' };
+  user: any = { 'email': '', 'showChangePassword': false, 'showStatus': false, 'changedPassword': '', 'uuid': '','showRole':false };
   allUser: any = [];
   showActionPopup: boolean = false;
   userRole: any;
   userName:any;
-  pageNumber:number = 0;
-  hasNext:boolean=false;
   userStatusArray:any={'userActiveStatus':[]}
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
+  filteredUserRole:any=[];
+  selectedRoles:any = [];
 
   constructor(public appService: ApplicationServiceService, private title: Title) { 
     title.setTitle("User-Setting");
@@ -42,6 +42,10 @@ export class UserSettingComponent implements OnInit {
         this.showActionPopup = true;
         this.user = callback.data;
         console.log(this.user)
+        for(let i =0;i<this.user.roles.length;i++){
+          this.user.roles[i] = this.user.roles[i].split("_")[2];
+        }
+        this.selectedRoles  = [...this.user.roles];
         
       } else {
         this.showActionPopup = false;
@@ -74,40 +78,12 @@ export class UserSettingComponent implements OnInit {
         } else if (event.target.value === 'status') {
             this.user['showStatus'] = true;
             this.user['showChangePassword'] = false;
-        }
+          } else if(event.target.value === 'role'){
+            this.user['showStatus'] = false;
+            this.user['showChangePassword'] = false;
+            this.user['showRole'] =true;
+          }
     }
-
-  // findAllUser(pageNumber:any) {
-  //   this.hasNext=false;
-  //   this.appService.findAllUser(pageNumber,(callback: any) => {
-  //     if (callback.status == 200 && callback.data) {
-  //       if(this.pageNumber== -1){
-  //         this.allUser = callback.data;
-  //       }
-  //       if(callback.data[0].hasNextElement){
-  //         this.pageNumber = this.pageNumber+1;
-  //       }
-  //       if(callback.data[0].data){
-  //         this.allUser.push.apply(this.allUser,callback.data[0].data)
-  //       }
-  //       this.hasNext = callback.data[0].hasNextElement;
-  //     }
-  //   })
-  // }
-
-  // updateAlUserStatus(){
-  //     this.appService.updateUserStatus(this.userStatusArray, (callback: any) => {
-  //       if (callback.status == 200) {
-  //         this.alert.showAlertPopup = true;
-  //         this.alert.alertMsg = callback.message;
-  //         this.allUser=[];
-  //         this.userStatusArray.userActiveStatus=[];
-  //         this.pageNumber=0;
-  //       } else {
-  //         console.log(callback)
-  //       }
-  //     })
-  // }
 
   updateSingleUserStatus(status:any){
     this.userStatusArray.userActiveStatus.push({'userId':this.user.uuid,'status':status})
@@ -139,18 +115,46 @@ export class UserSettingComponent implements OnInit {
     }
   }
 
+  onCheckboxChange(event:any, role: string) {
+    if (event.target.checked) {
+      if (!this.selectedRoles.includes(role)) {
+        this.selectedRoles.push(role);
+      }
+    } else {
+      const index = this.selectedRoles.indexOf(role);
+      if (index !== -1) {
+        this.selectedRoles.splice(index, 1);
+      }
+    }
+    console.log(this.selectedRoles)
+  }
+
+  editRole(){
+    let params:object= {
+      'uuid':this.user.uuid,
+      'roles':this.selectedRoles
+    }
+    this.appService.isClaimStatusActive((res:any)=>{
+      if(res.status && res.data.status == 1){
+        console.log(res)
+        this.appService.editRole(params,(res:any)=>{
+          if(res.status){
+            console.log(res)
+            // this.showAlertPopup(res)
+          }
+        })
+      }
+    })
+    
+  }
+
   showAlertPopup(res:any){
     this.alert.showAlertPopup = true;
     setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
     res.status==400 ? this.alert.isError=true : this.alert.isError=false;
     this.alert.alertMsg = res.message ? res.message : res.result.message;
+    scrollTo(0,0);
   }
-
-  // loadMoreData(){
-  //   if(this.hasNext){
-  //     this.findAllUser(this.pageNumber)
-  //   }
-  // }
 
   isAdmin(){
    return Utils.checkAdmin();

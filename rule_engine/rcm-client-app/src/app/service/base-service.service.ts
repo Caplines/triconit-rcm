@@ -50,7 +50,10 @@ export class BaseService {
     'ruleclaimdata':"/api/fetch-claim-rule-val-data",
     'ruleRemark':"/api/fetch-claim-rule-remarks",
     'autorules':"/api/run-auto-rules",
-    'ivdetails':"/api/ivfdata"
+    'ivdetails':"/api/ivfdata",
+    'editRoles':"/editRole",
+    'claimStatus':"/isClaimStatusActive",
+    'getOfficesByUuid':"/getOffices"
   }
 
   constructor(public http: HttpClient, private tokenStorage: TokenStorageService) {
