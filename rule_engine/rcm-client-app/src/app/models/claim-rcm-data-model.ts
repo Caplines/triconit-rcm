@@ -54,6 +54,11 @@ export interface  ClaimRcmDataModel {
 	statusES?:string;
 	estSecondaryES?:string;
 	descriptionES?:string;
+	assignedToTeam?:number;
+	ivfId?:string;
+	tpId?:string;
+	ivDos?:string;
+	tpDos?:string;
 }
 
 
@@ -73,6 +78,7 @@ export interface  ClaimEditModel {
 	serCVDto?:Array<ServiceLevelCodeDataModel>;
 	submissionDto?:SubmissionDetailModel;
 	ruleRemarkDto?:Array<ClaimRuleRemarkModel>;
+	submission?:boolean;
 
 }
 

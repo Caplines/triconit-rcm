@@ -56,9 +56,10 @@ export class ClaimService extends BaseService {
 
 
   
-  
-  
-
+  fetchIvDetails(clamiduuid:string,ivId:string,callback:any){
+    //if needed we will put iv id in Request
+    this.getData({},this.httpUrl['ivdetails']+"/"+clamiduuid,callback);
+  }
   
 
 }

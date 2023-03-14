@@ -47,7 +47,7 @@ public class RcmClaimRuleRemark extends BaseAuditEntity implements Serializable 
 	@JoinColumn(name = "commented_by", referencedColumnName = "uuid")
 	private RcmUser commentedBy;
 
-	@Column(name = "remarks", columnDefinition = "text", nullable = false)
+	@Column(name = "remarks", columnDefinition = "text", nullable = true)
 	String remarks;
 
 	@ManyToOne(fetch = FetchType.LAZY)

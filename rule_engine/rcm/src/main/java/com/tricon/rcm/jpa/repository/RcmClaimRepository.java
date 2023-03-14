@@ -185,13 +185,13 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("patientId") String patientId);
 	*/		
 	@Query(nativeQuery = true, value = ""
-			+" SELECT treatement_plan_id FROM reports r inner join report_detail rd on rd.report_id=r.id "
+			+" SELECT treatement_plan_id,date_of_service FROM reports r inner join report_detail rd on rd.report_id=r.id "
 			+" where office_id=:officeId and patient_id=:patientId "
 			+" and treatement_plan_id not in ('PREBATCHMODE','SEALANTMODE') and iv_date is not null "
 			+" and STR_TO_DATE(iv_date, '%m/%d/%Y')<:dos "
 			+" order by STR_TO_DATE(iv_date, '%m/%d/%Y') desc limit 1"
 			)
-    String getLatestTPIdForPatientDosAndIV(@Param("officeId") String officeId,
+	Object getLatestTPIdForPatientDosAndIV(@Param("officeId") String officeId,
 			@Param("patientId") String patientId,@Param("dos") String dos);
 	
 	@Query(nativeQuery = true, value = ""+

@@ -49,7 +49,8 @@ export class BaseService {
     'submissionDetails':'/api/fetch-claim-sub-det',
     'ruleclaimdata':"/api/fetch-claim-rule-val-data",
     'ruleRemark':"/api/fetch-claim-rule-remarks",
-    'autorules':"/api/run-auto-rules"
+    'autorules':"/api/run-auto-rules",
+    'ivdetails':"/api/ivfdata"
   }
 
   constructor(public http: HttpClient, private tokenStorage: TokenStorageService) {

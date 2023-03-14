@@ -106,3 +106,13 @@ table#data-scroll-t1 tr,table#data-scroll-t1re tr {
 table#data-scroll-t1 tr:nth-child(odd) {
   background-color: #BBDEFB;
 }
+
+
+.table-container {
+	background: #fff;
+    padding: 20px 20px;
+    position: relative;
+    font-size: 14px;
+	text-align:left;
+	color: #494949;
+}

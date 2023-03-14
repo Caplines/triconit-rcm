@@ -20,7 +20,7 @@
                 </div>
                 <div class="detail-box">
                     <div class="detail-box-form">
-                        <a data-toggle="collapse" (click)="showHide(0)" class="bold-b-text"  aria-expanded="true">Claim Details:</a>
+                        <a data-toggle="collapse" (click)="showHide(0)" class="bold-b-text"  aria-expanded="true">Claim Details:  <span style="color:#ff00a8">{{infoMessage}}</span></a>
                         <div class="form-row collapse show" id="claimDetails" >
                             <div class="col-md-3 mb-2">
                                 <div class="custom-row">
@@ -103,6 +103,7 @@
                                     <label for="" class="">Provider on Claim :</label>
                                     <div></div>
                                 </div>
+                              
 
                             </div>
                             <div class="col-md-3 mb-2">
@@ -123,6 +124,16 @@
                                     <div>{{claimRcm.assignedToName}}</div>
                                 </div>
 
+                                <div class="custom-row">
+                                    <label for="" class="">Team Assigned:</label>
+                                    <div>{{getTeamName(claimRcm.assignedToTeam+"")}}</div>
+                                </div>
+
+                                <div class="custom-row">
+                                    <label for="" class="">Claim Staus:</label>
+                                    <div>{{claimRcm.pending?"Pending":"Submiited"}}</div>
+                                </div>
+
                             </div>
                         </div>
                         <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text " aria-expanded="false">Links to Related Documents:</a>
@@ -130,26 +141,26 @@
                             <div class="col-md-3 mb-2">
                                 <div class="custom-row">
                                     <label for="" class="">IV ID :</label>
-                                    <div>213654</div>
+                                    <div>{{claimRcm.ivfId}}</div>
                                 </div>
                                 <div class="custom-row">
                                     <label for="" class="">Signed Tx Plan ID :</label>
-                                    <div>456321</div>
+                                    <div>{{claimRcm.tpId}}</div>
                                 </div>
                             </div>
                             <div class="col-md-3 mb-2">
                                 <div class="custom-row">
                                     <label for="" class="">Date of IV :</label>
-                                    <div>12/19/2022</div>
+                                    <div>{{claimRcm.ivDos}}</div>
                                 </div>
                                 <div class="custom-row">
                                     <label for="" class="">Date of Tx. Plan :</label>
-                                    <div>12/19/2022</div>
+                                    <div>{{claimRcm.tpDos}}</div>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-2">
-                                <div><a routerLink="ivf" target="_blank" class="flex-center">IV Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
-                                <div><a routerLink="treatmentPlan" target="_blank"class="flex-center">Treatment Plan Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
+                                <div><a [routerLink]="['ivf']" target="_blank" class="flex-center">IV Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
+                                <div><a  target="_blank"class="flex-center">Treatment Plan Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
                             </div>
                         </div>
                         <a data-toggle="collapse" (click)="showHide(2)" class="bold-b-text " aria-expanded="false">Remarks by Other RCM Teams:</a>
@@ -277,7 +288,7 @@
                                                  
                                             </td>
                                             <td><div [innerHTML]="rule.message"></div></td>
-                                            <td><textarea class="form-control" id="" rows="1"  [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}" (keydown)="removeErrorDisplayKey($event)"></textarea></td>
+                                            <td><textarea class="form-control" id="" rows="1"  [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}" (keydown)="removeErrorDisplayKey($event)" [disabled]="makeReadOnly()"></textarea></td>
                                             
                                         </tr>
                                        
@@ -300,20 +311,20 @@
                                                 
                                                     <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="CL_P_F_{{rule.ruleId}}">
                                                         <label class="btn btn-light" [ngClass]="{active:rule.messageType==2}">
-                                                        <input type="radio" name="mant{{idx}}"  value="2" (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId)" [(ngModel)]='rule.messageType'> Yes
+                                                        <input type="radio" name="mant{{idx}}"  value="2" (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId)" [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Yes
                                                         </label>
                                                         <label class="btn btn-light" [ngClass]="{active:rule.messageType==1}">
-                                                        <input type="radio" name="mant{{idx}}"  value="1" (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId)" [(ngModel)]='rule.messageType'> No
+                                                        <input type="radio" name="mant{{idx}}"  value="1" (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId)" [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> No
                                                         </label>
                                                      </div>
                                                  
                                             </td>
-                                            <td><textarea class="form-control" id="" rows="1"  [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}" (keydown)="removeErrorDisplayKey($event)"></textarea></td>
+                                            <td><textarea class="form-control" id="" rows="1"  [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}" (keydown)="removeErrorDisplayKey($event)" [disabled]="makeReadOnly()"></textarea></td>
                                         </tr>
                                        <ng-container *ngIf="claimRcm.claimNotes">
                                         <tr>
                                             <td colspan="2" class="text-right">{{claimRcm.claimNotes[0].key}}</td>
-                                            <td colspan="4"><textarea class="form-control mandatory" id="CL_N_{{claimRcm.claimNotes[0].id}}" rows="1" [(ngModel)]='claimRcm.claimNotes[0].value' (keydown)="removeErrorDisplayKey($event)"></textarea></td>
+                                            <td colspan="4"><textarea class="form-control mandatory" id="CL_N_{{claimRcm.claimNotes[0].id}}" rows="1" [(ngModel)]='claimRcm.claimNotes[0].value' (keydown)="removeErrorDisplayKey($event)" [disabled]="makeReadOnly()"></textarea></td>
                                         </tr>
                                         </ng-container>
                                     </tbody>
@@ -330,7 +341,7 @@
                                 <table class="table table-striped table-bordered">
                                     <thead>
                                         <tr class="total-row">
-                                            <th> Rule Name <button type="button" class="btn btn-success" (click)="switchType('pass')">Pass: {{count.pass}}</button> <button type="button" class="btn btn-danger mx-1" (click)="switchType('fail')">Fail: {{count.fail}}</button><button type="button" class="btn btn-info" (click)="switchType('alert')">Alert: {{count.alert}}</button> </th>
+                                            <th><div style="display: flex;" class="rule-switch"> Rule Name <button type="button" class="btn btn-success" (click)="switchType('pass')">Pass: {{count.pass}}</button> <button type="button" class="btn btn-danger mx-1" (click)="switchType('fail')">Fail: {{count.fail}}</button><button type="button" class="btn btn-info" (click)="switchType('alert')">Alert: {{count.alert}}</button> </div></th>
                                             <th> Service Codes</th>
                                             <th> Tooth#</th>
                                             <th> Surface#</th>
@@ -347,7 +358,7 @@
                                                 <td>{{rule.tooth}} </td>
                                                 <td>{{rule.surface}}</td>
                                                 <td [innerHTML]="rule.message"></td>
-                                                <td> <input type="text" maxlength="100"  [(ngModel)]='rule.remark' id="ENG_REP_{{rule.ruleId}}" (click)="removeErrorDisplayKeyById('ENG_REP_',rule.ruleId)"> </td>
+                                                <td> <input type="text" maxlength="100"  [(ngModel)]='rule.remark' id="ENG_REP_{{rule.ruleId}}" (click)="removeErrorDisplayKeyById('ENG_REP_',rule.ruleId)" [disabled]="makeReadOnly()"> </td>
                                             </ng-container>
                                         </tr>
                                 </tbody>
@@ -383,14 +394,14 @@
                                             <td>
                                                 <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%">
                                                     <label class="btn btn-light" [ngClass]="{active:d.messageType==2}">
-                                                    <input type="radio" name="mt{{i}}"  value="2" (click)="d.messageType=2;removeErrorDisplayKeyById('SERV_C_V_',i)" [(ngModel)]='d.messageType'> Yes
+                                                    <input type="radio" name="mt{{i}}"  value="2" (click)="d.messageType=2;removeErrorDisplayKeyById('SERV_C_V_',i)" [(ngModel)]='d.messageType' [disabled]="makeReadOnly()"> Yes
                                                     </label>
                                                     <label class="btn btn-light" [ngClass]="{active:d.messageType==1}">
-                                                    <input type="radio" name="mt{{i}}"  value="1" (click)="d.messageType=1;removeErrorDisplayKeyById('SERV_C_V_',i)" [(ngModel)]='d.messageType'> No
+                                                    <input type="radio" name="mt{{i}}"  value="1" (click)="d.messageType=1;removeErrorDisplayKeyById('SERV_C_V_',i)" [(ngModel)]='d.messageType' [disabled]="makeReadOnly()"> No
                                                     </label>
                                                  </div>
                                              </td>
-                                            <td><textarea class="form-control" id="" rows="1" [(ngModel)]='d.remark' id="SERV_C_V_{{i}}"></textarea></td>
+                                            <td><textarea class="form-control" id="" rows="1" [(ngModel)]='d.remark' id="SERV_C_V_{{i}}" [disabled]="makeReadOnly()"></textarea></td>
                                         </tr>
                                         </ng-container>
                                     </tbody>
@@ -422,16 +433,16 @@
                       
                                             <td> <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="SUB_DET_CHA">
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.channel=='RemoteLite'}"> 
-                                                    <input type="radio" name="channel"  value="RemoteLite" (click)="submissionDto.channel='RemoteLite';removeErrorDisplayKeyById('SUB_DET_CHA')"> RemoteLite
+                                                    <input type="radio" name="channel"  value="RemoteLite" (click)="submissionDto.channel='RemoteLite';removeErrorDisplayKeyById('SUB_DET_CHA')" [disabled]="makeReadOnly()"> RemoteLite
                                                 </label>
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto?.channel=='Fax'}">
-                                                    <input type="radio" name="channel"  value="Fax" (click)="submissionDto.channel='Fax';removeErrorDisplayKeyById('SUB_DET_CHA')"> Fax
+                                                    <input type="radio" name="channel"  value="Fax" (click)="submissionDto.channel='Fax';removeErrorDisplayKeyById('SUB_DET_CHA')" [disabled]="makeReadOnly()"> Fax
                                                 </label>
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto?.channel=='Mail'}">
-                                                    <input type="radio" name="channel"  value="Mail" (click)="submissionDto.channel='Mail';removeErrorDisplayKeyById('SUB_DET_CHA')"> Mail
+                                                    <input type="radio" name="channel"  value="Mail" (click)="submissionDto.channel='Mail';removeErrorDisplayKeyById('SUB_DET_CHA')" [disabled]="makeReadOnly()"> Mail
                                                 </label>
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto?.channel=='Portal'}">
-                                                    <input type="radio" name="channel"  value="Portal" (click)="submissionDto.channel='Portal';removeErrorDisplayKeyById('SUB_DET_CHA')"> Portal
+                                                    <input type="radio" name="channel"  value="Portal" (click)="submissionDto.channel='Portal';removeErrorDisplayKeyById('SUB_DET_CHA')" [disabled]="makeReadOnly()"> Portal
                                                 </label>
                                                  </div>
                                             </td>
@@ -442,10 +453,10 @@
                                             <td>
                                                 <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="SUB_DET_ATT">
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.attachmentSend}"> 
-                                                    <input type="radio" name="atch"  value="ww" (click)="submissionDto.attachmentSend=true;removeErrorDisplayKeyById('SUB_DET_ATT')"> Yes
+                                                    <input type="radio" name="atch"  value="" (click)="submissionDto.attachmentSend=true;removeErrorDisplayKeyById('SUB_DET_ATT')" [disabled]="makeReadOnly()"> Yes
                                                 </label>
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.attachmentSend==false}"> 
-                                                    <input type="radio" name="atch"  value="w" (click)="submissionDto.attachmentSend=false;removeErrorDisplayKeyById('SUB_DET_ATT')"> No
+                                                    <input type="radio" name="atch"  value="" (click)="submissionDto.attachmentSend=false;removeErrorDisplayKeyById('SUB_DET_ATT')" [disabled]="makeReadOnly()"> No
                                                 </label>
                                                </div>
  
@@ -457,10 +468,10 @@
                                             <td>
                                                 <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="SUB_DET_PRE">
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.preauth}"> 
-                                                    <input type="radio" name="atch"  value="ww" (click)="submissionDto.preauth=true;removeErrorDisplayKeyById('SUB_DET_PRE')"> Yes
+                                                    <input type="radio" name="atch"  value="" (click)="submissionDto.preauth=true;removeErrorDisplayKeyById('SUB_DET_PRE')" [disabled]="makeReadOnly()" [disabled]="makeReadOnly()"> Yes
                                                 </label>
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.preauth==false}"> 
-                                                    <input type="radio" name="atch"  value="w" (click)="submissionDto.preauth=false;removeErrorDisplayKeyById('SUB_DET_PRE')"> No
+                                                    <input type="radio" name="atch"  value="" (click)="submissionDto.preauth=false;removeErrorDisplayKeyById('SUB_DET_PRE')"  [disabled]="makeReadOnly()" [disabled]="makeReadOnly()"> No
                                                 </label>
                                                </div>
  
@@ -472,10 +483,10 @@
                                             <td>
                                                 <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="SUB_DET_REF">
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.refferalLetter}"> 
-                                                    <input type="radio" name="atch"  value="ww" (click)="submissionDto.refferalLetter=true;removeErrorDisplayKeyById('SUB_DET_REF')"> Yes
+                                                    <input type="radio" name="atch"  value="" (click)="submissionDto.refferalLetter=true;removeErrorDisplayKeyById('SUB_DET_REF')" [disabled]="makeReadOnly()"> Yes
                                                 </label>
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.refferalLetter==false}"> 
-                                                    <input type="radio" name="atch"  value="w" (click)="submissionDto.refferalLetter=false;removeErrorDisplayKeyById('SUB_DET_REF')"> No
+                                                    <input type="radio" name="atch"  value="" (click)="submissionDto.refferalLetter=false;removeErrorDisplayKeyById('SUB_DET_REF')" [disabled]="makeReadOnly()"> No
                                                 </label>
                                                </div>
  
@@ -484,18 +495,18 @@
                                         <tr>
                                             <td>06</td>
                                             <td>Claim #</td>
-                                            <td><textarea class="form-control" id="" rows="1" id="SUB_DET_CLA" (click)="removeErrorDisplayKeyById('SUB_DET_CLA')"> {{submissionDto.claimNumber}}</textarea></td>
+                                            <td><textarea class="form-control" id="" rows="1" id="SUB_DET_CLA" (click)="removeErrorDisplayKeyById('SUB_DET_CLA')" [disabled]="makeReadOnly()"> {{submissionDto.claimNumber}}</textarea></td>
                                         </tr>
                                         <tr>
                                             <td>07</td>
                                             <td>Preauth #</td>
-                                            <td><textarea class="form-control" id="" rows="1" id="SUB_DET_PRENO" (click)="removeErrorDisplayKeyById('SUB_DET_PRENO')">{{submissionDto.preauthNo}}</textarea></td>
+                                            <td><textarea class="form-control" id="" rows="1" id="SUB_DET_PRENO" (click)="removeErrorDisplayKeyById('SUB_DET_PRENO')" [disabled]="makeReadOnly()">{{submissionDto.preauthNo}}</textarea></td>
                                         </tr>
                                     </tbody>
                                 </table>
 
                                 <strong>Remarks if needed</strong>
-                                <div><textarea class="form-control" id="" rows="3" [(ngModel)]='claimRcm.claimRemarks'></textarea></div>
+                                <div><textarea class="form-control" id="" rows="3" [(ngModel)]='claimRcm.claimRemarks' [disabled]="makeReadOnly()"></textarea></div>
                             </div>
                         </div>
                     </div>
@@ -505,6 +516,16 @@
                         <button type="button" class="btn btn-success" (click)="saveClaim('latter')">Save For Later Processing</button>
                         <button type="button" class="btn btn-success" (click)="saveClaim('submit')">Mark as Submittted</button>
                         <button type="button" class="btn btn-success">Assign to Another Team</button>
+                    </div>
+                    <div>
+                       
+                                    <div class="alert fade show text-center"  *ngIf="alert.showAlertPopup" [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">
+                                        <strong>{{alert.alertMsg}}</strong>
+                                        <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                        
                     </div>
                 </div>
                 

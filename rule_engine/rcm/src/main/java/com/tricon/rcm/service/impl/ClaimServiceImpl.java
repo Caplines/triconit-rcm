@@ -1009,7 +1009,7 @@ public class ClaimServiceImpl {
 
 			BeanUtils.copyProperties(dto, implDto);
 			List<String> linkedClaims = rcmLinkedClaimsRepo.getLinkedClaims(dto.getUuid());
-			String ivfId = "", tpId = "";
+			String ivfId = "", tpId = "",ivDos="",tpDos="";
 			String[] clT = implDto.getClaimId().split("_");
 			String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
 
@@ -1024,18 +1024,30 @@ public class ClaimServiceImpl {
 				Object ivDet[] = null;
 				if (ivd != null)
 					ivDet = (Object[]) ivd;
-				if (ivDet != null && ivDet.length == 1) {
+				if (ivDet != null && ivDet.length == 2) {
 					ivDet = (Object[]) ivd;
 					ivfId = (String) ivDet[0];
-					tpId = rcmClaimRepository.getLatestTPIdForPatientDosAndIV(implDto.getOfficeUuid(),
+					ivDos = (String) ivDet[1];
+					
+					Object tp  = rcmClaimRepository.getLatestTPIdForPatientDosAndIV(implDto.getOfficeUuid(),
 							implDto.getPatientId(), (String) ivDet[1]);
+					if (tp != null) {
+						Object[] tpDet = (Object[]) tp;
+						if (tpDet != null && tpDet.length == 2) {
+							tpId = (String) tpDet[0];
+							tpDos = (String) tpDet[1];
+						}
+					}
+					
+					
 				}
 			} catch (Exception issueIV) {
 				issueIV.printStackTrace();
 			}
 			implDto.setIvfId(ivfId);
 			implDto.setTpId(tpId);
-
+			implDto.setIvDos(ivDos);
+			implDto.setTpDos(tpDos);
 			//
 			implDto.setAllowEdit(false);// Allow Edit only if assigned to login user.
 			RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByClaimsClaimUuidAndActive(claimUuid, true);
@@ -1174,17 +1186,7 @@ public class ClaimServiceImpl {
 			
 
 			
-			/*
-			 * String ivfId = "";//, tpId = "";
-			 * 
-			 * try { Object ivd = rcmClaimRepository.getIVIdOfClaim(clT[0],
-			 * claim.getOffice().getUuid(), claim.getPatientId()); Object ivDet[]=null; if
-			 * (ivd != null) ivDet=(Object[])ivd; if (ivDet != null && ivDet.length==1) {
-			 * ivDet=(Object[])ivd; ivfId =(String) ivDet[0]; //tpId =
-			 * rcmClaimRepository.getLatestTPIdForPatientDosAndIV(ivfId,
-			 * claim.getOffice().getUuid(), claim.getPatientId(),(String)ivDet[1]); }
-			 * }catch(Exception issueIV){ issueIV.printStackTrace(); }
-			 */
+			
 			boolean pullSuccess = false;
 
 			List<RcmClaimsServiceRuleValidation> serviceData = rcmClaimsServiceRuleValidationRepo
@@ -1619,9 +1621,12 @@ public class ClaimServiceImpl {
 
 	}
 
-	private void saveClaimNotes(List<ClaimNoteDto> data, RcmUser user, RcmClaims claim, JwtUser jwtUser) {
-
-		data.forEach(s -> {
+	private boolean saveClaimNotes(List<ClaimNoteDto> data, RcmUser user, RcmClaims claim, JwtUser jwtUser) {
+        boolean saveAll=true;
+        if (data==null) return false;
+        if (data.size()==0) return false;
+        for(ClaimNoteDto s:data){
+		//data.forEach(s -> {
 			RcmClaimNoteType noteType = rcmClaimNoteTypeRepo.findById(s.getId()).get();
 			RcmClaimNotes notes = rcmClaimNotesRepo.findByClaimAndNoteType(claim, noteType);
 			if (s.getValue() != null && !s.getValue().trim().equals("")) {
@@ -1640,9 +1645,12 @@ public class ClaimServiceImpl {
 				notes.setTeamId(rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId()));
 
 				rcmClaimNotesRepo.save(notes);
+				
+			}else {
+				saveAll=false;
 			}
-		});
-
+		}
+       return saveAll;
 	}
 
 	public List<ClaimRuleVaidationValueDto> fetchClaimAllRulesData(JwtUser jwtUser, String claimuuid) {
@@ -1754,6 +1762,7 @@ public class ClaimServiceImpl {
 		if (assign == null) {
 			return "Not assigned to user:" + jwtUser.getEmail();
 		}
+		boolean notesSaved=false;
 		if (officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid()
 				.equals(user.getCompany().getUuid())) {
 
@@ -1764,7 +1773,7 @@ public class ClaimServiceImpl {
 				if (dto.getClaimManualRuleValidationList() != null)
 					saveClaimManualRules(dto.getClaimManualRuleValidationList(), user, claim, jwtUser);
 				if (dto.getClaimNoteDtoList() != null) {
-					saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, jwtUser);
+					notesSaved = saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, jwtUser);
 				}
 				if (dto.getRuleRemarkDto() != null) {
 					saveClaimRuleRemark(dto.getRuleRemarkDto(), user, claim, jwtUser);

@@ -20,7 +20,10 @@ public class FreshClaimDataImplDto {
 	float secTotal;
 	List<String> linkedClaims;
 	String ivfId;
+	String ivDos;
+	
 	String tpId;
+	String tpDos;
 	
 	String uuid;
 	String claimId;

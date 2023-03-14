@@ -20,7 +20,7 @@ import { ActivatedRoute } from '@angular/router';
 export class BillingClaimsComponent implements OnInit {
 
 
-
+  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   claimRcm: ClaimRcmDataModel;
   claimARulesPullDataModel:ClaimRulesPullDataModel={};
   claimEditModel:ClaimEditModel;
@@ -29,10 +29,11 @@ export class BillingClaimsComponent implements OnInit {
   claimRules:Array<ClaimRuleModel>=[];
   claimRuleRemarks:Array<ClaimRuleRemarkModel>=[];
   reheading:string;
-
+  inSave:boolean=false;
   ruleEngineReport:Array<RuleEngineValModel>=[];
   
   claimUUid:string="";
+  infoMessage:string="";
   ruleData:any=[];
   count:any={'pass':0,'fail':0,'alert':0};
   mtype:string='1';//Fail By Default.
@@ -63,6 +64,8 @@ export class BillingClaimsComponent implements OnInit {
     ths.claimService.fetchBillingClaimsByUuid(uuid,(res:any)=>{
       if (res.status=== 200){
        ths.claimRcm= res.data;
+
+       ths.infoMessage= (!ths.claimRcm.primary &&  ths.claimRcm.assoicatedClaimStatus)?"Primary Claim is Open":"";
        ths.fetchClaimNotes();
        ths.getServiceLevelCodes();
        ths.getSubmissionDetails();
@@ -136,18 +139,29 @@ export class BillingClaimsComponent implements OnInit {
     });
         
     if (type==='latter'){
-        ths.claimService.saveClaimData(ths.claimEditModel,()=>{
-
+        ths.inSave=true;
+        ths.claimService.saveClaimData(ths.claimEditModel,(callback: any)=>{
+          ths.inSave=false;
+          this.showAlertPopup(callback);
         });
     }
     else if (type==='submit'){
         //do From Validation
         let valid= ths.validateData();
+        if (valid) {
+          ths.claimEditModel.submission=true;
+          ths.inSave=true;
+          ths.claimService.saveClaimData(ths.claimEditModel,(callback: any)=>{
+            ths.inSave=false;
+            this.showAlertPopup(callback);
+          });
+        }
     } 
     else if (type==='assign'){
        
     } 
   }
+  
   
   addErrorDisplay(el:HTMLElement){
     el.classList.add('bg-error');
@@ -166,9 +180,6 @@ export class BillingClaimsComponent implements OnInit {
   }
 
   removeErrorDisplayKeyById(id:any,sub?:any){
-    console.log(id);
-    console.log(sub);
-    console.log(id+(sub!=undefined?sub:""));
     this.removeErrorDisplay(document.getElementById(id+(sub!=undefined?sub:"")));
 
   }
@@ -193,7 +204,7 @@ export class BillingClaimsComponent implements OnInit {
         }
         if (x.messageType===0) {//mark the Yes or No
             ths.addErrorDisplay(document.getElementById("CL_P_F_"+x.ruleId));
-            valid=false;
+            //valid=false;
         }
     });
 
@@ -206,15 +217,32 @@ export class BillingClaimsComponent implements OnInit {
         ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
         valid=false;
    }else{
-        
-       if (ths.submissionDto.channel===undefined)   ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
-       if (ths.submissionDto.attachmentSend===undefined)   ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
-       if (ths.submissionDto.preauth===undefined)   ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
-       if (ths.submissionDto.refferalLetter===undefined)   ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
+       if (ths.submissionDto.channel===undefined || ths.submissionDto.channel===null)  {
+        ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
+        valid=false;
+       } 
+       if (ths.submissionDto.attachmentSend===undefined || ths.submissionDto.attachmentSend===null)  {
+        ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
+        valid=false;
+       } 
+       if (ths.submissionDto.preauth===undefined || ths.submissionDto.preauth===null){
+        ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
+        valid=false;
+       }   
+       if (ths.submissionDto.refferalLetter===undefined || ths.submissionDto.refferalLetter===null)   {
+        ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
+        valid=false;
+       }
        let SUB_DET_CLA:any = document.getElementById("SUB_DET_CLA");
-       if (SUB_DET_CLA.value.trim()==='')   ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
+       if (SUB_DET_CLA.value.trim()==='')   {
+        ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
+        valid=false;
+       }
        let SUB_DET_PRENO:any = document.getElementById("SUB_DET_PRENO");
-       if (SUB_DET_PRENO.value.trim()==='')   ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+       if (SUB_DET_PRENO.value.trim()==='')   {
+        ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+        valid=false;
+       }
        
  
     }
@@ -382,5 +410,33 @@ export class BillingClaimsComponent implements OnInit {
 
   passFail(t:any,type:number){
       t=type;
+  }
+
+  makeReadOnly():boolean {
+    
+    if (!this.claimRcm.pending) return true;
+   else if (!this.claimRcm.allowEdit)return true;
+   return false;
+  }
+
+  getTeamName(teamId:string):string{
+  
+    let team=Number(teamId);
+    if (!isNaN(team)) return this.appConstants.TEAMS_CONFIG.get(Number(team))?.name;
+
+    return "NA";
+  }
+
+  showAlertPopup(res:any){
+    this.alert.showAlertPopup = true;
+    setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
+    if (res.status==200){
+     this.alert.isError=false;
+     this.alert.alertMsg="Data Saved.";
+    }else{
+      this.alert.isError=true;
+      this.alert.alertMsg = "Error";
+    }
+    
   }
 }
