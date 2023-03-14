@@ -68,7 +68,7 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "Api For Fetching users basis of Login User teamId and his Role(Like TL,ASSO)", response = RcmUserToDto.class, responseContainer = "List")
-	@RequestMapping(value = "/users_by_role/{role}", method = RequestMethod.GET)
+	@RequestMapping(value = "/user/users_by_role/{role}", method = RequestMethod.GET)
 	public ResponseEntity<?> getUsersOfParticularTeam(@PathVariable("role") String role) {
 		if(RcmRoleEnum.validateRoles(role)==null) {
 			return ResponseEntity
@@ -107,7 +107,7 @@ public class UserController {
 	}
 	
 	@ApiOperation(value = "Api For Fetching TeamName Details basis of Login User teamId", response = RcmTeamDto.class, responseContainer = "List")
-	@RequestMapping(value = "other_user_team", method = RequestMethod.GET)
+	@RequestMapping(value = "/user/other_teams", method = RequestMethod.GET)
 	public ResponseEntity<?> teamNameByUserTeamId() {
 		List<RcmTeamDto> response = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
