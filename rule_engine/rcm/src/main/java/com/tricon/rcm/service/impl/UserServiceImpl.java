@@ -18,7 +18,7 @@ import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.GenericResponse;
-import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -26,6 +26,7 @@ import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.security.JwtUser;
+import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 
 @Service
@@ -122,4 +123,17 @@ public class UserServiceImpl {
 		}
 		return null;
 	}
+
+	public List<RcmRoleDto> getRolesByUserEmail(String userEmail)throws Exception {
+		RcmUser user = userRepo.findByEmail(userEmail);
+		List<RcmRoleDto> roles = null;
+		if (user != null && !user.getEmail().equals(Constants.SYSTEM_USER_EMAIL)) {
+			roles = masterService.getRoles(user.getCompany().getName());
+			roles.removeIf(x->x.getRoleId().equals(Constants.ADMIN));
+			roles.removeIf(x->x.getRoleId().equals(Constants.UPLOAD_CLAIMS));
+			return roles;
+		}
+		return null;
+	}
+
 }

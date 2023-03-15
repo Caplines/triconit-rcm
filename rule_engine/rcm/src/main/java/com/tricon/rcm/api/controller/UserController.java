@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
@@ -113,6 +115,28 @@ public class UserController {
 		JwtUser jwtUser = (JwtUser) userDetails;
 		try {
 			response = userService.getTeamNameByOtherUserTeamId(jwtUser);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@ApiOperation(value = "Api For Fetching UserRoles basis of User's email", response = RcmTeamDto.class, responseContainer = "List")
+	@RequestMapping(value = "/user/roles/{userEmail}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> rolesByUserEmail(@PathVariable("userEmail")String userEmail) {
+		 List<RcmRoleDto> response = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+		JwtUser jwtUser = (JwtUser) userDetails;
+		if(!jwtUser.isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.UNAUTHORIZED, "Not Authorize", null));
+		}
+		try {
+			response = userService.getRolesByUserEmail(userEmail);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
