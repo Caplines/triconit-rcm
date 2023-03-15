@@ -19,6 +19,7 @@ export class UserSettingComponent implements OnInit {
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   filteredUserRole:any=[];
   selectedRoles:any = [];
+  userRolesByEmail:any=[];
 
   constructor(public appService: ApplicationServiceService, private title: Title) { 
     title.setTitle("User-Setting");
@@ -42,11 +43,9 @@ export class UserSettingComponent implements OnInit {
         this.showActionPopup = true;
         this.user = callback.data;
         console.log(this.user)
-        for(let i =0;i<this.user.roles.length;i++){
-          this.user.roles[i] = this.user.roles[i].split("_")[2];
-        }
+        this.removeRolePrefix()
+        this.user.roles =  this.removeAdminAndUploadClaimsRole(this.user.roles)
         this.selectedRoles  = [...this.user.roles];
-        
       } else {
         this.showActionPopup = false;
         this.showAlertPopup(callback);
@@ -82,6 +81,7 @@ export class UserSettingComponent implements OnInit {
             this.user['showStatus'] = false;
             this.user['showChangePassword'] = false;
             this.user['showRole'] =true;
+            this.getUserRolesByEmail()
           }
     }
 
@@ -118,12 +118,23 @@ export class UserSettingComponent implements OnInit {
   onCheckboxChange(event:any, role: string) {
     if (event.target.checked) {
       if (!this.selectedRoles.includes(role)) {
-        this.selectedRoles.push(role);
+        if(role == 'TL' && !this.selectedRoles.includes("ASSO")){
+          this.selectedRoles.push(role);
+          this.selectedRoles.push("ASSO");
+        }else{
+          this.selectedRoles.push(role);
+        }
       }
     } else {
       const index = this.selectedRoles.indexOf(role);
       if (index !== -1) {
-        this.selectedRoles.splice(index, 1);
+        if(role == "TL"){
+          this.selectedRoles.splice(index, 1);
+          let idxAsso = this.selectedRoles.indexOf("ASSO");
+          idxAsso != -1 ? this.selectedRoles.splice(idxAsso,1) : '';
+        }else{
+          this.selectedRoles.splice(index, 1);
+        }
       }
     }
     console.log(this.selectedRoles)
@@ -134,13 +145,13 @@ export class UserSettingComponent implements OnInit {
       'uuid':this.user.uuid,
       'roles':this.selectedRoles
     }
-    this.appService.isClaimStatusActive((res:any)=>{
+    this.appService.isClaimStatusActive(this.user.uuid,(res:any)=>{
       if(res.status && res.data.status == 1){
         console.log(res)
         this.appService.editRole(params,(res:any)=>{
           if(res.status){
             console.log(res)
-            // this.showAlertPopup(res)
+            this.showAlertPopup(res)
           }
         })
       }
@@ -154,6 +165,35 @@ export class UserSettingComponent implements OnInit {
     res.status==400 ? this.alert.isError=true : this.alert.isError=false;
     this.alert.alertMsg = res.message ? res.message : res.result.message;
     scrollTo(0,0);
+  }
+
+  removeAdminAndUploadClaimsRole(role:any){
+    let idxAdmin = role.indexOf("ADMIN")
+    let idxClaims = role.indexOf('CLAIMS');
+    if(idxAdmin != -1){
+      this.user.roles.splice(idxAdmin,1)
+    }
+    if(idxClaims != -1){
+      this.user.roles.splice(idxClaims,1)
+    }
+    return this.user.roles;
+  }
+
+  removeRolePrefix(){
+    for(let i =0;i<this.user.roles.length;i++){
+      let rolePrefix = this.user.roles[i].split("_")[1];
+      this.user.roles[i] = this.user.roles[i].replace(`ROLE_${rolePrefix}_`,"")
+    }
+    return this.user;
+  }
+  
+  getUserRolesByEmail(){
+    this.appService.fetchRolesByEmail(this.user.email,(res:any)=>{
+      if(res.status){
+        console.log(res)
+        this.userRolesByEmail  = res.data;
+      }
+    })
   }
 
   isAdmin(){

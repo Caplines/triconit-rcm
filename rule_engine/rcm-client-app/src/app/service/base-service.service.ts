@@ -52,11 +52,12 @@ export class BaseService {
     'autorules':"/api/run-auto-rules",
     'ivdetails':"/api/ivfdata",
     'editRoles':"/editRole",
-    'claimStatus':"/isClaimStatusActive",
     'getOfficesByUuid':"/getOffices",
     'other_user_team':"/user/other_teams",
     'tl_user':"/user/users_by_role/tl",
-    'other_team_remark':"/api/remarks-other"
+    'other_team_remark':"/api/remarks-other",
+    'rolesByEmail':'/user/roles',
+    'claimStatus':"/claim_assign_to_user",
   }
 
   constructor(public http: HttpClient, private tokenStorage: TokenStorageService) {

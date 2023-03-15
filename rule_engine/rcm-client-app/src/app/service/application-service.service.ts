@@ -278,10 +278,6 @@ saveProductionData(params:any,callback:any){
   this.postData(params,this.httpUrl['productionData'],callback)
 }
 
-isClaimStatusActive(callback:any){
-  this.getData({},this.httpUrl['claimStatus'],callback)
-}
-
 editRole(params:any,callback:any){
   this.postData(params,this.httpUrl['editRoles'],callback)
 }
@@ -303,5 +299,13 @@ fetchTLUsers(callback:any){
 
 fetchOtherTeams(callback:any){
   this.getData({},this.httpUrl['other_user_team'],callback)
+}
+
+isClaimStatusActive(uuid:any,callback:any){
+  this.getData({},this.httpUrl[`claimStatus`]+"/"+uuid,callback)
+}
+
+fetchRolesByEmail(email:any,callback:any){
+  this.getData({},this.httpUrl['rolesByEmail']+"/"+email,callback)
 }
 }
