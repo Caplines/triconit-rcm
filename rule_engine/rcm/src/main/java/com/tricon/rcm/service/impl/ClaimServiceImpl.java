@@ -1362,7 +1362,7 @@ public class ClaimServiceImpl {
 
 	public List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(String companyId, String claimuuid, int teamId) {
 
-		List<ClaimRemarksDto> list = rcmClaimCommentRepo.fetchClaimRemarksOtherTeam(claimuuid, teamId);
+		List<ClaimRemarksDto> list = rcmClaimAssignmentRepo.fetchClaimRemarksOtherTeam(claimuuid, teamId);
 
 		return list;
 	}

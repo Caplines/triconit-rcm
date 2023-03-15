@@ -79,6 +79,12 @@ export interface  ClaimEditModel {
 	submissionDto?:SubmissionDetailModel;
 	ruleRemarkDto?:Array<ClaimRuleRemarkModel>;
 	submission?:boolean;
+	//Ayush
+	assignToTL?:boolean;
+	assignToOtherTeam?:boolean;
+	assignTouuid?:string;
+	assignToTeam?:number;
+	
 
 }
 
@@ -171,4 +177,29 @@ export interface RuleEngineValModel{
     dos?:string;
     patientName?:string;
 	remark?:string;//Used For Saving Remark
+}
+
+export interface TLUser{
+
+	uuid?:string;
+	active?:number;
+	email?:string;
+	fullName?:string;
+	firstName?:string;
+	lastName?:string;
+}
+
+export interface TeamsM{
+
+	teamName?:string;
+	teamId?:number;
+}
+
+export interface OtherTeamRem{
+	
+	comment?:string;
+	cd?:Date;
+	fName?:string;
+	lName?:string;
+	teamName?:string;
 }

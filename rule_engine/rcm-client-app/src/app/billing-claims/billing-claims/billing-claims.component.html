@@ -176,30 +176,17 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>01</td>
-                                            <td>CDP Team</td>
-                                            <td>12/19/2022</td>
-                                            <td>Button to Submit their response or escalate the claim to some other teamButton to Submit their response or escalate the claim to some other team</td>
-                                        </tr>
-                                        <tr>
-                                            <td>02</td>
-                                            <td>CDP Team</td>
-                                            <td>12/19/2022</td>
-                                            <td>TeamButton to Submit their response or escalate the claim to some other team</td>
-                                        </tr>
-                                        <tr>
-                                            <td>03</td>
-                                            <td>Posting Team</td>
-                                            <td>11/1/2022</td>
-                                            <td>TeamButton to Submit their response or escalate the claim to some other team</td>
-                                        </tr>
-                                        <tr>
-                                            <td>04</td>
-                                            <td>Aging Team</td>
-                                            <td>10/1/2022</td>
-                                            <td>Button to Submit their response or escalate the claim to some other teamButton to Submit their response or escalate the claim to some other team</td>
-                                        </tr>
+                                      <ng-container *ngIf="otherTeamRemarks?.length>0">
+                                     <tr  *ngFor="let rem of otherTeamRemarks ;let idx=index">
+                                            <td>{{idx+1}}</td>
+                                            <td>{{rem.teamName}}</td>
+                                            <td>{{rem.cd}}</td>
+                                            <td>{{rem.comment}}</td>
+                                       </tr>
+                                    </ng-container>
+                                    <ng-container *ngIf="otherTeamRemarks?.length==0 || !otherTeamRemarks">
+                                       No Remarks Found.
+                                    </ng-container>
                                     </tbody>
                                 </table>
                             </div>
@@ -510,12 +497,50 @@
                             </div>
                         </div>
                     </div>
+                     <!-- Modal -->
+                     <div id="assigment-modal" class="modal">
+                        <div class="modal-content">
+                            <div class="close-modal">
+                                <h5>Assigmment Model</h5> <span (click)="closeModal()">&times;</span>
+                            </div>
+                            <div class="table-responsive">
+                                <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="SUB_DET_REF">
+                                    <label class="btn btn-light" [ngClass]="{active:assignModel.toOtherTeam}"> 
+                                        <input type="radio" name="atch"  value="" (click)="assignModel.toOtherTeam=true;assignModel.toLead=false;" > Send To Other Team
+                                    </label>
+                                    <label class="btn btn-light" [ngClass]="{active:assignModel.toLead}"> 
+                                        <input type="radio" name="atch"  value="" (click)="assignModel.toOtherTeam=false;assignModel.toLead=true;"> Send To Team Lead To Preview
+                                    </label>
+                                </div>
+                                <ng-container *ngIf="assignModel.toLead">
+                                    <div class="table-responsive">
+                                        TEAM LEAD  --> tlUsers  --> assignToTL?:boolean;
+                                        assignTouuid?:string;
+                                        claimEditModel
+                                    </div>
+
+
+                                </ng-container>
+                                <ng-container *ngIf="assignModel.toOtherTeam">
+                                    <div class="table-responsive">
+                                        OTHER --> teamsMs  -->  assignToOtherTeam?:boolean;
+                                        assignToTeam?:string;
+                                        claimEditModel
+                                    </div>
+
+
+                                </ng-container>
+                            </div>
+                        
+                        </div>
+                    </div>
+                    <!-- Modal End -->
                     <div class="action-buttons" *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
                                                        )">
                         <button type="button" class="btn btn-success" (click)="saveClaim('latter')">Save For Later Processing</button>
                         <button type="button" class="btn btn-success" (click)="saveClaim('submit')">Mark as Submittted</button>
-                        <button type="button" class="btn btn-success">Assign to Another Team</button>
+                        <button type="button" class="btn btn-success" (click)="saveClaim('assign')">Assign to Another Team</button>
                     </div>
                     <div>
                        

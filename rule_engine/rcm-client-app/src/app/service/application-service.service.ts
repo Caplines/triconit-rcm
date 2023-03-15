@@ -292,10 +292,16 @@ fetchOfficeByUuid(callback:any){
 
 setPaddingRightContainer(){
   let m:any = document.getElementsByClassName("gray-bar");
-  console.log(m[0].clientHeight)
   if(m[0].clientHeight>55){
     return this.setPaddingContainer=true;
   }
 }
 
+fetchTLUsers(callback:any){
+  this.getData({},this.httpUrl['tl_user'],callback)
+}
+
+fetchOtherTeams(callback:any){
+  this.getData({},this.httpUrl['other_user_team'],callback)
+}
 }

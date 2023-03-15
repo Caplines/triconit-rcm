@@ -5,12 +5,14 @@ import { ClaimService  } from '../../service/claim.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimRcmDataModel ,ClaimEditModel,ServiceLevelCodeModel ,SubmissionDetailModel,
     ClaimRuleModel ,ClaimRuleRemarkModel,RuleEngineValModel,
-    ClaimRuleRemarkModelS} from '../../models/claim-rcm-data-model';
+    ClaimRuleRemarkModelS, TLUser ,TeamsM ,OtherTeamRem} from '../../models/claim-rcm-data-model';
 import {ClaimRulesPullDataModel} from '../../models/claim-rules-pull-data-model';
 
 import { Title } from '@angular/platform-browser';
 
 import { ActivatedRoute } from '@angular/router';
+
+
 @Component({
   selector: 'app-billing-claims',
   templateUrl: './billing-claims.component.html',
@@ -31,6 +33,11 @@ export class BillingClaimsComponent implements OnInit {
   reheading:string;
   inSave:boolean=false;
   ruleEngineReport:Array<RuleEngineValModel>=[];
+  tlUsers:Array<TLUser>;
+  teamsMs:Array<TeamsM>;
+  assignModel:any={"toLead":false,"toOtherTeam":false};
+  otherTeamRemarks:Array<OtherTeamRem>=[];
+
   
   claimUUid:string="";
   infoMessage:string="";
@@ -38,6 +45,8 @@ export class BillingClaimsComponent implements OnInit {
   count:any={'pass':0,'fail':0,'alert':0};
   mtype:string='1';//Fail By Default.
   ivfData:any=[];
+
+  modelElement:any={'modal':'','span':''}
 
     constructor(public appService: ApplicationServiceService,public appConstants: AppConstants,
         private claimService: ClaimService,
@@ -66,11 +75,15 @@ export class BillingClaimsComponent implements OnInit {
        ths.claimRcm= res.data;
 
        ths.infoMessage= (!ths.claimRcm.primary &&  ths.claimRcm.assoicatedClaimStatus)?"Primary Claim is Open":"";
+       ths.fetchOtherTeamRemarks();
        ths.fetchClaimNotes();
        ths.getServiceLevelCodes();
        ths.getSubmissionDetails();
        ths.getClaimRuleData();
        ths.runAutoRules(false);
+       ths.fetchTLUsers();
+       ths.fetchOtherTeams();
+       
       }
      
     });
@@ -106,10 +119,13 @@ export class BillingClaimsComponent implements OnInit {
     ths.claimRuleRemarks=[];
     ths.ruleEngineReport=[];
     ths.reheading="";
+    ths.tlUsers=[];
+    ths.teamsMs=[];
+    ths.otherTeamRemarks=[];
   }
-  getIVFData(){
+  //getIVFData(){
 
-    let ths=this;
+    //let ths=this;
    
     // ths.appService.fetchivfDataForClaim(ths.claimUUid,(res:any)=>{
     //   if (res.status=== 200){
@@ -117,8 +133,8 @@ export class BillingClaimsComponent implements OnInit {
     //   }
      
     // });
-    ths.ivfData = 'dsf'
-  }
+    //ths.ivfData = 'dsf'
+ // }
 
   saveClaim(type:string){
     let ths = this;
@@ -158,7 +174,22 @@ export class BillingClaimsComponent implements OnInit {
         }
     } 
     else if (type==='assign'){
-       
+      ths.openModal();
+
+      console.log(ths.claimEditModel);
+      let valid= ths.validateData();
+      if (valid) {
+
+      
+        //Open Modal
+        /*
+        ths.claimEditModel.submission=false;
+        ths.claimService.saveClaimData(ths.claimEditModel,(callback: any)=>{
+          ths.inSave=false;
+          this.showAlertPopup(callback);
+        });
+       */ 
+      }
     } 
   }
   
@@ -263,7 +294,7 @@ export class BillingClaimsComponent implements OnInit {
     ths.ruleEngineReport.forEach(x=>{
 
         
-        if (x.mtype==='1' &&  x.remark.trim()===''){
+        if (x.mtype==='1' &&  (x.remark==null || x.remark.trim()==='')){
             ths.addErrorDisplay(document.getElementById("ENG_REP_"+x.ruleId));
             valid=false;
         }
@@ -437,6 +468,46 @@ export class BillingClaimsComponent implements OnInit {
       this.alert.isError=true;
       this.alert.alertMsg = "Error";
     }
+    
+  }
+
+  closeModal(){
+    this.modelElement.modal.style.display = "none";
+  }
+ 
+  openModal(){
+    
+    this.modelElement.modal = document.getElementById("assigment-modal");
+    this.modelElement.span = document.getElementsByClassName("close")[0];
+    this.modelElement.modal.style.display = "block";
+}
+
+  fetchTLUsers(){
+    let ths=this;
+    ths.appService.fetchTLUsers((res:any)=>{
+        if (res.status=== 200){
+          ths.tlUsers =res.data;
+
+        }
+    })
+  }
+
+  fetchOtherTeams(){
+    let ths=this;
+    ths.appService.fetchOtherTeams((res:any)=>{
+        if (res.status=== 200){
+          ths.teamsMs =res.data;
+        }
+    })
+  }
+
+  fetchOtherTeamRemarks(){
+    let ths=this;
+    ths.claimService.fetchOtherTeamRemarks(ths.claimRcm.uuid,(res:any)=>{
+        if (res.status=== 200){
+          ths.otherTeamRemarks =res.data;
+        }
+    })
     
   }
 }

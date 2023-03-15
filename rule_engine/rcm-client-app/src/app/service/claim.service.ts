@@ -62,4 +62,9 @@ export class ClaimService extends BaseService {
   }
   
 
+  fetchOtherTeamRemarks(clamiduuid:string,callback:any){
+    this.getData({},this.httpUrl['other_team_remark']+"/"+clamiduuid,callback);
+  }
+  
+
 }

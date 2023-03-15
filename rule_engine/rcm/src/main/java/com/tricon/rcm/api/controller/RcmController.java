@@ -217,7 +217,7 @@ public class RcmController {
 	}
 	
 	
-	@ApiOperation(value = "Api For Fetching Claims (Other team )Remarks", response = ClaimRemarksDto.class ,responseContainer = "List")
+	@ApiOperation(value = "Api For Fetching Claims (Other team )Remarks From Claims", response = ClaimRemarksDto.class ,responseContainer = "List")
 	@GetMapping("/api/remarks-other/{claimuuid}")
 	public ResponseEntity<Object> fetchClaimRemarksOtherTeam(@PathVariable("claimuuid") String claimuuid) {
 		Object[] obj = checkForSimplePointUser();

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 
 public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment, Integer>{
 
@@ -31,4 +32,16 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	
 	@Query(value ="select * from rcm_claim_assignment ra join rcm_claims rc where rc.claim_uuid=ra.claim_id and ra.assigned_to=:assignTo and rc.pending is true",nativeQuery=true)
 	List<RcmClaimAssignment>findExistingUserClaimsWithPendingState(String assignTo);
+	
+	
+	@Query(nativeQuery = true, value = " select "
+			 +" comment_assigned_by comment,assign.created_date cd, tm.description teamName,us.first_name fName,us.last_name lName "
+			 +" from  rcm_claim_assignment assign inner join rcm_user us on us.uuid=assign.assigned_by "
+			 +" inner join rcm_team tm on tm.id=us.team_Id "
+			 +"  where claim_id=:claim_id and team_id!=:teamId order by assign.created_date"
+	+ "")
+    List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
+	
+	
+	
 }

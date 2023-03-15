@@ -1,9 +1,12 @@
 package com.tricon.rcm.dto.customquery;
 
+import java.util.Date;
+
 public interface ClaimRemarksDto {
 
 	String getComment();
-	String getCd();
+	Date getCd();
 	String getFName();
 	String getLName();
+	String getTeamName();
 }
