@@ -48,6 +48,7 @@ export class ToolUpdateComponent implements OnInit {
     this.appService.setPaddingRightContainer();
    // this.fetchLatesClaimLLogs();
    
+
   }
 
   modal(){
@@ -140,6 +141,7 @@ this.sourceType="";
              filteredData[0].newClaimsCount=d.newClaimsCount;
              console.log(d);
              
+
           });
           res.message == '' ? res.message = "Updated Successfully" : res.message;
           this.showAlertPopup(res);
@@ -150,93 +152,93 @@ this.sourceType="";
         }else{
           //ERROR
         }
-      
+
       });
+    }
   }
- }
 
   selectSource(source: any) {
     this.sourceType = source;
   }
-  
- //
- updateClaims(){
-  console.log(this.esAgent);
-  let ths= this;
-  if (ths.esAgent || ths.googleSheet){
-     ths.setSource();
-     ths.pullFreshClaims();
 
-  }
- }
+  //
+  updateClaims() {
+    console.log(this.esAgent);
+    let ths = this;
+    if (ths.esAgent || ths.googleSheet) {
+      ths.setSource();
+      ths.pullFreshClaims();
 
- setSource(){
-  let ths= this;
-  console.log(ths.sourceType);
-   if (ths.sourceType=='') ths.freshClaimPullModel.source='GOOGLESHEET';
-   else  ths.freshClaimPullModel.source=ths.sourceType;
- /* if (ths.esAgent || ths.googleSheet){
-    if (ths.esAgent) ths.freshClaimPullModel.source="EAGLESOFT";
-    else ths.freshClaimPullModel.source="GOOGLESHEET";
- }*/
- }
-
- fetchAllClients(){
-  let ths= this;
-  ths.appService.getClientsName((res:any)=>{
-
-    if (res.status=== 200){
-      ths.clients=res.data;
-      ths.clients.forEach((x)=>{
-        if (x.clientName=='Smilepoint') {
-          ths.smilePoint=x;
-        } 
-      });
-      }
-   });
- }
-
- expandCollapseBox(el:any){
-  if(el === 'claimDetails'){
-    this.expandCollapse.expandClaim = !this.expandCollapse.expandClaim
-  }
-  else if(el === 'teamRemarks'){
-    this.expandCollapse.expandTeamRemarks = !this.expandCollapse.expandTeamRemarks
-  }
-}
-
-selectAll(isAllSelected:any){
-  if(isAllSelected){
-    this.log.forEach((e:any)=>{
-      console.log(e.update)
-      if(!e.update){
-        e.update = true;
-        this.hasUpdateClaims.push(e.officeUuid)
-      }
-    })
-  }else{
-    this.log.forEach((e:any)=>{
-      console.log(e.update)
-      if(e.update){
-        e.update = false;
-        this.hasUpdateClaims=[];
-      }
-    })
-  }
-}
-
-fetchIssueClaims(){
-
-let ths= this;
-ths.appService.fetchIssueClaims(ths.cName,(res:any)=>{
-
-  if (res.status=== 200){
-    ths.issueCl=res.data;
-      this.modal();
     }
- });
+  }
 
- }
+  setSource() {
+    let ths = this;
+    console.log(ths.sourceType);
+    if (ths.sourceType == '') ths.freshClaimPullModel.source = 'GOOGLESHEET';
+    else ths.freshClaimPullModel.source = ths.sourceType;
+    /* if (ths.esAgent || ths.googleSheet){
+       if (ths.esAgent) ths.freshClaimPullModel.source="EAGLESOFT";
+       else ths.freshClaimPullModel.source="GOOGLESHEET";
+    }*/
+  }
+
+  fetchAllClients() {
+    let ths = this;
+    ths.appService.getClientsName((res: any) => {
+
+      if (res.status === 200) {
+        ths.clients = res.data;
+        ths.clients.forEach((x) => {
+          if (x.clientName == 'Smilepoint') {
+            ths.smilePoint = x;
+          }
+        });
+      }
+    });
+  }
+
+  expandCollapseBox(el: any) {
+    if (el === 'claimDetails') {
+      this.expandCollapse.expandClaim = !this.expandCollapse.expandClaim
+    }
+    else if (el === 'teamRemarks') {
+      this.expandCollapse.expandTeamRemarks = !this.expandCollapse.expandTeamRemarks
+    }
+  }
+
+  selectAll(isAllSelected: any) {
+    if (isAllSelected) {
+      this.log.forEach((e: any) => {
+        console.log(e.update)
+        if (!e.update) {
+          e.update = true;
+          this.hasUpdateClaims.push(e.officeUuid)
+        }
+      })
+    } else {
+      this.log.forEach((e: any) => {
+        console.log(e.update)
+        if (e.update) {
+          e.update = false;
+          this.hasUpdateClaims = [];
+        }
+      })
+    }
+  }
+
+  fetchIssueClaims() {
+
+    let ths = this;
+    ths.appService.fetchIssueClaims(ths.cName, (res: any) => {
+
+      if (res.status === 200) {
+        ths.issueCl = res.data;
+        this.modal();
+      }
+    });
+
+  }
 
 
   saveToPdf(divName: any) {
@@ -254,28 +256,28 @@ ths.appService.fetchIssueClaims(ths.cName,(res:any)=>{
   exportToCsv() {
     let options: any = {
       showLabels: true,
-      headers: ["Total No. of New Claims Added","Office UUID","Office Name", "Source", "Database Updation Done",, "Last Updated On"]
+      headers: ["Total No. of New Claims Added", "Office Name", "Source", "Database Updation Done", "Last Updated On"]
     }
     let excelData: any;
-    excelData= {...this.log};
-    excelData = [excelData];  
-    excelData = Object.values(excelData[0]);
-        for(let i=0;i<excelData.length;i++){
-        if(excelData[i].cd){
-          let date:Date = new Date(excelData[i].cd);
-          excelData[i].cd = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-        } else {
-          excelData[i].cd='';
-        }
-        if(excelData[i].status == 1 && excelData[i].status != "YES"){
-          excelData[i].status = "YES";
-        } else if(excelData[i].status == 0 && excelData[i].status != "NO"){
-          excelData[i].status = "NO";
-        }
-        if(excelData[i].source == ""){
-          excelData[i].source = "EAGLESOFT"
-        }
-        }
+    excelData = [...this.log];
+    excelData = excelData.map((e: any) => {
+      if (e.cd) {
+        let date: Date = new Date(e.cd);
+        e = { ...e, cd: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` }
+      } else {
+        e = {...e,cd : ''};
+      }
+      if (e.status == 1) {
+        e = { ...e, status: "YES" }
+      } else if (e.status == 0) {
+        e = { ...e, status: "NO" };
+      }
+      if (e.source == "") {
+        return { ...e, source: "EAGLESOFT" };
+      }
+      return e;
+    })
+    excelData = excelData.map(({ officeUuid, ...newData }: any) => newData) //to remove required properties in excel
     new ngxCsv(excelData, 'Tool to Update', options);
 
   }

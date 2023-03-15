@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ApplicationServiceService  } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateLogModel } from '../../models/claim-associate-log-model';
-import {ClaimAssociateDetailModel} from '../../models/claim-associate-detail-model';
 import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
@@ -15,10 +14,7 @@ import { ngxCsv } from 'ngx-csv/ngx-csv';
 export class FetchClaimsComponent implements OnInit {
 
   selectedBtype:number=0;
-  selectedSubtype:string="Fresh";
-
   log: Array<ClaimAssociateLogModel>;
-  claimDetail:Array<ClaimAssociateDetailModel>;
   expandCollapse:boolean=true;
   switchBox:any={'billing':true,'reBilling':false};
   isSorted:boolean=false;
@@ -27,20 +23,13 @@ export class FetchClaimsComponent implements OnInit {
 
     constructor(private appService: ApplicationServiceService,public appConstants: AppConstants) {
     this.selectedBtype=this.appConstants.BILLING_ID;
-    this.log =this.claimDetail= [];
-
+    this.log = [];
    }
-
   
   ngOnInit(): void {
-
     this.fetchClaimsByBillingType(this.selectedBtype);
-    this.fetchClaims(this.selectedSubtype);
   }
 
-  
-
-   
   fetchClaimsByBillingType(type:number){
     this.loader.billingLoader=true;
     if(type==1){
@@ -67,21 +56,6 @@ export class FetchClaimsComponent implements OnInit {
     });
   }
 
-  fetchClaims(subType:string){
-    this.loader.listClaimLoader=true;
-    let ths=this;
-    ths.appService.fetchAssociateClaimDet(ths.selectedBtype,subType,(res:any)=>{
-      if (res.status=== 200){
-       ths.claimDetail= res.data;
-       
-       ths.loader.listClaimLoader=false;
-      }else{
-        //ERROR
-      }
-     
-    });
-  }
-
   sortData(data:any,sortProp:string,order:any,sortType:string){ 
     this.appService.sortData(data,sortProp,order,sortType);
   }
@@ -91,13 +65,13 @@ export class FetchClaimsComponent implements OnInit {
       this.totalClaimData.totalCount = this.totalClaimData.totalCount + e.count;
  });
   }
+
   calcRemLiteReject(data:any){
     data.forEach((e:any)=>{
       this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalRemLiteReject + e.remoteLiteRejections;
    });
   }
 
-  
   saveToPdf(divName: any) {
     html2canvas(<any>document.getElementById(divName)).then(canvas => {
       const content = canvas.toDataURL('image/png');
@@ -112,28 +86,28 @@ export class FetchClaimsComponent implements OnInit {
   exportToCsv() {
     let options: any = {
       showLabels: true,
-      headers: ["Office UUID","Office Name","Oldest Pending Date","Oldest Pending DOS",`${this.selectedBtype==this.appConstants.BILLING_ID? 'Number of Pending Fresh Cases' : 'Number of Pending Rebilling Cases'}`, "Number of Pending Remotelite Rejections"]
+      headers: ["Office Name","Oldest Pending Date","Oldest Pending DOS",`${this.selectedBtype==this.appConstants.BILLING_ID? 'Number of Pending Fresh Cases' : 'Number of Pending Rebilling Cases'}`, "Number of Pending Remotelite Rejections"]
     }
     let excelData: any;
-    excelData= {...this.log};  
-    excelData = [excelData];  
-    excelData = Object.values(excelData[0]);
-        for(let i=0;i<excelData.length;i++){
-        if(excelData[i].opdos){
-          let date:Date = new Date(excelData[i].opdos);
-          excelData[i].opdos = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-        } else {
-          excelData[i].opdos='';
-        }
-        if(excelData[i].opdt){
-          let date:Date = new Date(excelData[i].opdt);
-          excelData[i].opdt = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-        } else {
-          excelData[i].opdt='';
-        }
-        }
-    new ngxCsv(excelData, 'Fetch-Claims', options);
+    excelData= [...this.log];  
+    excelData = excelData.map((e:any)=>{
+      if(e.opdos){
+        let date:Date = new Date(e.opdos);
+        e = {...e,opdos : `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`};
+      } else {
+        e = {...e,opdos:''};
+      }
+      if(e.opdt){
+        let date:Date = new Date(e.opdt);
+        e = {...e,opdt : `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`};
+      } else {
+        e = {...e,opdt:''};
+      }
+      return e;
+    })
 
+    excelData = excelData.map(({officeUuid,...newData}:any)=>newData)
+    new ngxCsv(excelData, 'Fetch-Claims', options);
   }
 
 }

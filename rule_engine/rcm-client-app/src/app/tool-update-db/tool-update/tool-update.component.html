@@ -106,7 +106,7 @@
                                         <tr *ngFor="let lg of log">
                                             <td colspan="6">{{lg.officeName}}</td>
                                             <td colspan="6"><img [src]="lg.source == 'GOOGLESHEET' ? '../../assets/img/google-sheet-icon.png' : '../../assets/img/rule-engine.png'" alt=""></td>
-                                            <td colspan="6"><span [ngClass]="{'yes-box': lg.status=='1' || lg.status=='YES' ,'no-box':lg.status=='0' || lg.status=='NO'}">{{lg.status=='1'? 'Yes':'No' || lg.status=='YES' ? 'Yes':'No'}}</span></td>
+                                            <td colspan="6"><span [ngClass]="{'yes-box': lg.status=='1','no-box':lg.status=='0'}">{{lg.status=='1'? 'Yes':'No'}}</span></td>
                                             <td colspan="6">{{lg.cd | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
                                             <td colspan="6">{{lg.newClaimsCount}}</td>
                                             <td colspan="6"><a href="javascript:void(0);"></a><input type="checkbox" [(ngModel)]="lg.update" (change)="isUpdateClaimsChecked(lg.officeUuid,lg.update)" /></td>
