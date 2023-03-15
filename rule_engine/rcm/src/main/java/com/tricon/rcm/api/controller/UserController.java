@@ -29,6 +29,7 @@ import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.UserServiceImpl;
+import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 
 import io.swagger.annotations.ApiOperation;
@@ -67,16 +68,12 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
-	@ApiOperation(value = "Api For Fetching users basis of Login User teamId and his Role(Like TL,ASSO)", response = RcmUserToDto.class, responseContainer = "List")
-	@RequestMapping(value = "/user/users_by_role/{role}", method = RequestMethod.GET)
-	public ResponseEntity<?> getUsersOfParticularTeam(@PathVariable("role") String role) {
-		if(RcmRoleEnum.validateRoles(role)==null) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLE_NOT_MATCH, null));
-		}
+	@ApiOperation(value = "Api For Fetching users basis of Login User teamId and his Role TL", response = RcmUserToDto.class, responseContainer = "List")
+	@RequestMapping(value = "/user/users_by_role/tl", method = RequestMethod.GET)
+	public ResponseEntity<?> getUsersOfParticularTeam() {
 		List<RcmUserToDto> response = null;
 		try {
-			response = userService.getUsersByRole(role);
+			response = userService.getUsersByRole(Constants.TEAMLEAD);
 			if(response==null) {
 				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 			}
