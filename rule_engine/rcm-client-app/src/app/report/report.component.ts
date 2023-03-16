@@ -3,7 +3,7 @@ import { Title } from '@angular/platform-browser';
 
 import { ActivatedRoute } from '@angular/router';
 import { ClaimService  } from '../service/claim.service';
-
+import { ApplicationServiceService  } from '../service/application-service.service';
 @Component({
 	selector: 'app-report',
 	templateUrl: './report.component.html',
@@ -13,8 +13,9 @@ import { ClaimService  } from '../service/claim.service';
 export class ReportComponent implements OnInit {
 	reportDataInd: any;
 	ivId:string="";
+	message:string="";
 
-	constructor(private route: ActivatedRoute,private title : Title,
+	constructor(public appService: ApplicationServiceService,private route: ActivatedRoute,private title : Title,
 		private claimService: ClaimService) {
 		title.setTitle("RCM tool - IV Details");
 	 
@@ -35,6 +36,10 @@ export class ReportComponent implements OnInit {
 		ths.claimService.fetchIvDetails(clamId,"",(res:any)=>{
 		  if (res.status=== 200){
 			this.reportDataInd = res.data;
+			debugger;
+			if (res.data==null){
+                 this.message="IV Not Found.";
+			}
 		  }
 		 
 		});

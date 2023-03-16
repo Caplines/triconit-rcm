@@ -80,7 +80,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id is null and off.company_id=:companyId " + " and pending=true ")
+			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true ")
 	List<FreshClaimDataDto> fetchFreshClaimDetails(@Param("companyId") String companyId, @Param("teamid") int teamid);
 	
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
@@ -97,7 +97,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id is not null and off.company_id=:companyId " + " and pending=true ")
+			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=teamid and off.company_id=:companyId " + " and pending=true ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeam(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
@@ -220,14 +220,14 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("patientid") String patientId,@Param("claim_id") String claimId);
 	
 	
-	;
 	@Query(nativeQuery = true, value = ""+
-			" SELECT ivf_form_id ivId,office_id officeId FROM reports_claim r inner join report_claim_detail rd "+
-			" on rd.report_id=r.id "+
-			" where r.claim_id=:claim_id and r.patient_id=:patientid and "+
+			" SELECT ivf_form_id ivId,r.office_id officeId FROM reports_claim r inner join report_claim_detail rd "+
+			" on rd.report_id=r.id inner join patient_detail pd on pd.id=r.ivf_form_id  and  pd.office_id=r.office_id "+
+			" where r.claim_id=:claim_id and r.patient_id=:patientid and pd.cob_status in (:primarysecnnoifo) and "+
 			"  r.office_id=:office_id order by STR_TO_DATE( iv_date, '%m/%d/%Y'),rd.group_run desc limit 1"	)
 	IVFDto getLatestIvfNumberForClaim(@Param("office_id") String officeId,
-			@Param("patientid") String patientId,@Param("claim_id") String claimId);
+			@Param("patientid") String patientId,@Param("claim_id") String claimId,
+			@Param("primarysecnnoifo") List<String> primarysecnnoifo);//Primary Secondary no information
 	
 	
 	@Query(nativeQuery = true, value = "select claim_uuid,pending from rcm_claims where "

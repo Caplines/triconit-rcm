@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.google.api.client.util.Strings;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmRules;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
@@ -134,14 +135,66 @@ public class RuleBookServiceImpl {
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean pass= true;
+		String[] clT = rcmClaim.getClaimId().split("_");
+		//String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
+		boolean primary=true;
+		if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
+			primary=true;
+			
+		} else {
+			 primary=false;
+			
+		}
+		List<String> errorMessage=null;
 		try {
 
 			if (ivf == null) {
-				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule303.error.message1", new Object[] {}, locale), Constants.FAIL, "",
-						"", ""));
+			
+				if (errorMessage==null) errorMessage= new ArrayList<>();
+				errorMessage.add("IV Not Found");
+				pass= false;
 			} else {
-
+				ivf.getBasicInfo2();
+				if (!rcmClaim.getPatientName().trim().equalsIgnoreCase(ivf.getBasicInfo2())) {
+					if (errorMessage==null) errorMessage= new ArrayList<>();
+					errorMessage.add("Claim Patient name: "+rcmClaim.getPatientName() +"; IV Patient name: "+ivf.getBasicInfo2());
+					pass= false;
+					//Fail
+				}
+				System.out.println(ivf.getBasicInfo6());
+				if (!Constants.SDF_ES_DATE.format(rcmClaim.getPatientBirthDate()).equals(ivf.getBasicInfo6())) {
+					if (errorMessage==null) errorMessage= new ArrayList<>();
+					errorMessage.add("Claim Patient DOB: "+Constants.SDF_ES_DATE.format(rcmClaim.getPatientBirthDate()) +"; Claim Patient DOB: "+ivf.getBasicInfo6());
+					pass= false;
+					//Fail
+				}
+				if (primary) {
+					if (!rcmClaim.getPrimePolicyHolder().trim().equalsIgnoreCase(ivf.getBasicInfo5())) {
+						if (errorMessage==null) errorMessage= new ArrayList<>();
+						errorMessage.add("Claim PolicyHolder: "+rcmClaim.getPrimePolicyHolder() +"; IV PolicyHolder: "+ivf.getBasicInfo5());
+						pass= false;
+						//Fail
+					}
+				}else {
+					if (!rcmClaim.getSecPolicyHolder().trim().equalsIgnoreCase(ivf.getBasicInfo5())) {
+						if (errorMessage==null) errorMessage= new ArrayList<>();
+						errorMessage.add("Claim PolicyHolder: "+rcmClaim.getSecPolicyHolder() +"; IV PolicyHolder: "+ivf.getBasicInfo5());
+						pass= false;
+						//Fail
+					}
+				}
+			
+				if (pass) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule303.pass.message", new Object[] {}, locale), Constants.PASS, "",
+							"", ""));
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule303.error.message", new Object[] {String.join(",", errorMessage)}, locale), Constants.FAIL, "",
+							"", ""));
+				}
+				
 			}
 
 		} catch (Exception n) {

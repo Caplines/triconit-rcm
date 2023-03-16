@@ -1,8 +1,9 @@
 
+<div class="right-container" >
 <div class="inner-bg">
-		<div>
+		<div *ngIf="reportDataInd!=null">
 			
-			<div class="table-container" *ngIf="reportDataInd.ivFormTypeId==1">
+			<div class="table-container">
 				<h3>IVF DATA- Details</h3>
 				<span>
 					<p style="text-align: center">Smilepoint - Insurance
@@ -919,4 +920,7 @@
 			</div>
 
 		</div>
+		
+		<div *ngIf="reportDataInd==null" style="margin-top: 100px;margin-left: 71px;"> {{this.message}}</div>
 		<!--showReportData DIV  -->
+	</div>

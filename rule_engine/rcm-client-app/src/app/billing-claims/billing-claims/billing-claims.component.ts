@@ -23,6 +23,7 @@ export class BillingClaimsComponent implements OnInit {
 
 
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
+  alertAssign:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   claimRcm: ClaimRcmDataModel;
   claimARulesPullDataModel:ClaimRulesPullDataModel={};
   claimEditModel:ClaimEditModel;
@@ -44,7 +45,7 @@ export class BillingClaimsComponent implements OnInit {
   ruleData:any=[];
   count:any={'pass':0,'fail':0,'alert':0};
   mtype:string='1';//Fail By Default.
-  ivfData:any=[];
+  //ivfData:any=[];
 
   modelElement:any={'modal':'','span':''}
 
@@ -80,7 +81,7 @@ export class BillingClaimsComponent implements OnInit {
        ths.getServiceLevelCodes();
        ths.getSubmissionDetails();
        ths.getClaimRuleData();
-       ths.runAutoRules(false);
+       //ths.runAutoRules(false);
        ths.fetchTLUsers();
        ths.fetchOtherTeams();
        
@@ -142,7 +143,7 @@ export class BillingClaimsComponent implements OnInit {
     ths.claimEditModel.claimUuid=ths.claimRcm.uuid;
     ths.claimEditModel.claimNoteDtoList=ths.claimRcm.claimNotes;
     ths.claimEditModel.claimRemark=ths.claimRcm.claimRemarks;
-    ths.claimEditModel.serCVDto=ths.claimServiceLevelModel.dto;
+    ths.claimEditModel.serCVDto=ths.claimServiceLevelModel?.dto;
     ths.claimEditModel.submissionDto=ths.submissionDto;
     ths.claimEditModel.ruleRemarkDto=[];
     ths.claimRules.forEach(x=>{
@@ -174,7 +175,10 @@ export class BillingClaimsComponent implements OnInit {
         }
     } 
     else if (type==='assign'){
-      ths.openModal();
+      ths.claimEditModel.assignTouuid="";
+      ths.claimEditModel.assignToTeam=-1;
+      
+      ths.openAssignModal();
 
       console.log(ths.claimEditModel);
       let valid= ths.validateData();
@@ -275,7 +279,7 @@ export class BillingClaimsComponent implements OnInit {
         valid=false;
        }
        
- 
+      
     }
 
     if (ths.claimServiceLevelModel.claimFound){
@@ -300,8 +304,16 @@ export class BillingClaimsComponent implements OnInit {
         }
     });
     
+     if ( ths. ruleEngineReport.length==0){
+         ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
 
+          valid=false;
+    
+        }else{
+         ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
+     }
      console.log("valid",valid);
+     
      return valid;
 
   }
@@ -334,6 +346,7 @@ export class BillingClaimsComponent implements OnInit {
         if (res.status=== 200){
            
             ths.claimServiceLevelModel=res.data;
+
         }
     })
 
@@ -401,9 +414,9 @@ export class BillingClaimsComponent implements OnInit {
 
   getClaimRuleData(){
     let ths=this;
-    ths.claimARulesPullDataModel.claimId="15927";///ths.claimRcm.claimId.split("_")[0];
-    ths.claimARulesPullDataModel.officeId="cc450da8-aaae-11e8-8544-8c16451459cd";//ths.claimRcm.officeUuid;
-    ths.claimARulesPullDataModel.patientId="6602";//ths.claimRcm.patientId;
+    ths.claimARulesPullDataModel.claimId=ths.claimRcm.claimId.split("_")[0];//"15927";///
+    ths.claimARulesPullDataModel.officeId=ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
+    ths.claimARulesPullDataModel.patientId=ths.claimRcm.patientId;//"6602";//
 
     ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel,(res:any)=>{
         if (res.status=== 200){
@@ -460,10 +473,25 @@ export class BillingClaimsComponent implements OnInit {
 
   showAlertPopup(res:any){
     this.alert.showAlertPopup = true;
-    setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
+    setTimeout(() => {this.alert.showAlertPopup=false;}, 5000);
     if (res.status==200){
      this.alert.isError=false;
-     this.alert.alertMsg="Data Saved.";
+     
+     this.alert.alertMsg=res.data.message;
+     if ( this.alert.alertMsg === 'Latter'){
+      this.alert.alertMsg ="Saved for Latter Processing!!";
+     }else if ( this.alert.alertMsg === 'Submitted'){
+      this.alert.alertMsg ="Claim Submitted Successfully!!";
+      this.claimRcm.allowEdit=false;
+
+     }else if ( this.alert.alertMsg === 'OtherTeam'){
+      this.alert.alertMsg ="Claim Assigned To Other Team Successfully!!";
+      this.claimRcm.allowEdit=false;
+     }else if ( this.alert.alertMsg === 'TL'){
+        this.alert.alertMsg ="Claim Assigned To TL For Preview!!";
+        this.claimRcm.allowEdit=false;
+       }
+
     }else{
       this.alert.isError=true;
       this.alert.alertMsg = "Error";
@@ -471,12 +499,26 @@ export class BillingClaimsComponent implements OnInit {
     
   }
 
+  showAlertAssignPopup(res:any){
+    this.alertAssign.showAlertPopup = true;
+    setTimeout(() => {this.alertAssign.showAlertPopup=false;}, 2000);
+    if (res.status==200){
+     this.alertAssign.isError=false;
+     this.alertAssign.alertMsg=res.message;
+    }else{
+      this.alertAssign.isError=true;
+      this.alertAssign.alertMsg = "Error";
+    }
+    
+  }
+
+
   closeModal(){
     this.modelElement.modal.style.display = "none";
   }
  
-  openModal(){
-    
+  openAssignModal(){
+    this.assignModel.toOtherTeam=this.assignModel.toLead=false;
     this.modelElement.modal = document.getElementById("assigment-modal");
     this.modelElement.span = document.getElementsByClassName("close")[0];
     this.modelElement.modal.style.display = "block";
@@ -509,5 +551,35 @@ export class BillingClaimsComponent implements OnInit {
         }
     })
     
+  }
+
+  reval(){
+
+    this.runAutoRules(true);
+  }
+
+  assignToOtherTeam(){
+    let ths= this;
+    ths.claimEditModel.assignToOtherTeam=true;
+    ths.removeErrorDisplay(document.getElementById("selectTeam"));
+    if  (ths.claimEditModel.assignToTeam==-1){
+      ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
+    }else{
+      //assign
+    }
+    
+
+
+  }
+
+  assignToLead(){
+    let ths= this;
+    this.claimEditModel.assignToTL=true;
+    ths.removeErrorDisplay(document.getElementById("selectLeadName"));
+    if  (ths.claimEditModel.assignTouuid==""){
+      ths.addErrorDisplay(document.getElementById("selectLeadName"));//
+    }else{
+      //assign
+    }
   }
 }

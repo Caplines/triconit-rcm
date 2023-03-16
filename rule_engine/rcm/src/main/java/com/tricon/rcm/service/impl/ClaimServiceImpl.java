@@ -56,6 +56,7 @@ import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
 import com.tricon.rcm.dto.ClaimDataDetails;
 import com.tricon.rcm.dto.ClaimDetailDto;
+import com.tricon.rcm.dto.ClaimEditDetailDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
@@ -1122,7 +1123,7 @@ public class ClaimServiceImpl {
 			long ct= rcmClaimDetailRepo.countByClaimClaimUuid(claimUuid);
 			if (ct==0) {
 				//Pull && Save Data
-				clT[0] = "2115";// For testing
+				//clT[0] = "2115";// For testing
 				List<ClaimDetailDto> cdList = ruleEngineService.pullClaimDetailFromFromRE(clT[0], off.getCompany().getUuid(),
 						off.getUuid());
 				
@@ -1342,22 +1343,34 @@ public class ClaimServiceImpl {
 
 		if (claims != null) {
 			RcmOffice off = claims.getOffice();
+			String[] clT = claims.getClaimId().split("_");
+			//String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
+			List<String> types= new ArrayList<>();
+			if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
+				types.add("Primary");
+				types.add("No Information");
+				
+			} else {
+				types.add("Secondary");
+				
+			}
+			
 			IVFDto iVFDto = rcmClaimRepository.getLatestIvfNumberForClaim(off.getUuid(), claims.getPatientId(),
-					claimuuid);
+					claimuuid,types);
 			if (iVFDto != null) {
 				return ruleEngineService.pullIVFDataFromRE(iVFDto.getIvId(), claims.getPatientId(), companyId,
 						off.getUuid());
 			} else {
 				// For testing..
-				return ruleEngineService.pullIVFDataFromRE("196041", "7431", companyId,
-						"f015515d-7df2-11e8-8432-8c16451459cd");
+				//return ruleEngineService.pullIVFDataFromRE("196041", "7431", companyId,
+				//		"f015515d-7df2-11e8-8432-8c16451459cd");
 			}
 		} else {
 			// For testing..
-			return ruleEngineService.pullIVFDataFromRE("196041", "7431", companyId,
-					"f015515d-7df2-11e8-8432-8c16451459cd");
+			//return ruleEngineService.pullIVFDataFromRE("196041", "7431", companyId,
+			//		"f015515d-7df2-11e8-8432-8c16451459cd");
 		}
-		// return null;
+		return null;
 	}
 
 	public List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(String companyId, String claimuuid, int teamId) {
@@ -1752,22 +1765,26 @@ public class ClaimServiceImpl {
 		return "";
 	}
 
-	public String saveFullClaim(JwtUser jwtUser, ClaimEditDto dto) {
+	public ClaimEditDetailDto saveFullClaim(JwtUser jwtUser, ClaimEditDto dto) {
 
+		ClaimEditDetailDto claimEditDetailDto= new ClaimEditDetailDto();
+		String message="";
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
 		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
 		RcmClaimAssignment assign = rcmClaimAssignmentRepo
 				.findByAssignedToUuidAndClaimsClaimUuidAndActive(jwtUser.getUuid(), claim.getClaimUuid(), true);
 		// claim.getC
 		if (assign == null) {
-			return "Not assigned to user:" + jwtUser.getEmail();
-		}
+			claimEditDetailDto.setMessage( "Not assigned to user:" + jwtUser.getEmail());
+			return claimEditDetailDto;
+			}
 		boolean notesSaved=false;
 		if (officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid()
 				.equals(user.getCompany().getUuid())) {
 
 			if (!claim.isPending()) {
-				return "Claim Already Submitted";
+				claimEditDetailDto.setMessage( "Claim Already Submitted");
+				return claimEditDetailDto;
 			} else {
 
 				if (dto.getClaimManualRuleValidationList() != null)
@@ -1791,20 +1808,42 @@ public class ClaimServiceImpl {
 					saveClaimServiceCodeValidation(dto.getSerCVDto(), user, claim, jwtUser);
 
 			}
-
+			claim.setLastWorkTeamId(user.getTeam());
 			if (dto.isSubmission()) {
 				claim.setPending(false);
+				
 				claim.setUpdatedBy(user);
 				claim.setUpdatedDate(new Date());
 
 				rcmClaimRepository.save(claim);
+				message="Submitted";
+			}else if(dto.isAssignToOtherTeam()){
+				
+				claim.setUpdatedBy(user);
+				claim.setUpdatedDate(new Date());
+				rcmClaimRepository.save(claim);
+				message="OtherTeam";
+			}else if(dto.isAssignToTL()){
+				
+				claim.setUpdatedBy(user);
+				claim.setUpdatedDate(new Date());
+				rcmClaimRepository.save(claim);
+				message="TL";
+			}else {
+				
+				claim.setUpdatedBy(user);
+				claim.setUpdatedDate(new Date());
+				rcmClaimRepository.save(claim);
+				message="Latter";
 			}
+			
+			
 
 		} else {
-			return "wrong Client Name";
+			message = "wrong Client Name";
 		}
-
-		return "success";
+		claimEditDetailDto.setMessage(message);
+		return claimEditDetailDto;
 	}
 
 	public String assignToOtherOrTeamLead(JwtUser jwtUser, ClaimAssignDto dto) {
@@ -1931,17 +1970,17 @@ public class ClaimServiceImpl {
 
 					List<TPValidationResponseDto> allLIst = new ArrayList<>();
 
+					//Get Iv From Database Report
 					CaplineIVFFormDto ivData = getIvfDataFromRE(jwtUser.getCompany().getUuid(), claimuuid);
 
 					RcmRules rule = getRulesFromList(rules, RuleConstants.RULE_ID_301);
 					allLIst.addAll(ruleBookService.rule301(rule, ivData, claim.getSecMemberId()));
 
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_302);
-
 					allLIst.addAll(ruleBookService.rule302(rule, ivData, claim.getGroupNumber()));
 
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_303);
-					// allLIst.addAll(ruleBookService.rule303(rule, ivData, claim));
+					allLIst.addAll(ruleBookService.rule303(rule, ivData, claim));
 
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_304);
 					Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(

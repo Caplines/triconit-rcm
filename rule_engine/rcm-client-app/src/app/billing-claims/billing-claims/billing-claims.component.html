@@ -126,12 +126,12 @@
 
                                 <div class="custom-row">
                                     <label for="" class="">Team Assigned:</label>
-                                    <div>{{getTeamName(claimRcm.assignedToTeam+"")}}</div>
+                                    <div [innerHTML]="getTeamName(claimRcm.assignedToTeam+'')"></div>
                                 </div>
 
                                 <div class="custom-row">
                                     <label for="" class="">Claim Staus:</label>
-                                    <div>{{claimRcm.pending?"Pending":"Submiited"}}</div>
+                                    <div [innerHTML]="claimRcm.pending?'Pending':'Submiited'"></div>
                                 </div>
 
                             </div>
@@ -208,39 +208,13 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>01</td>
-                                            <td>CDP Team</td>
-                                            <td>12/19/2022</td>
-                                            <td>Send clearer X-Ray</td>
-                                            <td>Tooth No. 13</td>
-                                            <td>0 Yes  |  0 No</td>
-                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
-                                        </tr>
-                                        <tr>
-                                            <td>02</td>
-                                            <td>CDP Team</td>
-                                            <td>12/08/2022</td>
-                                            <td>Send Pano</td>
-                                            <td></td>
-                                            <td>0 Yes  |  0 No</td>
-                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
-                                        </tr>
-                                        <tr>
-                                            <td>03</td>
-                                            <td>CDP Team</td>
-                                            <td>12/19/2022</td>
-                                            <td>Rebill with detailed Narrative</td>
-                                            <td>Narrative show show medical necessity for RCT on Tooth No. 20</td>
-                                            <td>0 Yes  |  0 No</td>
-                                            <td><textarea class="form-control" id="" rows="1"></textarea></td>
-                                        </tr>
-                                    </tbody>
+                                       Not Found.
                                 </table>
                             </div>
                         </div>
 
-                        <a data-toggle="collapse" (click)="showHide(4)" class="bold-b-text " aria-expanded="false">Claim Level Validations (Automated):</a>
+                        <a  (click)="reval()" *ngIf="claimRcm.allowEdit && claimRcm.pending"> Re Validate Automated Claims</a>
+                        <a data-toggle="collapse" (click)="showHide(4)" class="bold-b-text " aria-expanded="false">Claim Level Validations (Automated):</a> 
                         <div class="form-row  collapse show" id="claimValidations" >
                             <div class="table-responsive">
                                 <table class="table">
@@ -320,7 +294,7 @@
                         </div>
 
                         <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text " aria-expanded="false">Rule Engine Validations:</a>
-                        <div class="form-row  collapse show" id="claimValidationsManual" >
+                        <div class="form-row  collapse show" id="claimValidationsRE" >
                             <ng-container *ngIf="ruleEngineReport.length>0">
                             <div class="rule-detail" [innerHTML]="reheading">
                             </div>
@@ -357,8 +331,8 @@
                                 </ng-container>
                         </div>
                        
-                        <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text " aria-expanded="false">Service Code Level Validations:</a>
-                        <div class="form-row  collapse show" id="serviceCodeValidations" >
+                        <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text " aria-expanded="false"  id="serviceCodeValidations">Service Code Level Validations:</a>
+                        <div class="form-row  collapse show" >
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -372,7 +346,13 @@
                                         </tr>
                                     </thead>
                                     <tbody >
+                                        <ng-container *ngIf="claimServiceLevelModel?.claimFound==false">
+                                            <tr>
+                                                <td colspan="6">Claim Data Not Found..</td>
+                                            </tr> 
+                                        </ng-container>
                                         <ng-container *ngIf="claimServiceLevelModel?.claimFound">
+                                             
                                         <tr *ngFor="let d of claimServiceLevelModel.dto; let i = index">
                                             <td>{{i+1}}</td>
                                             <td>{{d.name}}</td>
@@ -514,20 +494,39 @@
                                 </div>
                                 <ng-container *ngIf="assignModel.toLead">
                                     <div class="table-responsive">
-                                        TEAM LEAD  --> tlUsers  --> assignToTL?:boolean;
-                                        assignTouuid?:string;
-                                        claimEditModel
+                                        
+                                        <label>TL Name :</label>
+                                        <select class="form-control" id="selectLeadName" name="" [(ngModel)]='claimEditModel.assignTouuid'>
+                                         <option selected="true"  value=""  >Select Lead Name</option>
+                                        <ng-container *ngFor="let tl of tlUsers">
+                                            <option  value="{{tl.uuid}}">{{tl.firstName}} {{tl.lastName}}</option>
+                                        </ng-container>
+                                        </select>
+
+                                        <button type="button" class="btn btn-success" (click)="assignToLead()">Assign to Team Lead</button>
                                     </div>
 
 
                                 </ng-container>
                                 <ng-container *ngIf="assignModel.toOtherTeam">
                                     <div class="table-responsive">
-                                        OTHER --> teamsMs  -->  assignToOtherTeam?:boolean;
-                                        assignToTeam?:string;
-                                        claimEditModel
-                                    </div>
+                                        <label>Team Name:</label>
+                                        <select class="form-control" id="selectTeam" name="w"  [(ngModel)]='claimEditModel.assignToTeam'>
+                                         <option selected="true" value="-1">Select Team</option>
+                                        <ng-container *ngFor="let tl of teamsMs">
+                                            <option  value="{{tl.teamId}}">{{tl.teamName}}</option>
+                                        </ng-container>
+                                        </select>
 
+                                        <button type="button" class="btn btn-success" (click)="assignToOtherTeam()">Assign to Other Team</button>
+                                   
+                                    </div>
+                                    <div class="alert fade show text-center"  *ngIf="alert.showAlertPopup" [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">
+                                        <strong>{{alert.alertMsg}}</strong>
+                                        <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
 
                                 </ng-container>
                             </div>
@@ -535,12 +534,12 @@
                         </div>
                     </div>
                     <!-- Modal End -->
-                    <div class="action-buttons" *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
+                    <div class="action-buttons"  *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
                                                        )">
-                        <button type="button" class="btn btn-success" (click)="saveClaim('latter')">Save For Later Processing</button>
-                        <button type="button" class="btn btn-success" (click)="saveClaim('submit')">Mark as Submittted</button>
-                        <button type="button" class="btn btn-success" (click)="saveClaim('assign')">Assign to Another Team</button>
+                        <button type="button" class="btn btn-success" [disabled]="inSave" (click)="saveClaim('latter')">Save For Later Processing</button>
+                        <button type="button" class="btn btn-success" [disabled]="inSave" (click)="saveClaim('submit')">Mark as Submittted</button>
+                        <button type="button" class="btn btn-success"  [disabled]="inSave" (click)="saveClaim('assign')">Assign to Another Team</button>
                     </div>
                     <div>
                        
