@@ -35,6 +35,8 @@ export class OfficeAssignmentComponent implements OnInit {
   loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false}
   showExportLoader:boolean=false;
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0,'totalcountAndRemLiteReject':0}
+  clientName:string='';
+  date:any;
   constructor(private appService: ApplicationServiceService,private title:Title,private router:Router) { 
     title.setTitle("Claim-Office Assignment");
     this.claimData = [];//{} as FreshClaimPLogs;
@@ -44,6 +46,7 @@ export class OfficeAssignmentComponent implements OnInit {
   ngOnInit(): void {
     this.fetchClaimAssignments();
     this.teamId = localStorage.getItem("teamId");
+    this.clientName = localStorage.getItem("cname");
     this.getUserByTeamId();
     this.assignOfficeDetails.teamId = this.teamId;
   }
@@ -160,7 +163,9 @@ export class OfficeAssignmentComponent implements OnInit {
   let height = canvas.height  * width / canvas.width;
   console.log(width,height)
   pdf.addImage(content,"PNG",0,0,width,height)
-  pdf.save("output.pdf")
+  this.date = new Date();
+  this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+  pdf.save(`${this.clientName}_Office_Assignemnt_${this.date}`);
   this.loader.exportPDFLoader = false;
   m.classList.add('table-wrapper-scroll-y')
   m.classList.add('table-inner-scrollbar')
@@ -209,9 +214,12 @@ exportToCsv(){
         e.opdt = '';
     }
   })
+
   excelData = this.claimData.map(
     ({officeUuid,assignedUser,fname,lname,...newClaimData})=> newClaimData);
-    new ngxCsv(excelData, 'My Report',options);
+    this.date = new Date();
+    this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`
+    new ngxCsv(excelData, `${this.clientName}_Office_Assignemnt_${this.date}`,options);
     this.loader.exportCSVLoader=false;
     this.fetchClaimAssignments();
     

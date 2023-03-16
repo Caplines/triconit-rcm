@@ -43,9 +43,11 @@ export class UserSettingComponent implements OnInit {
         this.showActionPopup = true;
         this.user = callback.data;
         console.log(this.user)
-        this.removeRolePrefix()
         this.user.roles =  this.removeAdminAndUploadClaimsRole(this.user.roles)
         this.selectedRoles  = [...this.user.roles];
+        this.addClaimKeywordPrefix();
+        console.log(this.selectedRoles);
+
       } else {
         this.showActionPopup = false;
         this.showAlertPopup(callback);
@@ -152,8 +154,14 @@ export class UserSettingComponent implements OnInit {
           if(res.status){
             console.log(res)
             this.showAlertPopup(res)
+            this.showActionPopup=false;
+            this.user['showRole'] =false;
           }
         })
+      }else { 
+        this.alert.showAlertPopup = true;
+        this.alert.isError = true;
+        this.alert.alertMsg = res.data.msg;
       }
     })
     
@@ -179,14 +187,6 @@ export class UserSettingComponent implements OnInit {
     return this.user.roles;
   }
 
-  removeRolePrefix(){
-    for(let i =0;i<this.user.roles.length;i++){
-      let rolePrefix = this.user.roles[i].split("_")[1];
-      this.user.roles[i] = this.user.roles[i].replace(`ROLE_${rolePrefix}_`,"")
-    }
-    return this.user;
-  }
-  
   getUserRolesByEmail(){
     this.appService.fetchRolesByEmail(this.user.email,(res:any)=>{
       if(res.status){
@@ -194,6 +194,16 @@ export class UserSettingComponent implements OnInit {
         this.userRolesByEmail  = res.data;
       }
     })
+  }
+
+  addClaimKeywordPrefix(){
+    if(this.selectedRoles.includes("VIEW_ONLY") || this.selectedRoles.includes("MANAGER")){
+      let idxView = this.selectedRoles.indexOf("VIEW_ONLY");
+      idxView !== -1 ? this.selectedRoles[idxView] =  "CLIENT_"+this.selectedRoles[idxView] : '';
+      let idxManager = this.selectedRoles.indexOf("MANAGER");
+      idxManager !== -1 ?  this.selectedRoles[idxManager] = "CLIENT_"+this.selectedRoles[idxManager]: '';
+      return;
+    }
   }
 
   isAdmin(){

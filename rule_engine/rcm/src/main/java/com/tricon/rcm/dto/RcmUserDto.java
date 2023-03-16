@@ -17,4 +17,5 @@ public class RcmUserDto {
 	private String firstName;
 	private String lastName;
     private List<String>roles;
+	private String clientName;
 }

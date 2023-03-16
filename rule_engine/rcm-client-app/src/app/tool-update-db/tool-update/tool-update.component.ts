@@ -33,6 +33,7 @@ export class ToolUpdateComponent implements OnInit {
   alert:any={'showAlertPopup':false,'alertMsg':''}
   issueClientName:any='';
   ele:any={'modal':'','span':''}
+  date:any;
   
   constructor(public appService: ApplicationServiceService,private title:Title) { 
 
@@ -248,7 +249,9 @@ this.sourceType="";
       let width = pdf.internal.pageSize.getWidth();
       let height = canvas.height * width / canvas.width;
       pdf.addImage(content, "PNG", 0, 0, width, height)
-      pdf.save("output.pdf")
+      this.date = new Date();
+      this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+      pdf.save(`${localStorage.getItem("cname")}_Tool_To_Update_Database_${this.date}`);
     });
 
   }
@@ -278,7 +281,9 @@ this.sourceType="";
       return e;
     })
     excelData = excelData.map(({ officeUuid, ...newData }: any) => newData) //to remove required properties in excel
-    new ngxCsv(excelData, 'Tool to Update', options);
+    this.date = new Date();
+    this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+    new ngxCsv(excelData,`${localStorage.getItem("cname")}_Tool_To_Update_Database_${this.date}`, options);
 
   }
 

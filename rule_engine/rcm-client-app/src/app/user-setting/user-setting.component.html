@@ -52,7 +52,7 @@
                                                 <option selected="true" hidden="true">Action</option>
                                                 <option value="changePass">Change Password</option>
                                                 <option value="status" *ngIf="this.user.email !== userName">Enable / Disable Status</option>
-                                                <option value="role" *ngIf="this.user.teamId != -1 " >Enable / Disable Role</option>
+                                                <option value="role" *ngIf="this.user.teamNameId != -1 && this.user.email != userName " >Enable / Disable Role</option>
                                             </select>
                                     </div>
                                 </div>
@@ -104,7 +104,7 @@
                                                 </div>
                                             </ng-container>
                                             <div class="p-1 m-2">
-                                                <button type="button" class="btn btn-success" (click)="editRole()">Edit Role</button>
+                                                <button type="button" class="btn btn-success" (click)="editRole()">Edit Role for {{this.user.clientName}}</button>
                                             </div>
                                         </div>
                                     </div>

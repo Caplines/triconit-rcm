@@ -25,6 +25,7 @@ export class ListOfClaimsComponent implements OnInit {
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
+  date:any;
 
   constructor(private appService: ApplicationServiceService, public appConstants: AppConstants) {
     this.selectedBtype = this.appConstants.BILLING_ID;
@@ -71,9 +72,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.filteredOfficeName = data;
     this.filteredOfficeName.forEach((e: any) => {
       this.claimDetail.forEach((ele: any) => {
-        if (e.name == ele.officeName) {
           e['checked'] = !e['checked'];
-        }
       })
     });
   }
@@ -97,14 +96,16 @@ export class ListOfClaimsComponent implements OnInit {
       let width = pdf.internal.pageSize.getWidth();
       let height = canvas.height * width / canvas.width;
       pdf.addImage(content, "PNG", 0, 0, width, height)
-      pdf.save("List-of-Claims.pdf")
+      this.date = new Date();
+      this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+      pdf.save(`${localStorage.getItem("cname")}_List_of_Claims_${this.date}`);
     });
   }
 
   exportToCsv() {
     let options: any = {
       showLabels: true,
-      headers: ["Office Name", "Patient ID", 'Date of Service', "Timely Filing Limit (Days)", "Patient Name", "Insurance Name", "Claim Age", "Insurance Type", "Estimated Amount", "Action Required", "Claim Type"]
+      headers: ["Office Name", "Patient ID", 'Date of Service', "Patient Name","LastTeam","Timely Filing Limit (Days)",  "Insurance Name", "Claim Age", "Insurance Type", "Estimated Amount", "Action Required", "Claim Type"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];
@@ -126,11 +127,16 @@ export class ListOfClaimsComponent implements OnInit {
       } else {
         e = { ...e, ['claimType']: "Secondary" };
       }
+      if(e.lastTeam == null){
+        e = {...e,lastTeam:'N/A'}
+      }
       return e;
     })
 
     excelData = excelData.map(
-      ({ claimId, lastTeam, opdos, opdt, secName, secTotal, uuid, secondaryInsurance, billedAmount, statusType, ...newClaimData }: any) => newClaimData);
-    new ngxCsv(excelData, 'List-of-Claims', options);
+      ({ claimId, opdos, opdt, secName, secTotal, uuid, secondaryInsurance, billedAmount, statusType, ...newClaimData }: any) => newClaimData);
+      this.date = new Date();
+      this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+    new ngxCsv(excelData,`${localStorage.getItem("cname")}_List_of_Claims_${this.date}`, options);
   }
 }

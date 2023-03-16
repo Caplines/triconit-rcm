@@ -20,6 +20,7 @@ export class FetchClaimsComponent implements OnInit {
   isSorted:boolean=false;
   loader:any={'billingLoader':false,'listClaimLoader':false};
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0}
+  date:any;
 
     constructor(private appService: ApplicationServiceService,public appConstants: AppConstants) {
     this.selectedBtype=this.appConstants.BILLING_ID;
@@ -79,7 +80,9 @@ export class FetchClaimsComponent implements OnInit {
       let width = pdf.internal.pageSize.getWidth();
       let height = canvas.height * width / canvas.width;
       pdf.addImage(content, "PNG", 0, 0, width, height)
-      pdf.save("Fetch-Claims.pdf")
+      this.date = new Date();
+      this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+      pdf.save(`${localStorage.getItem("cname")}_Fetch_Claims_${this.date}`)
     });
   }
 
@@ -107,7 +110,9 @@ export class FetchClaimsComponent implements OnInit {
     })
 
     excelData = excelData.map(({officeUuid,...newData}:any)=>newData)
-    new ngxCsv(excelData, 'Fetch-Claims', options);
+    this.date = new Date();
+    this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+    new ngxCsv(excelData,`${localStorage.getItem("cname")}_Fetch_Claims_${this.date}`, options);
   }
 
 }

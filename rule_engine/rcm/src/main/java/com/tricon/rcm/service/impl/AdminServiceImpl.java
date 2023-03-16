@@ -279,6 +279,7 @@ public class AdminServiceImpl {
 			RcmUserDto data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
+			data.setClientName(user.getCompany().getName());
 			data.setTeamNameId(utilService.checkTeamNullOrNot(user.getTeam()));
 			Object [] rolesData=user.getRoles().stream().map(x->x.getRole().split("_", 4)).toArray();
 			List<String>roles=new ArrayList<>();
