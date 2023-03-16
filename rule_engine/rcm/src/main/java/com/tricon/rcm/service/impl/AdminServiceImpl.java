@@ -280,7 +280,13 @@ public class AdminServiceImpl {
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
 			data.setTeamNameId(utilService.checkTeamNullOrNot(user.getTeam()));
-			data.setRoles(user.getRoles().stream().map(x->x.getRole()).collect(Collectors.toList()));;
+			Object [] rolesData=user.getRoles().stream().map(x->x.getRole().split("_", 4)).toArray();
+			List<String>roles=new ArrayList<>();
+			for (Object o : rolesData) {
+				String s[] = (String[])o;
+				roles.add(s[s.length-1]);
+			}
+			data.setRoles(roles);		
 			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_EXIST, data);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
