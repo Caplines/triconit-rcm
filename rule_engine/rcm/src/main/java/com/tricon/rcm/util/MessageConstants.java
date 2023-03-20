@@ -69,5 +69,7 @@ public class MessageConstants {
 	public static final String ROLE_CAN_NOT_BE_CHANGE = "Role can't be change because claim is assign to this user";
 	
 	public static final String ROLE_NOT_MATCH = "Given role does't match";
+	
+	public static final String TL_ASSO_REQUIRED = "TeamLead or Associate is required for this role";
 
 }

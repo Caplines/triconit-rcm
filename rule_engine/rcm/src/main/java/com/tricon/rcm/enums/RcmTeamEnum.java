@@ -1,8 +1,11 @@
 package com.tricon.rcm.enums;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import com.tricon.rcm.dto.RcmRolesResponseDto;
 import com.tricon.rcm.util.Constants;
 
 public enum RcmTeamEnum {
@@ -127,4 +130,38 @@ public enum RcmTeamEnum {
 		}
 		return null;
 	}
+	
+	public static List<RcmRolesResponseDto> getRolesByTeamId(int teamId) {
+		RcmRoleEnum rolesEnum[] = null;
+		List<RcmRolesResponseDto> roles = new ArrayList<>();
+		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() == teamId).findFirst();
+		RcmRolesResponseDto rolesResponseDto = null;
+		if (teamEnum.isPresent()) {
+			rolesEnum = teamEnum.get().getRole();
+			int id = teamEnum.get().getId();
+			for (RcmRoleEnum data : rolesEnum) {
+				rolesResponseDto = new RcmRolesResponseDto();
+				rolesResponseDto.setRoleId(data.getName());
+				rolesResponseDto.setRoleName(data.getFullName());
+				rolesResponseDto.setFullRoleName(generateRole(id, data.getName()));
+				roles.add(rolesResponseDto);
+			}
+			return roles;
+		}
+		if (teamId == -1) {
+			RcmRolesResponseDto rolesResponseForAdmin = new RcmRolesResponseDto();
+			rolesResponseForAdmin.setRoleId(RcmRoleEnum.ADMIN.getName());
+			rolesResponseForAdmin.setRoleName(RcmRoleEnum.ADMIN.getFullName());
+			rolesResponseForAdmin.setFullRoleName(generateRole(0, RcmRoleEnum.ADMIN.getName()));
+			roles.add(rolesResponseForAdmin);
+			RcmRolesResponseDto rolesResponseForUploadClaims = new RcmRolesResponseDto();
+			rolesResponseForUploadClaims.setRoleId(RcmRoleEnum.UPLOAD_CLAIMS.getName());
+			rolesResponseForUploadClaims.setRoleName(RcmRoleEnum.UPLOAD_CLAIMS.getFullName());
+			rolesResponseForUploadClaims.setFullRoleName(generateRole(0, RcmRoleEnum.UPLOAD_CLAIMS.getName()));
+			roles.add(rolesResponseForUploadClaims);
+			return roles;
+		}
+		return null;
+	}
+		
 }

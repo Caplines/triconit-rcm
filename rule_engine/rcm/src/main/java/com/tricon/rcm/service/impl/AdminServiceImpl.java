@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
+import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
@@ -49,6 +51,7 @@ import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmOfficeResponse;
+import com.tricon.rcm.dto.RcmRolesResponseDto;
 import com.tricon.rcm.dto.RcmUserDto;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserStatusDto;
@@ -281,6 +284,28 @@ public class AdminServiceImpl {
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
 			data.setClientName(user.getCompany().getName());
 			data.setTeamNameId(utilService.checkTeamNullOrNot(user.getTeam()));
+//			List<String> rolesData = user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());
+//			List<RcmRolesResponseDto> rolesByTeamEnum = RcmTeamEnum
+//					.getRolesByTeamId(utilService.checkTeamNullOrNot(user.getTeam()));
+//			List<RcmRolesResponseDto> rolesResponse = new ArrayList<>();
+//			for (String roles : rolesData) {
+//				RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
+//				for (RcmRolesResponseDto respDto : rolesByTeamEnum) {
+//					if (respDto.getFullRoleName().equals(roles)) {
+//						responseDto.setRoleId(respDto.getRoleId());
+//						responseDto.setRoleName(respDto.getRoleName());
+//						responseDto.setFullRoleName(respDto.getFullRoleName());
+//					}
+//					// if UPLOAD_CLAIMS Roles Not match with teamId then we will add explicity
+//					if (roles.equals(Constants.ROLE_PREFIX + Constants.UPLOAD_CLAIMS)) {
+//						responseDto.setRoleId(RcmRoleEnum.UPLOAD_CLAIMS.getName());
+//						responseDto.setRoleName(RcmRoleEnum.UPLOAD_CLAIMS.getFullName());
+//						responseDto.setFullRoleName(roles);
+//					}
+//				}
+//				rolesResponse.add(responseDto);
+//			}
+//			data.setRoles(rolesResponse);
 			Object [] rolesData=user.getRoles().stream().map(x->x.getRole().split("_", 4)).toArray();
 			List<String>roles=new ArrayList<>();
 			for (Object o : rolesData) {
@@ -609,6 +634,11 @@ public class AdminServiceImpl {
 				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ADMIN_NOT_ASSOCIATED_WITH_ROLES, null);
 			}
 			
+			//UPLOAD Claim Role can associate with other roles but TL or ASSO is required for this role
+			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getRoles().size()==1)) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TL_ASSO_REQUIRED, null);
+			}
+			
 			List<RcmUserRole> existingRoles = existingUser.getRoles().stream().collect(Collectors.toList());
 			if (existingRoles != null) {
 				// remove all existingRoles include ADMIN
@@ -630,7 +660,11 @@ public class AdminServiceImpl {
 				pk = new RcmUserRolePk();
 				pk.setUuid(existingUser.getUuid());
 				rcmRole.setId(pk);
-				rcmRole.setRole(RcmTeamEnum.generateRole(teamId, role));
+				if (role.equals(Constants.UPLOAD_CLAIMS)) {
+					rcmRole.setRole(RcmTeamEnum.generateRole(0, role)); 
+				} else {
+					rcmRole.setRole(RcmTeamEnum.generateRole(teamId, role));
+				}
 				listOfRoles.add(rcmRole);
 			}
 			userRole.saveAll(listOfRoles);
