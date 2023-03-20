@@ -362,6 +362,18 @@ public class RcmController {
 	}
 	
 	
+	
+	@ApiOperation(value = "Api For Assigning Un Assigned Claim to Users", response = String.class)
+	@GetMapping("/api/assign-unsassigned_claims")
+	@PreAuthorize("hasRole('BILLING_TL')")
+	public ResponseEntity<Object> assignUnsAsignedClaims() {
+		Object[] obj = checkForSimplePointUser();
+		JwtUser jwtUser = (JwtUser) obj[0];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.assignedUnsAssignedClaims(jwtUser)));
+	}
+	
 
 	@ApiOperation(value = "Api For Running Automated  rules on Claims", response = String.class)
 	@GetMapping("/api/run-auto-rules/{claimuuid}/{reRun}")

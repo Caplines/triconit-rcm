@@ -18,5 +18,5 @@ public class ClaimEditDto {
 	boolean assignToTL;
 	boolean assignToOtherTeam;
 	String assignTouuid;
-	String assignToTeam;
+	int assignToTeam;
 }

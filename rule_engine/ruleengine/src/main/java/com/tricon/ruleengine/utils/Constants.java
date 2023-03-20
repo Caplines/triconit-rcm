@@ -130,6 +130,7 @@ public class Constants {
 	public static final String RULE_ID_86="Oral hygiene with Prophy and Fluoride";
 	public static final String RULE_ID_87="Provider Certification";
 	public static final String RULE_ID_88="D0140 with Treatment";
+	public static final String RULE_ID_89="D0140 with D0220";
 	
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
