@@ -155,14 +155,12 @@ public class RuleBookServiceImpl {
 				errorMessage.add("IV Not Found");
 				pass= false;
 			} else {
-				ivf.getBasicInfo2();
 				if (!rcmClaim.getPatientName().trim().equalsIgnoreCase(ivf.getBasicInfo2())) {
 					if (errorMessage==null) errorMessage= new ArrayList<>();
 					errorMessage.add("Claim Patient name: "+rcmClaim.getPatientName() +"; IV Patient name: "+ivf.getBasicInfo2());
 					pass= false;
 					//Fail
 				}
-				System.out.println(ivf.getBasicInfo6());
 				if (!Constants.SDF_ES_DATE.format(rcmClaim.getPatientBirthDate()).equals(ivf.getBasicInfo6())) {
 					if (errorMessage==null) errorMessage= new ArrayList<>();
 					errorMessage.add("Claim Patient DOB: "+Constants.SDF_ES_DATE.format(rcmClaim.getPatientBirthDate()) +"; Claim Patient DOB: "+ivf.getBasicInfo6());
@@ -195,6 +193,12 @@ public class RuleBookServiceImpl {
 							"", ""));
 				}
 				
+			}
+			
+			if (!pass) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule303.error.message1", new Object[] {}, locale), Constants.FAIL, "",
+						"", ""));
 			}
 
 		} catch (Exception n) {
