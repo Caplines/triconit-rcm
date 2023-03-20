@@ -95,7 +95,7 @@
                                             <ng-container *ngFor="let role of userRolesByEmail">
                                                 <div class="form-check-inline">
                                                     <div class="form-check  form-check-inline custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox" [id]="role.roleId" [checked]="selectedRoles.includes(role.roleId)"
+                                                        <input class="custom-control-input" type="checkbox" [id]="role.roleId" [checked]="selectRole(role)"
                                                         (change)="onCheckboxChange($event, role.roleId)">
                                                         <label class="custom-control-label" [for]="role.roleId">
                                                             {{role.roleName}}

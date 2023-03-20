@@ -143,6 +143,11 @@ export class UserSettingComponent implements OnInit {
   }
 
   editRole(){
+    if (this.selectedRoles.includes("CLAIMS")){
+      const index = this.selectedRoles.indexOf("CLAIMS");
+      this.selectedRoles.splice(index, 1);
+      this.selectedRoles.push("UPLOAD_CLAIMS");
+    }
     let params:object= {
       'uuid':this.user.uuid,
       'roles':this.selectedRoles
@@ -181,7 +186,11 @@ export class UserSettingComponent implements OnInit {
     if(idxAdmin != -1){
       this.user.roles.splice(idxAdmin,1)
     }
-    if(idxClaims != -1){
+    if(idxClaims != -1 && idxAdmin != -1){
+      this.user.roles.splice(idxClaims,1)
+
+    }
+    if (role.length==1 && idxClaims != -1){
       this.user.roles.splice(idxClaims,1)
     }
     return this.user.roles;
@@ -208,5 +217,16 @@ export class UserSettingComponent implements OnInit {
 
   isAdmin(){
    return Utils.checkAdmin();
+  }
+
+  selectRole(role:any):boolean{
+    console.log('Roles',role);
+    console.log('SelectedRoles',this.selectedRoles);
+    if  (role.roleId === 'UPLOAD_CLAIMS'){
+      let r =role;
+      r.roleId= "CLAIMS";
+      return   r.roleId.includes(this.selectedRoles);
+    }
+    return this.selectedRoles.includes(role.roleId)  ;
   }
 }
