@@ -393,7 +393,9 @@
                                         <tr>
                                             <td>01</td>
                                             <td>Date & Time of Claim Processing in Eaglesoft</td>
-                                            <td>{{claimServiceLevelModel?.esDate}} & {{submissionDto?.esTime}}</td>
+                                            <td>
+                                                <input class="form-control" id="" rows="1" id="SUB_DET_DT" placeholder="yyyy-mm-dd" (click)="removeErrorDisplayKeyById('SUB_DET_DT')" [disabled]="makeReadOnly()"  [(ngModel)]='submissionDto.esDate' type="date"/>
+                                              & <input class="form-control" id="" rows="1" id="SUB_DET_TI" (click)="removeErrorDisplayKeyById('SUB_DET_TI')" [disabled]="makeReadOnly()" [(ngModel)]='submissionDto.esTime'/></td>
                                         </tr>
                                         <tr>
                                             <td>02</td>

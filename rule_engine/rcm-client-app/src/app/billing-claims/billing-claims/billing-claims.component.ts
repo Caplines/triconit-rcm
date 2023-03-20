@@ -177,12 +177,11 @@ export class BillingClaimsComponent implements OnInit {
     else if (type==='assign'){
       ths.claimEditModel.assignTouuid="";
       ths.claimEditModel.assignToTeam=-1;
-      ths.openAssignModal();
+     
       ths.assignModel.toOtherTeam=true;
-      console.log(ths.claimEditModel);
       let valid= ths.validateData();
       if (valid) {
-
+        ths.openAssignModal();
       
         //Open Modal
         /*
@@ -249,6 +248,8 @@ export class BillingClaimsComponent implements OnInit {
         ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
         ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
         ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+        ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
+        ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
         valid=false;
    }else{
        if (ths.submissionDto.channel===undefined || ths.submissionDto.channel===null)  {
@@ -275,6 +276,16 @@ export class BillingClaimsComponent implements OnInit {
        let SUB_DET_PRENO:any = document.getElementById("SUB_DET_PRENO");
        if (SUB_DET_PRENO.value.trim()==='')   {
         ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+        valid=false;
+       }
+       let SUB_DET_DT:any = document.getElementById("SUB_DET_DT");
+       if (SUB_DET_DT.value.trim()==='')   {
+        ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
+        valid=false;
+       }
+       let SUB_DET_TI:any = document.getElementById("SUB_DET_TI");
+       if (SUB_DET_TI.value.trim()==='')   {
+        ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
         valid=false;
        }
        
@@ -413,9 +424,9 @@ export class BillingClaimsComponent implements OnInit {
 
   getClaimRuleData(){
     let ths=this;
-    ths.claimARulesPullDataModel.claimId="15927";//ths.claimRcm.claimId.split("_")[0];//"15927";///
-    ths.claimARulesPullDataModel.officeId="cc450da8-aaae-11e8-8544-8c16451459cd";//ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
-    ths.claimARulesPullDataModel.patientId="6602";//ths.claimRcm.patientId;//"6602";//
+    ths.claimARulesPullDataModel.claimId=ths.claimRcm.claimId.split("_")[0];//"15927";///
+    ths.claimARulesPullDataModel.officeId=ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
+    ths.claimARulesPullDataModel.patientId=ths.claimRcm.patientId;//"6602";//
 
     ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel,(res:any)=>{
         if (res.status=== 200){
@@ -572,12 +583,12 @@ export class BillingClaimsComponent implements OnInit {
       ths.closeModal();
       console.log(ths.claimEditModel);
       
-      /*ths.claimService.saveClaimData(ths.claimEditModel,(callback: any)=>{
+      ths.claimService.saveClaimData(ths.claimEditModel,(callback: any)=>{
         ths.inSave=false;
         ths.showAlertPopup(callback);
         ths.claimRcm.allowEdit=false;
         ths.showAlertPopup(callback);
-      });*/
+      });
     }
     
 
