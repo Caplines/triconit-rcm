@@ -2,35 +2,31 @@
 
     <div class="page-header">
         <div class="container">
-            <a class="logo" href="javascript:void(0);" routerLink="/"><img src="../assets/img/capline-logo.png" /></a>
+            <a class="logo" href="javascript:void(0);" routerLink="/"><img src="../assets/img/RCM-logo.png" /></a>
 
         </div>
     </div>
     <div class="container-fluid inner-page-bg">
         <div class="info-box">
-            <div>
-                <h2>How it works?</h2>
-                <ul>
-                    <li><em>1</em><strong>Claims Preparation</strong>Lorem ipsum dolor elit, sed do eiusmod tempor
-                        incididunt </li>
-                    <li><em>2</em><strong>Claims Submission</strong>Lorem ipsum dolor sit elit, sed do eiusmod tempor
-                        incididunt </li>
-                    <li><em>3</em><strong>Claims Management</strong>consectetur adipiscing elit, sed do eiusmod tempor
-                        incididunt </li>
-                    <li><em>4</em><strong>Reporting & Analytics</strong>Lorem ipsum elit, sed do eiusmod tempor
-                        incididunt </li>
-                </ul>
+            <div class="info-text-capline">
+                Experience the
+                <span>Capline</span>
+                Difference!
+            </div>
+            <div class="logos">
+                <img src="../assets/img/google-rating.png"  class="googleRating"/><br />
+                <img src="../assets/img/inc-logo.png" class="incLogo" />
+                <img src="../assets/img/BBB-Logo.png" class="BBBLogo" />
             </div>
         </div>
         <ng-container *ngIf="!forgotPassObj.showForgotPasswordBox && !forgotPassObj.showResetEmailMsg">
         <div class="inner-container">
-            <div class="rcm-logo">RCM <span>Login</span></div>
-            <h2 class="page-heading">Hello ! Welcome back</h2>
+            <div class="rcm-logo">RCM Login</div>
 
             <form class="login-box" name="form" *ngIf="!isLoggedIn" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
                 <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="user">Email</label>
+                    <div class="col-md-12 mb-3">
+                        <label for="user">Username</label>
                         <input type="text" id="" class="form-control form-control-sm"
                             placeholder="Enter your Email address" name="username" [(ngModel)]="form.username" required
                             #username="ngModel" autofocus="">
@@ -67,8 +63,8 @@
                 <a href="javascript:void(0);" (click)="showForgotPassBox()">Forgot password?</a>
             </div>
                 <div class="row">
-                    <div class="col-md-4 mt-2 mb-3">
-                        <button class="btn btn-lg btn-bca mt-2" type="submit" [disabled]="!isRecaptchaSolved && username.errors && password.errors">Login</button>
+                    <div class="col-md-12 mt-2 mb-3">
+                        <button class="btn btn-lg btn-bca mt-2" type="submit" [disabled]="!isRecaptchaSolved && username.errors && password.errors">Log in</button>
                     </div>
                 </div>
                 <div class="form-group">

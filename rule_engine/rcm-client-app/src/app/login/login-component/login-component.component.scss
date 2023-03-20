@@ -1,17 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
 body {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Montserrat", sans-serif!important;
     font-size: 16px;
-
+}
+.login-bg {
+    background: url(../../../assets/img/RCM-Login.jpg) no-repeat;
+    background-size: 100%;
+    background-position:0px 30px;
 }
 
-
 .inner-container {
-    padding-left: 25px;
-    padding-bottom: 20px;
     position: relative;
-    padding-top: 50px;
     width: 33%;
-    padding-right: 25px;
+    padding:50px 35px 20px;
+    background: #fff;
+    margin-top: 5%;
+    border-radius: 20px;
+    margin-right: 5%;
+    font-family: "Montserrat", sans-serif;
+    box-shadow: 5px 5px 5px rgb(0 0 0 / 0.2);
 }
 
 
@@ -19,6 +26,7 @@ body {
     outline: none;
     box-shadow: none !important;
     border-color: #ddd;
+    font-family: "Montserrat", sans-serif;
 }
 
 
@@ -26,21 +34,38 @@ label {
     display: inline-block;
     margin-bottom: .5rem;
 }
-
-
+.logos {
+    text-align: right;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+.googleRating {
+    width:100px;
+}
+.incLogo {
+    width: 58px;
+    margin-right: 10px;
+    margin-bottom: 11px;
+}
+.BBBLogo {
+    width: 100px;
+}
 .page-header {
-    background: #1c212d;
-    height: 70px;
-    padding-top: 12px;
+    background: #fff;
+    height: 100px;
     z-index: 9;
     position: relative;
+    display: flex;
 }
 
-    .page-header .container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+.page-header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: inherit;
+    padding: 0 10%;
+}
 
 .inner-page-bg {
     min-height: 400px;
@@ -62,31 +87,20 @@ label {
     }
 
 .login-box {
-    margin-top: 15px;
-    padding-bottom: 25px;
-    width: 380px;
-    margin-left: auto;
-    margin-right: auto;
+    padding: 0px 25px;
 }
 
-    .login-box label {
-        padding-left: 2px;
-        font-size: 14px;
-        color: #1c212d;
-        margin-bottom: 5px;
-        font-weight: 500;
-        margin-left: 2px;
-    }
+.login-box label {
+    font-size: 16px;
+    color: #606161;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
 
 
 
 .form-control-sm {
-    height: calc(1.5em + 0.8rem + 5px);
     padding: 0.25rem 0.5rem;
-    font-size: .875rem;
-    line-height: 1.5;
-    border-radius: 0.2rem;
-    border: 1px solid rgb(173, 182, 190);
     width: 100%;
 }
 
@@ -99,29 +113,34 @@ label {
 
 
 .form-control {
-    height: 50px;
-    width: 380px;
-    border-radius: 5px;
-    box-shadow: 0px 0px 5px #ede6e6;
     padding-left: 38px;
-    line-height: 50px;
+    border: 0px;
+    border-radius: 0px;
+    border-bottom: 2px solid #53b4e3;
+    margin-bottom: 25px;
+    font-family: "Montserrat", sans-serif;
+    padding-bottom: 0px;
 }
 
 .btn-bca {
-    background: #1c212d;
-    height: 45px;
-    width: 380px;
-    font-size: 14px !important;
-    font-weight: 600;
+    background: #36a7de;
+    height: 55px;
+    width: 100%;
+    font-size: 25px !important;
+    font-weight: 700;
     color: #fff;
     justify-content: center;
+    border-radius: 10px;
+    text-transform: uppercase;
+    font-family: "Montserrat", sans-serif;
+    margin: 0px !important;
 }
 
-    .btn-bca:hover {
-        background: #000 !important;
-        color: #fff;
-        text-decoration: none;
-    }
+.btn-bca:hover {
+    background: #36a7de;
+    color: #fff;
+    text-decoration: none;
+}
 
 input::placeholder {
     color: #bec1ce;
@@ -132,18 +151,21 @@ input::placeholder {
 
 .focus-input::after {
     content: "";
-    background: url(../../../assets/img/email_icon.png) no-repeat;
+    background: url(../../../assets/img/loginUser.png) no-repeat;
     position: absolute;
-    top: 29px;
-    left: 5px;
+    top: 26px;
+    left: -3px;
     padding-left: 60px;
     background-position: center center;
     height: 50px;
+    background-size: 24px;
 }
 
 .focus-input.password::after {
-    background: url(../../../assets/img/password_icon.png) no-repeat;
+    background: url(../../../assets/img/loginpassword.png) no-repeat;
     background-position: center center;
+    background-size: 22px;
+    top: 24px;
 }
 
 
@@ -152,62 +174,52 @@ input::placeholder {
     padding-left: 26px;
     display: flex;
     justify-content: space-between;
-    width: 380px;
 }
 
 
 
-    .remberMe a {
-        margin-right: 10px;
-        color: #1676dd;
-        font-weight: 500;
-        font-size: 13px;
-    }
+.remberMe a {
+    color: #606161;
+    font-weight: 500;
+    font-size: 14px;
+}
 
     .remberMe .custom-checkbox {
         line-height: 20px;
     }
 
 .info-box {
-    width: 67%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
-    color: #000;
-    margin-left: -15px;
-    position: relative;
-    border-top: 1px solid transparent;
-    border-image: linear-gradient(to right, #a0c6dd, white);
-    border-image-slice: 1;
+    width: 58%;
+    text-align: right;
+    margin-top: 5%;
+    padding-top: 50px;
+    font-size: 38px;
+    font-family: "Montserrat", sans-serif;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 800;
+    position:relative;
 }
+.info-text-capline {
+    text-align: left;
+    float: right;
+    text-shadow: 0px 3px 10px #0e0e0e;
+    line-height: normal;
 
-    .info-box::before {
-        content: "";
-        background-image: url(../../../assets/img/10912.jpg);
-        background-size: cover;
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        bottom: 0px;
-        left: 0px;
-        opacity: 0.3;
-        transform: rotate(180deg);
+    span {
+        font-size: 56px;
+        line-height: normal;
+        margin-top: 5px;
+        display: block;
     }
-
+}
 .rcm-logo {
-    font-size: 25px;
-    width: 160px;
-    display: flex;
-    margin: 0 auto 20px;
-    background: #fff;
-    justify-content: center;
-    align-items: center;
-    height: 60px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 6px #e7e7e7;
+    font-size: 32px;
     font-weight: 700;
     color: #1c212d;
+    font-family: 'Montserrat', sans-serif;
+    padding-left: 25px;
+    margin-bottom: 35px;
 }
 
     .rcm-logo span {
@@ -362,3 +374,18 @@ input::placeholder {
         top: 33px;
     
     }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-box-shadow: none;
+    transition: background-color 5000s ease-in-out 0s;
+    border-bottom: 2px solid #53b4e3;
+    font-family: "Montserrat", sans-serif;
+}
