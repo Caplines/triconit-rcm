@@ -12992,6 +12992,118 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 		}
 		return dList;
 	}
+	
+	// D0140 with D0220
+	public List<TPValidationResponseDto> Rule89(List<Object> tpList, MessageSource messageSource, Rules rule,
+			BufferedWriter bw) {
+		
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes=new TreeSet<>();
+		Set<String> surfaces=new TreeSet<>();
+    	Set<String> teethC=new TreeSet<>();
+    	//Set<String> issueCodes=new TreeSet<>();
+    	//boolean pass=true;
+    	boolean presentD0140=false;
+    	boolean presentD0220=false;
+    	List<String> toothD0140=new ArrayList<>();
+    	List<String> toothD0220=new ArrayList<>();
+    	
+    	//String amount="";
+    	RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_89,
+				Constants.rule_log_debug, bw);
+        try {
+		/*String ER_MSG=Constants.TP;
+		
+		if (userType==Constants.userType_CL) {
+			ER_MSG=Constants.CL;
+		}*/
+        	//IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		   for (Object obj : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) obj;
+				String code=tp.getServiceCode();
+				String estIns =tp.getEstInsurance();
+				surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+				teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+				fcodes.add(code);
+				
+				if(estIns.equals("") || estIns.equals("0") || estIns.equals("0.00")
+						||	estIns.equals("0.0")) {
+					RuleEngineLogger.generateLogs(clazz, code + "- Fees - " + estIns,
+							Constants.rule_log_debug, bw);
+					continue;//need to ask.
+				}
+				if (code.equalsIgnoreCase("D0140")) {
+					presentD0140=true;
+					if (!tp.getTooth().equals(""))toothD0140.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+				}
+				if (code.equalsIgnoreCase("D0220")) {
+					presentD0220=true;
+					if (!tp.getTooth().equals(""))toothD0220.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+				}
+				
+				
+			 }
+		    
+			if (presentD0140 && presentD0220) {
+				List<String> differences1 = toothD0140.stream()
+		                .filter(element -> !toothD0220.contains(element))
+		                .collect(Collectors.toList());
+		    	
+		    	List<String> differences2 = toothD0220.stream()
+		                .filter(element -> !toothD0140.contains(element))
+		                .collect(Collectors.toList());
+		    	
+		    	differences1.addAll(differences2);
+				if (differences1.size()>0) {
+					
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule89.error.message", new Object[] { String.join(",", differences1) }, locale),
+							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule89.pass.message", new Object[] {  }, locale),
+							Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+				}
+			
+			}else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule89.pass.message", new Object[] {  }, locale),
+						Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+			
+			}
+		
+		
+		
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+			return dList;
+		}
+		return dList;
+	}
+	
+	public static void main(String ss []) {
+		
+		List<String> toothD0140=new ArrayList<>();
+    	List<String> toothD0220=new ArrayList<>();
+    	toothD0140.add("S");
+    	//toothD0220.add("S");
+    	//toothD0220.add("D");
+    	List<String> differences1 = toothD0140.stream()
+                .filter(element -> !toothD0220.contains(element))
+                .collect(Collectors.toList());
+    	
+    	List<String> differences2 = toothD0220.stream()
+                .filter(element -> !toothD0140.contains(element))
+                .collect(Collectors.toList());
+    	
+    	differences1.addAll(differences2);
+    	System.out.println(String.join(",", differences1));
+    	
+    	
+	}
 	//Insurance and Address
     /**
      * 

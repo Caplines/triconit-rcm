@@ -24,6 +24,8 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	
 	RcmClaimAssignment findByClaimsClaimUuidAndActive(String claimUUid,boolean active);
 	
+	//RcmClaimAssignment findByClaimsClaimUuidAndActive(String claimUUid);
+	
 	@Query(value ="select count(assigned_to) from rcm_claim_assignment where assigned_to=:assignTo AND active is true",nativeQuery=true)
 	int findExistingUserAssignClaimCountsAndActiveStatus(@Param("assignTo")String assignTo);
 	
