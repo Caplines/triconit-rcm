@@ -177,9 +177,8 @@ export class BillingClaimsComponent implements OnInit {
     else if (type==='assign'){
       ths.claimEditModel.assignTouuid="";
       ths.claimEditModel.assignToTeam=-1;
-      
       ths.openAssignModal();
-
+      ths.assignModel.toOtherTeam=true;
       console.log(ths.claimEditModel);
       let valid= ths.validateData();
       if (valid) {
@@ -414,12 +413,13 @@ export class BillingClaimsComponent implements OnInit {
 
   getClaimRuleData(){
     let ths=this;
-    ths.claimARulesPullDataModel.claimId=ths.claimRcm.claimId.split("_")[0];//"15927";///
-    ths.claimARulesPullDataModel.officeId=ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
-    ths.claimARulesPullDataModel.patientId=ths.claimRcm.patientId;//"6602";//
+    ths.claimARulesPullDataModel.claimId="15927";//ths.claimRcm.claimId.split("_")[0];//"15927";///
+    ths.claimARulesPullDataModel.officeId="cc450da8-aaae-11e8-8544-8c16451459cd";//ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
+    ths.claimARulesPullDataModel.patientId="6602";//ths.claimRcm.patientId;//"6602";//
 
     ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel,(res:any)=>{
         if (res.status=== 200){
+          ths.getRulesClaimdata();
             ths.ruleEngineReport=res.data;
             if (ths.ruleEngineReport.length>0)  
             ths.generateRuleEngineReportHeading(ths.ruleEngineReport[0]);
@@ -561,11 +561,23 @@ export class BillingClaimsComponent implements OnInit {
   assignToOtherTeam(){
     let ths= this;
     ths.claimEditModel.assignToOtherTeam=true;
+    ths.claimEditModel.assignToTL=false;
+    ths.claimEditModel.assignTouuid='';
     ths.removeErrorDisplay(document.getElementById("selectTeam"));
     if  (ths.claimEditModel.assignToTeam==-1){
       ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
     }else{
       //assign
+      ths.inSave=true;
+      ths.closeModal();
+      console.log(ths.claimEditModel);
+      
+      /*ths.claimService.saveClaimData(ths.claimEditModel,(callback: any)=>{
+        ths.inSave=false;
+        ths.showAlertPopup(callback);
+        ths.claimRcm.allowEdit=false;
+        ths.showAlertPopup(callback);
+      });*/
     }
     
 
@@ -575,11 +587,18 @@ export class BillingClaimsComponent implements OnInit {
   assignToLead(){
     let ths= this;
     this.claimEditModel.assignToTL=true;
+    ths.claimEditModel.assignToOtherTeam=false;
+    ths.claimEditModel.assignToTeam=0;
+    
+    
     ths.removeErrorDisplay(document.getElementById("selectLeadName"));
     if  (ths.claimEditModel.assignTouuid==""){
       ths.addErrorDisplay(document.getElementById("selectLeadName"));//
     }else{
       //assign
+      ths.inSave=true;
+      ths.closeModal();
+      console.log(ths.claimEditModel);
     }
   }
 }
