@@ -14,7 +14,7 @@
 .table thead th:first-child{
     //width: 405px;
 }
-    .table thead th:nth-child(2){
+    /*.table thead th:nth-child(2){
         width: 150px;
     }
     .table thead th:nth-child(3){
@@ -22,7 +22,7 @@
     }
     .table thead th:nth-child(4){
         width: 150px;
-    }
+    }*/
     .table thead th:nth-child(5){
       //  width: 720px;
     }
@@ -112,3 +112,21 @@
       .close-modal span{
         cursor: pointer;
       }
+.multi-input-row {
+    display: flex;
+    align-items: center;
+    .and-space {
+        font-weight:bold;
+        padding:0 5px;
+    }
+}
+
+.detail-box .table-responsive > .table td .btn-group {
+    border-bottom:0px;
+}
+.main-container .table .btn-group-toggle label.btn-light {
+    padding: 6px 0px 6px 25px;
+}
+.custom-row .NA {
+    font-size:13px;
+}

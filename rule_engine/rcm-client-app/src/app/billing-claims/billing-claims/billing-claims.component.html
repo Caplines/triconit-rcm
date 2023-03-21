@@ -210,6 +210,7 @@
                                     </thead>
                                     <tbody>
                                        Not Found.
+                                        </tbody>
                                 </table>
                             </div>
                         </div>
@@ -394,8 +395,11 @@
                                             <td>01</td>
                                             <td>Date & Time of Claim Processing in Eaglesoft</td>
                                             <td>
-                                                <input class="form-control" id="" rows="1" id="SUB_DET_DT" placeholder="yyyy-mm-dd" (click)="removeErrorDisplayKeyById('SUB_DET_DT')" [disabled]="makeReadOnly()"  [(ngModel)]='submissionDto.esDate' type="date"/>
-                                              & <input class="form-control" id="" rows="1" id="SUB_DET_TI" (click)="removeErrorDisplayKeyById('SUB_DET_TI')" [disabled]="makeReadOnly()" [(ngModel)]='submissionDto.esTime'/></td>
+                                                <div class="multi-input-row">
+                                                    <input class="form-control" id="" rows="1" id="SUB_DET_DT" placeholder="yyyy-mm-dd" (click)="removeErrorDisplayKeyById('SUB_DET_DT')" [disabled]="makeReadOnly()" [(ngModel)]='submissionDto.esDate' type="date" />
+                                                    <span class="and-space">&</span> <input class="form-control" id="" rows="1" id="SUB_DET_TI" (click)="removeErrorDisplayKeyById('SUB_DET_TI')" [disabled]="makeReadOnly()" [(ngModel)]='submissionDto.esTime' />
+                                                </div>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>02</td>
@@ -421,7 +425,7 @@
                                             <td>03</td>
                                             <td>Attachment sent with claim </td>
                                             <td>
-                                                <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="SUB_DET_ATT">
+                                                <div data-toggle="buttons" class="btn-group btn-group-toggle"id="SUB_DET_ATT">
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.attachmentSend}"> 
                                                     <input type="radio" name="atch"  value="" (click)="submissionDto.attachmentSend=true;removeErrorDisplayKeyById('SUB_DET_ATT')" [disabled]="makeReadOnly()"> Yes
                                                 </label>
@@ -436,7 +440,7 @@
                                             <td>04</td>
                                             <td>Preauth </td>
                                             <td>
-                                                <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="SUB_DET_PRE">
+                                                <div data-toggle="buttons" class="btn-group btn-group-toggle" id="SUB_DET_PRE">
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.preauth}"> 
                                                     <input type="radio" name="atch"  value="" (click)="submissionDto.preauth=true;removeErrorDisplayKeyById('SUB_DET_PRE')" [disabled]="makeReadOnly()" [disabled]="makeReadOnly()"> Yes
                                                 </label>
@@ -451,7 +455,7 @@
                                             <td>05</td>
                                             <td>Refferal Letter </td>
                                             <td>
-                                                <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="SUB_DET_REF">
+                                                <div data-toggle="buttons" class="btn-group btn-group-toggle" id="SUB_DET_REF">
                                                 <label class="btn btn-light" [ngClass]="{active:submissionDto.refferalLetter}"> 
                                                     <input type="radio" name="atch"  value="" (click)="submissionDto.refferalLetter=true;removeErrorDisplayKeyById('SUB_DET_REF')" [disabled]="makeReadOnly()"> Yes
                                                 </label>
