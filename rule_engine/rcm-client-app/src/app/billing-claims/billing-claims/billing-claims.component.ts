@@ -237,7 +237,7 @@ export class BillingClaimsComponent implements OnInit {
         }
         if (x.messageType===0) {//mark the Yes or No
             ths.addErrorDisplay(document.getElementById("CL_P_F_"+x.ruleId));
-            //valid=false;
+            valid=false;
         }
     });
 
@@ -283,6 +283,7 @@ export class BillingClaimsComponent implements OnInit {
         ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
         valid=false;
        }
+       
        let SUB_DET_TI:any = document.getElementById("SUB_DET_TI");
        if (SUB_DET_TI.value.trim()==='')   {
         ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));

@@ -273,10 +273,10 @@
                                                 
                                                     <div data-toggle="buttons" class="btn-group btn-group-toggle" style="display: flex;width: 50%" id="CL_P_F_{{rule.ruleId}}">
                                                         <label class="btn btn-light" [ngClass]="{active:rule.messageType==2}">
-                                                        <input type="radio" name="mant{{idx}}"  value="2" (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId)" [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Yes
+                                                        <input type="radio" name="mant{{idx}}"  value="2" (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)" [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Yes
                                                         </label>
                                                         <label class="btn btn-light" [ngClass]="{active:rule.messageType==1}">
-                                                        <input type="radio" name="mant{{idx}}"  value="1" (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId)" [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> No
+                                                        <input type="radio" name="mant{{idx}}"  value="1" (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)" [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> No
                                                         </label>
                                                      </div>
                                                  
