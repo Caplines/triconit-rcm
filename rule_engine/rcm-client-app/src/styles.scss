@@ -356,7 +356,7 @@ a.flex-center:hover {
 }
 
 .detail-box .table-responsive .table th.remark {
-    width: 65%;
+    width: 60%;
 }
 
 .detail-box .table-responsive .table .form-control {
@@ -681,7 +681,6 @@ a.flex-center:hover {
 
 .custom-row {
     display: flex;
-    justify-content: space-between;
     padding: 0 10px;
     height: 30px;
     align-items: center;
@@ -690,12 +689,17 @@ a.flex-center:hover {
 }
 
 .custom-row label {
-    margin-right: 5px;
+    margin-right: 10px;
     min-width: 140px;
     color: #737373;
+    border-right: 1px solid #e3e3e3;
+    min-height: 26px;
+    margin-bottom: 0px;
 }
 
-
+.text-number {
+    justify-content: space-between;
+}
 .form-container {
     padding: 30px 30px;
     background: #fff;
