@@ -11,7 +11,6 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 pt-3">
-                <h2 class="page-heading">User Setting</h2>
                 <div class="main-container">
                     <div class="form-container detail-box ">
                         <ng-container *ngIf="!isAdmin()">
@@ -21,16 +20,6 @@
                         </ng-container>
 
                         <ng-container *ngIf="isAdmin()">
-                            <!--<div class="date-range-box">
-                                <label for="findUser">Find User By Email : </label>
-                                <div class="input-group">
-                                    <input type="text" [(ngModel)]="user.email" class="form-control" placeholder="User By Email" aria-label="User By Email" aria-describedby="basic-addon2" [ngClass]="{'is-invalid': user.email && (user.email=='' || !(user.email.includes('@'))) }" required="true">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-secondary" (click)="findUser()" type="button"><img src="../assets/img/search.png" class="search-icon" /> Find</button>
-                                    </div>
-                                </div>
-                            </div>-->
-
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
@@ -43,7 +32,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                 <!--<div class="col-sm-3 find-btn"><button type="button" class="btn btn-secondary" (click)="findAllUser(0)"><img src="../assets/img/user-white.png" class="search-icon" /> Find All User</button></div>--> 
                             </div>
                             <div class="row"  *ngIf="showActionPopup">
                                 <div class="col-sm-3">
