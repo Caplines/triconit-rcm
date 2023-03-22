@@ -1,6 +1,7 @@
 package com.tricon.rcm.service.impl;
 
 import java.sql.Timestamp;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,13 +13,13 @@ import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmUser;
-import com.tricon.rcm.db.entity.RcmUserTemp;
+import com.tricon.rcm.db.entity.RcmUserRoleHistory;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
-import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
+import com.tricon.rcm.jpa.repository.RcmUserRoleHistoryRepo;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.MessageConstants;
@@ -41,7 +42,7 @@ public class RcmCommonServiceImpl {
 	RcmOfficeRepository officeRepo;
 	
 	@Autowired
-	RcmUserTempRepo  userTempRepo;
+	RcmUserRoleHistoryRepo  userTempRepo;
 	
 	@Autowired
 	RcmUtilServiceImpl utilService;
@@ -101,7 +102,7 @@ public class RcmCommonServiceImpl {
 	}
 	
 	public void dumpDataToRcmUserTemp(RcmUser user, List<String> roles) {
-		RcmUserTemp tempUser = new RcmUserTemp();
+		 RcmUserRoleHistory tempUser = new RcmUserRoleHistory();
 		tempUser.setClientName(user.getCompany().getName());
 		tempUser.setUser(user);
 		tempUser.setEmail(user.getEmail());

@@ -38,7 +38,6 @@ import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
-import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
@@ -74,7 +73,6 @@ import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
-import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.ClaimUtil;
@@ -168,7 +166,7 @@ public class AdminServiceImpl {
 						.anyMatch(x -> x.equals(Constants.ACCOUNT_MANAGER)&& dto.getUserRole().size() == 1)) {}
 				
 				//FOR ADMIN ROLE WITH UPLOAD_CLAIMS AND ACCOUNT_MANAGER ROLE whose TEAM IS NULL
-				else if (dto.getUserRole().size() == 3) {
+				else if (dto.getUserRole().size() == 3 || dto.getUserRole().size() == 2) {
 					for (String r : dto.getUserRole()) {
 						if (r.equals(Constants.UPLOAD_CLAIMS) || r.equals(Constants.ADMIN) || r.equals(Constants.ACCOUNT_MANAGER))
 							continue;
@@ -198,6 +196,10 @@ public class AdminServiceImpl {
 				else if (dto.getUserRole().stream()
 						.anyMatch(x -> x.equals(Constants.ACCOUNT_MANAGER) && dto.getUserRole().size() == 1 && team!=null)) {
 					//return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
+				}
+				else if (dto.getUserRole().size() == 2) {
+					for (String r : dto.getUserRole()) {
+						if (r.equals(Constants.UPLOAD_CLAIMS) && r.equals(Constants.ACCOUNT_MANAGER)) {}}
 				}
 				else
 				user.setTeam(team);

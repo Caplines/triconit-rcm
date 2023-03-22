@@ -160,6 +160,11 @@ public enum RcmTeamEnum {
 			rolesResponseForUploadClaims.setRoleName(RcmRoleEnum.UPLOAD_CLAIMS.getFullName());
 			rolesResponseForUploadClaims.setFullRoleName(generateRole(0, RcmRoleEnum.UPLOAD_CLAIMS.getName()));
 			roles.add(rolesResponseForUploadClaims);
+			RcmRolesResponseDto rolesResponseForAccountManager = new RcmRolesResponseDto();
+			rolesResponseForAccountManager.setRoleId(RcmRoleEnum.ACCOUNT_MANAGER.getName());
+			rolesResponseForAccountManager.setRoleName(RcmRoleEnum.ACCOUNT_MANAGER.getFullName());
+			rolesResponseForAccountManager.setFullRoleName(generateRole(0, RcmRoleEnum.ACCOUNT_MANAGER.getName()));
+			roles.add(rolesResponseForUploadClaims);
 			return roles;
 		}
 		return null;

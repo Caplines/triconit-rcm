@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "rcm_user_temp")
-public class RcmUserTemp implements Serializable{
+@Table(name = "rcm_user_role_history")
+public class RcmUserRoleHistory implements Serializable{
 	
 	private static final long serialVersionUID = 3911626627575940850L;
 
@@ -51,7 +51,7 @@ public class RcmUserTemp implements Serializable{
 	@Column(name = "roles", nullable = false,columnDefinition ="text")
 	private String rolesDetails;
 	
-	@Column(name = "team_id", nullable = false)
+	@Column(name = "team_name", nullable = false)
 	private String teamName;
 	
 	@CreationTimestamp
