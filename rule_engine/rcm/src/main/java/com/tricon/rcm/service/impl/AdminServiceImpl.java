@@ -282,7 +282,7 @@ public class AdminServiceImpl {
             	tempUser.setFirstName(user.getFirstName());            	
             	tempUser.setLastName(user.getLastName());
             	tempUser.setCreatedDate(Timestamp.from(Instant.now()));
-            	tempUser.setTeamName(user.getTeam().getNameId()); 	
+            	tempUser.setTeamName(utilService.checkTeamNullOrNot(user.getTeam())==-1?"-1":user.getTeam().getName()); 	
             	tempUser.setRolesDetails(dto.getUserRole().stream().collect(Collectors.joining(",", "[", "]")));
             	userTempRepo.save(tempUser);            
             }
