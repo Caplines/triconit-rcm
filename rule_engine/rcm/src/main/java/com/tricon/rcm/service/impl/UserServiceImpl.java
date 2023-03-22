@@ -129,7 +129,6 @@ public class UserServiceImpl {
 		List<RcmRoleDto> roles = null;
 		if (user != null && !user.getEmail().equals(Constants.SYSTEM_USER_EMAIL)) {
 			roles = masterService.getRoles(user.getCompany().getName());
-			roles.removeIf(x->x.getRoleId().equals(Constants.ADMIN));
 			return roles;
 		}
 		return null;

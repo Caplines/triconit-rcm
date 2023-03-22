@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -37,6 +38,7 @@ import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
+import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
@@ -72,6 +74,7 @@ import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
+import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.ClaimUtil;
@@ -132,6 +135,9 @@ public class AdminServiceImpl {
 	
 	@Autowired
 	RcmUtilServiceImpl utilService;
+	
+	@Autowired
+	RcmUserTempRepo  userTempRepo;
 
 	/**
 	 * This Method save Data of New Register User
@@ -160,10 +166,14 @@ public class AdminServiceImpl {
 				else if (dto.getUserRole().stream()
 						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1)) {}
 				
-				//FOR ADMIN ROLE WITH UPLOAD_CLAIMS ROLE whose TEAM IS NULL
-				else if (dto.getUserRole().size() == 2) {
+				//FOR SINGLE ACCOUNT_MANAGER ROLE whose TEAM IS NULL	
+				else if (dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.ACCOUNT_MANAGER)&& dto.getUserRole().size() == 1)) {}
+				
+				//FOR ADMIN ROLE WITH UPLOAD_CLAIMS AND ACCOUNT_MANAGER ROLE whose TEAM IS NULL
+				else if (dto.getUserRole().size() == 3) {
 					for (String r : dto.getUserRole()) {
-						if (r.equals(Constants.UPLOAD_CLAIMS) || r.equals(Constants.ADMIN))
+						if (r.equals(Constants.UPLOAD_CLAIMS) || r.equals(Constants.ADMIN) || r.equals(Constants.ACCOUNT_MANAGER))
 							continue;
 						else
 							return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);
@@ -186,10 +196,20 @@ public class AdminServiceImpl {
 						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1 && team!=null)) {
 					//return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
 				}
+				
+				//FOR SINGLE ACCOUNT_MANAGER ROLE TEAM IS NOT REQUIRED 	
+				else if (dto.getUserRole().stream()
+						.anyMatch(x -> x.equals(Constants.ACCOUNT_MANAGER) && dto.getUserRole().size() == 1 && team!=null)) {
+					//return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
+				}
 				else
 				user.setTeam(team);
 			}
-			user.setCompany(company);
+			if (company == null) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST,null);
+			} else {
+				user.setCompany(company);
+			}
 			user = userRepo.save(user);
 
 			// if role is TL then we will assign TL+ASSO to registerUser
@@ -213,6 +233,10 @@ public class AdminServiceImpl {
 				} 
 				else if (role.equals(Constants.UPLOAD_CLAIMS)) {
 					roles.setRole(RcmTeamEnum.generateRole(0, role)); // If role is upload_claims then by default teamId will
+																		// consider 0
+				}
+				else if (role.equals(Constants.ACCOUNT_MANAGER)) {
+					roles.setRole(RcmTeamEnum.generateRole(0, role)); // If role is ACCOUNT_MANAGER then by default teamId will
 																		// consider 0
 				}
 				else {
@@ -247,7 +271,21 @@ public class AdminServiceImpl {
 						+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
 				emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
 			}
-
+			
+			//dump new userData into rcm_user_temp table
+			
+            if(user!=null) {
+            	RcmUserTemp tempUser=new RcmUserTemp();
+            	tempUser.setClientName(user.getCompany().getName());
+            	tempUser.setUser(user);
+            	tempUser.setEmail(user.getEmail());    
+            	tempUser.setFirstName(user.getFirstName());            	
+            	tempUser.setLastName(user.getLastName());
+            	tempUser.setCreatedDate(Timestamp.from(Instant.now()));
+            	tempUser.setTeamName(user.getTeam().getNameId()); 	
+            	tempUser.setRolesDetails(dto.getUserRole().stream().collect(Collectors.joining(",", "[", "]")));
+            	userTempRepo.save(tempUser);            
+            }
 			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_EXIST_WITH_EMAIL, null);
@@ -302,6 +340,18 @@ public class AdminServiceImpl {
 //						responseDto.setRoleName(RcmRoleEnum.UPLOAD_CLAIMS.getFullName());
 //						responseDto.setFullRoleName(roles);
 //					}
+			// if ACCOUNT_MANAGER Roles Not match with teamId then we will add explicity
+//			        if (roles.equals(Constants.ROLE_PREFIX + Constants.ACCOUNT_MANAGER)) {
+//				        responseDto.setRoleId(RcmRoleEnum.ACCOUNT_MANAGER.getName());
+//				        responseDto.setRoleName(RcmRoleEnum.ACCOUNT_MANAGER.getFullName());
+//				        responseDto.setFullRoleName(roles);
+//			        }
+			// if ADMIN Roles Not match with teamId then we will add explicity
+//	        if (roles.equals(Constants.ROLE_PREFIX + Constants.ADMIN)) {
+//		        responseDto.setRoleId(RcmRoleEnum.ADMIN.getName());
+//		        responseDto.setRoleName(RcmRoleEnum.ADMIN.getFullName());
+//		        responseDto.setFullRoleName(roles);
+//	        }
 //				}
 //				rolesResponse.add(responseDto);
 //			}
@@ -615,6 +665,9 @@ public class AdminServiceImpl {
 		RcmUserRole rcmRole = null;
 		RcmUserRolePk pk = null;
 		List<RcmUserRole> listOfRoles = new ArrayList<>();
+		boolean isAccountManager=false;
+		boolean isUploadClaims=false;
+		
 		// if uuid is match from login user then return
 		if (jwtUser.getUuid().equals(dto.getUuid())) {
 			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
@@ -624,19 +677,44 @@ public class AdminServiceImpl {
 		if (existingUser != null) {
 			int teamId=utilService.checkTeamNullOrNot(existingUser.getTeam());
 			
-			// If team Id is -1(User is ADMIN,UPLOAD Claim Only) then it can not use this editRole Functionality
-			if (teamId==-1) {
+			//IF teamId=-1 then this role can't be exist in roles array
+			if (teamId == -1 && dto.getRoles().stream()
+					.anyMatch(x -> x.equals(Constants.TEAMLEAD) || x.equals(Constants.ASSOCIATE)
+							|| x.equals(Constants.CLIENT_MANAGER) || x.equals(Constants.CLIENT_VIEW_ONLY))) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
+			}
+			
+			//IF teamId=9 then this role can't be exist in roles array
+			if (teamId == 9 && dto.getRoles().stream()
+					.anyMatch(x -> x.equals(Constants.TEAMLEAD) || x.equals(Constants.ASSOCIATE)
+							|| x.equals(Constants.UPLOAD_CLAIMS) || x.equals(Constants.ACCOUNT_MANAGER))) {
 				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 			}
 			
 			//ADMIN Role can not associate with other roles
-			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.ADMIN))) {
+			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.ADMIN) && teamId!=-1)) {
 				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ADMIN_NOT_ASSOCIATED_WITH_ROLES, null);
 			}
 			
 			//UPLOAD Claim Role can associate with other roles but TL or ASSO is required for this role
-			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getRoles().size()==1)) {
+			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getRoles().size()==1) && teamId!=-1) {
 				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TL_ASSO_REQUIRED, null);
+			}
+			
+			//ACCOUNT_MANAGER Role can associate with other roles but TL or ASSO is required for this role
+			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.ACCOUNT_MANAGER)&& dto.getRoles().size()==1) && teamId!=-1) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TL_ASSO_REQUIRED, null);
+			}
+			
+			if (dto.getRoles().size() == 2 && teamId!=-1) {
+				for (String r : dto.getRoles()) {
+					if (r.equals(Constants.UPLOAD_CLAIMS))
+						isUploadClaims = true;
+					if (r.equals(Constants.ACCOUNT_MANAGER))
+						isAccountManager = true;
+				}
+				if (isAccountManager && isUploadClaims)
+					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TL_ASSO_REQUIRED, null);
 			}
 			
 			List<RcmUserRole> existingRoles = existingUser.getRoles().stream().collect(Collectors.toList());
@@ -646,7 +724,7 @@ public class AdminServiceImpl {
 			}
 			
 			// if role is TL then we will assign TL+ASSO to editUser
-			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.TEAMLEAD))) {
+			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.TEAMLEAD) && teamId!=-1)) {
 				rcmRole = new RcmUserRole();
 				pk = new RcmUserRolePk();
 				pk.setUuid(existingUser.getUuid());
@@ -662,7 +740,14 @@ public class AdminServiceImpl {
 				rcmRole.setId(pk);
 				if (role.equals(Constants.UPLOAD_CLAIMS)) {
 					rcmRole.setRole(RcmTeamEnum.generateRole(0, role)); 
-				} else {
+				}
+				else if (role.equals(Constants.ACCOUNT_MANAGER)) {
+					rcmRole.setRole(RcmTeamEnum.generateRole(0, role));
+				}
+				else if (role.equals(Constants.ADMIN)) {
+					rcmRole.setRole(RcmTeamEnum.generateRole(0, role));
+				}
+				else {
 					rcmRole.setRole(RcmTeamEnum.generateRole(teamId, role));
 				}
 				listOfRoles.add(rcmRole);

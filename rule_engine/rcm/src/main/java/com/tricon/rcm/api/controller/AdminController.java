@@ -66,6 +66,10 @@ public class AdminController {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLES_REQUIRED, null));
 		}
+		if(dto.getUserRole().stream().map(x->RcmRoleEnum.validateRoles(x)).anyMatch(x->x==null)) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLE_NOT_MATCH, null));
+		}
 		GenericResponse response = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();

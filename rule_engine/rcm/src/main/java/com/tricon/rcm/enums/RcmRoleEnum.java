@@ -8,7 +8,8 @@ public enum RcmRoleEnum {
 	TL("TL", "TeamLead", true,false,true), ASSO("ASSO", "Associate", true,false,true), SYSTEM("SYSTEM", "System", false,false,false),
 	ADMIN("ADMIN", "Admin",true,false,false),CLIENT_MANAGER("CLIENT_MANAGER", "Client Manager",false,true,true),
 	CLIENT_VIEW_ONLY("CLIENT_VIEW_ONLY","Client View Only",false,true,true),
-	UPLOAD_CLAIMS("UPLOAD_CLAIMS","Upload Claims",true,false,false);
+	UPLOAD_CLAIMS("UPLOAD_CLAIMS","Upload Claims",true,false,false),
+	ACCOUNT_MANAGER("ACCOUNT_MANAGER","Account Manager",true,false,false);
 	
 	final private String name;
 	final private String fullName;
