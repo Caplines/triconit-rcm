@@ -113,6 +113,9 @@
                                             
                                         </tr>
                                     </tbody>
+                                    <ng-container *ngIf="log.length==0">
+                                        <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
+                                    </ng-container>
                                 </table>
                             </div>
                             <div class="update-button" *ngIf="!loader"><a  href="javascript:void(0);" [ngClass]="{'disabled':hasUpdateClaims.length==0}"  class="btn btn-success" (click)="pullFreshClaims()" >Update Latest Claim</a></div>

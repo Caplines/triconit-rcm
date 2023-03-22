@@ -49,6 +49,9 @@ export class AppConstants {
         [13,{
             "name":"Upload Claims","paths":["/user-setting"],"defaultpath":"/user-setting"
         }],
+        [14,{
+            "name":"Account Manager","paths":["/user-setting"],"defaultpath":"/user-setting"
+        }],
 
     ]);
 

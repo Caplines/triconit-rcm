@@ -144,8 +144,11 @@
                                                 <td>{{lg.remoteLiteRejections+lg.count}}</td>
                                             </tr>
                                         </ng-container>
-                                        </tbody>
-                                    </table>
+                                    </tbody>
+                                    <ng-container *ngIf="claimData.length==0">
+                                        <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
+                                    </ng-container>
+                                </table>
                                 </div>
                             </div>
 

@@ -113,7 +113,7 @@ export class RegisterNewUserComponent implements OnInit {
 
   selectDefaultUserRole(event:any){
     
-    if((event.target.value == "true" && event.target.id == "ADMIN") || (event.target.checked == true && event.target.id=="UPLOAD_CLAIMS")){
+    if((event.target.value == "true" && event.target.id == "ADMIN") || (event.target.checked == true && event.target.id=="UPLOAD_CLAIMS") || (event.target.checked == true && event.target.id=="ACCOUNT_MANAGER")){
       if(this.userRoles.length==0){
         this.userRoles.push(event.target.id);
       }else { 
@@ -136,7 +136,7 @@ export class RegisterNewUserComponent implements OnInit {
         indTL  !== -1 ? this.userRoles.splice(indTL,1) : '';
         this.teamData=this.userRoleByTeam=[];
       }
-    }else if((event.target.value == 'false' && event.target.id == "ADMIN") || (event.target.checked == false && event.target.id=="UPLOAD_CLAIMS")){
+    }else if((event.target.value == 'false' && event.target.id == "ADMIN") || (event.target.checked == false && event.target.id=="UPLOAD_CLAIMS") ||(event.target.checked == false && event.target.id=="ACCOUNT_MANAGER")){
       for(let i=0;i<this.userRoles.length;i++){
         if(this.userRoles[i] == event.target.id){
           this.userRoles.splice(i,1);
@@ -162,14 +162,14 @@ export class RegisterNewUserComponent implements OnInit {
       this.userDetails.controls.teamId.setValidators('');
       this.userDetails.controls.teamId.setValue('');
       let select_box: any = document.getElementById("select");
-      select_box.selectedIndex = 0;
+      select_box ?  select_box.selectedIndex=0 : ''; 
       this.userDetails.controls.teamId.updateValueAndValidity();
     }
     if ((event.target.checked == false && event.target.id == "UPLOAD_CLAIMS")) {
       this.userDetails.controls.teamId.setValidators('');
       this.userDetails.controls.teamId.setValue('');
       let select_box: any = document.getElementById("select");
-      select_box.selectedIndex = 0;
+      select_box ?  select_box.selectedIndex=0 : ''; 
       this.userDetails.controls.teamId.updateValueAndValidity();
     }
     if (event.target.checked == false && (this.userRoles.includes("TL") || this.userRoles.includes("ASSO"))) {

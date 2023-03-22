@@ -124,6 +124,10 @@
                     background: #0c0e14;
                 }
 
+                .gray-bar ul li.update-pass{
+                    vertical-align: bottom !important;
+                }
+
 .navbar.fixed-left .navbar-nav .nav-item .dropdown-toggle:after {
     float: right;
     margin-top: 7px;
