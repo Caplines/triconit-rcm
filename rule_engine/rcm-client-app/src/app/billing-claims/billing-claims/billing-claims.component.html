@@ -304,7 +304,7 @@
                                 <table class="table table-striped table-bordered">
                                     <thead>
                                         <tr class="total-row">
-                                            <th><div style="display: flex;" class="rule-switch"> Rule Name <button type="button" class="btn btn-success" (click)="switchType('pass')">Pass: {{count.pass}}</button> <button type="button" class="btn btn-danger mx-1" (click)="switchType('fail')">Fail: {{count.fail}}</button><button type="button" class="btn btn-info" (click)="switchType('alert')">Alert: {{count.alert}}</button> </div></th>
+                                            <th><div style="display: flex; width: 455px;" class="rule-switch"> Rule Name <button type="button" class="btn btn-success" (click)="switchType('pass')">Pass: {{count.pass}}</button> <button type="button" class="btn btn-danger mx-1" (click)="switchType('fail')">Fail: {{count.fail}}</button><button type="button" class="btn btn-info" (click)="switchType('alert')">Alert: {{count.alert}}</button> </div></th>
                                             <th> Service Codes</th>
                                             <th> Tooth#</th>
                                             <th> Surface#</th>
@@ -397,7 +397,7 @@
                                             <td>
                                                 <div class="multi-input-row">
                                                     <input class="form-control" id="" rows="1" id="SUB_DET_DT" placeholder="yyyy-mm-dd" (click)="removeErrorDisplayKeyById('SUB_DET_DT')" [disabled]="makeReadOnly()" [(ngModel)]='submissionDto.esDate' type="date" />
-                                                    <span class="and-space">&</span> <input class="form-control" id="" rows="1" id="SUB_DET_TI" (click)="removeErrorDisplayKeyById('SUB_DET_TI')" [disabled]="makeReadOnly()" [(ngModel)]='submissionDto.esTime' />
+                                                    <span class="and-space">&</span> <input class="form-control" id="" rows="1" id="SUB_DET_TI" (click)="removeErrorDisplayKeyById('SUB_DET_TI')" [disabled]="makeReadOnly()" [(ngModel)]='submissionDto.esTime'  type="time"/>
                                                 </div>
                                             </td>
                                         </tr>

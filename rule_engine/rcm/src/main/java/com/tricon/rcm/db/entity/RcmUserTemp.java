@@ -32,7 +32,7 @@ public class RcmUserTemp implements Serializable{
 	@Column(name = "id", unique = true, nullable = false)
 	private int id;
 
-	@Column(nullable = false, unique = true, length = 100)
+	@Column(nullable = false,length = 100)
 	private String email;
 	
 	@Column(name = "first_name", nullable = false, length = 20)

@@ -3,21 +3,22 @@ package com.tricon.rcm.service.impl;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmUser;
-import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.MessageConstants;
@@ -38,6 +39,12 @@ public class RcmCommonServiceImpl {
 	
 	@Autowired
 	RcmOfficeRepository officeRepo;
+	
+	@Autowired
+	RcmUserTempRepo  userTempRepo;
+	
+	@Autowired
+	RcmUtilServiceImpl utilService;
 		
 	
 	public List<RcmOfficeDto> getAllOffices(){
@@ -91,5 +98,18 @@ public class RcmCommonServiceImpl {
 			return office;
 		}
 		return null;
+	}
+	
+	public void dumpDataToRcmUserTemp(RcmUser user, List<String> roles) {
+		RcmUserTemp tempUser = new RcmUserTemp();
+		tempUser.setClientName(user.getCompany().getName());
+		tempUser.setUser(user);
+		tempUser.setEmail(user.getEmail());
+		tempUser.setFirstName(user.getFirstName());
+		tempUser.setLastName(user.getLastName());
+		tempUser.setCreatedDate(Timestamp.from(Instant.now()));
+		tempUser.setTeamName(utilService.checkTeamNullOrNot(user.getTeam()) == -1 ? "-1" : user.getTeam().getName());
+		tempUser.setRolesDetails(roles.stream().collect(Collectors.joining(",", "[", "]")));
+		userTempRepo.save(tempUser);
 	}
 }
