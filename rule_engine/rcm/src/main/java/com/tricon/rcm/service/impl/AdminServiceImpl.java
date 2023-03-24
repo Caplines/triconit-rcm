@@ -38,6 +38,7 @@ import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
+import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
@@ -73,6 +74,7 @@ import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
+import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.ClaimUtil;
@@ -166,7 +168,7 @@ public class AdminServiceImpl {
 						.anyMatch(x -> x.equals(Constants.ACCOUNT_MANAGER)&& dto.getUserRole().size() == 1)) {}
 				
 				//FOR ADMIN ROLE WITH UPLOAD_CLAIMS AND ACCOUNT_MANAGER ROLE whose TEAM IS NULL
-				else if (dto.getUserRole().size() == 3 || dto.getUserRole().size() == 2) {
+				else if (dto.getUserRole().size() == 3) {
 					for (String r : dto.getUserRole()) {
 						if (r.equals(Constants.UPLOAD_CLAIMS) || r.equals(Constants.ADMIN) || r.equals(Constants.ACCOUNT_MANAGER))
 							continue;
@@ -197,17 +199,14 @@ public class AdminServiceImpl {
 						.anyMatch(x -> x.equals(Constants.ACCOUNT_MANAGER) && dto.getUserRole().size() == 1 && team!=null)) {
 					//return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
 				}
-				else if (dto.getUserRole().size() == 2) {
-					for (String r : dto.getUserRole()) {
-						if (r.equals(Constants.UPLOAD_CLAIMS) && r.equals(Constants.ACCOUNT_MANAGER)) {}}
+				else {
+				//user.setTeam(team);
 				}
-				else
-				user.setTeam(team);
 			}
 			if (company == null) {
 				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST,null);
 			} else {
-				user.setCompany(company);
+				//user.setCompany(company);
 			}
 			user = userRepo.save(user);
 
@@ -310,8 +309,8 @@ public class AdminServiceImpl {
 			RcmUserDto data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
-			data.setClientName(user.getCompany().getName());
-			data.setTeamNameId(utilService.checkTeamNullOrNot(user.getTeam()));
+			//data.setClientName(user.getCompany().getName());
+			//data.setTeamNameId(utilService.checkTeamNullOrNot(user.getTeam()));
 //			List<String> rolesData = user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());
 //			List<RcmRolesResponseDto> rolesByTeamEnum = RcmTeamEnum
 //					.getRolesByTeamId(utilService.checkTeamNullOrNot(user.getTeam()));
@@ -497,7 +496,7 @@ public class AdminServiceImpl {
 		List<RcmCompanyDto> listOfCompany = null;
 		// if login user is capline then return all companies details like company name and company uuid otherwise login user
 		// company details
-		if (jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+		if (jwtUser.isSmilePoint()) {
 			company = rcmCompanyRepo.findAll();
 			if (company != null && !company.isEmpty()) {
 				listOfCompany = company.stream().map(x -> new RcmCompanyDto(x.getName(), x.getUuid()))
@@ -663,7 +662,7 @@ public class AdminServiceImpl {
 
 		// if user is not null and company is capline then admin can change user's roles of own company users and other company user's roles
 		if (existingUser != null) {
-			int teamId=utilService.checkTeamNullOrNot(existingUser.getTeam());
+			int teamId=-1;//;utilService.checkTeamNullOrNot(existingUser.getTeam());
 			
 			//IF teamId=-1 then this role can't be exist in roles array
 			if (teamId == -1 && dto.getRoles().stream()
@@ -748,6 +747,7 @@ public class AdminServiceImpl {
 		RcmUser assigneByUser = null, assigneToUser = null;
 		RcmClaimAssignment assignment = null;
 		RcmClaimStatusType claimStatusType = null;
+		/*
 		if (oldClaimUserData != null && !oldClaimUserData.isEmpty()) {
 
 			assigneToUser = userRepo.findByUuid(dto.getNewClaimUserUuid());
@@ -766,7 +766,8 @@ public class AdminServiceImpl {
 					RcmClaimAssignment checkExistingClaimEntryStatus=claimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(assigneToUser.getUuid(),assign.getClaims().getClaimUuid(),true);
 					if(checkExistingClaimEntryStatus!=null) {
 					claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REASSIGN_MESSAGE,
-							assigneByUser, false, checkExistingClaimEntryStatus.getAssignedTo().getUuid(), checkExistingClaimEntryStatus.getClaims().getClaimUuid()); }
+							assigneByUser, false, checkExistingClaimEntryStatus.getAssignedTo().getUuid(), checkExistingClaimEntryStatus.getClaims().getClaimUuid());
+					}
 					
 					assignment = ClaimUtil.createAssginmentData(assignment, assigneByUser, assigneToUser, null,
 							assign.getClaims(), MessageConstants.CLAIM_REASSIGN_MESSAGE, claimStatusType);
@@ -775,6 +776,7 @@ public class AdminServiceImpl {
 				return MessageConstants.CLAIM_REASSIGN_SUCCESS_MESSAGE;
 			}
 		}
+		*/
 		return MessageConstants.SOMETHING_WENT_WRONG;
 	}
 	
