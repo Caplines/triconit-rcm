@@ -16,13 +16,13 @@ import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserCompany;
-import com.tricon.rcm.db.entity.RcmUserTemp;
+//import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
-import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
+//import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
@@ -45,8 +45,8 @@ public class RcmCommonServiceImpl {
 	@Autowired
 	RcmOfficeRepository officeRepo;
 
-	@Autowired
-	RcmUserTempRepo userTempRepo;
+	//@Autowired
+	//RcmUserTempRepo userTempRepo;
 
 	@Autowired
 	RcmUtilServiceImpl utilService;
@@ -103,7 +103,7 @@ public class RcmCommonServiceImpl {
 		return null;
 	}
 
-	public void dumpDataToRcmUserTemp(RcmUser user, List<String> roles) {
+	/*public void dumpDataToRcmUserTemp(RcmUser user, List<String> roles) {
 		RcmUserTemp tempUser = new RcmUserTemp();
 		// tempUser.setClientName(user.getCompany().getName());
 		tempUser.setUser(user);
@@ -115,7 +115,7 @@ public class RcmCommonServiceImpl {
 		// "-1" : user.getTeam().getName());
 		tempUser.setRolesDetails(roles.stream().collect(Collectors.joining(",", "[", "]")));
 		// userTempRepo.save(tempUser);
-	}
+	}*/
 
 	/**
 	 * From List of RcmCompany check if companyuuid is present
