@@ -13,7 +13,7 @@ export class ClaimAssignPermission implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot
   ) {
     //console.log("state.url",state.url);
-    let ut: any = localStorage.getItem('teamId');
+    let ut: any = localStorage.getItem('selected_teamId');
     if (!ut) {
       this.router.navigate(['/']);
       return false;
@@ -35,11 +35,8 @@ export class ClaimAssignPermission implements CanActivate {
         this.router.navigate([teamM.defaultpath]);
         return false;
       }
-      console.log(Utils.isSmilePoint());
-      if (Utils.isBillingLead() || Utils.isClientManager()){
-        return true;
-      }
-      return false;
+      
+      return true;
     }
 
     // not logged in so redirect to login page with the return url

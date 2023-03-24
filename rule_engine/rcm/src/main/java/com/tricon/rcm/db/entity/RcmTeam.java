@@ -31,6 +31,19 @@ public class RcmTeam {
 	@Column(name = "active", nullable = false)
 	private int active;
 
+	public RcmTeam() {
+		super();
+	}
+	public RcmTeam(int id, String name, String nameId, String description, int active) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.nameId = nameId;
+		this.description = description;
+		this.active = active;
+	}
 
+
+	
 
 }

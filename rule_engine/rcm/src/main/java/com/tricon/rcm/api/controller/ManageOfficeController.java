@@ -60,7 +60,7 @@ public class ManageOfficeController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		try {
-			response = officeService.assignOfficeByAdmin(dto,jwtUser.getCompany());
+			response = officeService.assignOfficeByAdmin(dto,jwtUser.getCompany());//why is this in ADMIN
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

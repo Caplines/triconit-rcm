@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { AuthService } from '../../service/auth-service.service';
 import { TokenStorageService } from '../../service/token-storage.service';
-import { environment } from '../../../environments/environment';
+import { SwitchAccountModel } from '../../models/switch.account.model';
+
+//import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login-component',
@@ -31,6 +33,8 @@ export class LoginComponent implements OnInit {
 	//siteKey:any = environment.recaptcha.siteKey;
 
 
+  cwModel:SwitchAccountModel;
+
   //https://www.bezkoder.com/angular-13-jwt-auth/
 
   constructor(private authService: AuthService, private tokenStorage: TokenStorageService,private router:Router,private appService: ApplicationServiceService) { }
@@ -44,14 +48,19 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     const { username, password ,token} = this.form;
+   ;
     if (!this.isRecaptchaSolved) return ;
     this.authService.login(username, password,token, (result: any) => {
-      console.log(result);
+      console.log(result.data);
       if (result.status == 200) {
         this.tokenStorage.saveData(result.data, result.data.token);
         this.isLoginFailed = false;
         this.isLoggedIn = true;
+        
+        this.cwModel=result.data;
         //this.roles = this.tokenStorage.getUser().roles;
+        //open popup;
+
         this.reloadPage();
       } else {
         this.errorMessage = result.error;
@@ -121,4 +130,8 @@ export class LoginComponent implements OnInit {
 			this.isRecaptchaSolved = false;
 		}
 	}
+
+
+
+
 }

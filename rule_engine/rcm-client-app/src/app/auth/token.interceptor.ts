@@ -11,19 +11,41 @@ export class TokenInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     //let token = this.tokenExtractor.getToken() as string;
-    //console.log(token);  
-    request = request.clone({
+    //console.log(token); 
+    let ls:any=localStorage;
+    if (ls.getItem("selected_teamId")==null){
+      request = request.clone({
+        setHeaders: {
+          Authorization: 'Bearer ' + AuthHeader.getToken()
+          //t : ls.getItem("selected_teamId"),
+          //c : ls.getItem("selected_clientName"),
+         // r : ls.getItem("selected_roleName")
+          
+  
+          // , 'x-xsrf-token' :this.getCookie('XSRF-TOKEN')//Enable for Protection.
+        }
+      });
+    }
+    else { 
+       request = request.clone({
       setHeaders: {
-        Authorization: 'Bearer ' + AuthHeader.getToken()
+        Authorization: 'Bearer ' + AuthHeader.getToken(),
+        t : ls.getItem("selected_teamId"),
+        c : ls.getItem("selected_clientName"),
+       r : ls.getItem("selected_roleName")
+        
+
         // , 'x-xsrf-token' :this.getCookie('XSRF-TOKEN')//Enable for Protection.
       }
     });
+  }
     /*
     request = request.clone({
         withCredentials: true
       });
     console.log(request);
     */
+    console.log(request);
     return next.handle(request);
   }
 

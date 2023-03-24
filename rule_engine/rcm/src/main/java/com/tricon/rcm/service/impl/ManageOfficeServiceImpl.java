@@ -46,10 +46,10 @@ public class ManageOfficeServiceImpl {
 		List<String> listOfOfficeId = userOfficeData.stream().map(x -> x.getOfficeId()).collect(Collectors.toList());
 		List<RcmUser> listOfUsers = userRepo.findByUuidIn(listOfUserId);
 		RcmOffice office = null;
-		RcmUser newUser = null;
+		RcmUser newUser1 = null;
 		UserAssignOffice user = null;
 
-		if (listOfUsers!=null && !listOfUsers.isEmpty()) {
+		/*if (listOfUsers!=null && !listOfUsers.isEmpty()) {
 			for (RcmUser u : listOfUsers) {
 				if (u.getTeam().getId() != dto.getTeamId() || !u.getCompany().getUuid().equals(logedIncompany.getUuid())) {
 					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
@@ -98,6 +98,7 @@ public class ManageOfficeServiceImpl {
 			}
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 		}
+		*/
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
 	}
 }

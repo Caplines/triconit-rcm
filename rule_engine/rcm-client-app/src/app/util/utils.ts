@@ -11,6 +11,44 @@ export default class Utils {
           });
         return role;
     }
+
+
+     /**
+    * Get Clients from companies
+    * @param clients
+    */
+     static getClients(clients:any):any{
+      let cpm:any=[];
+      clients.forEach(function (value:any) {
+         cpm.push({"name":value.name,"id":value.uuid});
+        });
+        
+      return JSON.stringify(cpm);
+    }
+
+    /**
+    *Get Clients from LS
+    */
+     static getClientsFromLS():any{
+      return JSON.parse(localStorage.getItem("clients"));
+    }
+    /**
+    *Get Clients from LS
+    */
+    static getTeamsFromLS():any{
+      return JSON.parse(localStorage.getItem("teams"));
+    }
+      /**
+    * Get Clients from companies
+    * @param auth
+    */
+      static getTeams(teams:any):any{
+         let tm:any=[];
+         teams.forEach(function (value:any) {
+            tm.push({"name":value.name,"id":value.id,"nameId":value.nameId});
+           });
+           return JSON.stringify(tm);
+     }
    
    /**
     *store user details  in local storage to keep user logged in between page refreshes
@@ -18,13 +56,23 @@ export default class Utils {
     * @param token
     */
    static setLocalStorage(data:any,token:string){
+      console.log(data);
        localStorage.setItem('currentUser', data.userName);
        //localStorage.setItem('userType', data.userType);
        localStorage.setItem('token', token);
-       localStorage.setItem('teamId', data.teamId);
        localStorage.setItem('roles', Utils.getRoles(data.authorities));
        localStorage.setItem('name', data.firstName);
-       localStorage.setItem('cname', data.clientName);
+       localStorage.setItem('clients', Utils.getClients(data.companies));
+       localStorage.setItem('teams', Utils.getTeams(data.teams));
+       
+   }
+
+   static setLocalStoragePartial(clientName:string,roleName:any,teamId:number){
+    
+       localStorage.setItem('selected_clientName', clientName);
+       localStorage.setItem('selected_roleName', roleName);
+       localStorage.setItem('selected_teamId',teamId+"");
+     
        
    }
    
@@ -46,6 +94,9 @@ export default class Utils {
        localStorage.removeItem('roles');
        localStorage.removeItem('name');
        localStorage.removeItem('clientName');
+       localStorage.removeItem('selected_clientName')
+       localStorage.removeItem('selected_roleName');
+       localStorage.removeItem('selected_teamId');
        
    }
    /*
@@ -95,5 +146,21 @@ export default class Utils {
 	     }
         return false;
    }
+
+   static isAccountpopupNeeded(){
+      let ls:any=localStorage;
+      if (ls.getItem('selected_clientName')==null ||
+           ls.getItem('selected_roleName') ==null ||
+          ls.getItem('selected_teamId') ==null){
+            return true;
+          }
+      return false;   
+   }
+
+   static getRolesFromLS():any{
+      return  localStorage.getItem("roles").split(",");
+    }
+
+  
 
 }

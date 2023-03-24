@@ -206,14 +206,14 @@ public class ClaimUtil {
 	
 	public static RcmClaimAssignment createAssginmentData(RcmClaimAssignment assignment,
 			RcmUser assigneByUser,RcmUser assigneToUser,String uuid,RcmClaims claims,
-			String commentsBy,RcmClaimStatusType rcmClaimStatusType) {
+			String commentsBy,RcmClaimStatusType rcmClaimStatusType,RcmTeam assignedTeam) {
 		
 		assignment.setAssignedBy(assigneByUser);
 		assignment.setAssignedTo(assigneToUser);
 		assignment.setClaims(claims);
 		assignment.setCommentAssignedBy(commentsBy);
 		assignment.setCreatedBy(assigneByUser);
-		assignment.setCurrentTeamId(assigneToUser.getTeam());
+		assignment.setCurrentTeamId(assignedTeam);
 		assignment.setRcmClaimStatus(rcmClaimStatusType);
 		assignment.setActive(true);
 		assignment.setTakenBack(false);

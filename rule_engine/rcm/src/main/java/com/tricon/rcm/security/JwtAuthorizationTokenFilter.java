@@ -27,11 +27,22 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
     private UserDetailsService userDetailsService;
     private JwtTokenUtil jwtTokenUtil;
     private String tokenHeader;
+    
+    private String tokenHeaderClient;
+    private String tokenHeaderRole;
+    private String tokenHeaderTeam;
+    
+    
 
-    public JwtAuthorizationTokenFilter(UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, String tokenHeader) {
+    public JwtAuthorizationTokenFilter(UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, String tokenHeader,
+    		String tokenHeaderClient,String tokenHeaderRole,String tokenHeaderTeam) {
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.tokenHeader = tokenHeader;
+        this.tokenHeaderClient = tokenHeaderClient;
+        this.tokenHeaderRole = tokenHeaderRole;
+        this.tokenHeaderTeam = tokenHeaderTeam;
+        
     }
 
     @Override
@@ -39,10 +50,16 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
         logger.debug("processing authentication for '{}'", request.getRequestURL());
 
         final String requestHeader = request.getHeader(this.tokenHeader);
-
         String username = null;
         String authToken = null;
-        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
+        boolean otherToken=true;
+        if (request.getHeader(this.tokenHeaderClient) ==null || 
+        	request.getHeader(this.tokenHeaderRole)==null ||
+        	request.getHeader(this.tokenHeaderTeam)==null) {
+        	otherToken=false;
+        	
+        }
+        if (otherToken && requestHeader != null && requestHeader.startsWith("Bearer ")) {
             authToken = requestHeader.substring(7);
             try {
                 username = jwtTokenUtil.getUsernameFromToken(authToken);
@@ -54,6 +71,8 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
         } else {
             logger.warn("couldn't find bearer string, will ignore the header");
         }
+        
+        
 
         logger.debug("checking authentication for user '{}'", username);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

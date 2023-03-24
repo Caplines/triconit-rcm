@@ -2,11 +2,15 @@ package com.tricon.rcm.security;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.tricon.rcm.db.entity.RcmCompany;
+import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.util.Constants;
 
 
@@ -25,41 +29,68 @@ public class JwtUser implements UserDetails {
     private final String firstname;
     private final String lastname;
     private final String password;
-    private final int teamId;
     private final String email;
     private final Collection<? extends GrantedAuthority> authorities;
     private final int active;
     private final Date lastPasswordResetDate;
-    private final RcmCompany company;
+    private final List<RcmCompany> companies;
+    private final List<RcmTeam> teams;
     
     private final boolean isSmilePoint;
     private final boolean isTeamLead;
     private final boolean isAssociate;
     
+    private int teamId=-1;
+    private RcmCompany company;
+    private String companyName;//InHeader
+    private String role;//In header
+    
 
-    public JwtUser(
+    public String getCompanyName() {
+		return companyName;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
+	}
+	public JwtUser(
           String uuid,
           String firstname,
           String lastname,
           String email,
           String password,
-           int teamId,
           Collection<? extends GrantedAuthority> authorities,
           int enabled,
           Date lastPasswordResetDate,
-          RcmCompany company
+          List<RcmCompany> companies,
+          List<RcmTeam> teams
+          
     ) {
         this.uuid = uuid;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.password = password;
-        this.teamId  = teamId;
         this.authorities = authorities;
         this.active = enabled;
         this.lastPasswordResetDate = lastPasswordResetDate;
-        this.company =company;
-        this.isSmilePoint=company!=null?(company.getName().equals(Constants.COMPANY_NAME)?true:false):false;
+        this.companies =companies;
+        this.teams =teams;
+        boolean isSmilePoint=false;
+        if (companies!=null) {
+        	List<RcmCompany> filteredList=companies.stream()
+        	.filter(cmp -> cmp.getName().equals(Constants.COMPANY_NAME))
+  	      .collect(Collectors.toList());
+        	if (filteredList!=null && filteredList.size() ==1 ) {
+        		isSmilePoint=true;
+        	}
+        }
+        this.isSmilePoint=isSmilePoint;
         this.isTeamLead=authorities!=null?(authorities.stream().anyMatch(x->x.getAuthority().endsWith(Constants.HYPHEN+Constants.TEAMLEAD))?true:false):false;
         this.isAssociate=authorities!=null?(authorities.stream().anyMatch(x->x.getAuthority().endsWith(Constants.HYPHEN+Constants.ASSOCIATE))?true:false):false;
     }
@@ -114,12 +145,7 @@ public class JwtUser implements UserDetails {
 	public Date getLastPasswordResetDate() {
 		return lastPasswordResetDate;
 	}
-	public int getTeamId() {
-		return teamId;
-	}
-	public RcmCompany getCompany() {
-		return company;
-	}
+
 	public boolean isSmilePoint() {
 		return isSmilePoint;
 	}
@@ -127,14 +153,32 @@ public class JwtUser implements UserDetails {
 		return email;
 	}
 	
-	
-
-	
+	public List<RcmCompany> getCompanies() {
+		return companies;
+	}
+	public List<RcmTeam> getTeams() {
+		return teams;
+	}
 	public boolean isTeamLead() {
 		return isTeamLead;
 	}
 	public boolean isAssociate() {
 		return isAssociate;
 	}
+	public int getTeamId() {
+		return teamId;
+	}
+	public void setTeamId(int teamId) {
+		this.teamId = teamId;
+	}
+	public RcmCompany getCompany() {
+		return company;
+	}
+	public void setCompany(RcmCompany company) {
+		this.company = company;
+	}
+
+	
     
+	
 }

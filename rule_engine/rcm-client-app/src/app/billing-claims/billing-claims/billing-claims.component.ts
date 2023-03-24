@@ -427,7 +427,7 @@ export class BillingClaimsComponent implements OnInit {
     let ths=this;
     ths.claimARulesPullDataModel.claimId=ths.claimRcm.claimId.split("_")[0];//"15927";///
     ths.claimARulesPullDataModel.officeId=ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
-    ths.claimARulesPullDataModel.patientId=ths.claimRcm.patientId;//"6602";//
+    ths.claimARulesPullDataModel.patientId=ths.claimRcm.patientId;//"6602";//TESTING
 
     ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel,(res:any)=>{
         if (res.status=== 200){

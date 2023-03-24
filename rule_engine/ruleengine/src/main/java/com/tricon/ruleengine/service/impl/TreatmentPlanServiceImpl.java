@@ -2251,7 +2251,26 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_88,
 								Constants.rule_log_debug, bw);
 					
-		 //END  D0140 with Treatment 
+		 //END  D0140 with Treatment
+				
+		//  D0140 with D0220
+				
+				rule = getRulesFromList(rules, Constants.RULE_ID_89);
+				dtoRL = rb.Rule89(tList,messageSource, rule, bw);
+					if (dtoRL != null) {
+						list.addAll(dtoRL);
+						for (TPValidationResponseDto t : dtoRL) {
+							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+								t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+								// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+						}
+				}
+						
+				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_89,
+								Constants.rule_log_debug, bw);
+					
+		 //END  D0140 with D0220
+				
 
 		// RULE_ID_79 "Insurance and Address"
 		/*
@@ -2464,7 +2483,25 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_88,
 									Constants.rule_log_debug, bw);
 						
-	    //END  D0140 with Treatment 
+	    //END  D0140 with Treatment
+		
+		//  D0140 with D0220
+			
+			rule = getRulesFromList(rules, Constants.RULE_ID_89);
+			dtoRL = rb.Rule89(tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+			}
+					
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_89,
+							Constants.rule_log_debug, bw);
+				
+	   //END  D0140 with D0220			
 					
 		        
 		// END "Bridge Clause"

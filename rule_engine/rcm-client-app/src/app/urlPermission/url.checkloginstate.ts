@@ -11,34 +11,37 @@ export class CheckUserLoggedInState implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     console.log(localStorage.getItem('currentUser'));
-    console.log(state)
+   
+    
     if (localStorage.getItem('currentUser')) {
-      let ut: any = localStorage.getItem('teamId');
+      let ut: any = localStorage.getItem('selected_teamId');//selected_roleName//selected_teamId
+     if (ut!=null){
       let ntKey: Number = new Number(ut).valueOf();
       let team: any = this.appConstants.TEAMS_CONFIG.get(ntKey);
       let teamM: TeamModel = (<TeamModel>team);
-      if (Utils.isSmilePoint() && Utils.checkAdmin()){
-        this.router.navigate([this.appConstants.TEAMS_CONFIG.get(2).defaultpath]);
-        return true;
-      }
-
       let ph = teamM.paths.find(x =>
         x === state.url);
-      //in case wrong url is accessed
       if (typeof ph == "undefined") {
-        this.router.navigate([teamM.defaultpath]);
-        return false;
-      } else{
-        return true;
-      }
+          this.router.navigate([teamM.defaultpath]);
+          return false;
+        } else{
+          return true;
+        }
+     
+         //return false;
+     
     } else{ 
+      return false;
+        
+      }
+    }else{
       if(state.url == "/login"){
         return true;
       } else{
         this.router.navigate(['/login']);
         return false;
       } 
+      }
     }
-
-  }
+  
 }

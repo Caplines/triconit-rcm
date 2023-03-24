@@ -60,11 +60,11 @@ public class AuthenticationRestController {
 
         // Return the token
         return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Success",
-        		new JwtAuthenticationCustomResponse(token,userDetails.getUsername(),userDetails.getAuthorities(),user.getTeamId(),user.getFirstname(), user.getCompany().getName())));
+        		new JwtAuthenticationCustomResponse(token,userDetails.getUsername(),userDetails.getAuthorities(),user.getTeams(),user.getFirstname(), user.getCompanies())));
         //return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
-
-    @RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)
+    
+   @RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
         String authToken = request.getHeader(tokenHeader);
         final String token = authToken.substring(7);

@@ -114,7 +114,7 @@ public class UserController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		try {
-			response = userService.getTeamNameByOtherUserTeamId(jwtUser);
+			response = null;//userService.getTeamNameByOtherUserTeamId(jwtUser);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -136,7 +136,7 @@ public class UserController {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.UNAUTHORIZED, "Not Authorize", null));
 		}
 		try {
-			response = userService.getRolesByUserEmail(userEmail);
+			response = null;//userService.getRolesByUserEmail(userEmail);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

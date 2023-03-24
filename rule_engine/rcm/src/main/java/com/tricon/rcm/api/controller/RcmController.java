@@ -12,11 +12,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.AssigmentClaimListDto;
@@ -24,6 +27,7 @@ import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
+import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.ClaimNotesDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
@@ -57,7 +61,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @CrossOrigin
-public class RcmController {
+public class RcmController extends BaseHeaderController{
 
 	private final Logger logger = LoggerFactory.getLogger(RuleEngineService.class);
 
@@ -74,12 +78,16 @@ public class RcmController {
 	@Autowired
 	RcmCommonServiceImpl rcmCommonServiceImpl;
 
+	
+	
+	
 	/**
 	 * Fetch Claims From Eagle Soft or Google Sheet
 	 * 
 	 * @param dto
 	 * @return
 	 */
+	
 	@ApiOperation(value = "Api For Fetching Claims From  ES or GSheet", response = String.class, responseContainer = "Map")
 	@PostMapping("/api/fetch-claims-from-source")
 	@PreAuthorize("hasRole('BILLING_TL')")
@@ -146,7 +154,10 @@ public class RcmController {
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = AssignFreshClaimLogsImplDto.class, responseContainer = "List")
 	@PostMapping("/api/fetch-claims-log-assign")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> fetchClaimsForAssignments(@RequestBody AssigmentClaimListDto dto) {
+	public ResponseEntity<Object> fetchClaimsForAssignments(@RequestBody AssigmentClaimListDto dto,
+			 Model model) {
+		
+		 PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchClaimsForAssignments(dto)));
 	}
@@ -396,7 +407,7 @@ public class RcmController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		// only SmilePoint can do this
-		if (jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+		if (jwtUser.isSmilePoint()) {
 			return new Object[] { jwtUser, true };
 		} else {
 			return new Object[] { jwtUser, false };

@@ -89,4 +89,13 @@ public class RcmCompany {
 	public void setUpdatedDate(Date updatedDate) {
 		this.updatedDate = updatedDate;
 	}
+
+	public RcmCompany(String uuid, String name) {
+		super();
+		this.uuid = uuid;
+		this.name = name;
+	}
+	
+	
+	
 }

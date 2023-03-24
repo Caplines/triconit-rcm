@@ -1,0 +1,70 @@
+package com.tricon.rcm.db.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import com.tricon.rcm.db.BaseAuditEntity;
+
+import lombok.Data;
+
+
+@Entity
+@Table(name = "rcm_user_company")
+public class RcmUserCompany  implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1404590629152928979L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique = true, nullable = false)
+	private int id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "rcm_user_id",referencedColumnName="uuid")
+	private RcmUser user;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "company_id",referencedColumnName="uuid")
+	private RcmCompany company;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public RcmUser getUser() {
+		return user;
+	}
+
+	public void setUser(RcmUser user) {
+		this.user = user;
+	}
+
+	public RcmCompany getCompany() {
+		return company;
+	}
+
+	public void setCompany(RcmCompany company) {
+		this.company = company;
+	}
+	
+	
+
+}

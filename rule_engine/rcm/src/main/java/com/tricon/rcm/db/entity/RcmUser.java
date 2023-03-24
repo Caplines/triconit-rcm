@@ -2,18 +2,15 @@ package com.tricon.rcm.db.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
+
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -57,9 +54,15 @@ public class RcmUser extends BaseAuditEntity implements Serializable{
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	private Set<RcmUserRole> roles;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+	private Set<RcmUserTeam> rcmTeams;
+	
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+	private Set<RcmUserCompany> rcmCompanies;
+	
+	/*@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "company_id",referencedColumnName="uuid")
-	private RcmCompany company;
+	private RcmCompany company;*/
 
 	@Column(name = "last_password_reset_date")
 	private Date lastPasswordResetDate;
@@ -67,9 +70,9 @@ public class RcmUser extends BaseAuditEntity implements Serializable{
 	@Column(name = "active")
 	private int active;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id",referencedColumnName="id")
-	private RcmTeam team;
+	private RcmTeam team;*/
 	
 	
 	@ManyToOne(fetch = FetchType.LAZY)

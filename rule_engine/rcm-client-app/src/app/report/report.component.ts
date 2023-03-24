@@ -36,7 +36,6 @@ export class ReportComponent implements OnInit {
 		ths.claimService.fetchIvDetails(clamId,"",(res:any)=>{
 		  if (res.status=== 200){
 			this.reportDataInd = res.data;
-			debugger;
 			if (res.data==null){
                  this.message="IV Not Found.";
 			}

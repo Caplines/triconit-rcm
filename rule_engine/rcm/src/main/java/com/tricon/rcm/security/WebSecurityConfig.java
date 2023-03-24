@@ -53,6 +53,17 @@ public class WebSecurityConfig {
 	@Value("${jwt.header}")
 	private String tokenHeader;
 
+	
+	@Value("${jwt.headerC}")
+	private String tokenHeaderClient;
+	
+	@Value("${jwt.headerR}")
+	private String tokenHeaderRole;
+	
+	@Value("${jwt.headerT}")
+	private String tokenHeaderTeam;
+	    
+	    
 	@Value("${jwt.route.authentication.path}")
 	private String authenticationPath;
 
@@ -101,7 +112,7 @@ public class WebSecurityConfig {
 		 * .httpBasic(withDefaults());
 		 */
 		JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(jwtUserDetailsService,
-				jwtTokenUtil, tokenHeader);
+				jwtTokenUtil, tokenHeader,tokenHeaderClient,tokenHeaderRole,tokenHeaderTeam);
 		http.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 		// return http.build();
@@ -158,7 +169,7 @@ public class WebSecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("*"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token", "_csrf",
+		configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token", "_csrf","r","t","c",
 				CrossDomainCsrfTokenRepository.XSRF_HEADER_NAME));
 		configuration.setExposedHeaders(
 				Arrays.asList("x-auth-token", CrossDomainCsrfTokenRepository.XSRF_HEADER_NAME, "_csrf"));

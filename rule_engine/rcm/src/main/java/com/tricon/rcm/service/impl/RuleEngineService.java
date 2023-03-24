@@ -215,6 +215,7 @@ public class RuleEngineService {
 
 					mainRoot = result.getBody();
 					RcmClaims claim = null;
+					RcmTeam assignedTeam =null;
 					for (RcmClaimDataDto datas : mainRoot.getData().getDatas()) {
 						// String officeUuid = datas.getOfficeName();
 						// RcmOffice off = officeRepo.findByUuid(officeUuid);
@@ -226,7 +227,7 @@ public class RuleEngineService {
 									List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
 									UserAssignOffice assignedUser = userAssignOfficeRepo
 											.findByOfficeUuidAndTeamId(off.getUuid(), RcmTeamEnum.BILLING.getId());
-
+									assignedTeam = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
 									RcmInsuranceType rcmInsuranceType = null;
 									if (claims == null || claims.size() == 0) {
 										// List<String> buildError1=null;
@@ -318,7 +319,7 @@ public class RuleEngineService {
 											//
 											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 													assignedUser.getUser(), claimUUid, claim,
-													Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling);
+													Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling,assignedTeam);
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
 										}

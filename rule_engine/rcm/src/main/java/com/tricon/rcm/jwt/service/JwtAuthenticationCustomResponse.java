@@ -2,8 +2,12 @@ package com.tricon.rcm.jwt.service;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+
+import com.tricon.rcm.db.entity.RcmCompany;
+import com.tricon.rcm.db.entity.RcmTeam;
 
 
 /**
@@ -20,11 +24,17 @@ public class JwtAuthenticationCustomResponse implements Serializable {
 
 	private String userName;
 	
-	private int teamId;
+	//private int teamId;
 	
 	private String firstName;
 	
-	private String clientName;
+	//private String clientName;
+	
+	
+	private List<RcmTeam> teams;
+	
+	private List<RcmCompany> companies;
+	
 	
 	Collection<? extends GrantedAuthority> authorities;
 	
@@ -32,13 +42,16 @@ public class JwtAuthenticationCustomResponse implements Serializable {
     public JwtAuthenticationCustomResponse(String token,
     		String userName ,
     		Collection<? extends GrantedAuthority>  authorities,
-    		int teamId,String firstName,String clientName) {
+    		List<RcmTeam> teams,String firstName,List<RcmCompany> companies) {
         this.token = token;
         this.userName = userName;
         this.authorities = authorities;
-        this.teamId = teamId;
+       // this.teamId = teamId;
         this.firstName=firstName;
-        this.clientName=clientName;
+        //this.clientName=clientName;
+        this.teams=teams;
+        this.companies=companies;
+        
     }
 	
 	public String getToken() {
@@ -49,9 +62,9 @@ public class JwtAuthenticationCustomResponse implements Serializable {
 		return userName;
 	}
 
-	public int getTeamId() {
+	/*public int getTeamId() {
 		return teamId;
-	}
+	}*/
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
@@ -60,10 +73,22 @@ public class JwtAuthenticationCustomResponse implements Serializable {
 	public String getFirstName() {
 		return firstName;
 	}
-	
-	public String getClientName() {
-		return clientName;
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
+
+	public List<RcmTeam> getTeams() {
+		return teams;
+	}
+
+	public List<RcmCompany> getCompanies() {
+		return companies;
+	}
+	
+	/*public String getClientName() {
+		return clientName;
+	}*/
 	
 
 	

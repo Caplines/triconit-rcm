@@ -13057,7 +13057,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 				if (differences1.size()>0) {
 					
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule89.error.message", new Object[] { String.join(",", differences1) }, locale),
+							messageSource.getMessage("rule89.error.message", new Object[] {  }, locale),
 							Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 				}else {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -13084,26 +13084,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 		return dList;
 	}
 	
-	public static void main(String ss []) {
-		
-		List<String> toothD0140=new ArrayList<>();
-    	List<String> toothD0220=new ArrayList<>();
-    	toothD0140.add("S");
-    	//toothD0220.add("S");
-    	//toothD0220.add("D");
-    	List<String> differences1 = toothD0140.stream()
-                .filter(element -> !toothD0220.contains(element))
-                .collect(Collectors.toList());
-    	
-    	List<String> differences2 = toothD0220.stream()
-                .filter(element -> !toothD0140.contains(element))
-                .collect(Collectors.toList());
-    	
-    	differences1.addAll(differences2);
-    	System.out.println(String.join(",", differences1));
-    	
-    	
-	}
+
 	//Insurance and Address
     /**
      * 

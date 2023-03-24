@@ -114,6 +114,7 @@ public class UserServiceImpl {
 	 * @param jwtUser
 	 * @return
 	 */
+	/*
 	public List<RcmTeamDto> getTeamNameByOtherUserTeamId(JwtUser jwtUser) {
 		int teamId = RcmTeamEnum.validateTeamId(jwtUser.getTeamId());
 		if (teamId != 0) {
@@ -133,5 +134,5 @@ public class UserServiceImpl {
 		}
 		return null;
 	}
-
+    */
 }
