@@ -273,7 +273,7 @@ public class AdminServiceImpl {
 			//dump new userData into rcm_user_temp table
 			
             if(user!=null) {
-            	  commonService.dumpDataToRcmUserTemp(user,dto.getUserRole());
+            	  //commonService.dumpDataToRcmUserTemp(user,dto.getUserRole());
             	}
 			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 		}
@@ -719,7 +719,7 @@ public class AdminServiceImpl {
 				listOfRoles.add(rcmRole);
 			}
 			userRole.saveAll(listOfRoles);
-			commonService.dumpDataToRcmUserTemp(existingUser,dto.getRoles());
+			//commonService.dumpDataToRcmUserTemp(existingUser,dto.getRoles());
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
