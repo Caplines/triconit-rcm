@@ -184,4 +184,8 @@ public class MasterServiceImpl {
 		}
 		return roles;
 	}
+
+	public List<RcmCompany> getClients() throws Exception {
+		return rcmCompanyRepo.findAll();
+	}
 }

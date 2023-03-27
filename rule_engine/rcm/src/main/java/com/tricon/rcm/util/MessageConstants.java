@@ -77,5 +77,7 @@ public class MessageConstants {
 	public static final String TEAM_NOT_EXIT = "Team not exist";
 	
 	public static final String CLINET_NOT_MANDATORY = "Client is not mandatory";
+	
+	public static final String UNAUTHORIZED_USER = "User is not authorized";
 
 }

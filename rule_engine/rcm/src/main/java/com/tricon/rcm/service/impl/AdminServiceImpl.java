@@ -271,49 +271,16 @@ public class AdminServiceImpl {
 			RcmUserDto data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
-			//data.setClientName(user.getCompany().getName());
-			//data.setTeamNameId(utilService.checkTeamNullOrNot(user.getTeam()));
-//			List<String> rolesData = user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());
-//			List<RcmRolesResponseDto> rolesByTeamEnum = RcmTeamEnum
-//					.getRolesByTeamId(utilService.checkTeamNullOrNot(user.getTeam()));
-//			List<RcmRolesResponseDto> rolesResponse = new ArrayList<>();
-//			for (String roles : rolesData) {
-//				RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
-//				for (RcmRolesResponseDto respDto : rolesByTeamEnum) {
-//					if (respDto.getFullRoleName().equals(roles)) {
-//						responseDto.setRoleId(respDto.getRoleId());
-//						responseDto.setRoleName(respDto.getRoleName());
-//						responseDto.setFullRoleName(respDto.getFullRoleName());
-//					}
-//					// if UPLOAD_CLAIMS Roles Not match with teamId then we will add explicity
-//					if (roles.equals(Constants.ROLE_PREFIX + Constants.UPLOAD_CLAIMS)) {
-//						responseDto.setRoleId(RcmRoleEnum.UPLOAD_CLAIMS.getName());
-//						responseDto.setRoleName(RcmRoleEnum.UPLOAD_CLAIMS.getFullName());
-//						responseDto.setFullRoleName(roles);
-//					}
-			// if ACCOUNT_MANAGER Roles Not match with teamId then we will add explicity
-//			        if (roles.equals(Constants.ROLE_PREFIX + Constants.ACCOUNT_MANAGER)) {
-//				        responseDto.setRoleId(RcmRoleEnum.ACCOUNT_MANAGER.getName());
-//				        responseDto.setRoleName(RcmRoleEnum.ACCOUNT_MANAGER.getFullName());
-//				        responseDto.setFullRoleName(roles);
-//			        }
-			// if ADMIN Roles Not match with teamId then we will add explicity
-//	        if (roles.equals(Constants.ROLE_PREFIX + Constants.ADMIN)) {
-//		        responseDto.setRoleId(RcmRoleEnum.ADMIN.getName());
-//		        responseDto.setRoleName(RcmRoleEnum.ADMIN.getFullName());
-//		        responseDto.setFullRoleName(roles);
-//	        }
-//				}
-//				rolesResponse.add(responseDto);
-//			}
-//			data.setRoles(rolesResponse);
-			Object [] rolesData=user.getRoles().stream().map(x->x.getRole().split("_", 4)).toArray();
-			List<String>roles=new ArrayList<>();
-			for (Object o : rolesData) {
-				String s[] = (String[])o;
-				roles.add(s[s.length-1]);
+			data.setRoles(user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList()));
+			List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
+			if (clientName != null && !clientName.isEmpty()) {
+				data.setClientName(clientName.stream().map(x -> x.getCompany().getName()).collect(Collectors.toList()));
+
 			}
-			data.setRoles(roles);		
+			List<RcmUserTeam> teamName = userTeamRepo.findByUserUuid(user.getUuid());
+			if (teamName != null && !teamName.isEmpty()) {
+				data.setTeamNameId(teamName.stream().map(x -> x.getTeam().getId()).collect(Collectors.toList()));
+			}
 			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_EXIST, data);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
@@ -624,26 +591,6 @@ public class AdminServiceImpl {
 
 		// if user is not null and company is capline then admin can change user's roles of own company users and other company user's roles
 		if (existingUser != null) {
-			int teamId=-1;//;utilService.checkTeamNullOrNot(existingUser.getTeam());
-			
-			//IF teamId=-1 then this role can't be exist in roles array
-			if (teamId == -1 && dto.getRoles().stream()
-					.anyMatch(x -> x.equals(Constants.TEAMLEAD) || x.equals(Constants.ASSOCIATE)
-							|| x.equals(Constants.CLIENT_MANAGER) || x.equals(Constants.CLIENT_VIEW_ONLY))) {
-				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
-			}
-			
-			//IF teamId=9 then this role can't be exist in roles array
-			if (teamId == 9 && dto.getRoles().stream()
-					.anyMatch(x -> x.equals(Constants.TEAMLEAD) || x.equals(Constants.ASSOCIATE)
-							|| x.equals(Constants.UPLOAD_CLAIMS) || x.equals(Constants.ACCOUNT_MANAGER))) {
-				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
-			}
-			
-			//ADMIN Role can not associate with other roles
-			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.ADMIN) && teamId!=-1)) {
-				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ADMIN_NOT_ASSOCIATED_WITH_ROLES, null);
-			}
 			
 			List<RcmUserRole> existingRoles = existingUser.getRoles().stream().collect(Collectors.toList());
 			if (existingRoles != null) {
@@ -652,12 +599,12 @@ public class AdminServiceImpl {
 			}
 			
 			// if role is TL then we will assign TL+ASSO to editUser
-			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.TEAMLEAD) && teamId!=-1)) {
+			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.TEAMLEAD))) {
 				rcmRole = new RcmUserRole();
 				pk = new RcmUserRolePk();
 				pk.setUuid(existingUser.getUuid());
 				rcmRole.setId(pk);
-				rcmRole.setRole(RcmTeamEnum.generateRole(teamId,Constants.ASSOCIATE));
+				rcmRole.setRole(RcmTeamEnum.generateRoleByRoleType(Constants.ASSOCIATE));
 				userRole.save(rcmRole);
 			}
 			// add new roles
@@ -666,18 +613,8 @@ public class AdminServiceImpl {
 				pk = new RcmUserRolePk();
 				pk.setUuid(existingUser.getUuid());
 				rcmRole.setId(pk);
-				if (role.equals(Constants.UPLOAD_CLAIMS)) {
-					rcmRole.setRole(RcmTeamEnum.generateRole(0, role)); 
-				}
-				else if (role.equals(Constants.ACCOUNT_MANAGER)) {
-					rcmRole.setRole(RcmTeamEnum.generateRole(0, role));
-				}
-				else if (role.equals(Constants.ADMIN)) {
-					rcmRole.setRole(RcmTeamEnum.generateRole(0, role));
-				}
-				else {
-					rcmRole.setRole(RcmTeamEnum.generateRole(teamId, role));
-				}
+				rcmRole.setRole(RcmTeamEnum.generateRoleByRoleType(role));
+				userRole.save(rcmRole);
 				listOfRoles.add(rcmRole);
 			}
 			userRole.saveAll(listOfRoles);

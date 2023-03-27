@@ -13,10 +13,10 @@ public class RcmUserDto {
 	private Integer active;
 	private String fullName;
 	private String email;
-	private Integer teamNameId;
+	private List<Integer> teamNameId;
 	private String firstName;
 	private String lastName;
     private List<String>roles;
-	private String clientName;
+	private List<String> clientName;
     //private List<RcmRolesResponseDto>roles;
 }

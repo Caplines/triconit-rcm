@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmRoleDto;
@@ -77,4 +78,17 @@ public class MasterController {
 //
 //
 //	}
+	
+	@RequestMapping(value = "/getClients", method = RequestMethod.GET)
+	public ResponseEntity<?> getClients() {
+		List<RcmCompany> clients = null;
+		try {
+		  clients = masterDataService.getClients();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", clients));
+	}
+
 }
