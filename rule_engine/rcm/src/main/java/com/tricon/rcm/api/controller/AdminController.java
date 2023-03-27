@@ -68,9 +68,44 @@ public class AdminController extends BaseHeaderController{
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
+		
+		//check role exit or not
 		if(RcmRoleEnum.validateRoles(dto.getUserRole())==null) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLE_NOT_MATCH, null));
+		}
+		
+		// check team is mandatory
+
+		if (!dto.getUserRole().equals(Constants.ADMIN)
+				&& (dto.getTeamId().isEmpty() || dto.getTeamId().stream().anyMatch(x -> x == 0))) {
+			if (dto.getUserRole().equals(Constants.SUPER_ADMIN)) {
+			} else
+				return ResponseEntity
+						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null));
+		}
+
+		// check client is mandatory
+
+		if (dto.getUserRole().equals(Constants.ADMIN) && (dto.getCompanyName().isEmpty()
+				|| dto.getCompanyName().stream().anyMatch(x -> x == null || x.trim().equals("")))) {
+			if (dto.getUserRole().equals(Constants.SUPER_ADMIN)) {
+			} else
+				return ResponseEntity
+						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.CLINET_MANDATORY, null));
+		}
+
+		// team is not required for ADMIN OR SUPER_ADMIN
+		if ((dto.getUserRole().equals(Constants.ADMIN) || dto.getUserRole().equals(Constants.SUPER_ADMIN))
+				&& !dto.getTeamId().isEmpty()) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null));
+		}
+
+		// Client is not required for SUPER_ADMIN
+		if (dto.getUserRole().equals(Constants.SUPER_ADMIN) && !dto.getCompanyName().isEmpty()) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.CLINET_NOT_MANDATORY, null));
 		}
 		
 		GenericResponse response = null;
