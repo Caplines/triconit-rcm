@@ -36,8 +36,10 @@ import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.db.entity.RcmUserCompany;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
+import com.tricon.rcm.db.entity.RcmUserTeam;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
@@ -73,7 +75,9 @@ import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
+import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
+import com.tricon.rcm.jpa.repository.RcmUserTeamRepo;
 //import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
@@ -135,6 +139,13 @@ public class AdminServiceImpl {
 	
 	@Autowired
 	RcmUtilServiceImpl utilService;
+	
+	@Autowired
+	RcmUserCompanyRepo userCompanyRepo;
+	
+	@Autowired
+	RcmUserTeamRepo userTeamRepo;
+	
 
 	/**
 	 * This Method save Data of New Register User
@@ -147,135 +158,86 @@ public class AdminServiceImpl {
 		RcmUserRole roles = null;
 		RcmUserRolePk pk = null;
 		RcmUser user = null;
-//		UserAssignOffice userAssignOffice = null;
+		RcmCompany company = null;
+		RcmTeam team = null;
+		RcmUserCompany userCompany = null;
+		RcmUserTeam userTeam = null;
+
 		user = userRepo.findByEmail(dto.getEmail());
 		if (user == null) {
-			RcmCompany company = rcmCompanyRepo.findByName(dto.getCompanyName());
-			RcmTeam team = teamRepo.findById(dto.getTeamId());
 			user = convertDtotoModel(dto);
-			if (team == null) {
-				
-				//FOR SINGLE ADMIN ROLE whose TEAM IS NULL
-				if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1)) {} 	
-				
-				//FOR SINGLE UPLOAD_CLAIMS ROLE whose TEAM IS NULL			
-				else if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1)) {}
-				
-				//FOR SINGLE ACCOUNT_MANAGER ROLE whose TEAM IS NULL	
-				else if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.ACCOUNT_MANAGER)&& dto.getUserRole().size() == 1)) {}
-				
-				//FOR ADMIN ROLE WITH UPLOAD_CLAIMS AND ACCOUNT_MANAGER ROLE whose TEAM IS NULL
-				else if (dto.getUserRole().size() == 3) {
-					for (String r : dto.getUserRole()) {
-						if (r.equals(Constants.UPLOAD_CLAIMS) || r.equals(Constants.ADMIN) || r.equals(Constants.ACCOUNT_MANAGER))
-							continue;
-						else
-							return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);
-					}
-				} else 
-					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null);				
-			} else {
-				//ADMIN ROLE CAN NOT ASSOCIATED WITH OTHER ROLES
-				if(dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size()>1)){
-					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ADMIN_NOT_ASSOCIATED_WITH_ROLES, null);
-				}
-				//FOR SINGLE ADMIN ROLE TEAM IS NOT REQUIRED 
-				else if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.ADMIN) && dto.getUserRole().size() == 1 && team!=null)) {
-					return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
-				} 
-				//FOR SINGLE UPLOAD_CLAIMS ROLE TEAM IS NOT REQUIRED 	
-				else if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.UPLOAD_CLAIMS) && dto.getUserRole().size() == 1 && team!=null)) {
-					//return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
-				}
-				
-				//FOR SINGLE ACCOUNT_MANAGER ROLE TEAM IS NOT REQUIRED 	
-				else if (dto.getUserRole().stream()
-						.anyMatch(x -> x.equals(Constants.ACCOUNT_MANAGER) && dto.getUserRole().size() == 1 && team!=null)) {
-					//return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null);
-				}
-				else {
-				//user.setTeam(team);
-				}
-			}
-			if (company == null) {
-				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST,null);
-			} else {
-				//user.setCompany(company);
-			}
 			user = userRepo.save(user);
-
-			// if role is TL then we will assign TL+ASSO to registerUser
-			if (dto.getUserRole().stream().anyMatch(x -> x.equals(Constants.TEAMLEAD))) {
-				roles = new RcmUserRole();
-				pk = new RcmUserRolePk();
-				pk.setUuid(user.getUuid());
-				roles.setId(pk);
-				roles.setRole(RcmTeamEnum.generateRole(team.getId(), Constants.ASSOCIATE));
-				userRole.save(roles);
-			}
-
-			for (String role : dto.getUserRole()) {
-				roles = new RcmUserRole();
-				pk = new RcmUserRolePk();
-				pk.setUuid(user.getUuid());
-				roles.setId(pk);
-				if (role.equals(Constants.ADMIN)) {
-					roles.setRole(RcmTeamEnum.generateRole(0, role)); // If role is admin then by default teamId will
-																		// consider 0
-				} 
-				else if (role.equals(Constants.UPLOAD_CLAIMS)) {
-					roles.setRole(RcmTeamEnum.generateRole(0, role)); // If role is upload_claims then by default teamId will
-																		// consider 0
-				}
-				else if (role.equals(Constants.ACCOUNT_MANAGER)) {
-					roles.setRole(RcmTeamEnum.generateRole(0, role)); // If role is ACCOUNT_MANAGER then by default teamId will
-																		// consider 0
-				}
-				else {
-					roles.setRole(RcmTeamEnum.generateRole(team.getId(), role));
-				}
-				userRole.save(roles);
-			}
-
-			// save user data into user_assign_office table
-//				if (user.getCompany().getName().equals(Constants.COMPANY_NAME) && dto.getUserRole().stream().anyMatch(x->x.equals(RcmRoleEnum.ASSO.getName())||x.equals(RcmRoleEnum.TL.getName()))) {
-//
-//					// check office is already exist or not in given team id
-//					if (user.getOffice()!=null) {
-//					userAssignOffice = userAssignRepo.findByOfficeUuidAndTeamId(user.getOffice().getUuid(),user.getTeam().getId());
-//
-//					if (userAssignOffice==null) {
-//						userAssignOffice=new UserAssignOffice();
-//						userAssignOffice.setUser(user);
-//						userAssignOffice.setOffice(user.getOffice());
-//						userAssignOffice.setTeam(user.getTeam());
-//						userAssignRepo.save(userAssignOffice);
-//					 }
-//					}
-//				}
-
-			// send email to register User
 			if (user != null) {
-				String userEmail = user.getEmail();
-				String emailSubject = "New Registration Confirmation";
-				String emailText = "Hi " + user.getFirstName()
-						+ ",\n\nThanks for signing up to RCM. You can now login into the RCM Account.\n\n"
-						+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
-				emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
+
+				// save clients details
+				for (String clientName : dto.getCompanyName()) {
+					company = rcmCompanyRepo.findByName(clientName);
+					if (company != null) {
+						userCompany = new RcmUserCompany();
+						userCompany.setCompany(company);
+						userCompany.setUser(user);
+						userCompanyRepo.save(userCompany);
+					} else {
+						return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
+					}
+				}
+
+				// save Teams details
+				for (int teamId : dto.getTeamId()) {
+					team = teamRepo.findById(teamId);
+					if (team != null) {
+						userTeam = new RcmUserTeam();
+						userTeam.setTeam(team);
+						userTeam.setUser(user);
+						userTeamRepo.save(userTeam);
+					} else {
+						return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_EXIT, null);
+					}
+				}
+
+				// if role is TL then we will assign TL+ASSO to registerUser
+				if (dto.getUserRole() != null && dto.getUserRole().trim().equals("")) {
+					if (dto.getUserRole().equals(Constants.TEAMLEAD)) {
+						for (int i = 0; i <= dto.getTeamId().size(); i++) {
+							roles = new RcmUserRole();
+							pk = new RcmUserRolePk();
+							pk.setUuid(user.getUuid());
+							roles.setId(pk);
+							roles.setRole(RcmTeamEnum.generateRoleByRoleType(Constants.ASSOCIATE));
+							userRole.save(roles);
+						}
+					}
+				}
+
+				if(dto.getUserRole()!=null && dto.getUserRole().trim().equals("")){
+					for (int i = 0; i <= dto.getTeamId().size(); i++) {
+						roles = new RcmUserRole();
+						pk = new RcmUserRolePk();
+						pk.setUuid(user.getUuid());
+						roles.setId(pk);
+						roles.setRole(RcmTeamEnum.generateRoleByRoleType(dto.getUserRole()));
+						userRole.save(roles);
+					}
+
+				}
+
+				// send email to register User
+				if (user != null) {
+					String userEmail = user.getEmail();
+					String emailSubject = "New Registration Confirmation";
+					String emailText = "Hi " + user.getFirstName()
+							+ ",\n\nThanks for signing up to RCM. You can now login into the RCM Account.\n\n"
+							+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
+					emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
+				}
+
+				// dump new userData into rcm_user_temp table
+
+				if (user != null) {
+					commonService.dumpDataToRcmUserTemp(user, dto.getUserRole(), userCompany, userTeam);
+				}
+				return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 			}
-			
-			//dump new userData into rcm_user_temp table
-			
-            if(user!=null) {
-            	  //commonService.dumpDataToRcmUserTemp(user,dto.getUserRole());
-            	}
-			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_EXIST_WITH_EMAIL, null);
 	}

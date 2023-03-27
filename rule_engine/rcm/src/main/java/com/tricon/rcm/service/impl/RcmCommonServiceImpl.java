@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,12 +17,17 @@ import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserCompany;
+import com.tricon.rcm.db.entity.RcmUserRoleHistory;
+import com.tricon.rcm.db.entity.RcmUserTeam;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
+import com.tricon.rcm.jpa.repository.RcmUserRoleHistoryRepo;
+import com.tricon.rcm.jpa.repository.RcmUserTeamRepo;
 //import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
@@ -45,11 +51,17 @@ public class RcmCommonServiceImpl {
 	@Autowired
 	RcmOfficeRepository officeRepo;
 
-	//@Autowired
-	//RcmUserTempRepo userTempRepo;
+	@Autowired
+	RcmUserRoleHistoryRepo userTempRepo;
 
 	@Autowired
 	RcmUtilServiceImpl utilService;
+	
+	@Autowired
+	RcmUserCompanyRepo userCompanyRepo;
+	
+	@Autowired
+	RcmUserTeamRepo userTeamRepo;
 
 	public List<RcmOfficeDto> getAllOffices() {
 
@@ -103,19 +115,31 @@ public class RcmCommonServiceImpl {
 		return null;
 	}
 
-	/*public void dumpDataToRcmUserTemp(RcmUser user, List<String> roles) {
-		RcmUserTemp tempUser = new RcmUserTemp();
-		// tempUser.setClientName(user.getCompany().getName());
+	public void dumpDataToRcmUserTemp(RcmUser user, String roles, RcmUserCompany userCompany,
+			RcmUserTeam userTeam) {
+		RcmUserRoleHistory tempUser = new RcmUserRoleHistory();
+		if (userCompany!=null && userCompany.getUser().getUuid().equals(user.getUuid())) {
+			List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(userCompany.getUser().getUuid());
+			if (clientName != null && !clientName.isEmpty()) {
+				tempUser.setClientName(clientName.stream().map(x -> x.getCompany().getName())
+						.collect(Collectors.joining(",", "[", "]")));
+			}
+		}
+		if (userTeam!=null && userTeam.getUser().getUuid().equals(user.getUuid())) {
+			List<RcmUserTeam> teamName = userTeamRepo.findByUserUuid(userTeam.getUser().getUuid());
+			if (teamName != null && !teamName.isEmpty()) {
+				tempUser.setTeamName(
+						teamName.stream().map(x -> x.getTeam().getName()).collect(Collectors.joining(",", "[", "]")));
+			}
+		}
 		tempUser.setUser(user);
 		tempUser.setEmail(user.getEmail());
 		tempUser.setFirstName(user.getFirstName());
 		tempUser.setLastName(user.getLastName());
 		tempUser.setCreatedDate(Timestamp.from(Instant.now()));
-		// tempUser.setTeamName(utilService.checkTeamNullOrNot(user.getTeam()) == -1 ?
-		// "-1" : user.getTeam().getName());
-		tempUser.setRolesDetails(roles.stream().collect(Collectors.joining(",", "[", "]")));
-		// userTempRepo.save(tempUser);
-	}*/
+		tempUser.setRolesDetails(roles);
+		userTempRepo.save(tempUser);
+	}
 
 	/**
 	 * From List of RcmCompany check if companyuuid is present
@@ -198,6 +222,13 @@ public class RcmCommonServiceImpl {
 		}
 
 		return com;
+	}
+	
+	public boolean checkIfRolesValidFromJWT(String role, JwtUser jwtUser) {
+		if (role == null || role.trim().equals(""))
+			return false;
+		return jwtUser.getAuthorities().stream()
+				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(role)));
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.tricon.rcm.api.controller;
 
 import java.util.List;
+import org.springframework.ui.Model;
 
 import javax.validation.Valid;
 
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmClaimDto;
 import com.tricon.rcm.dto.RcmClaimResponseDto;
@@ -44,7 +46,7 @@ import com.tricon.rcm.util.MessageConstants;
 
 @RestController
 @CrossOrigin
-public class AdminController {
+public class AdminController extends BaseHeaderController{
 
 	private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
@@ -56,28 +58,22 @@ public class AdminController {
 	private UserDetailsService userDetailsService;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto dto) {
-		if (dto.getUserRole().stream().anyMatch(x->x.equals(Constants.SYSTEM))) {
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+	public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto dto,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		System.out.println(partialHeader);
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		if (dto.getUserRole().equals(Constants.SYSTEM)) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
 		}
-		if (dto.getUserRole().isEmpty()) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLES_REQUIRED, null));
-		}
-		if(dto.getUserRole().stream().map(x->RcmRoleEnum.validateRoles(x)).anyMatch(x->x==null)) {
+		if(RcmRoleEnum.validateRoles(dto.getUserRole())==null) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLE_NOT_MATCH, null));
 		}
+		
 		GenericResponse response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-		}
 		try {
 			response = serviceImpl.registerUser(dto);
 		} catch (Exception e) {

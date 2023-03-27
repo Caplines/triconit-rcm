@@ -11,5 +11,5 @@ public class RcmRoleDto {
 
 	private String roleName;
 	private String roleId;
-	private boolean isTeamMandatory;
+	//private boolean isTeamMandatory;
 }

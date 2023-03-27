@@ -41,17 +41,17 @@ public class RcmUserRoleHistory implements Serializable{
 	@Column(name = "last_name", nullable = false, length = 20)
 	private String lastName;
 	
-	@Column(name = "client_name", nullable = false, length = 20)
+	@Column(name = "client_name", length = 20)
 	private String clientName;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "uuid",nullable = false)
 	private RcmUser user;
 	
-	@Column(name = "roles", nullable = false,columnDefinition ="text")
+	@Column(name = "roles",columnDefinition ="text")
 	private String rolesDetails;
 	
-	@Column(name = "team_name", nullable = false)
+	@Column(name = "team_name")
 	private String teamName;
 	
 	@CreationTimestamp

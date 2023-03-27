@@ -13,38 +13,35 @@ public enum RcmTeamEnum {
 	/*
 	 * Make sure Same is present in rcm_team Table
 	 */
-	SYSYEM(1, "SYSTEM","System", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM },true,false,false),
-    ADMIN(2, "ADMIN","Admin", new RcmRoleEnum[] { RcmRoleEnum.ADMIN },true,false,false),
-	PATIENT_CALLING(3,"PATIENT_CALLING","Patient Calling", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	OFFICE(4, "OFFICE", "Office",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	INTERNAL_AUDIT(5, "INTERNAL_AUDIT","Internal Audit", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	IV_TEAM(6, "IV_TEAM","IV Team", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	LC3(8, "LC3","LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	CLIENT(9, "CLIENT","Client", new RcmRoleEnum[] { RcmRoleEnum.CLIENT_MANAGER,RcmRoleEnum.CLIENT_VIEW_ONLY},false,true,true),
-	AGING(10, "AGING","Aging", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	POSTING(11, "POSTING","Posting", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	QUALITY(12, "QUALITY","Quality", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true,true),
-	UPLOAD_CLAIMS(13, "UPLOAD_CLAIMS","Upload Claims", new RcmRoleEnum[] {RcmRoleEnum.UPLOAD_CLAIMS},true,false,false),
-	ACCOUNT_MANAGER(14, "ACCOUNT_MANAGER","Account Manager", new RcmRoleEnum[] {RcmRoleEnum.ACCOUNT_MANAGER},true,false,false);
+	SYSYEM(1, "SYSTEM","System", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM },false),
+    ADMIN(2, "ADMIN","Admin", new RcmRoleEnum[] { RcmRoleEnum.ADMIN },false),
+	PATIENT_CALLING(3,"PATIENT_CALLING","Patient Calling", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	OFFICE(4, "OFFICE", "Office",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	INTERNAL_AUDIT(5, "INTERNAL_AUDIT","Internal Audit", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	IV_TEAM(6, "IV_TEAM","IV Team", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	LC3(8, "LC3","LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	//CLIENT(9, "CLIENT","Client", new RcmRoleEnum[] {RcmRoleEnum.CLIENT_VIEW_ONLY,RcmRoleEnum.REPORTING},true),
+	AGING(10, "AGING","Aging", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	POSTING(11, "POSTING","Posting", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	QUALITY(12, "QUALITY","Quality", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	//UPLOAD_CLAIMS(13, "UPLOAD_CLAIMS","Upload Claims", new RcmRoleEnum[] {RcmRoleEnum.UPLOAD_CLAIMS},true),
+	//ACCOUNT_MANAGER(14, "ACCOUNT_MANAGER","Account Manager", new RcmRoleEnum[] {RcmRoleEnum.ACCOUNT_MANAGER},true),
+	SUPER_ADMIN(16, "SUPER_ADMIN","Super Admin", new RcmRoleEnum[] {RcmRoleEnum.SUPER_ADMIN},false);
 	
 	final private int id;
 	final private String name;
 	final private String description;
 	final private RcmRoleEnum[] role;
-	final private boolean isSmilepoint;
 	final private boolean isRoleVisible;
-	final private boolean isTeamMandatory;
 	
-	private RcmTeamEnum(int id,String name,String description,RcmRoleEnum[] role,boolean isSmilepoint,
-			boolean isRoleVisible,boolean isTeamMandatory) {
+	private RcmTeamEnum(int id,String name,String description,RcmRoleEnum[] role,
+			boolean isRoleVisible) {
 		this.id = id;
 		this.name = name;
 		this.description=description;
 		this.role = role;
-		this.isSmilepoint=isSmilepoint;
 		this.isRoleVisible=isRoleVisible;
-		this.isTeamMandatory=isTeamMandatory;
 	}
 
 
@@ -55,11 +52,6 @@ public enum RcmTeamEnum {
 
 	public boolean isRoleVisible() {
 		return isRoleVisible;
-	}
-
-
-	public boolean isSmilepoint() {
-		return isSmilepoint;
 	}
 
 
@@ -75,19 +67,6 @@ public enum RcmTeamEnum {
 
 	public RcmRoleEnum[] getRole() {
 		return role;
-	}
-
-	
-
-
-	
-
-	
-
-
-
-	public boolean isTeamMandatory() {
-		return isTeamMandatory;
 	}
 
 
@@ -155,17 +134,29 @@ public enum RcmTeamEnum {
 			rolesResponseForAdmin.setRoleName(RcmRoleEnum.ADMIN.getFullName());
 			rolesResponseForAdmin.setFullRoleName(generateRole(0, RcmRoleEnum.ADMIN.getName()));
 			roles.add(rolesResponseForAdmin);
-			RcmRolesResponseDto rolesResponseForUploadClaims = new RcmRolesResponseDto();
-			rolesResponseForUploadClaims.setRoleId(RcmRoleEnum.UPLOAD_CLAIMS.getName());
-			rolesResponseForUploadClaims.setRoleName(RcmRoleEnum.UPLOAD_CLAIMS.getFullName());
-			rolesResponseForUploadClaims.setFullRoleName(generateRole(0, RcmRoleEnum.UPLOAD_CLAIMS.getName()));
-			roles.add(rolesResponseForUploadClaims);
-			RcmRolesResponseDto rolesResponseForAccountManager = new RcmRolesResponseDto();
-			rolesResponseForAccountManager.setRoleId(RcmRoleEnum.ACCOUNT_MANAGER.getName());
-			rolesResponseForAccountManager.setRoleName(RcmRoleEnum.ACCOUNT_MANAGER.getFullName());
-			rolesResponseForAccountManager.setFullRoleName(generateRole(0, RcmRoleEnum.ACCOUNT_MANAGER.getName()));
-			roles.add(rolesResponseForUploadClaims);
+//			RcmRolesResponseDto rolesResponseForUploadClaims = new RcmRolesResponseDto();
+//			rolesResponseForUploadClaims.setRoleId(RcmRoleEnum.UPLOAD_CLAIMS.getName());
+//			rolesResponseForUploadClaims.setRoleName(RcmRoleEnum.UPLOAD_CLAIMS.getFullName());
+//			rolesResponseForUploadClaims.setFullRoleName(generateRole(0, RcmRoleEnum.UPLOAD_CLAIMS.getName()));
+//			roles.add(rolesResponseForUploadClaims);
+//			RcmRolesResponseDto rolesResponseForAccountManager = new RcmRolesResponseDto();
+//			rolesResponseForAccountManager.setRoleId(RcmRoleEnum.ACCOUNT_MANAGER.getName());
+//			rolesResponseForAccountManager.setRoleName(RcmRoleEnum.ACCOUNT_MANAGER.getFullName());
+//			rolesResponseForAccountManager.setFullRoleName(generateRole(0, RcmRoleEnum.ACCOUNT_MANAGER.getName()));
+//			roles.add(rolesResponseForUploadClaims);
 			return roles;
+		}
+		return null;
+	}
+	
+	public static String generateRoleByRoleType(String roleType) {
+		Optional<RcmRoleEnum> roleEnum = Arrays.stream(RcmRoleEnum.values())
+				.filter(x -> x.getName().equals(roleType)).findFirst();
+		String roleName = "", role = "";
+		if (roleEnum.isPresent()) {
+			roleName = roleEnum.get().getName();
+			role = Constants.ROLE_PREFIX.concat(roleName);
+			return role;
 		}
 		return null;
 	}

@@ -35,7 +35,7 @@ public class RcmUserTeam  implements Serializable{
 	private int id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "rcm_user_id",referencedColumnName="uuid", insertable = false, updatable = false)
+	@JoinColumn(name = "rcm_user_id",referencedColumnName="uuid")
 	private RcmUser user;
 	
 	@ManyToOne(fetch = FetchType.EAGER)

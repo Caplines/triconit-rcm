@@ -22,8 +22,8 @@ public class UserRegistrationDto {
 	private String email;
 	@NotEmpty(message = "Please provide your password")
 	private String password;
-	private int teamId=0;
-	private List<String> userRole;
-	@NotEmpty(message = "Please provide a company")
-	private String companyName;
+	private List<Integer>teamId;
+	@NotEmpty(message = "Please provide a role")
+	private String userRole;
+	private List<String> companyName;
 }

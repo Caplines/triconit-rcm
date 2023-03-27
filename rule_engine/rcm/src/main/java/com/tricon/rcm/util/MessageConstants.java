@@ -71,5 +71,9 @@ public class MessageConstants {
 	public static final String ROLE_NOT_MATCH = "Given role does't match";
 	
 	public static final String TL_ASSO_REQUIRED = "TeamLead or Associate is required for this role";
+	
+	public static final String CLINET_MANDATORY = "Client is mandatory";
+	
+	public static final String TEAM_NOT_EXIT = "Team not exist";
 
 }

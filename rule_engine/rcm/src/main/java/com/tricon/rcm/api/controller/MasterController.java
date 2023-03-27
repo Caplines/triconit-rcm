@@ -34,42 +34,47 @@ public class MasterController {
 
 	}
 
-	@RequestMapping(value = "/getteams/{companyName}", method = RequestMethod.GET)
-	public ResponseEntity<?> getTeams(@PathVariable("companyName")String companyName){
+	@RequestMapping(value = "/getteams", method = RequestMethod.GET)
+	public ResponseEntity<?> getTeams(){
 
-		List<RcmTeamDto> teams = masterDataService.getTeams(companyName);
-		if(teams==null) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-		}
+		List<RcmTeamDto> teams = masterDataService.getTeams();
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", teams));
 
 	}
+	
+	@RequestMapping(value = "/getroles", method = RequestMethod.GET)
+	public ResponseEntity<?> getRoles(){
 
-	@RequestMapping(value = "/getroles/{companyName}", method = RequestMethod.GET)
-	public ResponseEntity<?> getRoles(@PathVariable("companyName")String companyName){
-
-		List<RcmRoleDto> roles = masterDataService.getRoles(companyName);
-		if(roles==null) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-		}
+		List<RcmRoleDto> roles = masterDataService.getRoles();
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", roles));
 
 	}
+
+//	@RequestMapping(value = "/getroles/{companyName}", method = RequestMethod.GET)
+//	public ResponseEntity<?> getRoles(@PathVariable("companyName")String companyName){
+//
+//		List<RcmRoleDto> roles = masterDataService.getRoles(companyName);
+//		if(roles==null) {
+//			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", roles));
+//
+//	}
 	
-	@RequestMapping(value = "/rolesByTeamId/{teamId}", method = RequestMethod.GET)
-	public ResponseEntity<?> rolesByTeamId(@PathVariable("teamId")int teamId){
-
-		List<RcmRoleDto> roles = masterDataService.getRolesByTeamId(teamId);
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", roles));
-
-	}
-	
-	@RequestMapping(value = "/defaultRolesByCname/{companyName}", method = RequestMethod.GET)
-	public ResponseEntity<?> defaultRolesByCname(@PathVariable("companyName")String companyName){
-
-		List<RcmRoleDto> defaultRoles = masterDataService.defaultRolesByCompanyName(companyName);
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", defaultRoles));
-
-
-	}
+//	@RequestMapping(value = "/rolesByTeamId/{teamId}", method = RequestMethod.GET)
+//	public ResponseEntity<?> rolesByTeamId(@PathVariable("teamId")int teamId){
+//
+//		List<RcmRoleDto> roles = masterDataService.getRolesByTeamId(teamId);
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", roles));
+//
+//	}
+//	
+//	@RequestMapping(value = "/defaultRolesByCname/{companyName}", method = RequestMethod.GET)
+//	public ResponseEntity<?> defaultRolesByCname(@PathVariable("companyName")String companyName){
+//
+//		List<RcmRoleDto> defaultRoles = masterDataService.defaultRolesByCompanyName(companyName);
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", defaultRoles));
+//
+//
+//	}
 }
