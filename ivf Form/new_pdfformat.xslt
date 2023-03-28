@@ -1,1081 +1,925 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+﻿<?xml version="1.0" encoding="ISO-8859-1"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
    version="1.0" >
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"  version="1.0"  />
-	<xsl:template match="/caplineIVFFormDto">
+<xsl:template match="/caplineIVFFormDto">
 <html>
-
 <head>
-                <style>
-				body {font-family:sans-serif;}
-				table {vertical-align:text-top;}
-				.grid-container {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  background-color: #bbb;
- width:100%; 
- box-sizing:border-box;
- line-height:2px;
-}
-.br1px{ border-left: 1px solid #000; border-top: 1px solid #000;}
-.grid-item {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  padding: 10px;
-  
-  text-align: center;
-  width:32%;
-  float:left;
-  box-sizing:border-box;
-}
-.main-heading-1 {font-family:helvetica;font-weight:regular;font-size:13px}
-.main-heading-11 {font-family:helvetica;font-weight:regular;font-size:11px}
-.sub-heading {font-family:helvetica;font-size:9px;}
-.sub-heading1 {font-family:helvetica;font-size:9px;}
-.withds {width:3%}
-.underline1{text-decoration:underline}
-.colourb{color:#4472c4}
-.colourp{color:#7030a0}
-.colourrr{color:red}
-.colourbr{color:#843c0b}
-.colourpos{color:#1f3864}
-.colourgr{color:#385623}
-.br_but{border-bottom:1px solid #000;}
-.border-btn tr:last-child td {border-bottom:1px solid #000; } 
-/*.last-r-border tr td:last-child, .last-r-border tr th:last-child {border-right:1px solid #000;}*/
-     
-	 </style>
-			<title>PDF - IVF Form</title>
-			<meta name="description" content="PDF - IVF Form" />
-			
-		</head>
-		
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        body {
+            font-family: helvetica;
+            font-size: 12px;
+        }
 
+        .tableHeading {
+            font-size: 14px;
+            background-color: #3d85c6;
+            color: #fff;
+            text-align: center;
+            font-family: sans-serif;
+            font-weight: bold;
+        }
+
+
+        .sub-heading {
+            font-size: 12px;
+            color: #000;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .rowHeading {
+            background-color: #666666;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .table {
+            border-collapse: collapse;
+            width: 100%
+        }
+
+            .table td {
+                border: 1px solid #000;
+                border-collapse: collapse;
+                padding: 2px 4px;
+                vertical-align: top;
+            }
+
+        .lightGray {
+            background-color: #f3f3f3;
+        }
+
+        .lightBrown {
+            background-color: #f9cb9c;
+        }
+
+        .yellow {
+            background-color: #ff0;
+        }
+
+        .red {
+            background-color: #f00;
+            color: #fff;
+        }
+
+        .white {
+            background-color: #fff;
+        }
+
+        .dullBlue {
+            background-color: #a2c4c9;
+            color: #000;
+        }
+
+        .dullYellow {
+            background-color: #ffe599;
+            color: #000;
+        }
+
+        .dullRed {
+            background-color: #dd7e6b;
+            color: #000;
+        }
+
+        .dullGreen {
+            background-color: #b6d7a8;
+        }
+
+        .text-white {
+            color: #fff;
+        }
+
+        .width-5 {
+            width: 5%;
+            border: 0px;
+        }
+
+        .width-7 {
+            width: 7%;
+        }
+
+        .width-8 {
+            width: 8%;
+        }
+
+        .width-10 {
+            width: 10%;
+        }
+
+        .width-13 {
+            width: 13%;
+        }
+
+        .width-14 {
+            width: 14%;
+        }
+
+        .width-15 {
+            width: 15%;
+        }
+
+        .width-16 {
+            width: 16%;
+        }
+
+        .width-17 {
+            width: 17%;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .table td.borderNone {
+            border: 0px;
+            background:#fff;
+        }
+        .blackClr {
+            color:#000;
+        }
+        .align-right {
+            text-align:right;
+        }
+		.table td.innerTableBox {
+            padding: 0;
+        }
+        .innerTable {
+            border-collapse: collapse;
+            float: left;
+            width: 33.333%;
+        }
+        .innerTable tr td:first-child {
+            border-left:0px;
+        }
+            .innerTable:last-child tr td:last-child {
+                border-right: 0px;
+            }
+            .innerTable tr td {
+                border-top: 0px;
+            }
+            .innerTable tr:last-child td {
+                border-bottom: 0px;
+            }
+    </style>
+</head>
 <body>
-    <form  id="myIVForm" target="_top" >
-	
-        
-        <div id="page_1">
-		   <span> 
-		   
-            <p  style="text-align: center">Smilepoint - Insurance Verification Form</p>
-            </span>
-			
-           <table  id="basic"  vertical-align="top">
-                <tbody>
-                    <tr>
-                        <td>
-                           <span class="main-heading-1">Claims Timely Fillings  </span>
-						    
-                        </td> 
-                        <td><span class="sub-heading"><xsl:value-of select="percentages12"/></span></td>
-                        <td colspan="6">
-                         </td>
-                        
-                        <td>
-                         <span class="main-heading-1">IVF ID:</span> <span class="sub-heading"><xsl:value-of select="basicInfo1"/>_<xsl:value-of select="id"/></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="withds">
-                           <span class="main-heading-1">Office Name:</span> 
-						</td>
-                        <td>						
-						   <span class="sub-heading" ><xsl:value-of select="basicInfo1"/> </span>
-                        </td>
-                        <td class="withds">
-                           <span class="main-heading-1">Patient Name:</span>
-						</td>
-						<td>
-						   <span class="sub-heading"><xsl:value-of select="basicInfo2"/></span>
-						 </td>
-                        <td>
-                           <span class="main-heading-1">Insurance Name:</span>
-						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="basicInfo3"/></span>
-                        </td>
-                        <td>
-                         <span class="main-heading-1">Tax ID:</span>
-                         </td>
-                        <td>						 
-						 <span class="sub-heading"><xsl:value-of select="basicInfo4"/></span>
-                        </td>
-                    </tr>
-					<tr>
-                        <td class="withds">
-                           <span class="main-heading-1">Policy Holder:</span> 
-						</td>
-                        <td>						
-						   <span class="sub-heading" ><xsl:value-of select="basicInfo5"/> </span>
-                        </td>
-                        <td class="withds">
-                           <span class="main-heading-1">Patient DOB:</span>
-						</td>
-						<td>
-						   <span class="sub-heading"><xsl:value-of select="basicInfo6"/></span>
-						 </td>
-                        <td>
-                           <span class="main-heading-1">Insurance Contact:</span>
-						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="basicInfo7"/></span>
-                        </td>
-                        <td>
-                         <span class="main-heading-1">CSR Name:</span>
-                         </td>
-                        <td>						 
-						 <span class="sub-heading"><xsl:value-of select="basicInfo8"/></span>
-                        </td>
-                    </tr>
-					<tr>
-                        <td class="withds">
-                           <span class="main-heading-1">Policy Holder DOB:</span> 
-						</td>
-                        <td>						
-						   <span class="sub-heading" ><xsl:value-of select="basicInfo9"/> </span>
-                        </td>
-                        <td class="withds">
-                           <span class="main-heading-1">Employer Name:</span>
-						</td>
-						<td>
-						   <span class="sub-heading"><xsl:value-of select="basicInfo10"/></span>
-						 </td>
-                        <td>
-                           <span class="main-heading-1">Continued/Recall/NP:</span>
-						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="basicInfo11"/></span>
-                        </td>
-                        <td>
-                         <span class="main-heading-1">REF #:</span>
-                         </td>
-                        <td>						 
-						 <span class="sub-heading"><xsl:value-of select="basicInfo12"/></span>
-                        </td>
-                    </tr>
-					<tr>
-                        <td class="withds">
-                           <span class="main-heading-1">Member SSN:</span> 
-						</td>
-                        <td>						
-						   <span class="sub-heading" ><xsl:value-of select="basicInfo13"/> </span>
-                        </td>
-                        <td class="withds">
-                           <span class="main-heading-1">Group #:</span>
-						</td>
-						<td>
-						   <span class="sub-heading"><xsl:value-of select="basicInfo14"/></span>
-						 </td>
-                        <td>
-                           <span class="main-heading-1">COB Status:</span>
-						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="basicInfo15"/></span>
-                        </td>
-                        <td>
-                         <span class="main-heading-1">Patient ID:</span>
-                         </td>
-                        <td>						 
-						 <span class="sub-heading"><xsl:value-of select="basicInfo21"/></span>
-                        </td>
-                    </tr>
-					<tr>
-                        <td class="withds">
-                           <span class="main-heading-1">Member ID:</span> 
-						</td>
-                        <td>						
-						   <span class="sub-heading" ><xsl:value-of select="basicInfo16"/> </span>
-                        </td>
-                        <td class="withds">
-                           <span class="main-heading-1">Appointment:</span>
-						</td>
-						<td>
-						   <span class="sub-heading"><xsl:value-of select="basicInfo17"/></span>
-						 </td>
-                        <td>
-                           <span class="main-heading-1">Payer ID:</span>
-						 </td>
-                        <td> <span class="sub-heading"><xsl:value-of select="basicInfo18"/></span>
-                        </td>
-                        <td>
-                         <span class="main-heading-1">Provider Last Name:</span>
-                         </td>
-                        <td>						 
-						 <span class="sub-heading"><xsl:value-of select="basicInfo19"/></span>
-                        </td>
-                    </tr>
-					<tr>
-                        <td  class="withds">
-                          <span class="main-heading-1"> Insurance Address:</span>
-						</td>
-                        <td  colspan="7">						
-						  <span class="sub-heading"><xsl:value-of select="basicInfo20"/></span>
-                            
-                        </td>
-                    </tr>
-					
-                    
-                </tbody>
-            </table>
-            <p id="errors" style="color:red;font-weight:200;"></p>
-            <p class="p3 ft1 main-heading-1">Policy/Plan Information</p>
-            <table cellpadding="5" cellspacing="2" class="t1" id="policy">
-                <tbody>
-				   <!--
-                    <tr>
-                        <td colspan="2">
-                            <p class="p2 ft4"><b>Plan Type :</b>
-                                <span class="sub-heading"><xsl:value-of select="policy1"/>policy17 CRA Req.
-                            </p>
-                        </td>
-                          <td>
-                            <p class="p0 ft5">
-                                D0120:
-                                <span class="sub-heading"><xsl:value-of select="policy18"/>
-                            </p>
-                        </td>
-                        <td>
-                            <p class="p0 ft5">
-                                D2391:
-                                <span class="sub-heading"><xsl:value-of select="policy19"/>
-                            </p>
-                        </td>
-                        <td>
-                            <p class="p0 ft5">
-                                Find FS:
-                                <span class="sub-heading"><xsl:value-of select="policy20"/>
-                            </p>
-                        </td>
-                                
-                    </tr>
-					-->
-                    <tr>
-                        <td class="main-heading-1">
-                            Plan Type:
-						</td>
-                        <td> 						
-                          <span class="sub-heading"><xsl:value-of select="policy1"/></span>
-                           
-                        </td>
-                        <td class="main-heading-1">
-                                Termed Date:
-						</td>
-                        <td> 						
-                                <span class="sub-heading"><xsl:value-of select="policy2"/></span>
-                        </td>
-                        <td class="main-heading-1">
-                                Network:
-						</td>
-                        <td> 						
-								<span class="sub-heading"><xsl:value-of select="policy3"/></span>
-                        </td>
-                        <td class="main-heading-1">
-							Fee Schedule:
- 						</td>
-                        <td> 						
-								<span class="sub-heading"><xsl:value-of select="policy4"/></span>
-                        </td>
-                        <td class="main-heading-1">
-                            Effective Date:
-						</td>
-                        <td> 						
-                                <span class="sub-heading"><xsl:value-of select="policy5" /></span>
-                        </td>
-                        <td class="main-heading-1">
-                            
-							Cal.Yr/Fiscal Yr/Plan Yr. :
-                      	</td>
-                        <td> 						
-                          <span class="sub-heading"><xsl:value-of select="policy6"/></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="main-heading-1">
-                            Annual Max:
-						</td>
-                        <td> 						
-                            
-							<span class="sub-heading"><xsl:value-of select="policy7"/></span>
-                        </td>
-                        <td class="main-heading-1">
-                           Ann. Max Rem:
-   						</td>
-                        <td> 						
-                                <span class="sub-heading"><xsl:value-of select="policy8"/></span>
-                        </td>
-                        <td class="main-heading-1">
-                            Ind. Ded:
-                     	</td>
-                        <td> 						
-                         <span class="sub-heading"><xsl:value-of select="policy9"/></span>
-                        </td>
-                        <td class="main-heading-1">
-                            Ind. Ded Rem:
-						</td>
-                        <td> 						
-                                <span class="sub-heading"><xsl:value-of select="policy10"/></span>
-                        </td>
-                        <td class="main-heading-1">
-                            Dependents Covered to age:
-                        </td>
-                        <td> 						
-                            <span class="sub-heading"><xsl:value-of select="policy11"/></span>
-                         </td>
-                        <td class="main-heading-1">
-                            Pre-D Mandatory:
-                      	</td>
-                        <td> 						
-                          <span class="sub-heading"><xsl:value-of select="policy12"/></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="main-heading-1">
-                            Non-Duplicate clause?
-						</td>
-                        <td> 						
-							<span class="sub-heading"><xsl:value-of select="policy13"/></span>
-                        </td>
-                        <td  class="main-heading-1" colspan="2">
-						
-                            Full Time Student Status Required?
-						</td>
-                        <td> 						
-                                
-								<span class="sub-heading"><xsl:value-of select="policy14"/></span>
-                        </td>
-                        <td class="main-heading-1" colspan="2">
-                            Assignment of Benefits Accepted?
-						</td>
-                        <td> 						
-                            
-							<span class="sub-heading"><xsl:value-of select="policy15"/></span>
-                        </td>
-                        <td class="main-heading-1">
-                                Coverage Book:
-						</td>
-                        <td> 						
-                                <span class="sub-heading"><xsl:value-of select="policy16"/></span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <br/>
-			<p class="p3 ft1 main-heading-1">Items to be Checked Manually by Treatment Planner and LC3</p>
-            
-			
-			
-            <table style="width: 90%" id="rules" cellpadding="0">
-                <colgroup>
-                    <col width="12.5%"/>
-                    <col width="12.5%"/>
-                    <col width="12.5%"/>
-                    <col width="8.5%"/>
-                    <col width="10.5%"/>
-                    <col width="18.5%"/>
-                    <col width="12.5%"/>
-                    <col width="12.5%"/>
-                </colgroup>
-                <tbody>
-                    <tr>
-                        <td class="main-heading-11 colourgr"><span class="underline1">X-Rays</span>(Frequency)</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 colourb underline1">Sealants(D1351)</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="sealantsD"/></span></td>
-                        <td class="main-heading-11 colourp underline1">Perio</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 colourp withds"><span class="underline1">Perio</span> Mnt.(D4910): %</td>
-						<td><span class="sub-heading1"><xsl:value-of select="perioMnt1"/></span></td>
-						<td class="main-heading-11 colourgr">Dentures (Frequency)</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourgr">BWX:</span><xsl:value-of select="xrays1"/><br/>
-						<span class="colourgr">FMX (D0210):</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="xrays4"/></span></td>
-                        <td class="main-heading-11 colourb">Frequency:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="sealants1"/></span></td>
-                        <td class="main-heading-11 colourp">SRP (D4341)%:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="perio1"/></span></td>
-                        <td class="main-heading-11 colourp withds">Frequency: %</td>
-						<td><span class="sub-heading1"><xsl:value-of select="perioMnt2"/></span></td>
-						<td class="main-heading-11 colourgr">Complete (D5110/D5120):</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="dentures1"/></span></td>
-                    </tr>
-					<tr>
-                        <td colspan="4" class="main-heading-11 withds"><span class="colourgr"></span>
-						<span class="sub-heading1">
-						</span>
-						</td>
-                        <td colspan="2" class="main-heading-11 colourgr"></td>
-                        <td colspan="2"></td>
-                        <td colspan="2"><span class="main-heading-11 colourgr">Denture(fr)(D5225):</span>
-						<span class="sub-heading1"><xsl:value-of select="denf5225"/></span></td>
-                    </tr>
-					<tr>
-                        <td colspan="4" class="main-heading-11 withds"><span class="colourgr"></span>
-						<span class="sub-heading1"></span>
-						</td>
-						<td colspan="2" class=""></td>
-						
-                        <td colspan="2" class="main-heading-11 colourgr"></td>
-                        <td colspan="2"><span class="main-heading-11 colourgr">Denture(fr)(D5226):</span>
-						<span class="sub-heading1"><xsl:value-of select="denf5226"/></span></td>
-                        
-                    </tr>
-					
-                    <tr>
-                        <td colspan="1" class="main-heading-11 withds"><span class="colourgr">Will downgrade applicable?:</span>
-						</td>
-                        <td class="sub-heading1 colourgr"><xsl:value-of select="cdowngrade"/></td>
-                        <td></td>
-                        <td colspan="7" class="main-heading-11 colourgr">
-						  </td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 colourgr withds"><span class="colourgr">PA(D0220):</span><xsl:value-of select="xrays2"/><br/>
-						<span class="colourgr">D0230:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="xrays3"/></span></td>
-                        <td class="main-heading-11 colourb">Age Limit:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="sealants2"/></span></td>
-                        <td class="main-heading-11 colourp">Frequency:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="perio2"/></span></td>
-                        <td class="main-heading-11 colourp withds">Alt. with Prophy (D1110):</td>
-						<td><span class="sub-heading1"><xsl:value-of select="perioMnt3"/></span></td>
-						<td class="main-heading-11 colourgr">Immediate (D5130/D5140):</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="dentures2"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 colourgr withds"><span class="colourgr">Bundling:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="xrays5"/></span></td>
-                        <td class="main-heading-11 colourb">Coverage:</td>
-                        <td><span class="sub-heading1"><!--<xsl:value-of select=""/>--></span></td>
-                        <td class="main-heading-11 colourp">Quads Per Day:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="perio3"/></span></td>
-                        <td class="main-heading-11 withds"><span class="colourp">FMD (D4355)%:</span><xsl:value-of select="perioMnt4"/><br/>
-						<span class="colourp">Frqncy </span></td>
-						<td><span class="sub-heading1"><xsl:value-of select="perioMnt5"/></span></td>
-						<td class="main-heading-11 colourgr">Partial (D5213/D5214):</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="dentures3"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 colourrr withds"><span class="colourrr">Fluroide (D1208):</span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 colourb">Primary-Molars:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="sealants3"/></span></td>
-                        <td class="main-heading-11 colourp">Days b/w Quads:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="perio4"/></span></td>
-                        <td class="main-heading-11 withds"><span class="colourp">Gingivitis (D4346)%:</span><xsl:value-of select="perioMnt6"/><br/>
-						<span class="colourp">Freq.</span></td>
-						<td><span class="sub-heading1"><xsl:value-of select="perioMnt7"/></span></td>
-						<td class="main-heading-11 colourgr">Interim Partial (D5820):</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="dentures4"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 colourrr withds"><span class="colourrr">Frqncy:</span>
-						<span class="sub-heading1"><xsl:value-of select="fluroide1"/></span><span class="colourrr">Age Lmt:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="fluroide2"/></span></td>
-                        <td class="main-heading-11 colourb">Pre-Molars:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="sealants4"/></span></td>
-                        <td class="main-heading-11 colourp"></td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 withds"></td>
-						<td><span class="sub-heading1"></span></td>
-						<td class="main-heading-11 colourgr"></td>
-                        <td></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 colourrr withds"><span class="colourrr">Varnish (D1206):</span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 colourb">Perm-Molars:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="sealants5"/></span></td>
-                        <td class="main-heading-11 colourgr"><span class="underline1">Prophy (Frequency):</span></td>
-                        <td><span class="sub-heading1"><xsl:value-of select="prophy1"/></span></td>
-                        <td class="main-heading-11 withds"><span class="colourp">D1120:</span>
-						</td>
-						<td><span class="sub-heading1"><xsl:value-of select="prophy2"/></span></td>
-						<td class="main-heading-11 colourgr">1120/1110 Roll Age:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="rollage"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 colourrr withds"><span class="colourrr">Frqncy:</span>
-						<span class="colourrr"><xsl:value-of select="fluroide3"/></span>
-						<span class="colourrr">Age Lmt:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="fluroide4"/></span></td>
-                        <td class="main-heading-11 colourb"></td>
-                        <td></td>
-                        <td class="main-heading-11 colourgr"></td>
-                        <td></td>
-                        <td class="main-heading-11 withds">
-						</td>
-						<td></td>
-						<td class="main-heading-11 colourgr"></td>
-                        <td></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">Exams(Frequency):</span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 colourgr"><span class="underline1">SSC</span> Frequency</td>
-                        <td></td>
-                        <td class="main-heading-11 colourb"><b><span class="underline1">Oral Surgery</span></b></td>
-                        <td></td>
-                        <td class="main-heading-11 withds colourb"><span class="underline1"></span></td>
-						<td></td>
-						<td class="main-heading-11 colourbr"><span class="underline1">Prosthetics</span></td>
-                        <td></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">D0120:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="exams1"/></span></td>
-                        <td class="main-heading-11 colourgr"> D2930:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="ssc1"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourp">Crown Lengthening (D4249)%:</span>
-                          <span class="sub-heading1"><xsl:value-of select="oral1"/></span>	
-						  <span class="colourp">Frqncy:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="oral2"/></span></td>
-                        <td class="main-heading-11 colourbr">Missing Tooth Clause:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="prosthetics1"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">D0140:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="exams2"/></span></td>
-                        <td class="main-heading-11 colourgr">D2931:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="ssc2"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourp">Bone Graft (D7953) Covered w.EXT:</span>
-                          <span class="sub-heading1"><xsl:value-of select="dentures5"/></span>	
-						  <span class="colourp">Frqncy:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="dentures6"/></span></td>
-                        <td class="main-heading-11 colourbr">Replacement Clause:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="prosthetics2"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">D0145:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="exams3"/></span></td>
-                        <td class="main-heading-11 colourgr"></td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourp">Alveolplasty:</span>
-                          <span class="sub-heading1"></span>	
-						  <span class="colourp"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 colourbr">Crowns<span class="sub-heading1">(D2740/D2750)Freq</span>:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior5"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">D0150:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="exams4"/></span></td>
-                        <td class="main-heading-11 colourgr">Posterior Composites (D2391)%:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior1"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourp">1-3 Teeth/Qd (D7311): Covered w. Ext:</span>
-                          <span class="sub-heading1"><xsl:value-of select="oral3"/></span>	
-						  <span class="colourp">Frequency:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="oral4"/></span></td>
-                        <td class="main-heading-11 colourbr">Paid Prep / Seat Date:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="prosthetics3"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourrr underline1"><b>Waiting Periods:</b></span>
-						<span class="colourrr">(months)</span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 colourgr">Frequency:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior2"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourp">4 Teeth/Qd (D7310): Covered w. Ext:</span>
-                          <span class="sub-heading1"><xsl:value-of select="oral5"/></span>	
-						  <span class="colourp">Frequency:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="oral6"/></span></td>
-                        <td class="main-heading-11 colourbr"></td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourrr">Basic:</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="waitingPeriod1"/></span></td>
-                        <td class="main-heading-11 colourrr">Fillings (Bundle):</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="fillings"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourgr">Ortho(D8080/D8090) Age Limit:</span>
-                         </td>
-                        <td><span class="sub-heading1"><xsl:value-of select="ortho3"/></span></td>
-                        <td class="main-heading-11"><span class="colourbr">Build-Up (D2950) %:</span>
-						<span class="sub-heading1"><xsl:value-of select="posterior10"/></span>
-						<span class="colourbr">Frequency:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior11"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourrr">Major:</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="waitingPeriod2"/></span></td>
-                        <td class="main-heading-11 colourrr"></td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="4">
-                         </td>
-                        <td class="main-heading-11"><span class="colourbr">Same day as Crown:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior12"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourrr">Ortho:</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="waitingPeriod3"/></span></td>
-                        <td class="main-heading-11 colourrr"></td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="4">
-                         </td>
-                        <td class="main-heading-11"><span class="colourbr"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-					<td colspan="10"><span class="p3 ft1 main-heading-1">Items Handled by Eaglesoft Automatically</span>
-					</td>
-					</tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourrr">Preventative %:</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages9"/></span></td>
-                        <td class="main-heading-11 colourrr"><span class="underline1">Extractions</span>: %</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourgr">Ortho (%): D8080, D8090,D8070:</span>
-                         </td>
-                        <td><span class="sub-heading1"><xsl:value-of select="ortho1"/></span></td>
-                        <td class="main-heading-11"><span class="colourbr"><span class="underline1">Sealants</span> D1351(%):</span>
-						<span class="sub-heading1"><xsl:value-of select="sealantsD"/></span>
-						<span class="colourbr"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourrr">Subject to ded:</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages13"/></span></td>
-                        
-                        <td colspan="8"><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">Diagnostic %:</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages10"/></span></td>
-                        <td class="main-heading-11 colourrr"><span><b>Minor</b></span>: (D7111, D7140):</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="extractions1"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourgr">Ortho Max:</span>
-                         </td>
-                        <td><span class="sub-heading1"><xsl:value-of select="ortho2"/></span></td>
-                        <td class="main-heading-11"><span class="colourgr">Ortho Remaining:</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="ortho5"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">Subject to ded:</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages14"/></span></td>
-                        <td colspan="8"><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">PA(%):</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages11"/></span></td>
-                        <td class="main-heading-11 colourrr"><span><b>Major</b></span>: (D7210, D7220, D7230,D7240):</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="extractions2"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourgr">Subject to Deductible:</span>
-                         </td>
-                        <td><span class="sub-heading1"><xsl:value-of select="ortho4"/></span></td>
-                        <td class="main-heading-11"><span class="colourbr"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">Subject to ded:</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages15"/></span></td>
-                        
-                        
-						<td class="main-heading-11"><span class="colourb">FMX(%)</span>
-						
-						</td>
-						<td><span class="sub-heading1"><xsl:value-of select="percentages16"/></span></td>
-						<td colspan="6"><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td colspan="4" class="main-heading-11 withds"><span class="colourgr">Denture(%)(D5225):</span>
-						<span class="sub-heading1">
-						<xsl:value-of select="den5225"/></span>
-						</td>
-                        <td colspan="2" class="main-heading-11 colourgr"></td>
-                        <td colspan="2"></td>
-                        <td colspan="2"><span class="main-heading-11 colourgr"></span>
-						<span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td colspan="4" class="main-heading-11 withds"><span class="colourgr">Denture(%)(D5226):</span>
-						<span class="sub-heading1"><xsl:value-of select="den5226"/></span>
-						</td>
-						<td colspan="2" class=""></td>
-						
-                        <td colspan="2" class="main-heading-11 colourgr"></td>
-                        <td colspan="2"><span class="main-heading-11 colourgr"></span>
-						<span class="sub-heading1"></span></td>
-                        
-                    </tr>
-					<tr>
-                        <td colspan="10" class="main-heading-11 withds"><span class="colourgr">Bridges(%)</span>
-						</td>
-                    </tr>
-					<tr>
-                        <td colspan="3" class="main-heading-11 withds"><span class="colourgr">(D6245 / D6740):</span>
-						<span class="sub-heading1"><xsl:value-of select="bridges1"/></span>
-						</td>
-                        <td colspan="1" class="main-heading-11 colourgr">Frequency:</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="bridges2"/></span></td>
-                        <td colspan="6" class="main-heading-11 colourgr">
-						  </td>
-                    </tr>
-					
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb"></span>
-						
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11 colourrr"></td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="3">
-                         </td>
-                        <td></td>
-                        <td class="main-heading-11"><span class="colourb">IV Sedation</span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourgr">Basic (%):</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages1"/></span></td>
-                        <td class="main-heading-11 colourb"><span class="underline1">Sedation (%)</span>Nitrous (D9230):</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="sedations1"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourb">IV Sedation (D9243):</span>
-                         </td>
-                        <td><span class="sub-heading1"><xsl:value-of select="sedations2"/></span></td>
-                        <td class="main-heading-11"><span class="colourb"> (D9248):</span>
-						<span class="sub-heading1"><xsl:value-of select="sedations3"/></span>
-						<span class="colourbr"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourgr">Subject to Ded</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages2"/></span></td>
-                        <td class="main-heading-11 colourrr"></td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="4">
-                         </td>
-                        <td class="main-heading-11"><span class="colourbr"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourp">Major (%):</span>
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages3"/></span></td>
-                        <td class="main-heading-11 colourrr"></td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="4">
-                         </td>
-                        <td class="main-heading-11"><span class="colourbr"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">Subject to Ded:</span> 
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages4"/></span></td>
-                        <td class="main-heading-11 colourp">Implants Coverage (%)</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourpos"></span>
-                         </td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11"><span class="colourbr"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">Endo (%):</span> 
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages5"/></span></td>
-                        <td class="main-heading-11 colourp">Implants D6010:
-						<span class="sub-heading1"><xsl:value-of select="implants1"/></span>
-						<span class="main-heading-11">D6057:</span>
-						<span class="sub-heading1"><xsl:value-of select="implants2"/></span>
-						<span class="main-heading-11">D6190:</span>
-						<span class="sub-heading1"></span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="implants3"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourpos">Downgraded to Amalgam(D2140):</span>
-                         </td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior3"/></span></td>
-                        <td class="main-heading-11"><span class="colourbr"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourb">Subject to Ded:</span> 
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages6"/></span></td>
-                        <td class="main-heading-11 colourp">Implant Supported Porc./Ceramic(D6065):
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="implants4"/></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourpos">Crowns (D2740 / D2750) %:</span>
-                         </td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior4"/></span></td>
-                        <td class="main-heading-11"><span class="colourbr"></span>
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                    </tr>
-					
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourp">Implants Fr(D6010):</span> 
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="implants5"/></span></td>
-                        <td class="main-heading-11 colourp">Implants Fr(D6057):
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="implants6"/></span></td>
-                        <td colspan="4"></td>
-						
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourp">Implants Fr(D6065):</span> 
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="implants7"/></span></td>
-                        <td class="main-heading-11 colourp">Implants Fr(D6190):
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="implants8"/></span></td>
-                        <td colspan="4"></td>
-						
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourgr">Perio Surgery(%):</span> 
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages7"/></span></td>
-                        <td class="main-heading-11 colourp">
-						</td>
-                        <td><span class="sub-heading1"></span></td>
-                        <td class="main-heading-11" colspan="3"><span class="colourpos">Will Crown Downgrade or not?:</span>
-                         </td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior6"/></span></td>
-                        <td class="main-heading-11"><span class="colourbr">Which code?</span>
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior17"/></span></td>
-                    </tr>
-					<tr>
-                        <td class="main-heading-11 withds"><span class="colourgr">Subject to Ded:</span> 
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="percentages8"/></span></td>
-                        <td class="main-heading-11 colourb">Consult (D9310) %:
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="posterior8"/></span></td>
-                        <td class="main-heading-11" colspan="1"><span class="colourb">Frequency</span>
-                         </td>
-						 <td class="sub-heading1" colspan="1"><xsl:value-of select="posterior9"/>
-                         </td>
-                        <td><span class="main-heading-11 colourpos">Night Guards (D9944) %:</span></td>
-                        <td class="sub-heading1"><span class="colourbr"><xsl:value-of select="posterior7"/></span>
-						</td>
-                        <td><span class="main-heading-11 colourpos">Night Gaurds (D9945) %:</span></td>
-						<td><span class="sub-heading1"><xsl:value-of select="posterior18"/></span></td>
-                    </tr>
-                    
-                    <tr>
-                        <td class="main-heading-11 withds"><span class="">D0120:</span> 
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="policy18"/></span></td>
-                        <td class="colourb">
-						</td>
-                        
-                        <td class="main-heading-11" colspan="1"><span class="">D2391:</span>
-                         </td>
-						 <td class="sub-heading1" colspan="1"><xsl:value-of select="policy19"/>
-                         </td>
-                        <td><span class="main-heading-11 colourpos">Night Gaurds(D9944)FR:</span></td>
-                        <td class="sub-heading1"><xsl:value-of select="posterior19"/>
-						</td>
-						<td><span class="sub-heading1"></span></td>
-                        <td><span class="main-heading-11 colourpos">Night Gaurds(D9945)FR:</span></td>
-						<td><span class="sub-heading1"><xsl:value-of select="posterior20"/></span></td>
-                    </tr>
+    <form>
+        <table class="table" vertical-align="top">
+            <tr>
+                <td colspan="10" class="tableHeading">Subscriber and Insurance Details</td>
+                <td class="width-5 borderNone"></td>
+            </tr>
+            <tr>
+                <td class="width-15">Office Name</td>
+                <td class="width-7"><xsl:value-of select="basicInfo1"/></td>
+                <td class="width-10">Patient Name </td>
+                <td class="width-7"><xsl:value-of select="basicInfo21"/></td>
+                <td class="width-13">Insurance Name</td>
+                <td class="width-7"><xsl:value-of select="basicInfo3"/></td>
+                <td class="width-7">Provider Name</td>
+                <td class="width-7"><xsl:value-of select="basicInfo19"/></td>
+                <td class="width-15">Secondary Provider Name, if Any</td>
+                <td class="width-7"><xsl:value-of select="secProviderName"/></td>
+                <td class="width-5 borderNone"></td>
+            </tr>
+            <tr class="lightGray">
+                <td>Tax ID</td>
+                <td><xsl:value-of select="basicInfo4"/></td>
+                <td>Patient DOB</td>
+                <td class="white"><xsl:if test="string-length(basicInfo6) &gt; 9"><xsl:value-of select="concat(substring(basicInfo6,9,2),'/',substring(basicInfo6,6,2),'/',substring(basicInfo6,1,4))" /></xsl:if></td>
+                <td>Insurance Contact</td>
+                <td><xsl:value-of select="basicInfo7"/></td>
+                <td>Provider Network</td>
+                <td class="yellow"><xsl:value-of select="policy3"/></td>
+                <td>Secondary Provider Network</td>
+                <td><xsl:value-of select="secProvNetwork"/></td>
+                <td class="borderNone"></td>
+            </tr>
+            <tr>
+                <td>ES/Patient ID</td>
+                <td><xsl:value-of select="basicInfo21"/></td>
+                <td>Policy Holder Name</td>
+                <td><xsl:value-of select="basicInfo5"/></td>
+                <td>Appointment Type</td>
+                <td><xsl:value-of select="basicInfo11"/></td>
+                <td>Does Plan have OON Benefits?</td>
+                <td class="yellow"><xsl:value-of select="oonbenfits"/></td>
+                <td>Patient Assigned To Office</td>
+                <td class="red blackClr"><xsl:value-of select="yesNoAssignToffice"/></td>
+                <td class="borderNone"></td>
+            </tr>
+            <tr class="lightGray">
+                <td>Member ID/SSN</td>
+                <td><xsl:value-of select="basicInfo16"/></td>
+                <td>Policy Holder DOB</td>
+                <td class="white"><xsl:if test="string-length(basicInfo9) &gt; 9"><xsl:value-of select="concat(substring(basicInfo9,9,2),'/',substring(basicInfo9,6,2),'/',substring(basicInfo9,1,4))" /></xsl:if></td>
+                <td>Appointment Date</td>
+                <td class="white"><xsl:if test="string-length(basicInfo17) &gt; 9"><xsl:value-of select="concat(substring(basicInfo17,9,2),'/',substring(basicInfo17,6,2),'/',substring(basicInfo17,1,4))" /></xsl:if></td>
+                <td>Source</td>
+                <td><xsl:value-of select="basicInfo8"/></td>
+                <td>Ref #</td>
+                <td><xsl:value-of select="basicInfo12"/></td>
+                <td class="borderNone"></td>
+            </tr>
 
-					<tr>
-                        <td class="main-heading-11 withds colourpos"><span class="">How many fillings can be done in a year? :</span> 
-						
-						</td>
-                        <td><span class="sub-heading1"><xsl:value-of select="fill1"/></span></td>
-                        <td class="colourb">
-						</td>
-                        
-                        <td class="main-heading-11" colspan="1"><span class="colourpos">How many Extractions can be done in a year?:</span>
-                         </td>
-						 <td class="sub-heading1" colspan="1"><xsl:value-of select="extr1"/>
-                         </td>
-                        <td><span class="main-heading-11 colourpos">How many crowns can be done in a year?:</span></td>
-                        <td class="sub-heading1"><xsl:value-of select="crn1"/>
-						</td>
-						<td><span class="sub-heading1"></span></td>
-                        <td><span class="main-heading-11"></span></td>
-						<td><span class="sub-heading1"></span></td>
-                    </tr>
-                    
-                </tbody>
-            </table>
-            
-            <br/>
+        </table>
+        <br />
+        <br />
 
-            <p class="p3 ft34 main-heading-11">Complete 5 Year History</p>
-			
-			 <xsl:variable name="hh" select="count(history/his)"/>
-             <xsl:variable name="hhi" select="num[1]"/>			 
-			 <xsl:variable name="tra2" select="history/his"/> 
-			 
-			<div class="classname_main">  
-			<!-- 
-			<div class='grid-container'>
-				<div class="grid-item main-heading-11">ADA Code</div>
-				<div class="grid-item main-heading-11">Tooth No.</div>
-				<div class="grid-item main-heading-11">DOS</div>
+        <table class="table" vertical-align="top">
+            <tr>
+                <td colspan="10" class="tableHeading">Policy Plan Info</td>
+                <td class="width-5 borderNone"></td>               
+            </tr>
 
-				</div>
-			-->	
-						<table  style="border:0px" cellpadding="0" cellspacing="0">
-				<tr>
-					<td vertical-align="top" style="vertical-align:top;">
-					<table  style="border-right:1px solid #000; page-break:avoid" class="border-btn" cellspacing="0">
-                <tbody>
-			    <tr class="">
-			    <th class="main-heading-11 br1px br_but" style="width:25%">ADA Code</th>
-				<th class="main-heading-11 br1px br_but" style="width:25%">Tooth No.</th>
-				<th class="main-heading-11 br1px br_but" style="width:25%">DOS</th>
-				</tr>
-				<xsl:for-each select="hdto1/hisall1">
-				<tr class="">
-				<td class="br1px"><span class="sub-heading1"><xsl:value-of select="historyCode"/></span></td>
-				<td class="br1px"><span class="sub-heading1"><xsl:value-of select="historyTooth"/></span></td>
-				<td class="br1px"><span class="sub-heading1"><xsl:value-of select="historyDos"/></span></td>
-				</tr>
-				</xsl:for-each>
-             </tbody>
-            </table></td>
+            <tr>
+                <td class="width-15">Plan Type</td>
+                <td class="width-7"><xsl:value-of select="policy1"/></td>
+                <td class="width-10">Group/Employer Name</td>
+                <td class="width-7"><xsl:value-of select="basicInfo10"/></td>
+                <td class="width-13">Group No</td>
+                <td class="width-7"><xsl:value-of select="basicInfo14"/></td>
+                <td class="width-7">Effective Date</td>
+                <td class="width-7"><xsl:if test="string-length(policy5) &gt; 9"><xsl:value-of select="concat(substring(policy5,9,2),'/',substring(policy5,6,2),'/',substring(policy5,1,4))" /></xsl:if></td>
+                <td class="width-15">Term Date</td>
+                <td class="width-7"><xsl:if test="string-length(policy2) &gt; 9"><xsl:value-of select="concat(substring(policy2,9,2),'/',substring(policy2,6,2),'/',substring(policy2,1,4))" /></xsl:if></td>
+                <td class="width-5 borderNone"></td>
+            </tr>
+            <tr class="lightGray">
+                <td>Annual Max</td>
+                <td><xsl:value-of select="policy7"/></td>
+                <td>Individual Deductible</td>
+                <td><xsl:value-of select="policy9"/></td>
+                <td>Fee Schedule</td>
+                <td><xsl:value-of select="policy4"/></td>
+                <td>Allowed Amount of D0120</td>
+                <td><xsl:value-of select="policy18"/></td>
+                <td>Benefit Period</td>
+                <td class="white"><xsl:value-of select="policy6"/></td>
+                <td class="borderNone"></td>
+            </tr>
+            <tr>
+
+                <td>Annual Max Remaining</td>
+                <td><xsl:value-of select="policy8"/></td>
+                <td>Individual Ded Remaining</td>
+                <td><xsl:value-of select="policy10"/></td>
+                <td>Coverage Book</td>
+                <td><xsl:value-of select="policy16"/></td>
+                <td>Allowed Amount of D2391</td>
+                <td><xsl:value-of select="policy19"/></td>
+                <td>COB Status</td>
+                <td><xsl:value-of select="basicInfo15"/></td>
+                <td class="borderNone"></td>
+            </tr>
+            <tr class="lightGray">
+                <td>Assignment of benefits Accepted?</td>
+                
+				<xsl:choose>
+				     <xsl:when test="policy15 = 'No' ">
+					 <td class="red blackClr"><xsl:value-of select="policy15"/></td>
+					 </xsl:when>
+				     <xsl:otherwise>
+					 <td class="blackClr"><xsl:value-of select="policy15"/></td>
+					 </xsl:otherwise>
+				</xsl:choose>	 
+						  
+                <td>Pre- Auth Required</td>
+				<xsl:choose>
+				     <xsl:when test="policy15 = 'No' ">
+					 <td><xsl:value-of select="policy12"/></td>
+					 </xsl:when>
+				     <xsl:otherwise>
+					 <xsl:choose>
+					      <xsl:when test="policy1 = 'Child Medicaid' or policy1 = 'Medicare' or policy1= 'Adult Medicaid' or policy1 = 'HMO medicare'">
+						  <td class="red"><a href="https://docs.google.com/spreadsheets/d/13C7ph9Hal1mDdU5nioWWX2ndof6Ls2IYbVw03uRDiVM/edit#gid=2067143248" style="text-decoration:none" traget="_blank" >Yes</a></td>
+						  </xsl:when>
+				          <xsl:otherwise>
+						   <td class="">Yes</td>
+						  </xsl:otherwise>
+					 </xsl:choose>
 					
-			<td vertical-align="top" style="vertical-align:top;">
-			<table style="border-right:1px solid #000;  margin-left:-1px;"  class="border-btn" cellspacing="0" >
-             <tbody>
-			    <tr>
-			    <th class="main-heading-11 br1px br_but" style="width:25%">ADA Code</th>
-				<th class="main-heading-11 br1px br_but" style="width:25%">Tooth No.</th>
-				<th class="main-heading-11 br1px br_but" style="width:25%">DOS</th>
-				</tr>
-				<xsl:for-each select="hdto2/hisall2">
-				<tr>
-				<td class="br1px"><span class="sub-heading1"><xsl:value-of select="historyCode"/></span></td>
-				<td class="br1px"><span class="sub-heading1"><xsl:value-of select="historyTooth"/></span></td>
-				<td class="br1px"><span class="sub-heading1"><xsl:value-of select="historyDos"/></span></td>
-				</tr>
-				</xsl:for-each>
+					 </xsl:otherwise>
+				</xsl:choose>
 				
-             </tbody>	
-            </table>
-					</td>
-					<td vertical-align="top" style="vertical-align:top;">
-				<table style="border-right:1px solid #000; margin-left:-1px;" class="border-btn last-r-border" cellspacing="0">
-             <tbody>
-			    <tr>
-			    <th class="main-heading-11 br1px br_but" style="width:25%">ADA Code</th>
-				<th class="main-heading-11 br1px br_but" style="width:25%">Tooth No.</th>
-				<th class="main-heading-11 br1px br_but" style="width:25%">DOS</th>
-				</tr>
-				<xsl:for-each select="hdto3/hisall3">
-				<tr>
-				<td class="br1px"><span class="sub-heading1"><xsl:value-of select="historyCode"/></span></td>
-				<td class="br1px"><span class="sub-heading1"><xsl:value-of select="historyTooth"/></span></td>
-				<td class="br1px"><span class="sub-heading1"><xsl:value-of select="historyDos"/></span></td>
-				</tr>
-				</xsl:for-each>
-             </tbody>
-            </table>
-					</td>
-				</tr>
-			</table>
-			
-			
-			 </div>
+                
+                <td></td>
+                <td></td>
+                <td>Claims Filing Limit</td>
+                <td><xsl:value-of select="basicInfo15"/></td>
+                <td class="lightBrown">CRA Required</td>
+                <td class="red blackClr"><xsl:if test="policy17 = 'Yes'"><a href="" target="_blank"><xsl:value-of select="basicInfo15"/></a></xsl:if><xsl:if test="policy17 != 'Yes'"><xsl:value-of select="policy17"/></xsl:if></td>
+                <td class="borderNone"></td>
+            </tr>
 
-            <table cellpadding="0" cellspacing="0" style="width:100%; clear:both;">
-                <tbody>
-				<tr>
-                        <td colspan="2" class="main-heading-11">
-                            Comments:
-							<div>
-							<span class="sub-heading">
-							<textarea id="comments" name="comments" rows="20" cols="48">
-							<xsl:value-of select="comments"/>&#160;
-							</textarea>
-							</span>
-							</div>
-                             
-                        </td>
-                        
-                    </tr>
-                    <tr>
-                        <td>
-                           <span class="main-heading-11"> Benefits Verified by:</span>
-							<span class="sub-heading"><xsl:value-of select="benefits"/></span>
-                             
-                        </td>
-                        <td style="text-align:right">
-                          <span class="sub-heading">Date:</span>
-							<span class="sub-heading"><xsl:value-of select="date" /></span>
+        </table>
+        <br />
+        <br />
+        <table class="table" vertical-align="top">
+            <tr class="lightGray">
+                <td class="width-15 red tableHeading text-left">Special Remarks for Office and LC3</td>
+                <td colspan="10"><xsl:value-of select="comments"/></td>
+            </tr>
+        </table>
+        <br />
+        <br />
+        <table class="table" vertical-align="top">
+            <tr>
+                <td colspan="11" class="tableHeading">Plan Details</td>
+            </tr>
 
-                           
-                        </td>
-                    </tr>
-                   
-                    
-                </tbody>
-            </table>
-        </div>
+            <tr>
+                <td colspan="3" class="sub-heading dullBlue">Preventive Services</td>
+                <td class="width-7 borderNone"></td>
+                <td colspan="3" class="sub-heading dullYellow">Basic Services</td>
+                <td class="width-7  borderNone"></td>
+                <td colspan="3" class="sub-heading dullRed">Major Services</td>
+            </tr>
+            <tr>
+                <td class="width-15 red">Waiting Period</td>
+                <td colspan="2" class="red width-17"><xsl:value-of select="waitingPeriod4"/>	</td>
+                <td class="width-7 borderNone"></td>
+                <td class="red width-13">Waiting Period</td>
+                <td class="red width-14" colspan="2"><xsl:value-of select="waitingPeriod1"/>	</td>
+                <td class="width-7 borderNone"></td>
+                <td class="red width-15">Waiting Period</td>
+                <td class="red width-12" colspan="2"><xsl:value-of select="waitingPeriod2"/>	</td>
+            </tr>
+            <tr>
+                <td class="red">Subject to Deductible</td>
+                <td colspan="2" class="red width-16"><xsl:value-of select="percentages13"/>		</td>
+                <td class="borderNone"></td>
+                <td class="red">Subject to Deductible</td>
+                <td class="red" colspan="2"><xsl:value-of select="percentages2"/>		</td>
+                <td class="borderNone"></td>
+                <td class="red">Subject to Deductible</td>
+                <td class="red" colspan="2"><xsl:value-of select="percentages4"/>		</td>
+            </tr>
+            <tr>
+                <td class="rowHeading">Exams</td>
+                <td class="rowHeading width-7">%	</td>
+                <td class="rowHeading width-10">Freq</td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Perio(Non-Surgical)</td>
+                <td class="rowHeading width-7">%	</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="red">Missing tooth clause</td>
+                <td class="red" colspan="2"><xsl:value-of select="prosthetics1"/>	</td>
+            </tr>
+            <tr>
+                <td class="dullBlue">Exams Shares Frequency</td>
+                <td class="dullBlue"><xsl:value-of select="pano2"/></td>
+                <td class="dullBlue"></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4341 (SRP)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="perio1"/></td>
+                <td class="dullYellow"><xsl:value-of select="perio2"/></td>
+                <td class="borderNone"></td>
+                <td class="red">Replacement Clause</td>
+                <td class="red" colspan="2"><xsl:value-of select="prosthetics2"/>	</td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0120 ( Oral Evaluation))</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0120"/></td>
+                <td class="dullBlue"><xsl:value-of select="exams1"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">Quads per Day</td>
+                <td class="dullYellow align-right"><xsl:value-of select="perio3"/></td>
+                <td class="dullYellow"></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Buidup and Crown</td>
+                <td class="rowHeading width-7">%	</td>
+                <td class="rowHeading">Freq	</td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0150 (Comprehensive)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0150"/></td>
+                <td class="dullBlue"><xsl:value-of select="exams4"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">Days B/W Quads</td>
+                <td class="dullYellow"><xsl:value-of select="perio4"/></td>
+                <td class="dullYellow"></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D2950 (Core Buidup)</td>
+                <td class="dullRed width-7 align-right"><xsl:value-of select="posterior10"/></td>
+                <td class="dullRed"><xsl:value-of select="posterior11"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0140 (Emergency)</td>
+                <td class="dullBlue align-right">100</td>d0140
+                <td class="dullBlue">2X1CY</td>exams2
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4355(FMD)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="perioMnt4"/></td>
+                <td class="dullYellow"><xsl:value-of select="perioMnt5"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">Same day as crown</td>
+                <td class="dullRed align-right"><xsl:value-of select="posterior12"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0160(Limited)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="pedo1"/></td>
+                <td class="dullBlue"><xsl:value-of select="d0160Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4346( Gingivitis)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="perioMnt6"/></td>
+                <td class="dullYellow"><xsl:value-of select="perioMnt7"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">Crown paid prep/seat date</td>
+                <td class="dullRed"><xsl:value-of select="prosthetics3"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0145 (Regular for Child)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0145"/></td>
+                <td class="dullBlue"><xsl:value-of select="exams3"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4910(Perio Main)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="perioMnt1"/></td>
+                <td class="dullYellow"><xsl:value-of select="perioMnt2"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D2740(Porcelain Crown)</td>
+                <td class="dullRed align-right"><xsl:value-of select="posterior4"/></td>
+                <td class="dullRed"><xsl:value-of select="posterior5"/></td>
+            </tr>
+            <tr>
+                <td class="rowHeading">X-Rays</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4910 Alt with Prophy (D1110)</td>
+                <td class="dullYellow"><xsl:value-of select="perioMnt3"/></td>
+                <td class="dullYellow"></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D2750 (Noble Metal)</td>
+                <td class="dullRed align-right"><xsl:value-of select="d2750"/></td>
+                <td class="dullRed"><xsl:value-of select="d2750fr"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0220 (Periapical)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0220"/></td>
+                <td class="dullBlue"><xsl:value-of select="d0220Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Perio Surgery</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullRed">Downgrading applicable</td>
+                <td class="dullRed"><xsl:value-of select="posterior6"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0230 (Additional PA)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0230"/></td>
+                <td class="dullBlue"><xsl:value-of select="xrays3"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4381(Arestin)</td>
+                <td class="dullYellow"><xsl:value-of select="d4381"/></td>
+                <td class="dullYellow"><xsl:value-of select="d4381Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">Downgraded Code</td>
+                <td class="dullRed"><xsl:value-of select="posterior17"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0210 (FMX)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0210"/></td>
+                <td class="dullBlue"><xsl:value-of select="d0210Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4249(Crown Lengthening)</td>
+                <td class="dullYellow"><xsl:value-of select="oral1"/></td>
+                <td class="dullYellow"><xsl:value-of select="oral2"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">How many Crown can be done in a year?</td>
+                <td class="dullRed"><xsl:value-of select="crn1"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0330 (Pano)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="pano1"/></td>
+                <td class="dullBlue"><xsl:value-of select="d0330Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">VAPs</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">SSC Crown</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0272/D0274 (BWX)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="bwx"/></td>
+                <td class="dullBlue"><xsl:value-of select="bwxFreq"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D0431</td>
+                <td class="dullYellow align-right"><xsl:value-of select="d0431"/></td>
+                <td class="dullYellow align-right"><xsl:value-of select="d0431fr"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D2930/D2934(Primary Tooth)</td>
+                <td class="dullRed"><xsl:value-of select="d2930"/></td>
+                <td class="dullRed"><xsl:value-of select="ssc1"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D0350 (Oral/Facial Photo images)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0350"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0350Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4999</td>
+                <td class="dullYellow align-right"><xsl:value-of select="d4999"/></td>
+                <td class="dullYellow align-right"><xsl:value-of select="d4999fr"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D2931(Permanent Tooth)</td>
+                <td class="dullRed align-right"><xsl:value-of select="d2931"/></td>
+                <td class="dullRed"><xsl:value-of select="ssc2"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">Does FMX/Pano share Freq?</td>
+                <td class="dullBlue"><xsl:value-of select="pano2"/></td>
+                <td class="dullBlue"></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D9910</td>
+                <td class="dullYellow align-right"><xsl:value-of select="perioD9910"/></td>
+                <td class="dullYellow align-right"><xsl:value-of select="d9910Frequency"/></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Bridge</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+            </tr>
+            <tr>
+                <td class="rowHeading">Prophylaxis</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D9630</td>
+                <td class="dullYellow align-right"><xsl:value-of select="d9630"/></td>
+                <td class="dullYellow align-right"><xsl:value-of select="d9630fr"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D6245/D6740</td>
+                <td class="dullRed align-right"><xsl:value-of select="bridges1"/></td>
+                <td class="dullRed"><xsl:value-of select="bridges2"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">Roll Age</td>
+                <td class="dullBlue align-right"><xsl:value-of select="fluroide2"/></td>
+                <td class="dullBlue"></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4921</td>
+                <td class="dullYellow align-right"><xsl:value-of select="perioD4921"/></td>
+                <td class="dullYellow align-right"><xsl:value-of select="d4921Frequency"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">Downgrading applicable</td>
+                <td class="dullRed"><xsl:value-of select="cdowngrade"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D1120 (Prophy- Child)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1120"/></td>
+                <td class="dullBlue"><xsl:value-of select="prophy2"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D4266</td>
+                <td class="dullYellow align-right"><xsl:value-of select="perioD4266"/></td>
+                <td class="dullYellow align-right"><xsl:value-of select="d4266Frequency"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">Which code</td>
+                <td class="dullRed"><xsl:value-of select="bWhichCode"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D1110 (Prophy- Adult)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1110"/></td>
+                <td class="dullBlue"><xsl:value-of select="prophy1"/></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Fillings</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Dentures</td>
+                <td class="rowHeading align-right"><xsl:value-of select="den5225"/></td>
+                <td class="rowHeading"><xsl:value-of select="denf5225"/></td>
+            </tr>
+            <tr>
+                <td class="rowHeading">Flouride</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D2391 ( Composites)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="posterior1"/></td>
+                <td class="dullYellow"><xsl:value-of select="posterior2"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D5110/D5120 (Complete)</td>
+                <td class="dullRed"><xsl:value-of select="d5110_20"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">Age Limit</td>
+                <td class="dullBlue align-right"><xsl:value-of select="fluroide2"/></td>
+                <td class="dullBlue"></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">Downgraded to D2140</td>
+                <td class="dullYellow"><xsl:value-of select="posterior3"/></td>
+                <td class="dullYellow"></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D5211/D5212/<br/>D5213/D5214 (Partial)</td>
+                <td class="dullRed">1000</td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D1206 (Fluoride)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1206"/></td>
+                <td class="dullBlue"><xsl:value-of select="fluroide1"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">How many Fillings can be done in a year?</td>
+                <td class="dullYellow"><xsl:value-of select="fill1"/></td>
+                <td class="dullYellow"></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D5130/D5140<br/> (Immediate)</td>
+                <td class="dullRed"><xsl:value-of select="d5130_40"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D1208 (Varnish)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1208"/></td>
+                <td class="dullBlue"><xsl:value-of select="fluroide3"/></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Extractions</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullRed"><strong>D5820 (Interim)</strong></td>
+                <td class="dullRed"><xsl:value-of select="d5810_c"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="rowHeading">Oral Hygine</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D7111, D7140(Minor)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="extractions1"/></td>
+                <td class="dullYellow"><xsl:value-of select="extractions1fr"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D5225/D5226 (Partial Denture)</td>
+                <td class="dullRed"><xsl:value-of select="d5225_26_c"/></td>
+                <td class="dullRed"></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D1330</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1330"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1330Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D7210/D7220/D7230<br/>/D7240 (Major)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="extractions2"/></td>
+                <td class="dullYellow"><xsl:value-of select="extractions2fr"/></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Implants</td>
+                <td class="rowHeading" colspan="2"><xsl:value-of select="implantsC"/></td>
+            </tr>
+            <tr>
+                <td class="rowHeading">Sealant</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D7250( Wisdom Tooth)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="d7250"/></td>
+                <td class="dullYellow"><xsl:value-of select="d7250fr"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">Coverage %</td>
+                <td class="dullRed align-right" colspan="2"><xsl:value-of select="implants1"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D1351</td>
+                <td class="dullBlue align-right"><xsl:value-of select="sealantsD"/></td>
+                <td class="dullBlue"><xsl:value-of select="sealants1"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">
+                    How many Extractions can be done in a year?
+                </td>
+                <td class="dullYellow"></td>
+                <td class="dullYellow"><xsl:value-of select="extr1"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">Frequency</td>
+                <td class="dullRed" colspan="2"><xsl:value-of select="implants5"/>	</td>
+            </tr>
+            <tr>
+                <td class="dullBlue">Age Limit</td>
+                <td class="dullBlue align-right"><xsl:value-of select="sealants2"/></td>
+                <td class="dullBlue"></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Endodontics</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Oral Surgery</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+            </tr>
+            <tr>
+                <td class="dullBlue">Primary Molars</td>
+                <td class="red blackClr"><xsl:value-of select="sealants3"/></td>
+                <td class="dullBlue"></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D3220 (Pulpotomy)</td>
+                <td class="dullYellow"><xsl:value-of select="d3220"/></td>
+                <td class="dullYellow"><xsl:value-of select="d3220Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D7310</td>
+                <td class="dullRed align-right"><xsl:value-of select="d7310"/></td>
+                <td class="dullRed"><xsl:value-of select="oral6"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">Pre Molars</td>
+                <td class="red blackClr"><xsl:value-of select="sealants4"/></td>
+                <td class="dullBlue"></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D3330 (RCT)</td>
+                <td class="dullYellow"><xsl:value-of select="d3330"/></td>
+                <td class="dullYellow"><xsl:value-of select="d3330Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D7311</td>
+                <td class="dullRed align-right"><xsl:value-of select="d7311"/></td>
+                <td class="dullRed"><xsl:value-of select="oral4"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">Per Molars</td>
+                <td class="red blackClr"><xsl:value-of select="sealants5"/></td>
+                <td class="dullBlue"></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Labial Veneer</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullRed">D7953 (Bone Graft)</td>
+                <td class="dullRed align-right"><xsl:value-of select="d7953"/></td>
+                <td class="dullRed"><xsl:value-of select="dentures6"/></td>
+            </tr>
+            <tr>
+                <td class="rowHeading">Space Maintainer</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D2962</td>
+                <td class="dullYellow align-right"><xsl:value-of select="d2962"/></td>
+                <td class="dullYellow align-right"><xsl:value-of select="d2962fr"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed" colspan="2">1-3 Teeth/Quads D7311<br/> covered with Ext.	</td>
+                <td class="dullRed"><xsl:value-of select="oral3"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D1510/D1516/D1517 (Placement)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1510"/></td>
+                <td class="dullBlue"><xsl:value-of select="d1510Freq"/></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Sedation</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullRed" colspan="2">4 Teeth/Quads D7310<br/> covered with Ext.</td>
+                <td class="dullRed"><xsl:value-of select="oral5"/></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D1520/D1526/D1527 (Removal)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1520_26_27"/></td>
+                <td class="dullBlue"><xsl:value-of select="d1520_26_27_fr"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D9230 (Nitrous)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="sedations1"/></td>
+                <td class="dullYellow"><xsl:value-of select="sedations1fr"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed" colspan="2">D7953 is covered with Implants?	</td>
+                <td class="dullRed"><xsl:value-of select="dentures5"/></td>
+            </tr>
+            <tr>
+                <td class="rowHeading">Consultation</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D9243 (Intravenous)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="sedations2"/></td>
+                <td class="dullYellow"><xsl:value-of select="sedations2fr"/></td>
+                <td class="borderNone"></td>
+                <td class="rowHeading text-center" colspan="3">Ortho Criteria		</td>
+            </tr>
+            <tr>
+                <td class="dullBlue">D9310</td>
+                <td class="dullBlue align-right"><xsl:value-of select="posterior8"/></td>
+                <td class="dullBlue"><xsl:value-of select="posterior9"/></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D9248 (Non-Intravenous)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="sedations3"/></td>
+                <td class="dullYellow"><xsl:value-of select="sedations3fr"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed" colspan="2">Ortho Coverage % (D8080,D8070,D8090)	</td>
+                <td class="dullRed align-right"><xsl:value-of select="ortho1"/></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="borderNone"></td>
+                <td class="rowHeading">Night Gaurds</td>
+                <td class="rowHeading">%</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td class="dullRed" colspan="2">Ortho Maximum</td>
+                <td class="dullRed align-right"><xsl:value-of select="ortho2"/></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="borderNone"></td>
+                <td class="dullYellow">D9944/D9945</td>
+                <td class="dullYellow align-right"><xsl:value-of select="posterior7"/></td>
+                <td class="dullYellow"><xsl:value-of select="posterior19"/></td>
+                <td class="borderNone"></td>
+                <td class="dullRed" colspan="2">Ortho Maximum remaining	</td>
+                <td class="dullRed align-right"><xsl:value-of select="ortho5"/></td>
+            </tr>
+            <tr>
+                <td colspan="8" class="borderNone"></td>
+                <td class="dullRed" colspan="2">Ortho Ded</td>
+                <td class="dullRed align-right"><xsl:value-of select="ortho4"/></td>
+            </tr>
+        </table>
+        <br />
+        <br />
+        <table class="table" vertical-align="top">
+            <tr>
+                <td colspan="9" class="tableHeading">History</td>
+                <td class="borderNone width-7"></td>
+                <td class="borderNone width-5"></td>
+            </tr>
+            <tr>
+                <td colspan="9" class="innerTableBox">
+                    <table class="innerTable" vertical-align="top">
+                        <tr>
+                            <td class="rowHeading width-15">ADA Code</td>
+                            <td class="rowHeading width-7">Tooth No</td>
+                            <td class="rowHeading width-10">DOS</td>
+                        </tr>
+						<xsl:for-each select="hdto1/hisall1">
+						 <tr>
+                            <td class="dullBlue"><xsl:value-of select="historyCode"/></td>
+                            <td class="dullBlue"><xsl:value-of select="historyTooth"/></td>
+                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,9,2),'/',substring(historyDos,6,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                        </tr>
+						</xsl:for-each>
+                       
+                    </table>
+
+                    <table class="innerTable" vertical-align="top">
+                        <tr>
+                            <td class="rowHeading width-15">ADA Code</td>
+                            <td class="rowHeading width-7">Tooth No</td>
+                            <td class="rowHeading width-10">DOS</td>
+                        </tr>
+                       
+                       <xsl:for-each select="hdto2/hisall2">
+						 <tr>
+                            <td class="dullBlue"><xsl:value-of select="historyCode"/></td>
+                            <td class="dullBlue"><xsl:value-of select="historyTooth"/></td>
+                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,9,2),'/',substring(historyDos,6,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                        </tr>
+						</xsl:for-each>
+                    </table>
+                    <table class="innerTable" vertical-align="top">
+                        <tr>
+                            <td class="rowHeading width-15">ADA Code</td>
+                            <td class="rowHeading width-7">Tooth No</td>
+                            <td class="rowHeading width-10">DOS</td>
+                        </tr>
+                        <xsl:for-each select="hdto3/hisall3">
+						 <tr>
+                            <td class="dullBlue"><xsl:value-of select="historyCode"/></td>
+                            <td class="dullBlue"><xsl:value-of select="historyTooth"/></td>
+                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,9,2),'/',substring(historyDos,6,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                        </tr>
+						</xsl:for-each>
+                    </table>
+                </td>
+               
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+            </tr>
+            <tr>
+                <td class="borderNone" colspan="11"></td>
+            </tr>
+            <tr>
+                <td class="dullGreen width-15">Benefits Verified by</td>
+                <td class="lightGray width-15"><xsl:value-of select="benefits"/></td>
+                <td class="dullGreen width-15">Submission Date</td>
+                <td class="lightGray width-15"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,9,2),'/',substring(date,6,2),'/',substring(date,1,4))" /></xsl:if></td>
+                <td class="borderNone" colspan="7"></td>
+            </tr>
+        </table>
+		
     </form>
 
-
 </body>
-
 </html>
 </xsl:template>
 </xsl:stylesheet>
