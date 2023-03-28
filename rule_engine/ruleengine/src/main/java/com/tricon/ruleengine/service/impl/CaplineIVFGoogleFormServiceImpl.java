@@ -66,6 +66,11 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	
 	@Value("${re.xsltos.file}")
 	private String XSLT_FILE_OS;
+	
+	@Value("${re.xsltortho.file}")
+	private String XSLT_FILE_ORTHO;
+	
+	
 
 	@Value("${re.xslt.filenew}")
 	private String XSLT_FILE_NEW;
@@ -702,6 +707,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				String xslt=XSLT_FILE;
 				if (iVFormType.getName().equals(Constants.IV_ORAL_SURGERY_FORM_NAME)) {
 					xslt=XSLT_FILE_OS ;
+				}
+				if (iVFormType.getName().equals(Constants.IV_ORTHO_FORM_NAME)) {
+					xslt=XSLT_FILE_ORTHO ;
 				}
 				if (dto.getNewFormat().equals(""))o = xml.createPdfStream(
 

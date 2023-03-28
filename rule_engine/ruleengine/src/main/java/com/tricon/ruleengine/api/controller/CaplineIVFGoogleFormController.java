@@ -168,6 +168,44 @@ public class CaplineIVFGoogleFormController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", mess));
 
 	}
+	
+	@CrossOrigin
+	@PostMapping
+	@RequestMapping(value = "/savedatatoreortho")
+	public ResponseEntity<Object> saveOrthoFromGoogleForm(@RequestBody CaplineIVFFormDto dto,
+			HttpServletRequest request) {
+		//
+
+		//Integer i = 0;
+		Object [] ob=null;
+	    Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+	    
+		
+		Office office = od.getOfficeByName(dto.getBasicInfo1(),cmp.getUuid());
+		try {
+			
+
+			EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
+
+			if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
+				ob = civf.saveIVFFormData(dto, office,true,iVformTypeDao.getIVFormTypeByName(Constants.IV_ORTHO_FORM_NAME));
+				
+			}else {
+				//i = civf.saveIVFFormData(dto, office);
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String mess = "Data saved successfully with IVF ID "+office.getName()+"_"+ ob[0];
+				
+		if ((Integer)ob[0] == 0)
+			mess = "Data not saved successfully- Reason-"+ob[1];
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", mess));
+
+	}
 
 	@CrossOrigin
 	@PostMapping
@@ -186,6 +224,18 @@ public class CaplineIVFGoogleFormController {
 		//
 
 		IVFormType v=iVformTypeDao.getIVFormTypeByName(Constants.IV_ORAL_SURGERY_FORM_NAME);
+		
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", getPatientdataFromDB(dto,v)));
+
+	}
+	
+	@CrossOrigin
+	@PostMapping
+	@RequestMapping(value = "/queryivorthodatafromdb")
+	public ResponseEntity<Object> queryORthoDataFromDB(@RequestBody CaplineIVFQueryFormDto dto, HttpServletRequest request) throws Exception {
+		//
+
+		IVFormType v=iVformTypeDao.getIVFormTypeByName(Constants.IV_ORTHO_FORM_NAME);
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", getPatientdataFromDB(dto,v)));
 
@@ -428,6 +478,47 @@ public class CaplineIVFGoogleFormController {
 		
 		if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
 			obj = civf.generatePDF(dto,office,iVformTypeDao.getIVFormTypeByName(Constants.IV_ORAL_SURGERY_FORM_NAME));
+		}
+		if (obj != null && obj[1]!=null) {
+			ByteArrayOutputStream ou =(ByteArrayOutputStream)  obj[1];
+			response.setContentType("application/pdf");
+			//response.setContentLengthLong(ou.size());
+			
+			//String name="" java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+java.net.URLEncoder.encode(obj[0]+ ".pdf","UTF-8")));
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+(obj[0].toString().replaceAll(",", "").replaceAll(" ", "") +".pdf")));
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
+			InputStream in = new ByteArrayInputStream(ou.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			ou.close();
+		}
+		
+
+	}
+	
+	@CrossOrigin
+	@GetMapping
+	@RequestMapping(value = "/queryivorthodatatopdf")
+	public void generateOrthoPDF(@RequestParam String o ,@RequestParam String id,
+			@RequestParam String p,HttpServletResponse response) throws IOException {
+		//
+		CaplineIVFQueryFormDto dto= new CaplineIVFQueryFormDto();
+		dto.setPasswordRE(p);
+		dto.setUniqueID(id);
+		dto.setOfficeNameDB(o);
+		dto.setPdf(null);
+		dto.setNewFormat("");
+		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+		
+		Office office = od.getOfficeByName(dto.getOfficeNameDB(),cmp.getUuid());
+
+		EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(office);
+        Object[] obj=null; 
+		
+		
+		if (esDB != null && esDB.getPassword().equals(dto.getPasswordRE())) {
+			obj = civf.generatePDF(dto,office,iVformTypeDao.getIVFormTypeByName(Constants.IV_ORTHO_FORM_NAME));
 		}
 		if (obj != null && obj[1]!=null) {
 			ByteArrayOutputStream ou =(ByteArrayOutputStream)  obj[1];

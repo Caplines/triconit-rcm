@@ -118,8 +118,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/savedatatore",
                 "/savedatatoreCheck",
                 "/savedatatoreos",
+                "/savedatatoreortho",
                 "/queryivdatafromdb",
                 "/queryivosdatafromdb",
+                "/queryivorthodatafromdb",
                 "/queryivdatafromdbTemp"
             )
 
@@ -130,6 +132,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 HttpMethod.GET,
                 "/queryivdatatopdf",
                 "/queryivosdatatopdf",
+                "/queryivorthodatatopdf",
                 "/queryivdatatohtml",
                 "/.well-known/acme-challenge/8h0NwOQLZreL70OMOZtKMYcM5W2Fme1JUatgJFuTElA",
                 "/.well-known/acme-challenge/AoJiyMAei-mA1StzpKpf22vgqefQLxk8GgBsa3yplpA",

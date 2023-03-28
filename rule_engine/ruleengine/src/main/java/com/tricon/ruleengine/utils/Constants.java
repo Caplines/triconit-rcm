@@ -392,6 +392,9 @@ public class Constants {
 	public static String IV_ORAL_SURGERY_FORM_NAME="Oral Surgery form";
 	public static int IV_ORAL_SURGERY_FORM_NAME_ID=2;
 	
+	public static String IV_ORTHO_FORM_NAME="Ortho";
+	public static int IV_ORTHO_FORM_NAME_ID=3;
+	
 	
 	public static String OfficeNeedToTakeInfo_o="OfficeNeedToTakeInfo";
 	public static String OfficeNeedToTakeInfo_r="Office Need To Take Info";

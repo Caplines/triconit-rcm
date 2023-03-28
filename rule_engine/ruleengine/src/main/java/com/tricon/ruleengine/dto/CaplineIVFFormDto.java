@@ -696,6 +696,57 @@ public class CaplineIVFFormDto {
 	private String d2962;   
 	private String d2962fr;
 	private String historyCount;
+	
+	private String d0145;
+	private String d0150;
+	private String d2750;
+	private String d2750fr;
+	private String d0220;
+	private String d0220Freq;
+	private String d0230;
+	private String bwx;
+	private String d0210;
+	private String d0210Freq;
+	private String d0350Freq;
+	private String bwxFreq;
+	private String d2931;
+	private String d1206;
+	private String d1208;
+	private String bWhichCode;
+	private String d5110_20;
+	private String d1330Freq;
+	private String d5111_12_13_14;
+	private String d5130_40;
+	private String d5810_c;
+	private String d5225_26_c;
+	private String extractions1fr;
+	private String extractions2fr;
+	private String implantsC;
+	private String d1520_26_27;
+	private String d1520_26_27_fr;
+	private String waitingPeriod;
+	private String wip;
+	private String insBillingC;
+	private String benefitPeriod;
+	private String waitingPeriodDrop;
+	private String d8070;
+	private String d8080;
+	private String d8090;
+	private String d8670;
+	private String d8680;
+	private String d8690;
+	private String d8070fr;
+	private String d8080fr;
+	private String d8090fr;
+	private String d8670fr;
+	private String d8680fr;
+	private String d8690fr;
+	private String apptype;
+	private String secProviderName;
+	private String secProvNetwork;
+	private String yesNoAssignToffice;
+	private String d1120;
+	private String d1110;
     //END
     
     public String getFill1() {
@@ -3354,6 +3405,406 @@ public class CaplineIVFFormDto {
 
 	public void setHistoryCount(String historyCount) {
 		this.historyCount = historyCount;
+	}
+
+	public String getD0150() {
+		return d0150;
+	}
+
+	public void setD0150(String d0150) {
+		this.d0150 = d0150;
+	}
+
+	public String getD2750() {
+		return d2750;
+	}
+
+	public void setD2750(String d2750) {
+		this.d2750 = d2750;
+	}
+
+	public String getD2750fr() {
+		return d2750fr;
+	}
+
+	public void setD2750fr(String d2750fr) {
+		this.d2750fr = d2750fr;
+	}
+
+	public String getD0220() {
+		return d0220;
+	}
+
+	public void setD0220(String d0220) {
+		this.d0220 = d0220;
+	}
+
+	public String getD0220Freq() {
+		return d0220Freq;
+	}
+
+	public void setD0220Freq(String d0220Freq) {
+		this.d0220Freq = d0220Freq;
+	}
+
+	public String getD0230() {
+		return d0230;
+	}
+
+	public void setD0230(String d0230) {
+		this.d0230 = d0230;
+	}
+
+	public String getBwx() {
+		return bwx;
+	}
+
+	public void setBwx(String bwx) {
+		this.bwx = bwx;
+	}
+
+	public String getD0210() {
+		return d0210;
+	}
+
+	public void setD0210(String d0210) {
+		this.d0210 = d0210;
+	}
+
+	public String getD0210Freq() {
+		return d0210Freq;
+	}
+
+	public void setD0210Freq(String d0210Freq) {
+		this.d0210Freq = d0210Freq;
+	}
+
+	public String getD0350Freq() {
+		return d0350Freq;
+	}
+
+	public void setD0350Freq(String d0350Freq) {
+		this.d0350Freq = d0350Freq;
+	}
+
+	public String getBwxFreq() {
+		return bwxFreq;
+	}
+
+	public void setBwxFreq(String bwxFreq) {
+		this.bwxFreq = bwxFreq;
+	}
+
+	public String getD2931() {
+		return d2931;
+	}
+
+	public void setD2931(String d2931) {
+		this.d2931 = d2931;
+	}
+
+	public String getD1206() {
+		return d1206;
+	}
+
+	public void setD1206(String d1206) {
+		this.d1206 = d1206;
+	}
+
+	public String getD1208() {
+		return d1208;
+	}
+
+	public void setD1208(String d1208) {
+		this.d1208 = d1208;
+	}
+
+	public String getbWhichCode() {
+		return bWhichCode;
+	}
+
+	public void setbWhichCode(String bWhichCode) {
+		this.bWhichCode = bWhichCode;
+	}
+
+	public String getD5110_20() {
+		return d5110_20;
+	}
+
+	public void setD5110_20(String d5110_20) {
+		this.d5110_20 = d5110_20;
+	}
+
+	public String getD1330Freq() {
+		return d1330Freq;
+	}
+
+	public void setD1330Freq(String d1330Freq) {
+		this.d1330Freq = d1330Freq;
+	}
+
+	public String getD5111_12_13_14() {
+		return d5111_12_13_14;
+	}
+
+	public void setD5111_12_13_14(String d5111_12_13_14) {
+		this.d5111_12_13_14 = d5111_12_13_14;
+	}
+
+	public String getD5130_40() {
+		return d5130_40;
+	}
+
+	public void setD5130_40(String d5130_40) {
+		this.d5130_40 = d5130_40;
+	}
+
+	public String getD5810_c() {
+		return d5810_c;
+	}
+
+	public void setD5810_c(String d5810_c) {
+		this.d5810_c = d5810_c;
+	}
+
+	public String getD5225_26_c() {
+		return d5225_26_c;
+	}
+
+	public void setD5225_26_c(String d5225_26_c) {
+		this.d5225_26_c = d5225_26_c;
+	}
+
+	public String getExtractions1fr() {
+		return extractions1fr;
+	}
+
+	public void setExtractions1fr(String extractions1fr) {
+		this.extractions1fr = extractions1fr;
+	}
+
+	public String getExtractions2fr() {
+		return extractions2fr;
+	}
+
+	public void setExtractions2fr(String extractions2fr) {
+		this.extractions2fr = extractions2fr;
+	}
+
+	public String getImplantsC() {
+		return implantsC;
+	}
+
+	public void setImplantsC(String implantsC) {
+		this.implantsC = implantsC;
+	}
+
+	public String getD1520_26_27() {
+		return d1520_26_27;
+	}
+
+	public void setD1520_26_27(String d1520_26_27) {
+		this.d1520_26_27 = d1520_26_27;
+	}
+
+	public String getD1520_26_27_fr() {
+		return d1520_26_27_fr;
+	}
+
+	public void setD1520_26_27_fr(String d1520_26_27_fr) {
+		this.d1520_26_27_fr = d1520_26_27_fr;
+	}
+
+	public String getWaitingPeriod() {
+		return waitingPeriod;
+	}
+
+	public void setWaitingPeriod(String waitingPeriod) {
+		this.waitingPeriod = waitingPeriod;
+	}
+
+	public String getWip() {
+		return wip;
+	}
+
+	public void setWip(String wip) {
+		this.wip = wip;
+	}
+
+	public String getInsBillingC() {
+		return insBillingC;
+	}
+
+	public void setInsBillingC(String insBillingC) {
+		this.insBillingC = insBillingC;
+	}
+
+	public String getBenefitPeriod() {
+		return benefitPeriod;
+	}
+
+	public void setBenefitPeriod(String benefitPeriod) {
+		this.benefitPeriod = benefitPeriod;
+	}
+
+	public String getWaitingPeriodDrop() {
+		return waitingPeriodDrop;
+	}
+
+	public void setWaitingPeriodDrop(String waitingPeriodDrop) {
+		this.waitingPeriodDrop = waitingPeriodDrop;
+	}
+
+	public String getD8070() {
+		return d8070;
+	}
+
+	public void setD8070(String d8070) {
+		this.d8070 = d8070;
+	}
+
+	public String getD8080() {
+		return d8080;
+	}
+
+	public void setD8080(String d8080) {
+		this.d8080 = d8080;
+	}
+
+	public String getD8090() {
+		return d8090;
+	}
+
+	public void setD8090(String d8090) {
+		this.d8090 = d8090;
+	}
+
+	public String getD8670() {
+		return d8670;
+	}
+
+	public void setD8670(String d8670) {
+		this.d8670 = d8670;
+	}
+
+	public String getD8680() {
+		return d8680;
+	}
+
+	public void setD8680(String d8680) {
+		this.d8680 = d8680;
+	}
+
+	public String getD8690() {
+		return d8690;
+	}
+
+	public void setD8690(String d8690) {
+		this.d8690 = d8690;
+	}
+
+	public String getD8070fr() {
+		return d8070fr;
+	}
+
+	public void setD8070fr(String d8070fr) {
+		this.d8070fr = d8070fr;
+	}
+
+	public String getD8080fr() {
+		return d8080fr;
+	}
+
+	public void setD8080fr(String d8080fr) {
+		this.d8080fr = d8080fr;
+	}
+
+	public String getD8090fr() {
+		return d8090fr;
+	}
+
+	public void setD8090fr(String d8090fr) {
+		this.d8090fr = d8090fr;
+	}
+
+	public String getD8670fr() {
+		return d8670fr;
+	}
+
+	public void setD8670fr(String d8670fr) {
+		this.d8670fr = d8670fr;
+	}
+
+	public String getD8680fr() {
+		return d8680fr;
+	}
+
+	public void setD8680fr(String d8680fr) {
+		this.d8680fr = d8680fr;
+	}
+
+	public String getD8690fr() {
+		return d8690fr;
+	}
+
+	public void setD8690fr(String d8690fr) {
+		this.d8690fr = d8690fr;
+	}
+
+	public String getD0145() {
+		return d0145;
+	}
+
+	public void setD0145(String d0145) {
+		this.d0145 = d0145;
+	}
+
+	public String getApptype() {
+		return apptype;
+	}
+
+	public void setApptype(String apptype) {
+		this.apptype = apptype;
+	}
+
+	public String getSecProviderName() {
+		return secProviderName;
+	}
+
+	public void setSecProviderName(String secProviderName) {
+		this.secProviderName = secProviderName;
+	}
+
+	public String getSecProvNetwork() {
+		return secProvNetwork;
+	}
+
+	public void setSecProvNetwork(String secProvNetwork) {
+		this.secProvNetwork = secProvNetwork;
+	}
+
+	public String getYesNoAssignToffice() {
+		return yesNoAssignToffice;
+	}
+
+	public void setYesNoAssignToffice(String yesNoAssignToffice) {
+		this.yesNoAssignToffice = yesNoAssignToffice;
+	}
+
+	public String getD1120() {
+		return d1120;
+	}
+
+	public void setD1120(String d1120) {
+		this.d1120 = d1120;
+	}
+
+	public String getD1110() {
+		return d1110;
+	}
+
+	public void setD1110(String d1110) {
+		this.d1110 = d1110;
 	}
 	
 	

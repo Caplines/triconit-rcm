@@ -18,14 +18,12 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
-import com.tricon.ruleengine.dto.OfficeDto;
 import com.tricon.ruleengine.dto.scrapping.ScrapPatient;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
@@ -37,10 +35,8 @@ import com.tricon.ruleengine.model.db.PatientDetailTemp2;
 import com.tricon.ruleengine.model.db.PatientHistory;
 import com.tricon.ruleengine.model.db.PatientHistoryTemp;
 import com.tricon.ruleengine.model.db.PatientTemp;
-import com.tricon.ruleengine.model.db.ReplicationDays;
 import com.tricon.ruleengine.model.db.User;
 import com.tricon.ruleengine.utils.Constants;
-import com.tricon.ruleengine.utils.DaysCalculation;
 
 @Repository
 public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
@@ -126,7 +122,25 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " d1517 as d1517,d1517_freq as d1517Freq,d3220 as d3220,d3220_freq as d3220Freq,out_network_message as outNetworkMessage,"
 			+ " os_plan_type as osPlanType,sm_age_limit as smAgeLimit,perio_d4921 as perioD4921, d4921_frequency as d4921Frequency,perio_d4266 as perioD4266,d4266_frequency as d4266Frequency,"
 			+ " perio_d9910 as perioD9910, d9910_frequency as d9910Frequency, oonbenfits as oonbenfits, d9630 as d9630,d9630fr as d9630fr,d0431 as d0431,d0431fr as d0431fr,d4999 as d4999,d4999fr as d4999fr,"
-			+ " d2962 as d2962,d2962fr as d2962fr,history_count as  historyCount";
+			+ " d2962 as d2962,d2962fr as d2962fr,history_count as  historyCount,"
+			+ " d0145 as d0145, d0150 as d0150,d2750 as d2750,d2750_fr as d2750fr,"
+			+ " d0220 as d0220,d0220_freq as d0220Freq,d0230 as d0230,"
+			+ " bwx as bwx,d0210 as d0210,d0210_freq as d0210Freq,"
+			+ " d0350_freq as d0350Freq,bwx_freq as bwxFreq,d2931 as d2931,"
+			+ " d1206 as d1206,d1208 as d1208,b_which_code as bWhichCode,"
+			+ " d5110_20 as d5110_20, d1330_freq as d1330Freq,"
+			+ " d5111_12_13_14 as d5111_12_13_14,d5130_40 as d5130_40,"
+			+ " d5810_c as d5810_c,d5225_26_c as d5225_26_c,"
+			+ " extractions1_fr as extractions1fr,extractions2_fr as extractions2fr,"
+			+ " implants_c as implantsC,d1520_26_27 as d1520_26_27,"
+			+ " d1520_26_27_fr as d1520_26_27_fr,waiting_period as waitingPeriod,"
+			+ " wip as wip,ins_billing_c as insBillingC,benefit_period as benefitPeriod,"
+			+ " waiting_period_drop as waitingPeriodDrop,d8070 as d8070,"
+			+ " d8080 as d8080,d8090 as d8090,d8670 as d8670,d8680 as d8680,"
+			+ " d8690 as d8690,d8070_fr as d8070fr, d8080_fr as d8080fr,"
+			+ " d8090_fr as d8090fr,d8670_fr as d8670fr,d8680_fr as d8680fr,"
+			+ " d8690_fr as d8690fr,apptype as apptype,sec_provider_name as secProviderName,"
+			+ " sec_prov_network as secProvNetwork,yes_no_assign_to_office as yesNoAssignToffice";
 	
 	@Override
 	public Patient checkforPatientWithId(String patientid, Office off) {
