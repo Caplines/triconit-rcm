@@ -25,5 +25,5 @@ public class UserRegistrationDto {
 	private List<Integer>teamId;
 	@NotEmpty(message = "Please provide a role")
 	private String userRole;
-	private List<String> companyName;
+	private List<String> companyUuid;
 }

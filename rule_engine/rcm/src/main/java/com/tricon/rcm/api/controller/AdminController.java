@@ -63,6 +63,7 @@ public class AdminController extends BaseHeaderController{
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		
 		if (dto.getUserRole().equals(Constants.SYSTEM)) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
@@ -75,41 +76,37 @@ public class AdminController extends BaseHeaderController{
 		}
 		
 		// check team is mandatory
+		if (!(dto.getUserRole().equals(Constants.ADMIN) || dto.getUserRole().equals(Constants.SUPER_ADMIN))) {
 
-		if (!dto.getUserRole().equals(Constants.ADMIN)
-				&& (dto.getTeamId().isEmpty() || dto.getTeamId().stream().anyMatch(x -> x == 0))) {
-			if (dto.getUserRole().equals(Constants.SUPER_ADMIN)) {
-			} else
+			if (dto.getTeamId().isEmpty() || dto.getTeamId().stream().anyMatch(x -> x == 0)) {
 				return ResponseEntity
-						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_MANDATORY, null));
+						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_REQUIRED, null));
+			}
+
+		} else {
+			if (!dto.getTeamId().isEmpty()) {
+				return ResponseEntity
+						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null));
+			}
 		}
 
 		// check client is mandatory
 
-		if (dto.getUserRole().equals(Constants.ADMIN) && (dto.getCompanyName().isEmpty()
-				|| dto.getCompanyName().stream().anyMatch(x -> x == null || x.trim().equals("")))) {
-			if (dto.getUserRole().equals(Constants.SUPER_ADMIN)) {
-			} else
+		if (!dto.getUserRole().equals(Constants.SUPER_ADMIN) && (dto.getCompanyUuid().isEmpty()
+				|| dto.getCompanyUuid().stream().anyMatch(x -> x == null || x.trim().equals("")))) {
 				return ResponseEntity
-						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.CLINET_MANDATORY, null));
-		}
-
-		// team is not required for ADMIN OR SUPER_ADMIN
-		if ((dto.getUserRole().equals(Constants.ADMIN) || dto.getUserRole().equals(Constants.SUPER_ADMIN))
-				&& !dto.getTeamId().isEmpty()) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_REQUIRED, null));
+						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.CLINET_REQUIRED, null));
 		}
 
 		// Client is not required for SUPER_ADMIN
-		if (dto.getUserRole().equals(Constants.SUPER_ADMIN) && !dto.getCompanyName().isEmpty()) {
+		if (dto.getUserRole().equals(Constants.SUPER_ADMIN) && !dto.getCompanyUuid().isEmpty()) {
 			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.CLINET_NOT_MANDATORY, null));
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.CLINET_NOT_REQUIRED, null));
 		}
 		
 		GenericResponse response = null;
 		try {
-			response = serviceImpl.registerUser(dto);
+			response = serviceImpl.registerUser(dto,partialHeader.getRole(),partialHeader.getJwtUser());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -140,27 +137,27 @@ public class AdminController extends BaseHeaderController{
 		return ResponseEntity.ok(response);
 	}
 
-	@RequestMapping(value = "/finduser", method = RequestMethod.POST)
-	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-	public ResponseEntity<?> findUserByEmail(@RequestBody FindUserDto dto,Model model) {
-		GenericResponse response = null;
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if(partialHeader==null)return ResponseEntity
-				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-
-		if (dto.getEmail()==null||dto.getEmail().trim().equals("")) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
-		}
-		try {
-			response = serviceImpl.findUserByEmail(dto);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(response);
-	}
+//	@RequestMapping(value = "/finduser", method = RequestMethod.POST)
+//	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+//	public ResponseEntity<?> findUserByEmail(@RequestBody FindUserDto dto,Model model) {
+//		GenericResponse response = null;
+//		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+//		if(partialHeader==null)return ResponseEntity
+//				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+//
+//		if (dto.getEmail()==null||dto.getEmail().trim().equals("")) {
+//			return ResponseEntity
+//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+//		}
+//		try {
+//			response = serviceImpl.findUserByEmail(dto);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(response);
+//	}
 
 	@RequestMapping(value = "/getAllUsers/{companyName}/{pageNumber}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
@@ -319,36 +316,36 @@ public class AdminController extends BaseHeaderController{
 		return ResponseEntity.ok(response);
 	}
 	
-	@RequestMapping(value = "editRole", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> editRoles(@RequestBody RcmEditRolesDto dto,Model model) {
-		if ((dto.getUuid()==null||dto.getUuid().trim().equals(""))||dto.getRoles().isEmpty()){
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
-		}
-		if(dto.getRoles().stream().map(x->RcmRoleEnum.validateRoles(x)).anyMatch(x->x==null)) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLE_NOT_MATCH, null));
-		}
-		
-		GenericResponse response = null;
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if(partialHeader==null)return ResponseEntity
-				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		if(!partialHeader.getJwtUser().isSmilePoint()) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.UNAUTHORIZED_USER, null));
-		}
-		
-		try {
-			response = serviceImpl.editRolesByAdmin(partialHeader.getJwtUser(),dto);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(response);
-	}
+//	@RequestMapping(value = "editRole", method = RequestMethod.POST)
+//	@PreAuthorize("hasRole('ADMIN')")
+//	public ResponseEntity<?> editRoles(@RequestBody RcmEditRolesDto dto,Model model) {
+//		if ((dto.getUuid()==null||dto.getUuid().trim().equals(""))||dto.getRoles().isEmpty()){
+//			return ResponseEntity
+//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+//		}
+//		if(dto.getRoles().stream().map(x->RcmRoleEnum.validateRoles(x)).anyMatch(x->x==null)) {
+//			return ResponseEntity
+//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.ROLE_NOT_MATCH, null));
+//		}
+//		
+//		GenericResponse response = null;
+//		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+//		if(partialHeader==null)return ResponseEntity
+//				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+//		if(!partialHeader.getJwtUser().isSmilePoint()) {
+//			return ResponseEntity
+//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.UNAUTHORIZED_USER, null));
+//		}
+//		
+//		try {
+//			response = serviceImpl.editRolesByAdmin(partialHeader.getJwtUser(),dto);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(response);
+//	}
 	/**
 	 * This Api fetches all users from Claim assignment table according to teamid
 	 * @param dto

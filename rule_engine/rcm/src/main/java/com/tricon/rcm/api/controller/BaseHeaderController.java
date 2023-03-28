@@ -50,13 +50,15 @@ public abstract class BaseHeaderController  {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		partialHeader.setJwtUser(jwtUser);
-		if(company==null || RcmTeamEnum.validateTeamId(team)==0) return null;		
-		if(company!=null) {
-			if(!commonService.checkIfSessionClientValid(company.getUuid(),jwtUser.getCompanies())) return null;
-			if(!commonService.checkIfSessionTeamValid(team,jwtUser.getTeams())) return null;
-			if(!commonService.checkIfRolesValidFromJWT(role,jwtUser)) return null;
+		if (commonService.isSuperAdmin(jwtUser))
+			return partialHeader;
+		if (company == null)
+			return null;
+		if (company != null) {		
+			if(!commonService.checkIfSessionClientValid(company.getUuid(), jwtUser.getCompanies())) return null;
+			if (!commonService.checkIfRolesValidFromJWT(role, jwtUser))return null;
+			if (!commonService.checkIfSessionTeamValid(team, jwtUser.getTeams()) && !role.equals(Constants.ADMIN))return null;
 		}
-		
-        return partialHeader;
-    }
+		return partialHeader;
+	}
 }
