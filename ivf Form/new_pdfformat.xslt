@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
    version="1.0" >
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"  version="1.0"  />
@@ -849,12 +849,10 @@
         <br />
         <table class="table" vertical-align="top">
             <tr>
-                <td colspan="9" class="tableHeading">History</td>
-                <td class="borderNone width-7"></td>
-                <td class="borderNone width-5"></td>
+                <td colspan="11" class="tableHeading">History</td>
             </tr>
             <tr>
-                <td colspan="9" class="innerTableBox">
+                <td colspan="11" class="innerTableBox">
                     <table class="innerTable" vertical-align="top">
                         <tr>
                             <td class="rowHeading width-15">ADA Code</td>
@@ -901,9 +899,6 @@
 						</xsl:for-each>
                     </table>
                 </td>
-               
-                <td class="borderNone"></td>
-                <td class="borderNone"></td>
             </tr>
             <tr>
                 <td class="borderNone" colspan="11"></td>
