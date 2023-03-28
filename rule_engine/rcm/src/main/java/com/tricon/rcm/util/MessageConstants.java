@@ -40,7 +40,7 @@ public class MessageConstants {
 	
 	public static final String DUPLICATE_OFFICE="Duplicate office not allow";
 	
-	public static final String TEAM_MANDATORY="Team is mandatory";
+	public static final String TEAM_REQUIRED="Team is Required";
 	
 	public static final String CLAIM_REMOVE_MESSAGE="Old user role removed";
 	
@@ -72,11 +72,11 @@ public class MessageConstants {
 	
 	public static final String TL_ASSO_REQUIRED = "TeamLead or Associate is required for this role";
 	
-	public static final String CLINET_MANDATORY = "Client is mandatory";
+	public static final String CLINET_REQUIRED = "Client is required";
 	
 	public static final String TEAM_NOT_EXIT = "Team not exist";
 	
-	public static final String CLINET_NOT_MANDATORY = "Client is not mandatory";
+	public static final String CLINET_NOT_REQUIRED = "Client is not required";
 	
 	public static final String UNAUTHORIZED_USER = "User is not authorized";
 

@@ -34,6 +34,8 @@ import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.MessageConstants;
 
+import io.jsonwebtoken.lang.Collections;
+
 @Service
 public class RcmCommonServiceImpl {
 
@@ -230,5 +232,35 @@ public class RcmCommonServiceImpl {
 		return jwtUser.getAuthorities().stream()
 				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(role)));
 	}
-
+	
+	public boolean isSuperAdmin(JwtUser jwtUser) {
+		return jwtUser.getAuthorities().stream()
+				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(Constants.SUPER_ADMIN)));
+	}
+	
+	public boolean isAdmin(JwtUser jwtUser) {
+		return jwtUser.getAuthorities().stream()
+				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(Constants.ADMIN)));
+	}
+	
+	public boolean validateUserClients(JwtUser jwtUser, List<String> uuids) throws Exception {
+		List<RcmUserCompany> clientsData = userCompanyRepo.findByUserUuid(jwtUser.getUuid());
+		List<String> clientUuid = null;
+		boolean isFound = false;
+		if (clientsData != null && !clientsData.isEmpty()) {
+			clientUuid = clientsData.stream().map(x -> x.getCompany().getUuid()).collect(Collectors.toList());
+			for (String id : uuids) {
+				if (clientUuid.contains(id)) {
+					isFound = true;
+					continue;
+				} else
+					isFound = false;
+			}
+			if (isFound)
+				return true;
+		}
+		return false;
+	}
+	
+	public 
 }
