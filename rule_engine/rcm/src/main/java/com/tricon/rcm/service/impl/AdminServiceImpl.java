@@ -2,6 +2,7 @@ package com.tricon.rcm.service.impl;
 
 import java.sql.Timestamp;
 
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +66,6 @@ import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.dto.customquery.RcmClaimAssignmentDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
-import com.tricon.rcm.dto.customquery.RcmUserDetails;
 import com.tricon.rcm.email.EmailUtil;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -156,104 +156,43 @@ public class AdminServiceImpl {
 	 * @return Generic response
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse registerUser(UserRegistrationDto dto,String isAdminRole,JwtUser jwtUser) throws Exception {
-		RcmUserRole roles = null;
-		RcmUserRolePk pk = null;
+	public GenericResponse registerUser(UserRegistrationDto dto, String isAdminRole, JwtUser jwtUser) throws Exception {
 		RcmUser user = null;
-		RcmCompany company = null;
-		RcmTeam team = null;
-		RcmUserCompany userCompany = null;
-		RcmUserTeam userTeam = null;
-		if (isAdminRole.equals(Constants.ADMIN)){			
-			if(dto.getUserRole().equals(Constants.SUPER_ADMIN))return new GenericResponse(HttpStatus.BAD_REQUEST,"1st", null);
-			
-			if(!commonService.validateUserClients(jwtUser,dto.getCompanyUuid())) return new GenericResponse(HttpStatus.BAD_REQUEST,"2nd", null);
+		String responseMessage = "";
+
+		if (isAdminRole.equals(Constants.ADMIN)) {
+			if (dto.getUserRole().equals(Constants.SUPER_ADMIN))
+				return null;
+
+			if (!commonService.validateUserClients(jwtUser, dto.getCompanyUuid()))
+				return null;
 		}
 		user = userRepo.findByEmail(dto.getEmail());
 		if (user == null) {
 			user = convertDtotoModel(dto);
 			user = userRepo.save(user);
-			if (user != null) {		
-				// save clients details
-				for (String clientUuid : dto.getCompanyUuid()) {
-					company = rcmCompanyRepo.findByUuid(clientUuid);
-					if (company != null) {
-						userCompany = new RcmUserCompany();
-						userCompany.setCompany(company);
-						userCompany.setUser(user);
-						userCompanyRepo.save(userCompany);
-					} else {
-						return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
-					}
-				}
+			if (user != null) {
+				responseMessage = commonService.saveOrEditUser(user, dto.getUserRole(), dto.getCompanyUuid(),
+						dto.getTeamId());
 
-				// save Teams details
-				for (int teamId : dto.getTeamId()) {
-					team = teamRepo.findById(teamId);
-					if (team != null) {
-						userTeam = new RcmUserTeam();
-						userTeam.setTeam(team);
-						userTeam.setUser(user);
-						userTeamRepo.save(userTeam);
-					} else {
-						return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.TEAM_NOT_EXIT, null);
-					}
-				}
-
-				// if role is TL then we will assign TL+ASSO to registerUser
-				if (dto.getUserRole() != null && !dto.getUserRole().trim().equals("")) {
-					if (dto.getUserRole().equals(Constants.TEAMLEAD)) {
-						for (int i = 0; i <= dto.getTeamId().size(); i++) {
-							roles = new RcmUserRole();
-							pk = new RcmUserRolePk();
-							pk.setUuid(user.getUuid());
-							roles.setId(pk);
-							roles.setRole(RcmTeamEnum.generateRoleByRoleType(Constants.ASSOCIATE));
-							userRole.save(roles);
-						}
-					}
-				}
-				if(dto.getUserRole()!=null && !dto.getUserRole().trim().equals("")){
-					for (int i = 0; i <= dto.getTeamId().size(); i++) {	
-						roles = new RcmUserRole();
-						pk = new RcmUserRolePk();
-						pk.setUuid(user.getUuid());
-						roles.setId(pk);
-						roles.setRole(RcmTeamEnum.generateRoleByRoleType(dto.getUserRole()));
-						userRole.save(roles);
-					}
-					//save role in case of ADMIN and SUPER_ADMIN because team size is 0
-					if(dto.getUserRole().equals(Constants.ADMIN) || dto.getUserRole().equals(Constants.SUPER_ADMIN)) {
-						roles = new RcmUserRole();
-						pk = new RcmUserRolePk();
-						pk.setUuid(user.getUuid());
-						roles.setId(pk);
-						roles.setRole(RcmTeamEnum.generateRoleByRoleType(dto.getUserRole()));
-						userRole.save(roles);
-					}
-
+				if (responseMessage != null) {
+					return new GenericResponse(HttpStatus.BAD_REQUEST, responseMessage, null);
 				}
 
 				// send email to register User
-				if (user != null) {
-					String userEmail = user.getEmail();
-					String emailSubject = "New Registration Confirmation";
-					String emailText = "Hi " + user.getFirstName()
-							+ ",\n\nThanks for signing up to RCM. You can now login into the RCM Account.\n\n"
-							+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
-					emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
-				}
-
-				// dump new userData into rcm_user_temp table
-
-				if (user != null) {
-					commonService.dumpDataToRcmUserTemp(user, dto.getUserRole(), userCompany, userTeam);
-				}
-				return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
+				String userEmail = user.getEmail();
+				String emailSubject = "New Registration Confirmation";
+				String emailText = "Hi " + user.getFirstName()
+						+ ",\n\nThanks for signing up to RCM. You can now login into the RCM Account.\n\n"
+						+ "Your Password is: " + dto.getPassword() + "\n\n" + "Thanks and Regards\nRCM Team";
+				emailUtil.sendEmailForUserRegistration(userEmail, emailSubject, emailText);
 			}
+
+			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_CREATION, null);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_EXIST_WITH_EMAIL, null);
 	}
+
 
 	/**
 	 * This Method convert DTO to RcmUser Model
@@ -590,52 +529,47 @@ public class AdminServiceImpl {
 	 * @return GenericResponse
 	 */
 
-//	@Transactional(rollbackOn = Exception.class)
-//	public GenericResponse editRolesByAdmin(JwtUser jwtUser, RcmEditRolesDto dto) throws Exception {
-//		RcmUser existingUser = userRepo.findByUuid(dto.getUuid());
-//		RcmUserRole rcmRole = null;
-//		RcmUserRolePk pk = null;
-//		List<RcmUserRole> listOfRoles = new ArrayList<>();
-//
-//		// if uuid is match from login user then return
-//		if (jwtUser.getUuid().equals(dto.getUuid())) {
-//			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
-//		}
-//
-//		// if user is not null and company is capline then admin can change user's roles of own company users and other company user's roles
-//		if (existingUser != null) {
-//			
-//			List<RcmUserRole> existingRoles = existingUser.getRoles().stream().collect(Collectors.toList());
-//			if (existingRoles != null) {
-//				// remove all existingRoles include ADMIN
-//				userRole.deleteAll(existingRoles);
-//			}
-//			
-//			// if role is TL then we will assign TL+ASSO to editUser
-//			if (dto.getRoles().stream().anyMatch(x -> x.equals(Constants.TEAMLEAD))) {
-//				rcmRole = new RcmUserRole();
-//				pk = new RcmUserRolePk();
-//				pk.setUuid(existingUser.getUuid());
-//				rcmRole.setId(pk);
-//				rcmRole.setRole(RcmTeamEnum.generateRoleByRoleType(Constants.ASSOCIATE));
-//				userRole.save(rcmRole);
-//			}
-//			// add new roles
-//			for (String role : dto.getRoles()) {
-//				rcmRole = new RcmUserRole();
-//				pk = new RcmUserRolePk();
-//				pk.setUuid(existingUser.getUuid());
-//				rcmRole.setId(pk);
-//				rcmRole.setRole(RcmTeamEnum.generateRoleByRoleType(role));
-//				userRole.save(rcmRole);
-//				listOfRoles.add(rcmRole);
-//			}
-//			userRole.saveAll(listOfRoles);
-//			//commonService.dumpDataToRcmUserTemp(existingUser,dto.getRoles());
-//			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
-//		}
-//		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
-//   }
+	@Transactional(rollbackOn = Exception.class)
+	public GenericResponse editRolesByAdmin(RcmEditRolesDto dto, String isAdminRole, JwtUser jwtUser) throws Exception {
+
+		String responseMessage = "";
+		// Validate ADMIN Functionality
+		if (isAdminRole.equals(Constants.ADMIN)) {
+			if (dto.getRole().equals(Constants.SUPER_ADMIN))
+				return null;
+
+			if (!commonService.validateUserClients(jwtUser, dto.getCompanyUuid()))
+				return null;
+		}
+		// if uuid is match from login user then return
+		if (jwtUser.getUuid().equals(dto.getUuid())) {
+			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
+		}
+
+		RcmUser existingUser = userRepo.findByUuid(dto.getUuid());
+		if (existingUser != null) {
+			List<RcmUserRole> existingRoles = existingUser.getRoles().stream().collect(Collectors.toList());
+			List<RcmUserCompany> existingClients=userCompanyRepo.findByUserUuid(existingUser.getUuid());
+			List<RcmUserTeam> existingTeams=userTeamRepo.findByUserUuid(existingUser.getUuid());
+			if (existingRoles != null) {
+				// remove all existingRoles
+				userRole.deleteAll(existingRoles);
+				//remove all existing clients
+				userCompanyRepo.deleteAll(existingClients);	
+				//remove all existing teams
+				userTeamRepo.deleteAll(existingTeams);
+				
+			}
+			responseMessage = commonService.saveOrEditUser(existingUser, dto.getRole(), dto.getCompanyUuid(),
+					dto.getTeamId());
+
+			if (responseMessage != null) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, responseMessage, null);
+			}
+			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
+		}
+		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
+	}
 
 	public List<RcmUserToDto> getUsersFromClaimAssignmentTable(RcmClaimDto dto,RcmCompany company) throws Exception {
 		// first we will check any claim is assign or not in this uuid

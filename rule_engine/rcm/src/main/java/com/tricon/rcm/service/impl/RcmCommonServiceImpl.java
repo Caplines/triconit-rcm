@@ -2,9 +2,7 @@ package com.tricon.rcm.service.impl;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,24 +15,27 @@ import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserCompany;
+import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRoleHistory;
+import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.RcmUserTeam;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
+import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleHistoryRepo;
+import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
 import com.tricon.rcm.jpa.repository.RcmUserTeamRepo;
 //import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.MessageConstants;
-
-import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class RcmCommonServiceImpl {
@@ -64,6 +65,12 @@ public class RcmCommonServiceImpl {
 	
 	@Autowired
 	RcmUserTeamRepo userTeamRepo;
+	
+	@Autowired
+	RcmTeamRepo teamRepo;
+	
+	@Autowired
+	RcmUserRoleRepo userRole;
 
 	public List<RcmOfficeDto> getAllOffices() {
 
@@ -262,5 +269,77 @@ public class RcmCommonServiceImpl {
 		return false;
 	}
 	
-	public 
+	public String saveOrEditUser(RcmUser user, String role,
+			List<String> companyUuid, List<Integer> teamIds) throws Exception {
+		RcmUserRole roles = null;
+		RcmUserRolePk pk = null;
+		RcmCompany company = null;
+		RcmTeam team = null;
+		RcmUserCompany userCompany = null;
+		RcmUserTeam userTeam = null;
+		
+		// save clients details
+		for (String clientUuid : companyUuid) {
+			company = rcmCompanyRepo.findByUuid(clientUuid);
+			if (company != null) {
+				userCompany = new RcmUserCompany();
+				userCompany.setCompany(company);
+				userCompany.setUser(user);
+				userCompanyRepo.save(userCompany);
+			} else {
+				return MessageConstants.COMPANY_NOT_EXIST;
+			}
+		}
+
+		// save Teams details
+		for (int teamId : teamIds) {
+			team = teamRepo.findById(teamId);
+			if (team != null) {
+				userTeam = new RcmUserTeam();
+				userTeam.setTeam(team);
+				userTeam.setUser(user);
+				userTeamRepo.save(userTeam);
+			} else {
+				return MessageConstants.TEAM_NOT_EXIT;
+			}
+		}
+
+		// if role is TL then we will assign TL+ASSO to registerUser
+		if (role != null && !role.trim().equals("")) {
+			if (role.equals(Constants.TEAMLEAD)) {
+				for (int i = 0; i <= teamIds.size(); i++) {
+					roles = new RcmUserRole();
+					pk = new RcmUserRolePk();
+					pk.setUuid(user.getUuid());
+					roles.setId(pk);
+					roles.setRole(RcmTeamEnum.generateRoleByRoleType(Constants.ASSOCIATE));
+					userRole.save(roles);
+				}
+			}
+		}
+		if (role != null && !role.trim().equals("")) {
+			for (int i = 0; i <= teamIds.size(); i++) {
+				roles = new RcmUserRole();
+				pk = new RcmUserRolePk();
+				pk.setUuid(user.getUuid());
+				roles.setId(pk);
+				roles.setRole(RcmTeamEnum.generateRoleByRoleType(role));
+				userRole.save(roles);
+			}
+			// save role in case of ADMIN and SUPER_ADMIN because team size is 0
+			if (role.equals(Constants.ADMIN) || role.equals(Constants.SUPER_ADMIN)) {
+				roles = new RcmUserRole();
+				pk = new RcmUserRolePk();
+				pk.setUuid(user.getUuid());
+				roles.setId(pk);
+				roles.setRole(RcmTeamEnum.generateRoleByRoleType(role));
+				userRole.save(roles);
+			}
+
+		}
+		dumpDataToRcmUserTemp(user,role,userCompany,userTeam);
+		
+		return null;
+	}
+	
 }

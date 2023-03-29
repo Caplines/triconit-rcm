@@ -10,5 +10,7 @@ import lombok.NoArgsConstructor;
 public class RcmEditRolesDto {
 
 	private String uuid;
-	private List<String>roles;
+	private String role;
+	private List<String>companyUuid;
+	private List<Integer>teamId;
 }

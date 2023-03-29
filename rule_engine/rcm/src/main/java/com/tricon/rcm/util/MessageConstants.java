@@ -60,7 +60,7 @@ public class MessageConstants {
 	
 	public static final String USER_EXIST_WITH_EMAIL = "User already registered with this email ID";
 	
-	public static final String TEAM_NOT_REQUIRED = "Team is not required for this role";
+	public static final String TEAM_NOT_REQUIRED = "Team is not required";
 	
 	public static final String ADMIN_NOT_ASSOCIATED_WITH_ROLES="Admin role can not associate with other roles";
 	
