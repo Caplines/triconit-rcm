@@ -66,6 +66,7 @@ import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.dto.customquery.RcmClaimAssignmentDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
+import com.tricon.rcm.dto.customquery.RcmUserDetails;
 import com.tricon.rcm.email.EmailUtil;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -217,26 +218,53 @@ public class AdminServiceImpl {
 	 * @param dto
 	 * @return user details
 	 */
-//	public GenericResponse findUserByEmail(FindUserDto dto) throws Exception {
-//		RcmUser user = userRepo.findByEmail(dto.getEmail());
-//		if (user != null && !user.getEmail().equals(Constants.SYSTEM_USER_EMAIL)) {
-//			RcmUserDto data = new RcmUserDto();
-//			BeanUtils.copyProperties(user, data);
-//			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
-//			data.setRoles(user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList()));
-//			List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
-//			if (clientName != null && !clientName.isEmpty()) {
-//				data.setClientName(clientName.stream().map(x -> x.getCompany().getName()).collect(Collectors.toList()));
-//
-//			}
-//			List<RcmUserTeam> teamName = userTeamRepo.findByUserUuid(user.getUuid());
-//			if (teamName != null && !teamName.isEmpty()) {
-//				data.setTeamNameId(teamName.stream().map(x -> x.getTeam().getId()).collect(Collectors.toList()));
-//			}
-//			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_EXIST, data);
-//		}
-//		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
-//	}
+	public RcmUserDto findUserByEmail(FindUserDto dto, String roleFromHeader, RcmCompany company)
+			throws Exception {
+		RcmUserDetails userDetails = null;
+		RcmUser user = null;
+		RcmUserDto data = null;
+		if (roleFromHeader.equals(Constants.ADMIN)) {
+			userDetails = userRepo.findUserByClientUuid(dto.getEmail(), company.getUuid());
+			if (userDetails != null) {
+				user = userRepo.findByUuid(userDetails.getUuid());
+				data = new RcmUserDto();
+				BeanUtils.copyProperties(userDetails, data);
+				data.setRoles(user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList()));
+				List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
+				if (clientName != null && !clientName.isEmpty()) {
+					data.setClientName(
+							clientName.stream().map(x -> x.getCompany().getName()).collect(Collectors.toList()));
+
+				}
+				List<RcmUserTeam> teamName = userTeamRepo.findByUserUuid(user.getUuid());
+				if (teamName != null && !teamName.isEmpty()) {
+					data.setTeamNameId(teamName.stream().map(x -> x.getTeam().getId()).collect(Collectors.toList()));
+				}
+				return data;
+			}
+		}
+
+		if (roleFromHeader.equals(Constants.SUPER_ADMIN)) {
+			user = userRepo.findByEmail(dto.getEmail());
+			data = new RcmUserDto();
+			BeanUtils.copyProperties(user, data);
+			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
+			data.setRoles(user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList()));
+			List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
+			if (clientName != null && !clientName.isEmpty()) {
+				data.setClientName(clientName.stream().map(x -> x.getCompany().getName()).collect(Collectors.toList()));
+
+			}
+			List<RcmUserTeam> teamName = userTeamRepo.findByUserUuid(user.getUuid());
+			if (teamName != null && !teamName.isEmpty()) {
+				data.setTeamNameId(teamName.stream().map(x -> x.getTeam().getId()).collect(Collectors.toList()));
+			}
+			return data;
+		}
+
+		return null
+				;
+	}
 
 	/**
 	 * This Method is used to fetch All user records .
@@ -560,6 +588,13 @@ public class AdminServiceImpl {
 				userTeamRepo.deleteAll(existingTeams);
 				
 			}
+			//edit user Personal details
+			
+			existingUser.setFirstName(dto.getFirstName());
+			existingUser.setLastName(dto.getLastName());
+			existingUser=userRepo.save(existingUser);
+			
+			//edit role,client and teams details
 			responseMessage = commonService.saveOrEditUser(existingUser, dto.getRole(), dto.getCompanyUuid(),
 					dto.getTeamId());
 
