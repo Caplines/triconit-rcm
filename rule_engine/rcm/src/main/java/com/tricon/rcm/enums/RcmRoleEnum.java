@@ -9,10 +9,10 @@ public enum RcmRoleEnum {
 	ASSO("ASSO", "Associate",true), 
 	SYSTEM("SYSTEM", "System",false),
 	ADMIN("ADMIN", "Admin",true),
-//	//CLIENT_MANAGER("CLIENT_MANAGER", "Client Manager",true),
-//	CLIENT_VIEW_ONLY("CLIENT_VIEW_ONLY","Client View Only",true),
-//	UPLOAD_CLAIMS("UPLOAD_CLAIMS","Upload Claims",true),
-//	ACCOUNT_MANAGER("ACCOUNT_MANAGER","Account Manager",true),
+   // CLIENT_MANAGER("CLIENT_MANAGER", "Client Manager",true),
+	CLIENT_VIEW_ONLY("CLIENT_VIEW_ONLY","Client View Only",true),
+	UPLOAD_CLAIMS("UPLOAD_CLAIMS","Upload Claims",true),
+	ACCOUNT_MANAGER("ACCOUNT_MANAGER","Account Manager",true),
 	REPORTING("REPORTING","Reporting",true),
 	SUPER_ADMIN("SUPER_ADMIN","Super Admin",true);
 

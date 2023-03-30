@@ -342,8 +342,4 @@ public class RcmCommonServiceImpl {
 		return null;
 	}
 	
-	public void checkAccessibilityOfAdminOrSuperAdminByClientUuid(String role,String companyId) {
-          
-	}
-	
 }

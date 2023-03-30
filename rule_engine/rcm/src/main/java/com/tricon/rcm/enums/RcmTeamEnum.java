@@ -21,13 +21,13 @@ public enum RcmTeamEnum {
 	IV_TEAM(6, "IV_TEAM","IV Team", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
 	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
 	LC3(8, "LC3","LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	//CLIENT(9, "CLIENT","Client", new RcmRoleEnum[] {RcmRoleEnum.CLIENT_VIEW_ONLY,RcmRoleEnum.REPORTING},true),
+	CLIENT(9, "CLIENT","Client", new RcmRoleEnum[] {RcmRoleEnum.CLIENT_VIEW_ONLY},false),
 	AGING(10, "AGING","Aging", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
 	POSTING(11, "POSTING","Posting", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
 	QUALITY(12, "QUALITY","Quality", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	//UPLOAD_CLAIMS(13, "UPLOAD_CLAIMS","Upload Claims", new RcmRoleEnum[] {RcmRoleEnum.UPLOAD_CLAIMS},true),
-	//ACCOUNT_MANAGER(14, "ACCOUNT_MANAGER","Account Manager", new RcmRoleEnum[] {RcmRoleEnum.ACCOUNT_MANAGER},true),
-	SUPER_ADMIN(16, "SUPER_ADMIN","Super Admin", new RcmRoleEnum[] {RcmRoleEnum.SUPER_ADMIN},false);
+	UPLOAD_CLAIMS(13, "UPLOAD_CLAIMS","Upload Claims", new RcmRoleEnum[] {RcmRoleEnum.UPLOAD_CLAIMS},false),
+	ACCOUNT_MANAGER(14, "ACCOUNT_MANAGER","Account Manager", new RcmRoleEnum[] {RcmRoleEnum.ACCOUNT_MANAGER},false),
+	SUPER_ADMIN(15, "SUPER_ADMIN","Super Admin", new RcmRoleEnum[] {RcmRoleEnum.SUPER_ADMIN},false);
 	
 	final private int id;
 	final private String name;
