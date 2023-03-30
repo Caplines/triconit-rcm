@@ -105,43 +105,43 @@ public enum RcmTeamEnum {
 		return null;
 	}
 	
-	public static List<RcmRolesResponseDto> getRolesByTeamId(int teamId) {
-		RcmRoleEnum rolesEnum[] = null;
-		List<RcmRolesResponseDto> roles = new ArrayList<>();
-		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() == teamId).findFirst();
-		RcmRolesResponseDto rolesResponseDto = null;
-		if (teamEnum.isPresent()) {
-			rolesEnum = teamEnum.get().getRole();
-			int id = teamEnum.get().getId();
-			for (RcmRoleEnum data : rolesEnum) {
-				rolesResponseDto = new RcmRolesResponseDto();
-				rolesResponseDto.setRoleId(data.getName());
-				rolesResponseDto.setRoleName(data.getFullName());
-				rolesResponseDto.setFullRoleName(generateRole(id, data.getName()));
-				roles.add(rolesResponseDto);
-			}
-			return roles;
-		}
-		if (teamId == -1) {
-			RcmRolesResponseDto rolesResponseForAdmin = new RcmRolesResponseDto();
-			rolesResponseForAdmin.setRoleId(RcmRoleEnum.ADMIN.getName());
-			rolesResponseForAdmin.setRoleName(RcmRoleEnum.ADMIN.getFullName());
-			rolesResponseForAdmin.setFullRoleName(generateRole(0, RcmRoleEnum.ADMIN.getName()));
-			roles.add(rolesResponseForAdmin);
-//			RcmRolesResponseDto rolesResponseForUploadClaims = new RcmRolesResponseDto();
-//			rolesResponseForUploadClaims.setRoleId(RcmRoleEnum.UPLOAD_CLAIMS.getName());
-//			rolesResponseForUploadClaims.setRoleName(RcmRoleEnum.UPLOAD_CLAIMS.getFullName());
-//			rolesResponseForUploadClaims.setFullRoleName(generateRole(0, RcmRoleEnum.UPLOAD_CLAIMS.getName()));
-//			roles.add(rolesResponseForUploadClaims);
-//			RcmRolesResponseDto rolesResponseForAccountManager = new RcmRolesResponseDto();
-//			rolesResponseForAccountManager.setRoleId(RcmRoleEnum.ACCOUNT_MANAGER.getName());
-//			rolesResponseForAccountManager.setRoleName(RcmRoleEnum.ACCOUNT_MANAGER.getFullName());
-//			rolesResponseForAccountManager.setFullRoleName(generateRole(0, RcmRoleEnum.ACCOUNT_MANAGER.getName()));
-//			roles.add(rolesResponseForUploadClaims);
-			return roles;
-		}
-		return null;
-	}
+//	public static List<RcmRolesResponseDto> getRolesByTeamId(int teamId) {
+//		RcmRoleEnum rolesEnum[] = null;
+//		List<RcmRolesResponseDto> roles = new ArrayList<>();
+//		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() == teamId).findFirst();
+//		RcmRolesResponseDto rolesResponseDto = null;
+//		if (teamEnum.isPresent()) {
+//			rolesEnum = teamEnum.get().getRole();
+//			int id = teamEnum.get().getId();
+//			for (RcmRoleEnum data : rolesEnum) {
+//				rolesResponseDto = new RcmRolesResponseDto();
+//				rolesResponseDto.setRoleId(data.getName());
+//				rolesResponseDto.setRoleName(data.getFullName());
+//				//rolesResponseDto.setFullRoleName(generateRole(id, data.getName()));
+//				roles.add(rolesResponseDto);
+//			}
+//			return roles;
+//		}
+//		if (teamId == -1) {
+//			RcmRolesResponseDto rolesResponseForAdmin = new RcmRolesResponseDto();
+//			rolesResponseForAdmin.setRoleId(RcmRoleEnum.ADMIN.getName());
+//			rolesResponseForAdmin.setRoleName(RcmRoleEnum.ADMIN.getFullName());
+//			//rolesResponseForAdmin.setFullRoleName(generateRole(0, RcmRoleEnum.ADMIN.getName()));
+//			roles.add(rolesResponseForAdmin);
+////			RcmRolesResponseDto rolesResponseForUploadClaims = new RcmRolesResponseDto();
+////			rolesResponseForUploadClaims.setRoleId(RcmRoleEnum.UPLOAD_CLAIMS.getName());
+////			rolesResponseForUploadClaims.setRoleName(RcmRoleEnum.UPLOAD_CLAIMS.getFullName());
+////			rolesResponseForUploadClaims.setFullRoleName(generateRole(0, RcmRoleEnum.UPLOAD_CLAIMS.getName()));
+////			roles.add(rolesResponseForUploadClaims);
+////			RcmRolesResponseDto rolesResponseForAccountManager = new RcmRolesResponseDto();
+////			rolesResponseForAccountManager.setRoleId(RcmRoleEnum.ACCOUNT_MANAGER.getName());
+////			rolesResponseForAccountManager.setRoleName(RcmRoleEnum.ACCOUNT_MANAGER.getFullName());
+////			rolesResponseForAccountManager.setFullRoleName(generateRole(0, RcmRoleEnum.ACCOUNT_MANAGER.getName()));
+////			roles.add(rolesResponseForUploadClaims);
+//			return roles;
+//		}
+//		return null;
+//	}
 	
 	public static String generateRoleByRoleType(String roleType) {
 		Optional<RcmRoleEnum> roleEnum = Arrays.stream(RcmRoleEnum.values())

@@ -16,6 +16,6 @@ public class RcmUserDto {
 	private String firstName;
 	private String lastName;
 	private List<Integer> teamNameId;
-    private List<String>roles;
+    private List<RcmRolesResponseDto>roles;
 	private List<String> clientName;
 }

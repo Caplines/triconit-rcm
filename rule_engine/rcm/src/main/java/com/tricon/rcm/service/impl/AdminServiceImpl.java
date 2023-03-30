@@ -229,7 +229,14 @@ public class AdminServiceImpl {
 				user = userRepo.findByUuid(userDetails.getUuid());
 				data = new RcmUserDto();
 				BeanUtils.copyProperties(userDetails, data);
-				data.setRoles(user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList()));
+				List<String> rolesData =user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());			
+			    List<RcmRolesResponseDto> rolesResponse = new ArrayList<>();
+				for (String roles : rolesData) {
+					RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
+					responseDto=RcmRoleEnum.getRoles(roles);
+					rolesResponse.add(responseDto);		
+				}
+				data.setRoles(rolesResponse);			
 				List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
 				if (clientName != null && !clientName.isEmpty()) {
 					data.setClientName(
@@ -249,7 +256,14 @@ public class AdminServiceImpl {
 			data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
-			data.setRoles(user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList()));
+			List<String> rolesData =user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());			
+		    List<RcmRolesResponseDto> rolesResponse = new ArrayList<>();
+			for (String roles : rolesData) {
+				RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
+				responseDto=RcmRoleEnum.getRoles(roles);
+				rolesResponse.add(responseDto);		
+			}
+			data.setRoles(rolesResponse);
 			List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
 			if (clientName != null && !clientName.isEmpty()) {
 				data.setClientName(clientName.stream().map(x -> x.getCompany().getName()).collect(Collectors.toList()));

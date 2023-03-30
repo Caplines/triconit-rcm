@@ -1,7 +1,11 @@
 package com.tricon.rcm.enums;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+
+import com.tricon.rcm.dto.RcmRolesResponseDto;
 
 public enum RcmRoleEnum {
 
@@ -43,4 +47,17 @@ public enum RcmRoleEnum {
 		}
 		return null;
 	}
+	
+	public static RcmRolesResponseDto getRoles(String role) {		
+		String removePrefix[]=role.split("_");
+		Optional<RcmRoleEnum> data = Arrays.stream(values()).filter(x -> x.getName().equals(removePrefix[1])).findFirst();
+		RcmRolesResponseDto rolesResponseDto = null;
+		if (data.isPresent()) {
+				rolesResponseDto = new RcmRolesResponseDto();
+				rolesResponseDto.setRoleId(data.get().name());
+				rolesResponseDto.setRoleName(data.get().getFullName());
+				return rolesResponseDto;
+			}
+			return null;
+		}
 }

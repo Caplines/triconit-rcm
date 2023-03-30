@@ -11,5 +11,5 @@ public class RcmRolesResponseDto {
 
 	private String roleId;
 	private String roleName;
-	private String fullRoleName;
+	//private String fullRoleName;
 }
