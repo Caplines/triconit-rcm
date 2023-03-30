@@ -85,5 +85,6 @@ public class Constants {
 	public static final String CLIENT_MANAGER = "CLIENT_MANAGER";
 	public static final String CLIENT_VIEW_ONLY = "CLIENT_VIEW_ONLY";
 	public static final String SUPER_ADMIN = "SUPER_ADMIN";
+	public static final String REPORTING = "REPORTING";
 
 }

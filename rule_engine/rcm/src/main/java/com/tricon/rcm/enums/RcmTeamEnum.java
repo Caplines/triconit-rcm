@@ -15,19 +15,13 @@ public enum RcmTeamEnum {
 	 */
 	SYSYEM(1, "SYSTEM","System", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM },false),
     ADMIN(2, "ADMIN","Admin", new RcmRoleEnum[] { RcmRoleEnum.ADMIN },false),
-	PATIENT_CALLING(3,"PATIENT_CALLING","Patient Calling", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	OFFICE(4, "OFFICE", "Office",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	INTERNAL_AUDIT(5, "INTERNAL_AUDIT","Internal Audit", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	IV_TEAM(6, "IV_TEAM","IV Team", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	LC3(8, "LC3","LC3", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	CLIENT(9, "CLIENT","Client", new RcmRoleEnum[] {RcmRoleEnum.CLIENT_VIEW_ONLY},false),
-	AGING(10, "AGING","Aging", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	POSTING(11, "POSTING","Posting", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	QUALITY(12, "QUALITY","Quality", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
-	UPLOAD_CLAIMS(13, "UPLOAD_CLAIMS","Upload Claims", new RcmRoleEnum[] {RcmRoleEnum.UPLOAD_CLAIMS},false),
-	ACCOUNT_MANAGER(14, "ACCOUNT_MANAGER","Account Manager", new RcmRoleEnum[] {RcmRoleEnum.ACCOUNT_MANAGER},false),
-	SUPER_ADMIN(15, "SUPER_ADMIN","Super Admin", new RcmRoleEnum[] {RcmRoleEnum.SUPER_ADMIN},false);
+	INTERNAL_AUDIT(3, "INTERNAL_AUDIT","Internal Audit", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	AGING(4, "AGING","Aging", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	POSTING(5, "POSTING","Posting", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	QUALITY(6, "QUALITY","Quality", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
+	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),	
+	SUPER_ADMIN(8, "SUPER_ADMIN","Super Admin", new RcmRoleEnum[] {RcmRoleEnum.SUPER_ADMIN},false),
+	REPORTING(9,"REPORTING","Reporting",new RcmRoleEnum[] {RcmRoleEnum.REPORTING},false);
 	
 	final private int id;
 	final private String name;
