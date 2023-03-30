@@ -82,7 +82,7 @@ export class HeaderComponent implements OnInit {
   openPopUp(open:boolean){
     if (!open) {
       this.modelTitle="Select Account";
-    } 
+    }
     else {
       this.modelTitle="Switch Account";
     } 
@@ -90,6 +90,7 @@ export class HeaderComponent implements OnInit {
       this.cwModel.companies=this.staticUtil.getClientsFromLS();
       this.cwModel.teams=this.staticUtil.getTeamsFromLS();
       this.cwModel.roles=this.staticUtil.getRolesFromLS();
+      this.cwModel.roles = this.cwModel.roles.map((role:any) => role.replace("ROLE_", ""));
       this.modelElement.modal = document.getElementById("switch-modal");
       this.modelElement.modal.style.display = "block";
       this.showPopup= true;
