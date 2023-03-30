@@ -479,7 +479,7 @@ public class AdminController extends BaseHeaderController{
 
 		// check team is mandatory
 		if (!(role.equals(Constants.ADMIN) || role.equals(Constants.SUPER_ADMIN)
-				|| role.equals(Constants.ACCOUNT_MANAGER) || role.equals(Constants.REPORTING))) {
+				||role.equals(Constants.REPORTING))) {
 
 			if (teamId==null || teamId.isEmpty() || teamId.stream().anyMatch(x -> x == 0)) {
 				return MessageConstants.TEAM_REQUIRED;

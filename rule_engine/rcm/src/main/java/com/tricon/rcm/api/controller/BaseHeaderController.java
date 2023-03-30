@@ -58,7 +58,7 @@ public abstract class BaseHeaderController  {
 			if(!commonService.checkIfSessionClientValid(company.getUuid(), jwtUser.getCompanies())) return null;
 			if (!commonService.checkIfRolesValidFromJWT(role, jwtUser))return null;
 			if (!commonService.checkIfSessionTeamValid(team, jwtUser.getTeams()) && (!role.equals(Constants.ADMIN)
-					|| !role.equals(Constants.ACCOUNT_MANAGER) || !role.equals(Constants.REPORTING)))
+					||!role.equals(Constants.REPORTING)))
 				return null;
 		}
 		return partialHeader;
