@@ -229,6 +229,7 @@ public class AdminServiceImpl {
 				user = userRepo.findByUuid(userDetails.getUuid());
 				data = new RcmUserDto();
 				BeanUtils.copyProperties(userDetails, data);
+				data.setActive(user.getActive());
 				List<String> rolesData =user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());			
 			    List<RcmRolesResponseDto> rolesResponse = new ArrayList<>();
 				for (String roles : rolesData) {
@@ -256,6 +257,7 @@ public class AdminServiceImpl {
 			data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
+			data.setActive(user.getActive());
 			List<String> rolesData =user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());			
 		    List<RcmRolesResponseDto> rolesResponse = new ArrayList<>();
 			for (String roles : rolesData) {
