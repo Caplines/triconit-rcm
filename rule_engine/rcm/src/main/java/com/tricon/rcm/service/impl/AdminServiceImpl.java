@@ -359,19 +359,28 @@ public class AdminServiceImpl {
 	 * @return GenericResponse
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse passwordUpdation(JwtUser jwtUser, PasswordResetDto dto) throws Exception {
+	public GenericResponse passwordUpdation(JwtUser jwtUser, PasswordResetDto dto, String isAdminOrSuperAdmin)
+			throws Exception {
 		String msg = "";
 		RcmUser user = null, loginUser = null;
+		List<String> clients = null;
 		loginUser = userRepo.findByEmail(jwtUser.getUsername());
 		if (loginUser != null) {
 			if (!dto.getUuid().equals(loginUser.getUuid())) {
 				user = userRepo.findByUuid(dto.getUuid());
-				msg = commonService.resetPassword(user, loginUser, dto.getPassword());
-			} else {
-				msg = MessageConstants.UPDATION_FAIL;
-			}
-		} else {
-			msg = MessageConstants.USER_NOT_EXIST;
+				if(user==null) return new GenericResponse(HttpStatus.OK,MessageConstants.USER_NOT_EXIST, null);				
+				if (user != null && isAdminOrSuperAdmin.equals(Constants.ADMIN)) {
+					clients = user.getRcmCompanies().stream().map(x -> x.getCompany().getUuid())
+							.collect(Collectors.toList());
+					if (!commonService.validateUserClients(jwtUser, clients))return new GenericResponse(HttpStatus.OK,MessageConstants.UPDATION_FAIL, null);
+					msg = commonService.resetPassword(user, loginUser, dto.getPassword());
+				}
+
+				if (user != null && isAdminOrSuperAdmin.equals(Constants.SUPER_ADMIN)) {
+					msg = commonService.resetPassword(user, loginUser, dto.getPassword());
+				}
+				
+			}else msg=MessageConstants.UPDATION_FAIL;
 		}
 		return new GenericResponse(HttpStatus.OK, msg, null);
 	}
@@ -396,16 +405,11 @@ public class AdminServiceImpl {
 	 * This method is used only admin
 	 * @return List of companies
 	 */
-	public GenericResponse getCompanies() throws Exception {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
+	public GenericResponse getCompanies(String isAdminOrSuperAdmin, JwtUser jwtUser) throws Exception {
+
 		List<RcmCompany> company = null;
-		List<RcmCompanyDto> listOfCompany = null;
-		// if login user is capline then return all companies details like company name and company uuid otherwise login user
-		// company details
-		if (jwtUser.isSmilePoint()) {
+		List<RcmCompanyDto> listOfCompany = new ArrayList<>();
+		if (isAdminOrSuperAdmin.equals(Constants.SUPER_ADMIN)) {
 			company = rcmCompanyRepo.findAll();
 			if (company != null && !company.isEmpty()) {
 				listOfCompany = company.stream().map(x -> new RcmCompanyDto(x.getName(), x.getUuid()))
@@ -413,17 +417,19 @@ public class AdminServiceImpl {
 			}
 			return new GenericResponse(HttpStatus.OK, "", listOfCompany);
 		} else {
-			RcmCompany loginUserCompany = rcmCompanyRepo.findByUuid(jwtUser.getCompany().getUuid());
-			if (loginUserCompany != null) {
-				listOfCompany=new ArrayList<>();
-			RcmCompanyDto dto = new RcmCompanyDto();
-			dto.setName(loginUserCompany.getName());
-			dto.setCompanyUuid(loginUserCompany.getUuid());
-			listOfCompany.add(dto);
-			return new GenericResponse(HttpStatus.OK, "", listOfCompany);
+			for (RcmCompany client : jwtUser.getCompanies()) {
+				RcmCompanyDto dto = null;
+				RcmCompany loginUserCompany = rcmCompanyRepo.findByUuid(client.getUuid());
+				if (loginUserCompany != null) {					
+					dto = new RcmCompanyDto();
+					dto.setName(loginUserCompany.getName());
+					dto.setCompanyUuid(loginUserCompany.getUuid());	
+					listOfCompany.add(dto);	
+				}			
 			}
+			return new GenericResponse(HttpStatus.OK, "", listOfCompany);
 		}
-		return new GenericResponse(HttpStatus.OK, "", null);
+
 	}
 
 	/**
@@ -434,10 +440,10 @@ public class AdminServiceImpl {
 	 */
 	@Transactional(rollbackOn = Exception.class)
 	public GenericResponse addNewOfficeByAdmin(RcmCompanyDto dto) throws Exception {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		Object principal = authentication.getPrincipal();
+//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+//		JwtUser jwtUser = (JwtUser) userDetails;
 		RcmOffice office = new RcmOffice();
 		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyUuid());
 		RcmOfficeResponse officeResponse=null;
@@ -461,7 +467,17 @@ public class AdminServiceImpl {
 			//find max id from office table
 			int maxId=officeRepo.getMaxKeyFromOffice();
 			
-			if (oldOffice == null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+//			if (oldOffice == null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+//				officeResponse=new RcmOfficeResponse();
+//				office.setName(dto.getName());
+//				office.setCompany(company);
+//				office.setKey(maxId+1);
+//				office=officeRepo.save(office);
+//				officeResponse.setOfficeUuid(office.getUuid());
+//				officeResponse.setId(maxId);
+//				return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,officeResponse );
+//			} 
+			if (oldOffice == null) {
 				officeResponse=new RcmOfficeResponse();
 				office.setName(dto.getName());
 				office.setCompany(company);
@@ -470,20 +486,21 @@ public class AdminServiceImpl {
 				officeResponse.setOfficeUuid(office.getUuid());
 				officeResponse.setId(maxId);
 				return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,officeResponse );
-			} else {
-				// if login user(ADMIN) is other than capline then login user can add own new
-				// company offices
-				if (oldOffice == null && jwtUser.getCompany().getName().equals(company.getName())) {
-					officeResponse=new RcmOfficeResponse();
-					office.setName(dto.getName());
-					office.setCompany(company);
-					office.setKey(maxId+1);
-					office=officeRepo.save(office);
-					officeResponse.setOfficeUuid(office.getUuid());
-					officeResponse.setId(maxId);
-					return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,officeResponse);
-				}
-			}
+			} 
+//			else {
+//				// if login user(ADMIN) is other than capline then login user can add own new
+//				// company offices
+//				if (oldOffice == null && jwtUser.getCompany().getName().equals(company.getName())) {
+//					officeResponse=new RcmOfficeResponse();
+//					office.setName(dto.getName());
+//					office.setCompany(company);
+//					office.setKey(maxId+1);
+//					office=officeRepo.save(office);
+//					officeResponse.setOfficeUuid(office.getUuid());
+//					officeResponse.setId(maxId);
+//					return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,officeResponse);
+//				}
+//			}
 		} 
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
 	}
@@ -494,17 +511,8 @@ public class AdminServiceImpl {
 	 * @param uuid
 	 * @return List of RcmOfficeDto
 	 */
-	public GenericResponse getOfficesByCompanyUuid(String uuid) throws Exception {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		//if login user is capline then fetch all companies offices otherwise login user can fetch own company offices by uuid
-		if (jwtUser.getCompany().getUuid().equals(uuid)
-				|| jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
-			return new GenericResponse(HttpStatus.OK, "",commonService.getOfficesByUuid(uuid));
-		}
-		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
+	public List<RcmOfficeDto> getOfficesByCompanyUuid(String uuid) throws Exception {
+		return commonService.getOfficesByUuid(uuid);
 	}
 
 	/**
@@ -514,10 +522,10 @@ public class AdminServiceImpl {
 	 */
 	@Transactional(rollbackOn = Exception.class)
 	public GenericResponse editOfficeDetailsByAdmin(RcmEditOfficeDto dto) throws Exception {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		Object principal = authentication.getPrincipal();
+//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+//		JwtUser jwtUser = (JwtUser) userDetails;
 		RcmOffice office = officeRepo.findByUuid(dto.getOfficeUuid());
 		RcmOffice checkExistOfficeName=officeRepo.findByNameAndCompanyUuid(dto.getOfficeName(),dto.getCompanyUuid());
 
@@ -531,21 +539,28 @@ public class AdminServiceImpl {
 			return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.NAME_EXIST, null);
 		}
 		// if login user(ADMIN) is capline then login user can edit other company office
-		if (office != null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+//		if (office != null && jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+//			office.setName(dto.getOfficeName());
+//			office.setUpdatedDate(Timestamp.from(Instant.now()));
+//			office=officeRepo.save(office);
+//			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, office.getUuid());
+//		}
+		if (office != null) {
 			office.setName(dto.getOfficeName());
 			office.setUpdatedDate(Timestamp.from(Instant.now()));
 			office=officeRepo.save(office);
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, office.getUuid());
-		} else {
-			// if login user(ADMIN) is other than capline then login user can edit own
-			// company offices
-			if (office != null && jwtUser.getCompany().getName().equals(office.getCompany().getName())) {
-				office.setName(dto.getOfficeName());
-				office.setUpdatedDate(Timestamp.from(Instant.now()));
-				office=officeRepo.save(office);
-				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, office.getUuid());
-			}
 		}
+//		else {
+//			// if login user(ADMIN) is other than capline then login user can edit own
+//			// company offices
+//			if (office != null && jwtUser.getCompany().getName().equals(office.getCompany().getName())) {
+//				office.setName(dto.getOfficeName());
+//				office.setUpdatedDate(Timestamp.from(Instant.now()));
+//				office=officeRepo.save(office);
+//				return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, office.getUuid());
+//			}
+//		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null);
 	}
 
@@ -606,60 +621,60 @@ public class AdminServiceImpl {
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
 	}
 
-	public List<RcmUserToDto> getUsersFromClaimAssignmentTable(RcmClaimDto dto,RcmCompany company) throws Exception {
-		// first we will check any claim is assign or not in this uuid
-		// if yes then fetch all billing users data will show in popup window
+//	public List<RcmUserToDto> getUsersFromClaimAssignmentTable(RcmClaimDto dto,RcmCompany company) throws Exception {
+//		// first we will check any claim is assign or not in this uuid
+//		// if yes then fetch all billing users data will show in popup window
+//
+//	int existingUsersClaimCounts = claimAssignmentRepo.findExistingUsersAssignClaimCounts(dto.getUserUuid());
+//		if (existingUsersClaimCounts >= 1) {
+//			List<RcmUserToDto> rcmUser = userService.getUsersByTeamId(dto.getTeamId(), company);
+//			if (rcmUser != null) {
+//				rcmUser.removeIf(x -> x.getUuid().equals(dto.getUserUuid()));
+//				return rcmUser;
+//			} 
+//		}
+//		return null;
+//	}
 
-	int existingUsersClaimCounts = claimAssignmentRepo.findExistingUsersAssignClaimCounts(dto.getUserUuid());
-		if (existingUsersClaimCounts >= 1) {
-			List<RcmUserToDto> rcmUser = userService.getUsersByTeamId(dto.getTeamId(), company);
-			if (rcmUser != null) {
-				rcmUser.removeIf(x -> x.getUuid().equals(dto.getUserUuid()));
-				return rcmUser;
-			} 
-		}
-		return null;
-	}
-
-	@Transactional(rollbackOn = Exception.class)
-	public String claimAssignmentToUser(ClaimAssignmentDto dto, JwtUser jwtUser) throws Exception {
-		List<RcmClaimAssignment> oldClaimUserData = claimAssignmentRepo
-				.findExistingUserClaimsWithPendingState(dto.getOldClaimUserUuid());
-		RcmUser assigneByUser = null, assigneToUser = null;
-		RcmClaimAssignment assignment = null;
-		RcmClaimStatusType claimStatusType = null;
-		/*
-		if (oldClaimUserData != null && !oldClaimUserData.isEmpty()) {
-
-			assigneToUser = userRepo.findByUuid(dto.getNewClaimUserUuid());
-			if (assigneToUser != null && assigneToUser.getTeam().getId() == RcmTeamEnum.BILLING.getId()) {
-				assigneByUser = userRepo.findByEmail(jwtUser.getEmail());
-
-				for (RcmClaimAssignment assign : oldClaimUserData) {
-					assignment = new RcmClaimAssignment();
-					claimStatusType = assign.getRcmClaimStatus();
-					// change comment and active status of oldClaim user whose claim is pending
-					claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REMOVE_MESSAGE,
-							assigneByUser, false, dto.getOldClaimUserUuid(), assign.getClaims().getClaimUuid());
-					// now insert old user claims will assign to new user whose claim is pending
-					
-					//if assignTo user already with same claimId then his status will be
-					RcmClaimAssignment checkExistingClaimEntryStatus=claimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(assigneToUser.getUuid(),assign.getClaims().getClaimUuid(),true);
-					if(checkExistingClaimEntryStatus!=null) {
-					claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REASSIGN_MESSAGE,
-							assigneByUser, false, checkExistingClaimEntryStatus.getAssignedTo().getUuid(), checkExistingClaimEntryStatus.getClaims().getClaimUuid());
-					}
-					
-					assignment = ClaimUtil.createAssginmentData(assignment, assigneByUser, assigneToUser, null,
-							assign.getClaims(), MessageConstants.CLAIM_REASSIGN_MESSAGE, claimStatusType);
-					claimAssignmentRepo.save(assignment);
-				}
-				return MessageConstants.CLAIM_REASSIGN_SUCCESS_MESSAGE;
-			}
-		}
-		*/
-		return MessageConstants.SOMETHING_WENT_WRONG;
-	}
+//	@Transactional(rollbackOn = Exception.class)
+//	public String claimAssignmentToUser(ClaimAssignmentDto dto, JwtUser jwtUser) throws Exception {
+//		List<RcmClaimAssignment> oldClaimUserData = claimAssignmentRepo
+//				.findExistingUserClaimsWithPendingState(dto.getOldClaimUserUuid());
+//		RcmUser assigneByUser = null, assigneToUser = null;
+//		RcmClaimAssignment assignment = null;
+//		RcmClaimStatusType claimStatusType = null;
+//		/*
+//		if (oldClaimUserData != null && !oldClaimUserData.isEmpty()) {
+//
+//			assigneToUser = userRepo.findByUuid(dto.getNewClaimUserUuid());
+//			if (assigneToUser != null && assigneToUser.getTeam().getId() == RcmTeamEnum.BILLING.getId()) {
+//				assigneByUser = userRepo.findByEmail(jwtUser.getEmail());
+//
+//				for (RcmClaimAssignment assign : oldClaimUserData) {
+//					assignment = new RcmClaimAssignment();
+//					claimStatusType = assign.getRcmClaimStatus();
+//					// change comment and active status of oldClaim user whose claim is pending
+//					claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REMOVE_MESSAGE,
+//							assigneByUser, false, dto.getOldClaimUserUuid(), assign.getClaims().getClaimUuid());
+//					// now insert old user claims will assign to new user whose claim is pending
+//					
+//					//if assignTo user already with same claimId then his status will be
+//					RcmClaimAssignment checkExistingClaimEntryStatus=claimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(assigneToUser.getUuid(),assign.getClaims().getClaimUuid(),true);
+//					if(checkExistingClaimEntryStatus!=null) {
+//					claimAssignmentRepo.updateClaimUserStatusAndComment(MessageConstants.CLAIM_REASSIGN_MESSAGE,
+//							assigneByUser, false, checkExistingClaimEntryStatus.getAssignedTo().getUuid(), checkExistingClaimEntryStatus.getClaims().getClaimUuid());
+//					}
+//					
+//					assignment = ClaimUtil.createAssginmentData(assignment, assigneByUser, assigneToUser, null,
+//							assign.getClaims(), MessageConstants.CLAIM_REASSIGN_MESSAGE, claimStatusType);
+//					claimAssignmentRepo.save(assignment);
+//				}
+//				return MessageConstants.CLAIM_REASSIGN_SUCCESS_MESSAGE;
+//			}
+//		}
+//		*/
+//		return MessageConstants.SOMETHING_WENT_WRONG;
+//	}
 	
 	@Transactional(rollbackOn = Exception.class)
 	public String addClient(RcmClientDto dto) throws Exception {

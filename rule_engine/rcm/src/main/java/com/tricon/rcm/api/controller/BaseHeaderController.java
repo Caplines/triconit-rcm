@@ -50,7 +50,7 @@ public abstract class BaseHeaderController  {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 		JwtUser jwtUser = (JwtUser) userDetails;
 		partialHeader.setJwtUser(jwtUser);
-		if (commonService.isSuperAdmin(jwtUser))
+		if (commonService.isSuperAdmin(role,jwtUser))
 			return partialHeader;
 		if (company == null)
 			return null;

@@ -240,9 +240,9 @@ public class RcmCommonServiceImpl {
 				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(role)));
 	}
 	
-	public boolean isSuperAdmin(JwtUser jwtUser) {
+	public boolean isSuperAdmin(String role,JwtUser jwtUser) {
 		return jwtUser.getAuthorities().stream()
-				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(Constants.SUPER_ADMIN)));
+				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(role)));
 	}
 	
 	public boolean isAdmin(JwtUser jwtUser) {
@@ -340,6 +340,10 @@ public class RcmCommonServiceImpl {
 		dumpDataToRcmUserTemp(user,role,userCompany,userTeam);
 		
 		return null;
+	}
+	
+	public void checkAccessibilityOfAdminOrSuperAdminByClientUuid(String role,String companyId) {
+          
 	}
 	
 }

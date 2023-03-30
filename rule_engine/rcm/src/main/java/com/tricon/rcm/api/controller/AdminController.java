@@ -35,6 +35,7 @@ import com.tricon.rcm.dto.RcmClientResponseDto;
 import com.tricon.rcm.dto.RcmCompanyDto;
 import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
+import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmUserDto;
 import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RcmUserToDto;
@@ -87,7 +88,7 @@ public class AdminController extends BaseHeaderController{
 	}
 
 	@RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
 	public ResponseEntity<?> resetpasswordByAdmin(@RequestBody PasswordResetDto dto,Model model) {
 		GenericResponse response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -98,8 +99,9 @@ public class AdminController extends BaseHeaderController{
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
+		
 		try {
-			response = serviceImpl.passwordUpdation(partialHeader.getJwtUser(),dto);
+			response = serviceImpl.passwordUpdation(partialHeader.getJwtUser(),dto,partialHeader.getRole());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -156,7 +158,7 @@ public class AdminController extends BaseHeaderController{
 	}
 
 	@RequestMapping(value = "/resetstatus", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
 	public ResponseEntity<?> resetstatus(@RequestBody RcmUserStatusDto dto,Model model) {
 		GenericResponse response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -201,14 +203,17 @@ public class AdminController extends BaseHeaderController{
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(response);
-	}
+  }
 	
 	@RequestMapping(value = "/getOrganization", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getCompanyDetails() {
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+	public ResponseEntity<?> getCompanyDetails(Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		GenericResponse response = null;
 		try {
-			response = serviceImpl.getCompanies();
+			response = serviceImpl.getCompanies(partialHeader.getRole(),partialHeader.getJwtUser());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -219,14 +224,14 @@ public class AdminController extends BaseHeaderController{
 	
 	@RequestMapping(value = "/getClientDetails", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('SUPER_ADMIN')")
-	public ResponseEntity<?> getClientDetails() {
+	public ResponseEntity<?> getClientDetails(Model model) {
 		List<RcmClientResponseDto> response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		
+		if(!partialHeader.getJwtUser().isSmilePoint()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.UNAUTHORIZED_USER, null));
 		}
 		try {
 			response = serviceImpl.getClientWithGoogleSheetData();
@@ -252,10 +257,6 @@ public class AdminController extends BaseHeaderController{
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		
-		if(!partialHeader.getJwtUser().isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.UNAUTHORIZED_USER, null));
-		}
 		try {
 			response = serviceImpl.addNewOfficeByAdmin(dto);
 		} catch (Exception e) {
@@ -267,9 +268,12 @@ public class AdminController extends BaseHeaderController{
 	}
 
 	@RequestMapping(value = "officeByCompany/{uuid}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> officesByUuid(@PathVariable("uuid") String uuid) {
-		GenericResponse response = null;
+	@PreAuthorize("hasRole('SUPER_ADMIN')")
+	public ResponseEntity<?> officesByUuid(@PathVariable("uuid") String uuid,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		List<RcmOfficeDto> response = null;
 		try {
 			response = serviceImpl.getOfficesByCompanyUuid(uuid);
 		} catch (Exception e) {
@@ -290,10 +294,7 @@ public class AdminController extends BaseHeaderController{
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		
-		if(!partialHeader.getJwtUser().isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.UNAUTHORIZED_USER, null));
-		}
+
 		GenericResponse response = null;
 		try {
 			response = serviceImpl.editOfficeDetailsByAdmin(dto);
@@ -345,61 +346,61 @@ public class AdminController extends BaseHeaderController{
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = "assignmentclaimUsers", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> claimsFromAssignmentTable(@RequestBody RcmClaimDto dto) {
-		if (dto.getTeamId()==null||dto.getUserUuid().trim().equals("")) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
-		}
-		List<RcmUserToDto> response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-		}
-		try {
-			response = serviceImpl.getUsersFromClaimAssignmentTable(dto, jwtUser.getCompany());
-			if(response==null) {
-				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
-	
-	@RequestMapping(value = "assignclaimToUser", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> claimAssignmentToUser(@RequestBody ClaimAssignmentDto dto) {
-		if ((dto.getNewClaimUserUuid()==null||dto.getNewClaimUserUuid().trim().equals(""))||(dto.getOldClaimUserUuid()==null||dto.getOldClaimUserUuid().trim().equals(""))) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
-		}
-		String response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-		}
-		try {
-			response = serviceImpl.claimAssignmentToUser(dto,jwtUser);
-			if(response==null) {
-				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
+//	@RequestMapping(value = "assignmentclaimUsers", method = RequestMethod.POST)
+//	@PreAuthorize("hasRole('ADMIN')")
+//	public ResponseEntity<?> claimsFromAssignmentTable(@RequestBody RcmClaimDto dto) {
+//		if (dto.getTeamId()==null||dto.getUserUuid().trim().equals("")) {
+//			return ResponseEntity
+//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+//		}
+//		List<RcmUserToDto> response = null;
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		Object principal = authentication.getPrincipal();
+//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+//		JwtUser jwtUser = (JwtUser) userDetails;
+//		if(!jwtUser.isSmilePoint()) {
+//			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+//		}
+//		try {
+//			response = serviceImpl.getUsersFromClaimAssignmentTable(dto, jwtUser.getCompany());
+//			if(response==null) {
+//				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+//	}
+//	
+//	@RequestMapping(value = "assignclaimToUser", method = RequestMethod.POST)
+//	@PreAuthorize("hasRole('ADMIN')")
+//	public ResponseEntity<?> claimAssignmentToUser(@RequestBody ClaimAssignmentDto dto) {
+//		if ((dto.getNewClaimUserUuid()==null||dto.getNewClaimUserUuid().trim().equals(""))||(dto.getOldClaimUserUuid()==null||dto.getOldClaimUserUuid().trim().equals(""))) {
+//			return ResponseEntity
+//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+//		}
+//		String response = null;
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		Object principal = authentication.getPrincipal();
+//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+//		JwtUser jwtUser = (JwtUser) userDetails;
+//		if(!jwtUser.isSmilePoint()) {
+//			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+//		}
+//		try {
+//			response = serviceImpl.claimAssignmentToUser(dto,jwtUser);
+//			if(response==null) {
+//				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+//	}
 	
 	@RequestMapping(value = "addClient", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('SUPER_ADMIN')")
@@ -415,10 +416,7 @@ public class AdminController extends BaseHeaderController{
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		
-		if(!partialHeader.getJwtUser().isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.UNAUTHORIZED_USER, null));
-		}
+
 		try {
 			response = serviceImpl.addClient(dto);
 		} catch (Exception e) {
@@ -444,10 +442,7 @@ public class AdminController extends BaseHeaderController{
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		
-		if(!partialHeader.getJwtUser().isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.UNAUTHORIZED_USER, null));
-		}
+
 		try {
 			response = serviceImpl.editClient(dto);
 		} catch (Exception e) {
@@ -460,15 +455,11 @@ public class AdminController extends BaseHeaderController{
 	
 	@RequestMapping(value = "claim_assign_to_user/{uuid}", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-	public ResponseEntity<?> claimStatusOfUser(@PathVariable("uuid") String uuid) {
+	public ResponseEntity<?> claimStatusOfUser(@PathVariable("uuid") String uuid,Model model) {
 		RcmClaimResponseDto response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.UNAUTHORIZED, "Not Authorize", null));
-		}
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		try {
 			response = serviceImpl.checkExistingUserClaimStatusActiveOrNot(uuid);
 		} catch (Exception e) {
