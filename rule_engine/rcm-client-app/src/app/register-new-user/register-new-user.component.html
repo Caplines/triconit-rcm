@@ -82,85 +82,37 @@
                                 <div class="row">
                                     <div class="col-sm">
                                         <div class="form-group">
-                                            <label for="companyId">Client Name</label>
-                                            <select class="form-control"  (change)="selectCompany($event);getRolesByCompany($event);" [ngClass]="{'is-invalid':userDetails.controls.companyName.invalid && userDetails.controls.companyName.touched,'is-valid':userDetails.controls.companyName.valid}">
-                                                <option selected="true" hidden="true" >Select Client</option>
-                                                <ng-container *ngFor="let comp of companyData">
-                                                    <option value="{{comp.name}}">{{comp.name}}</option>
-                                                </ng-container>
-                                            </select>
-                                            <!-- <small class="text-danger" *ngIf="userDetails.controls['companyName'].touched && userDetails.controls['companyName'].errors?.required">* Please Select Client Name.</small> -->
+                                            <label for="companyId">Role</label>
+                                            <ng-container >    
+                                                <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
+                                                    <select class="form-control" id="select" (change)="selectUserRole($event)">
+                                                        <option selected="true" hidden="true" value="">Select Role</option>
+                                                        <option *ngFor="let userRole of userRoleByTeam" value="{{userRole.roleId}}">{{userRole.roleName}}</option>
+                                                </select>
+                                            </ng-container>
                                         </div>
                                     </div>
-                                    <ng-container *ngIf="defaulUserRoleData.length>0 || userRoleByTeam.length>0">
-                                        <div class="col-sm-8">
-                                            <div class="form-group">
-                                                <label for="userRole">User Role :</label>
-                                                <br>
-                                                <div class="user-role-box">
-                                                <div *ngFor="let userRole of defaulUserRoleData;let idx=index;" style="display: inline-block;">
-                                                    <ng-container *ngIf="userRole.roleId == 'ADMIN'">
-                                                        <strong>
-                                                            {{userRole.roleName}}
-                                                        </strong>
-                                                        <div style="display: inline-flex;gap:5px">
-                                                            
-                                                            <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="role{{userRole.roleId}}" value="true" id="{{userRole.roleId}}" (change)="selectDefaultUserRole($event)">
-                                                            <label class="form-check-label" >
-                                                          Yes
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="role{{userRole.roleId}}" value="false" id="{{userRole.roleId}}" (change)="selectDefaultUserRole($event)">
-                                                        <label class="form-check-label" >
-                                                            No
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </ng-container>
-                                            <ng-container *ngIf="userRole.roleId !== 'ADMIN'">
-                                                <div class="form-check  form-check-inline custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="role" id="{{userRole.roleId}}"
-                                                    (change)="selectDefaultUserRole($event)">
-                                                    <label class="custom-control-label" for="{{userRole.roleId}}">
-                                                        {{userRole.roleName}}
-                                                    </label>
-                                                </div>
-                                            </ng-container>
-                                            
-                                                </div>
-                                                <ng-container *ngFor="let userRole of userRoleByTeam">    
-                                                    <div class="form-check  form-check-inline custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox" name="role" id="{{userRole.roleId}}"
-                                                            (change)="selectUserRole($event)" [checked]="userRoles.includes('TL')" >
-                                                        <label class="custom-control-label" for="{{userRole.roleId}}">
-                                                            {{userRole.roleName}}
-                                                        </label>
-                                                    </div>
-                                                </ng-container>
-                                            </div>
-                                     </div>
                                 </div>
-
-                                </ng-container>
-                            </div>
-                            <ng-container *ngIf="teamData.length>0">
-                                <div class="row">
+                                <div class="row" [ngStyle]="{'visibility': this.userDetails.value.userRole == 'SUPER_ADMIN' ? 'hidden' : 'visible'}">
                                     <div class="col-sm">
+                                        <div class="form-group">
+                                            <label for="companyId">Client Name</label>
+                                            <multi-select-dropdown [list]="companyData" (shareCheckedList)="shareCheckedList($event)" [isClient]="true">
+                                            </multi-select-dropdown>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm" [ngStyle]="{'visibility':this.userDetails.value.userRole == 'SUPER_ADMIN' || this.userDetails.value.userRole == 'ADMIN' || this.userDetails.value.userRole == 'REPORTING' ? 'hidden' : 'visible' }  ">
                                         <div class="form-group">
                                             <label for="teamId">Team Name</label>
                                             <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
-                                            <select class="form-control" id="select" (change)="selectTeamName($event)" [ngClass]="{'is-invalid':userDetails.controls.teamId.invalid && userDetails.controls.teamId.touched && userDetails.teamId.value == '','is-valid': userDetails.controls.teamId.touched && userDetails.controls.teamId.valid}">
-                                        <option selected="true"  value="">Select Team</option>
-                                        <option *ngFor="let team of teamData" value="{{team.teamId}}">{{team.teamName}}</option>
-                                    </select>
+                                            <multi-select-dropdown [list]="teamData" (shareCheckedList)="shareCheckedList($event)" [isTeam]="true">
+                                            </multi-select-dropdown>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm"></div>
                                 </div>
-                            </div>
-                        </div>
-                        </ng-container>
                             <div class="action-buttons">
-                                <button type="button" class="btn btn-success" (click)="registerNewUser()">Submit</button>
+                                <button type="button" class="btn btn-success" [disabled]="this.userDetails.invalid" (click)="registerNewUser()">Submit</button>
                             </div>
                             
                             </form>

@@ -40,7 +40,8 @@
                                                 <option selected="true" hidden="true">Action</option>
                                                 <option value="changePass">Change Password</option>
                                                 <option value="status" *ngIf="this.user.email !== userName">Enable / Disable Status</option>
-                                                <option value="role" *ngIf="this.user.teamNameId != -1 && this.user.email != userName " >Enable / Disable Role</option>
+                                                <!-- <option value="role" *ngIf="this.user.teamNameId != -1 && this.user.email != userName " >Enable / Disable Role</option> -->
+                                                <option value="editUser" *ngIf="this.user.teamNameId != -1 && this.user.email != userName " >Edit User</option>
                                             </select>
                                     </div>
                                 </div>
@@ -75,27 +76,85 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" *ngIf="user.showRole">
-                                <div class="col-sm-3">
-                                    <div class="form-group">
-                                        <label for="status">Enable Disable Role :</label>
-                                        <div>
-                                            <ng-container *ngFor="let role of userRolesByEmail">
-                                                <div class="form-check-inline">
-                                                    <div class="form-check  form-check-inline custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox" [id]="role.roleId" [checked]="selectRole(role)"
-                                                        (change)="onCheckboxChange($event, role.roleId)">
-                                                        <label class="custom-control-label" [for]="role.roleId">
-                                                            {{role.roleName}}
-                                                        </label>
+                            <div class="row" *ngIf="user.showEditUser">
+                                <div class="col-lg-8 px-0">
+                                                <div class="col-lg-12 px-2">
+                                                    <div class="main-container register-User">
+                                                        <div class="form-container">
+                                                            <form [formGroup]="editedUserDetails" style="padding-right:20%">
+                                                                <div class="row">
+                                                                    <div class="col-sm">
+                                                                        <div class="form-group">
+                                                                            <label for="fname">First Name</label>
+                                                                            <input type="text" class="form-control" maxlength="25" formControlName="firstName" [ngClass]="{'is-invalid':editedUserDetails.controls.firstName.invalid && editedUserDetails.controls.firstName.touched,'is-valid':editedUserDetails.controls.firstName.valid}">
+                                                                            <small class="text-danger" *ngIf="editedUserDetails.controls['firstName'].touched && editedUserDetails.controls['firstName'].errors?.required">* Please Provide Your First Name.</small>
+                                                                            <small class="text-danger" *ngIf="editedUserDetails.controls['firstName'].touched && editedUserDetails.controls['firstName'].errors?.minlength">* Name cannot be less than 3 words.</small>
+                                                                            <small class="text-danger" *ngIf="editedUserDetails.controls['firstName'].touched && editedUserDetails.controls['firstName'].errors?.pattern">* Numbers or Spaces are not allowed.</small>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm">
+                                                                        <div class="form-group">
+                                                                            <label for="lname">Last Name</label>
+                                                                            <input type="text" class="form-control" maxlength="25" formControlName="lastName" [ngClass]="{'is-invalid':editedUserDetails.controls.lastName.invalid && editedUserDetails.controls.lastName.touched,'is-valid':editedUserDetails.controls.lastName.valid}">
+                                                                            <small class="text-danger" *ngIf="editedUserDetails.controls['lastName'].touched && editedUserDetails.controls['lastName'].errors?.required">* Please Provide Your Last Name.</small>
+                                                                            <small class="text-danger" *ngIf="editedUserDetails.controls['lastName'].touched && editedUserDetails.controls['lastName']?.errors?.minlength">* Name cannot be less than 3 words.</small>
+                                                                            <small class="text-danger" *ngIf="editedUserDetails.controls['lastName'].touched && editedUserDetails.controls['lastName'].errors?.pattern">* Numbers or Spaces are not allowed.</small>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm"></div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm">
+                                                                    </div>
+                                                                    <div class="col-sm">
+                                                                    </div>
+                                                                    <div class="col-sm"></div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm">
+                                                                        <div class="form-group">
+                                                                            <label for="companyId">Role</label>
+                                                                            <ng-container >    
+                                                                                <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
+                                                                                    <select class="form-control" id="select" (change)="selectUserRole($event)" >
+                                                                                        <option  hidden="true" value="" >Select Role</option>
+                                                                                        <ng-container *ngFor="let userRole of userRoleData;let idx = index" >
+                                                                                            <option value="{{userRole.roleId}}">{{userRole.roleName}}</option>
+                                                                                        </ng-container>
+                                                                                </select>
+                                                                            </ng-container>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm"> </div>
+                                                                    <div class="col-sm"></div>
+                                                                </div>
+                                                                <div class="row" [ngStyle]="{'visibility': this.editedUserDetails.value.role == 'SUPER_ADMIN' ? 'hidden' : 'visible'}">
+                                                                    <div class="col-sm">
+                                                                        <div class="form-group">
+                                                                            <label for="companyId">Client Name</label>
+                                                                            <multi-select-dropdown [list]="this.activeUserClients" [userClientData]="this.user.clientName" (shareCheckedList)="shareCheckedList($event)" [isClient]="true" [isFromUserSetting]="true">
+                                                                            </multi-select-dropdown>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm" [ngStyle]="{'visibility':this.editedUserDetails.value.role == 'SUPER_ADMIN' || this.editedUserDetails.value.role == 'ADMIN' || this.editedUserDetails.value.role == 'REPORTING' ? 'hidden' : 'visible' }  ">
+                                                                        <div class="form-group">
+                                                                            <label for="teamId">Team Name</label>
+                                                                            <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
+                                                                            <multi-select-dropdown [list]="teamData" [userTeamData]="this.user.teamNameId" (shareCheckedList)="shareCheckedList($event)" [isTeam]="true" [isFromUserSetting]="true">
+                                                                            </multi-select-dropdown>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm"></div>
+                                                                </div>
+                                                                <div class="my-3">
+                                                                    <button type="button" class="btn btn-success" [disabled]="editedUserDetails.invalid" (click)="editRole()">Edit User</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        
                                                     </div>
-                                                </div>
-                                            </ng-container>
-                                            <div class="p-1 m-2">
-                                                <button type="button" class="btn btn-success" (click)="editRole()">Edit Role for {{this.user.clientName}}</button>
-                                            </div>
+                                         
                                         </div>
-                                    </div>
                                 </div>
                             </div>
                         </ng-container>

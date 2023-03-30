@@ -186,3 +186,44 @@
     }
 }
 
+.activeUserDetails{
+    font-size: 16px;
+    background: #009f76;
+    border-radius: 5px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+.activeUsername {
+    background: #00c290;
+    border-radius: 5px 0px 0px 5px;
+    padding: 2px 8px 3px 10px;
+    margin-right: 10px;
+
+}
+.activeUserDetails span{
+    
+    margin-right: 10px;
+    border-right: 2px solid #00d088;
+    padding-right: 10px;
+    line-height: 14px;
+    display: inline-block;
+}
+
+.activeUserDetails span:last-child {
+    border:none;
+}
+
+.modal-backdrop.fade.show{
+    display: none;
+}
+.modal-backdrop.fade.modalShow{
+    display: block;
+}
+
+.modal{
+    top: 90px !important;
+}
+.modal-footer{
+    justify-content: center !important;
+}

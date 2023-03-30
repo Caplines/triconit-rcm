@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 
 import {UserSettingRoutingModule} from "./user-setting-routing.module"
 import { UserSettingComponent } from '../user-setting.component';
-import {FormsModule} from "@angular/forms"
+import {FormsModule, ReactiveFormsModule} from "@angular/forms"
 import { HeaderComponent } from 'src/app/header/header-component/header.component';
+import { MultiSelectDropdownModule } from 'src/app/shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module';
 
 
 @NgModule({
@@ -13,7 +14,9 @@ import { HeaderComponent } from 'src/app/header/header-component/header.componen
     CommonModule,
     UserSettingRoutingModule,
     FormsModule,
-    HeaderComponent
+    HeaderComponent,
+    ReactiveFormsModule,
+    MultiSelectDropdownModule
   ]
 })
 export class UserSettingModule { }

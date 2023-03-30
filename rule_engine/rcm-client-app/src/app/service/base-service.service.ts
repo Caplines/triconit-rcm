@@ -58,6 +58,8 @@ export class BaseService {
     'other_team_remark':"/api/remarks-other",
     'rolesByEmail':'/user/roles',
     'claimStatus':"/claim_assign_to_user",
+    'getRoles':'/master/getroles',
+    'getClients':'/master/getClients'
   }
 
   constructor(public http: HttpClient, private tokenStorage: TokenStorageService) {

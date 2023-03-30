@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule} from "@angular/forms"
 import { RegisterNewUserRoutingModule } from './register-new-user-routing.module';
 import { RegisterNewUserComponent } from '../register-new-user.component';
 import { HeaderComponent } from 'src/app/header/header-component/header.component';
+import { MultiSelectDropdownModule } from 'src/app/shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module';
 
 @NgModule({
   declarations: [RegisterNewUserComponent],
@@ -12,7 +13,8 @@ import { HeaderComponent } from 'src/app/header/header-component/header.componen
     RegisterNewUserRoutingModule,
     FormsModule,
     ReactiveFormsModule ,
-    HeaderComponent
-  ]
+    HeaderComponent,
+    MultiSelectDropdownModule
+  ],
 })
 export class RegisterNewUserModule { }

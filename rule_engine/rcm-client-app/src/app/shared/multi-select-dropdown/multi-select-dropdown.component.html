@@ -1,0 +1,35 @@
+<div>
+    <div (mouseleave)="showDropDown = false">
+        <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown">
+            <span *ngIf="checkedList.length<=0">Select</span>
+            <span *ngIf="checkedList.length>0 && isClient" >
+                <ng-container *ngFor="let item of checkedList"> {{item.name}}{{checkedList.length>1 ? ',':''}}</ng-container>
+            </span>
+            <span *ngIf="checkedList.length>0 && isTeam" >
+                <ng-container *ngFor="let item of checkedList"> {{item.teamName}},</ng-container>
+            </span>
+            <i class="fa fa-angle-down"></i>
+        </button>
+        <div class="drop-show" *ngIf="showDropDown && isClient">
+            <label *ngFor="let a of list;let idx = index">
+                <input type="checkbox" [(ngModel)]="a.checked" 
+                    (change)="getSelectedValue(a.checked,list[idx],'client')" />
+                <span>{{a.name}}</span>
+            </label>
+        </div>
+        <div class="drop-show" *ngIf="showDropDown && isClient && isFromUserSetting">
+            <label *ngFor="let a of list;let idx = index">
+                <input type="checkbox" [(ngModel)]="a.checked" 
+                    (change)="getSelectedValue(a.checked,list[idx],'userSettingClient')" />
+                <span>{{a.name}}</span>
+            </label>
+        </div>
+        <div class="drop-show" *ngIf="showDropDown && isTeam">
+            <label *ngFor="let a of list;let idx = index">
+                <input type="checkbox" [(ngModel)]="a.checked" 
+                    (change)="getSelectedValue(a.checked,list[idx],'userSettingTeam')" />
+                <span>{{a.teamName}}</span>
+            </label>
+        </div>
+    </div>
+</div>

@@ -11,9 +11,12 @@ export class AppConstants {
 
     public TEAMS_CONFIG = new Map<Number, TeamModel>([
         [1, {
-            "name": "NA", "paths": ["/tool-update"], "defaultpath": "/claim-assignment"
+            "name": "NA", "paths": ["/register",'/user-setting','/manage-office','/users-status','/manage-client','/tool-update'], "defaultpath": "/register"
         }],
         [2, {
+        "name":"Admin","paths":["/register",'/user-setting','/manage-office','/users-status','/manage-client'],"defaultpath":"/register"
+        }],
+        [-1, {
         "name":"Admin","paths":["/register",'/user-setting','/manage-office','/users-status','/manage-client'],"defaultpath":"/register"
         }],
         [3,{

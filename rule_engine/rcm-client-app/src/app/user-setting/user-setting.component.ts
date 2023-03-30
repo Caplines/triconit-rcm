@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Validators,FormBuilder } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
 import Utils from '../util/utils';
@@ -10,7 +11,7 @@ import Utils from '../util/utils';
 })
 export class UserSettingComponent implements OnInit {
 
-  user: any = { 'email': '', 'showChangePassword': false, 'showStatus': false, 'changedPassword': '', 'uuid': '','showRole':false };
+  user: any = { 'email': '', 'showChangePassword': false, 'showStatus': false, 'changedPassword': '', 'uuid': '','showEditUser':false };
   allUser: any = [];
   showActionPopup: boolean = false;
   userRole: any;
@@ -21,19 +22,41 @@ export class UserSettingComponent implements OnInit {
   selectedRoles:any = [];
   userRolesByEmail:any=[];
 
-  constructor(public appService: ApplicationServiceService, private title: Title) { 
+  editedUserDetails:any;
+  teamData:any=[];
+  companyData:any=[];
+  userRoleData:any=[];
+  showLoader:boolean=false;
+  activeUserClients:any=[];
+  teamId:any=[];
+  clientId:any=[];
+
+  constructor(public appService: ApplicationServiceService, private title: Title,private fb:FormBuilder) { 
     title.setTitle("User-Setting");
+    this.editedUserDetails = this.fb.group({
+      'firstName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
+      'lastName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
+      'companyUuid' : ['',Validators.required],
+      'teamId' : ['',Validators.required],
+      'role' : ['',Validators.required],
+    })
+    
   }
 
   ngOnInit(): void {
     this.userRole = localStorage.getItem("roles");
     this.userName = localStorage.getItem("currentUser")
     this.appService.setPaddingRightContainer();
+    this.activeUserClients = this.appService.getActiveClients();
+    this.getRoles();
+    this.getTeamsData();
+    scrollTo(0,0);
   }
   logout() {
     localStorage.clear();
     window.location.href = "/"
   }
+
 
   findUser() {
     if(this.user.email !== ''){
@@ -42,12 +65,9 @@ export class UserSettingComponent implements OnInit {
         this.showAlertPopup(callback);
         this.showActionPopup = true;
         this.user = callback.data;
-        console.log(this.user)
-        this.user.roles =  this.removeAdminAndUploadClaimsRole(this.user.roles)
-        this.selectedRoles  = [...this.user.roles];
-        this.addClaimKeywordPrefix();
-        console.log(this.selectedRoles);
-
+        this.editedUserDetails.controls.firstName.setValue(this.user.firstName);
+        this.editedUserDetails.controls.lastName.setValue(this.user.lastName);
+        console.log(this.editedUserDetails.value);
       } else {
         this.showActionPopup = false;
         this.showAlertPopup(callback);
@@ -76,14 +96,16 @@ export class UserSettingComponent implements OnInit {
         if (event.target.value === 'changePass') {
             this.user['showChangePassword'] = true;
             this.user['showStatus'] = false;
+            this.user['showEditUser'] = false;
         } else if (event.target.value === 'status') {
             this.user['showStatus'] = true;
             this.user['showChangePassword'] = false;
-          } else if(event.target.value === 'role'){
+            this.user['showEditUser'] =false;
+          } else if(event.target.value === 'editUser'){
             this.user['showStatus'] = false;
             this.user['showChangePassword'] = false;
-            this.user['showRole'] =true;
-            this.getUserRolesByEmail()
+            this.user['showEditUser'] =true;
+            // this.getUserRolesByEmail();
           }
     }
 
@@ -117,56 +139,17 @@ export class UserSettingComponent implements OnInit {
     }
   }
 
-  onCheckboxChange(event:any, role: string) {
-    if (event.target.checked) {
-      if (!this.selectedRoles.includes(role)) {
-        if(role == 'TL' && !this.selectedRoles.includes("ASSO")){
-          this.selectedRoles.push(role);
-          this.selectedRoles.push("ASSO");
-        }else{
-          this.selectedRoles.push(role);
-        }
-      }
-    } else {
-      const index = this.selectedRoles.indexOf(role);
-      if (index !== -1) {
-        if(role == "TL"){
-          this.selectedRoles.splice(index, 1);
-          let idxAsso = this.selectedRoles.indexOf("ASSO");
-          idxAsso != -1 ? this.selectedRoles.splice(idxAsso,1) : '';
-        }else{
-          this.selectedRoles.splice(index, 1);
-        }
-      }
-    }
-    console.log(this.selectedRoles)
-  }
-
   editRole(){
-    if (this.selectedRoles.includes("CLAIMS")){
-      const index = this.selectedRoles.indexOf("CLAIMS");
-      this.selectedRoles.splice(index, 1);
-      this.selectedRoles.push("UPLOAD_CLAIMS");
-    }
-    let params:object= {
-      'uuid':this.user.uuid,
-      'roles':this.selectedRoles
-    }
-    this.appService.isClaimStatusActive(this.user.uuid,(res:any)=>{
-      if(res.status && res.data.status == 1){
-        console.log(res)
-        this.appService.editRole(params,(res:any)=>{
-          if(res.status){
-            console.log(res)
-            this.showAlertPopup(res)
-            this.showActionPopup=false;
-            this.user['showRole'] =false;
-          }
-        })
-      }else { 
-        this.alert.showAlertPopup = true;
-        this.alert.isError = true;
-        this.alert.alertMsg = res.data.msg;
+    this.editedUserDetails.value = Object.assign(this.editedUserDetails.value,{'uuid':this.user.uuid});
+    // console.log(this.editedUserDetails.value)
+    this.appService.editUser( this.editedUserDetails.value,(res:any)=>{
+      if(res.status==200){
+        console.log(res);
+        this.showAlertPopup(res);
+        this.user['showEditUser'] =false;
+        location.reload();
+      }else{
+        this.showAlertPopup(res);
       }
     })
     
@@ -179,23 +162,6 @@ export class UserSettingComponent implements OnInit {
     this.alert.alertMsg = res.message ? res.message : res.result.message;
     scrollTo(0,0);
   }
-
-  removeAdminAndUploadClaimsRole(role:any){
-    let idxAdmin = role.indexOf("ADMIN")
-    let idxClaims = role.indexOf('CLAIMS');
-    if(idxAdmin != -1){
-      this.user.roles.splice(idxAdmin,1)
-    }
-    if(idxClaims != -1 && idxAdmin != -1){
-      this.user.roles.splice(idxClaims,1)
-
-    }
-    if (role.length==1 && idxClaims != -1){
-      this.user.roles.splice(idxClaims,1)
-    }
-    return this.user.roles;
-  }
-
   getUserRolesByEmail(){
     this.appService.fetchRolesByEmail(this.user.email,(res:any)=>{
       if(res.status){
@@ -204,29 +170,68 @@ export class UserSettingComponent implements OnInit {
       }
     })
   }
-
-  addClaimKeywordPrefix(){
-    if(this.selectedRoles.includes("VIEW_ONLY") || this.selectedRoles.includes("MANAGER")){
-      let idxView = this.selectedRoles.indexOf("VIEW_ONLY");
-      idxView !== -1 ? this.selectedRoles[idxView] =  "CLIENT_"+this.selectedRoles[idxView] : '';
-      let idxManager = this.selectedRoles.indexOf("MANAGER");
-      idxManager !== -1 ?  this.selectedRoles[idxManager] = "CLIENT_"+this.selectedRoles[idxManager]: '';
-      return;
-    }
+  
+  getTeamsData(){
+    this.showLoader=true;
+    this.appService.fetchTeamsNameData((callback:any)=>{
+      if(callback.status){
+        this.showLoader = false;
+        this.teamData = callback.data;
+      }
+    })
   }
 
   isAdmin(){
    return Utils.checkAdmin();
   }
 
-  selectRole(role:any):boolean{
-    console.log('Roles',role);
-    console.log('SelectedRoles',this.selectedRoles);
-    if  (role.roleId === 'UPLOAD_CLAIMS'){
-      let r =role;
-      r.roleId= "CLAIMS";
-      return   r.roleId.includes(this.selectedRoles);
+  getRoles(){
+    this.appService.fetchRoles((callback:any)=>{
+      if(callback.status){
+        this.userRoleData = callback.data;
     }
-    return this.selectedRoles.includes(role.roleId)  ;
+  })
+}
+
+selectUserRole(event:any){
+  if(event.target.value == "ADMIN" || event.target.value == "REPORTING"){
+    this.editedUserDetails.controls.teamId.clearValidators();
+    this.editedUserDetails.controls.teamId.updateValueAndValidity();
+    this.editedUserDetails.controls.teamId.setValue([]);
+    this.editedUserDetails.controls.role.setValue(event.target.value);
+  }
+  else if(event.target.value == "SUPER_ADMIN"){
+    this.editedUserDetails.controls.teamId.clearValidators();
+    this.editedUserDetails.controls.teamId.updateValueAndValidity();
+    this.editedUserDetails.controls.teamId.setValue([]);
+    this.editedUserDetails.controls.companyUuid.clearValidators();
+    this.editedUserDetails.controls.companyUuid.updateValueAndValidity();
+    this.editedUserDetails.controls.companyUuid.setValue([]);
+    this.editedUserDetails.controls.role.setValue(event.target.value);
+  }else{
+
+    this.editedUserDetails.controls.teamId.setValidators(Validators.required);
+    this.editedUserDetails.controls.companyUuid.setValidators(Validators.required);
+    this.editedUserDetails.controls.companyUuid.updateValueAndValidity();
+    this.editedUserDetails.controls.teamId.updateValueAndValidity();
+
+    this.editedUserDetails.controls.role.setValue(event.target.value);
+    this.editedUserDetails.controls.teamId.setValue(this.teamId);
+    this.editedUserDetails.controls.companyUuid.setValue(this.clientId);
+  }
+  console.log(this.editedUserDetails.value);
+}
+  
+  shareCheckedList(event:any){
+    if(event.action == 'team'){
+      this.teamId = event.value.map(({teamName,checked,...newData}:any)=>newData);
+      this.teamId = [].concat(...this.teamId.map((team:any) => team.teamId));
+      this.editedUserDetails.controls.teamId.setValue(this.teamId);
+    }
+    else if(event.action == 'client'){
+      this.clientId =  event.value.map(({checked,name,...newData}:any)=>newData);
+      this.clientId = [].concat(...this.clientId.map((client:any) => client.id));
+      this.editedUserDetails.controls.companyUuid.setValue(this.clientId);
+    }
   }
 }

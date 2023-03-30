@@ -24,9 +24,15 @@ export class HeaderComponent implements OnInit {
   loggedInUserName:any;
   modelTitle="";
 
+  showPopup:boolean=false;
+
   modelElement:any={'modal':'','span':''};
   cwModel:SwitchAccountModel;
+  userInfo:any={'currentClientName':'','currentRoleName':'','currentTeamId':''}
   //https://www.bezkoder.com/angular-13-jwt-auth/
+  selectedTeam:any='';
+  selectedClient:any='';
+  selectedRole:any='';
 
   constructor(private _baseService: BaseService) {
 
@@ -35,11 +41,12 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
    // if(!this.loggedInUserRole){
-      this.loggedInUserRole =  localStorage.getItem("roles");
+      this.userInfo.currentClientName =  localStorage.getItem("selected_clientName");
+      this.userInfo.currentRoleName =  localStorage.getItem("selected_roleName");
+      this.userInfo.currentTeamId =  localStorage.getItem("selected_teamId");
   //  }
-    this.loggedInUserName = localStorage.getItem("name");
+     this.loggedInUserName = localStorage.getItem("name");
     this.openPopUp(false);
-    
 
   }
 
@@ -58,24 +65,34 @@ export class HeaderComponent implements OnInit {
   }
 
   switchAccount(){
-     let t:any= document.getElementById("selectTeamAC");
-     let c:any= document.getElementById("selectClientAC");
-     let r:any= document.getElementById("selectRolesAC");
-     this.modelElement.modal = document.getElementById("switch-modal");
+    //  this.selectedTeam = document.getElementById("selectTeamAC");
+    //  this.selectedClient= document.getElementById("selectClientAC");
+    //  this.selectedRole= document.getElementById("selectRolesAC");
+    //  this.modelElement.modal = document.getElementById("switch-modal");
      this.modelElement.modal.style.display = "none";
-     this.staticUtil.setLocalStoragePartial(c.value,r.value,t.value);
+     let role = this.selectedRole.split('ROLE_')[1];
+     if(this.selectedTeam == ''){
+      this.selectedTeam = '-1'
+     }
+     this.staticUtil.setLocalStoragePartial(this.selectedClient,role,this.selectedTeam);
+    this.showPopup= false;
+     window.location.reload();
   }
 
   openPopUp(open:boolean){
-    if (!open) this.modelTitle="Select Account";
-    else  this.modelTitle="Switch Account";
+    if (!open) {
+      this.modelTitle="Select Account";
+    } 
+    else {
+      this.modelTitle="Switch Account";
+    } 
     if (open || this.staticUtil.isAccountpopupNeeded()){
       this.cwModel.companies=this.staticUtil.getClientsFromLS();
       this.cwModel.teams=this.staticUtil.getTeamsFromLS();
       this.cwModel.roles=this.staticUtil.getRolesFromLS();
-      
       this.modelElement.modal = document.getElementById("switch-modal");
       this.modelElement.modal.style.display = "block";
+      this.showPopup= true;
     }
   }
  

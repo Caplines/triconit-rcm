@@ -1,7 +1,16 @@
 <div class=" navbar-dark sticky-top bg-dark">
     <div class="topbar">
         <h1>Revenue Cycle Management(RCM)</h1>
+        <div class="activeUserDetails">
+            <strong class="activeUsername">Active Users-:</strong>
+            <span> <strong>Client Name:</strong>  {{userInfo.currentClientName}}</span>
+            <span><strong>Role Name:</strong> {{userInfo.currentRoleName}}</span>
+            <span *ngIf="userInfo.currentRoleName != 'ADMIN' && userInfo.currentRoleName != 'SUPER_ADMIN' && userInfo.currentRoleName != 'REPORTING' "> <strong>Team Id:</strong>  {{userInfo.currentTeamId}}</span>
+        </div>
         <ul class="navbar-nav px-3">
+            <li> <button type="button" class="btn btn-success btn-sm" title="Switch Account" (click)="openPopUp(true)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+              </svg></button> </li>
             <li><img src="../../assets/img/user-blue.png" /> Welcome, {{loggedInUserName}}</li>
             <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0);"><img src="../../assets/img/help.png" /> Help</a>
@@ -28,50 +37,68 @@
         </ul>
 
     </div>
-    <!-- Switch Account popup-->
-    <div id="switch-modal" class="modal">
-        <div class="modal-content">
-            <div class="close-modal">
-                <h5>{{modelTitle}}</h5>
-           
-            </div>
-
-    <div>
-        <div class="modal-content">
-           
-                    <div class="table-responsive">
-                        <label>Team Name:</label>
-                        <select class="form-control" id="selectTeamAC" name="selectTeamAC" >
-                         <option selected="true" value="-1">Select Team</option>
-                        <ng-container *ngFor="let tl of cwModel?.teams">
-                            <option  value="{{tl.id}}">{{tl.name}}</option>
-                        </ng-container>
-                        </select>
-
-                        <label>Client Names:</label>
-                        <select class="form-control" id="selectClientAC" name="selectClientAC" >
-                         <option selected="true" value="-1">Select Client Name</option>
-                        <ng-container *ngFor="let tl of cwModel?.companies">
-                            <option  value="{{tl.id}}">{{tl.name}}</option>
-                        </ng-container>
-                        </select>
-
-                        <label>Select Roles:</label>
-                        <select class="form-control" id="selectRolesAC" name="selectRolesAC" >
-                         <option selected="true" value="-1">Select Roles</option>
-                        <ng-container *ngFor="let tl of cwModel?.roles">
-                            <option  value="{{tl}}">{{tl}}</option>
-                        </ng-container>
-                        </select>
-
-                        <button type="button" class="btn btn-success" (click)="switchAccount()">Switch Account</button>
-                   
-                    </div>
-                   
-        </div>
-    </div>
-
-  </div>
-    <!-- Switch Account popup END -->
     
+    <!-- Switch Account popup-->
+
+    <div class="modal" id="switch-modal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">{{modelTitle}}</h5>
+              <button *ngIf="modelTitle == 'Switch Account'" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span  (click)="modelElement.modal.style.display = 'none'; showPopup= false;">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="form-group d-flex justify-content-around">
+                            <label class="font-weight-bolder">Team Name:</label>
+                            <select class="form-control" id="selectTeamAC" name="selectTeamAC" [(ngModel)]="selectedTeam"
+                                [disabled]="cwModel?.teams?.length==0">
+                                <option selected="true" value="">Select Team</option>
+                                <ng-container *ngFor="let tl of cwModel?.teams">
+                                    <option value="{{tl.id}}">{{tl.name}}</option>
+                                </ng-container>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="form-group d-flex justify-content-around">
+                            <label class="font-weight-bolder">Client Names:</label>
+                            <select class="form-control" id="selectClientAC" name="selectClientAC" [(ngModel)]="selectedClient">
+                                <option selected="true" value="">Select Client Name</option>
+                                <ng-container *ngFor="let tl of cwModel?.companies">
+                                    <option value="{{tl.name}}">{{tl.name}}</option>
+                                </ng-container>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="form-group d-flex justify-content-around">
+                            <label class="font-weight-bolder">Select Roles:</label>
+                            <select class="form-control" id="selectRolesAC" name="selectRolesAC" [(ngModel)]="selectedRole">
+                                <option selected="true" value="">Select Roles</option>
+                                <ng-container *ngFor="let tl of cwModel?.roles">
+                                    <option value="{{tl}}">{{tl}}</option>
+                                </ng-container>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" [disabled]="(cwModel?.teams?.length==0 && !this.selectedRole &&  !this.selectedClient)  ||  (!this.selectedRole  ||  !this.selectedClient) "
+                (click)="switchAccount()">{{modelTitle}}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!-- Switch Account popup END -->
+
+    <div class="modal-backdrop fade show" [ngClass]="{'modalShow':showPopup}"></div>
 </div>

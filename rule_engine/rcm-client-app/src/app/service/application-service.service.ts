@@ -51,8 +51,8 @@ export class ApplicationServiceService extends BaseService {
     this.getData({},this.httpUrl['getCompany'],callback)
   }
 
-  fetchTeamsNameData(params:any,callback:any){
-    this.getData({},this.httpUrl['getTeams']+`/${params}`,callback)
+  fetchTeamsNameData(callback:any){
+    this.getData({},this.httpUrl['getTeams'],callback)
   }
 
   fetchOfficeData(callback:any){
@@ -67,8 +67,21 @@ export class ApplicationServiceService extends BaseService {
     this.getData({},this.httpUrl['rolesByCompanyName']+`/${companyName}`,callback)
   }
 
-  fetchRolesByTeam(teamId:any,callback:any){
-    this.getData({},this.httpUrl['rolesByTeam']+`/${teamId}`,callback)
+  fetchRolesByTeam(callback:any){
+    this.getData({},this.httpUrl['rolesByTeam'],callback)
+  }
+
+  fetchClients(callback:any){
+    this.getData({},this.httpUrl['getClients'],callback)
+  }
+
+  getActiveClients(){
+    let activeUserClients = JSON.parse(localStorage.getItem("clients"));
+    return activeUserClients;
+  }
+
+  fetchRoles(callback:any){
+    this.getData({},this.httpUrl['getRoles'],callback)
   }
 
   fetchAllUser(page:any,companyName:any,callback:any){
@@ -278,7 +291,7 @@ saveProductionData(params:any,callback:any){
   this.postData(params,this.httpUrl['productionData'],callback)
 }
 
-editRole(params:any,callback:any){
+editUser(params:any,callback:any){
   this.postData(params,this.httpUrl['editRoles'],callback)
 }
 

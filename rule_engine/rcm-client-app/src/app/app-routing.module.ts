@@ -24,12 +24,12 @@ const  routes: Routes = [
   {
     path:'register',
     loadChildren :()=> import("./register-new-user/register-new-user/register-new-user.module").then(m=>m.RegisterNewUserModule),
-    canActivate: [AdminPermission]
+    // canActivate: [AdminPermission]
   },
   {
     path:'user-setting',
     loadChildren:()=> import("./user-setting/user-setting/user-setting.module").then(m=>m.UserSettingModule),
-    canActivate: [AdminPermission]
+    // canActivate: [AdminPermission]
   },
   {
     path:'tool-update',
