@@ -70,12 +70,11 @@ export class HeaderComponent implements OnInit {
     //  this.selectedRole= document.getElementById("selectRolesAC");
     //  this.modelElement.modal = document.getElementById("switch-modal");
      this.modelElement.modal.style.display = "none";
-     let role = this.selectedRole.split('ROLE_')[1];
      if(this.selectedTeam == ''){
       this.selectedTeam = '-1'
      }
-     this.staticUtil.setLocalStoragePartial(this.selectedClient,role,this.selectedTeam);
-    this.showPopup= false;
+     this.staticUtil.setLocalStoragePartial(this.selectedClient,this.selectedRole,this.selectedTeam);
+      this.showPopup= false;
      window.location.reload();
   }
 
