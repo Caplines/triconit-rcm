@@ -35,14 +35,14 @@ export class RegisterNewUserComponent implements OnInit {
 
    teamId:any=[];
    clientId:any=[];
-
+   currentRoleName:string='';
   ngOnInit(): void {
     this.getCompanyData();
     this.getTeamsData();
     this.getRoles();
     this.userDetails.reset();
     this.appService.setPaddingRightContainer();
-    
+    this.currentRoleName = localStorage.getItem("selected_roleName");
   }
 
   registerNewUser(){

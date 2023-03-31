@@ -87,7 +87,10 @@
                                                 <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>
                                                     <select class="form-control" id="select" (change)="selectUserRole($event)">
                                                         <option selected="true" hidden="true" value="">Select Role</option>
-                                                        <option *ngFor="let userRole of userRoleByTeam" value="{{userRole.roleId}}">{{userRole.roleName}}</option>
+                                                        <ng-container *ngFor="let userRole of userRoleByTeam">
+                                                            
+                                                            <option *ngIf="!(currentRoleName == 'ADMIN' && userRole.roleName == 'Super Admin') " value="{{userRole.roleId}}">{{userRole.roleName}}</option>
+                                                        </ng-container>
                                                 </select>
                                             </ng-container>
                                         </div>

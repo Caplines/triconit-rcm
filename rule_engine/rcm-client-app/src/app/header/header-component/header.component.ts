@@ -6,6 +6,7 @@ import { BaseService } from 'src/app/service/base-service.service';
 import { AuthService } from '../../service/auth-service.service';
 import { SwitchAccountModel } from '../../models/switch.account.model';
 import Utils from '../../util/utils';
+import { ApplicationServiceService } from 'src/app/service/application-service.service';
 
 @Component({
   selector: 'app-header-component',
@@ -33,8 +34,9 @@ export class HeaderComponent implements OnInit {
   selectedTeam:any='';
   selectedClient:any='';
   selectedRole:any='';
+  roleData:any=[];
 
-  constructor(private _baseService: BaseService) {
+  constructor(private appSer: ApplicationServiceService) {
 
     this.cwModel= {};
    }
@@ -46,10 +48,22 @@ export class HeaderComponent implements OnInit {
       this.userInfo.currentTeamId =  localStorage.getItem("selected_teamId");
   //  }
      this.loggedInUserName = localStorage.getItem("name");
+     console.log(1221);
+     
+     if(this.roleData.length==0){
+        this.getRoles();
+     }
     this.openPopUp(false);
 
   }
-
+  getRoles(){
+    this.appSer.fetchRoles((res:any)=>{
+      if(res.status){
+        console.log(res);
+        
+      }
+    })
+  }
  
   logout(){
     localStorage.clear();
