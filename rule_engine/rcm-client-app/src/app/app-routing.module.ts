@@ -4,7 +4,7 @@ import { CheckUserLoggedInState } from './urlPermission/url.checkloginstate';
 import { UrlPermission } from './urlPermission/url.permission';
 import { UrlToolUpdatePermission } from './urlPermission/url.tool-update.permission';
 import { ClaimAssignPermission } from './urlPermission/claim-assign-permission';
-import { AdminPermission } from './urlPermission/admin-permission';
+import { ReigsterPermission } from './urlPermission/register-permission';
 
 const  routes: Routes = [
 
@@ -24,7 +24,7 @@ const  routes: Routes = [
   {
     path:'register',
     loadChildren :()=> import("./register-new-user/register-new-user/register-new-user.module").then(m=>m.RegisterNewUserModule),
-    // canActivate: [AdminPermission]
+     canActivate: [ReigsterPermission]
   },
   {
     path:'user-setting',
@@ -40,7 +40,7 @@ const  routes: Routes = [
   {
     path:'manage-office',
     loadChildren :()=> import("./manage-office/manage-office.module").then(m=>m.ManageOfficeModule),
-    canActivate: [AdminPermission]
+    //canActivate: [AdminPermission]
   },
   {
     path:'claim-assignment',
@@ -50,12 +50,12 @@ const  routes: Routes = [
   {
     path:'users-status',
     loadChildren :()=> import("./users-status/users-status/users-status.module").then(m=>m.UserStatusModule),
-    canActivate: [AdminPermission]
+    
   },
   {
     path:'manage-client',
     loadChildren :()=> import("./manage-client/manage-client.module").then(m=>m.ManageClientModule),
-    canActivate: [AdminPermission]
+   
   },
 
   {

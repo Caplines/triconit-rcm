@@ -12,6 +12,7 @@ import { AdminPermission } from './urlPermission/admin-permission';
 import {TokenInterceptor} from './auth/token.interceptor';
 import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HeaderComponent } from './header/header-component/header.component';
+import { ReigsterPermission } from './urlPermission/register-permission';
 //import { FetchClaimsModule } from './fetch-claims/fetch-claims.module';
 //import { FormsModule } from '@angular/forms';
 
@@ -25,7 +26,7 @@ import { HeaderComponent } from './header/header-component/header.component';
     AppRoutingModule,HttpClientModule,HeaderComponent
   ],
   providers: [AuthService,CheckUserLoggedInState,UrlPermission,UrlToolUpdatePermission,
-    ClaimAssignPermission,AdminPermission,
+    ClaimAssignPermission,AdminPermission,ReigsterPermission,
 	  //,OfficeAndIVFormTypeResolve,
        {
           provide: HTTP_INTERCEPTORS,

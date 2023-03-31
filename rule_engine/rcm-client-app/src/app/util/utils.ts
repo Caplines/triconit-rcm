@@ -60,11 +60,16 @@ export default class Utils {
        localStorage.setItem('currentUser', data.userName);
        //localStorage.setItem('userType', data.userType);
        localStorage.setItem('token', token);
-       localStorage.setItem('roles', Utils.getRoles(data.authorities));
+      
        localStorage.setItem('name', data.firstName);
-       localStorage.setItem('clients', Utils.getClients(data.companies));
-       localStorage.setItem('teams', Utils.getTeams(data.teams));
+       this.setLocalStoragePhase2(data.authorities,data.companies,data.teams);
        
+   }
+
+   static setLocalStoragePhase2(auth:any,comp:any,teams:any){
+      localStorage.setItem('roles', Utils.getRoles(auth));
+      localStorage.setItem('clients', Utils.getClients(comp));
+      localStorage.setItem('teams', Utils.getTeams(teams));
    }
 
    static setLocalStoragePartial(clientName:string,roleName:any,teamId:number){
@@ -79,7 +84,7 @@ export default class Utils {
    static setRefreshToken(data:any){
 
     localStorage.setItem("token", (<any>data)[0].token);
-    localStorage.setItem('roles', Utils.getRoles((<any>data)[1]));
+    this.setLocalStoragePhase2(data[1],data[3],data[1]);
 
    }
    
@@ -114,6 +119,14 @@ export default class Utils {
 	     }
         return false;
    }
+
+   static checkSuperAdmin(){
+      let ls:any=localStorage;
+         if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_SUPER_ADMIN")>-1) {
+             return true;
+          }
+          return false;
+     }
 
    static isBillingLead(){
     let ls:any=localStorage;
@@ -161,6 +174,25 @@ export default class Utils {
       return  localStorage.getItem("roles").split(",");
     }
 
-  
+  static isLoggedIn(){
+   if (localStorage.getItem('currentUser')) {
+      return true;
+   }else{
+      return false;
+  }
+  }
+
+  static isSessionSet(){
+   if (localStorage.getItem('selected_clientName')) {
+      return true;
+   }else{
+      return false;
+  }
+  }
+
+  static setSession(data:any){
+        this.setRefreshToken(data);
+        this.setLocalStoragePhase2(data[1],data[3],data[1]);
+  }
 
 }

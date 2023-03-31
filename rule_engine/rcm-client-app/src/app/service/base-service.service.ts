@@ -68,7 +68,25 @@ export class BaseService {
   generateRefreshToken() {
     return this.http.get(environment.API_URL + '/refresh');
   }
-
+  
+  generateRefreshTokenCB(callback: any) {
+    return this.http.get(environment.API_URL + '/refresh')
+    .subscribe((data) => {
+      callback((<any>data));
+    }),
+      (error: any) => {
+        console.log(error)
+        if (error.status == 401) {
+          // this.router.navigate(['/logout']);
+        }
+        if (error.status == 500) {
+          callback(error);
+        }
+      },
+      () => {
+        console.log(`done`);
+      }
+  }
   postData(d: any, url: string, callback: any) {
     this.generateRefreshToken().pipe(switchMap(data => {
      
