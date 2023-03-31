@@ -18,10 +18,10 @@ import com.tricon.rcm.db.BaseAuditEntity;
 
 import lombok.Data;
 
-
+@Data
 @Entity
 @Table(name = "rcm_user_company")
-public class RcmUserCompany extends BaseAuditEntity implements Serializable{
+public class RcmUserCompany implements Serializable{
 	
 	/**
 	 * 
