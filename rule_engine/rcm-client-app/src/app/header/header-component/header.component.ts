@@ -53,14 +53,14 @@ export class HeaderComponent implements OnInit {
      if(this.roleData.length==0){
         this.getRoles();
      }
-    this.openPopUp(false);
+    
 
   }
   getRoles(){
     this.appSer.fetchRoles((res:any)=>{
       if(res.status){
-        console.log(res);
-        
+        this.roleData = res.data;
+        this.openPopUp(false);
       }
     })
   }
@@ -79,10 +79,6 @@ export class HeaderComponent implements OnInit {
   }
 
   switchAccount(){
-    //  this.selectedTeam = document.getElementById("selectTeamAC");
-    //  this.selectedClient= document.getElementById("selectClientAC");
-    //  this.selectedRole= document.getElementById("selectRolesAC");
-    //  this.modelElement.modal = document.getElementById("switch-modal");
      this.modelElement.modal.style.display = "none";
      if(this.selectedTeam == ''){
       this.selectedTeam = '-1'
@@ -103,7 +99,12 @@ export class HeaderComponent implements OnInit {
       this.cwModel.companies=this.staticUtil.getClientsFromLS();
       this.cwModel.teams=this.staticUtil.getTeamsFromLS();
       this.cwModel.roles=this.staticUtil.getRolesFromLS();
-      this.cwModel.roles = this.cwModel.roles.map((role:any) => role.replace("ROLE_", ""));
+      
+      this.cwModel.roles = this.cwModel.roles.map((roleId: any) => {
+        let foundRole = this.roleData.find((role: any) => role.roleId === roleId.substring(5));
+        return foundRole ? { roleName: foundRole.roleName, roleId: foundRole.roleId } : null;
+      }).filter((role: any) => role !== null);    //removes ROLE_ prefix from localstorage: roles and then retrived matched role name from role Data.
+
       this.modelElement.modal = document.getElementById("switch-modal");
       this.modelElement.modal.style.display = "block";
       this.showPopup= true;
