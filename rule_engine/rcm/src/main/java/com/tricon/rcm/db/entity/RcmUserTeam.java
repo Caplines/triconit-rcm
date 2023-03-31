@@ -16,9 +16,7 @@ import javax.persistence.Table;
 
 
 
-import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "rcm_user_team")
 public class RcmUserTeam implements Serializable{

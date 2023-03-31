@@ -15,9 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
-import lombok.Data;
 
-@Data
+
 @Entity
 @Table(name = "rcm_user_company")
 public class RcmUserCompany implements Serializable{
