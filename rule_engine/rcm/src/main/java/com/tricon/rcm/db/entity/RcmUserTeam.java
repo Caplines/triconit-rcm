@@ -21,7 +21,7 @@ import lombok.Data;
 
 @Entity
 @Table(name = "rcm_user_team")
-public class RcmUserTeam  implements Serializable{
+public class RcmUserTeam  extends BaseAuditEntity implements Serializable{
 	
 
 	/**
