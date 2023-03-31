@@ -81,7 +81,7 @@ export class ApplicationServiceService extends BaseService {
   }
 
   fetchRoles(callback:any){
-    this.getData({},this.httpUrl['getRoles'],callback)
+    this.getDataNoAuth({},this.httpUrl['getRoles'],callback)
   }
 
   fetchAllUser(page:any,companyName:any,callback:any){

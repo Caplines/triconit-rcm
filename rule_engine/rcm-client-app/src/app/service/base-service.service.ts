@@ -140,5 +140,14 @@ export class BaseService {
       ;
 
   }
+
+  getDataNoAuth(d:any,url:string ,callback: any): void {
+    this.http.get(environment.API_URL + url).subscribe({
+        next: data => {callback((<any>data));},
+        error: error => {
+        callback((<any>error));
+      }
+    })
+    };
   
 }
