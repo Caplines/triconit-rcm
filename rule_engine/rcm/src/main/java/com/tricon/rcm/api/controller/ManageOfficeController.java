@@ -46,47 +46,47 @@ public class ManageOfficeController {
 	@Autowired
 	private UserServiceImpl userService;
 	
-	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('BILLING_TL')")
-	public ResponseEntity<?> assignOfficesToBillingUser(@RequestBody AssignOfficesToBillingUserDto dto) {
-		if (dto.getAssignOfficeDetails().stream()
-				.anyMatch(x -> (x.getOfficeId()==null||x.getOfficeId().trim().equals("")) || (x.getUserId()==null||x.getUserId().trim().equals("")))) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
-		}
-		GenericResponse response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		try {
-			response = officeService.assignOfficeByAdmin(dto,jwtUser.getCompany());//why is this in ADMIN
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(response);
-	}
+//	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
+//	@PreAuthorize("hasRole('BILLING_TL')")
+//	public ResponseEntity<?> assignOfficesToBillingUser(@RequestBody AssignOfficesToBillingUserDto dto) {
+//		if (dto.getAssignOfficeDetails().stream()
+//				.anyMatch(x -> (x.getOfficeId()==null||x.getOfficeId().trim().equals("")) || (x.getUserId()==null||x.getUserId().trim().equals("")))) {
+//			return ResponseEntity
+//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+//		}
+//		GenericResponse response = null;
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		Object principal = authentication.getPrincipal();
+//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+//		JwtUser jwtUser = (JwtUser) userDetails;
+//		try {
+//			response = officeService.assignOfficeByAdmin(dto,jwtUser.getCompany());//why is this in ADMIN
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(response);
+//	}
 	
-	@RequestMapping(value = "/users/team/{teamId}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('BILLING_TL')")
-	public ResponseEntity<?> getUsersByTeamId(@PathVariable("teamId")int teamId) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		List<RcmUserToDto> response = null;
-		try {
-			response = userService.getUsersByTeamId(teamId,jwtUser.getCompany());
-			if(response==null) {
-				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
+//	@RequestMapping(value = "/users/team/{teamId}", method = RequestMethod.GET)
+//	@PreAuthorize("hasRole('BILLING_TL')")
+//	public ResponseEntity<?> getUsersByTeamId(@PathVariable("teamId")int teamId) {
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		Object principal = authentication.getPrincipal();
+//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+//		JwtUser jwtUser = (JwtUser) userDetails;
+//		List<RcmUserToDto> response = null;
+//		try {
+//			response = userService.getUsersByTeamId(teamId,jwtUser.getCompany());
+//			if(response==null) {
+//				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+//	}
 }
