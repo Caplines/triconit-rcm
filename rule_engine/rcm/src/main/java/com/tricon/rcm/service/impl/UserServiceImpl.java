@@ -59,11 +59,7 @@ public class UserServiceImpl {
 	 * @return GenericResponse
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse updatePassword(String password) throws Exception {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
+	public GenericResponse updatePassword(String password,JwtUser jwtUser) throws Exception {
 		String msg = "";
 		RcmUser loginUser = userRepo.findByEmail(jwtUser.getUsername());
 		if (loginUser != null) {
@@ -82,32 +78,32 @@ public class UserServiceImpl {
 	 * @return List of users
 	 */
 
-	public List<RcmUserToDto> getUsersByRole(String role) throws Exception {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		List<RcmUserToDto> data = null;
-		if (jwtUser.getTeamId() == -1) {
-			return null;
-		}
-		data = userRepo.findUsersByRole(RcmTeamEnum.generateRole(jwtUser.getTeamId(), role),
-				jwtUser.getCompany().getUuid());
-		data.removeIf(x -> x.getUuid().equals(jwtUser.getUuid()));
-		return data;
-
-	}
-
-	public List<RcmUserToDto> getUsersByTeamId(int teamId,RcmCompany company) throws Exception {
-		    List<RcmUserToDto> data = null;
-			teamId=RcmTeamEnum.validateTeamId(teamId);
-			if (teamId != 0) {
-				data = userRepo.findUsersByTeamId(teamId, company.getUuid());
-				return data;
-			}
-		
-		return null;
-	}
+//	public List<RcmUserToDto> getUsersByRole(String role) throws Exception {
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		Object principal = authentication.getPrincipal();
+//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+//		JwtUser jwtUser = (JwtUser) userDetails;
+//		List<RcmUserToDto> data = null;
+//		if (jwtUser.getTeamId() == -1) {
+//			return null;
+//		}
+//		data = userRepo.findUsersByRole(RcmTeamEnum.generateRole(jwtUser.getTeamId(), role),
+//				jwtUser.getCompany().getUuid());
+//		data.removeIf(x -> x.getUuid().equals(jwtUser.getUuid()));
+//		return data;
+//
+//	}
+//
+//	public List<RcmUserToDto> getUsersByTeamId(int teamId,RcmCompany company) throws Exception {
+//		    List<RcmUserToDto> data = null;
+//			teamId=RcmTeamEnum.validateTeamId(teamId);
+//			if (teamId != 0) {
+//				data = userRepo.findUsersByTeamId(teamId, company.getUuid());
+//				return data;
+//			}
+//		
+//		return null;
+//	}
 
 	/**
 	 * This api fetches all teamName of loginUser's teamId only exclude loginUser TeamId

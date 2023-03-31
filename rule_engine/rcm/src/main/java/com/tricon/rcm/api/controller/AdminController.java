@@ -418,7 +418,7 @@ public class AdminController extends BaseHeaderController{
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
 		try {
-			response = serviceImpl.addClient(dto);
+			response = serviceImpl.addClient(dto,partialHeader.getRole());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

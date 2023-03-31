@@ -357,4 +357,20 @@ public class RcmCommonServiceImpl {
 		return null;
 	}
 	
+	public void syncClientsWithSuperAdmin(RcmCompany client, String isSuperAdmin) throws Exception {
+		RcmUserCompany userCompany = null;
+		if (client != null && isSuperAdmin.equals(Constants.SUPER_ADMIN)) {
+			List<RcmUserToDto> data = userRepo.findSuperAdminUser(Constants.ROLE_PREFIX + Constants.SUPER_ADMIN);
+			List<String> uuid = data.stream().map(x -> x.getUuid()).collect(Collectors.toList());
+			List<RcmUser> user = userRepo.findByUuidIn(uuid);
+			if (user != null && !user.isEmpty()) {
+				for (RcmUser u : user) {
+					userCompany = new RcmUserCompany();
+					userCompany.setUser(u);
+					userCompany.setCompany(client);
+					userCompanyRepo.save(userCompany);
+				}
+			}
+		}
+	}
 }

@@ -52,5 +52,8 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	List<UserSearchDto> findByUserDetails(@Param("search")  String search);
 	
 	List<RcmUser>findByUuidIn(List<String> userId);
+	
+	@Query(value="select u.uuid as Uuid from rcm_user u inner join rcm_user_role r on u.uuid=r.uuid where r.role=:role",nativeQuery=true)
+	List<RcmUserToDto> findSuperAdminUser(@Param("role") String role);
 
 }

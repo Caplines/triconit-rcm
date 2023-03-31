@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmRoleDto;
@@ -54,14 +56,17 @@ public class UserController {
 
 	@ApiOperation(value = "Api For Update Password of Login User")
 	@RequestMapping(value = "/updatepassword", method = RequestMethod.POST)
-	public ResponseEntity<?> updatePasswordOfUserOrAdmin(@RequestBody PasswordResetDto dto) {
+	public ResponseEntity<?> updatePasswordOfUserOrAdmin(@RequestBody PasswordResetDto dto,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		GenericResponse response = null;
 		if ((dto.getPassword()==null||dto.getPassword().trim().equals(""))||dto.getUuid()==null) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.PASSWORD_EMPTY, null));
 		}
 		try {
-			response = userService.updatePassword(dto.getPassword());
+			response = userService.updatePassword(dto.getPassword(),partialHeader.getJwtUser());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -70,33 +75,32 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
-	@ApiOperation(value = "Api For Fetching users basis of Login User teamId and his Role TL", response = RcmUserToDto.class, responseContainer = "List")
-	@RequestMapping(value = "/user/users_by_role/tl", method = RequestMethod.GET)
-	public ResponseEntity<?> getUsersOfParticularTeam() {
-		List<RcmUserToDto> response = null;
-		try {
-			response = userService.getUsersByRole(Constants.TEAMLEAD);
-			if(response==null) {
-				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
+//	@ApiOperation(value = "Api For Fetching users basis of Login User teamId and his Role TL", response = RcmUserToDto.class, responseContainer = "List")
+//	@RequestMapping(value = "/user/users_by_role/tl", method = RequestMethod.GET)
+//	public ResponseEntity<?> getUsersOfParticularTeam() {
+//		List<RcmUserToDto> response = null;
+//		try {
+//			response = userService.getUsersByRole(Constants.TEAMLEAD);
+//			if(response==null) {
+//				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+//	}
 	
 	@ApiOperation(value = "Api For Fetching offices basis of Login User clientName", response = RcmOfficeDto.class, responseContainer = "List")
 	@RequestMapping(value = "getOffices", method = RequestMethod.GET)
-	public ResponseEntity<?> officesByUuid() {
+	public ResponseEntity<?> officesByUuid(Model model) {
 		List<RcmOfficeDto> response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		try {
-			response = commonService.getOfficesByUuid(jwtUser.getCompany().getUuid());
+			response = commonService.getOfficesByUuid(partialHeader.getCompany().getUuid());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -105,43 +109,43 @@ public class UserController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@ApiOperation(value = "Api For Fetching TeamName Details basis of Login User teamId", response = RcmTeamDto.class, responseContainer = "List")
-	@RequestMapping(value = "/user/other_teams", method = RequestMethod.GET)
-	public ResponseEntity<?> teamNameByUserTeamId() {
-		List<RcmTeamDto> response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		try {
-			response = null;//userService.getTeamNameByOtherUserTeamId(jwtUser);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
-	
-	@ApiOperation(value = "Api For Fetching UserRoles basis of User's email", response = RcmTeamDto.class, responseContainer = "List")
-	@RequestMapping(value = "/user/roles/{userEmail}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> rolesByUserEmail(@PathVariable("userEmail")String userEmail) {
-		 List<RcmRoleDto> response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.UNAUTHORIZED, "Not Authorize", null));
-		}
-		try {
-			response = null;//userService.getRolesByUserEmail(userEmail);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
+//	@ApiOperation(value = "Api For Fetching TeamName Details basis of Login User teamId", response = RcmTeamDto.class, responseContainer = "List")
+//	@RequestMapping(value = "/user/other_teams", method = RequestMethod.GET)
+//	public ResponseEntity<?> teamNameByUserTeamId() {
+//		List<RcmTeamDto> response = null;
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		Object principal = authentication.getPrincipal();
+//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+//		JwtUser jwtUser = (JwtUser) userDetails;
+//		try {
+//			response = null;//userService.getTeamNameByOtherUserTeamId(jwtUser);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+//	}
+//	
+//	@ApiOperation(value = "Api For Fetching UserRoles basis of User's email", response = RcmTeamDto.class, responseContainer = "List")
+//	@RequestMapping(value = "/user/roles/{userEmail}", method = RequestMethod.GET)
+//	@PreAuthorize("hasRole('ADMIN')")
+//	public ResponseEntity<?> rolesByUserEmail(@PathVariable("userEmail")String userEmail) {
+//		 List<RcmRoleDto> response = null;
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		Object principal = authentication.getPrincipal();
+//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+//		JwtUser jwtUser = (JwtUser) userDetails;
+//		if(!jwtUser.isSmilePoint()) {
+//			return ResponseEntity.ok(new GenericResponse(HttpStatus.UNAUTHORIZED, "Not Authorize", null));
+//		}
+//		try {
+//			response = null;//userService.getRolesByUserEmail(userEmail);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+//	}
 }

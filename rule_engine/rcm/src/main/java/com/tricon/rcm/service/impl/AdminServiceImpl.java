@@ -693,13 +693,14 @@ public class AdminServiceImpl {
 //	}
 	
 	@Transactional(rollbackOn = Exception.class)
-	public String addClient(RcmClientDto dto) throws Exception {
+	public String addClient(RcmClientDto dto,String isSuperAdmin) throws Exception {
 		RcmCompany company = rcmCompanyRepo.findByName(dto.getClientName());
 		RcmMappingTable mappingTable = null;
 		if (company == null) {
 			company = new RcmCompany();
 			company.setName(dto.getClientName());
 			company = rcmCompanyRepo.save(company);
+			commonService.syncClientsWithSuperAdmin(company, isSuperAdmin);
 			for (RcmClientGSheetDto data : dto.getHeader()) {
 				mappingTable = new RcmMappingTable();
 				mappingTable.setGoogleSheetId(data.getGoogle_sheet_id());
@@ -744,8 +745,7 @@ public class AdminServiceImpl {
 				mappingTable.setGoogleSheetSubId(data.getGoogle_sheet_sub_id());
 				mappingTable.setGoogleSheetSubName(data.getGoogle_sheet_sub_name());
 				mappingTableRepo.save(mappingTable);
-			} else
-				return MessageConstants.DB_INSERSTION_ERROR;
+			} 
 		}
 		return company.getUuid();
 	}
