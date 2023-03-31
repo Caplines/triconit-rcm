@@ -287,6 +287,8 @@ public class RcmCommonServiceImpl {
 			if (company != null) {
 				userCompany = new RcmUserCompany();
 				userCompany.setCompany(company);
+				userCompany.setCreatedBy(user);
+				userCompany.setUpdatedBy(user);
 				userCompany.setUser(user);
 				userCompanyRepo.save(userCompany);
 			} else {
@@ -296,14 +298,16 @@ public class RcmCommonServiceImpl {
 		
 		//if role is SUPER_ADMIN then all clients assign to super user
 		
-		if (isAdminRole.equals(Constants.SUPER_ADMIN)) {
+		if (isAdminRole.equals(Constants.SUPER_ADMIN) && role.equals(Constants.SUPER_ADMIN)) {
 			List<RcmCompany> clients = rcmCompanyRepo.findAll();
 			for (RcmCompany c : clients) {
 				userCompany = new RcmUserCompany();
+				userCompany.setCreatedBy(user);
+				userCompany.setUpdatedBy(user);
 				userCompany.setUser(user);
 				userCompany.setCompany(c);
 				userCompanyRepo.save(userCompany);
-			}			
+			}
 		}	
 
 		// save Teams details
@@ -312,6 +316,8 @@ public class RcmCommonServiceImpl {
 			if (team != null) {
 				userTeam = new RcmUserTeam();
 				userTeam.setTeam(team);
+				userTeam.setCreatedBy(user);
+				userTeam.setUpdatedBy(user);
 				userTeam.setUser(user);
 				userTeamRepo.save(userTeam);
 			} else {
