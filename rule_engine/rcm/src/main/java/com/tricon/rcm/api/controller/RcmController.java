@@ -90,17 +90,17 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Fetching Claims From  ES or GSheet", response = String.class, responseContainer = "Map")
 	@PostMapping("/api/fetch-claims-from-source")
-	@PreAuthorize("hasRole('BILLING_TL')")
-	public ResponseEntity<Object> fetchClaimsFromSource(@RequestBody ClaimSourceDto dto) {
+	@PreAuthorize("hasAnyRole('BILLING_TL','SUPER_ADMIN')")
+	public ResponseEntity<Object> fetchClaimsFromSource(@RequestBody ClaimSourceDto dto,
+			Model model) {
 
-		Object[] obj = checkForSimplePointUser();
-		// only SmilePoint can do this
-		if (!((boolean) obj[1])) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
-
+		// only SmilePoint can do this
 		Object sucess = null;
-		sucess = claimServiceImpl.pullClaimFromSource(dto, null, (JwtUser) obj[0]);
+		sucess = claimServiceImpl.pullClaimFromSource(dto, null, partialHeader.getJwtUser());
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", sucess));
 	}
 
@@ -157,7 +157,7 @@ public class RcmController extends BaseHeaderController{
 	public ResponseEntity<Object> fetchClaimsForAssignments(@RequestBody AssigmentClaimListDto dto,
 			 Model model) {
 		
-		 PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchClaimsForAssignments(dto)));
 	}
@@ -376,7 +376,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Assigning Un Assigned Claim to Users", response = String.class)
 	@GetMapping("/api/assign-unsassigned_claims")
-	@PreAuthorize("hasRole('BILLING_TL')")
+	@PreAuthorize("hasAnyRole('BILLING_TL','SUPER_ADMIN')")
 	public ResponseEntity<Object> assignUnsAsignedClaims() {
 		Object[] obj = checkForSimplePointUser();
 		JwtUser jwtUser = (JwtUser) obj[0];

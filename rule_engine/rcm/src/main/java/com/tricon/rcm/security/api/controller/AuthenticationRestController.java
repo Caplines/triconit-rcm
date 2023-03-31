@@ -75,7 +75,7 @@ public class AuthenticationRestController {
             String refreshedToken = jwtTokenUtil.refreshToken(token);
             JwtAuthenticationResponse r=new JwtAuthenticationResponse(refreshedToken);
             
-            return ResponseEntity.ok(new Object[] {r,user.getAuthorities()});
+            return ResponseEntity.ok(new Object[] {r,user.getAuthorities(),user.getTeams(),user.getCompanies()});
         } else {
             return ResponseEntity.badRequest().body(null);
         }

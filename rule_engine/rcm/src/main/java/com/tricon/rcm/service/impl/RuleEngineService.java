@@ -3,6 +3,7 @@ package com.tricon.rcm.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.tricon.rcm.dto.RcmClaimMainRootDto;
@@ -143,6 +144,7 @@ public class RuleEngineService {
 
 	@Autowired
 	RcmIssueClaimsRepo rcmIssueClaimsRepo;
+	
 
 	HttpHeaders headers = null;
 
@@ -818,6 +820,40 @@ public class RuleEngineService {
 
 		}
 		return insuranceType;
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	public boolean assignedUnsAssignedClaimsByTeam(String companyId,RcmUser assignedBy,int teamId)  {
+		
+		//Assign Unassigned Claims
+		try {
+		List<String> claims =rcmClaimRepository.getUnAsignedClaims(companyId);
+		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
+				.findByStatus(ClaimStatusEnum.Billing.getType());
+		logger.info(claims.size()+"");
+		int ct=0;
+		for(String claimUUid:claims) {
+			logger.info("MY COUNT--"+ (++ct));
+			RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
+			//
+			RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUUid);
+			UserAssignOffice assignedUser = userAssignOfficeRepo
+					.findByOfficeUuidAndTeamId(claim.getOffice().getUuid(), teamId);
+			 RcmTeam assignedTeam  = rcmTeamRepo.findById(teamId);
+			if (assignedUser!=null) { 
+				    rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy,
+					assignedUser.getUser(), claimUUid, claim,
+					Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling,assignedTeam);
+				    rcmClaimAssignmentRepo.save(rcmAssigment);
+			}
+
+			
+		}
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 }

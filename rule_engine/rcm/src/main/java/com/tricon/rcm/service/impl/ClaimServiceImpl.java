@@ -2104,47 +2104,15 @@ public class ClaimServiceImpl {
 		//Assign Unassigned Claims
 		try {
 			RcmUser assignedBy= userRepo.findByUuid(jwtUser.getUuid()) ;
-			assignedUnsAssignedClaims(jwtUser.getCompany().getUuid(),assignedBy);
+			return ruleEngineService.assignedUnsAssignedClaimsByTeam(jwtUser.getCompany().getUuid(),assignedBy,RcmTeamEnum.BILLING.getId());
 		}catch(Exception ex) {
 			ex.printStackTrace();
 			return false;
 		}
-		return true;
+		
 	}
 	
-	@Transactional(rollbackFor = Exception.class)
-	public boolean assignedUnsAssignedClaims(String companyId,RcmUser assignedBy)  {
-		
-		//Assign Unassigned Claims
-		try {
-		List<String> claims =rcmClaimRepository.getUnAsignedClaims(companyId);
-		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
-				.findByStatus(ClaimStatusEnum.Billing.getType());
-		logger.info(claims.size()+"");
-		int ct=0;
-		for(String claimUUid:claims) {
-			logger.info("MY COUNT--"+ (++ct));
-			RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
-			//
-			RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUUid);
-			UserAssignOffice assignedUser = userAssignOfficeRepo
-					.findByOfficeUuidAndTeamId(claim.getOffice().getUuid(), RcmTeamEnum.BILLING.getId());
-			 RcmTeam assignedTeam  = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
-			if (assignedUser!=null) { 
-				    rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy,
-					assignedUser.getUser(), claimUUid, claim,
-					Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling,assignedTeam);
-				    rcmClaimAssignmentRepo.save(rcmAssigment);
-			}
-
-			
-		}
-		}catch(Exception ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
+	
 	
 	public RcmRules getRulesFromList(List<RcmRules> rules, String name) {
 		RcmRules r = null;

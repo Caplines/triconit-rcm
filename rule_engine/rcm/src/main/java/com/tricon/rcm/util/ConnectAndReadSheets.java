@@ -208,7 +208,7 @@ public class ConnectAndReadSheets {
 				continue;
 			try {
 				int x = -1;
-				dto = new TimelyFilingLimitDto(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
+				dto = new TimelyFilingLimitDto(obj.get(++x), obj.get(++x));
 				list.add(dto);
 
 			} catch (Exception ex) {
