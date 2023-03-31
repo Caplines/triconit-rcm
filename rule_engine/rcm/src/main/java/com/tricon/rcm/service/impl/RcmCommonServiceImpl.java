@@ -287,8 +287,6 @@ public class RcmCommonServiceImpl {
 			if (company != null) {
 				userCompany = new RcmUserCompany();
 				userCompany.setCompany(company);
-				userCompany.setCreatedBy(user);
-				userCompany.setUpdatedBy(user);
 				userCompany.setUser(user);
 				userCompanyRepo.save(userCompany);
 			} else {
@@ -302,8 +300,6 @@ public class RcmCommonServiceImpl {
 			List<RcmCompany> clients = rcmCompanyRepo.findAll();
 			for (RcmCompany c : clients) {
 				userCompany = new RcmUserCompany();
-				userCompany.setCreatedBy(user);
-				userCompany.setUpdatedBy(user);
 				userCompany.setUser(user);
 				userCompany.setCompany(c);
 				userCompanyRepo.save(userCompany);
@@ -316,8 +312,6 @@ public class RcmCommonServiceImpl {
 			if (team != null) {
 				userTeam = new RcmUserTeam();
 				userTeam.setTeam(team);
-				userTeam.setCreatedBy(user);
-				userTeam.setUpdatedBy(user);
 				userTeam.setUser(user);
 				userTeamRepo.save(userTeam);
 			} else {
