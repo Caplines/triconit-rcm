@@ -174,7 +174,7 @@ public class AdminServiceImpl {
 			user = userRepo.save(user);
 			if (user != null) {
 				responseMessage = commonService.saveOrEditUser(user, dto.getUserRole(), dto.getCompanyUuid(),
-						dto.getTeamId());
+						dto.getTeamId(),isAdminRole);
 
 				if (responseMessage != null) {
 					return new GenericResponse(HttpStatus.BAD_REQUEST, responseMessage, null);
@@ -627,7 +627,7 @@ public class AdminServiceImpl {
 			
 			//edit role,client and teams details
 			responseMessage = commonService.saveOrEditUser(existingUser, dto.getRole(), dto.getCompanyUuid(),
-					dto.getTeamId());
+					dto.getTeamId(),isAdminRole);
 
 			if (responseMessage != null) {
 				return new GenericResponse(HttpStatus.BAD_REQUEST, responseMessage, null);

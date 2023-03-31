@@ -1,7 +1,9 @@
 package com.tricon.rcm.service.impl;
 
 import java.sql.Timestamp;
+
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.RcmUserTeam;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -270,7 +273,7 @@ public class RcmCommonServiceImpl {
 	}
 	
 	public String saveOrEditUser(RcmUser user, String role,
-			List<String> companyUuid, List<Integer> teamIds) throws Exception {
+			List<String> companyUuid, List<Integer> teamIds,String isAdminRole) throws Exception {
 		RcmUserRole roles = null;
 		RcmUserRolePk pk = null;
 		RcmCompany company = null;
@@ -290,6 +293,18 @@ public class RcmCommonServiceImpl {
 				return MessageConstants.COMPANY_NOT_EXIST;
 			}
 		}
+		
+		//if role is SUPER_ADMIN then all clients assign to super user
+		
+		if (isAdminRole.equals(Constants.SUPER_ADMIN)) {
+			List<RcmCompany> clients = rcmCompanyRepo.findAll();
+			for (RcmCompany c : clients) {
+				userCompany = new RcmUserCompany();
+				userCompany.setUser(user);
+				userCompany.setCompany(c);
+				userCompanyRepo.save(userCompany);
+			}			
+		}	
 
 		// save Teams details
 		for (int teamId : teamIds) {
