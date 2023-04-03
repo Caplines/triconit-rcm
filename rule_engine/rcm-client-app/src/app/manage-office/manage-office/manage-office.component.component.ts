@@ -30,7 +30,7 @@ export class ManageOfficeComponent implements OnInit {
   getcompanyData(){
     this.appService.fetchCompanyNameData((callback:any)=>{
       if(callback.status){
-        this.companyData = callback.data.data;
+        this.companyData = callback.data;
       
       }
     })
@@ -40,7 +40,7 @@ export class ManageOfficeComponent implements OnInit {
         this.appService.fetchOfficeByCompany(companyUuid,(callback:any)=>{
             if(callback.status){
               this.showLoader=false;
-              this.officeData = callback.data.data.map((e:any)=>({...e,'editable':false}));
+              this.officeData = callback.data.map((e:any)=>({...e,'editable':false}));
             }
     })
 }

@@ -426,7 +426,7 @@ public class AdminServiceImpl {
 	 * This method is used only admin
 	 * @return List of companies
 	 */
-	public GenericResponse getCompanies(String isAdminOrSuperAdmin, JwtUser jwtUser) throws Exception {
+	public List<RcmCompanyDto> getCompanies(String isAdminOrSuperAdmin, JwtUser jwtUser) throws Exception {
 
 		List<RcmCompany> company = null;
 		List<RcmCompanyDto> listOfCompany = new ArrayList<>();
@@ -436,7 +436,7 @@ public class AdminServiceImpl {
 				listOfCompany = company.stream().map(x -> new RcmCompanyDto(x.getName(), x.getUuid()))
 						.collect(Collectors.toList());
 			}
-			return new GenericResponse(HttpStatus.OK, "", listOfCompany);
+			return listOfCompany;
 		} else {
 			for (RcmCompany client : jwtUser.getCompanies()) {
 				RcmCompanyDto dto = null;
@@ -448,7 +448,7 @@ public class AdminServiceImpl {
 					listOfCompany.add(dto);	
 				}			
 			}
-			return new GenericResponse(HttpStatus.OK, "", listOfCompany);
+			return listOfCompany;
 		}
 
 	}

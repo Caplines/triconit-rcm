@@ -104,7 +104,7 @@ export class UserStatusComponent implements OnInit {
 getcompanyData(){
   this.appService.fetchCompanyNameData((callback:any)=>{
     if(callback.status){
-      this.companyData = callback.data.data;
+      this.companyData = callback.data;
       console.log(callback)
     }
   })

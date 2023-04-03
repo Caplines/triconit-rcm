@@ -208,7 +208,7 @@ public class AdminController extends BaseHeaderController{
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		GenericResponse response = null;
+		List<RcmCompanyDto> response = null;
 		try {
 			response = serviceImpl.getCompanies(partialHeader.getRole(),partialHeader.getJwtUser());
 		} catch (Exception e) {
