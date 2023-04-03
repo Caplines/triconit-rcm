@@ -2,9 +2,9 @@
     <div class="topbar">
         <h1>Revenue Cycle Management(RCM)</h1>
             <div class="activeUsername">
-            <span> <strong>Client Name:</strong>  {{userInfo.currentClientName}}</span>
-            <span><strong>Role Name:</strong> {{userInfo.currentRoleName?.roleName}}</span>
-            <span *ngIf="userInfo.currentRoleName?.roleId != 'ADMIN' && userInfo.currentRoleName?.roleId != 'SUPER_ADMIN' && userInfo.currentRoleName?.roleId != 'REPORTING' "> <strong>Team Id:</strong>  {{userInfo.currentTeamId}}</span>
+            <span> <strong>Client:</strong>  {{userInfo.currentClientName}}</span>
+            <span><strong>Role:</strong> {{userInfo.currentRoleName?.roleName}}</span>
+            <span *ngIf="userInfo.currentRoleName?.roleId != 'ADMIN' && userInfo.currentRoleName?.roleId != 'SUPER_ADMIN' && userInfo.currentRoleName?.roleId != 'REPORTING' "> <strong>Team:</strong>  {{userInfo.currentTeamId}}</span>
         </div>
         <ul class="navbar-nav px-3">
             <li> <button type="button" class="btn btn-success btn-sm" title="Switch Account" (click)="openPopUp(true)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">

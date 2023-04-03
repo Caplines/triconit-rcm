@@ -40,7 +40,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @CrossOrigin
-public class UserController {
+public class UserController extends BaseHeaderController {
 
 	private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -92,7 +92,7 @@ public class UserController {
 //		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 //	}
 	
-	@ApiOperation(value = "Api For Fetching offices basis of Login User clientName", response = RcmOfficeDto.class, responseContainer = "List")
+	@ApiOperation(value = "Api For Fetching offices basis of Login User clientUuid", response = RcmOfficeDto.class, responseContainer = "List")
 	@RequestMapping(value = "getOffices", method = RequestMethod.GET)
 	public ResponseEntity<?> officesByUuid(Model model) {
 		List<RcmOfficeDto> response = null;
