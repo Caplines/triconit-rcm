@@ -294,7 +294,6 @@ public class AdminServiceImpl {
 		RcmCompany company = null;
 		List<RcmUserCompany> clientsData = userCompanyRepo.findByUserUuid(jwtUser.getUuid());
 		List<String> clientUuid = clientsData.stream().map(x -> x.getCompany().getUuid()).collect(Collectors.toList());
-		System.out.println(clientUuid);
 		if (isAdminOrSuperAdmin.equals(Constants.ADMIN)) {
 
 			if (companyUuid.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
