@@ -28,19 +28,65 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	@Query(value="select u.uuid as Uuid,u.first_name as FirstName,u.last_name as LastName from rcm_user u inner join rcm_user_role r on u.uuid=r.uuid where r.role=:role and u.active=1 and u.company_id=:clientUuid",nativeQuery=true)
 	List<RcmUserToDto> findUsersByRole(@Param("role") String role,@Param("clientUuid")String clientUuid);
 	
-	@Query(value="select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user where company_id=:uuid AND email!=:ignoreUser",nativeQuery = true)
-	List<RcmUserToDto> getAllUserByCompanyUuid(@Param("uuid")String uuid,@Param("ignoreUser")String ignoreUser);
+	@Query(value="select c.Uuid,c.Email,c.FullName,c.ClientName,c.Roles,c.Active"
+			+ "	from (select GROUP_CONCAT(distinct rc.name) as ClientName,"
+			+ "GROUP_CONCAT(distinct case when SUBSTRING(ur.role,6)='TL' then 'TeamLead'"
+			+ "when SUBSTRING(ur.role,6)='ASSO' then 'Associate'"
+			+ "when SUBSTRING(ur.role,6)='ADMIN' then 'Admin'"
+			+ "when SUBSTRING(ur.role,6)='REPORTING' then 'Reporting'"
+			+ "when SUBSTRING(ur.role,6)='SUPER_ADMIN' then 'Super Admin'"
+			+ "Else 'Role Not Match'"
+			+ " End)as Roles,concat(us.first_name,' ',us.last_name)as FullName,"
+			+ "	us.uuid as Uuid,us.email as Email,us.Active from rcm_user_company uc"
+			+ "	inner join company rc on rc.uuid=uc.company_id"
+			+ "	inner join rcm_user us on uc.rcm_user_id=us.uuid"
+			+ "	inner join rcm_user_role ur on us.uuid=ur.uuid where us.email!=:ignoreUser and rc.uuid =:clientUuid group by us.uuid)c",countQuery = "select count(*) from rcm_user email!=:ignoreUser",nativeQuery = true)
+	Page<RcmUserToDto> getUsersBySuperAdminUsingClicentUuid(Pageable page,@Param("clientUuid")String uuid,@Param("ignoreUser")String ignoreUser);
 	
 
-	@Query(value = "select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName from rcm_user where company_id=:uuid AND email!=:ignoreUser", countQuery = "select count(*) from rcm_user where company_id=:uuid AND email!=:ignoreUser", nativeQuery = true)
-	Page<RcmUserToDto> getAllUserByCompanyUuidWithPagination(@Param("uuid") String uuid, Pageable page,@Param("ignoreUser")String ignoreUser);
+	@Query(value = "select c.Uuid,c.Email,c.FullName,c.ClientName,c.Roles,c.Active"
+			+ " from (select GROUP_CONCAT(distinct rc.name) as ClientName,GROUP_CONCAT(distinct case when SUBSTRING(ur.role,6)='TL' then 'TeamLead'"
+			+ "when SUBSTRING(ur.role,6)='ASSO' then 'Associate'"
+			+ "when SUBSTRING(ur.role,6)='ADMIN' then 'Admin'"
+			+ "when SUBSTRING(ur.role,6)='REPORTING' then 'Reporting'"
+			+ "when SUBSTRING(ur.role,6)='SUPER_ADMIN' then 'SuperAdmin'"
+			+ "Else 'Role Not Match'"
+			+ " End)as Roles,"
+			+ " us.uuid as Uuid,us.email as Email,us.Active,concat(us.first_name,' ',us.last_name)as FullName from rcm_user_company uc"
+			+ " inner join company rc on rc.uuid=uc.company_id"
+			+ "	inner join rcm_user us on uc.rcm_user_id=us.uuid"
+			+ "	inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid =:clientUuid and us.email!=:ignoreUser and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from rcm_user email!=:ignoreUser", nativeQuery = true)
+	Page<RcmUserToDto> getUserByCompanyUuidWithPagination(@Param("clientUuid") String clientUuid, Pageable page,@Param("ignoreUser")String ignoreUser);
 	
-	@Query(value="select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select c.company_id from rcm_user_company c where c.rcm_user_id=rcm_user.uuid)as CompanyName from rcm_user where email!=:ignoreUser",nativeQuery = true)
-	List<RcmUserToDto> getAllUser(@Param("ignoreUser")String ignoreUser);
+	@Query(value = "select c.Uuid,c.Email,c.FullName,c.ClientName,c.Roles,c.Active"
+			+ "	from (select GROUP_CONCAT(distinct rc.name) as ClientName,GROUP_CONCAT(distinct case when SUBSTRING(ur.role,6)='TL' then 'TeamLead'"
+			+ "when SUBSTRING(ur.role,6)='ASSO' then 'Associate'"
+			+ "when SUBSTRING(ur.role,6)='ADMIN' then 'Admin'"
+			+ "when SUBSTRING(ur.role,6)='REPORTING' then 'Reporting'"
+			+ "when SUBSTRING(ur.role,6)='SUPER_ADMIN' then 'Super Admin'"
+			+ "Else 'Role Not Match'"
+			+ " End)as Roles,concat(us.first_name,' ',us.last_name)as FullName,"
+			+ " us.uuid as Uuid,us.email as Email,us.Active from rcm_user_company uc"
+			+ " inner join company rc on rc.uuid=uc.company_id"
+			+ "	inner join rcm_user us on uc.rcm_user_id=us.uuid"
+			+ "	inner join rcm_user_role ur on us.uuid=ur.uuid where us.email!=:ignoreUser group by us.uuid)c", countQuery = "select count(*) from rcm_user where email!=:ignoreUser", nativeQuery = true)
+	Page<RcmUserToDto> getAllUserBySuperAdmin(Pageable page,@Param("ignoreUser")String ignoreUser);
 	
 
-	@Query(value = "select uuid as Uuid,active as Active,email as Email,concat(first_name,' ',last_name)as FullName,(select name from company c where c.uuid= rcm_user.company_id)as CompanyName from rcm_user where email!=:ignoreUser", countQuery = "select count(*) from rcm_user where email!=:ignoreUser", nativeQuery = true)
-	Page<RcmUserToDto> getAllUserByPagination(Pageable page,@Param("ignoreUser")String ignoreUser);
+	@Query(value = "select c.Uuid,c.Email,c.FullName,c.ClientName,c.Roles,c.Active"
+			+ " from (select GROUP_CONCAT(distinct rc.name) as ClientName,GROUP_CONCAT(distinct case when SUBSTRING(ur.role,6)='TL' then 'TeamLead'"
+			+ "when SUBSTRING(ur.role,6)='ASSO' then 'Associate'"
+			+ "when SUBSTRING(ur.role,6)='ADMIN' then 'Admin'"
+			+ "when SUBSTRING(ur.role,6)='REPORTING' then 'Reporting'"
+			+ "when SUBSTRING(ur.role,6)='SUPER_ADMIN' then 'Super Admin'"
+			+ "Else 'Role Not Match'"
+			+ " End)as Roles,"
+			+ " us.uuid as Uuid,us.Active,concat(us.first_name,' ',us.last_name)as FullName,"
+			+ " us.email as Email from rcm_user_company uc"
+			+ " inner join company rc on rc.uuid=uc.company_id"
+			+ " inner join rcm_user us on uc.rcm_user_id=us.uuid"
+			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid in(:clientUuid) and us.email!=:ignoreUser and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from rcm_user where email!=:ignoreUser", nativeQuery = true)
+	Page<RcmUserToDto> getAllUserByPagination(Pageable page,@Param("ignoreUser")String ignoreUser,@Param("clientUuid")List<String>clientUuid);
 
 	@Modifying
 	@Query(value="update rcm_user set active=:status,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where uuid in(:uuid)",nativeQuery = true)

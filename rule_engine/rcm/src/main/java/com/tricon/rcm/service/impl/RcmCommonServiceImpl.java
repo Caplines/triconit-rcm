@@ -11,6 +11,11 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmCompany;
@@ -21,8 +26,10 @@ import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRoleHistory;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.RcmUserTeam;
+import com.tricon.rcm.dto.GenericResponse;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -372,5 +379,20 @@ public class RcmCommonServiceImpl {
 				}
 			}
 		}
+	}
+	
+	public List<RcmUserPaginationDto> setUsersInPaginationDto(Page<RcmUserToDto> pageableList){		
+		List<RcmUserPaginationDto> listOfUsers = new ArrayList<>();
+		RcmUserPaginationDto paginationDto = new RcmUserPaginationDto();
+		if (pageableList != null && !pageableList.isEmpty()) {
+			paginationDto.setData(pageableList.getContent());
+			paginationDto.setPageNumber(pageableList.getNumber());
+			paginationDto.setTotalElements(pageableList.getTotalElements());
+			paginationDto.setPageSize(pageableList.getSize());
+			paginationDto.setHasNextElement(pageableList.hasNext());
+			listOfUsers.add(paginationDto);
+			return listOfUsers;
+		}
+		return null;
 	}
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.swing.JWindow;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -287,53 +288,56 @@ public class AdminServiceImpl {
 	 * This Method can use only ADMIN and company is capline
 	 * @return List of user Details
 	 */
-	public GenericResponse getAllUsers(int pageNumber, String cmpny) throws Exception {
-		RcmUserPaginationDto paginationDto = new RcmUserPaginationDto();
-		List<RcmUserPaginationDto> listOfUsers = new ArrayList<>();
+	public List<RcmUserPaginationDto> getAllUsers(int pageNumber, String companyUuid, String isAdminOrSuperAdmin,
+			JwtUser jwtUser) throws Exception {
+		List<RcmUserPaginationDto> listOfUsers = null;
 		RcmCompany company = null;
-		String companyUuid = "";
-		String ignoreUser=Constants.SYSTEM_USER_EMAIL;
-		// get all users without company name
-		if (cmpny.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
-			if (pageNumber == -1) { // without pagination if pageNumber<0
-				List<RcmUserToDto> data = userRepo.getAllUser(ignoreUser);
-				return new GenericResponse(HttpStatus.OK, "", data);
-			}
-			Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
-			Page<RcmUserToDto> pageableList = userRepo.getAllUserByPagination(paging,ignoreUser);
-			if (pageableList != null && !pageableList.isEmpty()) {
-				paginationDto.setData(pageableList.getContent());
-				paginationDto.setPageNumber(pageableList.getNumber());
-				paginationDto.setTotalElements(pageableList.getTotalElements());
-				paginationDto.setPageSize(pageableList.getSize());
-				paginationDto.setHasNextElement(pageableList.hasNext());
-				listOfUsers.add(paginationDto);
-				return new GenericResponse(HttpStatus.OK, "", listOfUsers);
-			}
-		} else {
-			// get all users by company name
-			company = rcmCompanyRepo.findByName(cmpny);
-			if (company != null) {
-				companyUuid = company.getUuid();
-				if (pageNumber == -1) { // without pagination if pageNumber<0
-					List<RcmUserToDto> data = userRepo.getAllUserByCompanyUuid(companyUuid,ignoreUser);
-					return new GenericResponse(HttpStatus.OK, "", data);
-				}
+		List<RcmUserCompany> clientsData = userCompanyRepo.findByUserUuid(jwtUser.getUuid());
+		List<String> clientUuid = clientsData.stream().map(x -> x.getCompany().getUuid()).collect(Collectors.toList());
+		if (isAdminOrSuperAdmin.equals(Constants.ADMIN)) {
+
+			if (companyUuid.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
 				Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
-				Page<RcmUserToDto> pageableList = userRepo.getAllUserByCompanyUuidWithPagination(companyUuid, paging,ignoreUser);
-				if (pageableList != null && !pageableList.isEmpty()) {
-					paginationDto.setData(pageableList.getContent());
-					paginationDto.setPageNumber(pageableList.getNumber());
-					paginationDto.setTotalElements(pageableList.getTotalElements());
-					paginationDto.setPageSize(pageableList.getSize());
-					paginationDto.setHasNextElement(pageableList.hasNext());
-					listOfUsers.add(paginationDto);
-					return new GenericResponse(HttpStatus.OK, "", listOfUsers);
+				Page<RcmUserToDto> pageableList = userRepo.getAllUserByPagination(paging, jwtUser.getEmail(),
+						clientUuid);
+				listOfUsers = commonService.setUsersInPaginationDto(pageableList);
+				return listOfUsers;
+			}
+
+			else {
+				company = rcmCompanyRepo.findByUuid(companyUuid);
+				if (company != null && clientUuid.stream().anyMatch(x->x.equals(companyUuid))) {
+					Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
+					Page<RcmUserToDto> pageableList = userRepo.getUserByCompanyUuidWithPagination(company.getUuid(),
+							paging, jwtUser.getEmail());
+					listOfUsers = commonService.setUsersInPaginationDto(pageableList);
+					return listOfUsers;
 				}
-			} else
-				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.COMPANY_NOT_EXIST, null);
+			}
 		}
-		return new GenericResponse(HttpStatus.OK, "", null);
+
+		if (isAdminOrSuperAdmin.equals(Constants.SUPER_ADMIN)) {
+			if (companyUuid.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
+				Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
+				Page<RcmUserToDto> pageableList = userRepo.getAllUserBySuperAdmin(paging, jwtUser.getEmail());
+				listOfUsers = commonService.setUsersInPaginationDto(pageableList);
+				return listOfUsers;
+			}
+
+			else {
+				company = rcmCompanyRepo.findByUuid(companyUuid);
+				if (company != null) {
+					Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
+					Page<RcmUserToDto> pageableList = userRepo.getUsersBySuperAdminUsingClicentUuid(paging,
+							company.getUuid(), jwtUser.getEmail());
+					listOfUsers = commonService.setUsersInPaginationDto(pageableList);
+					return listOfUsers;
+				}
+			}
+
+		}
+
+		return null;
 	}
 
 	/**

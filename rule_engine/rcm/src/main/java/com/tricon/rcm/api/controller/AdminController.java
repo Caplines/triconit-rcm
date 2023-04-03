@@ -37,6 +37,7 @@ import com.tricon.rcm.dto.RcmEditOfficeDto;
 import com.tricon.rcm.dto.RcmEditRolesDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmUserDto;
+import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
@@ -136,25 +137,21 @@ public class AdminController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,MessageConstants.USER_EXIST,response));
 	}
 
-	@RequestMapping(value = "/getAllUsers/{companyName}/{pageNumber}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getAllUsers(@PathVariable("companyName")String companyName,@PathVariable("pageNumber") int pageNumber) {
-		GenericResponse response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-		}
+	@RequestMapping(value = "/getAllUsers/{companyUuid}/{pageNumber}", method = RequestMethod.GET)
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+	public ResponseEntity<?> getAllUsers(@PathVariable("companyUuid")String companyUuid,@PathVariable("pageNumber") int pageNumber,Model model) {
+		List<RcmUserPaginationDto> response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		try {
-			response = serviceImpl.getAllUsers(pageNumber,companyName);
+			response = serviceImpl.getAllUsers(pageNumber,companyUuid,partialHeader.getRole(),partialHeader.getJwtUser());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 
 	@RequestMapping(value = "/resetstatus", method = RequestMethod.POST)

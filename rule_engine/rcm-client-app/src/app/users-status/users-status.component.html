@@ -42,12 +42,14 @@
                                         <tr class="thead-dark">
                                             <th>Client Name</th>
                                             <th>Full Name</th>
+                                            <th>Roles</th>
                                             <th>Status</th>
                                         </tr>
                                         <ng-container *ngFor="let user of allUser;let idx= index">
                                             <tr *ngIf="userName != user.email">
-                                                <td scope="col">{{user.companyName}}</td>
+                                                <td scope="col">{{user.clientName}}</td>
                                                 <td scope="col">{{user.fullName}}</td>
+                                                <td scope="col">{{user.roles}}</td>
                                                 <td scope="col" class="form-check-inline">
                                                     &nbsp;&nbsp;&nbsp;
                                                     <label class="form-check-label" for="enable">Enable </label>
