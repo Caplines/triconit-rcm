@@ -1,11 +1,10 @@
 <div class=" navbar-dark sticky-top bg-dark">
     <div class="topbar">
         <h1>Revenue Cycle Management(RCM)</h1>
-        <div class="activeUserDetails">
-            <strong class="activeUsername">Active Users-:</strong>
+            <div class="activeUsername">
             <span> <strong>Client Name:</strong>  {{userInfo.currentClientName}}</span>
-            <span><strong>Role Name:</strong> {{userInfo.currentRoleName}}</span>
-            <span *ngIf="userInfo.currentRoleName != 'ADMIN' && userInfo.currentRoleName != 'SUPER_ADMIN' && userInfo.currentRoleName != 'REPORTING' "> <strong>Team Id:</strong>  {{userInfo.currentTeamId}}</span>
+            <span><strong>Role Name:</strong> {{userInfo.currentRoleName?.roleName}}</span>
+            <span *ngIf="userInfo.currentRoleName?.roleId != 'ADMIN' && userInfo.currentRoleName?.roleId != 'SUPER_ADMIN' && userInfo.currentRoleName?.roleId != 'REPORTING' "> <strong>Team Id:</strong>  {{userInfo.currentTeamId}}</span>
         </div>
         <ul class="navbar-nav px-3">
             <li> <button type="button" class="btn btn-success btn-sm" title="Switch Account" (click)="openPopUp(true)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
@@ -45,8 +44,8 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLongTitle">{{modelTitle}}</h5>
-              <button *ngIf="modelTitle == 'Switch Account'" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span  (click)="modelElement.modal.style.display = 'none'; showPopup= false;">&times;</span>
+              <button (click)="modelElement.modal.style.display = 'none'; showPopup= false;" *ngIf="modelTitle == 'Switch Account'" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span  >&times;</span>
               </button>
             </div>
             <div class="modal-body">
@@ -54,9 +53,9 @@
                     <div class="col-sm">
                         <div class="form-group d-flex justify-content-around">
                             <label class="font-weight-bolder">Team Name:</label>
-                            <select class="form-control" id="selectTeamAC" name="selectTeamAC" [(ngModel)]="selectedTeam"
+                            <select class="form-control" id="selectTeamAC" name="selectTeamAC" (change)="checkBtnDisabled()" [(ngModel)]="selectedTeam"
                                 [disabled]="cwModel?.teams?.length==0">
-                                <option selected="true" value="">Select Team</option>
+                                <option selected="true" hidden="true" value="">Select Team</option>
                                 <ng-container *ngFor="let tl of cwModel?.teams">
                                     <option value="{{tl.id}}">{{tl.name}}</option>
                                 </ng-container>
@@ -68,8 +67,8 @@
                     <div class="col-sm">
                         <div class="form-group d-flex justify-content-around">
                             <label class="font-weight-bolder">Client Names:</label>
-                            <select class="form-control" id="selectClientAC" name="selectClientAC" [(ngModel)]="selectedClient">
-                                <option selected="true" value="">Select Client Name</option>
+                            <select class="form-control" id="selectClientAC" name="selectClientAC" (change)="checkBtnDisabled()" [(ngModel)]="selectedClient">
+                                <option selected="true" hidden="true" value="">Select Client Name</option>
                                 <ng-container *ngFor="let tl of cwModel?.companies">
                                     <option value="{{tl.name}}">{{tl.name}}</option>
                                 </ng-container>
@@ -81,10 +80,10 @@
                     <div class="col-sm">
                         <div class="form-group d-flex justify-content-around">
                             <label class="font-weight-bolder">Select Roles:</label>
-                            <select class="form-control" id="selectRolesAC" name="selectRolesAC" [(ngModel)]="selectedRole">
-                                <option selected="true" value="">Select Roles</option>
+                            <select class="form-control" id="selectRolesAC" name="selectRolesAC" (change)="checkBtnDisabled()" [(ngModel)]="selectedRole">
+                                <option selected="true" hidden="true" value="">Select Roles</option>
                                 <ng-container *ngFor="let tl of cwModel?.roles">
-                                    <option value="{{tl.roleId}}">{{tl.roleName}}</option>
+                                    <option  value="{{tl.roleId}}">{{tl.roleName}}</option>
                                 </ng-container>
                             </select>
                         </div>
@@ -95,17 +94,23 @@
                         <ng-container *ngIf="selectedRole == 'SUPER_ADMIN'"
                             style="align-items: flex-start;">
                             <div class="form-group d-flex justify-content-around">
-                                <label class="font-weight-bolder">Login As: </label>
-                                <button type="button" class="btn btn-outline-info" (click)="switchAccount()">Admin</button>
-                                <button type="button" class="btn btn-outline-info" (click)="switchAccount()">Normal User</button>
+                                <label class="font-weight-bolder">Login As:</label>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label" for="admin">Admin</label>
+                                    <input class="form-check-input" type="radio" [checked]="loginUserType=='Admin'" (change)="selectLoginType($event)" value="Admin" name="loginAs" id="admin">
+                                    <label class="form-check-label" for="enable">Normal User</label>
+                                    <input class="form-check-input" type="radio" [checked]="loginUserType=='normal'" (change)="selectLoginType($event)" value="normal" name="loginAs"  id="normal">
+                                </div>
                             </div>
                         </ng-container>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer" *ngIf="selectedRole != 'SUPER_ADMIN'">
-                <button type="button" class="btn btn-success" [disabled]="(cwModel?.teams?.length==0 && !this.selectedRole &&  !this.selectedClient)  ||  (!this.selectedRole  ||  !this.selectedClient) "
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" [disabled]="btnDisabled"
                 (click)="switchAccount()">{{modelTitle}}</button>
+                <!-- <button type="button" class="btn btn-success" [disabled]="(cwModel?.teams?.length==0 && !this.selectedRole &&  !this.selectedClient)  ||  (!this.selectedRole  ||  !this.selectedClient) "
+                (click)="switchAccount()">{{modelTitle}}</button> -->
             </div>
           </div>
         </div>

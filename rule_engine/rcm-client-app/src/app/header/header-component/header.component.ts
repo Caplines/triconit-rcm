@@ -35,6 +35,8 @@ export class HeaderComponent implements OnInit {
   selectedClient:any='';
   selectedRole:any='';
   roleData:any=[];
+  loginUserType:any='';
+  btnDisabled:boolean=true;
 
   constructor(private appSer: ApplicationServiceService) {
 
@@ -61,6 +63,12 @@ export class HeaderComponent implements OnInit {
       if(res.status){
         this.roleData = res.data;
         this.openPopUp(false);
+        this.userInfo.currentRoleName = this.roleData.find((e:any)=>{                  //Returns Role Name from Curernt Role ID.
+          if(e.roleId == this.userInfo.currentRoleName){
+            this.userInfo.currentRoleName = e.roleName;
+            return e.roleName;
+          }
+        })
       }
     })
   }
@@ -110,5 +118,54 @@ export class HeaderComponent implements OnInit {
       this.showPopup= true;
     }
   }
+
+  selectLoginType(event:any){
+    this.loginUserType = event.target.value;
+    this.checkValidationSuperAdmin();
+
+  }
+
+  checkBtnDisabled(){
+    if(this.selectedRole == 'SUPER_ADMIN'){
+    this.checkValidationSuperAdmin();
+    }
+   else if(this.selectedRole == 'ADMIN' ||  this.selectedRole == 'REPORTING'){
+     this.checkValidationAdminReporting();
+    }
+    else if(this.selectedRole != 'SUPER_ADMIN' || this.selectedRole != 'ADMIN' || this.selectedRole != 'REPORTING'){
+    this.checkValidationNormal();
+    }
+    else{
+      this.btnDisabled =  true;
+    }
+  }
+  
+  checkValidationSuperAdmin(){
+      if(this.cwModel?.companies?.length>0 && this.cwModel?.roles?.length>0 && this.selectedClient && this.selectedRole && this.loginUserType){
+        this.btnDisabled =  false;
+      }else { 
+        this.btnDisabled =  true;
+      }
+   
+  }
  
+  checkValidationAdminReporting(){
+      if(this.cwModel?.companies?.length>0 && this.cwModel?.roles?.length>0 && this.selectedClient && this.selectedRole){
+        this.btnDisabled =  false;
+        this.loginUserType='';
+      }else { 
+        this.btnDisabled =  true;
+      }
+  }
+ 
+  checkValidationNormal(){
+    
+      if(this.cwModel?.companies?.length>0 && this.cwModel?.roles?.length>0 && this.cwModel?.teams?.length>0  &&  this.selectedClient && this.selectedRole && this.selectedTeam){
+        this.btnDisabled =  false;
+        this.loginUserType='';
+      }else { 
+        this.btnDisabled =  true;
+      }
+    } 
+  
 }
