@@ -21,6 +21,7 @@ export class UserStatusComponent implements OnInit {
   companyData:any=[];
   showLoader:boolean=false;
   isFindUserBtnDisable:boolean=false;
+  companyUuid:any='';
 
   constructor(public appService: ApplicationServiceService, private title: Title) { 
     title.setTitle("User-Status");
@@ -39,7 +40,13 @@ export class UserStatusComponent implements OnInit {
 
   findAllUser(pageNumber:any) {
     this.hasNext=false;
-    this.appService.fetchAllUser(pageNumber,this.companyName,(callback: any) => {
+   this.companyData.find((ele:any) =>  {
+    if(this.companyName == ele.name)
+      this.companyUuid = ele.companyUuid;
+    else if(this.companyName == 'All')
+      this.companyUuid = 'All';
+    });
+    this.appService.fetchAllUser(pageNumber,this.companyUuid ,(callback: any) => {
       if (callback.status == 200 && callback.data) {
         if(this.pageNumber== -1){
           this.allUser = callback.data;
