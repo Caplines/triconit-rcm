@@ -13,13 +13,13 @@
             <div class="col-lg-12 pt-3">
                 <div class="main-container">
                     <div class="form-container detail-box ">
-                        <ng-container>
+                        <ng-container *ngIf="!isAdmin() && !isSuperAdmin()">
                             <label for="changePass">Change User Password</label>
                             <input type="password" [(ngModel)]="user.changedPassword">
                             <button type="button" (click)="changePassword()">Change Password</button>
                         </ng-container>
 
-                        <ng-container *ngIf="isAdmin()">
+                        <ng-container>
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
@@ -136,7 +136,7 @@
                                                                             </multi-select-dropdown>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-sm" [ngStyle]="{'visibility':this.editedUserDetails.value.role == 'SUPER_ADMIN' || this.editedUserDetails.value.role == 'ADMIN' || this.editedUserDetails.value.role == 'REPORTING' ? 'hidden' : 'visible' }  ">
+                                                                    <div class="col-sm" [ngStyle]="{'visibility':(this.editedUserDetails.value.role == 'SUPER_ADMIN' || this.editedUserDetails.value.role == 'ADMIN' || this.editedUserDetails.value.role == 'REPORTING' ) ? 'hidden' : 'visible' }  ">
                                                                         <div class="form-group">
                                                                             <label for="teamId">Team Name</label>
                                                                             <div class="spinner-border text-secondary" role="status" *ngIf="showLoader"></div>

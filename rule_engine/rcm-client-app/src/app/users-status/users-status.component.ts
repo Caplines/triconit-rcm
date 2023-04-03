@@ -133,5 +133,9 @@ showAlertPopup(res:any){
 isAdmin(){
   return Utils.checkAdmin();
  }
+ 
+ isSuperAdmin(){
+  return Utils.checkSuperAdmin();
+ }
 
 }

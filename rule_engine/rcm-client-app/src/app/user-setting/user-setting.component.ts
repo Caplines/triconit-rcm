@@ -185,6 +185,10 @@ export class UserSettingComponent implements OnInit {
    return Utils.checkAdmin();
   }
 
+  isSuperAdmin(){
+    return Utils.checkSuperAdmin();
+  }
+
   getRoles(){
     this.appService.fetchRoles((callback:any)=>{
       if(callback.status){

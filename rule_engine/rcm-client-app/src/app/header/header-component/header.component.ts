@@ -37,10 +37,11 @@ export class HeaderComponent implements OnInit {
   roleData:any=[];
   loginUserType:any='';
   btnDisabled:boolean=true;
-
+  teamData:any=[];
   constructor(private appSer: ApplicationServiceService) {
 
     this.cwModel= {};
+    this.teamData=[{"teamName":"Internal Audit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];
    }
 
   ngOnInit(): void {
@@ -63,16 +64,30 @@ export class HeaderComponent implements OnInit {
       if(res.status){
         this.roleData = res.data;
         this.openPopUp(false);
-        this.userInfo.currentRoleName = this.roleData.find((e:any)=>{                  //Returns Role Name from Curernt Role ID.
-          if(e.roleId == this.userInfo.currentRoleName){
-            this.userInfo.currentRoleName = e.roleName;
-            return e.roleName;
-          }
-        })
+        this.setRoleName();
+        this.setTeamName();
+      }
+    })
+  }
+
+  setRoleName(){
+    this.userInfo.currentRoleName = this.roleData.find((e:any)=>{                  //Returns Role Name from Curernt Role ID.
+      if(e.roleId == this.userInfo.currentRoleName){
+        this.userInfo.currentRoleName = e.roleName;
+        return e.roleName;
       }
     })
   }
  
+  setTeamName(){
+    this.userInfo.currentTeamId = this.teamData.find((e:any)=>{
+      if(e.teamId == this.userInfo.currentTeamId){
+        this.userInfo.currentTeamId = e.teamName;
+        return e.teamName;
+      }
+    })
+  }
+
   logout(){
     localStorage.clear();
     window.location.href="/login";

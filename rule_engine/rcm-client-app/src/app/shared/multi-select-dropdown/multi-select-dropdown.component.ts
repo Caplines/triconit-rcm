@@ -37,7 +37,7 @@ constructor(private appService: ApplicationServiceService) {
   }
   else if(this.isFromUserSetting && this.isTeam){
     this.list = this.list.map((e:any)=>{
-      if(this.userTeamData.some((k:any)=>e.teamId == k)){
+      if(this.userTeamData && this.userTeamData.some((k:any)=>e.teamId == k)){
         e['checked']=true;
         this.checkedList.push(e);
       }
