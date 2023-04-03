@@ -41,7 +41,12 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ "from rcm_user_company uc "
 			+ "inner join company rc on rc.uuid=uc.company_id "
 			+ "inner join rcm_user us on uc.rcm_user_id=us.uuid "
-			+ "inner join rcm_user_role ur on us.uuid=ur.uuid where us.email!=:ignoreUser and rc.uuid =:clientUuid group by us.uuid)c",countQuery = "select count(*) from rcm_user where email!=:ignoreUser",nativeQuery = true)
+			+ "inner join rcm_user_role ur on us.uuid=ur.uuid where us.email!=:ignoreUser and rc.uuid =:clientUuid group by us.uuid)c",
+			countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name) as ClientName,GROUP_CONCAT(distinct(ur.role)) as Roles from rcm_user_company uc "
+					+ "inner join company rc on rc.uuid=uc.company_id "
+					+ "inner join rcm_user us on uc.rcm_user_id=us.uuid "
+					+ "inner join rcm_user_role ur on us.uuid=ur.uuid "
+			+ "where email!=:ignoreUser and uc.company_id=:clientUuid group by us.uuid)c",nativeQuery = true)
 	Page<RcmUserToDto> getUsersBySuperAdminUsingClicentUuid(Pageable page,@Param("clientUuid")String clientUuid,@Param("ignoreUser")String ignoreUser);
 	
 
@@ -58,7 +63,10 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ "from rcm_user_company uc "
 			+ "inner join company rc on rc.uuid=uc.company_id "
 			+ "inner join rcm_user us on uc.rcm_user_id=us.uuid "
-			+ "inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid =:clientUuid and us.email!=:ignoreUser and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from rcm_user where email!=:ignoreUser", nativeQuery = true)
+			+ "inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid =:clientUuid and us.email!=:ignoreUser and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name) as ClientName,GROUP_CONCAT(distinct(ur.role))from rcm_user_company uc"
+			+ " inner join company rc on rc.uuid=uc.company_id"
+			+ " inner join rcm_user us on uc.rcm_user_id=us.uuid"
+			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where email!=:ignoreUser and uc.company_id =:clientUuid and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", nativeQuery = true)
 	Page<RcmUserToDto> getUserByCompanyUuidWithPagination(@Param("clientUuid") String clientUuid, Pageable page,@Param("ignoreUser")String ignoreUser);
 	
 	@Query(value = "select c.Uuid,c.Email,c.FullName,c.ClientName,c.Roles,c.Active"
@@ -72,7 +80,12 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ " us.uuid as Uuid,us.email as Email,us.Active from rcm_user_company uc"
 			+ " inner join company rc on rc.uuid=uc.company_id"
 			+ "	inner join rcm_user us on uc.rcm_user_id=us.uuid"
-			+ "	inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid in(:clientUuid) AND us.email!=:ignoreUser group by us.uuid)c", countQuery = "select count(*) from rcm_user where email!=:ignoreUser", nativeQuery = true)
+			+ "	inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid in(:clientUuid) AND us.email!=:ignoreUser group by us.uuid)c",
+			countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name) as ClientName,GROUP_CONCAT(distinct(ur.role)) as Roles from rcm_user_company uc "
+					+ "inner join company rc on rc.uuid=uc.company_id "
+					+ "inner join rcm_user us on uc.rcm_user_id=us.uuid "
+					+ "inner join rcm_user_role ur on us.uuid=ur.uuid "
+			+ " where email!=:ignoreUser and uc.company_id in(:clientUuid) group by us.uuid)c", nativeQuery = true)
 	Page<RcmUserToDto> getAllUserBySuperAdmin(Pageable page,@Param("ignoreUser")String ignoreUser,@Param("clientUuid")List<String>clientUuid);
 	
 
@@ -88,7 +101,10 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ " us.email as Email from rcm_user_company uc"
 			+ " inner join company rc on rc.uuid=uc.company_id"
 			+ " inner join rcm_user us on uc.rcm_user_id=us.uuid"
-			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid in(:clientUuid) and us.email!=:ignoreUser and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from rcm_user where email!=:ignoreUser", nativeQuery = true)
+			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid in(:clientUuid) and us.email!=:ignoreUser and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name),GROUP_CONCAT(distinct(ur.role)) from rcm_user_company uc"
+			+ " inner join company rc on rc.uuid=uc.company_id"
+			+ " inner join rcm_user us on uc.rcm_user_id=us.uuid"
+			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where email!=:ignoreUser and uc.company_id in(:clientUuid) and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", nativeQuery = true)
 	Page<RcmUserToDto> getAllUserByPagination(Pageable page,@Param("ignoreUser")String ignoreUser,@Param("clientUuid")List<String>clientUuid);
 
 	@Modifying
