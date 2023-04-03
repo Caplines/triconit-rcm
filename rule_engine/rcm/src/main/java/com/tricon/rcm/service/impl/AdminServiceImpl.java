@@ -294,6 +294,7 @@ public class AdminServiceImpl {
 		RcmCompany company = null;
 		List<RcmUserCompany> clientsData = userCompanyRepo.findByUserUuid(jwtUser.getUuid());
 		List<String> clientUuid = clientsData.stream().map(x -> x.getCompany().getUuid()).collect(Collectors.toList());
+		System.out.println(clientUuid);
 		if (isAdminOrSuperAdmin.equals(Constants.ADMIN)) {
 
 			if (companyUuid.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
@@ -319,14 +320,14 @@ public class AdminServiceImpl {
 		if (isAdminOrSuperAdmin.equals(Constants.SUPER_ADMIN)) {
 			if (companyUuid.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
 				Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
-				Page<RcmUserToDto> pageableList = userRepo.getAllUserBySuperAdmin(paging, jwtUser.getEmail());
+				Page<RcmUserToDto> pageableList = userRepo.getAllUserBySuperAdmin(paging, jwtUser.getEmail(),clientUuid);
 				listOfUsers = commonService.setUsersInPaginationDto(pageableList);
 				return listOfUsers;
 			}
 
 			else {
 				company = rcmCompanyRepo.findByUuid(companyUuid);
-				if (company != null) {
+				if (company != null && clientUuid.stream().anyMatch(x->x.equals(companyUuid))) {
 					Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
 					Page<RcmUserToDto> pageableList = userRepo.getUsersBySuperAdminUsingClicentUuid(paging,
 							company.getUuid(), jwtUser.getEmail());
