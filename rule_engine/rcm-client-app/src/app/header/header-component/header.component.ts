@@ -142,7 +142,8 @@ export class HeaderComponent implements OnInit {
 
   checkBtnDisabled(){
     if(this.selectedRole == 'SUPER_ADMIN'){
-    this.checkValidationSuperAdmin();
+      this.cwModel.teams = this.teamData;
+      this.checkValidationSuperAdmin();
     }
    else if(this.selectedRole == 'ADMIN' ||  this.selectedRole == 'REPORTING'){
      this.checkValidationAdminReporting();

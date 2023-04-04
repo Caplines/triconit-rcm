@@ -57,7 +57,7 @@
                                 [disabled]="cwModel?.teams?.length==0">
                                 <option selected="true" hidden="true" value="">Select Team</option>
                                 <ng-container *ngFor="let tl of cwModel?.teams">
-                                    <option value="{{tl.id}}">{{tl.name}}</option>
+                                    <option value="{{tl.id ? tl.id : tl.teamId}}">{{tl.name ? tl.name : tl.teamName}}</option>
                                 </ng-container>
                             </select>
                         </div>
