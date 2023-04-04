@@ -137,8 +137,12 @@ export class HeaderComponent implements OnInit {
 
   selectLoginType(event:any){
     this.loginUserType = event.target.value;
-    this.checkValidationSuperAdmin();
-
+    if(this.loginUserType == 'Normal') {
+      this.btnDisabled = true;
+    } else if(this.loginUserType == 'Admin'){
+      this.selectedTeam = '';
+      this.checkValidationSuperAdmin();
+    }
   }
 
   checkBtnDisabled(){
