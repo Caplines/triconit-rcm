@@ -250,9 +250,9 @@ public class RcmCommonServiceImpl {
 				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(role)));
 	}
 	
-	public boolean isSuperAdmin(String role,JwtUser jwtUser) {
+	public boolean isSuperAdmin(JwtUser jwtUser) {
 		return jwtUser.getAuthorities().stream()
-				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(role)));
+				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(Constants.SUPER_ADMIN)));
 	}
 	
 	public boolean isAdmin(JwtUser jwtUser) {

@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.AssignOfficesToBillingUserDto;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.ManageOfficeServiceImpl;
@@ -31,7 +33,7 @@ import com.tricon.rcm.util.MessageConstants;
 
 @RestController
 @CrossOrigin
-public class ManageOfficeController {
+public class ManageOfficeController extends BaseHeaderController {
 
 	private final Logger logger = LoggerFactory.getLogger(ManageOfficeController.class);
 	
@@ -69,24 +71,26 @@ public class ManageOfficeController {
 //		return ResponseEntity.ok(response);
 //	}
 	
-//	@RequestMapping(value = "/users/team/{teamId}", method = RequestMethod.GET)
-//	@PreAuthorize("hasRole('BILLING_TL')")
-//	public ResponseEntity<?> getUsersByTeamId(@PathVariable("teamId")int teamId) {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		Object principal = authentication.getPrincipal();
-//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-//		JwtUser jwtUser = (JwtUser) userDetails;
-//		List<RcmUserToDto> response = null;
-//		try {
-//			response = userService.getUsersByTeamId(teamId,jwtUser.getCompany());
-//			if(response==null) {
-//				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error(e.getMessage());
-//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-//		}
-//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-//	}
+	@RequestMapping(value = "/users/team/{teamId}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('TL')")
+	public ResponseEntity<?> getUsersByTeamId(@PathVariable("teamId")int teamId ,Model model) {
+	    List<RcmUserToDto> response = null;
+	    PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
+		
+		try {
+			response = userService.getUsersByTeamIdAndCompany(teamId,partialHeader.getCompany());
+			
+			
+			if(response==null) {
+				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+			}
+		} catch (Exception e) {
+		  e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 }

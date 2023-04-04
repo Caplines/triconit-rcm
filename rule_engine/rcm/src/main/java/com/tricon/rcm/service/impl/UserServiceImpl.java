@@ -94,16 +94,16 @@ public class UserServiceImpl {
 //
 //	}
 //
-//	public List<RcmUserToDto> getUsersByTeamId(int teamId,RcmCompany company) throws Exception {
-//		    List<RcmUserToDto> data = null;
-//			teamId=RcmTeamEnum.validateTeamId(teamId);
-//			if (teamId != 0) {
-//				data = userRepo.findUsersByTeamId(teamId, company.getUuid());
-//				return data;
-//			}
-//		
-//		return null;
-//	}
+	public List<RcmUserToDto> getUsersByTeamIdAndCompany(int teamId,RcmCompany company) throws Exception {
+		    List<RcmUserToDto> data = null;
+			teamId=RcmTeamEnum.validateTeamId(teamId);
+			if (teamId != 0) {
+		data = userRepo.findUsersByTeamIdAndCompanyId(teamId, company.getUuid());
+				return data;
+			}
+		
+		return null;
+	}
 
 	/**
 	 * This api fetches all teamName of loginUser's teamId only exclude loginUser TeamId

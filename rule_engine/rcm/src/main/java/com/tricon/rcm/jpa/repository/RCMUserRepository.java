@@ -22,8 +22,12 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	@Query(value="select u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName,u.first_name as FirstName,u.last_name as LastName from rcm_user u join rcm_user_company ruc where ruc.company_id=:clientUuid and ruc.rcm_user_id=u.uuid and u.email=:email",nativeQuery=true)
 	RcmUserDetails findUserByClientUuid(String email,String clientUuid);
 	
-	@Query(value="select u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName from rcm_user u where u.active=1 AND u.team_id=:teamId And u.company_id=:companyUuid",nativeQuery=true)
-	List<RcmUserToDto> findUsersByTeamId(@Param("teamId") int teamId,@Param("companyUuid")  String companyUuid);
+	@Query(value=""+
+			" select distinct u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName from rcm_user "+
+			" u inner join rcm_user_team rt on rt.rcm_user_id=u.uuid "+
+			" inner join rcm_user_company us on us.rcm_user_id=u.uuid "+
+			"  where u.active=1 AND rt.team_id=:teamId  and us.company_id=:companyUuid",nativeQuery=true)
+	List<RcmUserToDto> findUsersByTeamIdAndCompanyId(@Param("teamId") int teamId,@Param("companyUuid")  String companyUuid);
 	
 	@Query(value="select u.uuid as Uuid,u.first_name as FirstName,u.last_name as LastName from rcm_user u "
 			+ "inner join rcm_user_role r on u.uuid=r.uuid "

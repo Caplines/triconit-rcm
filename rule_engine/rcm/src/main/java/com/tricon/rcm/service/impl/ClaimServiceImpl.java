@@ -59,6 +59,7 @@ import com.tricon.rcm.dto.ClaimDetailDto;
 import com.tricon.rcm.dto.ClaimEditDetailDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
+import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
@@ -957,12 +958,10 @@ public class ClaimServiceImpl {
 		return rcmClaimRepository.fetchFreshClaimDetailsOtherTeam(jwtUser.getCompany().getUuid(), teamId);
 	}
 
-	public List<AssignFreshClaimLogsImplDto> fetchClaimsForAssignments(AssigmentClaimListDto dto) {
+	public List<AssignFreshClaimLogsImplDto> fetchClaimsForAssignments(AssigmentClaimListDto dto,PartialHeader partialHeader) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
 		List<Integer> ct = dto.getClaimType();
 		List<String> inst = dto.getInsuranceType();
 		if (dto.getClaimType() == null) {
@@ -990,7 +989,7 @@ public class ClaimServiceImpl {
 		}
 		List<AssignFreshClaimLogsDto> l = null;
 		try {
-			l = rcmClaimRepository.fetchClaimsForAssignments(jwtUser.getCompany().getUuid(), ct, instDB);
+			l = rcmClaimRepository.fetchClaimsForAssignments(partialHeader.getCompany().getUuid(), ct, instDB);
 			HashMap<String, RemoteLietStatusCount> remoteLiteMap = ruleEngineService.pullAndSaveRemoteLiteData();
 			RemoteLietStatusCount counts = null;
 

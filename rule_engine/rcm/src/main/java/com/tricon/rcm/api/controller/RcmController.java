@@ -153,13 +153,15 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = AssignFreshClaimLogsImplDto.class, responseContainer = "List")
 	@PostMapping("/api/fetch-claims-log-assign")
-	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	@PreAuthorize("hasAnyRole('TL','ASSO')")
 	public ResponseEntity<Object> fetchClaimsForAssignments(@RequestBody AssigmentClaimListDto dto,
 			 Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity
-				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchClaimsForAssignments(dto)));
+				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchClaimsForAssignments(dto,partialHeader)));
 	}
 
 	@ApiOperation(value = "Api For Fetching Billing TL Prodution Report", response = ProductionDto.class, responseContainer = "List")

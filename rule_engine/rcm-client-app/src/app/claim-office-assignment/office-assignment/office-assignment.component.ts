@@ -45,8 +45,8 @@ export class OfficeAssignmentComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchClaimAssignments();
-    this.teamId = localStorage.getItem("teamId");
-    this.clientName = localStorage.getItem("cname");
+    this.teamId = localStorage.getItem("selected_teamId");
+    this.clientName = localStorage.getItem("selected_clientName");
     this.getUserByTeamId();
     this.assignOfficeDetails.teamId = this.teamId;
   }
