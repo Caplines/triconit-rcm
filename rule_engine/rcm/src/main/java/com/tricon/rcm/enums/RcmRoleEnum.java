@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.tricon.rcm.dto.RcmRolesResponseDto;
+import com.tricon.rcm.util.Constants;
 
 public enum RcmRoleEnum {
 
@@ -49,7 +50,7 @@ public enum RcmRoleEnum {
 	}
 	
 	public static RcmRolesResponseDto getRoles(String role) {		
-		String removePrefix[]=role.split("_");
+		String removePrefix[]=role.split(Constants.ROLE_PREFIX);
 		Optional<RcmRoleEnum> data = Arrays.stream(values()).filter(x -> x.getName().equals(removePrefix[1])).findFirst();
 		RcmRolesResponseDto rolesResponseDto = null;
 		if (data.isPresent()) {

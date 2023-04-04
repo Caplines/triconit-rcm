@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.swing.JWindow;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -231,14 +230,24 @@ public class AdminServiceImpl {
 				data = new RcmUserDto();
 				BeanUtils.copyProperties(userDetails, data);
 				data.setActive(user.getActive());
-				List<String> rolesData =user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());			
-			    List<RcmRolesResponseDto> rolesResponse = new ArrayList<>();
+				List<String> rolesData =user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());
+				if(rolesData.stream().anyMatch(x->x.equals(Constants.ROLE_PREFIX +Constants.SUPER_ADMIN))) {
+					return null;
+				}
 				for (String roles : rolesData) {
 					RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
-					responseDto=RcmRoleEnum.getRoles(roles);
-					rolesResponse.add(responseDto);		
+					if (rolesData.size() == 2 && (roles.equals(Constants.ROLE_PREFIX + Constants.TEAMLEAD)
+							|| roles.equals(Constants.ROLE_PREFIX + Constants.ASSOCIATE))) {
+						responseDto = RcmRoleEnum.getRoles(Constants.TEAMLEAD);
+						data.setRoles(responseDto);
+						break;
+					} else {
+							responseDto = RcmRoleEnum.getRoles(roles);
+							data.setRoles(responseDto);
+							break;
+					}
 				}
-				data.setRoles(rolesResponse);			
+					
 				List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
 				if (clientName != null && !clientName.isEmpty()) {
 					data.setClientName(
@@ -260,13 +269,19 @@ public class AdminServiceImpl {
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
 			data.setActive(user.getActive());
 			List<String> rolesData =user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());			
-		    List<RcmRolesResponseDto> rolesResponse = new ArrayList<>();
 			for (String roles : rolesData) {
 				RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
-				responseDto=RcmRoleEnum.getRoles(roles);
-				rolesResponse.add(responseDto);		
+				if (rolesData.size() == 2 && (roles.equals(Constants.ROLE_PREFIX + Constants.TEAMLEAD)
+						|| roles.equals(Constants.ROLE_PREFIX + Constants.ASSOCIATE))) {
+					responseDto = RcmRoleEnum.getRoles(Constants.TEAMLEAD);
+					data.setRoles(responseDto);
+					break;
+				} else {
+						responseDto = RcmRoleEnum.getRoles(roles);
+						data.setRoles(responseDto);
+						break;
+				}
 			}
-			data.setRoles(rolesResponse);
 			List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
 			if (clientName != null && !clientName.isEmpty()) {
 				data.setClientName(clientName.stream().map(x -> x.getCompany().getName()).collect(Collectors.toList()));
@@ -279,8 +294,8 @@ public class AdminServiceImpl {
 			return data;
 		}
 
-		return null
-				;
+		return null;
+				
 	}
 
 	/**
@@ -319,7 +334,7 @@ public class AdminServiceImpl {
 		if (isAdminOrSuperAdmin.equals(Constants.SUPER_ADMIN)) {
 			if (companyUuid.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
 				Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
-				Page<RcmUserToDto> pageableList = userRepo.getAllUserBySuperAdmin(paging, jwtUser.getEmail(),clientUuid);
+				Page<RcmUserToDto> pageableList = userRepo.getAllUserBySuperAdmin(paging, jwtUser.getEmail());
 				listOfUsers = commonService.setUsersInPaginationDto(pageableList);
 				return listOfUsers;
 			}
