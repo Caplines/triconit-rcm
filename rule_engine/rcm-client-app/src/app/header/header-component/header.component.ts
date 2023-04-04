@@ -49,6 +49,7 @@ export class HeaderComponent implements OnInit {
       this.userInfo.currentClientName =  localStorage.getItem("selected_clientName");
       this.userInfo.currentRoleName =  localStorage.getItem("selected_roleName");
       this.userInfo.currentTeamId =  localStorage.getItem("selected_teamId");
+      this.loginUserType = localStorage.getItem("loginAs");
   //  }
      this.loggedInUserName = localStorage.getItem("name");
      console.log(1221);
@@ -158,6 +159,7 @@ export class HeaderComponent implements OnInit {
   
   checkValidationSuperAdmin(){
       if(this.cwModel?.companies?.length>0 && this.cwModel?.roles?.length>0 && this.selectedClient && this.selectedRole && this.loginUserType){
+        localStorage.setItem("loginAs",this.loginUserType)
         this.btnDisabled =  false;
       }else { 
         this.btnDisabled =  true;

@@ -23,37 +23,37 @@ export class AppConstants {
         "name":"Patient Calling Team","paths":["/user-setting"],"defaultpath":"/user-setting"
         }],
         [4,{
-        "name":"Office Team","paths":["/user-setting"],"defaultpath":"/user-setting"
+        "name":"Office Team","paths":['claim-assignment',"/user-setting"],"defaultpath":"/claim-assignment"
         }],
         [5,{
-        "name":"Internal Audit Team","paths":["/user-setting"],"defaultpath":"/user-setting"
+        "name":"Internal Audit Team","paths":["/user-setting"],"defaultpath":"/claim-assignment"
         }],
         [6,{
-        "name":"IV Team","paths":["/user-setting"],"defaultpath":"/user-setting"
+        "name":"IV Team","paths":["/user-setting"],"defaultpath":"/claim-assignment"
         }],
         [7, {
             "name": "Billing Team", "paths": ["/claim-assignment","/tool-update"], "defaultpath": "claim-assignment"
         }],
         [8,{
-        "name":"IV Team","paths":["/user-setting"],"defaultpath":"/user-setting"
+        "name":"IV Team","paths":["/user-setting"],"defaultpath":"/claim-assignment"
         }],
         [9,{
         "name":"Client","paths":["/user-setting"],"defaultpath":"/user-setting"
         }],
         [10,{
-            "name":"Aging","paths":["/user-setting"],"defaultpath":"/user-setting"
+            "name":"Aging","paths":["/user-setting"],"defaultpath":"/claim-assignment"
         }],
         [11,{
-            "name":"Posting","paths":["/user-setting"],"defaultpath":"/user-setting"
+            "name":"Posting","paths":["/user-setting"],"defaultpath":"/claim-assignment"
         }],
         [12,{
-            "name":"Quality","paths":["/user-setting"],"defaultpath":"/user-setting"
+            "name":"Quality","paths":["/user-setting"],"defaultpath":"/claim-assignment"
         }],
         [13,{
-            "name":"Upload Claims","paths":["/user-setting"],"defaultpath":"/user-setting"
+            "name":"Upload Claims","paths":["/user-setting"],"defaultpath":"/claim-assignment"
         }],
         [14,{
-            "name":"Account Manager","paths":["/user-setting"],"defaultpath":"/user-setting"
+            "name":"Account Manager","paths":["/user-setting"],"defaultpath":"/claim-assignment"
         }],
 
     ]);

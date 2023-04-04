@@ -27,18 +27,31 @@
     box-shadow: 0 6px 10px rgba(0,0,0,.15);
     margin-left: 1px;
     overflow: scroll;
-    height: 85px;
+    height: 105px;
 }
-.drop-show label{
+.drop-show-team{
+    padding: 4px;
+    width: 300px;
+    background-color: #FFF;
+    border: 1px solid #BABABA;
+    position: absolute;
+    z-index: 100;
+    -webkit-box-shadow: 0 6px 10px rgba(0,0,0,.15);
+    -moz-box-shadow: 0 6px 10px rgba(0,0,0,.15);
+    box-shadow: 0 6px 10px rgba(0,0,0,.15);
+    margin-left: 1px;
+}
+
+.drop-show label,.drop-show-team label{
     display: flex;
     font-size: 15px;
     cursor: pointer;
     align-items: center;
 }
-.drop-show label input{
+.drop-show label input,.drop-show-team label input{
     vertical-align: top;
 }
-.drop-show label span{
+.drop-show label span,.drop-show-team label span{
     display:inline-block;
     margin-left: 5px;
 }

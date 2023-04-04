@@ -24,7 +24,7 @@ export class RegisterNewUserComponent implements OnInit {
     this.userDetails = this.fb.group({
       'firstName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
       'lastName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
-      'email' : ['',[Validators.required,Validators.email,Validators.maxLength(100),Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]],
+      'email' : ['',[Validators.required,Validators.email,Validators.maxLength(100),Validators.pattern("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$")]],
       'password': [ '', [ Validators.required, Validators.minLength(6), Validators.maxLength(20),]
      ],
       'companyUuid' : ['',Validators.required],
@@ -46,7 +46,6 @@ export class RegisterNewUserComponent implements OnInit {
   }
 
   registerNewUser(){
-    let isValid:any = this.checkFieldsAreValid();
     if(this.userDetails.value.teamId == null ){
       this.userDetails.value.teamId = [];
     }
@@ -56,16 +55,14 @@ export class RegisterNewUserComponent implements OnInit {
         this.showAlertPopup(callback);
         this.companyData = this.userRoleId = this.teamData = this.userRoleByTeam = [];
         this.userDetails.reset();
-        this.getCompanyData();
+        setTimeout(() => {
+          location.reload();
+        }, 0);
       } else if(callback.status == 400) { 
         this.showAlertPopup(callback);
       }
     })
   }
-
-    checkFieldsAreValid(){
-        return {'status':true};
-    }
 
   getTeamsData(){
     this.showLoader=true;
@@ -130,19 +127,12 @@ export class RegisterNewUserComponent implements OnInit {
       this.teamId = event.value.map(({teamName,checked,...newData}:any)=>newData);
       this.teamId = [].concat(...this.teamId.map((team:any) => team.teamId));
       this.userDetails.controls.teamId.setValue(this.teamId);
-      console.log(this.userDetails.value);
-      
     }
     else if(event.action == 'client'){
       this.clientId =  event.value.map(({adddress,checked,createdDate,name,updatedDate,...newData}:any)=>newData);
       this.clientId = [].concat(...this.clientId.map((team:any) => team.uuid));
       this.userDetails.controls.companyUuid.setValue(this.clientId);
-      console.log(this.userDetails.value);
     }
-  }
-
-  getActiveUserClients(){
-   
   }
 
   showAlertPopup(res:any){

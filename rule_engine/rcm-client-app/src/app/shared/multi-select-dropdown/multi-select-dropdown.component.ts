@@ -17,19 +17,20 @@ export class MultiSelectDropdownComponent {
   @Input() userClientData:any=[];
   @Input() userTeamData:any=[];
   
-  checkedList : any[];
+  clientCheckedList : any[];
+  teamCheckedList : any[];
 
-constructor(private appService: ApplicationServiceService) {
-  this.checkedList = [];
+constructor() {
+  this.clientCheckedList = this.teamCheckedList= [];
   
  }
 
  ngOnInit(){
   if(this.isFromUserSetting && this.isClient){
     this.list = this.list.map((e:any)=>{
-          if(this.userClientData.some((k:any)=>e.name == k)){
+          if(this.userClientData && this.userClientData.some((k:any)=>e.name == k)){
             e['checked']=!e['checked'];
-            this.checkedList.push(e)
+            this.clientCheckedList.push(e)
           }
           return e;
     })
@@ -39,21 +40,22 @@ constructor(private appService: ApplicationServiceService) {
     this.list = this.list.map((e:any)=>{
       if(this.userTeamData && this.userTeamData.some((k:any)=>e.teamId == k)){
         e['checked']=true;
-        this.checkedList.push(e);
+        this.teamCheckedList.push(e);
       }
       return e;
   })
   this.shareCheckedlist('team');
   }
   }
+
      getSelectedValue(status:Boolean,value:any,type:String){
       if(type === 'client'){
         if(status){
-          this.checkedList.push(value);  
+          this.clientCheckedList.push(value);  
         }else{
-          this.checkedList.forEach((e:any,idx:any)=>{
+          this.clientCheckedList.forEach((e:any,idx:any)=>{
             if(e.uuid == value.uuid){
-              this.checkedList.splice(idx,1);
+              this.clientCheckedList.splice(idx,1);
             }
           })
         }
@@ -61,11 +63,11 @@ constructor(private appService: ApplicationServiceService) {
       }
       else if(type === 'userSettingClient'){
         if(status){
-          this.checkedList.push(value);  
+          this.clientCheckedList.push(value);  
         }else{
-          this.checkedList.forEach((e:any,idx:any)=>{
+          this.clientCheckedList.forEach((e:any,idx:any)=>{
             if(e.id == value.id  ){
-              this.checkedList.splice(idx,1);
+              this.clientCheckedList.splice(idx,1);
             }
           })
         }
@@ -73,11 +75,11 @@ constructor(private appService: ApplicationServiceService) {
       }
       else if(type === 'team'){
         if(status){
-          this.checkedList.push(value);  
+          this.teamCheckedList.push(value);  
         }else{
-          this.checkedList.forEach((e:any,idx:any)=>{
+          this.teamCheckedList.forEach((e:any,idx:any)=>{
            if(e.teamId == value.teamId){
-             this.checkedList.splice(idx,1);
+             this.teamCheckedList.splice(idx,1);
            }
           });
         }
@@ -85,11 +87,11 @@ constructor(private appService: ApplicationServiceService) {
       }
       else if(type === 'userSettingTeam'){
         if(status){
-          this.checkedList.push(value);  
+          this.teamCheckedList.push(value);  
         }else{
-          this.checkedList.forEach((e:any,idx:any)=>{
+          this.teamCheckedList.forEach((e:any,idx:any)=>{
            if(e.teamId == value.teamId){
-             this.checkedList.splice(idx,1);
+             this.teamCheckedList.splice(idx,1);
            }
           });
         }
@@ -97,6 +99,6 @@ constructor(private appService: ApplicationServiceService) {
       }
   }
   shareCheckedlist(action:any){
-       this.shareCheckedList.emit({'action':action,value:this.checkedList});
+       this.shareCheckedList.emit({'action':action,value: action=='team' ? this.teamCheckedList : this.clientCheckedList});
   }
 }

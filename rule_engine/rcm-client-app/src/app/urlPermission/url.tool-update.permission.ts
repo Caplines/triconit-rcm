@@ -36,7 +36,7 @@ export class UrlToolUpdatePermission implements CanActivate {
         return false;
       }
       console.log(Utils.isSmilePoint());
-      if (Utils.isSmilePoint() && Utils.isBillingLead()){
+      if (Utils.isSmilePoint() && Utils.isRoleLead()){
         return true;
       }
       return false;

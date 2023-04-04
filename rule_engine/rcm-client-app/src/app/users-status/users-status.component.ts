@@ -22,9 +22,11 @@ export class UserStatusComponent implements OnInit {
   showLoader:boolean=false;
   isFindUserBtnDisable:boolean=false;
   companyUuid:any='';
+  roleData:any=[];
 
   constructor(public appService: ApplicationServiceService, private title: Title) { 
     title.setTitle("User-Status");
+
   }
 
   ngOnInit(): void {
@@ -32,10 +34,21 @@ export class UserStatusComponent implements OnInit {
     this.userName = localStorage.getItem("currentUser")
     this.getcompanyData();
     this.appService.setPaddingRightContainer();
+    this.getRoles();
   }
   logout() {
     localStorage.clear();
     window.location.href = "/"
+  }
+
+  getRoles(){
+    this.appService.fetchRoles((res:any)=>{
+      if(res.status){
+        this.roleData = res.data;
+        console.log(this.roleData);
+        
+      }
+    })
   }
 
   findAllUser(pageNumber:any) {
@@ -128,6 +141,7 @@ showAlertPopup(res:any){
   setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
   res.status==400 ? this.alert.isError=true : this.alert.isError=false;
   this.alert.alertMsg = res.message ? res.message : res.result.message;
+  scrollTo(0,0);
 }
 
 isAdmin(){
@@ -137,5 +151,16 @@ isAdmin(){
  isSuperAdmin(){
   return Utils.checkSuperAdmin();
  }
+ 
+ commaSeperatedRoles(role:any){
+  let k:any = [];
+  role.split(",").forEach((role:any) => {
+    const word = role.replace("ROLE_", "");
+    k.push(word);
+  });
+        k = this.roleData.filter((role:any) => k.includes(role.roleId)).map((matchedRole:any) => matchedRole.roleName);
+        k = k.join(", ");
+        return k;
+    }
 
 }

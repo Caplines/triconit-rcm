@@ -63,10 +63,11 @@ export class UserSettingComponent implements OnInit {
       this.appService.findUser({ "email": this.user.email }, (callback: any) => {
         if (callback.status == 200 && callback.data) {
         this.showAlertPopup(callback);
-        this.showActionPopup = true;
+        this.showActionPopup ?  this.showActionBox() : this.showActionPopup = true;
         this.user = callback.data;
         this.editedUserDetails.controls.firstName.setValue(this.user.firstName);
         this.editedUserDetails.controls.lastName.setValue(this.user.lastName);
+        this.editedUserDetails.controls.role.setValue(this.user.roles.roleId)
         console.log(this.editedUserDetails.value);
       } else {
         this.showActionPopup = false;
@@ -79,6 +80,12 @@ export class UserSettingComponent implements OnInit {
     this.alert.isError=true;
     this.alert.alertMsg = "Field Cannot Be Empty";
   }
+}
+
+showActionBox(){
+  let select:any = document.getElementById("actionSelectBox");
+  select.selectedIndex = 0; 
+  this.showActionPopup = true;
 }
 
   changePassword() {

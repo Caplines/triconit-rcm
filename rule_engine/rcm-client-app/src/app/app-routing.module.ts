@@ -34,7 +34,7 @@ const  routes: Routes = [
   {
     path:'tool-update',
     loadChildren :()=> import("./tool-update-db/tool-update.module").then(m=>m.ToolUpdateModule),
-    canActivate: [UrlToolUpdatePermission]
+    // canActivate: [UrlToolUpdatePermission]
    
   },
   {
@@ -45,7 +45,7 @@ const  routes: Routes = [
   {
     path:'claim-assignment',
     loadChildren :()=> import("./claim-office-assignment/office-assignment.module").then(m=>m.ClaimAssignmentModule),
-    canActivate: [ClaimAssignPermission]
+    // canActivate: [ClaimAssignPermission]
   },
   {
     path:'users-status',

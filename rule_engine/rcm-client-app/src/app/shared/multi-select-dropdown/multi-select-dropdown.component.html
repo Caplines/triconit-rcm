@@ -1,12 +1,12 @@
 <div>
     <div (mouseleave)="showDropDown = false">
         <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown">
-            <span *ngIf="checkedList.length<=0">Select</span>
-            <span *ngIf="checkedList.length>0 && isClient" >
-                <ng-container *ngFor="let item of checkedList"> {{item.name}}{{checkedList.length>1 ? ',':''}}</ng-container>
+            <span *ngIf="clientCheckedList.length<=0 ||  teamCheckedList.length<=0 ">Select</span>
+            <span *ngIf="clientCheckedList.length>0 && isClient" >
+                <ng-container *ngFor="let item of clientCheckedList; let last = last"> {{ item.name }}{{last ? '': ','}}</ng-container>
             </span>
-            <span *ngIf="checkedList.length>0 && isTeam" >
-                <ng-container *ngFor="let item of checkedList"> {{item.teamName}},</ng-container>
+            <span *ngIf="teamCheckedList.length>0 && isTeam" >
+                <ng-container *ngFor="let item of teamCheckedList; let last = last"> {{item.teamName}}{{last ? '': ','}}</ng-container>
             </span>
             <i class="fa fa-angle-down"></i>
         </button>
@@ -24,7 +24,7 @@
                 <span>{{a.name}}</span>
             </label>
         </div>
-        <div class="drop-show" *ngIf="showDropDown && isTeam">
+        <div class="drop-show-team" *ngIf="showDropDown && isTeam">
             <label *ngFor="let a of list;let idx = index">
                 <input type="checkbox" [(ngModel)]="a.checked" 
                     (change)="getSelectedValue(a.checked,list[idx],'userSettingTeam')" />

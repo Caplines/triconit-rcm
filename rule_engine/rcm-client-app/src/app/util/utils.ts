@@ -119,6 +119,13 @@ export default class Utils {
 	     }
         return false;
    }
+   static checkRoleAdmin(){
+    let ls:any=localStorage;
+	    if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("ADMIN")>-1) {
+	        return true;
+	     }
+        return false;
+   }
 
    static checkSuperAdmin(){
       let ls:any=localStorage;
@@ -127,10 +134,25 @@ export default class Utils {
           }
           return false;
      }
+   static checkRoleSuperAdmin(){
+      let ls:any=localStorage;
+         if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("SUPER_ADMIN")>-1) {
+             return true;
+          }
+          return false;
+     }
 
    static isBillingLead(){
     let ls:any=localStorage;
        if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_BILLING_TL")>-1) {
+	        return true;
+	     }
+        return false;
+   }
+
+   static isRoleLead(){
+    let ls:any=localStorage;
+       if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("TL")>-1) {
 	        return true;
 	     }
         return false;
@@ -152,9 +174,17 @@ export default class Utils {
         return false;
    }
 
+   static isRoleAsso(){
+    let ls:any=localStorage;
+       if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("ASSO")>-1) {
+	        return true;
+	     }
+        return false;
+   }
+
    static isSmilePoint(){
     let ls:any=localStorage;
-       if (ls.getItem('currentUser') && ls.getItem('cname')==='Smilepoint') {
+       if (ls.getItem('currentUser') && ls.getItem('selected_clientName') && ls.getItem('selected_clientName')==='Smilepoint') {
 	        return true;
 	     }
         return false;
