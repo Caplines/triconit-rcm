@@ -149,12 +149,19 @@ showActionBox(){
   editRole(){
     this.editedUserDetails.value = Object.assign(this.editedUserDetails.value,{'uuid':this.user.uuid});
     // console.log(this.editedUserDetails.value)
-    this.appService.editUser( this.editedUserDetails.value,(res:any)=>{
-      if(res.status==200){
+    this.appService.isClaimStatusActive(this.user.uuid,(res:any)=>{
+      if(res.status == 200 && res.data.status == 1){
         console.log(res);
-        this.showAlertPopup(res);
-        this.user['showEditUser'] =false;
-        location.reload();
+        this.appService.editUser( this.editedUserDetails.value,(res:any)=>{
+          if(res.status==200){
+            console.log(res);
+            this.showAlertPopup(res);
+            this.user['showEditUser'] =false;
+            location.reload();
+          }else{
+            this.showAlertPopup(res);
+          }
+        })
       }else{
         this.showAlertPopup(res);
       }
