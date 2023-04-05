@@ -57,10 +57,6 @@ export class HeaderComponent implements OnInit {
      if(this.roleData.length==0){
         this.getRoles();
      }
-     if(window.history.state) {   // On reload Pop-up radio box issue code fix
-      this.loginUserType = '';
-     }
-
   }
   getRoles(){
     this.appSer.fetchRoles((res:any)=>{
