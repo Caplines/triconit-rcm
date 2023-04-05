@@ -145,7 +145,7 @@
                                             </tr>
                                         </ng-container>
                                     </tbody>
-                                    <ng-container *ngIf="claimData.length==0">
+                                    <ng-container *ngIf="claimData.length==0 && !loader.showLoader">
                                         <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
                                     </ng-container>
                                 </table>
