@@ -72,7 +72,7 @@ public class ManageOfficeController extends BaseHeaderController {
 //	}
 	
 	@RequestMapping(value = "/users/team/{teamId}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('TL')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
 	public ResponseEntity<?> getUsersByTeamId(@PathVariable("teamId")int teamId ,Model model) {
 	    List<RcmUserToDto> response = null;
 	    PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -80,7 +80,7 @@ public class ManageOfficeController extends BaseHeaderController {
 		
 		
 		try {
-			response = userService.getUsersByTeamIdAndCompany(teamId,partialHeader.getCompany());
+			response = userService.getUsersByTeamId(teamId,partialHeader.getCompany());
 			
 			
 			if(response==null) {

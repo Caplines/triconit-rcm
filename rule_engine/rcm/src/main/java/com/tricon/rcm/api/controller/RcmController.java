@@ -153,7 +153,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = AssignFreshClaimLogsImplDto.class, responseContainer = "List")
 	@PostMapping("/api/fetch-claims-log-assign")
-	@PreAuthorize("hasAnyRole('TL','ASSO')")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> fetchClaimsForAssignments(@RequestBody AssigmentClaimListDto dto,
 			 Model model) {
 		

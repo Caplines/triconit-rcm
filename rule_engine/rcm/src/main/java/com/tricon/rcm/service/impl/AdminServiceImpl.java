@@ -236,16 +236,8 @@ public class AdminServiceImpl {
 				}
 				for (String roles : rolesData) {
 					RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
-					if (rolesData.size() == 2 && (roles.equals(Constants.ROLE_PREFIX + Constants.TEAMLEAD)
-							|| roles.equals(Constants.ROLE_PREFIX + Constants.ASSOCIATE))) {
-						responseDto = RcmRoleEnum.getRoles(Constants.ROLE_PREFIX +Constants.TEAMLEAD);
-						data.setRoles(responseDto);
-						break;
-					} else {
-							responseDto = RcmRoleEnum.getRoles(roles);
-							data.setRoles(responseDto);
-							break;
-					}
+					responseDto = RcmRoleEnum.getRoles(roles);
+					data.setRoles(responseDto);
 				}
 					
 				List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
@@ -271,16 +263,8 @@ public class AdminServiceImpl {
 			List<String> rolesData =user.getRoles().stream().map(x -> x.getRole()).collect(Collectors.toList());			
 			for (String roles : rolesData) {
 				RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
-				if (rolesData.size() == 2 && (roles.equals(Constants.ROLE_PREFIX + Constants.TEAMLEAD)
-						|| roles.equals(Constants.ROLE_PREFIX + Constants.ASSOCIATE))) {
-					responseDto = RcmRoleEnum.getRoles(Constants.ROLE_PREFIX +Constants.TEAMLEAD);
-					data.setRoles(responseDto);
-					break;
-				} else {
-						responseDto = RcmRoleEnum.getRoles(roles);
-						data.setRoles(responseDto);
-						break;
-				}
+				responseDto = RcmRoleEnum.getRoles(roles);
+				data.setRoles(responseDto);
 			}
 			List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
 			if (clientName != null && !clientName.isEmpty()) {

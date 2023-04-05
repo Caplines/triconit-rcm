@@ -326,19 +326,7 @@ public class RcmCommonServiceImpl {
 			}
 		}
 
-		// if role is TL then we will assign TL+ASSO to registerUser
-		if (role != null && !role.trim().equals("")) {
-			if (role.equals(Constants.TEAMLEAD)) {
-				for (int i = 0; i <= teamIds.size(); i++) {
-					roles = new RcmUserRole();
-					pk = new RcmUserRolePk();
-					pk.setUuid(user.getUuid());
-					roles.setId(pk);
-					roles.setRole(RcmTeamEnum.generateRoleByRoleType(Constants.ASSOCIATE));
-					userRole.save(roles);
-				}
-			}
-		}
+         //save role
 		if (role != null && !role.trim().equals("")) {
 			for (int i = 0; i <= teamIds.size(); i++) {
 				roles = new RcmUserRole();
@@ -348,16 +336,6 @@ public class RcmCommonServiceImpl {
 				roles.setRole(RcmTeamEnum.generateRoleByRoleType(role));
 				userRole.save(roles);
 			}
-			// save role in case of ADMIN and SUPER_ADMIN because team size is 0
-			if (role.equals(Constants.ADMIN) || role.equals(Constants.SUPER_ADMIN)) {
-				roles = new RcmUserRole();
-				pk = new RcmUserRolePk();
-				pk.setUuid(user.getUuid());
-				roles.setId(pk);
-				roles.setRole(RcmTeamEnum.generateRoleByRoleType(role));
-				userRole.save(roles);
-			}
-
 		}
 		dumpDataToRcmUserTemp(user,role,userCompany,userTeam);
 		
