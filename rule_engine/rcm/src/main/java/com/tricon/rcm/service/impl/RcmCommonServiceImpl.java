@@ -328,14 +328,13 @@ public class RcmCommonServiceImpl {
 
          //save role
 		if (role != null && !role.trim().equals("")) {
-			for (int i = 0; i <= teamIds.size(); i++) {
 				roles = new RcmUserRole();
 				pk = new RcmUserRolePk();
 				pk.setUuid(user.getUuid());
 				roles.setId(pk);
 				roles.setRole(RcmTeamEnum.generateRoleByRoleType(role));
 				userRole.save(roles);
-			}
+			
 		}
 		dumpDataToRcmUserTemp(user,role,userCompany,userTeam);
 		
