@@ -57,7 +57,9 @@ export class HeaderComponent implements OnInit {
      if(this.roleData.length==0){
         this.getRoles();
      }
-    
+     if(window.history.state) {   // On reload Pop-up radio box issue code fix
+      this.loginUserType = '';
+     }
 
   }
   getRoles(){
@@ -138,6 +140,7 @@ export class HeaderComponent implements OnInit {
   selectLoginType(event:any){
     this.loginUserType = event.target.value;
     if(this.loginUserType == 'Normal') {
+      this.cwModel.teams = this.teamData;
       this.btnDisabled = true;
     } else if(this.loginUserType == 'Admin'){
       this.selectedTeam = '';
@@ -147,7 +150,6 @@ export class HeaderComponent implements OnInit {
 
   checkBtnDisabled(){
     if(this.selectedRole == 'SUPER_ADMIN'){
-      this.cwModel.teams = this.teamData;
       this.checkValidationSuperAdmin();
     }
    else if(this.selectedRole == 'ADMIN' ||  this.selectedRole == 'REPORTING'){
