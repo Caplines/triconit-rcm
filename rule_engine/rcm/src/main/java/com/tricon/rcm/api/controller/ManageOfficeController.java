@@ -80,7 +80,7 @@ public class ManageOfficeController extends BaseHeaderController {
 		
 		
 		try {
-			response = userService.getUsersByTeamId(teamId,partialHeader.getCompany());
+			response = userService.getUsersByTeamIdAndCompany(teamId,partialHeader.getCompany());
 			
 			
 			if(response==null) {
