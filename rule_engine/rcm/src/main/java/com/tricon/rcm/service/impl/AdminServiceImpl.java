@@ -238,7 +238,7 @@ public class AdminServiceImpl {
 					RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
 					if (rolesData.size() == 2 && (roles.equals(Constants.ROLE_PREFIX + Constants.TEAMLEAD)
 							|| roles.equals(Constants.ROLE_PREFIX + Constants.ASSOCIATE))) {
-						responseDto = RcmRoleEnum.getRoles(Constants.TEAMLEAD);
+						responseDto = RcmRoleEnum.getRoles(Constants.ROLE_PREFIX +Constants.TEAMLEAD);
 						data.setRoles(responseDto);
 						break;
 					} else {
@@ -273,7 +273,7 @@ public class AdminServiceImpl {
 				RcmRolesResponseDto responseDto = new RcmRolesResponseDto();
 				if (rolesData.size() == 2 && (roles.equals(Constants.ROLE_PREFIX + Constants.TEAMLEAD)
 						|| roles.equals(Constants.ROLE_PREFIX + Constants.ASSOCIATE))) {
-					responseDto = RcmRoleEnum.getRoles(Constants.TEAMLEAD);
+					responseDto = RcmRoleEnum.getRoles(Constants.ROLE_PREFIX +Constants.TEAMLEAD);
 					data.setRoles(responseDto);
 					break;
 				} else {
