@@ -51,7 +51,7 @@ public enum RcmRoleEnum {
 	
 	public static RcmRolesResponseDto getRoles(String role) {		
 		String removePrefix[]=role.split(Constants.ROLE_PREFIX);
-		Optional<RcmRoleEnum> data = Arrays.stream(values()).filter(x -> x.getName().equals(removePrefix[1])).findFirst();
+		Optional<RcmRoleEnum> data = Arrays.stream(values()).filter(x -> x.getName().equals(removePrefix[0])).findFirst();
 		RcmRolesResponseDto rolesResponseDto = null;
 		if (data.isPresent()) {
 				rolesResponseDto = new RcmRolesResponseDto();
