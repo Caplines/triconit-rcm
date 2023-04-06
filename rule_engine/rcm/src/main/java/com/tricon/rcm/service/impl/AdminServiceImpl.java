@@ -227,6 +227,7 @@ public class AdminServiceImpl {
 			userDetails = userRepo.findUserByClientUuid(dto.getEmail(), company.getUuid());
 			if (userDetails != null) {
 				user = userRepo.findByUuid(userDetails.getUuid());
+				if(user!=null) {
 				data = new RcmUserDto();
 				BeanUtils.copyProperties(userDetails, data);
 				data.setActive(user.getActive());
@@ -251,11 +252,15 @@ public class AdminServiceImpl {
 					data.setTeamNameId(teamName.stream().map(x -> x.getTeam().getId()).collect(Collectors.toList()));
 				}
 				return data;
+			  }
+			}else {
+				return null;
 			}
 		}
 
 		if (roleFromHeader.equals(Constants.SUPER_ADMIN)) {
 			user = userRepo.findByEmail(dto.getEmail());
+			if(user!=null) {
 			data = new RcmUserDto();
 			BeanUtils.copyProperties(user, data);
 			data.setFullName(String.join(" ", user.getFirstName(), user.getLastName()));
@@ -276,9 +281,12 @@ public class AdminServiceImpl {
 				data.setTeamNameId(teamName.stream().map(x -> x.getTeam().getId()).collect(Collectors.toList()));
 			}
 			return data;
+		  }
+			else {
+				return null;
+			}
 		}
-
-		return null;
+	     return null;
 				
 	}
 
