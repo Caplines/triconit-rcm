@@ -123,12 +123,22 @@ public class RcmController extends BaseHeaderController{
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchRemoteLiteRejections()));
 	}
-
+	
 	@ApiOperation(value = "Api For Fetching Billing/Rebilling Claims Details (Billing Pendency Dashboard)", response = FreshClaimDetailsDto.class, responseContainer = "List")
 	@GetMapping("/api/fetch-billing-claims/{billType}")
-	public ResponseEntity<Object> fetchBillingClaimDetails(@PathVariable("billType") int billType) {
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<Object> fetchBillingClaimDetails(@PathVariable("billType") int billType,Model model) {
+		
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		
+		if (partialHeader.getTeamId()!=RcmTeamEnum.BILLING.getId()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
 		return ResponseEntity
-				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchBillingClaimDetails(billType)));
+				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchBillingClaimDetails(billType,partialHeader)));
 	}
 
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDataDto.class, responseContainer = "List")

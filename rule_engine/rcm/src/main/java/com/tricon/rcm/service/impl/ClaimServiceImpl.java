@@ -330,20 +330,18 @@ public class ClaimServiceImpl {
 	 * 
 	 * @return
 	 */
-	public List<FreshClaimDetailsImplDto> fetchBillingClaimDetails(int billType) {
+	public List<FreshClaimDetailsImplDto> fetchBillingClaimDetails(int billType,PartialHeader partialHeader) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
 		List<FreshClaimDetailsDto> dtoList = null;
-		if (jwtUser.isTeamLead()) {// && jwtUser.isAssociate()) || jwtUser.isTeamLead()
-			dtoList = rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(), billType,
-					jwtUser.getTeamId());
+		/*if (jwtUser.isTeamLead()) {// && jwtUser.isAssociate()) || jwtUser.isTeamLead()
+			dtoList = rcmClaimRepository.fetchBillingOrReBillingClaimDetails(partialHeader.getCompany().getUuid(), billType,
+					partialHeader.getTeamId());
 		} else if (jwtUser.isAssociate()) {
-			dtoList = rcmClaimRepository.fetchBillingOrReBillingClaimDetails(jwtUser.getCompany().getUuid(), billType,
-					jwtUser.getTeamId(), jwtUser.getUuid());
-		}
+			dtoList = rcmClaimRepository.fetchBillingOrReBillingClaimDetails(partialHeader.getCompany().getUuid(), billType,
+					partialHeader.getTeamId(), partialHeader.getJwtUser().getUuid());
+		}*/
+		dtoList = rcmClaimRepository.fetchBillingOrReBillingClaimDetails(partialHeader.getCompany().getUuid(), billType,
+				partialHeader.getTeamId());
 		List<FreshClaimDetailsImplDto> finalList = new ArrayList<>();
 		HashMap<String, RemoteLietStatusCount> remoteLiteMap = ruleEngineService.pullAndSaveRemoteLiteData();
 		RemoteLietStatusCount counts = null;

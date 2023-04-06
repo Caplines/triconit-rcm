@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class PartialHeader {
 	
-	String clientUuid;
+	String clientName;
 	String role;
 	int teamId;
 	RcmCompany company;

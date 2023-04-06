@@ -92,7 +92,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				Date d= Constants.SIMPLE_DATE_FORMAT.parse(dto.getReportField1());
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(d);
-				int month = cal.get(Calendar.MONTH);
+				int month = cal.get(Calendar.MONTH)+1;
 				int yy = cal.get(Calendar.YEAR);
 				int dt = cal.get(Calendar.DATE);
 				
@@ -127,7 +127,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				 Date d= Constants.SIMPLE_DATE_FORMAT.parse(dto.getReportField1());
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(d);
-					int month = cal.get(Calendar.MONTH);
+					int month = cal.get(Calendar.MONTH)+1;
 					int yy = cal.get(Calendar.YEAR);
 					int dt = cal.get(Calendar.DATE);
 					

@@ -39,7 +39,7 @@ public abstract class BaseHeaderController  {
 		 
         PartialHeader partialHeader = new PartialHeader();
         RcmCompany company=rcmCompanyRepo.findByName(clientName);
-        partialHeader.setClientUuid(clientName);
+        partialHeader.setClientName(clientName);
         partialHeader.setRole(role);
         partialHeader.setTeamId(team);
         partialHeader.setCompany(company);
