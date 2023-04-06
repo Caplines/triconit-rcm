@@ -921,17 +921,13 @@ public class ClaimServiceImpl {
 			return null;
 	}
 
-	public List<FreshClaimDataDto> fetchFreshClaimDetails(int teamId, int billingORRebill, String sub) {
-
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
+	public List<FreshClaimDataDto> fetchFreshClaimDetails(int teamId, int billingORRebill, String sub,
+			PartialHeader partialHeader) {
 
 		if (sub.equals("Fresh"))
-			return rcmClaimRepository.fetchFreshClaimDetails(jwtUser.getCompany().getUuid(), teamId);
+			return rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
 		else
-			return rcmClaimRepository.fetchClaimDetailsWorkedByTeam(jwtUser.getCompany().getUuid(), teamId);
+			return rcmClaimRepository.fetchClaimDetailsWorkedByTeam(partialHeader.getCompany().getUuid(), teamId);
 
 	}
 
