@@ -90,7 +90,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Fetching Claims From  ES or GSheet", response = String.class, responseContainer = "Map")
 	@PostMapping("/api/fetch-claims-from-source")
-	@PreAuthorize("hasAnyRole('BILLING_TL','SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
 	public ResponseEntity<Object> fetchClaimsFromSource(@RequestBody ClaimSourceDto dto,
 			Model model) {
 
@@ -98,22 +98,29 @@ public class RcmController extends BaseHeaderController{
 		if (partialHeader==null) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
-		// only SmilePoint can do this
+		
+		if (partialHeader.getTeamId()!=RcmTeamEnum.BILLING.getId()) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
 		Object sucess = null;
+		dto.setCompanyuuid(partialHeader.getCompany().getUuid());
 		sucess = claimServiceImpl.pullClaimFromSource(dto, null, partialHeader.getJwtUser());
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", sucess));
 	}
 
 	@ApiOperation(value = "Api For Fetching Fresh Claims Logs (Billing Pendency Dashboard)", response = FreshClaimLogDto.class, responseContainer = "List")
 	@GetMapping("/api/fetch-fresh-claims-logs/{uuid}")
-	public ResponseEntity<Object> fetchFreshClaimLogs(@PathVariable("uuid") String companyUuid) {
-		// only SmilePoint can do this
-		Object[] obj = checkForSimplePointUser();
-		if (!((boolean) obj[1])) {
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<Object> fetchFreshClaimLogs(@PathVariable("uuid") String companyUuid
+			,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
+		
+		
 		return ResponseEntity
-				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchFreshClaimLogs(companyUuid)));
+				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchFreshClaimLogs(partialHeader.getCompany().getUuid())));
 	}
 
 	// @GetMapping("/api/fetch-remote-lite-rej/{uuid}")

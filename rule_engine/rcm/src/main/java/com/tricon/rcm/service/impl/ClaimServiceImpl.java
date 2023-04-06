@@ -233,17 +233,6 @@ public class ClaimServiceImpl {
 	public Object pullClaimFromSource(ClaimSourceDto dto, RcmUser user, JwtUser jwtUser) {
 		// go to Rule Engine.
 		Object status = null;
-		dto.getCompanyuuid();
-		RcmCompany company = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(dto.getCompanyuuid(), jwtUser);
-		
-		if (company==null) {
-			
-			logger.error("wrong Company Id");
-			return null;
-		}
-		boolean billTeam= rcmCommonServiceImpl.checkIfSessionTeamValid(RcmTeamEnum.BILLING.getId(), jwtUser.getTeams());
-		//boolean billTeam= rcmCommonServiceImpl.checkIfSessionTeamValid(RcmTeamEnum.BILLING.getId(), jwtUser.getTeams());
-		
 		if (dto.getSource().equals(ClaimSourceEnum.GOOGLESHEET.toString())) {
 			try {
 				if (user == null) {
