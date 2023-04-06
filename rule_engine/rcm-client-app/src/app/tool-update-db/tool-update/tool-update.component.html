@@ -5,11 +5,11 @@
             <div class="main-container">
                 <div class="detail-box">
                     <div class="form-group clientNameBox">
-                        <select class="form-control"name="cName" [(ngModel)]="cName"
+                        <!-- <select class="form-control"name="cName" [(ngModel)]="cName"
                         (change)="fetchLatesClaimLLogs()">
                         <option value="-1">Select Client Name</option>
                         <option *ngFor="let sta of clients" [value]="sta.uuid">{{sta.clientName}}</option>
-                    </select>
+                    </select> -->
                    <div class="issue-claim" *ngIf="cName!='-1'"><button class="btn btn-outline-primary" id="myBtn"  (click)="fetchIssueClaims()">Issue Claims</button></div>
                 </div>
                  <!-- Modal -->
