@@ -12,6 +12,9 @@
                     </select> -->
                    <div class="issue-claim" *ngIf="cName!='-1'"><button class="btn btn-outline-primary" id="myBtn"  (click)="fetchIssueClaims()">Issue Claims</button></div>
                 </div>
+                <ng-container *ngIf="log.length == 0">
+                    <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
+                </ng-container>
                  <!-- Modal -->
                         <div id="myModal" class="modal">
                             <div class="modal-content">
