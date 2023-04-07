@@ -59,6 +59,7 @@ export class UserSettingComponent implements OnInit {
 
 
   findUser() {
+    this.hideBox();
     if(this.user.email !== ''){
       this.appService.findUser({ "email": this.user.email }, (callback: any) => {
         if (callback.status == 200 && callback.data) {
@@ -115,6 +116,14 @@ showActionBox(){
             // this.getUserRolesByEmail();
           }
     }
+
+   hideBox(){ 
+      this.showActionPopup = false;
+      this.user['showStatus'] = false;
+      this.user['showChangePassword'] = false;
+      this.user['showEditUser'] =false;
+    
+   }
 
   updateSingleUserStatus(status:any){
     this.userStatusArray.userActiveStatus.push({'userId':this.user.uuid,'status':status})
