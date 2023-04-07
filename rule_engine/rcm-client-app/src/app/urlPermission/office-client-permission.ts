@@ -5,22 +5,21 @@ import { AppConstants } from '../constants/app.constants';
 
 
 @Injectable()
-export class ReigsterPermission implements CanActivate {
+export class OfficeClientPermission implements CanActivate {
 
   constructor(private router: Router,private appConstants: AppConstants) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot
   ) {
    console.log(12131321687);
-   
+   let ut:any = localStorage.getItem("selected_teamId");
     if (Utils.isLoggedIn()){
 
-      if ( (Utils.checkRoleAdmin() || Utils.checkRoleSuperAdmin() ) && localStorage.getItem("selected_teamId") == '-1'){
+      if ((Utils.checkRoleSuperAdmin() && ut == '-1') || (Utils.checkRoleAdmin() && ut == '-1' ) && (state.url != "/manage-client" && state.url != "/manage-office")){
         return true;
       }
-
     else{
-      this.router.navigate(['/login']);
+      this.router.navigate(['/register']);
       return false;
     }
     // }else{

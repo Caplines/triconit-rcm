@@ -78,10 +78,10 @@ this.sourceType="";
        
        if (res.status=== 200){
         ths.log=res.data;
-        if(ths.log.length == 0){
-          let ele = document.getElementById('myBtn'); //hide issues claim btn
-          ele.style.display = "none";
-        }
+        // if(ths.log.length == 0){
+        //   let ele = document.getElementById('myBtn'); //hide issues claim btn
+        //   ele.style.display = "none";
+        // }
 
        }else{
          //ERROR

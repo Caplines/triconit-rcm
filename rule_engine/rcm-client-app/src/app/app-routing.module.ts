@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckUserLoggedInState } from './urlPermission/url.checkloginstate';
-import { UrlPermission } from './urlPermission/url.permission';
-import { UrlToolUpdatePermission } from './urlPermission/url.tool-update.permission';
-import { ClaimAssignPermission } from './urlPermission/claim-assign-permission';
 import { ReigsterPermission } from './urlPermission/register-permission';
+import { ToolUserPermission } from './urlPermission/tool-user-permission';
+import { OfficeClientPermission } from './urlPermission/office-client-permission';
 
 const  routes: Routes = [
 
@@ -19,7 +18,7 @@ const  routes: Routes = [
   {
     path: 'fetch-claims',
     loadChildren: () => import('./fetch-claims/fetch-claims.module').then(m => m.FetchClaimsModule),
-    //canActivate: [UrlPermission]
+    canActivate: [ToolUserPermission]
   },
   {
     path:'register',
@@ -29,32 +28,34 @@ const  routes: Routes = [
   {
     path:'user-setting',
     loadChildren:()=> import("./user-setting/user-setting/user-setting.module").then(m=>m.UserSettingModule),
-    // canActivate: [AdminPermission]
+    canActivate: [ReigsterPermission]
   },
   {
     path:'tool-update',
     loadChildren :()=> import("./tool-update-db/tool-update.module").then(m=>m.ToolUpdateModule),
-    // canActivate: [UrlToolUpdatePermission]
+    canActivate: [ToolUserPermission]
    
   },
   {
     path:'manage-office',
     loadChildren :()=> import("./manage-office/manage-office.module").then(m=>m.ManageOfficeModule),
-    //canActivate: [AdminPermission]
+    canActivate: [OfficeClientPermission]
   },
   {
     path:'claim-assignment',
     loadChildren :()=> import("./claim-office-assignment/office-assignment.module").then(m=>m.ClaimAssignmentModule),
-    // canActivate: [ClaimAssignPermission]
+    canActivate: [ToolUserPermission]
   },
   {
     path:'users-status',
     loadChildren :()=> import("./users-status/users-status/users-status.module").then(m=>m.UserStatusModule),
+    canActivate: [ReigsterPermission]
     
   },
   {
     path:'manage-client',
     loadChildren :()=> import("./manage-client/manage-client.module").then(m=>m.ManageClientModule),
+    canActivate: [OfficeClientPermission]
    
   },
 
@@ -73,11 +74,11 @@ const  routes: Routes = [
   {
     path:'production',
     loadChildren :()=> import("./production/production.module").then(m=>m.ProductionModule),
-    //canActivate: [AdminPermission]
    },
   {
     path:'list-of-claims',
     loadChildren :()=> import("./list-of-claims/list-of-claims.module").then(m=>m.ListOfClaimsModule),
+    canActivate: [ToolUserPermission]
    },
 
   { path: '**', redirectTo: '/login' }

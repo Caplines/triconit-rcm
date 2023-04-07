@@ -7,14 +7,13 @@ import { AuthService } from './service/auth-service.service';
 import { CheckUserLoggedInState } from './urlPermission/url.checkloginstate';
 import { UrlPermission } from './urlPermission/url.permission';
 import { UrlToolUpdatePermission } from './urlPermission/url.tool-update.permission';
-import { ClaimAssignPermission } from './urlPermission/claim-assign-permission';
 import { AdminPermission } from './urlPermission/admin-permission';
 import {TokenInterceptor} from './auth/token.interceptor';
 import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HeaderComponent } from './header/header-component/header.component';
 import { ReigsterPermission } from './urlPermission/register-permission';
-//import { FetchClaimsModule } from './fetch-claims/fetch-claims.module';
-//import { FormsModule } from '@angular/forms';
+import { ToolUserPermission } from './urlPermission/tool-user-permission';
+import { OfficeClientPermission } from './urlPermission/office-client-permission';
 
 @NgModule({
   declarations: [
@@ -26,8 +25,7 @@ import { ReigsterPermission } from './urlPermission/register-permission';
     AppRoutingModule,HttpClientModule,HeaderComponent
   ],
   providers: [AuthService,CheckUserLoggedInState,UrlPermission,UrlToolUpdatePermission,
-    ClaimAssignPermission,AdminPermission,ReigsterPermission,
-	  //,OfficeAndIVFormTypeResolve,
+    AdminPermission,ReigsterPermission,ToolUserPermission,OfficeClientPermission,
        {
           provide: HTTP_INTERCEPTORS,
           useClass: TokenInterceptor,

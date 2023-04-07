@@ -38,7 +38,7 @@ export class HeaderComponent implements OnInit {
   loginUserType:any='';
   btnDisabled:boolean=true;
   teamData:any=[];
-  constructor(private appSer: ApplicationServiceService) {
+  constructor(private appSer: ApplicationServiceService,private router: Router) {
 
     this.cwModel= {};
     this.teamData=[{"teamName":"Internal Audit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];
@@ -107,7 +107,12 @@ export class HeaderComponent implements OnInit {
      }
      this.staticUtil.setLocalStoragePartial(this.selectedClient,this.selectedRole,this.selectedTeam);
       this.showPopup= false;
-     window.location.reload();
+
+    if(this.selectedTeam != -1){
+        window.location.href = "/claim-assignment";
+    }else{
+        window.location.href = "/register";
+    }
   }
 
   openPopUp(open:boolean){

@@ -23,7 +23,7 @@ export class AppConstants {
         "name":"Patient Calling Team","paths":["/user-setting"],"defaultpath":"/user-setting"
         }],
         [4,{
-        "name":"Office Team","paths":['claim-assignment',"/user-setting"],"defaultpath":"/claim-assignment"
+        "name":"Office Team","paths":['claim-assignment'],"defaultpath":"/claim-assignment"
         }],
         [5,{
         "name":"Internal Audit Team","paths":["/user-setting"],"defaultpath":"/claim-assignment"
@@ -32,7 +32,7 @@ export class AppConstants {
         "name":"IV Team","paths":["/user-setting"],"defaultpath":"/claim-assignment"
         }],
         [7, {
-            "name": "Billing Team", "paths": ["/claim-assignment","/tool-update"], "defaultpath": "claim-assignment"
+            "name": "Billing Team", "paths": ["/claim-assignment","/tool-update"], "defaultpath": "/claim-assignment"
         }],
         [8,{
         "name":"IV Team","paths":["/user-setting"],"defaultpath":"/claim-assignment"
