@@ -51,6 +51,7 @@ import com.tricon.rcm.db.entity.RcmRules;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
+import com.tricon.rcm.dto.AllPendencyReportDto;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
@@ -91,6 +92,8 @@ import com.tricon.rcm.dto.RuleRemarkDto;
 import com.tricon.rcm.dto.ServiceValidationDataDto;
 import com.tricon.rcm.dto.TPValidationResponseDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
+import com.tricon.rcm.dto.customquery.AllPendencyDateDto;
+import com.tricon.rcm.dto.customquery.AllPendencyDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
@@ -2046,6 +2049,18 @@ public class ClaimServiceImpl {
 		return "success";
 	}
 
+	public AllPendencyReportDto getAllPendencyReport(RcmCompany company) {
+		
+		AllPendencyReportDto dto= new AllPendencyReportDto();
+		List<AllPendencyDto> count= rcmClaimRepository.allPendencyCount(company.getUuid());
+		List<AllPendencyDateDto> date = rcmClaimRepository.allPendencyDateCount(company.getUuid());
+		dto.setCount(count);
+		dto.setDateCount(date);
+		dto.setOffices(officeRepo.findByCompany(company));
+		return dto;
+		
+		
+	}
 	private void saveAutoRuleReport(List<TPValidationResponseDto> ruleDataList, RcmUser user, RcmClaims claim,
 			List<RcmRules> rules,JwtUser jwtUser) {
 

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.rcm.dto.AllPendencyReportDto;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
@@ -426,6 +427,19 @@ public class RcmController extends BaseHeaderController{
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.runAutomatedRules(jwtUser,claimuuid,reRun)));
+	}
+	
+	@ApiOperation(value = "Api For Fetching pendency Report Data (All Billing Pendency Dashboard)", response = AllPendencyReportDto.class, responseContainer = "List")
+	@GetMapping("/api/allpendency")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING')")
+	public ResponseEntity<Object> fetchAllPencyData(Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+				
+		return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.getAllPendencyReport(partialHeader.getCompany())));
 	}
 	
 
