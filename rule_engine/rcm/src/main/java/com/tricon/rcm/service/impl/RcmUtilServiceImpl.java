@@ -5,13 +5,22 @@ import java.time.Instant;
 
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ForgotPasswordDto;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.RecaptchaResponseDto;
 import com.tricon.rcm.email.EmailUtil;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.util.Constants;
@@ -27,6 +36,18 @@ public class RcmUtilServiceImpl {
 	
 	@Autowired
 	EmailUtil emailUtil;
+	
+	@Value("${captcha.url}")
+	private String captchaUrl;
+
+	@Value("${captcha.secret.key}")
+	private String captchaSecretKey;
+	
+	
+	@Autowired
+	RestTemplate restTemplate;
+
+
 
 	/**
 	 * This Api does reset password for a user.Reset Password procedure completes through Email
@@ -65,4 +86,27 @@ public class RcmUtilServiceImpl {
 		return team==null?-1:team.getId();
 	}
 
+	
+	public boolean googleCaptchaVerificationStatus(String tokenForRecaptcha) {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(captchaUrl)
+					.queryParam("secret", captchaSecretKey).queryParam("response", tokenForRecaptcha);
+
+			HttpEntity<String> entity = new HttpEntity<>(headers);
+			ResponseEntity<RecaptchaResponseDto> response = restTemplate.exchange(builder.build().encode().toUri(),
+					HttpMethod.GET, entity, RecaptchaResponseDto.class);
+			RecaptchaResponseDto rs = response.getBody();
+			if (rs.isSuccess())
+				return true;
+			else
+				return false;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

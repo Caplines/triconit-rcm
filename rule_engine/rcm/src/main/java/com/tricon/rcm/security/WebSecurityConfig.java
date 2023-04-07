@@ -66,6 +66,9 @@ public class WebSecurityConfig {
 	    
 	@Value("${jwt.route.authentication.path}")
 	private String authenticationPath;
+	
+	@Value("${jwt.route.testing.authentication.path}")
+	private String authenticationPathForTesting;
 
 	/*
 	 * @Autowired public void configureGlobal(AuthenticationManagerBuilder auth)
@@ -120,7 +123,7 @@ public class WebSecurityConfig {
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().antMatchers(HttpMethod.POST, authenticationPath,"/forgotPassword").and()
+		return (web) -> web.ignoring().antMatchers(HttpMethod.POST, authenticationPath,"/forgotPassword",authenticationPathForTesting).and()
 				.ignoring().antMatchers(HttpMethod.GET,"/swagger-ui.html",
 						"/login","/tool-update", "/fetch-claims","/users-status","/register","/manage-office",
 						"/manage-client","/user-setting","/claim-assignment","/billing-claims/*",

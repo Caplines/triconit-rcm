@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,11 +31,14 @@ import com.tricon.rcm.jwt.service.JwtAuthenticationResponse;
 import com.tricon.rcm.security.JwtAuthenticationRequest;
 import com.tricon.rcm.security.JwtTokenUtil;
 import com.tricon.rcm.security.JwtUser;
+import com.tricon.rcm.service.impl.RcmUtilServiceImpl;
 
 
 @CrossOrigin
 @RestController
 public class AuthenticationRestController {
+	
+	private final Logger logger = LoggerFactory.getLogger(AuthenticationRestController.class);
 
     @Value("${jwt.header}")
     private String tokenHeader;
@@ -47,21 +52,30 @@ public class AuthenticationRestController {
     @Autowired
     @Qualifier("jwtUserDetailsService")
     private UserDetailsService userDetailsService;
+    
+    @Autowired
+    private RcmUtilServiceImpl utilService;
 
     @RequestMapping(value = "${jwt.route.authentication.path}", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
         //System.out.println(authenticationRequest.getUsername());
-        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());      
+        boolean verificationStatus=utilService.googleCaptchaVerificationStatus(authenticationRequest.getToken());       
+		if (verificationStatus) {
+			logger.info("Captcha verification status>>>>>>>success");
+			// Reload password post-security so we can generate the token
+			final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+			final String token = jwtTokenUtil.generateToken(userDetails);
+			JwtUser user = (JwtUser) userDetails;
 
-        // Reload password post-security so we can generate the token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        final String token = jwtTokenUtil.generateToken(userDetails);
-        JwtUser user = (JwtUser) userDetails;
+			// Return the token
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Success",
+					new JwtAuthenticationCustomResponse(token, userDetails.getUsername(), userDetails.getAuthorities(),
+							user.getTeams(), user.getFirstname(), user.getCompanies())));
+		}
 
-        // Return the token
-        return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Success",
-        		new JwtAuthenticationCustomResponse(token,userDetails.getUsername(),userDetails.getAuthorities(),user.getTeams(),user.getFirstname(), user.getCompanies())));
-        //return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.UNAUTHORIZED, "User Logged in Failed", null));
+		// return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
     
    @RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)
@@ -101,4 +115,22 @@ public class AuthenticationRestController {
             throw new AuthenticationException("Bad credentials!", e);
         }
     }
+    
+	@RequestMapping(value = "${jwt.route.testing.authentication.path}", method = RequestMethod.POST)
+	public ResponseEntity<?> loginWithOutCaptcha(@RequestBody JwtAuthenticationRequest authenticationRequest)
+			throws AuthenticationException {
+		// System.out.println(authenticationRequest.getUsername());
+		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+
+		// Reload password post-security so we can generate the token
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+		final String token = jwtTokenUtil.generateToken(userDetails);
+		JwtUser user = (JwtUser) userDetails;
+
+		// Return the token
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Success",
+				new JwtAuthenticationCustomResponse(token, userDetails.getUsername(), userDetails.getAuthorities(),
+						user.getTeams(), user.getFirstname(), user.getCompanies())));
+		// return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+	}
 }
