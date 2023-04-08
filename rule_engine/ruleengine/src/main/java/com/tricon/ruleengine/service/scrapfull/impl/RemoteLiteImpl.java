@@ -101,7 +101,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 
 		passwordElement.sendKeys(dto.getPassword().trim());
 		WebElement loginButonElement = driver.findElement(
-				By.xpath("//*[@id=\"loginForm\"]/div[3]/div[3]/button"));
+				By.id("login-btn-primary"));
 
 		loginButonElement.click();
 		Thread.sleep(1000);// Need to keep this number high for Linux issue.
@@ -295,6 +295,8 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		Thread.sleep(1000);
 		boolean serviceDate=false;
 		boolean treatingSignature=false;
+		boolean lastUpdate=false;
+		
 		
 		if (scrapSubType.equals(SCRAP_TYPE_1)) {
 		WebElement tableHeader=  driver.findElement(By.id("datatable-claims")); 
@@ -307,16 +309,25 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 			treatingSignature =true;
 		//	return ;//if header already There
 		 }
+		if (tableHeader.getText().contains("Last Update")) {
+			lastUpdate =true;
+		//	return ;//if header already There
+		 }
 		}
 		if (scrapSubType.equals(SCRAP_TYPE_2)) {
 			WebElement tableHeader=  driver.findElement(By.className("ant-table-thead")); 
 			System.out.println(tableHeader.getText());
+			
 			if (tableHeader.getText().contains("Service Date")) {
 				serviceDate =true;
 			//	return ;//if header already There
 			}
 			if (tableHeader.getText().contains("Treating Signature")) {
 				treatingSignature =true;
+			//	return ;//if header already There
+			 }
+			if (tableHeader.getText().contains("Last Update")) {
+				lastUpdate =true;
 			//	return ;//if header already There
 			 }
 		}
@@ -336,11 +347,16 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 			//driver.findElement(By.id("dosCheckbox")).click();//Service Date Click..
 			Thread.sleep(5000);
 			}
+			if (!lastUpdate) {
+				executor.executeScript("document.getElementById('lasT_UPDATE_DATECheckbox').click();");
+			//driver.findElement(By.id("dosCheckbox")).click();//Service Date Click..
+			Thread.sleep(5000);
+			}
 			}
 		}
 		
 		if (scrapSubType.equals(SCRAP_TYPE_2)) {
-			if (!treatingSignature || !serviceDate) {
+			if (!treatingSignature || !serviceDate || !lastUpdate) {
 				driver.findElement(By.className("anticon-insert-row-right")).click();
 				Thread.sleep(1000); 
 			List<WebElement> leftPanel=driver.findElements(By.className("column-select-row"));
@@ -370,6 +386,19 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 				
 			  }
 			
+			leftPanel=driver.findElements(By.className("column-select-row"));
+			for(WebElement le:leftPanel) {
+				
+				if (le.getText().contains("Last Update")) {
+					WebElement but = le.findElement(By.tagName("button"));
+					if (but.getAttribute("aria-checked").equals("false")) {
+						but.click();
+						break;
+					}
+					//System.out.println(but.getAttribute("aria-checked"));
+				}
+				
+			  }
 			
 			}
 		}
@@ -513,19 +542,61 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 	
 	private void fetchTableData(WebDriver driver,int pageNo,List<RemoteLiteData> dataList,String scrapSubType) throws InterruptedException{
 		 WebElement tableBody=null;
+		 WebElement tableBodyHead=null;
+		 int[] position= {0,1,2,3,4,5,6,7,8,9,10};
 		 if (scrapSubType.equals(SCRAP_TYPE_1)) {
 			 tableBody= driver.findElement(By.xpath("//*[@id=\"datatable-claims\"]/tbody"));
 		 }
 		 if (scrapSubType.equals(SCRAP_TYPE_2)) {
 			 tableBody= driver.findElement(By.className("ant-table-body"));
+			 //Added Logic  for SCRAP_TYPE_2 as Position can be changed
+			 tableBodyHead= driver.findElement(By.className("ant-table-thead"));
+			 WebElement trs= tableBodyHead.findElement(By.tagName("tr"));
+			 
+				 List<WebElement> tds= trs.findElements(By.tagName("th"));
+				 for(int index = 0; index < tds.size();index++) {
+					   System.out.println("INDEX-->"+index+"-"+tds.get(index).getAttribute("innerText"));
+					   if (tds.get(index).getAttribute("innerText").equals("Sent Date")) {
+							position[2]=index;
+						}
+						if (tds.get(index).getAttribute("innerText").equals("Patient Name")) {
+							position[3]=index;
+						}
+						if (tds.get(index).getAttribute("innerText").equals("Subscriber Name")) {
+							position[4]=index;
+						}
+						if (tds.get(index).getAttribute("innerText").equals("Carrier")) {
+							position[5]=index;
+						}
+						if (tds.get(index).getText().equals("Status")) {
+							position[6]=index;
+						}
+						if (tds.get(index).getAttribute("innerText").equals("Status Description")) {
+							position[7]=index;
+						}
+						if (tds.get(index).getAttribute("innerText").equals("Service Date")) {
+							position[8]=index;
+						}
+						if (tds.get(index).getAttribute("innerText").equals("Treating Signature")) {
+							position[9]=index;
+						}
+						if (tds.get(index).getAttribute("innerText").equals("Last Update")) {
+							position[10]=index;
+						}
+					   
+					}
+			 
+			 
 		 }
 		 
-			
+		
+		 
 		List<WebElement> trs= tableBody.findElements(By.tagName("tr"));
 		//RemoteLiteData data=null;
 		 boolean skipRow=true;
 		 for (WebElement tr:trs) {
 			   if (skipRow && scrapSubType.equals(SCRAP_TYPE_2)) {
+				 
 				   skipRow=false;
 				   continue;
 			   }
@@ -538,7 +609,18 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 			   if (tds!=null) {
 				   RemoteLiteData data=new RemoteLiteData();
 				   data.setHiddenClaims(hiddenClaims);
-				   IntStream.range(0, tds.size())
+				   
+				   data.setSendDate(tds.get(position[2]).getText());
+				   data.setName(tds.get(position[3]).getText());
+				   data.setSubscriberName(tds.get(position[4]).getText());
+				   data.setCarrier(tds.get(position[5]).getText());
+				   data.setStatus(tds.get(position[6]).getText());
+				   data.setDescription(tds.get(position[7]).getText());
+				   data.setServiceDate(tds.get(position[8]).getText());
+				   data.setTreatingSignature(tds.get(position[9]).getText());
+				   data.setLastUpdate(tds.get(position[10]).getText());
+				   
+				   /*IntStream.range(0, tds.size())
 					.forEach(index -> {
 						System.out.println(tds.get(index).getText());
 					//	if (data==null) data= new RemoteLiteData();
@@ -564,7 +646,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 						}
 						if (index==7) {
 							data.setDescription(tds.get(index).getText());
-							System.out.println("STA-->"+tds.get(index).getText());
+							System.out.println("Des-->"+tds.get(index).getText());
 						}
 						if (index==8) {
 							data.setServiceDate(tds.get(index).getText());
@@ -574,9 +656,13 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 							data.setTreatingSignature(tds.get(index).getText());
 							System.out.println("Date TS-->"+tds.get(index).getText());
 						}
+						if (index==10) {
+							data.setLastUpdate(tds.get(index).getText());
+							System.out.println("last Update-->"+tds.get(index).getText());
+						}
 						  
 					}
-					);
+					);*/
 			    //for (WebElement td:tds) {
 				 //  System.out.println("-->"+td.getText());
 			    //}

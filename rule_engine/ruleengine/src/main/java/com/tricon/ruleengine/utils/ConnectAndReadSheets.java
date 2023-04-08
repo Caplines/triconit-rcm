@@ -1828,7 +1828,7 @@ public class ConnectAndReadSheets {
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getServiceDate())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getTreatingSignature())));
 				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getHiddenClaims())));
-				
+				values.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(rd.getLastUpdate())));
 				
 				requests.add(new Request()
 						.setUpdateCells(new UpdateCellsRequest().setStart(new GridCoordinate().setSheetId(Integer.parseInt(sheetSubID)).setRowIndex(row)//)

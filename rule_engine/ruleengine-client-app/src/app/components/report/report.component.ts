@@ -27,6 +27,8 @@ export class ReportComponent implements OnInit {
 	showReportData: boolean = false;
 	showDetailsData: boolean = false;
     showLoadingPDFS:boolean = false;
+    showLoadingMoreDate:boolean = false;
+    oldSubscriptions:any=[];
 	reportDataInd: any;
     rdata1=[];
     rdata=[];
@@ -117,6 +119,8 @@ export class ReportComponent implements OnInit {
 
 	runReport() {
 		let rep = this.report;
+		this.reportData={};
+		
 		this.rdata1=[];
 		this.rdata=[];
 		this.showLoadingPDFS= false;
@@ -199,7 +203,7 @@ export class ReportComponent implements OnInit {
 				submit = true;
 			}
 		}
-
+		this.arrayOfKeys=[];
 		if (submit) {
 			if (this.showParam.Date) {
 				this.report.reportField1 = this.datePipe.transform(this.report.reportField1, 'MM/dd/yyyy');
@@ -207,6 +211,7 @@ export class ReportComponent implements OnInit {
 			this.showLoading = true;
 			this.applicationService.validateReport(this.report, this.ur, (result) => {
 				this.showLoading = false;
+				let ths=this;
 				if (result.status === 'OK') {
 					this.reportData = result.data;
 					
@@ -221,7 +226,7 @@ export class ReportComponent implements OnInit {
                 	   if (this.report.reportType === 'ivfRDBMSWebsiteParse'){
                 		   this.reportData= this.convertLocalTime(this.reportData);
                        }
-						this.arrayOfKeys = this.reportData;
+						this.arrayOfKeys.push(this.reportData);
 						//console.log("v",this.arrayOfKeys);
 					} else if (this.report.reportType === 'sealantElig'){
 						this.parseData(result.data);
@@ -230,12 +235,34 @@ export class ReportComponent implements OnInit {
 						this.arrayOfKeys = Object.keys(this.reportData);
 
 					}
-					this.showReportData = true;
-					if (this.isEmpty(this.reportData)) {
-						alert("No Data Found.");
-						this.showReportData = false;
-					} else {
+					
+					
+					
+					if (this.report.reportType == 'DateFromTo' || this.report.reportType == 'DateFromToUserName'){
+						let date1:Date = new Date(this.report.reportField1);
+						let date2:Date = new Date(this.report.reportField2);
+						let diffTime: number = Math.abs(date2.getTime() - date1.getTime());
+						let diffDays: number = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+						if (!this.isEmpty(this.reportData)){
+							this.showReportData = true;
+							this.showLoading = false;
+						}else{
+							this.showLoading = true;
+							this.showReportData = false;
+						}
+						if(diffDays>0){
+							this.showLoadingMoreDate=true;
+							this.loadMoreforMutipleDates(diffDays,this.report.reportField1);
+						}
+					}else {
+						this.showReportData = true;
+						if (this.isEmpty(this.reportData)) {
+							alert("No Data Found.");
+							this.showReportData = false;
+						} else {
 
+						}
+						
 					}
 				} else {
 					this.showReportData = false;
@@ -244,6 +271,53 @@ export class ReportComponent implements OnInit {
 		}
 	}
 
+	 loadMoreforMutipleDates(n:number,oldD:any){
+		 let ths=this;
+		 //ths.showLoadingMoreDate=true;
+		 if (n>0){
+			 let date1 = new Date(ths.report.reportField1);
+			 let date3 = date1.setDate(date1.getDate()+1);
+			   let mm= new Date(date3);
+			   console.log(mm.getDate());
+			   ths.report.reportField1=(mm.getMonth()+1)+"/"+mm.getDate()+"/"+mm.getFullYear();
+			   console.log("this.showLoadingMoreDate",this.showLoadingMoreDate);
+			   if (!this.showLoadingMoreDate) {
+				   return;//in case back is pressed.
+			   }
+			   let old=	ths.applicationService.validateReport(ths.report, ths.ur, (result) => {
+				
+		        ths.reportData ={...ths.reportData, ...result.data};
+		        if (!this.isEmpty(this.reportData)){
+					this.showReportData = true;
+					this.showLoading = false;
+				}else{
+					this.showLoading = true;
+					this.showReportData = false;
+				}
+		        ths.arrayOfKeys = Object.keys(ths.reportData);
+				ths.loadMoreforMutipleDates(n-1,oldD);
+			});
+			  
+		 }else{
+			 ths.report.reportField1=oldD;
+			 ths.showLoadingMoreDate=false;
+			 if (!this.isEmpty(this.reportData)){
+					this.showReportData = true;
+					this.showLoading = false;
+				}else{
+					this.showLoading = true;
+					this.showReportData = false;
+				}
+			 if (this.isEmpty(this.reportData)) {
+					alert("No Data Found.");
+					this.showReportData = false;
+					this.showLoading = false;
+				} else {
+
+			}
+		 }
+	}
+	 
 	isEmpty(obj) {
 		for (var key in obj) {
 			if (obj.hasOwnProperty(key))
@@ -440,7 +514,14 @@ downloadPdfSeal(){
 			});
 		}
 	  
-	 
+   goBack(){
+	this.showReportData=false;
+	this.showLoadingMoreDate=false;
+	this.reportData={};
+	
+   }
+
+    
 
 
 }
