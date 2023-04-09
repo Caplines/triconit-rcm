@@ -18,6 +18,7 @@ import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
@@ -78,22 +79,15 @@ public class UserServiceImpl {
 	 * @return List of users
 	 */
 
-//	public List<RcmUserToDto> getUsersByRole(String role) throws Exception {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		Object principal = authentication.getPrincipal();
-//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-//		JwtUser jwtUser = (JwtUser) userDetails;
-//		List<RcmUserToDto> data = null;
-//		if (jwtUser.getTeamId() == -1) {
-//			return null;
-//		}
-//		data = userRepo.findUsersByRole(RcmTeamEnum.generateRole(jwtUser.getTeamId(), role),
-//				jwtUser.getCompany().getUuid());
-//		data.removeIf(x -> x.getUuid().equals(jwtUser.getUuid()));
-//		return data;
-//
-//	}
-//
+	public List<RcmUserToDto> getUsersByRole(String role,PartialHeader partialHeader) throws Exception {
+		List<RcmUserToDto> data = null;
+		data = userRepo.findUsersByRoleAndTeamId(RcmTeamEnum.generateRole(partialHeader.getTeamId(), role),
+				partialHeader.getCompany().getUuid(),partialHeader.getTeamId());
+		data.removeIf(x -> x.getUuid().equals(partialHeader.getJwtUser().getUuid()));
+		return data;
+
+	}
+
 	public List<RcmUserToDto> getUsersByTeamIdAndCompany(int teamId,RcmCompany company) throws Exception {
 		    List<RcmUserToDto> data = null;
 			teamId=RcmTeamEnum.validateTeamId(teamId);
@@ -107,20 +101,20 @@ public class UserServiceImpl {
 
 	/**
 	 * This api fetches all teamName of loginUser's teamId only exclude loginUser TeamId
-	 * @param jwtUser
+	 * @param partialHeader
 	 * @return
 	 */
-	/*
-	public List<RcmTeamDto> getTeamNameByOtherUserTeamId(JwtUser jwtUser) {
-		int teamId = RcmTeamEnum.validateTeamId(jwtUser.getTeamId());
+	
+	public List<RcmTeamDto> getTeamNameByOtherUserTeamId(PartialHeader partialHeader) {
+		int teamId = RcmTeamEnum.validateTeamId(partialHeader.getTeamId());
 		if (teamId != 0) {
-			List<RcmTeamDto> teamName = masterService.getTeams(jwtUser.getCompany().getName());
-			teamName.removeIf(x -> x.getTeamId() == jwtUser.getTeamId());
+			List<RcmTeamDto> teamName = masterService.getTeams();
+			teamName.removeIf(x -> x.getTeamId() == partialHeader.getTeamId());
 			return teamName;
 		}
 		return null;
 	}
-
+   /*
 	public List<RcmRoleDto> getRolesByUserEmail(String userEmail)throws Exception {
 		RcmUser user = userRepo.findByEmail(userEmail);
 		List<RcmRoleDto> roles = null;

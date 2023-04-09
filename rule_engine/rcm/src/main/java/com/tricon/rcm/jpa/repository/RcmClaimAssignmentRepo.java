@@ -39,8 +39,9 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	@Query(nativeQuery = true, value = " select "
 			 +" comment_assigned_by comment,assign.created_date cd, tm.description teamName,us.first_name fName,us.last_name lName "
 			 +" from  rcm_claim_assignment assign inner join rcm_user us on us.uuid=assign.assigned_by "
-			 +" inner join rcm_team tm on tm.id=us.team_Id "
-			 +"  where claim_id=:claim_id and team_id!=:teamId order by assign.created_date"
+			 +" inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
+			 +" inner join rcm_team tm on tm.id=rut.team_Id "
+			 +"  where claim_id=:claim_id and rut.team_id!=:teamId order by assign.created_date"
 	+ "")
     List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
 	

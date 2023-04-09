@@ -68,11 +68,11 @@ public enum RcmTeamEnum {
 		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() == value).findFirst();
 		Optional<RcmRoleEnum> roleEnum = Arrays.stream(RcmRoleEnum.values())
 				.filter(x -> x.getName().equals(roleType)).findFirst();
-		String teamName = "", roleName = "", role = "";
+		String roleName = "", role = "";
 		if (teamEnum.isPresent() && roleEnum.isPresent()) {
-			teamName = teamEnum.get().getName();
+			//teamName = teamEnum.get().getName();
 			roleName = roleEnum.get().getName();
-			role = Constants.ROLE_PREFIX.concat(teamName).concat(Constants.HYPHEN).concat(roleName);
+			role = Constants.ROLE_PREFIX.concat(roleName);
 			return role;
 		}
 		if(value==0 &&roleEnum.isPresent()) {

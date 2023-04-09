@@ -57,9 +57,11 @@ public class UserController extends BaseHeaderController {
 	@ApiOperation(value = "Api For Update Password of Login User")
 	@RequestMapping(value = "/updatepassword", method = RequestMethod.POST)
 	public ResponseEntity<?> updatePasswordOfUserOrAdmin(@RequestBody PasswordResetDto dto,Model model) {
+		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		
 		GenericResponse response = null;
 		if ((dto.getPassword()==null||dto.getPassword().trim().equals(""))||dto.getUuid()==null) {
 			return ResponseEntity
@@ -75,22 +77,27 @@ public class UserController extends BaseHeaderController {
 		return ResponseEntity.ok(response);
 	}
 
-//	@ApiOperation(value = "Api For Fetching users basis of Login User teamId and his Role TL", response = RcmUserToDto.class, responseContainer = "List")
-//	@RequestMapping(value = "/user/users_by_role/tl", method = RequestMethod.GET)
-//	public ResponseEntity<?> getUsersOfParticularTeam() {
-//		List<RcmUserToDto> response = null;
-//		try {
-//			response = userService.getUsersByRole(Constants.TEAMLEAD);
-//			if(response==null) {
-//				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error(e.getMessage());
-//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-//		}
-//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-//	}
+	@ApiOperation(value = "Api For Fetching users basis of Login User teamId and his Role TL", response = RcmUserToDto.class, responseContainer = "List")
+	@RequestMapping(value = "/user/users_by_role/tl", method = RequestMethod.GET)
+	public ResponseEntity<?> getUsersOfParticularTeam(Model model) {
+		List<RcmUserToDto> response = null;
+		
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		
+		try {
+			response = userService.getUsersByRole(Constants.TEAMLEAD,partialHeader);
+			if(response==null) {
+				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 	
 	@ApiOperation(value = "Api For Fetching offices basis of Login User clientUuid", response = RcmOfficeDto.class, responseContainer = "List")
 	@RequestMapping(value = "getOffices", method = RequestMethod.GET)
@@ -109,23 +116,24 @@ public class UserController extends BaseHeaderController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-//	@ApiOperation(value = "Api For Fetching TeamName Details basis of Login User teamId", response = RcmTeamDto.class, responseContainer = "List")
-//	@RequestMapping(value = "/user/other_teams", method = RequestMethod.GET)
-//	public ResponseEntity<?> teamNameByUserTeamId() {
-//		List<RcmTeamDto> response = null;
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		Object principal = authentication.getPrincipal();
-//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-//		JwtUser jwtUser = (JwtUser) userDetails;
-//		try {
-//			response = null;//userService.getTeamNameByOtherUserTeamId(jwtUser);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error(e.getMessage());
-//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-//		}
-//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-//	}
+	@ApiOperation(value = "Api For Fetching TeamName Details basis of Login User teamId", response = RcmTeamDto.class, responseContainer = "List")
+	@RequestMapping(value = "/user/other_teams", method = RequestMethod.GET)
+	public ResponseEntity<?> teamNameByUserTeamId(Model model) {
+		List<RcmTeamDto> response = null;
+
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		try {
+			response = userService.getTeamNameByOtherUserTeamId(partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 //	
 //	@ApiOperation(value = "Api For Fetching UserRoles basis of User's email", response = RcmTeamDto.class, responseContainer = "List")
 //	@RequestMapping(value = "/user/roles/{userEmail}", method = RequestMethod.GET)

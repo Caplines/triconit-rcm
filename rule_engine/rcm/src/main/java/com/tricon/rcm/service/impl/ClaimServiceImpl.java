@@ -903,19 +903,13 @@ public class ClaimServiceImpl {
 	 * log.setNewClaimsCount(newClaimCt); commonClaimServiceImpl.save(log); }
 	 */
 
-	public Object fetchRemoteLiteRejections() {
+	public Object fetchRemoteLiteRejections(PartialHeader partialHeader) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-
-		ClaimSourceDto dto = new ClaimSourceDto();
+			ClaimSourceDto dto = new ClaimSourceDto();
 		// dto.setOfficeuuid(officeUUid);
-		dto.setCompanyuuid(jwtUser.getCompany().getUuid());
+		dto.setCompanyuuid(partialHeader.getCompany().getUuid());
 		// only for Simple Point
-		if (jwtUser.getCompany().getName().equals(Constants.COMPANY_NAME)) {
+		if (partialHeader.getCompany().getName().equals(Constants.COMPANY_NAME)) {
 
 			// RcmUser user= userRepo.findByEmail(((UserDetails) principal).getUsername());
 			Object obj = ruleEngineService.pullAndSaveRemoteLiteData();
@@ -934,14 +928,10 @@ public class ClaimServiceImpl {
 
 	}
 
-	public List<FreshClaimDataDto> fetchClaimsByTeamNotFrom(int teamId) {
+	public List<FreshClaimDataDto> fetchClaimsByTeamNotFrom(int teamId,PartialHeader partialHeader) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-
-		return rcmClaimRepository.fetchFreshClaimDetailsOtherTeam(jwtUser.getCompany().getUuid(), teamId);
+		
+		return rcmClaimRepository.fetchFreshClaimDetailsOtherTeam(partialHeader.getCompany().getUuid(), teamId);
 	}
 
 	public List<AssignFreshClaimLogsImplDto> fetchClaimsForAssignments(AssigmentClaimListDto dto,PartialHeader partialHeader) {
@@ -998,9 +988,9 @@ public class ClaimServiceImpl {
 		return finalList;
 	}
 
-	public FreshClaimDataImplDto fetchIndividualClaim(String claimUuid, JwtUser jwtUser) {
+	public FreshClaimDataImplDto fetchIndividualClaim(String claimUuid, PartialHeader partialHeader) {
 		FreshClaimDataImplDto implDto = null;
-		RcmClaimDetailDto dto = rcmClaimRepository.fetchIndividualClaim(jwtUser.getCompany().getUuid(), claimUuid);
+		RcmClaimDetailDto dto = rcmClaimRepository.fetchIndividualClaim(partialHeader.getCompany().getUuid(), claimUuid);
 		// RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
 		if (dto != null) {
 
@@ -1066,7 +1056,7 @@ public class ClaimServiceImpl {
 				implDto.setAssignedToName(assTo.getFirstName() + " " + assTo.getLastName());
 				implDto.setAssignedToUuid(assTo.getUuid());
 				implDto.setAssignedToTeam(assign.getCurrentTeamId().getId());
-				implDto.setAllowEdit(jwtUser.getUuid().equals(assTo.getUuid()));
+				implDto.setAllowEdit(partialHeader.getJwtUser().getUuid().equals(assTo.getUuid()));
 
 			}
 			RcmClaimComment comment = rcmClaimCommentRepo.findByClaimsClaimUuid(claimUuid);
@@ -1108,7 +1098,7 @@ public class ClaimServiceImpl {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public ServiceValidationDataDto readServiceValidationFromGSheet(String claimUuid, JwtUser jwtUser) {
+	public ServiceValidationDataDto readServiceValidationFromGSheet(String claimUuid,PartialHeader partialHeader) {
 
 		//RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
 		ServiceValidationDataDto dto = new ServiceValidationDataDto();
@@ -1117,7 +1107,7 @@ public class ClaimServiceImpl {
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUuid);
 		RcmOffice off = claim.getOffice();
 		List<RcmClaimDetail> cddList= new ArrayList<>();
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(off.getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(off.getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		
 		if (rcmCompany!=null) {
 			if (claim.isPending()) {
@@ -1317,14 +1307,10 @@ public class ClaimServiceImpl {
 		return data;
 	}
 
-	public List<ProductionDto> claimsProductionReportByTeam(int teamId, ClaimProductionLogDto dto) {
+	public List<ProductionDto> claimsProductionReportByTeam(int teamId, ClaimProductionLogDto dto,PartialHeader partialHeader) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-
-		rcmClaimRepository.claimProductionByTeamMember(jwtUser.getCompany().getUuid(), teamId, dto.getStartDate(),
+		
+		rcmClaimRepository.claimProductionByTeamMember(partialHeader.getCompany().getUuid(), teamId, dto.getStartDate(),
 				dto.getEndDate());
 		return null;
 
@@ -1384,12 +1370,12 @@ public class ClaimServiceImpl {
 		return list;
 	}
 
-	public List<ClaimRuleRemarksDto> fetchClaimRuleRemark(JwtUser jwtUser, String claimuuid) {
+	public List<ClaimRuleRemarksDto> fetchClaimRuleRemark(PartialHeader partialHeader, String claimuuid) {
 
-		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		List<ClaimRuleRemarksDto> list = null;
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimuuid);
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
 			list = rcmClaimRuleRemarkRepo.fetchClaimRuleRemarks(claimuuid, RcmTeamEnum.BILLING.getId());
 		} else {
@@ -1398,15 +1384,15 @@ public class ClaimServiceImpl {
 		return list;
 	}
 
-	public String saveClaimRemark(JwtUser jwtUser, ClaimRemarkDto dto) {
+	public String saveClaimRemark(PartialHeader partialHeader, ClaimRemarkDto dto) {
 
-		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany != null) {
 			if (!claim.isPending())
 				return "Claim Already Submitted";
-			return saveClaimRemark(dto.getRemark(), claim, user, jwtUser);
+			return saveClaimRemark(dto.getRemark(), claim, user, partialHeader);
 		}
 
 		else
@@ -1414,11 +1400,11 @@ public class ClaimServiceImpl {
 
 	}
 
-	private String saveClaimRemark(String remark, RcmClaims claim, RcmUser user, JwtUser jwtUser) {
+	private String saveClaimRemark(String remark, RcmClaims claim, RcmUser user, PartialHeader partialHeader) {
 
 		if (remark != null && !remark.trim().equals("")) {
 
-			RcmClaimComment comment = rcmClaimCommentRepo.findByCommentedByUuidAndClaimsClaimUuid(jwtUser.getUuid(),
+			RcmClaimComment comment = rcmClaimCommentRepo.findByCommentedByUuidAndClaimsClaimUuid(partialHeader.getJwtUser().getUuid(),
 					claim.getClaimUuid());
 			if (comment == null) {
 
@@ -1428,7 +1414,7 @@ public class ClaimServiceImpl {
 				comment.setClaims(claim);
 				comment.setComments(remark);
 				comment.setActive(true);
-				comment.setTeamId(rcmTeamRepo.findById(jwtUser.getTeamId()));
+				comment.setTeamId(rcmTeamRepo.findById(partialHeader.getTeamId()));
 			} else {
 				comment.setComments(remark);
 			}
@@ -1440,15 +1426,15 @@ public class ClaimServiceImpl {
 
 	}
 
-	public String saveClaimRuleRemark(JwtUser jwtUser, ClaimRuleRemarkDto dto) {
+	public String saveClaimRuleRemark(PartialHeader partialHeader, ClaimRuleRemarkDto dto) {
 
-		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
 			if (!claim.isPending())
 				return "Claim Already Submitted";
-			saveClaimRuleRemark(dto.getData(), user, claim, jwtUser);
+			saveClaimRuleRemark(dto.getData(), user, claim, partialHeader);
 
 			return "Remarks Saved";
 		}
@@ -1458,7 +1444,7 @@ public class ClaimServiceImpl {
 
 	}
 
-	private void saveClaimRuleRemark(List<RuleRemarkDto> data, RcmUser user, RcmClaims claim, JwtUser jwtUser) {
+	private void saveClaimRuleRemark(List<RuleRemarkDto> data, RcmUser user, RcmClaims claim, PartialHeader partialHeader) {
 		data.forEach(s -> {
 
 			RcmRules rule = rcmRuleRepo.findById(s.getRuleId()).get();
@@ -1476,12 +1462,12 @@ public class ClaimServiceImpl {
 			remark.setRemarks(s.getRemark());
 			remark.setRule(rule);
 			remark.setActive(true);
-			remark.setTeamId(rcmTeamRepo.findById(jwtUser.getTeamId()));
+			remark.setTeamId(rcmTeamRepo.findById(partialHeader.getTeamId()));
 			rcmClaimRuleRemarkRepo.save(remark);
 		});
 	}
 
-	private void saveClaimRuleManualMessageType(List<RuleRemarkDto> data, RcmUser user, RcmClaims claim, JwtUser jwtUser) {
+	private void saveClaimRuleManualMessageType(List<RuleRemarkDto> data, RcmUser user, RcmClaims claim, PartialHeader partialHeader) {
 		data.forEach(s -> {
 
 			
@@ -1504,12 +1490,12 @@ public class ClaimServiceImpl {
 			val.setRule(rule);
 			val.setActive(true);
 			val.setMessage("BY System");
-			val.setTeamId(rcmTeamRepo.findById(jwtUser.getTeamId()));
+			val.setTeamId(rcmTeamRepo.findById(partialHeader.getTeamId()));
 			rcmClaimRuleValidationRepo.save(val);
 		});
 	}
 	private void saveClaimServiceCodeValidation(List<ClaimServiceDto> data, RcmUser user, RcmClaims claim,
-			JwtUser jwtUser) {
+			PartialHeader partialHeader) {
 		data.forEach(s -> {
 
 			RcmClaimsServiceRuleValidation val = rcmClaimsServiceRuleValidationRepo
@@ -1524,26 +1510,26 @@ public class ClaimServiceImpl {
 		});
 	}
 
-	public List<RuleEngineClaimDto> getRuleEngineClaimReport(String officeId, String companyId, String patientId,
+	public List<RuleEngineClaimDto> getRuleEngineClaimReport(String officeId, PartialHeader partialHeader, String patientId,
 			String claimId) {
 
-		return rcmClaimRepository.getRuleEngineClaimReport(officeId, companyId, patientId, claimId);
+		return rcmClaimRepository.getRuleEngineClaimReport(officeId, partialHeader.getCompany().getUuid(), patientId, claimId);
 	}
 
-	public RcmClaimSubmissionDto fetchClaimSubmissionDetails(JwtUser jwtUser, String claimuuid) {
+	public RcmClaimSubmissionDto fetchClaimSubmissionDetails(PartialHeader partialHeader, String claimuuid) {
 
 		RcmClaimSubmissionDto d = rcmClaimSubmissionDetailsRepo.findByClaimUuidAndCompanyId(claimuuid,
-				jwtUser.getCompany().getUuid());
+				partialHeader.getCompany().getUuid());
 
 		return d;
 	}
 
-	public String saveClaimSubmissionDetails(JwtUser jwtUser, ClaimSubmissionDto dto) {
+	public String saveClaimSubmissionDetails(PartialHeader partialHeader, ClaimSubmissionDto dto) {
 
-		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
 
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
 			if (!claim.isPending())
 				return "Claim Already Submitted";
@@ -1586,7 +1572,7 @@ public class ClaimServiceImpl {
 		return rcmClaimSubmissionDetailsRepo.save(det).getId();
 	}
 
-	public List<KeyValueDto> fetchClaimNotes(JwtUser jwtUser, String claimuuid) {
+	public List<KeyValueDto> fetchClaimNotes(PartialHeader partialHeader, String claimuuid) {
 
 		List<KeyValueDto> list = new ArrayList<>();
 		List<RcmClaimNoteDto> d = rcmClaimNotesRepo.fetchClaimNotes(claimuuid, RcmTeamEnum.BILLING.getId());
@@ -1610,24 +1596,24 @@ public class ClaimServiceImpl {
 		return list;
 	}
 
-	public String saveClaimNotes(JwtUser jwtUser, ClaimNotesDto dto) {
+	public String saveClaimNotes(PartialHeader partialHeader, ClaimNotesDto dto) {
 
 		// RcmClaimNotes notes = null;
-		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
 		RcmClaimAssignment assign = rcmClaimAssignmentRepo
-				.findByAssignedToUuidAndClaimsClaimUuidAndActive(jwtUser.getUuid(), claim.getClaimUuid(), true);
+				.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
 		// claim.getC
 		if (assign == null) {
-			return "Not assigned to user:" + jwtUser.getEmail();
+			return "Not assigned to user:" + partialHeader.getJwtUser().getEmail();
 		}
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
 
 			if (!claim.isPending())
 				return "Claim Already Submitted";
-			saveClaimNotes(dto.getData(), user, claim, jwtUser);
+			saveClaimNotes(dto.getData(), user, claim, partialHeader);
 			return "Done";
 		}
 
@@ -1636,7 +1622,7 @@ public class ClaimServiceImpl {
 
 	}
 
-	private boolean saveClaimNotes(List<ClaimNoteDto> data, RcmUser user, RcmClaims claim, JwtUser jwtUser) {
+	private boolean saveClaimNotes(List<ClaimNoteDto> data, RcmUser user, RcmClaims claim, PartialHeader partialHeader) {
         boolean saveAll=true;
         if (data==null) return false;
         if (data.size()==0) return false;
@@ -1668,7 +1654,7 @@ public class ClaimServiceImpl {
        return saveAll;
 	}
 
-	public List<ClaimRuleVaidationValueDto> fetchClaimAllRulesData(JwtUser jwtUser, String claimuuid) {
+	public List<ClaimRuleVaidationValueDto> fetchClaimAllRulesData(PartialHeader partialHeader, String claimuuid) {
 
 		List<ClaimRuleVaidationValueDto> list = new ArrayList<>();
 		List<ClaimRuleValidationDto> d = rcmClaimRuleValidationRepo.fetchClaimRuleValidation(claimuuid,
@@ -1698,25 +1684,25 @@ public class ClaimServiceImpl {
 		return list;
 	}
 
-	public String saveClaimManualRules(JwtUser jwtUser, ClaimRuleValidationsDto dto) {
+	public String saveClaimManualRules(PartialHeader partialHeader, ClaimRuleValidationsDto dto) {
 
 		// RcmClaimNotes notes = null;
-		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
 		RcmClaimAssignment assign = rcmClaimAssignmentRepo
-				.findByAssignedToUuidAndClaimsClaimUuidAndActive(jwtUser.getUuid(), claim.getClaimUuid(), true);
+				.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
 		// claim.getC
 		if (assign == null) {
-			return "Not assigned to user:" + jwtUser.getEmail();
+			return "Not assigned to user:" + partialHeader.getJwtUser().getEmail();
 		}
 
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
 
 			if (!claim.isPending())
 				return "Claim Already Submitted";
-			saveClaimManualRules(dto.getData(), user, claim, jwtUser);
+			saveClaimManualRules(dto.getData(), user, claim, partialHeader);
 
 			return "Done";
 		}
@@ -1727,7 +1713,7 @@ public class ClaimServiceImpl {
 	}
 
 	private void saveClaimManualRules(List<com.tricon.rcm.dto.ClaimRuleValidationDto> data, RcmUser user,
-			RcmClaims claim, JwtUser jwtUser) {
+			RcmClaims claim, PartialHeader partialHeader) {
 		data.forEach(s -> {
 			RcmRules rule = rcmRuleRepo.findById(s.getRuleId()).get();
 			if (rule.getManualAuto().equals(Constants.RULE_TYPE_MANUAL)) {
@@ -1749,7 +1735,7 @@ public class ClaimServiceImpl {
 					val.setActive(true);
 					val.setRule(rule);
 
-					val.setTeamId(rcmTeamRepo.findById(jwtUser.getTeamId()));
+					val.setTeamId(rcmTeamRepo.findById(partialHeader.getTeamId()));
 					rcmClaimRuleValidationRepo.save(val);
 
 				}
@@ -1758,7 +1744,7 @@ public class ClaimServiceImpl {
 
 	}
 
-	public String fetchClaimRemark(JwtUser jwtUser, String claimuuid) {
+	public String fetchClaimRemark(PartialHeader partialHeader, String claimuuid) {
 
 		RcmClaimComment d = rcmClaimCommentRepo.findByClaimsClaimUuid(claimuuid);
 		if (d != null) {
@@ -1767,22 +1753,22 @@ public class ClaimServiceImpl {
 		return "";
 	}
 
-	public ClaimEditDetailDto saveFullClaim(JwtUser jwtUser, ClaimEditDto dto) {
+	public ClaimEditDetailDto saveFullClaim(PartialHeader partialHeader, ClaimEditDto dto) {
 
 		ClaimEditDetailDto claimEditDetailDto= new ClaimEditDetailDto();
 		String message="";
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
-		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		RcmClaimAssignment assign = rcmClaimAssignmentRepo
-				.findByAssignedToUuidAndClaimsClaimUuidAndActive(jwtUser.getUuid(), claim.getClaimUuid(), true);
+				.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
 		// claim.getC
 		if (assign == null) {
-			claimEditDetailDto.setMessage( "Not assigned to user:" + jwtUser.getEmail());
+			claimEditDetailDto.setMessage( "Not assigned to user:" + partialHeader.getJwtUser().getEmail());
 			return claimEditDetailDto;
 			}
 		boolean notesSaved=false;
 		RcmOffice office =officeRepo.findByUuid(claim.getOffice().getUuid());
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
 
 			if (!claim.isPending()) {
@@ -1791,27 +1777,27 @@ public class ClaimServiceImpl {
 			} else {
 
 				if (dto.getClaimManualRuleValidationList() != null)
-					saveClaimManualRules(dto.getClaimManualRuleValidationList(), user, claim, jwtUser);
+					saveClaimManualRules(dto.getClaimManualRuleValidationList(), user, claim, partialHeader);
 				if (dto.getClaimNoteDtoList() != null) {
-					notesSaved = saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, jwtUser);
+					notesSaved = saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, partialHeader);
 				}
 				if (dto.getRuleRemarkDto() != null) {
-					saveClaimRuleRemark(dto.getRuleRemarkDto(), user, claim, jwtUser);
-					saveClaimRuleManualMessageType(dto.getRuleRemarkDto(), user, claim, jwtUser);
+					saveClaimRuleRemark(dto.getRuleRemarkDto(), user, claim, partialHeader);
+					saveClaimRuleManualMessageType(dto.getRuleRemarkDto(), user, claim, partialHeader);
 
 				}
 				
 				if (dto.getClaimRemark() != null) {
-					saveClaimRemark(dto.getClaimRemark(), claim, user, jwtUser);
+					saveClaimRemark(dto.getClaimRemark(), claim, user, partialHeader);
 				}
 
 				if (dto.getSubmissionDto() != null)
 					saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
 				if (dto.getSerCVDto() != null)
-					saveClaimServiceCodeValidation(dto.getSerCVDto(), user, claim, jwtUser);
+					saveClaimServiceCodeValidation(dto.getSerCVDto(), user, claim, partialHeader);
 
 			}
-			claim.setLastWorkTeamId(rcmTeamRepo.findById(jwtUser.getTeamId()));
+			claim.setLastWorkTeamId(rcmTeamRepo.findById(partialHeader.getTeamId()));
 			if (dto.isSubmission()) {
 				claim.setPending(false);
 				
@@ -1875,17 +1861,17 @@ public class ClaimServiceImpl {
 		return claimEditDetailDto;
 	}
 
-	public String assignToOtherOrTeamLead(JwtUser jwtUser, ClaimAssignDto dto) {
+	public String assignToOtherOrTeamLead(PartialHeader partialHeader, ClaimAssignDto dto) {
 
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
-		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		RcmClaimAssignment assign = rcmClaimAssignmentRepo
-				.findByAssignedToUuidAndClaimsClaimUuidAndActive(jwtUser.getUuid(), claim.getClaimUuid(), true);
+				.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
 		// claim.getC
 		if (assign == null) {
-			return "Not assigned to user:" + jwtUser.getEmail();
+			return "Not assigned to user:" + partialHeader.getJwtUser().getEmail();
 		}
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
 
 			if (!claim.isPending()) {
@@ -1897,7 +1883,7 @@ public class ClaimServiceImpl {
 
 			if (dto.isToLead()) {
 				// Assign to lead
-				RcmTeam lastTeam = rcmTeamRepo.findById(jwtUser.getTeamId());
+				RcmTeam lastTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
 				RcmUser rcmLeadUser = userRepo.findByUuid(dto.getTeamLeadUuid());
 				// Check For Role on do for TEAM Lead
 				claim.setLastWorkTeamId(lastTeam);
@@ -1925,10 +1911,10 @@ public class ClaimServiceImpl {
 				// Assign to other Team.
 
 				RcmTeam team = rcmTeamRepo.findById(dto.getOtherTeamId());
-				RcmTeam lastTeam = rcmTeamRepo.findById(jwtUser.getTeamId());
+				RcmTeam lastTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
 				if (team != null) {
 					// Cannot assign to Same Team
-					if (jwtUser.getTeamId() != dto.getOtherTeamId()) {
+					if (partialHeader.getTeamId() != dto.getOtherTeamId()) {
 
 						claim.setCurrentTeamId(team);
 						claim.setLastWorkTeamId(lastTeam);
@@ -1966,7 +1952,7 @@ public class ClaimServiceImpl {
 		return "success";
 	}
 
-	public String runAutomatedRules(JwtUser jwtUser, String claimuuid,boolean reRrun) {
+	public String runAutomatedRules(PartialHeader partialHeader, String claimuuid,boolean reRrun) {
 
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimuuid);
 		
@@ -1974,11 +1960,11 @@ public class ClaimServiceImpl {
 		if (claim.isAutoRuleRun() && !reRrun) {
 			return "Already Run";
 		}
-		RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		System.out.println(calendar.get(Calendar.YEAR));
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormJwtAndCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), jwtUser);
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
 
 			if (!claim.isPending()) {
@@ -1988,7 +1974,7 @@ public class ClaimServiceImpl {
 			
 			RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByClaimsClaimUuidAndActive(claimuuid, true);
 			//Only Assigned User Can Run
-			if (assign != null && jwtUser.getUuid().equals(assign.getAssignedTo().getUuid())) {
+			if (assign != null && partialHeader.getJwtUser().getUuid().equals(assign.getAssignedTo().getUuid())) {
 				try {
 
 					List<String> types = Arrays
@@ -2000,7 +1986,7 @@ public class ClaimServiceImpl {
 					List<TPValidationResponseDto> allLIst = new ArrayList<>();
 
 					//Get Iv From Database Report
-					CaplineIVFFormDto ivData = getIvfDataFromRE(jwtUser.getCompany().getUuid(), claimuuid);
+					CaplineIVFFormDto ivData = getIvfDataFromRE(partialHeader.getCompany().getUuid(), claimuuid);
 
 					RcmRules rule = getRulesFromList(rules, RuleConstants.RULE_ID_301);
 					allLIst.addAll(ruleBookService.rule301(rule, ivData, claim.getSecMemberId()));
@@ -2031,7 +2017,7 @@ public class ClaimServiceImpl {
 							ruleBookService.rule305(rule, creList, claim, officeName, providerSheetData));
 
 					// Save Data here RcmClaimRuleValidation
-					saveAutoRuleReport(allLIst, user, claim, rules,jwtUser);
+					saveAutoRuleReport(allLIst, user, claim, rules,partialHeader);
 					claim.setAutoRuleRun(true);
 					rcmClaimRepository.save(claim);
 				} catch (Exception sheet) {
@@ -2062,7 +2048,7 @@ public class ClaimServiceImpl {
 		
 	}
 	private void saveAutoRuleReport(List<TPValidationResponseDto> ruleDataList, RcmUser user, RcmClaims claim,
-			List<RcmRules> rules,JwtUser jwtUser) {
+			List<RcmRules> rules,PartialHeader partialHeader) {
 
 		RcmClaimRuleValidation val = null;
 		for (TPValidationResponseDto ruleData : ruleDataList) {
@@ -2084,7 +2070,7 @@ public class ClaimServiceImpl {
 			val.setMessageType(MessageUtil.getReportMessageType(ruleData.getMessage()));
 			val.setActive(true);
 			val.setRunBy(user);
-			val.setTeamId(rcmTeamRepo.findById(jwtUser.getTeamId()));
+			val.setTeamId(rcmTeamRepo.findById(partialHeader.getTeamId()));
 			rcmClaimRuleValidationRepo.save(val);
 		}
 	}
@@ -2096,12 +2082,12 @@ public class ClaimServiceImpl {
 	 * @return
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public boolean assignedUnsAssignedClaims(JwtUser jwtUser) {
+	public boolean assignedUnsAssignedClaims(PartialHeader partialHeader) {
 		
 		//Assign Unassigned Claims
 		try {
-			RcmUser assignedBy= userRepo.findByUuid(jwtUser.getUuid()) ;
-			return ruleEngineService.assignedUnsAssignedClaimsByTeam(jwtUser.getCompany().getUuid(),assignedBy,RcmTeamEnum.BILLING.getId());
+			RcmUser assignedBy= userRepo.findByUuid(partialHeader.getJwtUser().getUuid()) ;
+			return ruleEngineService.assignedUnsAssignedClaimsByTeam(partialHeader.getCompany().getUuid(),assignedBy,RcmTeamEnum.BILLING.getId());
 		}catch(Exception ex) {
 			ex.printStackTrace();
 			return false;

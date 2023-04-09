@@ -127,9 +127,13 @@ public class RcmController extends BaseHeaderController{
 	// @GetMapping("/api/fetch-remote-lite-rej/{uuid}")
 	@ApiOperation(value = "Api For RemoteLiteRejections (Billing Pendency Dashboard)", response = FreshClaimDetailsDto.class, responseContainer = "List")
 	@GetMapping("/api/fetch-remote-lite-rej")
-	public ResponseEntity<Object> fetchRemoteLiteRejections() {
+	public ResponseEntity<Object> fetchRemoteLiteRejections(Model model) {
 
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchRemoteLiteRejections()));
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchRemoteLiteRejections(partialHeader)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching Billing/Rebilling Claims Details (Billing Pendency Dashboard)", response = FreshClaimDetailsDto.class, responseContainer = "List")
@@ -195,29 +199,38 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Billing TL Prodution Report", response = ProductionDto.class, responseContainer = "List")
 	@PostMapping("/api/bill/claim-production")
-	public ResponseEntity<Object> claimsProduction(@RequestBody ClaimProductionLogDto dto) {
+	public ResponseEntity<Object> claimsProduction(@RequestBody ClaimProductionLogDto dto, Model model) {
+		
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.claimsProductionReportByTeam(RcmTeamEnum.BILLING.getId(), dto)));
+				claimServiceImpl.claimsProductionReportByTeam(RcmTeamEnum.BILLING.getId(), dto,partialHeader)));
 	}
 
+	//@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	@ApiOperation(value = "Api For Fetching Individual Claim by uuid", response = FreshClaimDataImplDto.class)
 	@GetMapping("/api/fetchindclaim/{uuid}")
-	public ResponseEntity<Object> fetchIndividualClaim(@PathVariable("uuid") String claimUuid) {
+	public ResponseEntity<Object> fetchIndividualClaim(@PathVariable("uuid") String claimUuid,
+			 Model model) {
 
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = ((JwtUser) obj[0]);
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchIndividualClaim(claimUuid, jwtUser)));
+				claimServiceImpl.fetchIndividualClaim(claimUuid, partialHeader)));
 	}
 
     @ApiOperation(value = "Api For Fetching Service Code Validation Data by uuid", response = RcmClaimsServiceRuleValidationDto.class , responseContainer = "List")
 	@GetMapping("/api/fetchservicecodeval/{uuid}")
-	public ResponseEntity<Object> fetchServiceValidationFromGSheet(@PathVariable("uuid") String claimUuid) {
+	public ResponseEntity<Object> fetchServiceValidationFromGSheet(@PathVariable("uuid") String claimUuid,Model model) {
 
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = ((JwtUser) obj[0]);
+    	PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.readServiceValidationFromGSheet(claimUuid, jwtUser)));
+				claimServiceImpl.readServiceValidationFromGSheet(claimUuid, partialHeader)));
 	}
 	
    
@@ -230,177 +243,177 @@ public class RcmController extends BaseHeaderController{
 	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
 	@GetMapping("/api/issueClaims/{uuid}")
 	@PreAuthorize("hasRole('BILLING_TL')")
-	public ResponseEntity<Object> getIssueClaims(@PathVariable("uuid") String companyId) {
-		Object[] obj = checkForSimplePointUser();
-		if (!((boolean) obj[1])) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
-		}
+	public ResponseEntity<Object> getIssueClaims(@PathVariable("uuid") String companyId,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.getIssueClaims(companyId)));
 	}
 
 	@ApiOperation(value = "Api For Fetching Rule Data From Rule Engine DB", response = RuleEngineClaimDto.class, responseContainer = "List")
 	@PostMapping("/api/rules-data")
-	public ResponseEntity<Object> getRuleEngineClaimReport(@RequestBody FindRulesDto  dto) {
-		Object[] obj=checkForSimplePointUser();
-		JwtUser jwtUser=(JwtUser) obj[0];
+	public ResponseEntity<Object> getRuleEngineClaimReport(@RequestBody FindRulesDto  dto,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",claimServiceImpl.getRuleEngineClaimReport(dto.getOfficeId(),
-				jwtUser.getCompany().getUuid(), dto.getPatientId(), dto.getClaimId())));
+				partialHeader, dto.getPatientId(), dto.getClaimId())));
 	}
 
 	@ApiOperation(value = "Api For Fetching IVF DATA From Rule Engine", response = CaplineIVFFormDto.class)
 	@GetMapping("/api/ivfdata/{claimuuid}")
-	public ResponseEntity<Object> getIvfDataFromRE(@PathVariable("claimuuid") String claimuuid) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> getIvfDataFromRE(@PathVariable("claimuuid") String claimuuid,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.getIvfDataFromRE(jwtUser.getCompany().getUuid(), claimuuid)));
+				claimServiceImpl.getIvfDataFromRE(partialHeader.getCompany().getUuid(), claimuuid)));
 	}
 	
 	
 	@ApiOperation(value = "Api For Fetching Claims (Other team )Remarks From Claims", response = ClaimRemarksDto.class ,responseContainer = "List")
 	@GetMapping("/api/remarks-other/{claimuuid}")
-	public ResponseEntity<Object> fetchClaimRemarksOtherTeam(@PathVariable("claimuuid") String claimuuid) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> fetchClaimRemarksOtherTeam(@PathVariable("claimuuid") String claimuuid, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchClaimRemarksOtherTeam(jwtUser.getCompany().getUuid(), claimuuid,jwtUser.getTeamId())));
+				claimServiceImpl.fetchClaimRemarksOtherTeam(partialHeader.getCompany().getUuid(), claimuuid,partialHeader.getTeamId())));
 	}
 	
 	@ApiOperation(value = "Api For Saving Claims Remarks", response = String.class)
 	@PostMapping("/api/save-remarks")
-	public ResponseEntity<Object> saveRemark(@RequestBody ClaimRemarkDto dto) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.saveClaimRemark(jwtUser,dto)));
+	public ResponseEntity<Object> saveRemark(@RequestBody ClaimRemarkDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		 
+		if (partialHeader ==null) return null;
+		
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.saveClaimRemark(partialHeader,dto)));
 	}
 	
 	
 	@ApiOperation(value = "Api For Fetching Claims Rule Remarks", response = ClaimRuleRemarksDto.class ,responseContainer = "List")
 	@GetMapping("/api/fetch-claim-rule-remarks/{claimuuid}")
 	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> fetchClaimRuleRemark(@PathVariable("claimuuid") String claimuuid) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> fetchClaimRuleRemark(@PathVariable("claimuuid") String claimuuid, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchClaimRuleRemark(jwtUser,claimuuid)));
+				claimServiceImpl.fetchClaimRuleRemark(partialHeader,claimuuid)));
 	}
 	
 	
 	@ApiOperation(value = "Api For Saving Claims Rule Remarks", response = String.class)
 	@PostMapping("/api/save-claim-rule-remarks")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> saveClaimRuleRemark(@RequestBody ClaimRuleRemarkDto dto) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> saveClaimRuleRemark(@RequestBody ClaimRuleRemarkDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.saveClaimRuleRemark(jwtUser,dto)));
+				claimServiceImpl.saveClaimRuleRemark(partialHeader,dto)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching Claims Automated and Manual Rules Data", response = ClaimRuleVaidationValueDto.class ,responseContainer = "List")
 	@GetMapping("/api/fetch-claim-rule-val-data/{claimuuid}")
 	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> fetchClaimAutoRules(@PathVariable("claimuuid") String claimuuid) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> fetchClaimAutoRules(@PathVariable("claimuuid") String claimuuid, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchClaimAllRulesData(jwtUser,claimuuid)));
+				claimServiceImpl.fetchClaimAllRulesData(partialHeader,claimuuid)));
 	}
 	
 	@ApiOperation(value = "Api For Saving Claims Manual Rules", response = String.class)
 	@PostMapping("/api/save-claim-rule-val-datas")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> saveClaimManualRules(@RequestBody ClaimRuleValidationsDto dto) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> saveClaimManualRules(@RequestBody ClaimRuleValidationsDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.saveClaimManualRules(jwtUser,dto)));
+				claimServiceImpl.saveClaimManualRules(partialHeader,dto)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching Claims Submission detail", response = RcmClaimSubmissionDto.class)
 	@GetMapping("/api/fetch-claim-sub-det/{claimuuid}")
 	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> fetchClaimSubDetails(@PathVariable("claimuuid") String claimuuid) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> fetchClaimSubDetails(@PathVariable("claimuuid") String claimuuid, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchClaimSubmissionDetails(jwtUser,claimuuid)));
+				claimServiceImpl.fetchClaimSubmissionDetails(partialHeader,claimuuid)));
 	}
 	
 	@ApiOperation(value = "Api For Saving Claims Submission  Details", response = String.class)
 	@PostMapping("/api/save-claim-sub-det")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> saveClaimSubDetails(@RequestBody ClaimSubmissionDto dto) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> saveClaimSubDetails(@RequestBody ClaimSubmissionDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.saveClaimSubmissionDetails(jwtUser,dto)));
+				claimServiceImpl.saveClaimSubmissionDetails(partialHeader,dto)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching Claims Notes", response = KeyValueDto.class,responseContainer = "List")
 	@GetMapping("/api/fetch-claim-notes/{claimuuid}")
 	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> fetchClaimNotes(@PathVariable("claimuuid") String claimuuid) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> fetchClaimNotes(@PathVariable("claimuuid") String claimuuid, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchClaimNotes(jwtUser,claimuuid)));
+				claimServiceImpl.fetchClaimNotes(partialHeader,claimuuid)));
 	}
 	
 	@ApiOperation(value = "Api For Saving Claims Notes", response = String.class)
 	@PostMapping("/api/save-claim-notes")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> saveClaimNotes(@RequestBody ClaimNotesDto dto) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> saveClaimNotes(@RequestBody ClaimNotesDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.saveClaimNotes(jwtUser,dto)));
+				claimServiceImpl.saveClaimNotes(partialHeader,dto)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching Claims Remark (Only 1 for now)", response = String.class)
 	@GetMapping("/api/fetch-claim-remark/{claimuuid}")
 	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> fetchClaimRemark(@PathVariable("claimuuid") String claimuuid) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> fetchClaimRemark(@PathVariable("claimuuid") String claimuuid, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchClaimRemark(jwtUser,claimuuid)));
+				claimServiceImpl.fetchClaimRemark(partialHeader,claimuuid)));
 	}
 	
 	@ApiOperation(value = "Api For Saving Full Claim", response = String.class)
 	@PostMapping("/api/save-full-claim")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> saveFullClaim(@RequestBody ClaimEditDto dto) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> saveFullClaim(@RequestBody ClaimEditDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.saveFullClaim(jwtUser,dto)));
+				claimServiceImpl.saveFullClaim(partialHeader,dto)));
 	}
 	
 	
 	@ApiOperation(value = "Api For Assigning Claim to other user/Team for Preview", response = String.class)
 	@PostMapping("/api/assign-other-team-or-lead")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
-	public ResponseEntity<Object> assignToOtherOrTeamLead(@RequestBody ClaimAssignDto dto) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> assignToOtherOrTeamLead(@RequestBody ClaimAssignDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.assignToOtherOrTeamLead(jwtUser,dto)));
+				claimServiceImpl.assignToOtherOrTeamLead(partialHeader,dto)));
 	}
 	
 	
@@ -408,12 +421,12 @@ public class RcmController extends BaseHeaderController{
 	@ApiOperation(value = "Api For Assigning Un Assigned Claim to Users", response = String.class)
 	@GetMapping("/api/assign-unsassigned_claims")
 	@PreAuthorize("hasAnyRole('BILLING_TL','SUPER_ADMIN')")
-	public ResponseEntity<Object> assignUnsAsignedClaims() {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+	public ResponseEntity<Object> assignUnsAsignedClaims(Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.assignedUnsAssignedClaims(jwtUser)));
+				claimServiceImpl.assignedUnsAssignedClaims(partialHeader)));
 	}
 	
 
@@ -421,12 +434,12 @@ public class RcmController extends BaseHeaderController{
 	@GetMapping("/api/run-auto-rules/{claimuuid}/{reRun}")
 	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
 	public ResponseEntity<Object> runAutomatedRules(@PathVariable("claimuuid") String claimuuid,
-			@PathVariable("reRun") boolean reRun) {
-		Object[] obj = checkForSimplePointUser();
-		JwtUser jwtUser = (JwtUser) obj[0];
-
+			@PathVariable("reRun") boolean reRun, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.runAutomatedRules(jwtUser,claimuuid,reRun)));
+				claimServiceImpl.runAutomatedRules(partialHeader,claimuuid,reRun)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching pendency Report Data (All Billing Pendency Dashboard)", response = AllPendencyReportDto.class, responseContainer = "List")
@@ -443,7 +456,7 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 
-	private Object[] checkForSimplePointUser() {
+	/*private Object[] checkForSimplePointUser() {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
@@ -456,5 +469,5 @@ public class RcmController extends BaseHeaderController{
 		} else {
 			return new Object[] { jwtUser, false };
 		}
-	}
+	}*/
 }
