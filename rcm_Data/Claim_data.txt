@@ -1,0 +1,93 @@
+Where Claim is stored ?
+select * from rcm_claims;
+each claim has unique claim_uuid.
+
+Claim can be primary /seconday
+
+If Claim is Secondary then we need to submit/close  seconday first   onlly then we can work on Primary
+From Columm -->claim_id ->(2019_P) _p means Primary  _S Secondary
+---------------STEP1-------------------
+Related Claim Tables?
+
+How to fetch claim from DB.
+API ->api/fetchindclaim/{uuid}
+
+rcm_claim_assignment
+rcm_team
+rcm_insurance
+ 
+Linked Claims:
+ select claim_id from rcm_claims where  claim_uuid in (select linked_claim_id from rcm_linked_claims where claim_id=:claimuuid )
+ 
+ Get IV ID of Claim:
+   Each Claim has IV id (when we work on Rule Engine)
+ 	select ivf_form_id,date_of_service from reports_claim r inner join  
+	report_claim_detail rd on rd.report_id=r.id where
+	office_id=:officeId and claim_id=:claimid and  patient_id=:patientId limit 1
+	
+Get Tp id of claim:
+
+ SELECT treatement_plan_id,date_of_service FROM reports r inner join report_detail rd on rd.report_id=r.id 
+ where office_id=:officeId and patient_id=:patientId 
+ and treatement_plan_id not in ('PREBATCHMODE','SEALANTMODE') and iv_date is not null 
+ and STR_TO_DATE(iv_date, '%m/%d/%Y')<:dos 
+ order by STR_TO_DATE(iv_date, '%m/%d/%Y') desc limit 1
+ 
+ Note : Allow Edit only if assigned to login user.
+ How to find Assigned User ?
+ From Table rcm_claim_assignment.
+ 
+ Claim Comment --> rcm_claim_comment	-->This is remark (Remarks if needed section).
+ 
+---------------STEP2-------------------
+Now next 7 Apis all called to fetch restr Data
+1) api/remarks-other/ -- > Remark made by other teams.
+                            When claim is assigned to Other Teams  , other teams can Assign back the Claim to Bliing team with remarks.
+							Not covered in the Phase
+					table - > rcm_claim_assignment (comment_assigned_by)
+2)/api/fetch-claim-notes--> (Copy and Paste Provider Notes Section)
+                    table - > rcm_claim_note_type (Master Data)
+					          rcm_claim_notes 
+3) /api/fetchservicecodeval -->  (Only Smile point)
+  Need to Fetch Claim codes from Eagle Soft.
+   For section ->Service Code Level Validations:
+  
+ 
+  **************Call Rule Engine Api to pull Data(/claim-data-form-es)
+  This api which is hosted in RuleEngine .calls api which is Hosted in each office where Eagle Soft is installed.
+  And Save Data of claim in   "rcm_claim_detail" table
+  There is a google Sheet (1Ba44zmvoNzNBPNaxGPUNVxUu_O41r7HAWq2hyZuCDJc) where all Codes are given (Service-Code based Validations)
+  On sheet compair Code 
+  
+  Save final Data in "rcm_claims_service_rule_val" and Save Corresponding remarks in same Table.
+  
+4) api/fetch-claim-sub-det
+ Section --> Enter Claim Submission Details:
+ in table -- rcm_claims_submission_details
+
+5) api/rules-data * (Only Smile point)
+When we run Rule Engine Then Claim that we are working has Some Rule that a team runs. That data we store on reports table
+same we need to display here.
+
+6) api/fetch-claim-rule-val-data
+ section --> Claim Level Validations (Automated) and  Claim Level Validations (Manual):
+ section -->  Claim Level Validations (Only SmilePoint)
+ Table rcm_claim_rule_validation
+ Apart from Running Rule from Step6 We need some Addtional Rule that RCM Tool will run to check claim.
+ There are 6 Rules 5 Auomted and 1 Manual. 
+
+7) /api/fetch-claim-rule-remarks
+
+Pull Remarks Relation to section 6 are saved and Pulled From here.
+table -- rcm_claim_rule_remarks
+
+
+----Delete Data when Claim assigned to lead
+Check if its with Biling Team and not Submitted.
+1)rcm_claims_service_rule_val
+2)rcm_claim_comment
+3)rcm_claims_submission_details
+4)rcm_claim_rule_remark
+5)rcm_claim_rule_validation		
+ 
+
