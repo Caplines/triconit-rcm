@@ -17,8 +17,7 @@ import { OfficeClientPermission } from './urlPermission/office-client-permission
 
 @NgModule({
   declarations: [
-    AppComponent,
-    
+    AppComponent
   ],
   imports: [
     BrowserModule,

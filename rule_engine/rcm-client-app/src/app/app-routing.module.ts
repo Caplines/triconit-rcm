@@ -80,6 +80,11 @@ const  routes: Routes = [
     loadChildren :()=> import("./list-of-claims/list-of-claims.module").then(m=>m.ListOfClaimsModule),
     canActivate: [ToolUserPermission]
    },
+  {
+    path:'all-pendency',
+    loadChildren :()=> import("./allPendency/all-pendency/all-pendency.module").then(m=>m.AllPendencyModule),
+    canActivate: [ToolUserPermission]
+   },
 
   { path: '**', redirectTo: '/login' }
 ];
