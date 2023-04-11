@@ -57,6 +57,7 @@ export class HeaderComponent implements OnInit {
      if(this.roleData.length==0){
         this.getRoles();
      }
+     this.checkClientExist();
   }
   getRoles(){
     this.appSer.fetchRoles((res:any)=>{
@@ -135,6 +136,7 @@ export class HeaderComponent implements OnInit {
       this.modelElement.modal = document.getElementById("switch-modal");
       this.modelElement.modal.style.display = "block";
       this.showPopup= true;
+      this.checkClientExist();
     }
   }
 
@@ -192,5 +194,14 @@ export class HeaderComponent implements OnInit {
         this.btnDisabled =  true;
       }
     } 
+
+    checkClientExist(){
+      let getClient = localStorage.getItem('clients');
+      if(!getClient || getClient.length == 0){
+        setInterval(()=> {
+          this.logout()
+        },2000);
+      }
+    }
   
 }
