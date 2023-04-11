@@ -200,7 +200,7 @@ export class HeaderComponent implements OnInit {
       if(!getClient || getClient.length == 0){
         setInterval(()=> {
           this.logout()
-        },2000);
+        },1000);
       }
     }
   
