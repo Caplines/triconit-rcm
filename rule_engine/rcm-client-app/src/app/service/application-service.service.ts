@@ -321,4 +321,9 @@ isClaimStatusActive(uuid:any,callback:any){
 fetchRolesByEmail(email:any,callback:any){
   this.getData({},this.httpUrl['rolesByEmail']+"/"+email,callback)
 }
+
+
+fetchAllPendency(callback:any){
+  this.getData({},this.httpUrl['allpendency'],callback)
+}
 }

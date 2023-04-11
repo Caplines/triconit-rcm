@@ -59,7 +59,8 @@ export class BaseService {
     'rolesByEmail':'/user/roles',
     'claimStatus':"/claim_assign_to_user",
     'getRoles':'/master/getroles',
-    'getClients':'/master/getClients'
+    'getClients':'/master/getClients',
+    'allpendency':'/api/allpendency'
   }
 
   constructor(public http: HttpClient, private tokenStorage: TokenStorageService) {

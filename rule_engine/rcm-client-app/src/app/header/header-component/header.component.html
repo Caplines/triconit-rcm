@@ -33,7 +33,7 @@
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() || staticUtil.isRoleAsso()"><a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />List Of Claims</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() || staticUtil.isRoleAsso()"><a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />All Pendency</a></li>
             <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Update Password</a></li> 
-           <!-- <li ><a href="javascript:void(0);" [routerLink]="['/production']"routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Production</a></li> -->
+           <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead()"><a href="javascript:void(0);" [routerLink]="['/production']"routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Production</a></li>
         </ul>
 
     </div>

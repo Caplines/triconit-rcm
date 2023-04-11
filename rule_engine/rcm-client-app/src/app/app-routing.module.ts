@@ -74,6 +74,7 @@ const  routes: Routes = [
   {
     path:'production',
     loadChildren :()=> import("./production/production.module").then(m=>m.ProductionModule),
+    canActivate: [ToolUserPermission]
    },
   {
     path:'list-of-claims',
