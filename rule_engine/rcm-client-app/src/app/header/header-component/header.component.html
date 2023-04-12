@@ -67,7 +67,7 @@
                     <div class="col-sm">
                         <div class="form-group d-flex justify-content-around">
                             <label class="font-weight-bolder">Select Roles:</label>
-                            <select class="form-control" id="selectRolesAC" name="selectRolesAC" (change)="checkBtnDisabled()" [(ngModel)]="selectedRole">
+                            <select class="form-control"  id="selectRolesAC" name="selectRolesAC" (change)="checkBtnDisabled()" [(ngModel)]="selectedRole" [disabled]="cwModel?.roles?.length == 1 ? true : false">
                                 <option selected="true" hidden="true" value="">Select Roles</option>
                                 <ng-container *ngFor="let tl of cwModel?.roles">
                                     <option  value="{{tl.roleId}}">{{tl.roleName}}</option>

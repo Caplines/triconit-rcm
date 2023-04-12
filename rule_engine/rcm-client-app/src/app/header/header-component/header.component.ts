@@ -132,6 +132,10 @@ export class HeaderComponent implements OnInit {
         let foundRole = this.roleData.find((role: any) => role.roleId === roleId.substring(5));
         return foundRole ? { roleName: foundRole.roleName, roleId: foundRole.roleId } : null;
       }).filter((role: any) => role !== null);    //removes ROLE_ prefix from localstorage: roles and then retrived matched role name from role Data.
+      
+      if(this.cwModel.roles.length == 1) {
+        this.selectedRole = this.cwModel.roles[0].roleId;
+      }
 
       this.modelElement.modal = document.getElementById("switch-modal");
       this.modelElement.modal.style.display = "block";
