@@ -10,7 +10,7 @@ import com.tricon.rcm.util.Constants;
 
 public enum RcmRoleEnum {
 
-	TL("TL", "TeamLead",true),
+	TL("TL", "Team Lead",true),
 	ASSO("ASSO", "Associate",true), 
 	SYSTEM("SYSTEM", "System",false),
 	ADMIN("ADMIN", "Admin",true),

@@ -41,6 +41,7 @@ import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
+import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.AdminServiceImpl;
@@ -182,24 +183,21 @@ public class AdminController extends BaseHeaderController{
 	}
 	
 	@RequestMapping(value = "/finduserbydetail/{query}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> findUserByDetail(@PathVariable("query")String searchQuery) {
-		GenericResponse response = null;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-		JwtUser jwtUser = (JwtUser) userDetails;
-		if(!jwtUser.isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", null));
-		}
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+	public ResponseEntity<?> findUserByDetail(@PathVariable("query")String searchQuery,Model model) {
+		List<UserSearchDto> response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+
 		try {
-			response = serviceImpl.findUserByDetail(searchQuery);
+			response = serviceImpl.findUserByDetail(searchQuery,partialHeader.getRole(),partialHeader.getCompany());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,"",response));
   }
 	
 	@RequestMapping(value = "/getOrganization", method = RequestMethod.GET)

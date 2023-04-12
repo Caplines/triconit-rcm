@@ -80,4 +80,6 @@ public class MessageConstants {
 	
 	public static final String UNAUTHORIZED_USER = "User is not authorized";
 
+	public static final String PASSWORD_NOT_MATCH = "Password doesn't match with old Password";
+
 }

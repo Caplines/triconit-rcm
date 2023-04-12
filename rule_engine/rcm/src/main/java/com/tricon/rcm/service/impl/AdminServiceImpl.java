@@ -418,12 +418,18 @@ public class AdminServiceImpl {
 	 * @param searchQuery
 	 * @return List of users
 	 */
-	public GenericResponse findUserByDetail(String searchQuery) throws Exception {
-		List<UserSearchDto> user = userRepo.findByUserDetails(searchQuery);
-		if (user != null && !user.isEmpty()) {
-			return new GenericResponse(HttpStatus.OK, MessageConstants.USER_EXIST, user);
+	public List<UserSearchDto> findUserByDetail(String searchQuery, String roleFromHeader, RcmCompany company)
+			throws Exception {
+		List<UserSearchDto> user = null;
+		if (roleFromHeader.equals(Constants.ADMIN)) {
+			user = userRepo.findByUserDetailsByAdmin(searchQuery, company.getUuid());
+			return user;
 		}
-		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
+		if (roleFromHeader.equals(Constants.SUPER_ADMIN)) {
+			user = userRepo.findByUserDetailsBySuperAdmin(searchQuery);
+			return user;
+		}
+		return null;
 	}
 
 	/**

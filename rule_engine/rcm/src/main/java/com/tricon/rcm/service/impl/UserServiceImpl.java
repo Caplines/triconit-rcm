@@ -28,6 +28,7 @@ import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
+import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.MessageConstants;
 
 @Service
@@ -60,11 +61,15 @@ public class UserServiceImpl {
 	 * @return GenericResponse
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse updatePassword(String password,JwtUser jwtUser) throws Exception {
+	public GenericResponse updatePassword(String oldPassword, String newPassword, JwtUser jwtUser) throws Exception {
 		String msg = "";
 		RcmUser loginUser = userRepo.findByEmail(jwtUser.getUsername());
 		if (loginUser != null) {
-			msg = commonService.resetPassword(loginUser, loginUser, password);
+			String encodedPassword = loginUser.getPassword();
+			if (EncrytedKeyUtil.verifyPassword(oldPassword, encodedPassword)) {
+				msg = commonService.resetPassword(loginUser, loginUser, newPassword);
+			} else
+				msg = MessageConstants.PASSWORD_NOT_MATCH;
 		} else {
 			msg = MessageConstants.USER_NOT_EXIST;
 		}

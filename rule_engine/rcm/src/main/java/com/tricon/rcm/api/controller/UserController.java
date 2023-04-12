@@ -28,6 +28,7 @@ import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
+import com.tricon.rcm.dto.UpdatePasswordDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.security.JwtUser;
@@ -56,19 +57,20 @@ public class UserController extends BaseHeaderController {
 
 	@ApiOperation(value = "Api For Update Password of Login User")
 	@RequestMapping(value = "/updatepassword", method = RequestMethod.POST)
-	public ResponseEntity<?> updatePasswordOfUserOrAdmin(@RequestBody PasswordResetDto dto,Model model) {
+	public ResponseEntity<?> updatePasswordOfUserOrAdmin(@RequestBody UpdatePasswordDto dto,Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		
 		GenericResponse response = null;
-		if ((dto.getPassword()==null||dto.getPassword().trim().equals(""))||dto.getUuid()==null) {
+		if (dto.getOldPassword() == null || dto.getOldPassword().trim().equals("") || dto.getNewPassword() == null
+				|| dto.getNewPassword().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.PASSWORD_EMPTY, null));
 		}
 		try {
-			response = userService.updatePassword(dto.getPassword(),partialHeader.getJwtUser());
+			response = userService.updatePassword(dto.getOldPassword(),dto.getNewPassword(),partialHeader.getJwtUser());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

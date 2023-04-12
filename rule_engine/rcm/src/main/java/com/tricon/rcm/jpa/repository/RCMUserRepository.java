@@ -95,14 +95,21 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	@Query(value="update rcm_user set active=:status,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where uuid in(:uuid)",nativeQuery = true)
 	void enableOrDisableStatus(@Param("status")int active,@Param("updatedBy")String updatedBy,@Param("uuid")List<String> uuid);
 
-	@Query(value = "select uuid as Uuid,active as Active,concat(first_name,' ',last_name)as FullName,email as Email,"
-			+ "first_name as FirstName,last_name as LastName,team_id as TeamNameid from rcm_user where"
-			+ "(first_name like %:search% or email like %:search% or last_name like %:search%)",nativeQuery = true)
-	List<UserSearchDto> findByUserDetails(@Param("search")  String search);
+	@Query(value = "select u.uuid as Uuid,u.email as Email,"
+			+ "u.first_name as FirstName,u.last_name as LastName from rcm_user u "
+			+ "inner join rcm_user_company ruc on ruc.rcm_user_id=u.uuid "
+			+ "where (first_name like %:search% or email like %:search% or last_name like %:search%) and ruc.company_id=:clientUuid", nativeQuery = true)
+	List<UserSearchDto> findByUserDetailsByAdmin(@Param("search") String search,
+			@Param("clientUuid") String clientUuid);
 	
 	List<RcmUser>findByUuidIn(List<String> userId);
 	
 	@Query(value="select u.uuid as Uuid from rcm_user u inner join rcm_user_role r on u.uuid=r.uuid where r.role=:role",nativeQuery=true)
 	List<RcmUserToDto> findSuperAdminUser(@Param("role") String role);
+	
+	@Query(value = "select u.uuid as Uuid,u.email as Email,"
+			+ "u.first_name as FirstName,u.last_name as LastName from rcm_user u "
+			+ "where (first_name like %:search% or email like %:search% or last_name like %:search%)", nativeQuery = true)
+	List<UserSearchDto> findByUserDetailsBySuperAdmin(@Param("search") String search);
 
 }
