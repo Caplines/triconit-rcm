@@ -30,6 +30,7 @@ import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UpdatePasswordDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
+import com.tricon.rcm.dto.customquery.TreatmentPlanLinkDto;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
@@ -158,4 +159,23 @@ public class UserController extends BaseHeaderController {
 //		}
 //		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 //	}
+	
+	@RequestMapping(value = "/treatmentplan-link-data/{claimUuid}", method = RequestMethod.GET)
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	public ResponseEntity<?> treatmentPlanData(@PathVariable("claimUuid") String claimUuid, Model model) {
+		List<TreatmentPlanLinkDto> response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+
+		try {
+			response = userService.getTreatmentPlanLinkData(claimUuid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 }

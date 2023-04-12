@@ -22,6 +22,7 @@ import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
+import com.tricon.rcm.dto.customquery.TreatmentPlanLinkDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
@@ -130,4 +131,12 @@ public class UserServiceImpl {
 		return null;
 	}
     */
+
+	public List<TreatmentPlanLinkDto> getTreatmentPlanLinkData(String claimUuid) throws Exception {
+		if (claimUuid != null && !claimUuid.trim().equals("")) {
+			List<TreatmentPlanLinkDto> data = userRepo.findTreatmentPlanLinkData(claimUuid);
+			return data;
+		}
+		return null;
+	}
 }

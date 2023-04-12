@@ -13,6 +13,7 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.dto.customquery.RcmUserDetails;
+import com.tricon.rcm.dto.customquery.TreatmentPlanLinkDto;
 
 public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	
@@ -112,4 +113,11 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ "where (first_name like %:search% or email like %:search% or last_name like %:search%)", nativeQuery = true)
 	List<UserSearchDto> findByUserDetailsBySuperAdmin(@Param("search") String search);
 
+	//TreatmentPlan-link data query
+	
+	@Query(value = "select rc.date_last_updated_es as DatePlan,rcd.appt_id as Appt,rc.provider_id as Provider,rcd.service_code as Service,"
+			+ "rcd.description as Description,rcd.tooth as Tth,rcd.surface as Surface,rcd.fee as Fee,rcd.est_insurance as Ins,rcd.patient_portion as Pat "
+			+ "FROM rcm_claim_detail rcd inner join rcm_claims rc on rc.claim_uuid=rcd.claim_id "
+			+ "where rc.claim_uuid=:claimUuid", nativeQuery = true)
+	List<TreatmentPlanLinkDto> findTreatmentPlanLinkData(@Param("claimUuid") String claimUuid);
 }
