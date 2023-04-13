@@ -9,7 +9,7 @@ import { ApplicationServiceService } from '../service/application-service.servic
 })
 export class UpdatePasswordComponent implements OnInit {
 
-  user: any = { 'changedPassword': '', 'uuid': '' ,'confirmPass':''};
+  user: any = { 'oldPassword': '' ,'newPassword':''};
   userRole: any;
   userName:any;
   pageNumber:number = 0;
@@ -30,8 +30,8 @@ export class UpdatePasswordComponent implements OnInit {
   }
 
   changePassword() {
-    if(this.user.changedPassword === this.user.confirmPass && this.user.changedPassword!='' && this.user.confirmPass!=''){
-      this.appService.updatepassword({ "uuid": this.user.uuid, "password": this.user['changedPassword'] }, (callback: any) => {
+    if(this.user.oldPassword != this.user.newPassword && this.user.oldPassword!='' && this.user.newPassword!=''){
+      this.appService.updatepassword({"oldPassword": this.user['oldPassword'],"newPassword": this.user['newPassword']}, (callback: any) => {
         if (callback.status == 200) {
         console.log(callback)
         this.showAlertPopup(callback);

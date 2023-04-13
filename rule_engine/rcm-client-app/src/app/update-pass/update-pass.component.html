@@ -18,19 +18,19 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="changepass">Enter the  Password :</label>
-                                        <input type="text" class="form-control" [(ngModel)]="user['changedPassword']"
-                                            [ngClass]="{'is-invalid': user['changedPassword'] && (user['changedPassword']=='' || user['changedPassword'].length<6)}"
+                                        <label for="changepass">Enter the Old Password :</label>
+                                        <input type="text" class="form-control" [(ngModel)]="user['oldPassword']"
+                                            [ngClass]="{'is-invalid': user['oldPassword'] && (user['oldPassword']=='' || user['oldPassword'].length<6)}"
                                             >
                                     </div>
                                     <div class="form-group">
-                                        <label for="changepass">Confirm Password :</label>
-                                        <input type="text" class="form-control" [(ngModel)]="user['confirmPass']"
-                                            [ngClass]="{'is-invalid': user['confirmPass'] && user['changedPassword']!==user['confirmPass']}"
+                                        <label for="changepass">Enter the New Password :</label>
+                                        <input type="text" class="form-control" [(ngModel)]="user['newPassword']"
+                                            [ngClass]="{'is-invalid': user['newPassword'] && user['oldPassword']==user['newPassword']}"
                                             >
                                     </div>
                                     <div class="find-btn">
-                                        <button type="button" class="btn btn-success" [disabled]="user['changedPassword'].length<6 || user['confirmPass'].length<6 && (user['changedPassword'] !== user['confirmPass']) " (click)="changePassword()">Change
+                                        <button type="button" class="btn btn-success" [disabled]="!user['oldPassword'] || !user['newPassword'] || user['oldPassword'] == user['newPassword']" (click)="changePassword()">Change
                                             Password</button>
                                     </div>
                                 </div>

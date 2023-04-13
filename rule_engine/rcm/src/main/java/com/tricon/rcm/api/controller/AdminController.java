@@ -127,7 +127,7 @@ public class AdminController extends BaseHeaderController{
 		try {
 			response = serviceImpl.findUserByEmail(dto,partialHeader.getRole(),partialHeader.getCompany());
 			if(response==null) {
-				return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,MessageConstants.USER_NOT_EXIST,null));
+				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST,MessageConstants.USER_NOT_EXIST,null));
 			}
 			
 		} catch (Exception e) {
