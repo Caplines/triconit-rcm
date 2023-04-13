@@ -6,6 +6,7 @@ import { ClaimRcmDataModel, ClaimEditModel } from '../models/claim-rcm-data-mode
 import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
 import { ClaimAssignToTeamModel } from '../models/claim_assign_to_team';
 import { TokenStorageService } from '../service/token-storage.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,8 @@ import { TokenStorageService } from '../service/token-storage.service';
 export class ClaimService extends BaseService {
   setPaddingContainer: boolean = false;
 
-  constructor(http: HttpClient, tokenStorage: TokenStorageService) {
-    super(http, tokenStorage);
+  constructor(router: Router, http: HttpClient, tokenStorage: TokenStorageService) {
+    super(router, http, tokenStorage);
   }
 
   fetchBillingClaimsByUuid(uuid: string, callback: any) {

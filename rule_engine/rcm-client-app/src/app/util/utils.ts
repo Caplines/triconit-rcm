@@ -1,108 +1,108 @@
 export default class Utils {
-    
+
    /**
     * Get roles from Authorities
     * @param auth
     */
-    static getRoles(auth:any):any{
-        let role:any=[];
-        auth.forEach(function (value:any) {
-            role.push(value.authority);
-          });
-        return role;
-    }
+   static getRoles(auth: any): any {
+      let role: any = [];
+      auth.forEach(function (value: any) {
+         role.push(value.authority);
+      });
+      return role;
+   }
 
 
-     /**
-    * Get Clients from companies
-    * @param clients
-    */
-     static getClients(clients:any):any{
-      let cpm:any=[];
-      clients.forEach(function (value:any) {
-         cpm.push({"name":value.name,"id":value.uuid});
-        });
-        
+   /**
+  * Get Clients from companies
+  * @param clients
+  */
+   static getClients(clients: any): any {
+      let cpm: any = [];
+      clients.forEach(function (value: any) {
+         cpm.push({ "name": value.name, "id": value.uuid });
+      });
+
       return JSON.stringify(cpm);
-    }
+   }
 
-    /**
-    *Get Clients from LS
-    */
-     static getClientsFromLS():any{
+   /**
+   *Get Clients from LS
+   */
+   static getClientsFromLS(): any {
       return JSON.parse(localStorage.getItem("clients"));
-    }
-    /**
-    *Get Clients from LS
-    */
-    static getTeamsFromLS():any{
+   }
+   /**
+   *Get Clients from LS
+   */
+   static getTeamsFromLS(): any {
       return JSON.parse(localStorage.getItem("teams"));
-    }
-      /**
-    * Get Clients from companies
-    * @param auth
-    */
-      static getTeams(teams:any):any{
-         let tm:any=[];
-         teams.forEach(function (value:any) {
-            tm.push({"name":value.name,"id":value.id,"nameId":value.nameId});
-           });
-           return JSON.stringify(tm);
-     }
-   
+   }
+   /**
+ * Get Clients from companies
+ * @param auth
+ */
+   static getTeams(teams: any): any {
+      let tm: any = [];
+      teams.forEach(function (value: any) {
+         tm.push({ "name": value.name, "id": value.id, "nameId": value.nameId });
+      });
+      return JSON.stringify(tm);
+   }
+
    /**
     *store user details  in local storage to keep user logged in between page refreshes
     * @param data
     * @param token
     */
-   static setLocalStorage(data:any,token:string){
+   static setLocalStorage(data: any, token: string) {
       console.log(data);
-       localStorage.setItem('currentUser', data.userName);
-       //localStorage.setItem('userType', data.userType);
-       localStorage.setItem('token', token);
-      
-       localStorage.setItem('name', data.firstName);
-       this.setLocalStoragePhase2(data.authorities,data.companies,data.teams);
-       
+      localStorage.setItem('currentUser', data.userName);
+      //localStorage.setItem('userType', data.userType);
+      localStorage.setItem('token', token);
+
+      localStorage.setItem('name', data.firstName);
+      this.setLocalStoragePhase2(data.authorities, data.companies, data.teams);
+
    }
 
-   static setLocalStoragePhase2(auth:any,comp:any,teams:any){
+   static setLocalStoragePhase2(auth: any, comp: any, teams: any) {
       localStorage.setItem('roles', Utils.getRoles(auth));
       localStorage.setItem('clients', Utils.getClients(comp));
       localStorage.setItem('teams', Utils.getTeams(teams));
    }
 
-   static setLocalStoragePartial(clientName:string,roleName:any,teamId:number){
-    
-       localStorage.setItem('selected_clientName', clientName);
-       localStorage.setItem('selected_roleName', roleName);
-       localStorage.setItem('selected_teamId',teamId+"");
-     
-       
-   }
-   
-   static setRefreshToken(data:any){
+   static setLocalStoragePartial(clientName: string, roleName: any, teamId: number) {
 
-    localStorage.setItem("token", (<any>data)[0].token);
-    this.setLocalStoragePhase2(data[1],data[3],data[2]);
+      localStorage.setItem('selected_clientName', clientName);
+      localStorage.setItem('selected_roleName', roleName);
+      localStorage.setItem('selected_teamId', teamId + "");
+
 
    }
-   
+
+   static setRefreshToken(data: any) {
+
+      localStorage.setItem("token", (<any>data)[0].token);
+      this.setLocalStoragePhase2(data[1], data[3], data[2]);
+
+   }
+
    /**
     * Reset Local Storage
     */
 
-   static resetLocalStorage(){
-       localStorage.removeItem('currentUser');
-       localStorage.removeItem('teamId');
-       localStorage.removeItem('token');
-       localStorage.removeItem('roles');
-       localStorage.removeItem('name');
-       localStorage.removeItem('clientName');
-       localStorage.removeItem('selected_clientName')
-       localStorage.removeItem('selected_roleName');
-       localStorage.removeItem('selected_teamId');
-       
+   static resetLocalStorage() {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('teamId');
+      localStorage.removeItem('token');
+      localStorage.removeItem('roles');
+      localStorage.removeItem('name');
+      localStorage.removeItem('clientName');
+      localStorage.removeItem('selected_clientName')
+      localStorage.removeItem('selected_roleName');
+      localStorage.removeItem('selected_teamId');
+
    }
    /*
    static fetchUserTypeFromLocalStorage():string{
@@ -112,121 +112,127 @@ export default class Utils {
        
    }
    */
-   static checkAdmin(){
-    let ls:any=localStorage;
-	    if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_ADMIN")>-1) {
-	        return true;
-	     }
-        return false;
-   }
-   static checkRoleAdmin(){
-    let ls:any=localStorage;
-	    if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("ADMIN")>-1) {
-	        return true;
-	     }
-        return false;
-   }
-
-   static checkSuperAdmin(){
-      let ls:any=localStorage;
-         if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_SUPER_ADMIN")>-1) {
-             return true;
-          }
-          return false;
-     }
-   static checkRoleSuperAdmin(){
-      let ls:any=localStorage;
-         if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("SUPER_ADMIN")>-1) {
-             return true;
-          }
-          return false;
-     }
-
-   static isBillingLead(){
-    let ls:any=localStorage;
-       if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_BILLING_TL")>-1) {
-	        return true;
-	     }
-        return false;
-   }
-
-   static isRoleLead(){
-    let ls:any=localStorage;
-       if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("TL")>-1) {
-	        return true;
-	     }
-        return false;
-   }
-
-   static isClientManager(){
-    let ls:any=localStorage;
-       if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_CLIENT_CLIENT_MANAGER")>-1) {
-	        return true;
-	     }
-        return false;
-   }
-
-   static isBillingAsso(){
-    let ls:any=localStorage;
-       if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_BILLING_ASSO")>-1) {
-	        return true;
-	     }
-        return false;
-   }
-
-   static isRoleAsso(){
-    let ls:any=localStorage;
-       if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("ASSO")>-1) {
-	        return true;
-	     }
-        return false;
-   }
-
-   static isSmilePoint(){
-    let ls:any=localStorage;
-       if (ls.getItem('currentUser') && ls.getItem('selected_clientName') && ls.getItem('selected_clientName')==='Smilepoint') {
-	        return true;
-	     }
-        return false;
-   }
-
-   static isAccountpopupNeeded(){
-      let ls:any=localStorage;
-      if (ls.getItem('selected_clientName')==null ||
-           ls.getItem('selected_roleName') ==null ||
-          ls.getItem('selected_teamId') ==null){
-            return true;
-          }
-      return false;   
-   }
-
-   static getRolesFromLS():any{
-      return  localStorage.getItem("roles").split(",");
-    }
-
-  static isLoggedIn(){
-   if (localStorage.getItem('currentUser')) {
-      return true;
-   }else{
+   static checkAdmin() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_ADMIN") > -1) {
+         return true;
+      }
       return false;
-  }
-  }
-
-  static isSessionSet(){
-   if (localStorage.getItem('selected_clientName')) {
-      return true;
-   }else{
+   }
+   static checkRoleAdmin() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("ADMIN") > -1) {
+         return true;
+      }
       return false;
-  }
-  }
+   }
 
-  static setSession(data:any){
-        this.setRefreshToken(data);
-        this.setLocalStoragePhase2(data[1],data[3],data[1]);
-  }
+   static checkSuperAdmin() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_SUPER_ADMIN") > -1) {
+         return true;
+      }
+      return false;
+   }
+   static checkRoleSuperAdmin() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("SUPER_ADMIN") > -1) {
+         return true;
+      }
+      return false;
+   }
 
-  static isRegisterVisible(){
-   localStorage.getItem('selected_clientName')
-  }
+   static isBillingLead() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_BILLING_TL") > -1) {
+         return true;
+      }
+      return false;
+   }
+
+   static isRoleLead() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("TL") > -1) {
+         return true;
+      }
+      return false;
+   }
+
+   static isClientManager() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_CLIENT_CLIENT_MANAGER") > -1) {
+         return true;
+      }
+      return false;
+   }
+
+   static isBillingAsso() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_BILLING_ASSO") > -1) {
+         return true;
+      }
+      return false;
+   }
+
+   static isRoleAsso() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("ASSO") > -1) {
+         return true;
+      }
+      return false;
+   }
+
+   static isSmilePoint() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('selected_clientName') && ls.getItem('selected_clientName') === 'Smilepoint') {
+         return true;
+      }
+      return false;
+   }
+
+   static isAccountpopupNeeded() {
+      let ls: any = localStorage;
+      if (ls.getItem('selected_clientName') == null ||
+         ls.getItem('selected_roleName') == null ||
+         ls.getItem('selected_teamId') == null) {
+         return true;
+      }
+      return false;
+   }
+
+   static getRolesFromLS(): any {
+      return localStorage.getItem("roles").split(",");
+   }
+
+   static isLoggedIn() {
+      if (localStorage.getItem('currentUser')) {
+         return true;
+      } else {
+         return false;
+      }
+   }
+
+   static isSessionSet() {
+      if (localStorage.getItem('selected_clientName')) {
+         return true;
+      } else {
+         return false;
+      }
+   }
+
+   static setSession(data: any) {
+      this.setRefreshToken(data);
+      this.setLocalStoragePhase2(data[1], data[3], data[1]);
+   }
+
+   static isRegisterVisible() {
+      localStorage.getItem('selected_clientName')
+   }
+
+
+   static logout() {
+      localStorage.clear();
+      window.location.href = "/login";
+   }
 
 }
