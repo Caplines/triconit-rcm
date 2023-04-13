@@ -261,6 +261,11 @@ public class RcmCommonServiceImpl {
 				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(role)));
 	}
 	
+	public boolean isTeamLead(Set<RcmUserRole> roles) {
+		return roles.stream()
+				.anyMatch(x -> x.getRole().equals(Constants.ROLE_PREFIX.concat(Constants.TEAMLEAD)));
+	}
+	
 	public boolean isSuperAdmin(JwtUser jwtUser) {
 		return jwtUser.getAuthorities().stream()
 				.anyMatch(x -> x.getAuthority().equals(Constants.ROLE_PREFIX.concat(Constants.SUPER_ADMIN)));

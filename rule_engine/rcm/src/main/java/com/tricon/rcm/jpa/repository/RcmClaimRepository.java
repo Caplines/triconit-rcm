@@ -18,6 +18,7 @@ import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDateDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
+import com.tricon.rcm.dto.customquery.ClaimXDaysDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 
@@ -272,4 +273,20 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  where rc.pending is true and rca.active is false and cmp.uuid=:companyId"
 			+ "  group by rt.name" )
 	List<AllPendencyDateDto> allPendencyDateCount(@Param("companyId") String companyId);
+	
+	@Query(nativeQuery = true, value = ""
+			+ " select distinct rc.claim_id as claimId,rc.office_id as officeId,rc.claim_uuid as claimUUid  from rcm_claims rc inner join office off on off.uuid=rc.office_id "
+			+ " inner join company cmp on cmp.uuid=off.company_id left join rcm_claim_detail rcd on rcd.claim_id=rc.claim_uuid "
+			+ " where  cmp.name=:companyName and date(rc.created_date)  >= (CURDATE() - interval :days day) and rc.pending is true and rcd.id is null "
+			+ "")
+	List<ClaimXDaysDto> getClaimIdsdWithNoDetailForGivenLastDays(@Param("companyName") String companyName,
+			@Param("days") int days);
+	
+	@Query(nativeQuery = true, value = ""
+			+ " select distinct rc.claim_id as claimId,rc.office_id as officeId,rc.claim_uuid as claimUUid  from rcm_claims rc inner join office off on off.uuid=rc.office_id "
+			+ " inner join company cmp on cmp.uuid=off.company_id left join rcm_claim_detail rcd on rcd.claim_id=rc.claim_uuid "
+			+ " where  cmp.name=:companyName and off.uuid=:offuuid and date(rc.created_date)  >= (CURDATE() - interval :days day) and rc.pending is true and rcd.id is null "
+			+ "")
+	List<ClaimXDaysDto> getClaimIdsdWithNoDetailForGivenLastDayForOffice(@Param("companyName") String companyName,
+			@Param("days") int days,@Param("offuuid") String offuuid);
 }

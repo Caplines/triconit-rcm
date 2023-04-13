@@ -3,23 +3,16 @@ package com.tricon.rcm.api.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.AllPendencyReportDto;
@@ -52,11 +45,10 @@ import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
-import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
-import com.tricon.rcm.util.Constants;
+
 
 import io.swagger.annotations.ApiOperation;
 
@@ -73,15 +65,8 @@ public class RcmController extends BaseHeaderController{
 	Environment ev;
 
 	@Autowired
-	@Qualifier("jwtUserDetailsService")
-	private UserDetailsService userDetailsService;
-
-	@Autowired
 	RcmCommonServiceImpl rcmCommonServiceImpl;
 
-	
-	
-	
 	/**
 	 * Fetch Claims From Eagle Soft or Google Sheet
 	 * 
@@ -105,7 +90,7 @@ public class RcmController extends BaseHeaderController{
 		}
 		Object sucess = null;
 		dto.setCompanyuuid(partialHeader.getCompany().getUuid());
-		sucess = claimServiceImpl.pullClaimFromSource(dto, null, partialHeader.getJwtUser());
+		sucess = claimServiceImpl.pullClaimFromSource(dto, null, partialHeader);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", sucess));
 	}
 
@@ -199,6 +184,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Billing TL Prodution Report", response = ProductionDto.class, responseContainer = "List")
 	@PostMapping("/api/bill/claim-production")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING')")
 	public ResponseEntity<Object> claimsProduction(@RequestBody ClaimProductionLogDto dto, Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -225,7 +211,8 @@ public class RcmController extends BaseHeaderController{
     @ApiOperation(value = "Api For Fetching Service Code Validation Data by uuid", response = RcmClaimsServiceRuleValidationDto.class , responseContainer = "List")
 	@GetMapping("/api/fetchservicecodeval/{uuid}")
 	public ResponseEntity<Object> fetchServiceValidationFromGSheet(@PathVariable("uuid") String claimUuid,Model model) {
-
+        //Rule Engine up and running is needed
+    	//Only for Smile point
     	PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
 		
@@ -307,7 +294,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Saving Claims Rule Remarks", response = String.class)
 	@PostMapping("/api/save-claim-rule-remarks")
-	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> saveClaimRuleRemark(@RequestBody ClaimRuleRemarkDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
@@ -329,7 +316,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Saving Claims Manual Rules", response = String.class)
 	@PostMapping("/api/save-claim-rule-val-datas")
-	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> saveClaimManualRules(@RequestBody ClaimRuleValidationsDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
@@ -351,7 +338,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Saving Claims Submission  Details", response = String.class)
 	@PostMapping("/api/save-claim-sub-det")
-	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> saveClaimSubDetails(@RequestBody ClaimSubmissionDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
@@ -373,7 +360,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Saving Claims Notes", response = String.class)
 	@PostMapping("/api/save-claim-notes")
-	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> saveClaimNotes(@RequestBody ClaimNotesDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
@@ -395,7 +382,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Saving Full Claim", response = String.class)
 	@PostMapping("/api/save-full-claim")
-	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> saveFullClaim(@RequestBody ClaimEditDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
@@ -405,22 +392,32 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	
-	@ApiOperation(value = "Api For Assigning Claim to other user/Team for Preview", response = String.class)
-	@PostMapping("/api/assign-other-team-or-lead")
-	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	@ApiOperation(value = "Api For Assigning Claim to other user", response = String.class)
+	@PostMapping("/api/assign-other-team")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> assignToOtherOrTeamLead(@RequestBody ClaimAssignDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.assignToOtherOrTeamLead(partialHeader,dto)));
+				claimServiceImpl.assignToOtherTeam(partialHeader,dto)));
 	}
 	
+	@ApiOperation(value = "Api For Assigning Claim to TL", response = KeyValueDto.class,responseContainer = "List")
+	@PostMapping("/api/assign_to_tl")
+	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	public ResponseEntity<Object> assignClaimToTL(@RequestBody ClaimAssignDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.assignClaimToTL(partialHeader,dto,partialHeader.getTeamId())));
+	}
 	
 	
 	@ApiOperation(value = "Api For Assigning Un Assigned Claim to Users", response = String.class)
 	@GetMapping("/api/assign-unsassigned_claims")
-	@PreAuthorize("hasAnyRole('BILLING_TL','SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
 	public ResponseEntity<Object> assignUnsAsignedClaims(Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
@@ -432,7 +429,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Running Automated  rules on Claims", response = String.class)
 	@GetMapping("/api/run-auto-rules/{claimuuid}/{reRun}")
-	@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> runAutomatedRules(@PathVariable("claimuuid") String claimuuid,
 			@PathVariable("reRun") boolean reRun, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

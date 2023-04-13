@@ -87,11 +87,11 @@ public class UserServiceImpl {
 	 * @return List of users
 	 */
 
-	public List<RcmUserToDto> getUsersByRole(String role,PartialHeader partialHeader) throws Exception {
+	public List<RcmUserToDto> getUsersByRole(String role,PartialHeader partialHeader,boolean remove) throws Exception {
 		List<RcmUserToDto> data = null;
 		data = userRepo.findUsersByRoleAndTeamId(RcmTeamEnum.generateRole(partialHeader.getTeamId(), role),
 				partialHeader.getCompany().getUuid(),partialHeader.getTeamId());
-		data.removeIf(x -> x.getUuid().equals(partialHeader.getJwtUser().getUuid()));
+		if (remove)data.removeIf(x -> x.getUuid().equals(partialHeader.getJwtUser().getUuid()));
 		return data;
 
 	}

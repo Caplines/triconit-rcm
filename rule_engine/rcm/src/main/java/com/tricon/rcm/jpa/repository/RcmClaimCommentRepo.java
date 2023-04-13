@@ -2,7 +2,10 @@ package com.tricon.rcm.jpa.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import com.tricon.rcm.db.entity.RcmClaimComment;
@@ -23,4 +26,9 @@ public interface RcmClaimCommentRepo extends JpaRepository<RcmClaimComment, Stri
 	RcmClaimComment findByCommentedByUuidAndClaimsClaimUuid(String commentedBy,String claimuuid);
 	
 	RcmClaimComment findByClaimsClaimUuid(String claimuuid);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery = true,value="delete from rcm_claim_comment where claim_id = :claimId")
+	Integer deleteByClaimId(@Param("claimId")String claimId);
 }

@@ -2,6 +2,8 @@ package com.tricon.rcm.jpa.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,5 +23,9 @@ public interface RcmClaimsServiceRuleValidationRepo extends JpaRepository<RcmCla
    @Query(value="update rcm_claims_service_rule_val set active = false where claim_id =:claimUuid",nativeQuery = true)
    void deactivateOldClaimData(@Param("claimUuid") String claimUuid);
    
-
+   
+   @Transactional
+   @Modifying
+   @Query(nativeQuery = true,value="delete from rcm_claims_service_rule_val where claim_id = :claimId")
+   Integer deleteByClaimId(@Param("claimId")String claimId);
 }

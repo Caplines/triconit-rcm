@@ -71,13 +71,13 @@ public class ClaimScheduler {
 			}
 			ruleEngineService.pullAndSaveClaimFromRE(dto,user,li,ClaimTypeEnum.S,comp,log);
 			//ruleEngineService.pullAndSaveRemoteLiteData(dto,user,logId);
-			
+			ruleEngineService.pullClaimDetailsFromES(comp,null);
 			break;
 		}
 		
 		//Assign unassinedClaims
 		ruleEngineService.assignedUnsAssignedClaimsByTeam(comp.getUuid(),user,RcmTeamEnum.BILLING.getId());
-		
+		//Pull Claim Details From Rue Engine
 		logger.info("ClaimScheduler End at :-" + new Date());
 	}
 

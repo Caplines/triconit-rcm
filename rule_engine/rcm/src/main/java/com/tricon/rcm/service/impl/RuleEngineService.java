@@ -1,5 +1,6 @@
 package com.tricon.rcm.service.impl;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.tricon.rcm.dto.RcmInsuranceMainRootDto;
 import com.tricon.rcm.dto.RcmIvFMainRootDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
+import com.tricon.rcm.dto.customquery.ClaimXDaysDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
@@ -19,6 +21,7 @@ import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimDetailRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLogRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
@@ -37,6 +40,7 @@ import com.tricon.rcm.util.ConnectAndReadSheets;
 import com.tricon.rcm.util.Constants;
 import com.google.common.collect.Collections2;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
+import com.tricon.rcm.db.entity.RcmClaimDetail;
 import com.tricon.rcm.db.entity.RcmClaimLog;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
@@ -51,6 +55,7 @@ import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
+import com.tricon.rcm.dto.ClaimDataDetails;
 import com.tricon.rcm.dto.ClaimDetailDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
@@ -145,6 +150,8 @@ public class RuleEngineService {
 	@Autowired
 	RcmIssueClaimsRepo rcmIssueClaimsRepo;
 	
+	@Autowired
+	RcmClaimDetailRepo rcmClaimDetailRepo;
 
 	HttpHeaders headers = null;
 
@@ -854,6 +861,52 @@ public class RuleEngineService {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Pull Claim Detail from Eagle Soft(Called from Rule Engine).
+	 * @param rcmCompany
+	 * @param officeUUid =null mean for all offices
+	 */
+	public void pullClaimDetailsFromES(RcmCompany rcmCompany,String officeUUid) {
+	    //Only For Smile Point	
+		if (rcmCompany.getName().equals(Constants.COMPANY_NAME)) {
+		List<ClaimXDaysDto> claimIds=null;
+		if (officeUUid==null)claimIds= rcmClaimRepository.getClaimIdsdWithNoDetailForGivenLastDays(rcmCompany.getName(),Constants.LAST_X_DAYS_TO_CHECK_DET);
+		else  claimIds= rcmClaimRepository.getClaimIdsdWithNoDetailForGivenLastDayForOffice(rcmCompany.getName(),Constants.LAST_X_DAYS_TO_CHECK_DET,officeUUid);
+			for(ClaimXDaysDto data:claimIds) {
+			RcmClaims claim = rcmClaimRepository.findByClaimUuid(data.getClaimUUid());
+			List<ClaimDetailDto> cdList = pullClaimDetailFromFromRE(data.getClaimId().split("_")[0], rcmCompany.getUuid(),
+					data.getOfficeId());
+			if (cdList!=null) {
+			RcmClaimDetail rcmClaimDetail=null;
+			List<RcmClaimDetail> cddList= new ArrayList<>();
+			int tmp=0;
+			for(ClaimDetailDto cdt:cdList) {
+				
+				rcmClaimDetail = new RcmClaimDetail();
+				BeanUtils.copyProperties(cdt, rcmClaimDetail, "id");
+				rcmClaimDetail.setIdEs(cdt.getId()); 
+				rcmClaimDetail.setClaim(claim);
+				rcmClaimDetailRepo.save(rcmClaimDetail);
+				cddList.add(rcmClaimDetail);
+				if (tmp==0) {
+					
+					ClaimDataDetails cdd= cdt.getDetails();
+					claim.setDateLastUpdatedES(cdd.getDateLastUpdated());
+					claim.setDescriptionES(cdd.getDescription());
+					claim.setEstSecondaryES(cdd.getEstSecondary());
+					claim.setStatusES(cdd.getStatus());
+					//dto.setEsDate(cdd.getDateLastUpdated());
+					
+				}
+				//dto.setClaimFound(true);
+			  }
+			rcmClaimRepository.save(claim);	
+			}
+		}
+		
+		}
 	}
 
 }

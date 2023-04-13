@@ -233,13 +233,13 @@ public class ClaimServiceImpl {
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
 	@Transactional(rollbackFor = Exception.class)
-	public Object pullClaimFromSource(ClaimSourceDto dto, RcmUser user, JwtUser jwtUser) {
+	public Object pullClaimFromSource(ClaimSourceDto dto, RcmUser user, PartialHeader partialHeader) {
 		// go to Rule Engine.
 		Object status = null;
 		if (dto.getSource().equals(ClaimSourceEnum.GOOGLESHEET.toString())) {
 			try {
 				if (user == null) {
-					user = userRepo.findByUuid(jwtUser.getUuid());
+					user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 				}
 				status = pullAndSaveClaimFromSheet(dto, user);
 			} catch (Exception error) {
@@ -250,7 +250,7 @@ public class ClaimServiceImpl {
 			ClaimLogDto claimLogDto = null;
 			if (dto.getOfficeuuids() == null) {
 				List<String> of = new ArrayList<>();
-				officeRepo.findByCompany(jwtUser.getCompany()).stream().map(RcmOfficeDto::getUuid).forEach(of::add);
+				officeRepo.findByCompany(partialHeader.getCompany()).stream().map(RcmOfficeDto::getUuid).forEach(of::add);
 				dto.setOfficeuuids(of);
 			}
 			for (String dtoOff : dto.getOfficeuuids()) {
@@ -263,9 +263,9 @@ public class ClaimServiceImpl {
 				// ruleEngineService.pullAndSaveInsuranceFromRE(d, user);
 
 				List<TimelyFilingLimitDto> li = ruleEngineService
-						.pullTimelyFilingLmtMappingFromSheet(jwtUser.getCompany());
+						.pullTimelyFilingLmtMappingFromSheet(partialHeader.getCompany());
 				try {
-					data = ruleEngineService.pullAndSaveClaimFromRE(d, user, li, ClaimTypeEnum.P, jwtUser.getCompany(),
+					data = ruleEngineService.pullAndSaveClaimFromRE(d, user, li, ClaimTypeEnum.P, partialHeader.getCompany(),
 							-1); // (d, user,li);
 					String[] logsP = data.split("___");
 					if (logsP.length == 2) {
@@ -289,7 +289,7 @@ public class ClaimServiceImpl {
 					} catch (Exception p) {
 
 					}
-					data = ruleEngineService.pullAndSaveClaimFromRE(d, user, li, ClaimTypeEnum.S, jwtUser.getCompany(),
+					data = ruleEngineService.pullAndSaveClaimFromRE(d, user, li, ClaimTypeEnum.S, partialHeader.getCompany(),
 							logId); // (d, user,li);
 					String[] logsS = data.split("___");
 					if (logsS.length == 2) {
@@ -313,6 +313,8 @@ public class ClaimServiceImpl {
 			status = mapcountNew;
 
 		}
+		
+		ruleEngineService.pullClaimDetailsFromES(partialHeader.getCompany(), dto.getOfficeuuid());
 		return status;
 	}
 
@@ -1100,7 +1102,7 @@ public class ClaimServiceImpl {
 	@Transactional(rollbackFor = Exception.class)
 	public ServiceValidationDataDto readServiceValidationFromGSheet(String claimUuid,PartialHeader partialHeader) {
 
-		//RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
+		//Rule Engine up and running is needed
 		ServiceValidationDataDto dto = new ServiceValidationDataDto();
 		List<RcmClaimsServiceRuleValidationDto> list = new ArrayList<>();
 		RcmClaimsServiceRuleValidationDto one = null;
@@ -1372,7 +1374,7 @@ public class ClaimServiceImpl {
 
 	public List<ClaimRuleRemarksDto> fetchClaimRuleRemark(PartialHeader partialHeader, String claimuuid) {
 
-		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+		//RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		List<ClaimRuleRemarksDto> list = null;
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimuuid);
 		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
@@ -1583,7 +1585,7 @@ public class ClaimServiceImpl {
 			KeyValueDto dto = new KeyValueDto();
 			dto.setId(s.getNoteId());
 			dto.setKey(s.getNote());
-
+			
 			// s.getNoteId()
 			List<RcmClaimNoteDto> fil = d.stream().filter(c -> c.getNoteId() == s.getNoteId())
 					.collect(Collectors.toList());
@@ -1594,6 +1596,68 @@ public class ClaimServiceImpl {
 			list.add(dto);
 		});
 		return list;
+	}
+	
+	@Transactional
+	public String  assignClaimToTL(PartialHeader partialHeader, ClaimAssignDto dto,int teamId) {
+
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
+		if (rcmCompany!=null) {
+			if (!claim.isPending())
+				return "Claim Already Submitted";
+			//Assign Logic
+			
+			RcmUser rcmLeadUser = userRepo.findByUuid(dto.getTeamLeadUuid());
+			boolean isLead =rcmCommonServiceImpl.isTeamLead(rcmLeadUser.getRoles());
+			
+			if (isLead) {
+			//check is assign to Other team. ..Let him work
+			int asisgnCount=rcmClaimAssignmentRepo.claimAssignedToOtherTeamByGivenTeam(dto.getClaimUuid(),teamId);
+			if (asisgnCount>0)
+				return "Claim Already Assigned To Other Team";
+			//Delete OLd Data...
+			rcmClaimSubmissionDetailsRepo.deleteByClaimId(dto.getClaimUuid());
+			rcmClaimsServiceRuleValidationRepo.deleteByClaimId(dto.getClaimUuid());
+			rcmClaimRuleRemarkRepo.deleteByClaimId(dto.getClaimUuid());
+			rcmClaimRuleValidationRepo.deleteByClaimId(dto.getClaimUuid());
+			rcmClaimCommentRepo.deleteByClaimId(dto.getClaimUuid());
+			
+			RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+			//if Already Assigned to Any One on Same Team then Take back
+			RcmClaimAssignment assign = rcmClaimAssignmentRepo
+					.findByClaimsClaimUuidAndActiveAndCurrentTeamIdId(claim.getClaimUuid(), true,teamId);
+			if (assign!=null) {
+			assign.setActive(false);
+			assign.setUpdatedBy(user);
+			assign.setUpdatedDate(new Date());
+			assign.setTakenBack(true);
+			rcmClaimAssignmentRepo.save(assign);
+			}
+			//assign back to TL.
+			RcmClaimAssignment newAssign = new RcmClaimAssignment();
+			newAssign.setActive(true);
+			newAssign.setAssignedBy(user);
+			newAssign.setCreatedBy(user);
+			newAssign.setAssignedTo(rcmLeadUser);
+			newAssign.setClaims(claim);
+			newAssign.setCommentAssignedBy(dto.getRemark());
+			newAssign.setCurrentTeamId(claim.getCurrentTeamId());
+			newAssign.setRcmClaimStatus(claim.getClaimStatusType());
+			newAssign.setTakenBack(false);
+
+			rcmClaimAssignmentRepo.save(newAssign);
+			
+			return "success";
+		}else {
+			return "assigned user not a lead";
+		}
+		}
+
+		else
+			return "wrong Client Name";
+
 	}
 
 	public String saveClaimNotes(PartialHeader partialHeader, ClaimNotesDto dto) {
@@ -1861,7 +1925,7 @@ public class ClaimServiceImpl {
 		return claimEditDetailDto;
 	}
 
-	public String assignToOtherOrTeamLead(PartialHeader partialHeader, ClaimAssignDto dto) {
+	public String assignToOtherTeam(PartialHeader partialHeader, ClaimAssignDto dto) {
 
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
 		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
@@ -1877,37 +1941,11 @@ public class ClaimServiceImpl {
 			if (!claim.isPending()) {
 				return "Claim Already Submitted";
 			}
-			if (!claim.isPulledClaimsServiceDataFromEs()) {
+			if (partialHeader.getCompany().getName().equals(Constants.COMPANY_NAME) &&  !claim.isPulledClaimsServiceDataFromEs()) {
 				return "Service Code validation not Done";
 			}
 
-			if (dto.isToLead()) {
-				// Assign to lead
-				RcmTeam lastTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
-				RcmUser rcmLeadUser = userRepo.findByUuid(dto.getTeamLeadUuid());
-				// Check For Role on do for TEAM Lead
-				claim.setLastWorkTeamId(lastTeam);
-				claim.setUpdatedBy(user);
-				claim.setUpdatedDate(new Date());
-				rcmClaimRepository.save(claim);
-
-				RcmClaimAssignment newAssign = new RcmClaimAssignment();
-				newAssign.setActive(true);
-				newAssign.setAssignedBy(user);
-				newAssign.setAssignedTo(rcmLeadUser);// need to find
-				newAssign.setClaims(claim);
-				newAssign.setCommentAssignedBy(dto.getRemark());
-				newAssign.setCurrentTeamId(claim.getCurrentTeamId());
-				newAssign.setRcmClaimStatus(claim.getClaimStatusType());
-				newAssign.setTakenBack(false);
-
-				rcmClaimAssignmentRepo.save(newAssign);
-
-				assign.setActive(false);
-				assign.setUpdatedBy(user);
-				assign.setUpdatedDate(new Date());
-				rcmClaimAssignmentRepo.save(assign);
-			} else {
+			
 				// Assign to other Team.
 
 				RcmTeam team = rcmTeamRepo.findById(dto.getOtherTeamId());
@@ -1941,7 +1979,7 @@ public class ClaimServiceImpl {
 						rcmClaimAssignmentRepo.save(assign);
 
 					}
-				}
+				
 
 			}
 

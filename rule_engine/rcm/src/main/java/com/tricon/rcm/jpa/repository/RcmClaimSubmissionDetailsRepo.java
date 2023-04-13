@@ -1,6 +1,9 @@
 package com.tricon.rcm.jpa.repository;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -22,4 +25,9 @@ public interface RcmClaimSubmissionDetailsRepo extends JpaRepository<RcmClaimSub
 			+ " where dt.claim_id=:claimId and ruc.company_id=:compid "
 			)
 	RcmClaimSubmissionDto findByClaimUuidAndCompanyId(@Param("claimId")String claimId,@Param("compid")String compid);
-}
+
+	@Transactional
+	@Modifying
+	@Query(nativeQuery = true,value="delete from rcm_claims_submission_details where claim_id = :claimId")
+	   Integer deleteByClaimId(@Param("claimId")String claimId);
+	 }

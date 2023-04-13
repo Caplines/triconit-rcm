@@ -61,6 +61,7 @@ public class Constants {
 	public static final String PASS = "PASS";
 	// Taken From Rule Engine - END
 
+	public static final int LAST_X_DAYS_TO_CHECK_DET=56;
 	public static final String ROLE_PREFIX = "ROLE_";
 	public static final String HYPHEN = "_";
 	public static final String ADMIN = "ADMIN";
