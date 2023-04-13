@@ -12,14 +12,11 @@ import Utils from '../util/utils';
 export class UserSettingComponent implements OnInit {
 
   user: any = { 'email': '', 'showChangePassword': false, 'showStatus': false, 'changedPassword': '', 'uuid': '','showEditUser':false };
-  allUser: any = [];
   showActionPopup: boolean = false;
   userRole: any;
   userName:any;
   userStatusArray:any={'userActiveStatus':[]}
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
-  filteredUserRole:any=[];
-  selectedRoles:any = [];
   userRolesByEmail:any=[];
 
   editedUserDetails:any;
@@ -30,7 +27,9 @@ export class UserSettingComponent implements OnInit {
   activeUserClients:any=[];
   teamId:any=[];
   clientId:any=[];
-
+  filteredUsers:any=[];
+  selectedFromDropDown:boolean=false;
+  
   constructor(public appService: ApplicationServiceService, private title: Title,private fb:FormBuilder) { 
     title.setTitle("User-Setting");
     this.editedUserDetails = this.fb.group({
@@ -60,6 +59,8 @@ export class UserSettingComponent implements OnInit {
 
   findUser() {
     this.hideBox();
+    this.filteredUsers=[];
+    this.selectedFromDropDown=true;
     if(this.user.email !== ''){
       this.appService.findUser({ "email": this.user.email }, (callback: any) => {
         if (callback.status == 200 && callback.data) {
@@ -261,4 +262,31 @@ selectUserRole(event:any){
       this.editedUserDetails.controls.companyUuid.setValue(this.clientId);
     }
   }
+
+  searchUserByName(name: any) {
+    if(name.length>=3 && name){
+       this.appService.fetchUserByDetail(name, (res: any) => {
+        if (res.status) {
+          this.selectedFromDropDown=false;
+          this.filteredUsers=res.data;
+        }
+      })
+    
+    }else{
+      this.filteredUsers=[];
+    }
+  }
+
+  selectUser(email:any){
+    this.user.email = email;
+    this.filteredUsers=[];
+    this.selectedFromDropDown=true;
+    this.hideBox();
+    this.findUser();
+  }
+
+  ngOnDestroy(){
+    console.log("destri");
+   
+}
 }

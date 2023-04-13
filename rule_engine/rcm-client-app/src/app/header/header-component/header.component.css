@@ -26,7 +26,7 @@
     width: 100%;
     left: 0px;
     background: #0c0e14 !important;
-    height: 87px;
+    height: 80px;
     display: flex;
     justify-content: space-between;
     flex-flow: column;
@@ -83,7 +83,7 @@
     }
 
 .gray-bar {
-    padding: 8px 20px;
+    padding: 3px 20px 0px;
     clear: both;
     background: #1c212d;
     display: flex;
@@ -107,7 +107,7 @@
 
             .gray-bar ul li a {
                 padding: 7px 12px;
-                border-radius: 5px;
+                border-radius: 5px 5px 0px 0px;
                 color: #b9b9b9;
                 text-decoration: none;
                 display: inline-flex;
@@ -220,4 +220,29 @@
 }
 .modal-footer{
     justify-content: center !important;
+}
+
+
+.form-check-inline-radio span{
+    align-items: center;
+    display: inline-flex;
+    margin-right: 10px;;
+}
+
+.form-check-inline-radio span label {
+    margin-bottom: 0px;
+}
+.login-radio-box .font-weight-bolder{ 
+    width: 140px;
+    text-align: left;
+    padding-left: 42px;
+}
+.login-radio-box .form-check-inline-radio {
+    width: 227px;
+    text-align: left;
+    padding-left: 21px;
+    display: flex
+}
+.login-radio-box .form-check-inline-radio span{
+    margin-right: 30px;
 }

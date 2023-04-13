@@ -23,12 +23,27 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="findUser">Find User By Email : </label>
+                                        <label for="findUser">Find User : </label>
                                         <div class="input-group">
-                                            <input type="text" [(ngModel)]="user.email" class="form-control" placeholder="User By Email" aria-label="User By Email" aria-describedby="basic-addon2" [ngClass]="{'is-invalid': user.email && (user.email=='' || !(user.email.includes('@'))) }" required="true">
+                                            <input type="text" (keyup)="searchUserByName(user.email)" [(ngModel)]="user.email" class="form-control" placeholder="User By Email" aria-label="User By Email" aria-describedby="basic-addon2" required="true">
                                             <div class="input-group-append">
-                                                <button class="btn btn-secondary" (click)="findUser()" type="button"><img src="../assets/img/search.png" class="search-icon" /> Find</button>
+                                                <button class="btn btn-secondary" (click)="findUser()" type="button" [disabled]="selectedFromDropDown"><img src="../assets/img/search.png" class="search-icon" /> Find</button>
                                             </div>
+                                            <br>
+                                            <ng-container *ngIf="filteredUsers.length>0">
+                                                <div class="data-display">
+                                                    <ul>
+                                                        <li *ngFor="let user of filteredUsers" (click)="selectUser(user.email)"> {{user.firstName}} {{user.lastName}} | {{user.email}}</li>
+                                                    </ul>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="user?.email?.length>=3 && filteredUsers.length==0 && !showActionPopup">
+                                                <div class="data-display">
+                                                    <ul>
+                                                        <li class="no-data"> No Data Found</li>
+                                                    </ul>
+                                                </div>
+                                            </ng-container>
                                         </div>
                                     </div>
                                 </div>

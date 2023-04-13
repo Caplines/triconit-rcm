@@ -324,8 +324,11 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['rolesByEmail'] + "/" + email, callback)
   }
 
-
   fetchAllPendency(callback: any) {
     this.getData({}, this.httpUrl['allpendency'], callback)
+}
+
+fetchUserByDetail(query:any,callback:any){
+  this.getData({},this.httpUrl['findUserByDetail']+"/"+query,callback)
   }
 }

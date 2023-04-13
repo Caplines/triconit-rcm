@@ -62,7 +62,8 @@ export class BaseService {
     'getRoles': '/master/getroles',
     'getClients': '/master/getClients',
     'allpendency': '/api/allpendency',
-    'assigntotl': '/api/assign_to_tl'
+    'assigntotl': '/api/assign_to_tl',
+    'findUserByDetail':'/finduserbydetail',
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {
