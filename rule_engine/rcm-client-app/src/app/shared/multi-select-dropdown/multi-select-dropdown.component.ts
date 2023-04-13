@@ -59,7 +59,7 @@ getSelectedValue(status: Boolean, value: any, type: String) {
       this.clientCheckedList.push(value);
     } else {
       this.clientCheckedList.forEach((e: any, idx: any) => {
-        if (e.uuid == value.uuid) {
+        if (e.id === value.uuid || e.id === value.id) {
           this.clientCheckedList.splice(idx, 1);
         }
       })
