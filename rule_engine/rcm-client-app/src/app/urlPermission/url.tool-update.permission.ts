@@ -8,7 +8,7 @@ import { TeamModel } from '../models/team.model';
 @Injectable()
 export class UrlToolUpdatePermission implements CanActivate {
 
-  constructor(private router: Router,private appConstants: AppConstants) { }
+  constructor(private router: Router, private appConstants: AppConstants) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot
   ) {
@@ -20,23 +20,22 @@ export class UrlToolUpdatePermission implements CanActivate {
     }
     if (localStorage.getItem('currentUser')) {
       // logged in so return true
-      
-    ///TeamModel
-      let ntKey:Number=new Number(ut).valueOf();
-      let team :any = this.appConstants.TEAMS_CONFIG.get(ntKey);
 
-      let teamM: TeamModel=  (<TeamModel>team);
+      ///TeamModel
+      let ntKey: Number = new Number(ut).valueOf();
+      let team: any = this.appConstants.TEAMS_CONFIG.get(ntKey);
 
-      
-      let ph= teamM.paths.find(x => 
-           x === state.url);
-     //in case wrong url is accessed
-      if (typeof ph=="undefined"){
+      let teamM: TeamModel = (<TeamModel>team);
+
+
+      let ph = teamM.paths.find(x =>
+        x === state.url);
+      //in case wrong url is accessed
+      if (typeof ph == "undefined") {
         this.router.navigate([teamM.defaultpath]);
         return false;
       }
-      console.log(Utils.isSmilePoint());
-      if (Utils.isSmilePoint() && Utils.isRoleLead()){
+      if (Utils.isSmilePoint() && Utils.isRoleLead()) {
         return true;
       }
       return false;

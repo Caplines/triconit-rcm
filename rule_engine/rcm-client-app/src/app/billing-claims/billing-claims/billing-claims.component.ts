@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { ClaimService } from '../../service/claim.service';
+import { ClaimAssignToTeamModel } from '../../models/claim_assign_to_team';
 
 import { AppConstants } from '../../constants/app.constants';
 import {
@@ -11,7 +12,7 @@ import {
 import { ClaimRulesPullDataModel } from '../../models/claim-rules-pull-data-model';
 
 import { Title } from '@angular/platform-browser';
-
+import Utils from '../../util/utils';
 import { ActivatedRoute } from '@angular/router';
 
 
@@ -40,8 +41,8 @@ export class BillingClaimsComponent implements OnInit {
   teamsMs: Array<TeamsM>;
   assignModel: any = { "toLead": false, "toOtherTeam": false };
   otherTeamRemarks: Array<OtherTeamRem> = [];
-
-
+  smilePoint: boolean = false;
+  claimAssignToTeamModel: ClaimAssignToTeamModel = {};
   claimUUid: string = "";
   infoMessage: string = "";
   ruleData: any = [];
@@ -61,7 +62,7 @@ export class BillingClaimsComponent implements OnInit {
 
 
   ngOnInit(): void {
-
+    this.smilePoint = Utils.isSmilePoint();
     this.route.paramMap.subscribe(params => {
       this.claimUUid = params.get('uuid') || '';
       this.fetchClaimsByUuid(this.claimUUid);
@@ -80,9 +81,9 @@ export class BillingClaimsComponent implements OnInit {
         ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
         ths.fetchOtherTeamRemarks();
         ths.fetchClaimNotes();
-        ths.getServiceLevelCodes();
+        if (this.smilePoint) ths.getServiceLevelCodes();//Only In case of Smile point. other does not have it.
         ths.getSubmissionDetails();
-        ths.getClaimRuleData();//Only IN case of Smile point. other does not have it.
+        if (this.smilePoint) ths.getClaimRuleData();//Only In case of Smile point. other does not have it.
         //ths.runAutoRules(false);
         ths.fetchTLUsers();
         ths.fetchOtherTeams();
@@ -183,7 +184,7 @@ export class BillingClaimsComponent implements OnInit {
       ths.assignModel.toOtherTeam = true;
       let valid = ths.validateData();
       if (valid) {
-        ths.openAssignModal();
+        ths.openAssignModal('other');
 
         //Open Modal
         /*
@@ -194,6 +195,11 @@ export class BillingClaimsComponent implements OnInit {
         });
        */
       }
+    } else if (type === 'assigntl') {
+      ths.claimEditModel.assignTouuid = "";
+
+      ths.openAssignModal('tl');
+
     }
   }
 
@@ -295,35 +301,38 @@ export class BillingClaimsComponent implements OnInit {
 
     }
 
-    if (ths.claimServiceLevelModel.claimFound) {
+    if (this.smilePoint) {
+      if (ths.claimServiceLevelModel.claimFound) {
 
-      ths.claimServiceLevelModel.dto.forEach((x, i) => {
-        if ((x.remark == null || x.remark.trim() === '') && x.messageType === 1) {//on NO only
-          ths.addErrorDisplay(document.getElementById("SERV_C_V_" + i));
+        ths.claimServiceLevelModel.dto.forEach((x, i) => {
+          if ((x.remark == null || x.remark.trim() === '') && x.messageType === 1) {//on NO only
+            ths.addErrorDisplay(document.getElementById("SERV_C_V_" + i));
+            valid = false;
+          }
+
+        });
+      } else {
+        ths.addErrorDisplay(document.getElementById("serviceCodeValidations"));
+      }
+    }
+    if (this.smilePoint) {
+
+      ths.ruleEngineReport.forEach(x => {
+
+        if (x.mtype === '1' && (x.remark == null || x.remark.trim() === '')) {
+          ths.addErrorDisplay(document.getElementById("ENG_REP_" + x.ruleId));
           valid = false;
         }
-
       });
-    } else {
-      ths.addErrorDisplay(document.getElementById("serviceCodeValidations"));
-    }
 
-    ths.ruleEngineReport.forEach(x => {
+      if (ths.ruleEngineReport.length == 0) {
+        ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
 
-
-      if (x.mtype === '1' && (x.remark == null || x.remark.trim() === '')) {
-        ths.addErrorDisplay(document.getElementById("ENG_REP_" + x.ruleId));
         valid = false;
+
+      } else {
+        ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
       }
-    });
-
-    if (ths.ruleEngineReport.length == 0) {
-      ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
-
-      valid = false;
-
-    } else {
-      ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
     }
     console.log("valid", valid);
 
@@ -531,8 +540,10 @@ export class BillingClaimsComponent implements OnInit {
     this.modelElement.modal.style.display = "none";
   }
 
-  openAssignModal() {
+  openAssignModal(type: string) {
     this.assignModel.toOtherTeam = this.assignModel.toLead = false;
+    if (type === 'tl') this.assignModel.toLead = true;
+    if (type === 'other') this.assignModel.toOtherTeam = true;
     this.modelElement.modal = document.getElementById("assigment-modal");
     this.modelElement.span = document.getElementsByClassName("close")[0];
     this.modelElement.modal.style.display = "block";
@@ -603,16 +614,37 @@ export class BillingClaimsComponent implements OnInit {
     this.claimEditModel.assignToTL = true;
     ths.claimEditModel.assignToOtherTeam = false;
     ths.claimEditModel.assignToTeam = 0;
-
+    let valid = true;
 
     ths.removeErrorDisplay(document.getElementById("selectLeadName"));
-    if (ths.claimEditModel.assignTouuid == "") {
-      ths.addErrorDisplay(document.getElementById("selectLeadName"));//
-    } else {
-      //assign
-      ths.inSave = true;
-      ths.closeModal();
-      console.log(ths.claimEditModel);
+    ths.removeErrorDisplay(document.getElementById("tlRemark"));
+    let rem: any = document.getElementById("tlRemark");
+    if (rem.value.trim() === '') {
+      ths.addErrorDisplay(document.getElementById("tlRemark"));
+      valid = false;
     }
+    if (ths.claimEditModel.assignTouuid == "") {
+      ths.addErrorDisplay(document.getElementById("selectLeadName"));
+      valid = false;
+    }
+    if (valid) {
+      //Save Data
+      ths.claimAssignToTeamModel.claimUuid = ths.claimUUid;
+      ths.claimAssignToTeamModel.otherTeamId = -1;
+      ths.claimAssignToTeamModel.remark = rem.value;
+      ths.claimAssignToTeamModel.teamLeadUuid = ths.claimEditModel.assignTouuid;
+      ths.claimAssignToTeamModel.toLead = true;
+      ths.claimService.assignClaimToTL(ths.claimAssignToTeamModel, (res: any) => {
+        if (res.status === 200) {
+          window.location.reload();
+
+        }
+      })
+
+    }
+  }
+
+  get isRoleLead() {
+    return Utils.isRoleLead();
   }
 }
