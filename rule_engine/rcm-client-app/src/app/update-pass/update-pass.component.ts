@@ -30,7 +30,7 @@ export class UpdatePasswordComponent implements OnInit {
   }
 
   changePassword() {
-    if(this.user.oldPassword != this.user.newPassword && this.user.oldPassword!='' && this.user.newPassword!=''){
+    if(this.user.oldPassword!='' && this.user.newPassword!=''){
       this.appService.updatepassword({"oldPassword": this.user['oldPassword'],"newPassword": this.user['newPassword']}, (callback: any) => {
         if (callback.status == 200) {
         console.log(callback)

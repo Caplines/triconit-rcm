@@ -26,11 +26,11 @@
                                     <div class="form-group">
                                         <label for="changepass">Enter the New Password :</label>
                                         <input type="text" class="form-control" [(ngModel)]="user['newPassword']"
-                                            [ngClass]="{'is-invalid': user['newPassword'] && user['oldPassword']==user['newPassword']}"
+                                            [ngClass]="{'is-invalid': user['newPassword'] && (user['oldPassword'].length<6 || user['newPassword'].length<6)}"
                                             >
                                     </div>
                                     <div class="find-btn">
-                                        <button type="button" class="btn btn-success" [disabled]="!user['oldPassword'] || !user['newPassword'] || user['oldPassword'] == user['newPassword']" (click)="changePassword()">Change
+                                        <button type="button" class="btn btn-success" [disabled]="!user['oldPassword'] || !user['newPassword'] || user['oldPassword'].length<6 || user['newPassword'].length<6" (click)="changePassword()">Change
                                             Password</button>
                                     </div>
                                 </div>
