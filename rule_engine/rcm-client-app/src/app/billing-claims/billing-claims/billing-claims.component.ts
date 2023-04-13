@@ -48,6 +48,7 @@ export class BillingClaimsComponent implements OnInit {
   ruleData: any = [];
   count: any = { 'pass': 0, 'fail': 0, 'alert': 0 };
   mtype: string = '1';//Fail By Default.
+  tlErrormsg = "";
   //ivfData:any=[];
 
   modelElement: any = { 'modal': '', 'span': '' }
@@ -611,6 +612,7 @@ export class BillingClaimsComponent implements OnInit {
 
   assignToLead() {
     let ths = this;
+    ths.tlErrormsg = "";
     this.claimEditModel.assignToTL = true;
     ths.claimEditModel.assignToOtherTeam = false;
     ths.claimEditModel.assignToTeam = 0;
@@ -626,6 +628,11 @@ export class BillingClaimsComponent implements OnInit {
     if (ths.claimEditModel.assignTouuid == "") {
       ths.addErrorDisplay(document.getElementById("selectLeadName"));
       valid = false;
+    }
+    if (ths.claimRcm.assignedToUuid === ths.claimEditModel.assignTouuid) {
+      valid = false;
+      ths.tlErrormsg = "Claim Already Assigned to Same TL";
+
     }
     if (valid) {
       //Save Data

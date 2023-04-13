@@ -90,7 +90,7 @@ public class UserController extends BaseHeaderController {
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		
 		try {
-			response = userService.getUsersByRole(Constants.TEAMLEAD,partialHeader,true);
+			response = userService.getUsersByRole(Constants.TEAMLEAD,partialHeader,false);
 			if(response==null) {
 				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 			}

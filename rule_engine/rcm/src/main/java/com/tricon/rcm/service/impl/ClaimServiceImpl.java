@@ -1623,6 +1623,7 @@ public class ClaimServiceImpl {
 			rcmClaimRuleRemarkRepo.deleteByClaimId(dto.getClaimUuid());
 			rcmClaimRuleValidationRepo.deleteByClaimId(dto.getClaimUuid());
 			rcmClaimCommentRepo.deleteByClaimId(dto.getClaimUuid());
+			rcmClaimNotesRepo.deleteByClaimId(dto.getClaimUuid());
 			
 			RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 			//if Already Assigned to Any One on Same Team then Take back
