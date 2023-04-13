@@ -67,6 +67,12 @@ getSelectedValue(status: Boolean, value: any, type: String) {
     if (this.clientCheckedList.length == 0) {
       this.selectAllChecked = false;
     }
+    else if (this.list.length === this.clientCheckedList.length){
+      this.selectAllChecked=true;
+    }
+    else{
+      this.selectAllChecked=false;
+    }
     this.shareCheckedlist('client');
   }
   else if (type === 'userSettingClient') {
@@ -105,6 +111,11 @@ getSelectedValue(status: Boolean, value: any, type: String) {
       });
     }
     if(this.teamCheckedList.length==0){
+      this.selectAllChecked=false;
+    }
+    else if (this.teamData.length === this.teamCheckedList.length){
+      this.selectAllChecked=true;
+    } else{
       this.selectAllChecked=false;
     }
     this.shareCheckedlist('team');
