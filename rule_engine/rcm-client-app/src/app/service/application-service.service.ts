@@ -5,6 +5,7 @@ import {FreshClaimPullModel} from '../models/fresh.claim.pull.model';
 import {ClaimAssignmentPullModel} from '../models/claim-assignment-pull-model';
 import {ClaimRulesPullDataModel}from '../models/claim-rules-pull-data-model';
 import { TokenStorageService } from '../service/token-storage.service';
+import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
@@ -322,8 +323,11 @@ fetchRolesByEmail(email:any,callback:any){
   this.getData({},this.httpUrl['rolesByEmail']+"/"+email,callback)
 }
 
-
 fetchAllPendency(callback:any){
   this.getData({},this.httpUrl['allpendency'],callback)
+}
+
+fetchUserByDetail(query:any,callback:any){
+  this.getData({},this.httpUrl['findUserByDetail']+"/"+query,callback)
 }
 }

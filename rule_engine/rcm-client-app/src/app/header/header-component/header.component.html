@@ -26,14 +26,14 @@
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a href="javascript:void(0);" [routerLink]="['/user-setting']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive ? '../../assets/img/user-setting.png' : '../../assets/img/user-setting-gray.png'" />User Settings</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);" [routerLink]="['/manage-office']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Manage Offices</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a href="javascript:void(0);" [routerLink]="['/users-status']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Users Status</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);" [routerLink]="['/manage-client']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Manage Client</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() "><a href="javascript:void(0);" [routerLink]="['/claim-assignment']"  routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);" [routerLink]="['/manage-client']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/clientManage-active.png':'../../assets/img/clientManage.png'" />Manage Client</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() "><a href="javascript:void(0);" [routerLink]="['/claim-assignment']"  routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/pendency-green-icon.png':'../../assets/img/pendency-gray-icon.png'" />Pendency</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() "><a href="javascript:void(0);" [routerLink]="['/tool-update']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Tool to Update Database</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() || staticUtil.isRoleAsso()"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Billing Pendency Dashboard</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() || staticUtil.isRoleAsso()"><a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />List Of Claims</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() || staticUtil.isRoleAsso()"><a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />All Pendency</a></li>
-            <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Update Password</a></li> 
-           <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead()"><a href="javascript:void(0);" [routerLink]="['/production']"routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Production</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() || staticUtil.isRoleAsso()"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/dashboard-active.png':'../../assets/img/dashboard.png'" />Billing Pendency Dashboard</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() || staticUtil.isRoleAsso()"><a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />List Of Claims</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead() || staticUtil.isRoleAsso()"><a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />All Pendency</a></li>
+            <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/updatePassword-active.png':'../../assets/img/updatePassword.png'" />Update Password</a></li> 
+           <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal') || staticUtil.isRoleLead()"><a href="javascript:void(0);" [routerLink]="['/production']"routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a></li>
         </ul>
 
     </div>
@@ -94,13 +94,17 @@
                     <div class="col-sm">
                         <ng-container *ngIf="selectedRole == 'SUPER_ADMIN'"
                             style="align-items: flex-start;">
-                            <div class="form-group d-flex justify-content-around">
+                            <div class="form-group d-flex login-radio-box">
                                 <label class="font-weight-bolder">Login As:</label>
-                                <div class="form-check-inline">
-                                    <label class="form-check-label" for="admin">Admin</label>
-                                    <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Admin" name="loginAs" id="admin">
-                                    <label class="form-check-label" for="enable">Tool User</label>
-                                    <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Normal" name="loginAs"  id="normal">
+                                <div class="form-check-inline-radio ">
+                                    <span>
+                                        <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Admin" name="loginAs" id="admin">
+                                        <label class="form-check-label" for="admin">Admin</label>
+                                    </span>
+                                    <span>
+                                        <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Normal" name="loginAs"  id="normal">
+                                        <label class="form-check-label" for="enable">Tool User</label>
+                                    </span>
                                 </div>
                             </div>
                         </ng-container>
