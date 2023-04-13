@@ -79,7 +79,7 @@ export class ManageClientComponent implements OnInit {
           console.log(callback);
           clientDetails['editable']=false;
           clientDetails['newField']=false;
-          callback.message == ''? callback.message = "Edit Successfully" : callback.message;
+          callback.message == ''? callback.message = "Record has been updated" : callback.message;
           this.showAlertPopup(callback);
         }else{
           this.showAlertPopup(callback);

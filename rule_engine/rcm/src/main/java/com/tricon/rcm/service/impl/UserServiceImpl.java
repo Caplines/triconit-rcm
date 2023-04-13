@@ -69,12 +69,14 @@ public class UserServiceImpl {
 			String encodedPassword = loginUser.getPassword();
 			if (EncrytedKeyUtil.verifyPassword(oldPassword, encodedPassword)) {
 				msg = commonService.resetPassword(loginUser, loginUser, newPassword);
+				if (msg.equals(MessageConstants.UPDATION_FAIL)) {
+					msg = MessageConstants.UPDATION_FAIL;
+				} else
+					return new GenericResponse(HttpStatus.OK, msg, null);
 			} else
 				msg = MessageConstants.PASSWORD_NOT_MATCH;
-		} else {
-			msg = MessageConstants.USER_NOT_EXIST;
 		}
-		return new GenericResponse(HttpStatus.OK, msg, null);
+		return new GenericResponse(HttpStatus.BAD_REQUEST, msg, null);
 	}
 
 	/**

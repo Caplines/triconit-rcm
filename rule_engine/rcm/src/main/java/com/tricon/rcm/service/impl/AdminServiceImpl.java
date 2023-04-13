@@ -386,28 +386,26 @@ public class AdminServiceImpl {
 	 * @return GenericResponse
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse passwordUpdation(JwtUser jwtUser, PasswordResetDto dto, String isAdminOrSuperAdmin)
+	public GenericResponse passwordUpdation(JwtUser jwtUser, PasswordResetDto dto, String isAdminOrSuperAdmin,RcmCompany companyFromPartialHeader)
 			throws Exception {
 		String msg = "";
 		RcmUser user = null, loginUser = null;
-		List<String> clients = null;
+		RcmUserDetails userDetails = null;
 		loginUser = userRepo.findByEmail(jwtUser.getUsername());
 		if (loginUser != null) {
-			if (!dto.getUuid().equals(loginUser.getUuid())) {
 				user = userRepo.findByUuid(dto.getUuid());
 				if(user==null) return new GenericResponse(HttpStatus.OK,MessageConstants.USER_NOT_EXIST, null);				
 				if (user != null && isAdminOrSuperAdmin.equals(Constants.ADMIN)) {
-					clients = user.getRcmCompanies().stream().map(x -> x.getCompany().getUuid())
-							.collect(Collectors.toList());
-					if (!commonService.validateUserClients(jwtUser, clients))return new GenericResponse(HttpStatus.OK,MessageConstants.UPDATION_FAIL, null);
-					msg = commonService.resetPassword(user, loginUser, dto.getPassword());
+					userDetails = userRepo.findUserByClientUuid(user.getEmail(),companyFromPartialHeader.getUuid());
+					if(userDetails!=null) {
+					msg = commonService.resetPassword(user, loginUser, dto.getPassword());}
+					else {
+						msg=MessageConstants.UPDATION_FAIL;
+					}
 				}
-
 				if (user != null && isAdminOrSuperAdmin.equals(Constants.SUPER_ADMIN)) {
 					msg = commonService.resetPassword(user, loginUser, dto.getPassword());
 				}
-				
-			}else msg=MessageConstants.UPDATION_FAIL;
 		}
 		return new GenericResponse(HttpStatus.OK, msg, null);
 	}
@@ -606,7 +604,7 @@ public class AdminServiceImpl {
 	 */
 
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse editRolesByAdmin(RcmEditRolesDto dto, String isAdminRole, JwtUser jwtUser) throws Exception {
+	public GenericResponse editUsers(RcmEditRolesDto dto, String isAdminRole, JwtUser jwtUser) throws Exception {
 
 		String responseMessage = "";
 		// Validate ADMIN Functionality

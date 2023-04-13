@@ -103,7 +103,7 @@ public class AdminController extends BaseHeaderController{
 		}
 		
 		try {
-			response = serviceImpl.passwordUpdation(partialHeader.getJwtUser(),dto,partialHeader.getRole());
+			response = serviceImpl.passwordUpdation(partialHeader.getJwtUser(),dto,partialHeader.getRole(),partialHeader.getCompany());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -328,7 +328,7 @@ public class AdminController extends BaseHeaderController{
 				
 		GenericResponse response = null;	
 		try {
-			response = serviceImpl.editRolesByAdmin(dto,partialHeader.getRole(),partialHeader.getJwtUser());
+			response = serviceImpl.editUsers(dto,partialHeader.getRole(),partialHeader.getJwtUser());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
