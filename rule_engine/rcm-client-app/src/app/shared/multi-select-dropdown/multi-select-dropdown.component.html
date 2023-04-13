@@ -11,6 +11,10 @@
             <i class="fa fa-angle-down"></i>
         </button>
         <div class="drop-show" *ngIf="showDropDown && isClient">
+            <label>
+                <input type="checkbox" (change)="selectAll($event,'client')" [checked]="selectAllChecked">
+                <span>Select All</span>
+            </label>
             <label *ngFor="let a of list;let idx = index">
                 <input type="checkbox" [(ngModel)]="a.checked" 
                     (change)="getSelectedValue(a.checked,list[idx],'client')" />
@@ -18,6 +22,10 @@
             </label>
         </div>
         <div class="drop-show" *ngIf="showDropDown && isClient && isFromUserSetting">
+            <label>
+                <input type="checkbox" (change)="selectAll($event,'client')" [checked]="selectAllChecked">
+                <span>Select All</span>
+            </label>
             <label *ngFor="let a of list;let idx = index">
                 <input type="checkbox" [(ngModel)]="a.checked" 
                     (change)="getSelectedValue(a.checked,list[idx],'userSettingClient')" />
@@ -25,6 +33,10 @@
             </label>
         </div>
         <div class="drop-show-team" *ngIf="showDropDown && isTeam">
+            <label>
+                <input type="checkbox" (change)="selectAll($event,'team')" [checked]="selectAllChecked">
+                <span>Select All</span>
+            </label>
             <label *ngFor="let a of list;let idx = index">
                 <input type="checkbox" [(ngModel)]="a.checked" 
                     (change)="getSelectedValue(a.checked,list[idx],'userSettingTeam')" />

@@ -130,7 +130,7 @@ export class RegisterNewUserComponent implements OnInit {
     }
     else if(event.action == 'client'){
       this.clientId =  event.value.map(({adddress,checked,createdDate,name,updatedDate,...newData}:any)=>newData);
-      this.clientId = [].concat(...this.clientId.map((team:any) => team.uuid));
+      this.clientId = [].concat(...this.clientId.map((team:any) => team.uuid || team.id));
       this.userDetails.controls.companyUuid.setValue(this.clientId);
     }
   }

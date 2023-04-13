@@ -19,10 +19,14 @@ export class MultiSelectDropdownComponent {
   
   clientCheckedList : any[];
   teamCheckedList : any[];
+  clients:any=[]
+  selectAllChecked:boolean=false;
+  teamData:any=[];
 
-constructor() {
-  this.clientCheckedList = this.teamCheckedList= [];
-  
+constructor(private _service:ApplicationServiceService) {
+  this.clientCheckedList=this.teamCheckedList=[];
+  this.clients= JSON.parse(localStorage.getItem("clients"));
+  this.getTeamsData();
  }
 
  ngOnInit(){
@@ -46,59 +50,116 @@ constructor() {
   })
   this.shareCheckedlist('team');
   }
+  
   }
 
-     getSelectedValue(status:Boolean,value:any,type:String){
-      if(type === 'client'){
-        if(status){
-          this.clientCheckedList.push(value);  
-        }else{
-          this.clientCheckedList.forEach((e:any,idx:any)=>{
-            if(e.uuid == value.uuid){
-              this.clientCheckedList.splice(idx,1);
-            }
-          })
+getSelectedValue(status: Boolean, value: any, type: String) {
+  if (type === 'client') {
+    if (status) {
+      this.clientCheckedList.push(value);
+    } else {
+      this.clientCheckedList.forEach((e: any, idx: any) => {
+        if (e.uuid == value.uuid) {
+          this.clientCheckedList.splice(idx, 1);
         }
-      this.shareCheckedlist('client');
-      }
-      else if(type === 'userSettingClient'){
-        if(status){
-          this.clientCheckedList.push(value);  
-        }else{
-          this.clientCheckedList.forEach((e:any,idx:any)=>{
-            if(e.id == value.id  ){
-              this.clientCheckedList.splice(idx,1);
-            }
-          })
-        }
-      this.shareCheckedlist('client');
-      }
-      else if(type === 'team'){
-        if(status){
-          this.teamCheckedList.push(value);  
-        }else{
-          this.teamCheckedList.forEach((e:any,idx:any)=>{
-           if(e.teamId == value.teamId){
-             this.teamCheckedList.splice(idx,1);
-           }
-          });
-        }
-        this.shareCheckedlist('team');
-      }
-      else if(type === 'userSettingTeam'){
-        if(status){
-          this.teamCheckedList.push(value);  
-        }else{
-          this.teamCheckedList.forEach((e:any,idx:any)=>{
-           if(e.teamId == value.teamId){
-             this.teamCheckedList.splice(idx,1);
-           }
-          });
-        }
-        this.shareCheckedlist('team');
-      }
+      })
+    }
+    if (this.clientCheckedList.length == 0) {
+      this.selectAllChecked = false;
+    }
+    this.shareCheckedlist('client');
   }
-  shareCheckedlist(action:any){
-       this.shareCheckedList.emit({'action':action,value: action=='team' ? this.teamCheckedList : this.clientCheckedList});
+  else if (type === 'userSettingClient') {
+    if (status) {
+      this.clientCheckedList.push(value);
+    } else {
+      this.clientCheckedList.forEach((e: any, idx: any) => {
+        if (e.id == value.id) {
+          this.clientCheckedList.splice(idx, 1);
+        }
+      })
+    }
+    this.shareCheckedlist('client');
   }
+  else if (type === 'team') {
+    if (status) {
+      this.teamCheckedList.push(value);
+    } else {
+      this.teamCheckedList.forEach((e: any, idx: any) => {
+        if (e.teamId == value.teamId) {
+          this.teamCheckedList.splice(idx, 1);
+        }
+      });
+    }
+  
+    this.shareCheckedlist('team');
+  }
+  else if (type === 'userSettingTeam') {
+    if (status) {
+      this.teamCheckedList.push(value);
+    } else {
+      this.teamCheckedList.forEach((e: any, idx: any) => {
+        if (e.teamId == value.teamId) {
+          this.teamCheckedList.splice(idx, 1);
+        }
+      });
+    }
+    if(this.teamCheckedList.length==0){
+      this.selectAllChecked=false;
+    }
+    this.shareCheckedlist('team');
+  }
+}
+  shareCheckedlist(action: any) {
+    this.shareCheckedList.emit({ 'action': action, value: action == 'team' ? this.teamCheckedList : this.clientCheckedList });
+  }
+
+  getTeamsData(){
+    this._service.fetchTeamsNameData((res:any)=>{
+      if(res.status){
+        this.teamData = res.data
+      }
+    })
+  }
+  selectAll(event:any,from:any){
+    this.selectAllChecked=!this.selectAllChecked;
+    let isChecked:boolean=event.target.checked;
+    if (from === "client") {
+      if (isChecked) {
+        this.clients.forEach((e: any) => {
+          let isClientExist = this.clientCheckedList.some((ele: any) => e.id == ele.id || e.id == ele.uuid);
+          if (!isClientExist) {
+            this.clientCheckedList.push(e)
+          }
+        })
+        this.list = this.clientCheckedList.map((e: any) => ({ ...e, 'checked': true }));
+        this.shareCheckedlist('client');
+      } else {
+        this.list.forEach((e: any) => {
+          e.checked = false;
+        })
+        this.clientCheckedList = [];
+        this.shareCheckedlist('client');
+      }
+    } 
+    else if(from === "team"){
+      if (isChecked) {
+        this.teamData.forEach((e: any) => {
+          let isTeamExist = this.teamCheckedList.some((ele: any) => e.teamId == ele.teamId);
+          if (!isTeamExist) {
+            this.teamCheckedList.push(e)
+          }
+        })
+        this.list = this.teamCheckedList.map((e: any) => ({ ...e, 'checked': true }));
+        this.shareCheckedlist('team');
+      } else {
+        this.list.forEach((e: any) => {
+          e.checked = false;
+        })
+        this.teamCheckedList = [];
+        this.shareCheckedlist('team');
+        
+      }
+    }
+    }
 }
