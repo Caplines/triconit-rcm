@@ -618,60 +618,67 @@
                         <!-- Modal -->
                         <div id="assigment-modal" class="modal">
                             <div class="modal-content">
-                                <div class="close-modal">
-                                    <h5>Assign</h5> <span (click)="closeModal()">&times;</span>
-                                </div>
-                                <div class="table-responsive">
+                                <div _ngcontent-qaa-c48="" class="modal-header">
+                                    <h5 class="modal-title">Assign</h5>
+                                    <button type="button" (click)="closeModal()" class="close"><span>×</span></button>
+                                  </div>
+<div class="modal-body">
+
+        <ng-container *ngIf="assignModel.toLead" sytle="">
+            <div class="table-responsive">
+                <div role="alert" class="alert alert-info"><img src="../../assets/img/info-icon-border.png">Any Data Saved for latter processing will be lost</div>
+                <select class="form-control" id="selectLeadName" name=""
+                    [(ngModel)]='claimEditModel.assignTouuid'>
+                    <option selected="true" value="">Select Lead Name</option>
+                    <ng-container *ngFor="let tl of tlUsers">
+                        <option value="{{tl.uuid}}">{{tl.firstName}} {{tl.lastName}}
+                        </option>
+                    </ng-container>
+                </select>
+                <div class="remark-box"><label>Remark:</label><input name="tlRemark" id="tlRemark" class="form-control" /></div>
+                <div [innerHTML]="tlErrormsg" class="success-msg"></div>                
+            </div>
 
 
-                                    <ng-container *ngIf="assignModel.toLead" sytle="">
-                                        <div class="table-responsive">
+        </ng-container>
 
+        <ng-container *ngIf="assignModel.toOtherTeam">
+            <div class="table-responsive">
+                <div class="team-name-box">
+                    <label>Team Name:</label>
+                <select class="form-control" id="selectTeam" name="w"
+                    [(ngModel)]='claimEditModel.assignToTeam'>
+                    <option selected="true" value="-1">Select Team</option>
+                    <ng-container *ngFor="let tl of teamsMs">
+                        <option value="{{tl.teamId}}">{{tl.teamName}}</option>
+                    </ng-container>
+                </select>
+            </div>
+            </div>
+            <div class="alert fade show text-center" *ngIf="alert.showAlertPopup"
+                [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
+                role="alert">
+                <strong>{{alert.alertMsg}}</strong>
+            </div>
 
-                                            <select class="form-control" id="selectLeadName" name=""
-                                                [(ngModel)]='claimEditModel.assignTouuid'>
-                                                <option selected="true" value="">Select Lead Name</option>
-                                                <ng-container *ngFor="let tl of tlUsers">
-                                                    <option value="{{tl.uuid}}">{{tl.firstName}} {{tl.lastName}}
-                                                    </option>
-                                                </ng-container>
-                                            </select> Note* -> Any Data Saved for latter processing will be lost<br />
-                                            <label>Remark:</label><input name="tlRemark" id="tlRemark" /><br />
-                                            <div [innerHTML]="tlErrormsg"></div>
-                                            <button type="button" class="btn btn-success"
-                                                (click)="assignToLead()">Assign to Team Lead</button>
-                                        </div>
-
-
-                                    </ng-container>
-
-                                    <ng-container *ngIf="assignModel.toOtherTeam">
-                                        <div class="table-responsive">
-                                            <label>Team Name:</label>
-                                            <select class="form-control" id="selectTeam" name="w"
-                                                [(ngModel)]='claimEditModel.assignToTeam'>
-                                                <option selected="true" value="-1">Select Team</option>
-                                                <ng-container *ngFor="let tl of teamsMs">
-                                                    <option value="{{tl.teamId}}">{{tl.teamName}}</option>
-                                                </ng-container>
-                                            </select>
-
-                                            <button type="button" class="btn btn-success"
-                                                (click)="assignToOtherTeam()">Assign to Other Team</button>
-
-                                        </div>
-                                        <div class="alert fade show text-center" *ngIf="alert.showAlertPopup"
-                                            [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
-                                            role="alert">
-                                            <strong>{{alert.alertMsg}}</strong>
-                                            <button type="button" (click)="alert.showAlertPopup=false;" class="close"
-                                                data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-
-                                    </ng-container>
-                                </div>
+        </ng-container>
+</div>
+<div class="modal-footer">
+    <ng-container *ngIf="assignModel.toLead">
+        <button type="button" class="btn btn-success"
+        (click)="assignToLead()">Assign to Team Lead</button>
+    </ng-container>
+    <ng-container *ngIf="assignModel.toOtherTeam">
+        <button type="button" class="btn btn-success"
+        (click)="assignToOtherTeam()">Assign to Other Team</button>
+    </ng-container>
+    <ng-container *ngIf="alert.showAlertPopup">
+        <button type="button" (click)="alert.showAlertPopup=false;" class="close"
+        data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    </ng-container>
+</div>
 
                             </div>
                         </div>
