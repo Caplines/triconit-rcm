@@ -1347,7 +1347,7 @@ public class ClaimServiceImpl {
 			}
 			
 			IVFDto iVFDto = rcmClaimRepository.getLatestIvfNumberForClaim(off.getUuid(), claims.getPatientId(),
-					claimuuid,types);
+					clT[0],types);
 			if (iVFDto != null) {
 				return ruleEngineService.pullIVFDataFromRE(iVFDto.getIvId(), claims.getPatientId(), companyId,
 						off.getUuid());

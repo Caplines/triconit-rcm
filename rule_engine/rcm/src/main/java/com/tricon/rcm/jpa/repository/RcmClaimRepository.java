@@ -193,7 +193,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("patientId") String patientId);
 	*/		
 	@Query(nativeQuery = true, value = ""
-			+" SELECT treatement_plan_id,date_of_service FROM reports r inner join report_detail rd on rd.report_id=r.id "
+			+" SELECT treatement_plan_id,tx_plan_date FROM reports r inner join report_detail rd on rd.report_id=r.id "
 			+" where office_id=:officeId and patient_id=:patientId "
 			+" and treatement_plan_id not in ('PREBATCHMODE','SEALANTMODE') and iv_date is not null "
 			+" and STR_TO_DATE(iv_date, '%m/%d/%Y')<:dos "
