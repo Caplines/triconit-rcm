@@ -127,6 +127,7 @@ public class WebSecurityConfig {
 				.ignoring().antMatchers(HttpMethod.GET,"/swagger-ui.html",
 						"/login","/tool-update", "/fetch-claims","/users-status","/register","/manage-office",
 						"/manage-client","/user-setting","/claim-assignment","/billing-claims/*","/billing-claims/*/ivf","/billing-claims/{pathvariable:[0-9A-Za-z]+}/ivf",
+						"/list-of-claims","/all-pendency","/production","/update-pass",
 						 "/*.html",
 			                "/index.jsp",
 			                "/favicon.ico",

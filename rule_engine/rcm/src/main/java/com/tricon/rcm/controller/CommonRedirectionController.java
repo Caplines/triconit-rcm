@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class CommonRedirectionController {
 
 	@RequestMapping(value = { "/login", "/tool-update", "/fetch-claims", "/users-status", "/register", "/manage-office",
-			"/manage-client", "/user-setting", "/claim-assignment","/list-of-claims","/update-pass", "/billing-claims/*" }, method = RequestMethod.GET)
+			"/manage-client", "/user-setting", "/claim-assignment","/list-of-claims","/update-pass", "/billing-claims/*",
+			"/all-pendency","/production"}, method = RequestMethod.GET)
 	public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("IP ---> " + request.getServerName());
 		System.out.println("Scheme-->" + request.getScheme());

@@ -7,7 +7,7 @@
 }
 
 .bg-error {
-    border-color: #ff0000 !important;
+    border: 1px solid#ff0000 !important;
     color: #ff0000 !important;
 
 }
@@ -140,31 +140,37 @@
     font-size: 13px;
 }
 
-#assigment-modal .modal-content{
+#assigment-modal .modal-content {
     max-width: 500px;
     padding: 0px;
 }
+
 .modal-header .close {
     outline: none;
 }
+
 #assigment-modal .modal-footer {
     justify-content: center !important;
 }
+
 #assigment-modal .modal-content .form-control {
     width: 336px;
 
 }
+
 #assigment-modal .table-responsive {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
+
 #assigment-modal .remark-box {
     margin-top: 10px;
     width: 336px;
     text-align: left;
 }
+
 #assigment-modal .team-name-box {
     display: flex;
     width: 430px;
@@ -175,7 +181,8 @@
     margin-right: 10px;
     margin-bottom: 2px;
 }
-.success-msg{
+
+.success-msg {
     width: 336px;
     margin-top: 10px;
     color: #009f76;
