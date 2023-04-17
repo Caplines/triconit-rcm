@@ -43,8 +43,8 @@ export class ProductionComponent implements OnInit {
     });
   }
        //clear date field
-        (<HTMLInputElement>document.getElementById("sDate")).value='';
-        (<HTMLInputElement>document.getElementById("eDate")).value='';
+       // (<HTMLInputElement>document.getElementById("sDate")).value='';
+       // (<HTMLInputElement>document.getElementById("eDate")).value='';
  }
 }
 

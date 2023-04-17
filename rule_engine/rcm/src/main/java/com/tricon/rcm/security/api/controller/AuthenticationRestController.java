@@ -57,13 +57,18 @@ public class AuthenticationRestController {
     private RcmUtilServiceImpl utilService;
 
     @RequestMapping(value = "${jwt.route.authentication.path}", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
-        //System.out.println(authenticationRequest.getUsername());
-        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());      
-        boolean verificationStatus=utilService.googleCaptchaVerificationStatus(authenticationRequest.getToken());       
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {  
+		if (authenticationRequest.getUsername() == null || authenticationRequest.getUsername().trim().equals("")
+				|| authenticationRequest.getPassword() == null || authenticationRequest.getPassword().trim().equals("")
+				|| authenticationRequest.getToken() == null || authenticationRequest.getToken().trim().equals("")) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "User Logged in Failed", null));
+
+		}
+    	boolean verificationStatus=utilService.googleCaptchaVerificationStatus(authenticationRequest.getToken());       
 		if (verificationStatus) {
 			logger.info("Captcha verification status>>>>>>>success");
 			// Reload password post-security so we can generate the token
+			authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());  
 			final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 			final String token = jwtTokenUtil.generateToken(userDetails);
 			JwtUser user = (JwtUser) userDetails;
@@ -119,7 +124,12 @@ public class AuthenticationRestController {
 	@RequestMapping(value = "${jwt.route.testing.authentication.path}", method = RequestMethod.POST)
 	public ResponseEntity<?> loginWithOutCaptcha(@RequestBody JwtAuthenticationRequest authenticationRequest)
 			throws AuthenticationException {
-		// System.out.println(authenticationRequest.getUsername());
+		
+		if (authenticationRequest.getUsername() == null || authenticationRequest.getUsername().trim().equals("")
+				|| authenticationRequest.getPassword() == null || authenticationRequest.getPassword().trim().equals("")) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "User Logged in Failed", null));
+
+		}
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
 		// Reload password post-security so we can generate the token
