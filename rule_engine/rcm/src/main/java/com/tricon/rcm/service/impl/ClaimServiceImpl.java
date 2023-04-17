@@ -1312,9 +1312,8 @@ public class ClaimServiceImpl {
 	public List<ProductionDto> claimsProductionReportByTeam(int teamId, ClaimProductionLogDto dto,PartialHeader partialHeader) {
 
 		
-		rcmClaimRepository.claimProductionByTeamMember(partialHeader.getCompany().getUuid(), teamId, dto.getStartDate(),
+		return rcmClaimRepository.claimProductionByTeamMember(partialHeader.getCompany().getUuid(), teamId, dto.getStartDate(),
 				dto.getEndDate());
-		return null;
 
 	}
 

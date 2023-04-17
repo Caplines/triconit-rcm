@@ -135,13 +135,18 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst);
 	
 	@Query(nativeQuery = true, value = 
-			" select count(distinct assign.claim_id) as total,count(distinct DATE(assign.created_date)) as days ,us.uuid as uuid,us.first_name "+
-			" as fName,us.last_name as lName from rcm_user us "+
-			" left join rcm_claim_assignment assign on us.uuid=assign.assigned_to "+
-			" and  assign.created_date between STR_TO_DATE( :startDate, '%m/%d/%Y %H:%i:%s') and STR_TO_DATE(:endDate, '%m/%d/%Y %H:%i:%s') "+
-			" left join rcm_claims cl on cl.claim_uuid=assign.claim_id  and team_id=:teamId and taken_back is false and  cl.pending is true  "+
-			" left join office off on off.uuid=cl.office_id  "+
-			" where   us.company_id=:companyId  and us.team_id=:teamId group by us.uuid ")
+	            " select count(distinct assign.claim_id) as total,count(distinct DATE(assign.created_date)) as days ,"
+				+" us.uuid as uuid,us.first_name "
+				+" 	 as fName,us.last_name as lName from rcm_user us "
+				+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+				+"     inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
+				+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to  "
+				+" 	and  assign.created_date between STR_TO_DATE( :startDate, '%m/%d/%Y %H:%i:%s')"
+				+"     and STR_TO_DATE(:endDate, '%m/%d/%Y %H:%i:%s') "
+				+" 	left join rcm_claims cl on cl.claim_uuid=assign.claim_id "
+				+"     and rut.team_id=:teamId and taken_back is false and  cl.pending is true  "
+				+" 	left join office off on off.uuid=cl.office_id  "
+				+" 	where   cmp.company_id=:companyId and rut.team_id=:teamId group by us.uuid")
 	List<ProductionDto> claimProductionByTeamMember(@Param("companyId") String companyId,
 			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
 
