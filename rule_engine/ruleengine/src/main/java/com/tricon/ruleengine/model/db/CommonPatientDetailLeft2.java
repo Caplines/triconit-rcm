@@ -560,6 +560,12 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "d1110", length = 20)
 	private String d1110;
 	
+	@Column(name = "policy18", length = 20)
+	private String policy18;//interchange with D0120 to work on both forms old and new
+	
+	@Column(name = "d7953_extraction", length = 50)
+	private String d7953Extraction;
+
 	public String getNpi() {
 		return npi;
 	}
@@ -1992,6 +1998,22 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setD1110(String d1110) {
 		this.d1110 = d1110;
+	}
+
+	public String getPolicy18() {
+		return policy18;
+	}
+
+	public void setPolicy18(String policy18) {
+		this.policy18 = policy18;
+	}
+
+	public String getD7953Extraction() {
+		return d7953Extraction;
+	}
+
+	public void setD7953Extraction(String d7953Extraction) {
+		this.d7953Extraction = d7953Extraction;
 	}
     
 	

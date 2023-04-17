@@ -57,7 +57,9 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 	private String taxId;
 	private IVFormType ivFormType;
 	
-	private static final int PAGE_RECORD=50;
+	private static final int PAGE_RECORD_1=50;
+	private static final int PAGE_RECORD_2=100;
+	
 	private static final int PAGE_RECORD_INDEX=2;
 	private static final String SCRAP_TYPE_1="1";
 	private static final String SCRAP_TYPE_2="2";
@@ -434,8 +436,8 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		//select to records to display
 		if (scrapSubType.equals(SCRAP_TYPE_1)) {
 		Select select = new Select(driver.findElement(By.className("select-claim-count")));
-		select.selectByVisibleText(PAGE_RECORD+"");
-		select.selectByValue(PAGE_RECORD+"");
+		select.selectByVisibleText(PAGE_RECORD_1+"");
+		select.selectByValue(PAGE_RECORD_1+"");
 		Thread.sleep(5000);
 		fetchTableData(driver,1,dList,SCRAP_TYPE_1);
 		}
@@ -446,7 +448,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		List<WebElement> vs=driver.findElements(By.className("ant-select-item-option-content"));
 			for (WebElement v:vs) {
 				System.out.println(v.getText());
-				if (v.getText().contains("100")) {
+				if (v.getText().contains(PAGE_RECORD_2+"")) {
 					v.click();
 					break;
 				}
@@ -617,9 +619,13 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 				   data.setStatus(tds.get(position[6]).getText());
 				   data.setDescription(tds.get(position[7]).getText());
 				   data.setServiceDate(tds.get(position[8]).getText());
+				   if (scrapSubType.equals(SCRAP_TYPE_2)) {
 				   data.setTreatingSignature(tds.get(position[9]).getText());
 				   data.setLastUpdate(tds.get(position[10]).getText());
-				   
+				   }else {
+					   data.setTreatingSignature(tds.get(position[10]).getText());
+					   data.setLastUpdate(tds.get(position[9]).getText());
+				   }
 				   /*IntStream.range(0, tds.size())
 					.forEach(index -> {
 						System.out.println(tds.get(index).getText());
@@ -680,6 +686,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 							}
 							if (inp.getAttribute("placeholder").equals("End date")) {
 								data.setProcessedDate(data.getProcessedDate()+"-"+inp.getAttribute("value"));
+								break;
 							}
 						}
 					 }
@@ -694,12 +701,17 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		 
 		 try {
 			 System.out.println("updateRemoteLiteScrapSheetGoogleSheet for page"+pageNo);
-			 System.out.println("updateRemoteLiteScrapSheetGoogleSheet ==>"+(((pageNo-1)*PAGE_RECORD)+2));
+			 //System.out.println("updateRemoteLiteScrapSheetGoogleSheet ==>"+(((pageNo-1)*PAGE_RECORD)+2));
 		//make sure sheet has rows more than the no of records	 
-		 ConnectAndReadSheets.updateRemoteLiteScrapSheetGoogleSheet(dto.getGoogleSheetIdDb(),
+			 System.out.println("----->"+dataList.size());
+			 if (scrapSubType.equals(SCRAP_TYPE_1))ConnectAndReadSheets.updateRemoteLiteScrapSheetGoogleSheet(dto.getGoogleSheetIdDb(),
 					dto.getGoogleSubId(),
-					this.CLIENT_SECRET_DIR, this.CREDENTIALS_FOLDER, dataList,"Progress PAGE -"+pageNo,pageNo==1?2:((pageNo-1)*PAGE_RECORD)+2);
+					this.CLIENT_SECRET_DIR, this.CREDENTIALS_FOLDER, dataList,"Progress PAGE -"+pageNo,pageNo==1?2:((pageNo-1)*PAGE_RECORD_1)+2);
+		 else ConnectAndReadSheets.updateRemoteLiteScrapSheetGoogleSheet(dto.getGoogleSheetIdDb(),
+					dto.getGoogleSubId(),
+					this.CLIENT_SECRET_DIR, this.CREDENTIALS_FOLDER, dataList,"Progress PAGE -"+pageNo,pageNo==1?2:((pageNo-1)*PAGE_RECORD_2)+2);
 		 dataList.clear();
+		 System.out.println("-----<"+dataList.size());
 		 }catch(Exception m) {
 			 
 		 }

@@ -747,6 +747,9 @@ public class CaplineIVFFormDto {
 	private String yesNoAssignToffice;
 	private String d1120;
 	private String d1110;
+	private String d0120;
+	private String d7953Extraction;
+	
     //END
     
     public String getFill1() {
@@ -3805,6 +3808,22 @@ public class CaplineIVFFormDto {
 
 	public void setD1110(String d1110) {
 		this.d1110 = d1110;
+	}
+
+	public String getD0120() {
+		return d0120;
+	}
+
+	public void setD0120(String d0120) {
+		this.d0120 = d0120;
+	}
+
+	public String getD7953Extraction() {
+		return d7953Extraction;
+	}
+
+	public void setD7953Extraction(String d7953Extraction) {
+		this.d7953Extraction = d7953Extraction;
 	}
 	
 	

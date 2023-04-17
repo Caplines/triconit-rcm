@@ -9307,7 +9307,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 			
 			
             boolean needCheck=false;
-            String tpCode="";
+            List<String> tpCode=new ArrayList<>();
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
 				RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
@@ -9318,11 +9318,11 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 
 				if (tp.getServiceCode().equalsIgnoreCase("D1110") || tp.getServiceCode().equalsIgnoreCase("D1120")) {
 					needCheck=true;
-					tpCode=tp.getServiceCode();
+					tpCode.add(tp.getServiceCode());
 					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 					fcodes.add(tp.getServiceCode());
-					RuleEngineLogger.generateLogs(clazz, "TP Code- "+tpCode,
+					RuleEngineLogger.generateLogs(clazz, "TP Code- "+tp.getServiceCode(),
 							Constants.rule_log_debug, bw);
 								
 				}
@@ -9348,8 +9348,15 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 							RuleEngineLogger.generateLogs(clazz,
 									"Age- " + age[0] + " Years, " + age[1] + " Months & " + age[2] + " Days",
 									Constants.rule_log_debug, bw);
+							//added condition 13 April ->Princy
+							if (rollAge==99 && tpCode.contains("D1110")) {
+								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule39.pass2.message", new Object[] {  }, locale),
+										Constants.PASS,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+							
+							}else {
 							if (age[0]<rollAge) {
-							if (tpCode.equalsIgnoreCase("D1120")) {	
+							if (tpCode.contains("D1120")) {	
 								//Correct Code
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule39.pass2.message", new Object[] {  }, locale),
@@ -9357,11 +9364,11 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 							}else {
 							    //in-correct code	
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-										messageSource.getMessage("rule39.error.message", new Object[] { tpCode,rollAge }, locale),
+										messageSource.getMessage("rule39.error.message", new Object[] { "D1120",rollAge }, locale),
 										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 							 }
 							}else {
-								if (tpCode.equalsIgnoreCase("D1110")) {	
+								if (tpCode.contains("D1110")) {	
 								//correct code
 									dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule39.pass2.message", new Object[] {  }, locale),
@@ -9369,11 +9376,12 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 								}else {
 									//incorrect code
 									dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-											messageSource.getMessage("rule39.error.message", new Object[] { tpCode,rollAge }, locale),
+											messageSource.getMessage("rule39.error.message", new Object[] { "D1110",rollAge }, locale),
 											Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								}
 								
 							}
+						  }
 						} catch (ParseException e) {
 							RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),

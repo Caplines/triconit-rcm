@@ -23,7 +23,7 @@ public class CommonRedirectionController {
 	}
 	
 	@RequestMapping(value = { "/billing-claims/{cl}/ivf" }, method = RequestMethod.GET)
-	public void forwardC(@PathVariable("claimuuid") String cl,HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void forwardC(@PathVariable("cl") String cl,HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("IP ---> " + request.getServerName());
 		System.out.println("Scheme-->" + request.getScheme());
 		forwardRedirect(request, response);

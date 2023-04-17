@@ -140,7 +140,8 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " d8690 as d8690,d8070_fr as d8070fr, d8080_fr as d8080fr,"
 			+ " d8090_fr as d8090fr,d8670_fr as d8670fr,d8680_fr as d8680fr,"
 			+ " d8690_fr as d8690fr,apptype as apptype,sec_provider_name as secProviderName,"
-			+ " sec_prov_network as secProvNetwork,yes_no_assign_to_office as yesNoAssignToffice";
+			+ " sec_prov_network as secProvNetwork,yes_no_assign_to_office as yesNoAssignToffice,"
+			+ " policy18 as d0120,d1110 as d1110, d1120 as d1120, d7953_extraction as d7953Extraction ";
 	
 	@Override
 	public Patient checkforPatientWithId(String patientid, Office off) {
