@@ -68,6 +68,10 @@ const  routes: Routes = [
     loadChildren:()=>import("./report/report.module").then(m=>m.ReportModule)
   },
   {
+    path:'billing-claims/:uuid/tp',
+    loadChildren:()=>import("./treatment-plan/treatment-plan/treatment-plan.module").then(m=>m.TreatmentPlanModule)
+  },
+  {
     path:'update-pass',
     loadChildren:()=>import("./update-pass/update-pass/update-pass.module").then(m=>m.UpdatePasswordModule)
   },

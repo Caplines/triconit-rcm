@@ -3,14 +3,17 @@ import { BaseService } from './base-service.service';
 import { HttpClient } from '@angular/common/http';
 import { FreshClaimPullModel } from '../models/fresh.claim.pull.model';
 import { ClaimAssignmentPullModel } from '../models/claim-assignment-pull-model';
-import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
 import { TokenStorageService } from '../service/token-storage.service';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class ApplicationServiceService extends BaseService {
   setPaddingContainer: boolean = false;
+  private isTpActive = new Subject();
+  private isIvfActive = new Subject();
+  message$:any = this.isTpActive.asObservable();
 
   constructor(router: Router, http: HttpClient, tokenStorage: TokenStorageService) {
     super(router, http, tokenStorage);
@@ -331,4 +334,19 @@ export class ApplicationServiceService extends BaseService {
 fetchUserByDetail(query:any,callback:any){
   this.getData({},this.httpUrl['findUserByDetail']+"/"+query,callback)
   }
+
+fetchTpData(claimUuid:any,callback:any){
+  this.getData({},this.httpUrl['fetchTpData']+"/"+claimUuid,callback)
+  }
+
+  isTpIvfPage(event:any){
+    console.log("TPPPpppppppp");
+    
+    if(event.page === 'tp'){
+      this.isTpActive.next(event.value);
+    } else if(event.page === 'ivf'){
+      this.isIvfActive.next(event.value);
+    }
+  }
+
 }

@@ -64,6 +64,7 @@ export class BaseService {
     'allpendency': '/api/allpendency',
     'assigntotl': '/api/assign_to_tl',
     'findUserByDetail':'/finduserbydetail',
+    'fetchTpData':'/tp-link-data',
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

@@ -18,6 +18,8 @@ export class ReportComponent implements OnInit {
 	constructor(public appService: ApplicationServiceService,private route: ActivatedRoute,private title : Title,
 		private claimService: ClaimService) {
 		title.setTitle("RCM tool - IV Details");
+		
+		this.appService.isTpIvfPage({'page':'ivf',value:true});
 	 
 	}
 
