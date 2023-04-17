@@ -160,7 +160,7 @@ public class UserController extends BaseHeaderController {
 //		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 //	}
 	
-	@RequestMapping(value = "/treatmentplan-link-data/{claimUuid}", method = RequestMethod.GET)
+	@RequestMapping(value = "/tp-link-data/{claimUuid}", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> treatmentPlanData(@PathVariable("claimUuid") String claimUuid, Model model) {
 		List<TreatmentPlanLinkDto> response = null;

@@ -14,7 +14,7 @@ import { ApplicationServiceService } from 'src/app/service/application-service.s
 })
 export class ProductionComponent implements OnInit {
 
-  productionData:any=[{"fname":"Amit","total":1,"days":7},{"fname":"Ram","total":2,"days":5}];
+  productionData:any=[];
   alert:any={'showAlertPopup':false,'alertMsg':''}
   total:any=0;
   days:any=0;
@@ -30,7 +30,7 @@ export class ProductionComponent implements OnInit {
   if(startDate !=='' && endDate !==''){
   this.appService.saveProductionData({ "startDate": startDate,"endDate":endDate }, (callback: any) => {
     if (callback.status == 200 && callback.data) {
-   //this. productionData = callback.data;
+   this. productionData = callback.data;
    this. productionData.forEach((x:any) =>{
             Object.entries(x).forEach(([key, value])=>{
              if(key=='total')
