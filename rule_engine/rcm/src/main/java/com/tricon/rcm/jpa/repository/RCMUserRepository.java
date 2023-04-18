@@ -45,12 +45,12 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ "from rcm_user_company uc "
 			+ "inner join company rc on rc.uuid=uc.company_id "
 			+ "inner join rcm_user us on uc.rcm_user_id=us.uuid "
-			+ "inner join rcm_user_role ur on us.uuid=ur.uuid where us.email!=:ignoreUser and rc.uuid =:clientUuid group by us.uuid)c",
+			+ "inner join rcm_user_role ur on us.uuid=ur.uuid where us.email not in(:ignoreUser) and rc.uuid =:clientUuid group by us.uuid)c",
 			countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name) as ClientName from rcm_user_company uc "
 					+ "inner join company rc on rc.uuid=uc.company_id "
 					+ "inner join rcm_user us on uc.rcm_user_id=us.uuid "
-			+ "where email!=:ignoreUser and uc.company_id=:clientUuid group by us.uuid)c",nativeQuery = true)
-	Page<RcmUserToDto> getUsersBySuperAdminUsingClicentUuid(Pageable page,@Param("clientUuid")String clientUuid,@Param("ignoreUser")String ignoreUser);
+			+ "where email not in(:ignoreUser) and uc.company_id=:clientUuid group by us.uuid)c",nativeQuery = true)
+	Page<RcmUserToDto> getUsersBySuperAdminUsingClicentUuid(Pageable page,@Param("clientUuid")String clientUuid,@Param("ignoreUser")List<String> ignoreUser);
 	
 
 	@Query(value = "select c.Uuid,c.Email,c.FullName,c.ClientName,c.Roles,c.Active "
@@ -61,23 +61,23 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ "from rcm_user_company uc "
 			+ "inner join company rc on rc.uuid=uc.company_id "
 			+ "inner join rcm_user us on uc.rcm_user_id=us.uuid "
-			+ "inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid =:clientUuid and us.email!=:ignoreUser and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name) as ClientName,GROUP_CONCAT(distinct ur.role)from rcm_user_company uc"
+			+ "inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid =:clientUuid and us.email not in(:ignoreUser) and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name) as ClientName,GROUP_CONCAT(distinct ur.role)from rcm_user_company uc"
 			+ " inner join company rc on rc.uuid=uc.company_id"
 			+ " inner join rcm_user us on uc.rcm_user_id=us.uuid"
-			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where email!=:ignoreUser and uc.company_id =:clientUuid and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", nativeQuery = true)
-	Page<RcmUserToDto> getUserByCompanyUuidWithPagination(@Param("clientUuid") String clientUuid, Pageable page,@Param("ignoreUser")String ignoreUser);
+			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where email not in(:ignoreUser) and uc.company_id =:clientUuid and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", nativeQuery = true)
+	Page<RcmUserToDto> getUserByCompanyUuidWithPagination(@Param("clientUuid") String clientUuid, Pageable page,@Param("ignoreUser")List<String> ignoreUser);
 	
 	@Query(value = "select c.Uuid,c.Email,c.FullName,c.ClientName,c.Roles,c.Active"
 			+ "	from (select GROUP_CONCAT(distinct rc.name) as ClientName,GROUP_CONCAT(distinct ur.role)as Roles,concat(us.first_name,' ',us.last_name)as FullName,"
 			+ " us.uuid as Uuid,us.email as Email,us.active as Active from rcm_user_company uc"
 			+ " inner join company rc on rc.uuid=uc.company_id"
 			+ "	inner join rcm_user us on uc.rcm_user_id=us.uuid"
-			+ "	inner join rcm_user_role ur on us.uuid=ur.uuid where us.email!=:ignoreUser group by us.uuid)c",
+			+ "	inner join rcm_user_role ur on us.uuid=ur.uuid where us.email not in(:ignoreUser) group by us.uuid)c",
 			countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name) as ClientName from rcm_user_company uc "
 					+ "inner join company rc on rc.uuid=uc.company_id "
 					+ "inner join rcm_user us on uc.rcm_user_id=us.uuid "
-			+ " where email!=:ignoreUser group by us.uuid)c", nativeQuery = true)
-	Page<RcmUserToDto> getAllUserBySuperAdmin(Pageable page,@Param("ignoreUser")String ignoreUser);
+			+ " where email not in(:ignoreUser) group by us.uuid)c", nativeQuery = true)
+	Page<RcmUserToDto> getAllUserBySuperAdmin(Pageable page,@Param("ignoreUser")List<String> ignoreUser);
 	
 
 	@Query(value = "select c.Uuid,c.Email,c.FullName,c.ClientName,c.Roles,c.Active"
@@ -86,11 +86,11 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ " us.email as Email from rcm_user_company uc"
 			+ " inner join company rc on rc.uuid=uc.company_id"
 			+ " inner join rcm_user us on uc.rcm_user_id=us.uuid"
-			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid in(:clientUuid) and us.email!=:ignoreUser and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name),GROUP_CONCAT(distinct ur.role) from rcm_user_company uc"
+			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where rc.uuid in(:clientUuid) and us.email not in(:ignoreUser) and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", countQuery = "select count(*) from(select GROUP_CONCAT(distinct rc.name),GROUP_CONCAT(distinct ur.role) from rcm_user_company uc"
 			+ " inner join company rc on rc.uuid=uc.company_id"
 			+ " inner join rcm_user us on uc.rcm_user_id=us.uuid"
-			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where email!=:ignoreUser and uc.company_id in(:clientUuid) and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", nativeQuery = true)
-	Page<RcmUserToDto> getAllUserByPagination(Pageable page,@Param("ignoreUser")String ignoreUser,@Param("clientUuid")List<String>clientUuid);
+			+ " inner join rcm_user_role ur on us.uuid=ur.uuid where email not in(:ignoreUser) and uc.company_id in(:clientUuid) and ur.role not in ('ROLE_SUPER_ADMIN') group by us.uuid)c", nativeQuery = true)
+	Page<RcmUserToDto> getAllUserByPagination(Pageable page,@Param("ignoreUser")List<String> ignoreUser,@Param("clientUuid")List<String>clientUuid);
 
 	@Modifying
 	@Query(value="update rcm_user set active=:status,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where uuid in(:uuid)",nativeQuery = true)

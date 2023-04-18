@@ -25,6 +25,7 @@ import com.tricon.rcm.dto.AssignOfficesToBillingUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmUserToDto;
+import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.ManageOfficeServiceImpl;
 import com.tricon.rcm.service.impl.UserServiceImpl;
@@ -48,28 +49,26 @@ public class ManageOfficeController extends BaseHeaderController {
 	@Autowired
 	private UserServiceImpl userService;
 	
-//	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
-//	@PreAuthorize("hasRole('BILLING_TL')")
-//	public ResponseEntity<?> assignOfficesToBillingUser(@RequestBody AssignOfficesToBillingUserDto dto) {
-//		if (dto.getAssignOfficeDetails().stream()
-//				.anyMatch(x -> (x.getOfficeId()==null||x.getOfficeId().trim().equals("")) || (x.getUserId()==null||x.getUserId().trim().equals("")))) {
-//			return ResponseEntity
-//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
-//		}
-//		GenericResponse response = null;
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		Object principal = authentication.getPrincipal();
-//		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-//		JwtUser jwtUser = (JwtUser) userDetails;
-//		try {
-//			response = officeService.assignOfficeByAdmin(dto,jwtUser.getCompany());//why is this in ADMIN
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error(e.getMessage());
-//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-//		}
-//		return ResponseEntity.ok(response);
-//	}
+	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
+	public ResponseEntity<?> assignOfficesToBillingUser(@RequestBody AssignOfficesToBillingUserDto dto,Model model) {
+		if (dto.getAssignOfficeDetails().stream()
+				.anyMatch(x -> (x.getOfficeId()==null||x.getOfficeId().trim().equals("")) || (x.getUserId()==null||x.getUserId().trim().equals("")))) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		GenericResponse response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		try {
+			response = officeService.assignOfficeByAdmin(dto, partialHeader.getCompany(),RcmTeamEnum.BILLING.getId());//why is this in ADMIN
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(response);
+	}
 	
 	@RequestMapping(value = "/users/team/{teamId}", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")

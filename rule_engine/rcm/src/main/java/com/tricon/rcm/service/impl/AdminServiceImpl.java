@@ -301,11 +301,12 @@ public class AdminServiceImpl {
 		RcmCompany company = null;
 		List<RcmUserCompany> clientsData = userCompanyRepo.findByUserUuid(jwtUser.getUuid());
 		List<String> clientUuid = clientsData.stream().map(x -> x.getCompany().getUuid()).collect(Collectors.toList());
+		List<String>ignoreUsers=Arrays.asList(jwtUser.getEmail(),Constants.SYSTEM_USER_EMAIL);
 		if (isAdminOrSuperAdmin.equals(Constants.ADMIN)) {
 
 			if (companyUuid.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
 				Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
-				Page<RcmUserToDto> pageableList = userRepo.getAllUserByPagination(paging, jwtUser.getEmail(),
+				Page<RcmUserToDto> pageableList = userRepo.getAllUserByPagination(paging, ignoreUsers,
 						clientUuid);
 				listOfUsers = commonService.setUsersInPaginationDto(pageableList);
 				return listOfUsers;
@@ -316,7 +317,7 @@ public class AdminServiceImpl {
 				if (company != null && clientUuid.stream().anyMatch(x->x.equals(companyUuid))) {
 					Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
 					Page<RcmUserToDto> pageableList = userRepo.getUserByCompanyUuidWithPagination(company.getUuid(),
-							paging, jwtUser.getEmail());
+							paging, ignoreUsers);
 					listOfUsers = commonService.setUsersInPaginationDto(pageableList);
 					return listOfUsers;
 				}
@@ -326,7 +327,7 @@ public class AdminServiceImpl {
 		if (isAdminOrSuperAdmin.equals(Constants.SUPER_ADMIN)) {
 			if (companyUuid.equals(Constants.SHOW_ALL_COMPANY_USERS)) {
 				Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
-				Page<RcmUserToDto> pageableList = userRepo.getAllUserBySuperAdmin(paging, jwtUser.getEmail());
+				Page<RcmUserToDto> pageableList = userRepo.getAllUserBySuperAdmin(paging, ignoreUsers);
 				listOfUsers = commonService.setUsersInPaginationDto(pageableList);
 				return listOfUsers;
 			}
@@ -336,7 +337,7 @@ public class AdminServiceImpl {
 				if (company != null && clientUuid.stream().anyMatch(x->x.equals(companyUuid))) {
 					Pageable paging = PageRequest.of(pageNumber, totalRecordsperPage, Sort.by("FullName").ascending());
 					Page<RcmUserToDto> pageableList = userRepo.getUsersBySuperAdminUsingClicentUuid(paging,
-							company.getUuid(), jwtUser.getEmail());
+							company.getUuid(),ignoreUsers);
 					listOfUsers = commonService.setUsersInPaginationDto(pageableList);
 					return listOfUsers;
 				}
@@ -395,7 +396,7 @@ public class AdminServiceImpl {
 		if (loginUser != null) {
 				user = userRepo.findByUuid(dto.getUuid());
 				if(user==null) return new GenericResponse(HttpStatus.OK,MessageConstants.USER_NOT_EXIST, null);				
-				if (user != null && isAdminOrSuperAdmin.equals(Constants.ADMIN)) {
+				if (user != null && isAdminOrSuperAdmin.equals(Constants.ADMIN) && !user.getEmail().equals(Constants.SYSTEM_USER_EMAIL)) {
 					userDetails = userRepo.findUserByClientUuid(user.getEmail(),companyFromPartialHeader.getUuid());
 					if(userDetails!=null) {
 					msg = commonService.resetPassword(user, loginUser, dto.getPassword());}
@@ -403,7 +404,7 @@ public class AdminServiceImpl {
 						msg=MessageConstants.UPDATION_FAIL;
 					}
 				}
-				if (user != null && isAdminOrSuperAdmin.equals(Constants.SUPER_ADMIN)) {
+				if (user != null && isAdminOrSuperAdmin.equals(Constants.SUPER_ADMIN) && !user.getEmail().equals(Constants.SYSTEM_USER_EMAIL)) {
 					msg = commonService.resetPassword(user, loginUser, dto.getPassword());
 				}
 		}
@@ -622,6 +623,9 @@ public class AdminServiceImpl {
 
 		RcmUser existingUser = userRepo.findByUuid(dto.getUuid());
 		if (existingUser != null) {
+			if(existingUser.getEmail().equals(Constants.SYSTEM_USER_EMAIL)) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);
+			}
 			List<RcmUserRole> existingRoles = existingUser.getRoles().stream().collect(Collectors.toList());
 			List<RcmUserCompany> existingClients=userCompanyRepo.findByUserUuid(existingUser.getUuid());
 			List<RcmUserTeam> existingTeams=userTeamRepo.findByUserUuid(existingUser.getUuid());

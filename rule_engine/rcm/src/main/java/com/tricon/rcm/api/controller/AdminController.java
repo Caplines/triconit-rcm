@@ -120,6 +120,10 @@ public class AdminController extends BaseHeaderController{
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
+		if(dto.getEmail().equals(Constants.SYSTEM_USER_EMAIL)) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST,MessageConstants.USER_NOT_EXIST,null));
+		}
+		
 		if (dto.getEmail()==null||dto.getEmail().trim().equals("")) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
