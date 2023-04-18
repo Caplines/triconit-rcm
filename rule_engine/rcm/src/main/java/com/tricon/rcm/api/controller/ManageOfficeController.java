@@ -50,6 +50,7 @@ public class ManageOfficeController extends BaseHeaderController {
 	private UserServiceImpl userService;
 	
 	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL')")
 	public ResponseEntity<?> assignOfficesToBillingUser(@RequestBody AssignOfficesToBillingUserDto dto,Model model) {
 		if (dto.getAssignOfficeDetails().stream()
 				.anyMatch(x -> (x.getOfficeId()==null||x.getOfficeId().trim().equals("")) || (x.getUserId()==null||x.getUserId().trim().equals("")))) {
