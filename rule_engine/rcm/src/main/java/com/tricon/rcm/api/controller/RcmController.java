@@ -229,7 +229,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
 	@GetMapping("/api/issueClaims/{uuid}")
-	@PreAuthorize("hasRole('BILLING_TL')")
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','REPORTING','TL','ASSO')")
 	public ResponseEntity<Object> getIssueClaims(@PathVariable("uuid") String companyId,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;

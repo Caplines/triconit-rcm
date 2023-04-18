@@ -224,10 +224,6 @@ public class AdminController extends BaseHeaderController{
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		
-		if(!partialHeader.getJwtUser().isSmilePoint()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.UNAUTHORIZED_USER, null));
-		}
 		try {
 			response = serviceImpl.getClientWithGoogleSheetData();
 			if(response==null) {
