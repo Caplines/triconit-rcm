@@ -58,12 +58,13 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOfficeName();
         this.fetchOfficeByUuid();
 
-      } else {
-        this.loader.listClaimLoader = false;
-        if(res.data == "not Autorized")
-        this.logout();
-        //ERROR
-      }
+      } 
+      // else {
+      //   this.loader.listClaimLoader = false;
+      //   if(res.data == "not Autorized")
+      //   this.logout();
+      //   //ERROR
+      // }
 
     });
   }

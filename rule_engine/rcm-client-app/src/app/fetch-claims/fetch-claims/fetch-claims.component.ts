@@ -50,12 +50,13 @@ export class FetchClaimsComponent implements OnInit {
        ths.calcCount(ths.log)
        ths.calcRemLiteReject(ths.log)
        this.loader.billingLoader=false;
-      }else{
-        //ERROR
-        this.loader.billingLoader = false;
-        if(res.data == "not Autorized")
-        this.logout();
       }
+      // else{
+      //   //ERROR
+      //   this.loader.billingLoader = false;
+      //   if(res.data == "not Autorized")
+      //   this.logout();
+      // }
      
     });
   }
