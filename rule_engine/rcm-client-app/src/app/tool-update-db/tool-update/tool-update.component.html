@@ -10,9 +10,12 @@
                         <option value="-1">Select Client Name</option>
                         <option *ngFor="let sta of clients" [value]="sta.uuid">{{sta.clientName}}</option>
                     </select> -->
-                   <div class="issue-claim" *ngIf="cName!='-1'"><button class="btn btn-outline-primary" id="myBtn"  (click)="fetchIssueClaims()">Issue Claims</button></div>
+                        <div class="issue-claim" *ngIf="cName!='-1' && log.length != 0"><button class="btn btn-outline-primary" id="myBtn"  (click)="fetchIssueClaims()">Issue Claims</button></div>
                 </div>
-                <ng-container *ngIf="log.length == 0">
+                <ng-container *ngIf="loader">
+                    <div class="text-center"><span class="loader-data"></span> </div>
+                </ng-container >
+                <ng-container  *ngIf="log.length == 0 && !loader">
                     <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
                 </ng-container>
                  <!-- Modal -->

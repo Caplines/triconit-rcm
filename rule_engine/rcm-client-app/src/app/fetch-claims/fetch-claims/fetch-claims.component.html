@@ -112,11 +112,11 @@
                                                 </tr>
                                             </ng-container>
                                         </ng-container>
-                                        </tbody>
-                                        <ng-container *ngIf="log.length==0">
-                                            <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
-                                        </ng-container>
-                                    </table>
+                                    </tbody>
+                                </table>
+                                <ng-container *ngIf="log.length==0 && !loader.billingLoader">
+                                    <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
+                                </ng-container>
                                 </div>
                             </div>
                         </div>
