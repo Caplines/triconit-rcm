@@ -10,9 +10,9 @@ public class EncrytedKeyUtil {
         return encoder.encode(key);
     }
     
-	public static boolean verifyPassword(String oldPassword, String encryptedPassword) {
+	public static boolean verifyPassword(String password, String encryptedPassword) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		if (encoder.matches(oldPassword, encryptedPassword))
+		if (encoder.matches(password, encryptedPassword))
 			return true;
 		else
 			return false;

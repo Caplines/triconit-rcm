@@ -62,12 +62,12 @@ public class UserServiceImpl {
 	 * @return GenericResponse
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse updatePassword(String oldPassword, String newPassword, JwtUser jwtUser) throws Exception {
+	public GenericResponse updatePassword(String password, String newPassword, JwtUser jwtUser) throws Exception {
 		String msg = "";
 		RcmUser loginUser = userRepo.findByEmail(jwtUser.getUsername());
 		if (loginUser != null) {
 			String encodedPassword = loginUser.getPassword();
-			if (EncrytedKeyUtil.verifyPassword(oldPassword, encodedPassword)) {
+			if (EncrytedKeyUtil.verifyPassword(password, encodedPassword)) {
 				msg = commonService.resetPassword(loginUser, loginUser, newPassword);
 				if (msg.equals(MessageConstants.UPDATION_FAIL)) {
 					msg = MessageConstants.UPDATION_FAIL;

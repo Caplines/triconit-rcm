@@ -58,6 +58,7 @@ public class UserController extends BaseHeaderController {
 
 	@ApiOperation(value = "Api For Update Password of Login User")
 	@RequestMapping(value = "/updatepassword", method = RequestMethod.POST)
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','REPORTING','TL','ASSO')")
 	public ResponseEntity<?> updatePasswordOfUserOrAdmin(@RequestBody UpdatePasswordDto dto,Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

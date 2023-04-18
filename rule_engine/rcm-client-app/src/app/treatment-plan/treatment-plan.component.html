@@ -28,12 +28,6 @@
                                             <tr>
                                                 <th>
                                                     <div class="dFlex">
-                                                        Phase <span class="sorting">
-                                                        </span>
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
                                                         Date Plan <span class="sorting">
                                                         </span>
                                                     </div>
@@ -92,11 +86,15 @@
                                             <tr *ngIf="showLoader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
                                             <ng-container *ngFor="let tp of tpData">
                                                 <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td>{{tp.datePlan}}</td>
+                                                    <td>{{tp.appt}}</td>
+                                                    <td>{{tp.provider}}</td>
+                                                    <td>{{tp.service}}</td>
+                                                    <td>{{tp.tth}}</td>
+                                                    <td>{{tp.surf}}</td>
+                                                    <td>{{tp.fee}}</td>
+                                                    <td>{{tp.ins}}</td>
+                                                    <td>{{tp.pat}}</td>
                                                 </tr>
                                             </ng-container>
                                         </tbody>
