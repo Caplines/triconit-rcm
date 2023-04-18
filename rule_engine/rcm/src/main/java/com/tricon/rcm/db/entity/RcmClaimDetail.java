@@ -69,10 +69,10 @@ public class RcmClaimDetail implements Serializable {
 	@Column(name = "status", length = 15)
 	private String status;
 
-	@Column(name = "surface", length = 5)
+	@Column(name = "surface", length = 255)
 	private String surface;
 
-	@Column(name = "tooth", length = 5)
+	@Column(name = "tooth", length = 255)
 	private String tooth;
 
 	@Column(name = "service_code", length = 15)
