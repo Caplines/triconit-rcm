@@ -6,6 +6,7 @@ import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-m
 import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
+import Utils from '../../util/utils';
 
 @Component({
   selector: 'app-list-of-claims',
@@ -58,6 +59,9 @@ export class ListOfClaimsComponent implements OnInit {
         this.fetchOfficeByUuid();
 
       } else {
+        this.loader.listClaimLoader = false;
+        if(res.data == "not Autorized")
+        this.logout();
         //ERROR
       }
 
@@ -138,5 +142,9 @@ export class ListOfClaimsComponent implements OnInit {
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     new ngxCsv(excelData,`${localStorage.getItem("cname")}_List_of_Claims_${this.date}`, options);
+  }
+
+  logout() {
+    Utils.logout();
   }
 }

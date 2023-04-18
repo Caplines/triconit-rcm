@@ -5,6 +5,7 @@ import { ClaimAssociateLogModel } from '../../models/claim-associate-log-model';
 import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
+import Utils from '../../util/utils';
 
 @Component({
   selector: 'app-fetch-claims',
@@ -49,9 +50,11 @@ export class FetchClaimsComponent implements OnInit {
        ths.calcCount(ths.log)
        ths.calcRemLiteReject(ths.log)
        this.loader.billingLoader=false;
-
       }else{
         //ERROR
+        this.loader.billingLoader = false;
+        if(res.data == "not Autorized")
+        this.logout();
       }
      
     });
@@ -113,6 +116,10 @@ export class FetchClaimsComponent implements OnInit {
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     new ngxCsv(excelData,`${localStorage.getItem("cname")}_Fetch_Claims_${this.date}`, options);
+  }
+
+  logout() {
+    Utils.logout();
   }
 
 }

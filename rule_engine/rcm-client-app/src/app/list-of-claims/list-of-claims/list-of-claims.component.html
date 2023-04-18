@@ -209,12 +209,14 @@
                                                 </tr>
                                             </ng-container>
                                         </ng-container>
-
-                                        </tbody>
-                                        <ng-container *ngIf="filteredItems.length==0">
-                                            <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
-                                        </ng-container>
-                                    </table>
+                                    </tbody>
+                                </table>
+                                <ng-container *ngIf="loader.listClaimLoader">
+                                    <div class="text-center"><span class="loader-data"></span> </div>
+                                </ng-container>        
+                                    <ng-container *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
+                                        <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
+                                    </ng-container>
                                 </div>
                             </div>
 
