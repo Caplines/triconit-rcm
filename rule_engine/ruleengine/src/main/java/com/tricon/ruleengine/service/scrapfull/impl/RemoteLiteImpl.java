@@ -692,8 +692,10 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 					 }
 					 
 				  }
+				  // Do not insert data with Invalid date
 				   //data.setProcessedDate(data.getProcessedDate()+"-"+ driver.findElements(By.className("ant-picker-input")).get(1).findElement(By.tagName("input")).getAttribute("value"));
-				   dataList.add(data);
+				  if (!data.getServiceDate().equals("Invalid date")) 
+				  dataList.add(data);
 			   }
 			   
 			 

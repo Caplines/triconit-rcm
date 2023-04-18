@@ -1340,6 +1340,7 @@ public class ClaimServiceImpl {
 			if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
 				types.add("Primary");
 				types.add("No Information");
+				types.add("");
 				
 			} else {
 				types.add("Secondary");
