@@ -26,7 +26,8 @@
                             <a data-toggle="collapse" (click)="showHide(0)" class="bold-b-text"
                                 aria-expanded="true">Claim Details: <span
                                     style="color:#ff00a8">{{infoMessage}}</span></a>
-                            <div class="form-row collapse show" id="claimDetails">
+                                    <div *ngIf="loader.claimDetail" class="loader-data"></div>
+                                    <div  *ngIf="!loader.claimDetail" class="form-row collapse show" id="claimDetails">
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
                                         <label for="" class="">Office :</label>
@@ -148,7 +149,8 @@
                             </div>
                             <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text "
                                 aria-expanded="false">Links to Related Documents:</a>
-                            <div class="form-row collapse show" id="linksToDocuments">
+                                <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
+                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show" id="linksToDocuments">
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row text-number">
                                         <label for="" class="">IV ID :</label>
@@ -178,7 +180,8 @@
                             </div>
                             <a data-toggle="collapse" (click)="showHide(2)" class="bold-b-text "
                                 aria-expanded="false">Remarks by Other RCM Teams:</a>
-                            <div class="form-row  collapse show" id="teamRemarks">
+                                <div *ngIf="loader.remarksByOther" class="loader-data"></div>
+                                <div *ngIf="!loader.remarksByOther" class="form-row  collapse show" id="teamRemarks">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -198,7 +201,7 @@
                                                     <td>{{rem.comment}}</td>
                                                 </tr>
                                             </ng-container>
-                                            <ng-container *ngIf="otherTeamRemarks?.length==0 || !otherTeamRemarks">
+                                            <ng-container *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
                                                 No Remarks Found.
                                             </ng-container>
                                         </tbody>
@@ -208,7 +211,8 @@
 
                             <a data-toggle="collapse" (click)="showHide(3)" class="bold-b-text "
                                 aria-expanded="false">Additional Requirements for Rebilled Claims:</a>
-                            <div class="form-row  collapse show" id="rebilledClaims">
+                                <div *ngIf="loader.rebilledClaims" class="loader-data"></div>
+                                <div *ngIf="!loader.rebilledClaims" class="form-row  collapse show" id="rebilledClaims">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -222,10 +226,10 @@
                                                 <th>Remarks</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            Not Found.
-                                        </tbody>
                                     </table>
+                                    <div class="not-found" *ngIf="!loader.rebilledClaims">
+                                            Data Not Found.
+                                    </div>
                                 </div>
                             </div>
                             <ng-container *ngIf="smilePoint">
@@ -234,7 +238,8 @@
                                     Claims</a>
                                 <a data-toggle="collapse" (click)="showHide(4)" class="bold-b-text "
                                     aria-expanded="false">Claim Level Validations (Automated):</a>
-                                <div class="form-row  collapse show" id="claimValidations">
+                                    <div *ngIf="loader.automatedValidation" class="loader-data"></div>
+                                    <div *ngIf="!loader.automatedValidation" class="form-row  collapse show" id="claimValidations">
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
@@ -288,7 +293,8 @@
                             </ng-container>
                             <a data-toggle="collapse" (click)="showHide(5)" class="bold-b-text "
                                 aria-expanded="false">Claim Level Validations (Manual):</a>
-                            <div class="form-row  collapse show" id="claimValidationsManual">
+                                <div *ngIf="loader.manualValidation" class="loader-data"></div>
+                                <div *ngIf="!loader.manualValidation" class="form-row  collapse show" id="claimValidationsManual">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <tbody>
@@ -326,7 +332,7 @@
                                             </tr>
                                             <ng-container *ngIf="claimRcm.claimNotes">
                                                 <tr>
-                                                    <td colspan="2" class="text-right">{{claimRcm.claimNotes[0].key}}
+                                                    <td colspan="2" class="text-right">{{claimRcm.claimNotes[0]?.key}}
                                                     </td>
                                                     <td colspan="4"><textarea class="form-control mandatory"
                                                             id="CL_N_{{claimRcm.claimNotes[0].id}}" rows="1"
@@ -342,8 +348,9 @@
                             <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text "
                                     aria-expanded="false">Rule Engine Validations:</a>
-                                <div class="form-row  collapse show" id="claimValidationsRE">
-                                    <ng-container *ngIf="ruleEngineReport.length>0">
+                                    <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
+                                    <div  *ngIf="!loader.ruleEngValid" class="form-row  collapse show" id="claimValidationsRE">
+                                        <ng-container *ngIf="ruleEngineReport.length>0">
                                         <div class="rule-detail" [innerHTML]="reheading">
                                         </div>
                                         <div class="table-responsive">
@@ -390,16 +397,17 @@
                                             </table>
                                         </div>
                                     </ng-container>
-                                    <ng-container *ngIf="ruleEngineReport.length==0">
+                                    <ng-container *ngIf="ruleEngineReport.length==0 && !loader.ruleEngValid">
                                         Rule Not Run in Rule Engine
                                     </ng-container>
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text "
-                                    aria-expanded="false" id="serviceCodeValidations">Service Code Level
-                                    Validations:</a>
-                                <div class="form-row  collapse show">
+                                aria-expanded="false" id="serviceCodeValidations">Service Code Level
+                                Validations:</a>
+                                <div *ngIf="loader.serviceCode" class="loader-data"></div>
+                                <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
