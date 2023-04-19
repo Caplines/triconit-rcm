@@ -11,12 +11,31 @@ export class ToolUserPermission implements CanActivate {
   canActivate( ) {
     
     let ut: any = localStorage.getItem('selected_teamId');
+    let roleAsso:any= localStorage.getItem("selected_roleName");
+    let routes:any=['/claim-assignment','/all-pendency','/production','/tool-update','/fetch-claims']; // these page are not allowed to Associate.
+    
+    let isPageAllowed = routes.some((e:any)=>e==window.location.pathname);   
+
     if (!ut) {
       this.router.navigate(['/']);
       return false;
     }
-    else if(ut != -1 || ut != '-1'){
+    
+    else if(roleAsso == "ASSO" && ut == 7  && !isPageAllowed && (ut != -1 || ut != '-1')){
       return true;
+    }
+
+    else if (roleAsso == "ASSO"  && ut == 7 && isPageAllowed && (ut != -1 || ut != '-1')){
+        window.location.href= "/list-of-claims";
+    }
+
+    else if(ut == 7 && (ut != -1 || ut != '-1')){
+        return true;
+    }
+    
+    else if (ut != 7 && (ut != -1 || ut != '-1')){
+      this.router.navigate(['/update-pass']);
+      return false;
     }
     else{
       this.router.navigate(['/login']) 

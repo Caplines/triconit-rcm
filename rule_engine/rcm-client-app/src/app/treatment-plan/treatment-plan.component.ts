@@ -12,6 +12,7 @@ export class TreatmentPlanComponent {
   claimUuid:any;
   tpData:any=[];
   showLoader:boolean=false;
+  count:any={'Fee':0,'Ins':0,'Pat':0};
 
   constructor(private _service: ApplicationServiceService,private router:Router) {
     this._service.isTpIvfPage({'page':'tp',value:true});
@@ -31,8 +32,29 @@ export class TreatmentPlanComponent {
       this.showLoader=false;
         console.log(res);
         this.tpData=res.data;
+        this.totalFee(this.tpData);
+        this.totalIns(this.tpData);
+        this.totalPat(this.tpData);
         
       }
+    })
+  }
+
+  totalFee(data:any){
+      this.count.Fee == data.forEach((e:any)=>{
+        this.count.Fee = this.count.Fee + e.fee;
+      })
+  }
+
+  totalIns(data:any){
+    this.count.Ins == data.forEach((e:any)=>{
+      this.count.Ins = this.count.Ins + e.ins;
+    })
+  }
+
+  totalPat(data:any){
+    this.count.Fee == data.forEach((e:any)=>{
+      this.count.Pat = this.count.Pat + e.pat;
     })
   }
 

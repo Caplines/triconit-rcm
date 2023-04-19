@@ -38,6 +38,7 @@ export class HeaderComponent implements OnInit {
   loginUserType: any = '';
   btnDisabled: boolean = true;
   teamData: any = [];
+  currentTeamId:any;
   constructor(private appSer: ApplicationServiceService, private router: Router) {
 
     this.cwModel = {};
@@ -49,10 +50,12 @@ export class HeaderComponent implements OnInit {
     this.userInfo.currentClientName = localStorage.getItem("selected_clientName");
     this.userInfo.currentRoleName = localStorage.getItem("selected_roleName");
     this.userInfo.currentTeamId = localStorage.getItem("selected_teamId");
+    this.currentTeamId=this.userInfo.currentTeamId;
     this.loginUserType = localStorage.getItem("loginAs");
     //  }
     this.loggedInUserName = localStorage.getItem("name");
-    console.log(1221);
+    console.log(this.userInfo.currentTeamId);
+    console.log(this.staticUtil.isRoleLead());
 
     if (this.roleData.length == 0) {
       this.getRoles();
@@ -108,9 +111,13 @@ export class HeaderComponent implements OnInit {
     this.staticUtil.setLocalStoragePartial(this.selectedClient, this.selectedRole, this.selectedTeam);
     this.showPopup = false;
 
-    if (this.selectedTeam != -1) {
+    if (this.selectedTeam != -1 && this.selectedRole != "ASSO") {
       window.location.href = "/claim-assignment";
-    } else {
+    }
+    else if(this.selectedRole == "ASSO"){
+      window.location.href = "/list-of-claims";
+    }
+     else {
       window.location.href = "/register";
     }
   }

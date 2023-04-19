@@ -26,7 +26,7 @@ export class AllPendencyComponent {
   getAllPendencyDetails(){
     this.showLoader=true;
     this._service.fetchAllPendency((res:any)=>{
-      if(res.status){
+      if(res.status==200){
         this.showLoader=false;
 
           this.pendencyData = res.data.offices.map((office:any) => {

@@ -92,11 +92,21 @@
                                                     <td>{{tp.service}}</td>
                                                     <td>{{tp.tth}}</td>
                                                     <td>{{tp.surf}}</td>
-                                                    <td>{{tp.fee}}</td>
-                                                    <td>{{tp.ins}}</td>
-                                                    <td>{{tp.pat}}</td>
+                                                    <td>&#36; {{tp.fee}}</td>
+                                                    <td>&#36; {{tp.ins}}</td>
+                                                    <td>&#36; {{tp.pat}}</td>
                                                 </tr>
                                             </ng-container>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td colspan="2" class="text-right"> <strong>Subtotal for this Phase:</strong></td>
+                                                <td> <strong>&#36; {{count.Fee}}</strong> </td>
+                                                <td> <strong>&#36; {{count.Ins}}</strong> </td>
+                                                <td> <strong>&#36; {{count.Pat}}</strong> </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                     <ng-container *ngIf="tpData.length == 0 && !showLoader">
