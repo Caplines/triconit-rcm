@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AppConstants } from '../constants/app.constants';
+import { TeamModel } from '../models/team.model';
 
 
 @Injectable()
@@ -12,36 +13,41 @@ export class ToolUserPermission implements CanActivate {
     
     let ut: any = localStorage.getItem('selected_teamId');
     let roleAsso:any= localStorage.getItem("selected_roleName");
-    let routes:any=['/claim-assignment','/all-pendency','/production','/tool-update','/fetch-claims']; // these page are not allowed to Associate.
     
-    let isPageAllowed = routes.some((e:any)=>e==window.location.pathname);   
-
     if (!ut) {
       this.router.navigate(['/']);
       return false;
     }
-    
-    else if(roleAsso == "ASSO" && ut == 7  && !isPageAllowed && (ut != -1 || ut != '-1')){
+    if(ut!='-1'){
+
+      let ntKey: Number = new Number(ut).valueOf();
+      let team: any = this.appConstants.TEAMS_CONFIG.get(ntKey);
+      let teamM: TeamModel = (<TeamModel>team);
+
+      let ph = teamM.paths.find(x =>
+        x === window.location.pathname);
+      //in case wrong url is accessed
+      if (typeof ph == "undefined") {
+          if(roleAsso === "ASSO" && ut == 3){
+            window.location.href = "/list-of-claims";
+          }else{
+            window.location.href = teamM.defaultpath;
+          }
+        return false;
+      }
+      
+     if(ph && roleAsso === "ASSO"  && ut == 3){
+        if(window.location.pathname == "/list-of-claims"){
+          return true;
+        }else{
+          window.location.href = "/list-of-claims";
+        }
+    }
       return true;
     }
 
-    else if (roleAsso == "ASSO"  && ut == 7 && isPageAllowed && (ut != -1 || ut != '-1')){
-        window.location.href= "/list-of-claims";
+    this.router.navigate(['/login'], { queryParams: { returnUrl: window.location.pathname } });
+    return false;
     }
-
-    else if(ut == 7 && (ut != -1 || ut != '-1')){
-        return true;
-    }
-    
-    else if (ut != 7 && (ut != -1 || ut != '-1')){
-      this.router.navigate(['/update-pass']);
-      return false;
-    }
-    else{
-      this.router.navigate(['/login']) 
-      return false;
-    }
-
-      }
     }
 

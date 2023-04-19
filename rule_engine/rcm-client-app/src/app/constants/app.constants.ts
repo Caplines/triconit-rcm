@@ -16,44 +16,20 @@ export class AppConstants {
         [2, {
         "name":"Admin","paths":["/register",'/user-setting','/manage-office','/users-status','/manage-client'],"defaultpath":"/register"
         }],
-        [-1, {
-        "name":"Admin","paths":["/register",'/user-setting','/manage-office','/users-status','/manage-client'],"defaultpath":"/register"
-        }],
         [3,{
-        "name":"Patient Calling Team","paths":["/user-setting"],"defaultpath":"/user-setting"
+        "name":"Internal Audit Team","paths":["/list-of-claims","/claim-assignment","/update-pass"],"defaultpath":"/claim-assignment"
         }],
         [4,{
-        "name":"Office Team","paths":['claim-assignment'],"defaultpath":"/claim-assignment"
+            "name":"Aging","paths":["/update-pass"],"defaultpath":"/update-pass"
         }],
         [5,{
-        "name":"Internal Audit Team","paths":["/user-setting"],"defaultpath":"/claim-assignment"
+            "name":"Posting","paths":["/update-pass"],"defaultpath":"/update-pass"
         }],
         [6,{
-        "name":"IV Team","paths":["/user-setting"],"defaultpath":"/claim-assignment"
+            "name":"Quality","paths":["/update-pass"],"defaultpath":"/update-pass"
         }],
         [7, {
-            "name": "Billing Team", "paths": ["/claim-assignment","/tool-update"], "defaultpath": "/claim-assignment"
-        }],
-        [8,{
-        "name":"IV Team","paths":["/user-setting"],"defaultpath":"/claim-assignment"
-        }],
-        [9,{
-        "name":"Client","paths":["/user-setting"],"defaultpath":"/user-setting"
-        }],
-        [10,{
-            "name":"Aging","paths":["/user-setting"],"defaultpath":"/claim-assignment"
-        }],
-        [11,{
-            "name":"Posting","paths":["/user-setting"],"defaultpath":"/claim-assignment"
-        }],
-        [12,{
-            "name":"Quality","paths":["/user-setting"],"defaultpath":"/claim-assignment"
-        }],
-        [13,{
-            "name":"Upload Claims","paths":["/user-setting"],"defaultpath":"/claim-assignment"
-        }],
-        [14,{
-            "name":"Account Manager","paths":["/user-setting"],"defaultpath":"/claim-assignment"
+            "name": "Billing Team", "paths": ["/claim-assignment","/tool-update","/list-of-claims","/fetch-claims","/production","/all-pendency"], "defaultpath": "/claim-assignment"
         }],
 
     ]);
@@ -64,13 +40,11 @@ export class AppConstants {
     
     public TEAMS_ID_CONFIG= new Map<number,string>([
         [2,"ADMIN"],
-        [3,"PATIENT_CALLING"],
-        [4,"OFFICE"],
-        [5,"INTERNAL_AUDIT"],
-        [6,"IV_TEAM"],
+        [3,"INTERNAL_AUDIT"],
+        [4,"AGING"],
+        [5,"POSTING"],
+        [6,"QUALITY"],
         [7,"BILLING"],
-        [8,"LC3"],
-        [9,"CLIENT_MANAGER"],
 
      ]);
 

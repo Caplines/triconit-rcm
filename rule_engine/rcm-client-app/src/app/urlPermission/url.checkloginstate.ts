@@ -15,7 +15,7 @@ export class CheckUserLoggedInState implements CanActivate {
     
     if (localStorage.getItem('currentUser')) {
       let ut: any = localStorage.getItem('selected_teamId');//selected_roleName//selected_teamId
-     if (ut!=null){
+     if (ut!=null && ut!= "-1"){
       let ntKey: Number = new Number(ut).valueOf();
       let team: any = this.appConstants.TEAMS_CONFIG.get(ntKey);
       let teamM: TeamModel = (<TeamModel>team);

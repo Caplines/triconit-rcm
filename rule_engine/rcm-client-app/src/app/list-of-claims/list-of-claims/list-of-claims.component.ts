@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-list-of-claims',
@@ -28,9 +29,9 @@ export class ListOfClaimsComponent implements OnInit {
   selectedCheckboxOptions: any = [];
   date:any;
 
-  constructor(private appService: ApplicationServiceService, public appConstants: AppConstants) {
+  constructor(private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
     this.selectedBtype = this.appConstants.BILLING_ID;
-
+    title.setTitle("List Of Claims");
   }
 
 
