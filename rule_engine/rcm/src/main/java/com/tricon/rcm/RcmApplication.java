@@ -3,6 +3,7 @@ package com.tricon.rcm;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,7 +13,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 //@EnableWebMvc
 @EnableScheduling
-
+@EnableAspectJAutoProxy
 public class RcmApplication {
 
 	//>mvn clean then mvn package
