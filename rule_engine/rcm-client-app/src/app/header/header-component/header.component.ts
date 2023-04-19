@@ -7,6 +7,8 @@ import { AuthService } from '../../service/auth-service.service';
 import { SwitchAccountModel } from '../../models/switch.account.model';
 import Utils from '../../util/utils';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
+import { ClientModel } from 'src/app/models/client.model';
+import { IssueClaimModel } from 'src/app/models/issue.claim.model';
 
 @Component({
   selector: 'app-header-component',
@@ -39,6 +41,12 @@ export class HeaderComponent implements OnInit {
   btnDisabled: boolean = true;
   teamData: any = [];
   currentTeamId:any;
+  issueClaimsCount: number = 0;
+  clientUuid:string="-1";
+  ele:any={'modal':'','span':''}
+  issueClientName:any='';
+  clients : Array<ClientModel>;
+  issueCl : Array<IssueClaimModel>;
   constructor(private appSer: ApplicationServiceService, private router: Router) {
 
     this.cwModel = {};
@@ -60,7 +68,11 @@ export class HeaderComponent implements OnInit {
     if (this.roleData.length == 0) {
       this.getRoles();
     }
-    this.checkClientExist();
+
+    if(this.userInfo.currentClientName){
+      this.issueClaim();
+    }
+     this.checkClientExist();
   }
   getRoles() {
     this.appSer.fetchRoles((res: any) => {
@@ -104,6 +116,7 @@ export class HeaderComponent implements OnInit {
   }
 
   switchAccount() {
+    if(this.cwModel.roles.length != 1 && this.cwModel.companies.length != 1 && this.cwModel.teams.length != 1)
     this.modelElement.modal.style.display = "none";
     if (this.selectedTeam == '') {
       this.selectedTeam = '-1'
@@ -142,6 +155,16 @@ export class HeaderComponent implements OnInit {
       if (this.cwModel.roles.length == 1) {
         this.selectedRole = this.cwModel.roles[0].roleId;
       }
+      if (this.cwModel.companies.length == 1) {
+        this.selectedClient = this.cwModel.companies[0].name;
+      }
+      if (this.cwModel.teams.length == 1) {
+        this.selectedTeam = this.cwModel.teams[0].id;
+      }
+      if(this.cwModel.roles.length == 1 && this.cwModel.companies.length == 1 && this.cwModel.teams.length == 1){
+        this.switchAccount();
+      }
+
 
       this.modelElement.modal = document.getElementById("switch-modal");
       this.modelElement.modal.style.display = "block";
@@ -213,5 +236,45 @@ export class HeaderComponent implements OnInit {
       }, 1000);
     }
   }
+
+  issueClaim(){
+    this.appSer.fetchIssueClaimCounts((res:any)=>{
+      if(res.status==200){
+         this.issueClaimsCount = res.data;
+      }
+      else{
+        //ERROR
+      }
+    });
+  }
+
+ fetchIssueClaims(){
+    let cName = JSON.parse(localStorage.getItem('clients'));
+    cName.find((ele:any)=>{
+      if(ele.name == this.userInfo.currentClientName){
+        this.clientUuid = ele.id;
+      }
+    });
+    if(this.clientUuid){
+      this.appSer.fetchIssueClaims(this.clientUuid, (res: any) => {
+       if (res.status === 200) {
+          this.issueCl = res.data;
+          this.modal();
+        }
+      });
+    }
+  }
+
+ modal(){
+   this.issueClientName = localStorage.getItem("selected_clientName");
+    this.ele.modal = document.getElementById("myModal");
+    this.ele.span = document.getElementsByClassName("close")[0];
+    this.ele.modal.style.display = "block";
+  }
+
+ closeModalIC(){
+    this.ele.modal.style.display = "none";
+  }
+
 
 }

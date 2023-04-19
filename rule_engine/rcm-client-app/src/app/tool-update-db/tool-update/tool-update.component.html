@@ -4,54 +4,12 @@
         <div class="col-lg-12 pt-3">
             <div class="main-container">
                 <div class="detail-box">
-                    <div class="form-group clientNameBox">
-                        <!-- <select class="form-control"name="cName" [(ngModel)]="cName"
-                        (change)="fetchLatesClaimLLogs()">
-                        <option value="-1">Select Client Name</option>
-                        <option *ngFor="let sta of clients" [value]="sta.uuid">{{sta.clientName}}</option>
-                    </select> -->
-                        <div class="issue-claim" *ngIf="cName!='-1' && log.length != 0"><button class="btn btn-outline-primary" id="myBtn"  (click)="fetchIssueClaims()">Issue Claims</button></div>
-                </div>
                 <ng-container *ngIf="loader">
                     <div class="text-center"><span class="loader-data"></span> </div>
                 </ng-container >
                 <ng-container  *ngIf="log.length == 0 && !loader">
                     <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
                 </ng-container>
-                 <!-- Modal -->
-                        <div id="myModal" class="modal">
-                            <div class="modal-content">
-                                <div class="close-modal">
-                                    <h5>{{issueClientName}} Issues</h5> <span (click)="closeModal()">&times;</span>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table" *ngIf="issueCl.length>0">
-                                        <thead>
-                                            <tr>
-                                                     
-                                                <th colspan="6">Office Name</th>
-                                                <th colspan="6" >Claim Id</th>
-                                                <th colspan="6">Created Date</th>
-                                                <th colspan="6" style="min-width: 170px;">Issue</th>
-                                                <th colspan="6">source</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr *ngFor="let lg of issueCl">
-                                                <td colspan="6">{{lg.officeName}}</td>
-                                                <td colspan="6">{{lg.claimId}}</td>
-                                                <td colspan="6">{{lg.createdDate | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
-                                                <td colspan="6">{{lg.issue}}</td>
-                                                <td colspan="6">{{lg.source}}</td>
-                                                
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div class="text-center text-light bg-dark p-3 mb-2" *ngIf="issueCl.length==0">No Data !</div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Modal End -->
                     <div class="detail-box-form" *ngIf="log.length>0">
                         <ng-container *ngIf="cName==='614c4beb-7df2-11e8-8432-8c16451459cd'">
                             <a data-toggle="collapse"  href="javascript:void(0)"  (click)="expandCollapseBox('claimDetails')"  class="bold-b-text " [ngClass]="{'collapsed':!expandCollapse.expandClaim}" aria-expanded="true">How would you like to update the database:</a>

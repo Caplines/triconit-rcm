@@ -349,4 +349,8 @@ fetchTpData(claimUuid:any,callback:any){
     }
   }
 
+  fetchIssueClaimCounts(callback: any){
+    this.getData({}, this.httpUrl['fetchIssueClaimCounts'], callback)
+  }
+
 }

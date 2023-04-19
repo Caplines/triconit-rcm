@@ -50,23 +50,6 @@ export class ToolUpdateComponent implements OnInit {
     // this.fetchLatesClaimLLogs();
   }
 
-  modal(){
-      for(let cli of this.clients){
-        if(cli.uuid===this.cName){
-          this.issueClientName = cli.clientName;
-          break;
-      }
-    }
-      this.ele.modal = document.getElementById("myModal");
-      this.ele.span = document.getElementsByClassName("close")[0];
-      this.ele.modal.style.display = "block";
-  }
-
-    closeModal(){
-      this.ele.modal.style.display = "none";
-    }
-   
-
   fetchLatesClaimLLogs(cUuid:any){
     let ths=this;
     ths.alert.showAlertPopup=false;
@@ -234,20 +217,6 @@ this.sourceType="";
       })
     }
   }
-
-  fetchIssueClaims() {
-
-    let ths = this;
-    ths.appService.fetchIssueClaims(ths.cName, (res: any) => {
-
-      if (res.status === 200) {
-        ths.issueCl = res.data;
-        this.modal();
-      }
-    });
-
-  }
-
 
   saveToPdf(divName: any) {
     html2canvas(<any>document.getElementById(divName)).then(canvas => {
