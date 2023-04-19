@@ -141,4 +141,16 @@ public class UserServiceImpl {
 		}
 		return null;
 	}
+
+	public int getIssueClaimsCounts(RcmCompany company) throws Exception {
+		int counts = 0;
+		if (company != null) {
+			counts = userRepo.findCountsOfIssueClaims(company.getUuid());
+			if (counts > 0)
+				return counts;
+			else
+				return 0;
+		}
+		return 0;
+	}
 }

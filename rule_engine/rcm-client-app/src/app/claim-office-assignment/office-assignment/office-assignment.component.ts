@@ -101,7 +101,7 @@ export class OfficeAssignmentComponent implements OnInit {
   }
 
   getUserByTeamId(){
-    this.appService.fetchUserByTeamId(this.teamId,(callback:any)=>{
+    this.appService.fetchUserByTeamId((callback:any)=>{
       if(callback){
         this.userByTeam = callback.data
       }

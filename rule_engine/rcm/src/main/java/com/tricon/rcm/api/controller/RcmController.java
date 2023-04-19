@@ -149,12 +149,9 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
 		
-		if (partialHeader.getTeamId()!=RcmTeamEnum.BILLING.getId()) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
-		}
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchFreshClaimDetails(RcmTeamEnum.BILLING.getId(), type, subType,partialHeader)));
+				claimServiceImpl.fetchFreshClaimDetails(partialHeader.getTeamId(), type, subType,partialHeader)));
 	}
 
 	/*

@@ -941,8 +941,6 @@ public class ClaimServiceImpl {
 
 	public List<AssignFreshClaimLogsImplDto> fetchClaimsForAssignments(AssigmentClaimListDto dto,PartialHeader partialHeader) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
 		List<Integer> ct = dto.getClaimType();
 		List<String> inst = dto.getInsuranceType();
 		if (dto.getClaimType() == null) {

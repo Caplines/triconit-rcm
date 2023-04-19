@@ -62,7 +62,7 @@ public class ManageOfficeController extends BaseHeaderController {
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		try {
-			response = officeService.assignOfficeByAdmin(dto, partialHeader.getCompany(),RcmTeamEnum.BILLING.getId());//why is this in ADMIN
+			response = officeService.assignOfficeByAdmin(dto, partialHeader.getCompany(),partialHeader.getTeamId());//why is this in ADMIN
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -71,16 +71,16 @@ public class ManageOfficeController extends BaseHeaderController {
 		return ResponseEntity.ok(response);
 	}
 	
-	@RequestMapping(value = "/users/team/{teamId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/users/team", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
-	public ResponseEntity<?> getUsersByTeamId(@PathVariable("teamId")int teamId ,Model model) {
+	public ResponseEntity<?> getUsersByTeamId(Model model) {
 	    List<RcmUserToDto> response = null;
 	    PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
 		
 		
 		try {
-			response = userService.getUsersByTeamIdAndCompany(teamId,partialHeader.getCompany());
+			response = userService.getUsersByTeamIdAndCompany(partialHeader.getTeamId(),partialHeader.getCompany());
 			
 			
 			if(response==null) {

@@ -120,4 +120,8 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ "FROM rcm_claim_detail rcd inner join rcm_claims rc on rc.claim_uuid=rcd.claim_id "
 			+ "where rc.claim_uuid=:claimUuid", nativeQuery = true)
 	List<TreatmentPlanLinkDto> findTreatmentPlanLinkData(@Param("claimUuid") String claimUuid);
+	
+	@Query(value = "select count(cl.issue) from rcm_issue_claims cl "
+			+ "left join office off on  off.uuid=cl.office_id  where off.company_id=:clientUuid and cl.resolved is false", nativeQuery = true)
+	int findCountsOfIssueClaims(@Param("clientUuid") String clientUuid);
 }

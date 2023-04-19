@@ -108,7 +108,7 @@ public class ManageOfficeServiceImpl {
 				}
 			}
 			RcmUser user= userRepo.findByEmail(Constants.SYSTEM_USER_EMAIL);
-			ruleEngineService.assignedUnsAssignedClaimsByTeam(logedIncompany.getUuid(),user,RcmTeamEnum.BILLING.getId());
+			ruleEngineService.assignedUnsAssignedClaimsByTeam(logedIncompany.getUuid(),user,teamId);
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 		}
 		return new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.USER_NOT_EXIST, null);

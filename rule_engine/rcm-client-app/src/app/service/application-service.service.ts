@@ -92,8 +92,8 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['getAllUsers'] + `/${companyName ? companyName : 'All'}/${page}`, callback)
   }
 
-  fetchUserByTeamId(teamId: any, callback: any) {
-    this.getData({}, this.httpUrl['userByTeamId'] + `/${teamId}`, callback)
+  fetchUserByTeamId(callback: any) {
+    this.getData({}, this.httpUrl['userByTeamId'] , callback)
   }
 
   assignOffice(params: any, callback: any) {
