@@ -126,7 +126,9 @@ public class WebSecurityConfig {
 		return (web) -> web.ignoring().antMatchers(HttpMethod.POST, authenticationPath,"/forgotPassword",authenticationPathForTesting).and()
 				.ignoring().antMatchers(HttpMethod.GET,"/swagger-ui.html",
 						"/login","/tool-update", "/fetch-claims","/users-status","/register","/manage-office",
-						"/manage-client","/user-setting","/claim-assignment","/billing-claims/*","/billing-claims/*/ivf","/billing-claims/{pathvariable:[0-9A-Za-z]+}/ivf",
+						"/manage-client","/user-setting","/claim-assignment","/billing-claims/*","/billing-claims/*/ivf",
+						"/billing-claims/{pathvariable:[0-9A-Za-z]+}/ivf",
+						"/billing-claims/{pathvariable:[0-9A-Za-z]+}/tp",
 						"/list-of-claims","/all-pendency","/production","/update-pass",
 						 "/*.html",
 			                "/index.jsp",

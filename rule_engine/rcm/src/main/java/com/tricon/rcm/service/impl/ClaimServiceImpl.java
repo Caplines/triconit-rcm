@@ -923,10 +923,13 @@ public class ClaimServiceImpl {
 	public List<FreshClaimDataDto> fetchFreshClaimDetails(int teamId, int billingORRebill, String sub,
 			PartialHeader partialHeader) {
 
-		if (sub.equals("Fresh"))
-			return rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
-		else
+		if (sub.equals("Fresh")) {
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) return rcmClaimRepository.fetchFreshClaimDetailsInd(partialHeader.getCompany().getUuid(), teamId, partialHeader.getJwtUser().getUuid());
+			else return rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
+		}
+		else {
 			return rcmClaimRepository.fetchClaimDetailsWorkedByTeam(partialHeader.getCompany().getUuid(), teamId);
+		}
 
 	}
 
