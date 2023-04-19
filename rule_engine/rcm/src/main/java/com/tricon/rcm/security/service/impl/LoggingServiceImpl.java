@@ -1,12 +1,15 @@
 package com.tricon.rcm.security.service.impl;
 
 import org.slf4j.Logger;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmLogs;
 import com.tricon.rcm.jpa.repository.RcmLogRepository;
+
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,11 +25,14 @@ public class LoggingServiceImpl {
 
     public void displayReq(HttpServletRequest request, Object body) {
         StringBuilder reqMessage = new StringBuilder();
+        CharSequence[] ignoreExtensions = {".jpg", ".png", ".js",".css",".jpeg"};
         Map<String,String> parameters = getParameters(request);
         String ipAddress = request.getHeader("X-FORWARDED-FOR");  
         if (ipAddress == null) {  
             ipAddress = request.getRemoteAddr();  
         }
+        
+		if (!StringUtils.endsWithAny(request.getRequestURI(),ignoreExtensions)) {
         reqMessage.append("REQUEST ");
         reqMessage.append("method = [").append(request.getMethod()).append("]");
         reqMessage.append(" path = [").append(request.getRequestURI()).append("] ");
@@ -45,6 +51,7 @@ public class LoggingServiceImpl {
         rcmLogRepository.save(logs);
         logger.info("log Request: {}", reqMessage);
         
+    }
     }
 
     /*

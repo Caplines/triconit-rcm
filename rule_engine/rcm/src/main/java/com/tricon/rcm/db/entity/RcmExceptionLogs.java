@@ -29,7 +29,7 @@ public class RcmExceptionLogs {
 	@Column(name = "created_date")
 	private Date createdDate;
 	
-	@Column(name = "stack_trace")
+	@Column(name = "stack_trace",columnDefinition ="text")
 	private String stackTrace;
 	
 	@Column(name = "occurs_in")

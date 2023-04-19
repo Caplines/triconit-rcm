@@ -3,6 +3,7 @@ package com.tricon.rcm.exception;
 import java.sql.Timestamp;
 import java.time.Instant;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
@@ -35,13 +36,12 @@ public class ExceptionLogs {
 		exception.printStackTrace();
 		String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
-		String occursIn="Exeption occurs in " + className + " And method name is:" + methodName;
+		String occursIn="Exeption occurs in " + className +".class And method name is:" + methodName;
 		logger.error(occursIn);
 		exceptionLogs.setCreatedDate(Timestamp.from(Instant.now()));
-		exceptionLogs.setStackTrace(exception.getLocalizedMessage());
+		exceptionLogs.setStackTrace(ExceptionUtils.getStackTrace(exception));
 		exceptionLogs.setOccursIn(occursIn);
 		exceptionLogsRepo.save(exceptionLogs);
-
 	}
 
 }
