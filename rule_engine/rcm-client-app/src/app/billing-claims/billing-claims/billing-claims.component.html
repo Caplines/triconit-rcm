@@ -26,8 +26,8 @@
                             <a data-toggle="collapse" (click)="showHide(0)" class="bold-b-text"
                                 aria-expanded="true">Claim Details: <span
                                     style="color:#ff00a8">{{infoMessage}}</span></a>
-                                    <div *ngIf="loader.claimDetail" class="loader-data"></div>
-                                    <div  *ngIf="!loader.claimDetail" class="form-row collapse show" id="claimDetails">
+                            <div *ngIf="loader.claimDetail" class="loader-data"></div>
+                            <div *ngIf="!loader.claimDetail" class="form-row collapse show" id="claimDetails">
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
                                         <label for="" class="">Office :</label>
@@ -149,8 +149,8 @@
                             </div>
                             <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text "
                                 aria-expanded="false">Links to Related Documents:</a>
-                                <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show" id="linksToDocuments">
+                            <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
+                            <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show" id="linksToDocuments">
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row text-number">
                                         <label for="" class="">IV ID :</label>
@@ -180,8 +180,8 @@
                             </div>
                             <a data-toggle="collapse" (click)="showHide(2)" class="bold-b-text "
                                 aria-expanded="false">Remarks by Other RCM Teams:</a>
-                                <div *ngIf="loader.remarksByOther" class="loader-data"></div>
-                                <div *ngIf="!loader.remarksByOther" class="form-row  collapse show" id="teamRemarks">
+                            <div *ngIf="loader.remarksByOther" class="loader-data"></div>
+                            <div *ngIf="!loader.remarksByOther" class="form-row  collapse show" id="teamRemarks">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -201,7 +201,8 @@
                                                     <td>{{rem.comment}}</td>
                                                 </tr>
                                             </ng-container>
-                                            <ng-container *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
+                                            <ng-container
+                                                *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
                                                 No Remarks Found.
                                             </ng-container>
                                         </tbody>
@@ -211,8 +212,8 @@
 
                             <a data-toggle="collapse" (click)="showHide(3)" class="bold-b-text "
                                 aria-expanded="false">Additional Requirements for Rebilled Claims:</a>
-                                <div *ngIf="loader.rebilledClaims" class="loader-data"></div>
-                                <div *ngIf="!loader.rebilledClaims" class="form-row  collapse show" id="rebilledClaims">
+                            <div *ngIf="loader.rebilledClaims" class="loader-data"></div>
+                            <div *ngIf="!loader.rebilledClaims" class="form-row  collapse show" id="rebilledClaims">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -228,7 +229,7 @@
                                         </thead>
                                     </table>
                                     <div class="not-found" *ngIf="!loader.rebilledClaims">
-                                            Data Not Found.
+                                        Data Not Found.
                                     </div>
                                 </div>
                             </div>
@@ -238,8 +239,9 @@
                                     Claims</a>
                                 <a data-toggle="collapse" (click)="showHide(4)" class="bold-b-text "
                                     aria-expanded="false">Claim Level Validations (Automated):</a>
-                                    <div *ngIf="loader.automatedValidation" class="loader-data"></div>
-                                    <div *ngIf="!loader.automatedValidation" class="form-row  collapse show" id="claimValidations">
+                                <div *ngIf="loader.automatedValidation" class="loader-data"></div>
+                                <div *ngIf="!loader.automatedValidation" class="form-row  collapse show"
+                                    id="claimValidations">
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
@@ -293,8 +295,9 @@
                             </ng-container>
                             <a data-toggle="collapse" (click)="showHide(5)" class="bold-b-text "
                                 aria-expanded="false">Claim Level Validations (Manual):</a>
-                                <div *ngIf="loader.manualValidation" class="loader-data"></div>
-                                <div *ngIf="!loader.manualValidation" class="form-row  collapse show" id="claimValidationsManual">
+                            <div *ngIf="loader.manualValidation" class="loader-data"></div>
+                            <div *ngIf="!loader.manualValidation" class="form-row  collapse show"
+                                id="claimValidationsManual">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <tbody>
@@ -348,9 +351,10 @@
                             <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text "
                                     aria-expanded="false">Rule Engine Validations:</a>
-                                    <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
-                                    <div  *ngIf="!loader.ruleEngValid" class="form-row  collapse show" id="claimValidationsRE">
-                                        <ng-container *ngIf="ruleEngineReport.length>0">
+                                <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
+                                <div *ngIf="!loader.ruleEngValid" class="form-row  collapse show"
+                                    id="claimValidationsRE">
+                                    <ng-container *ngIf="ruleEngineReport.length>0">
                                         <div class="rule-detail" [innerHTML]="reheading">
                                         </div>
                                         <div class="table-responsive">
@@ -404,8 +408,8 @@
                             </ng-container>
                             <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text "
-                                aria-expanded="false" id="serviceCodeValidations">Service Code Level
-                                Validations:</a>
+                                    aria-expanded="false" id="serviceCodeValidations">Service Code Level
+                                    Validations:</a>
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                 <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
                                     <div class="table-responsive">
@@ -505,19 +509,19 @@
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.channel=='RemoteLite'}">
                                                             <input type="radio" name="channel" value="RemoteLite"
-                                                                (click)="submissionDto.channel='RemoteLite';removeErrorDisplayKeyById('SUB_DET_CHA')"
+                                                                (click)="submissionDto.channel='RemoteLite';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA')"
                                                                 [disabled]="makeReadOnly()"> RemoteLite
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Fax'}">
                                                             <input type="radio" name="channel" value="Fax"
-                                                                (click)="submissionDto.channel='Fax';removeErrorDisplayKeyById('SUB_DET_CHA')"
+                                                                (click)="submissionDto.channel='Fax';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA')"
                                                                 [disabled]="makeReadOnly()"> Fax
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Mail'}">
                                                             <input type="radio" name="channel" value="Mail"
-                                                                (click)="submissionDto.channel='Mail';removeErrorDisplayKeyById('SUB_DET_CHA')"
+                                                                (click)="submissionDto.channel='Mail';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA')"
                                                                 [disabled]="makeReadOnly()"> Mail
                                                         </label>
                                                         <label class="btn btn-light"
@@ -526,6 +530,14 @@
                                                                 (click)="submissionDto.channel='Portal';removeErrorDisplayKeyById('SUB_DET_CHA')"
                                                                 [disabled]="makeReadOnly()"> Portal
                                                         </label>
+                                                        <div class="portalcla">
+                                                            <textarea class="form-control" id="" rows="1"
+                                                                id="SUB_DET_CLA"
+                                                                (click)="removeErrorDisplayKeyById('SUB_DET_CLA')"
+                                                                [disabled]="claimNoEnable()"
+                                                                [(ngModel)]='submissionDto.claimNumber'></textarea>
+                                                        </div>
+
                                                     </div>
                                                 </td>
                                             </tr>
@@ -567,10 +579,17 @@
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.preauth==false}">
                                                             <input type="radio" name="atch" value=""
-                                                                (click)="submissionDto.preauth=false;removeErrorDisplayKeyById('SUB_DET_PRE')"
+                                                                (click)="submissionDto.preauth=false;removeErrorDisplayKeyById('SUB_DET_PRE');removeErrorDisplayKeyById('SUB_DET_PRENO')"
                                                                 [disabled]="makeReadOnly()" [disabled]="makeReadOnly()">
                                                             No
                                                         </label>
+                                                        <div class="preauthcla">
+                                                            <textarea class="form-control" id="" rows="1"
+                                                                id="SUB_DET_PRENO"
+                                                                (click)="removeErrorDisplayKeyById('SUB_DET_PRENO')"
+                                                                [disabled]="preAuthEnable()"
+                                                                [(ngModel)]='submissionDto.preauthNo'></textarea>
+                                                        </div>
                                                     </div>
 
                                                 </td>
@@ -597,22 +616,7 @@
 
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td>06</td>
-                                                <td>Claim #</td>
-                                                <td><textarea class="form-control" id="" rows="1" id="SUB_DET_CLA"
-                                                        (click)="removeErrorDisplayKeyById('SUB_DET_CLA')"
-                                                        [disabled]="makeReadOnly()"
-                                                        [(ngModel)]='submissionDto.claimNumber'></textarea></td>
-                                            </tr>
-                                            <tr>
-                                                <td>07</td>
-                                                <td>Preauth #</td>
-                                                <td><textarea class="form-control" id="" rows="1" id="SUB_DET_PRENO"
-                                                        (click)="removeErrorDisplayKeyById('SUB_DET_PRENO')"
-                                                        [disabled]="makeReadOnly()"
-                                                        [(ngModel)]='submissionDto.preauthNo'></textarea></td>
-                                            </tr>
+
                                         </tbody>
                                     </table>
 
@@ -699,8 +703,10 @@
                                                          (claimRcm.primary && claimRcm.pending) 
                                                        )" type="button" class="btn btn-success" [disabled]="inSave"
                                 (click)="saveClaim('latter')">Save For Later Processing</button>
-                            <button *ngIf="claimRcm.pending && (isRoleLead || smilePoint)" type="button"
-                                class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assigntl')">Assign to
+                            <button
+                                *ngIf="claimRcm.pending && (isRoleLead || isRoleSuperAdmin) && selectedTeam== claimRcm.currentTeamId"
+                                type="button" class="btn btn-success" [disabled]="inSave"
+                                (click)="saveClaim('assigntl')">Assign to
                                 Team Lead</button>
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
@@ -709,7 +715,7 @@
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
                                                        )" type="button" class="btn btn-success" [disabled]="inSave"
-                                (click)="saveClaim('assign')">Assign to Another Team</button>
+                                (click)="saveClaim('assign')">Assign to Other Team</button>
                         </div>
                         <div>
 

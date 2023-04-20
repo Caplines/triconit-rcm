@@ -42,6 +42,7 @@ export class BillingClaimsComponent implements OnInit {
   assignModel: any = { "toLead": false, "toOtherTeam": false };
   otherTeamRemarks: Array<OtherTeamRem> = [];
   smilePoint: boolean = false;
+  selectedTeam: number;
   claimAssignToTeamModel: ClaimAssignToTeamModel = {};
   claimUUid: string = "";
   infoMessage: string = "";
@@ -49,7 +50,7 @@ export class BillingClaimsComponent implements OnInit {
   count: any = { 'pass': 0, 'fail': 0, 'alert': 0 };
   mtype: string = '1';//Fail By Default.
   tlErrormsg = "";
-  loader:any={claimDetail:false,linkToRelatedDoc:false,remarksByOther:false,rebilledClaims:false,automatedValidation:false,manualValidation:false,ruleEngValid:false,serviceCode:false,claimSubmission:false}
+  loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false }
   //ivfData:any=[];
 
   modelElement: any = { 'modal': '', 'span': '' }
@@ -65,6 +66,8 @@ export class BillingClaimsComponent implements OnInit {
 
   ngOnInit(): void {
     this.smilePoint = Utils.isSmilePoint();
+    this.selectedTeam = Utils.selectedTeam();
+
     this.route.paramMap.subscribe(params => {
       this.claimUUid = params.get('uuid') || '';
       this.fetchClaimsByUuid(this.claimUUid);
@@ -75,10 +78,10 @@ export class BillingClaimsComponent implements OnInit {
   fetchClaimsByUuid(uuid: string) {
 
     let ths = this;
-    this.loader.claimDetail=this.loader.linkToRelatedDoc=true;
+    this.loader.claimDetail = this.loader.linkToRelatedDoc = true;
     ths.claimService.fetchBillingClaimsByUuid(uuid, (res: any) => {
       if (res.status === 200) {
-        this.loader.claimDetail=this.loader.linkToRelatedDoc=false;
+        this.loader.claimDetail = this.loader.linkToRelatedDoc = false;
         ths.claimRcm = res.data;
 
         ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
@@ -257,8 +260,13 @@ export class BillingClaimsComponent implements OnInit {
       ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
       ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
       ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
-      ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
-      ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+      if (!ths.claimNoEnable()) {
+
+        ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
+      }
+      if (!ths.preAuthEnable()) {
+        ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+      }
       ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
       ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
       valid = false;
@@ -279,15 +287,25 @@ export class BillingClaimsComponent implements OnInit {
         ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
         valid = false;
       }
-      let SUB_DET_CLA: any = document.getElementById("SUB_DET_CLA");
-      if (SUB_DET_CLA.value.trim() === '') {
-        ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
-        valid = false;
+      if (!ths.claimNoEnable()) {
+
+
+        let SUB_DET_CLA: any = document.getElementById("SUB_DET_CLA");
+        if (SUB_DET_CLA.value.trim() === '') {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
+          valid = false;
+        }
+      } else {
+        ths.removeErrorDisplayKeyById('SUB_DET_CLA');
       }
-      let SUB_DET_PRENO: any = document.getElementById("SUB_DET_PRENO");
-      if (SUB_DET_PRENO.value.trim() === '') {
-        ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
-        valid = false;
+      if (!ths.preAuthEnable()) {
+        let SUB_DET_PRENO: any = document.getElementById("SUB_DET_PRENO");
+        if (SUB_DET_PRENO.value.trim() === '') {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+          valid = false;
+        }
+      } else {
+        ths.removeErrorDisplayKeyById('SUB_DET_PRENO');
       }
       let SUB_DET_DT: any = document.getElementById("SUB_DET_DT");
       if (SUB_DET_DT.value.trim() === '') {
@@ -343,6 +361,19 @@ export class BillingClaimsComponent implements OnInit {
 
   }
 
+
+  claimNoEnable(): boolean {
+    if (this.submissionDto?.channel == 'Portal') {
+      return false;
+    } return true;
+  }
+
+  preAuthEnable(): boolean {
+    if (this.submissionDto?.preauth == true) {
+      return false;
+    } return true;
+  }
+
   switchType(type: any) {
     if (type == 'pass') {
       this.mtype = '2';
@@ -367,14 +398,13 @@ export class BillingClaimsComponent implements OnInit {
 
   getServiceLevelCodes() {
     let ths = this;
-    debugger;
     this.loader.serviceCode = true;
     ths.claimService.getServiceLevelCodes(ths.claimRcm.uuid, (res: any) => {
       if (res.status === 200) {
         this.loader.serviceCode = false;
         ths.claimServiceLevelModel = res.data;
 
-      } else{
+      } else {
         this.loader.serviceCode = false;
         ths.claimServiceLevelModel;
       }
@@ -394,12 +424,12 @@ export class BillingClaimsComponent implements OnInit {
 
   getRulesClaimdata() {
     let ths = this;
-    ths.loader.automatedValidation=ths.loader.manualValidation=true;
+    ths.loader.automatedValidation = ths.loader.manualValidation = true;
     ths.claimService.getRulesClaimdata(ths.claimRcm.uuid, (res: any) => {
       if (res.status === 200) {
-        ths.loader.automatedValidation=ths.loader.manualValidation=false;
+        ths.loader.automatedValidation = ths.loader.manualValidation = false;
         ths.claimRules = res.data;
-        
+
         ths.getRuleRemarks();
         // if (ths.submissionDto==null) ths.submissionDto={};
       }
@@ -447,14 +477,14 @@ export class BillingClaimsComponent implements OnInit {
 
   getClaimRuleData() {
     let ths = this;
-    ths.loader.ruleEngValid=true;
+    ths.loader.ruleEngValid = true;
     ths.claimARulesPullDataModel.claimId = ths.claimRcm.claimId.split("_")[0];//"15927";///
     ths.claimARulesPullDataModel.officeId = ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
     ths.claimARulesPullDataModel.patientId = ths.claimRcm.patientId;//"6602";//TESTING
 
     ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel, (res: any) => {
       if (res.status === 200) {
-        ths.loader.ruleEngValid=false;
+        ths.loader.ruleEngValid = false;
         ths.getRulesClaimdata();
         ths.ruleEngineReport = res.data;
         if (ths.ruleEngineReport.length > 0)
@@ -583,10 +613,10 @@ export class BillingClaimsComponent implements OnInit {
 
   fetchOtherTeamRemarks() {
     let ths = this;
-    ths.loader.remarksByOther=true;
+    ths.loader.remarksByOther = true;
     ths.claimService.fetchOtherTeamRemarks(ths.claimRcm.uuid, (res: any) => {
       if (res.status === 200) {
-        ths.loader.remarksByOther=false;
+        ths.loader.remarksByOther = false;
         ths.otherTeamRemarks = res.data;
       }
     })
@@ -667,5 +697,9 @@ export class BillingClaimsComponent implements OnInit {
 
   get isRoleLead() {
     return Utils.isRoleLead();
+  }
+
+  get isRoleSuperAdmin() {
+    return Utils.checkRoleSuperAdmin();
   }
 }

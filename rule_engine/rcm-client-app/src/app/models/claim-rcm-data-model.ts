@@ -22,6 +22,7 @@ export interface ClaimRcmDataModel {
 	claimStatus?: number;
 	lastTeam?: string;
 	currentTeam?: string;
+	currentTeamId?: number;
 	primInsurance?: string;
 	secInsurance?: string;
 	groupNumber?: string;

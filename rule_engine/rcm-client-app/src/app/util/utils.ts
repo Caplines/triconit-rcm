@@ -127,13 +127,7 @@ export default class Utils {
       return false;
    }
 
-   static checkSuperAdmin() {
-      let ls: any = localStorage;
-      if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_SUPER_ADMIN") > -1) {
-         return true;
-      }
-      return false;
-   }
+
    static checkRoleSuperAdmin() {
       let ls: any = localStorage;
       if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("SUPER_ADMIN") > -1) {
@@ -142,13 +136,7 @@ export default class Utils {
       return false;
    }
 
-   static isBillingLead() {
-      let ls: any = localStorage;
-      if (ls.getItem('currentUser') && ls.getItem('roles').indexOf("ROLE_BILLING_TL") > -1) {
-         return true;
-      }
-      return false;
-   }
+
 
    static isRoleLead() {
       let ls: any = localStorage;
@@ -226,13 +214,17 @@ export default class Utils {
    }
 
    static isRegisterVisible() {
-      localStorage.getItem('selected_clientName')
+      localStorage.getItem('selected_clientName');
    }
 
 
    static logout() {
       localStorage.clear();
       window.location.href = "/login";
+   }
+
+   static selectedTeam() {
+      return Number(localStorage.getItem('selected_teamId'));
    }
 
 }
