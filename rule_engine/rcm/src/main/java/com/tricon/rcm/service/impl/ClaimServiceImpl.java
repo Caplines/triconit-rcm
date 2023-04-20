@@ -412,7 +412,8 @@ public class ClaimServiceImpl {
 		RcmClaimStatusType systemStatusReBilling = rcmClaimStatusTypeRepo
 				.findByStatus(ClaimStatusEnum.ReBilling.getType());
 
-		RcmTeam assignedTeam  = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
+		RcmTeam assignedTeamBilling  = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
+		RcmTeam assignedTeamInternalAudit  = rcmTeamRepo.findById(RcmTeamEnum.INTERNAL_AUDIT.getId());
 		
 		// List<InsuranceNameTypeDto> insuranceTypeDto =
 		// ruleEngineService.pullInsuranceMappingFromSheet(company);
@@ -491,8 +492,10 @@ public class ClaimServiceImpl {
 						}
 						List<String> allCl = Arrays.asList(re.getClaimId() + claimTypeEnum.getSuffix());
 						List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
-						UserAssignOffice assignedUser = userAssignOfficeRepo.findByOfficeUuidAndTeamId(off.getUuid(),
+						UserAssignOffice assignedUserBilling = userAssignOfficeRepo.findByOfficeUuidAndTeamId(off.getUuid(),
 								RcmTeamEnum.BILLING.getId());
+						UserAssignOffice assignedUserInternalAudit = userAssignOfficeRepo.findByOfficeUuidAndTeamId(off.getUuid(),
+								RcmTeamEnum.INTERNAL_AUDIT.getId());
 
 						// RcmInsuranceType rcmInsuranceType = null;
 						if (claims == null || claims.size() == 0) {
@@ -592,10 +595,34 @@ public class ClaimServiceImpl {
 								newClaimSCt++;
 							rcmInsuranceType = rcmInsuranceTypeRepo.findById(ins.getInsuranceType().getId());
 
+								
+							boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
+							boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
+							boolean missing=true;
+							if (isBilling) {
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
 									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
 									claimTypeEnum);
+							missing=false;
+							}
+							if (isMedicaid) {
+								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
+										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
+										claimTypeEnum);
+								missing=false;
+							}
+							if(missing) {//no Billing or Medicaid
+								//put in billing 
+								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
+										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
+										claimTypeEnum);
+								missing=false;
+								isBilling=true;
+							}
+								
 							String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
 							RcmClaimLog l = logMap.get(off.getName());
 							if (l == null) {
@@ -617,11 +644,20 @@ public class ClaimServiceImpl {
 								rcmIssueClaimsRepo.save(isC);
 							}
 							/// createAssginmentData
-							if (assignedUser != null) {
+							if (assignedUserBilling != null && isBilling) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-										assignedUser.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
+										assignedUserBilling.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
+										systemStatusBilling,null);
+
+								rcmClaimAssignmentRepo.save(rcmAssigment);
+							}
+							if (assignedUserInternalAudit != null && isMedicaid) {
+								rcmAssigment = new RcmClaimAssignment();
+								//
+								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+										assignedUserInternalAudit.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
 										systemStatusBilling,null);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
@@ -631,6 +667,7 @@ public class ClaimServiceImpl {
 								isC.setResolved(true);
 								rcmIssueClaimsRepo.save(isC);
 							}
+						//}
 						}
 
 					} catch (Exception clai) {
@@ -640,7 +677,6 @@ public class ClaimServiceImpl {
 						logger.error(clai.getMessage());
 					}
 				}
-
 				for (ClaimFromSheet re : secondaryList) {
 
 					try {
@@ -670,8 +706,10 @@ public class ClaimServiceImpl {
 
 						List<String> allCl = Arrays.asList(re.getClaimId() + claimTypeEnum.getSuffix());
 						List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
-						UserAssignOffice assignedUser = userAssignOfficeRepo.findByOfficeUuidAndTeamId(off.getUuid(),
+						UserAssignOffice assignedUserBilling = userAssignOfficeRepo.findByOfficeUuidAndTeamId(off.getUuid(),
 								RcmTeamEnum.BILLING.getId());
+						UserAssignOffice assignedUserInternalAudit = userAssignOfficeRepo.findByOfficeUuidAndTeamId(off.getUuid(),
+								RcmTeamEnum.INTERNAL_AUDIT.getId());
 
 						// RcmInsuranceType rcmInsuranceType = null;
 						if (claims == null || claims.size() == 0) {
@@ -773,10 +811,35 @@ public class ClaimServiceImpl {
 							if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary))
 								newClaimSCt++;
 							rcmInsuranceType = rcmInsuranceTypeRepo.findById(ins.getInsuranceType().getId());
+							boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
+							boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
+							boolean missing=true;
+							if (isBilling) {
+							
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
 									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
 									claimTypeEnum);
+							missing=false;
+							}
+							if (isMedicaid) {
+								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
+										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
+										claimTypeEnum);
+								missing=false;
+							}
+							if(missing) {//no Billing or Medicaid
+								//put in billing 
+								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
+										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
+										claimTypeEnum);
+								missing=false;
+								isBilling=true;
+							}
+							
+							
 							String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
 							RcmClaimLog l = logMap.get(off.getName());
 							if (l == null) {
@@ -798,16 +861,25 @@ public class ClaimServiceImpl {
 								rcmIssueClaimsRepo.save(isC);
 							}
 							/// createAssginmentData
-							if (assignedUser != null) {
+							if (assignedUserBilling != null && isBilling) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-										assignedUser.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
-										systemStatusBilling,assignedTeam);
+										assignedUserBilling.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
+										systemStatusBilling,assignedTeamBilling);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
 							}
+							if (assignedUserInternalAudit != null && isMedicaid) {
+								rcmAssigment = new RcmClaimAssignment();
+								//
+								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+										assignedUserInternalAudit.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
+										systemStatusBilling,assignedTeamInternalAudit);
 
+								rcmClaimAssignmentRepo.save(rcmAssigment);
+							}
+                            
 							if (isC != null) {
 								isC.setResolved(true);
 								rcmIssueClaimsRepo.save(isC);
@@ -834,7 +906,7 @@ public class ClaimServiceImpl {
 					mapcountNew.put(entry.getKey(), claimLogDto);
 
 				}
-
+                /*
 				if (rcmOffices != null && rcmOffices.size() > 0) {
 					for (RcmOffice p : rcmOffices) {
 						if (mapcountNew.get(p.getUuid()) == null) {
@@ -853,6 +925,8 @@ public class ClaimServiceImpl {
 					}
 
 				}
+				*/
+				/*
 				if (rcmOffices == null) {
 					// need to Store logs look for all the offices
 					officeRepo.findByCompany(clCompany);
@@ -880,7 +954,7 @@ public class ClaimServiceImpl {
 
 					}
 
-				}
+				}*/
 
 			}
 

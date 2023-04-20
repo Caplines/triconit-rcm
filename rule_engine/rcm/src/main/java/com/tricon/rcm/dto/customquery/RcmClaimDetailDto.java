@@ -27,6 +27,7 @@ public interface RcmClaimDetailDto {
 	int getClaimStatus();
 	String getLastTeam();
 	String getCurrentTeam();
+	int getCurrentTeamId();
 	String getPrimInsurance();
 	String getSecInsurance();
 	String getGroupNumber();

@@ -130,7 +130,7 @@ public class UserController extends BaseHeaderController {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
 		try {
-			response = userService.getTeamNameByOtherUserTeamId(partialHeader);
+			response = userService.getTeamNameByOtherUserTeamId(partialHeader,true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

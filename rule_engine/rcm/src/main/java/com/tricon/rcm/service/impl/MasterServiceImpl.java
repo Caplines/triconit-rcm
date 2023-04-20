@@ -169,6 +169,21 @@ public class MasterServiceImpl {
 		}
 		return teams;
 	}
+	
+	public List<RcmTeamDto> getTeamById(int teamId) {
+		List<RcmTeamDto> teams = new ArrayList<>();
+		RcmTeamDto team = null;
+		for (RcmTeamEnum t : RcmTeamEnum.values()) {
+			
+			if (t.getId()==teamId) {
+				team = new RcmTeamDto();
+				team.setTeamName(t.getDescription());
+				team.setTeamId(t.getId());
+				teams.add(team);
+			}
+		}
+		return teams;
+	}
 
 	public List<RcmRoleDto> getRoles() {
 		List<RcmRoleDto> roles = new ArrayList<>();

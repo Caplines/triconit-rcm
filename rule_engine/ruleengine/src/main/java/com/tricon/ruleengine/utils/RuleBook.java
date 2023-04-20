@@ -10482,7 +10482,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
           }else {
         	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
   					messageSource.getMessage("rule49.error.message", new Object[] {chip,issueSet}, locale),
-  					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+  					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", issueSet)));
           }
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),

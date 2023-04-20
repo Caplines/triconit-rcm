@@ -224,7 +224,9 @@ public class RuleEngineService {
 
 					mainRoot = result.getBody();
 					RcmClaims claim = null;
-					RcmTeam assignedTeam =null;
+					RcmTeam assignedTeamBilling =null;
+					RcmTeam assignedTeamInternalAudit =null;
+					
 					for (RcmClaimDataDto datas : mainRoot.getData().getDatas()) {
 						// String officeUuid = datas.getOfficeName();
 						// RcmOffice off = officeRepo.findByUuid(officeUuid);
@@ -234,9 +236,12 @@ public class RuleEngineService {
 									System.out.println(re.getClaimId() + "--<ID");
 									List<String> allCl = Arrays.asList(re.getClaimId() + claimTypeEnum.getSuffix());
 									List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
-									UserAssignOffice assignedUser = userAssignOfficeRepo
+									UserAssignOffice assignedUserBilling = userAssignOfficeRepo
 											.findByOfficeUuidAndTeamId(off.getUuid(), RcmTeamEnum.BILLING.getId());
-									assignedTeam = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
+									UserAssignOffice assignedUserInternalAudit = userAssignOfficeRepo
+											.findByOfficeUuidAndTeamId(off.getUuid(), RcmTeamEnum.INTERNAL_AUDIT.getId());
+									assignedTeamBilling = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
+									assignedTeamInternalAudit= rcmTeamRepo.findById(RcmTeamEnum.INTERNAL_AUDIT.getId());
 									RcmInsuranceType rcmInsuranceType = null;
 									if (claims == null || claims.size() == 0) {
 										// List<String> buildError1=null;
@@ -311,10 +316,21 @@ public class RuleEngineService {
 											newClaimSCt++;
 										rcmInsuranceType = rcmInsuranceTypeRepo
 												.findById(ins.getInsuranceType().getId());
+										
+										boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(ins.getInsuranceType().getName());
+										boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(ins.getInsuranceType().getName());
+										if (isBilling) {
 										claim = ClaimUtil.createClaimFromESData(claim, off, re,
 												ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()),
 												user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
 												rcmInsuranceType, timely, claimTypeEnum);
+										}
+										if (isMedicaid) {
+											claim = ClaimUtil.createClaimFromESData(claim, off, re,
+													ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()),
+													user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
+													rcmInsuranceType, timely, claimTypeEnum);
+										}
 										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
 										RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(
 												re.getClaimId() + claimTypeEnum.getSuffix(), off, source);
@@ -323,12 +339,21 @@ public class RuleEngineService {
 											rcmIssueClaimsRepo.save(isC);
 										}
 										/// createAssginmentData
-										if (assignedUser != null) {
+										if (assignedUserBilling != null && isBilling) {
 											rcmAssigment = new RcmClaimAssignment();
 											//
 											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-													assignedUser.getUser(), claimUUid, claim,
-													Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling,assignedTeam);
+													assignedUserBilling.getUser(), claimUUid, claim,
+													Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling,assignedTeamBilling);
+
+											rcmClaimAssignmentRepo.save(rcmAssigment);
+										}
+										if (assignedUserInternalAudit != null && isMedicaid) {
+											rcmAssigment = new RcmClaimAssignment();
+											//
+											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+													assignedUserInternalAudit.getUser(), claimUUid, claim,
+													Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling,assignedTeamInternalAudit);
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
 										}

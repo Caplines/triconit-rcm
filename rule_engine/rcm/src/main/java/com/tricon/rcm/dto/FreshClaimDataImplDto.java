@@ -46,6 +46,7 @@ public class FreshClaimDataImplDto {
 	int claimStatus;
 	String lastTeam;
 	String currentTeam;
+	int currentTeamId;
 	String primInsurance;
 	String secInsurance;
 	String groupNumber;

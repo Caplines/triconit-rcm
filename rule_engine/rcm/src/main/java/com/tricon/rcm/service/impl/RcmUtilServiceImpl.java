@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 import javax.transaction.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -23,6 +26,7 @@ import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RecaptchaResponseDto;
 import com.tricon.rcm.email.EmailUtil;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
+import com.tricon.rcm.security.api.controller.AuthenticationRestController;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.GeneratePassword;
@@ -47,7 +51,7 @@ public class RcmUtilServiceImpl {
 	@Autowired
 	RestTemplate restTemplate;
 
-
+	private final Logger logger = LoggerFactory.getLogger(RcmUtilServiceImpl.class);
 
 	/**
 	 * This Api does reset password for a user.Reset Password procedure completes through Email
@@ -99,6 +103,8 @@ public class RcmUtilServiceImpl {
 			ResponseEntity<RecaptchaResponseDto> response = restTemplate.exchange(builder.build().encode().toUri(),
 					HttpMethod.GET, entity, RecaptchaResponseDto.class);
 			RecaptchaResponseDto rs = response.getBody();
+			logger.info("Captcha getHostName-->"+rs.getHostName());
+			logger.info("Captcha Status-->"+rs.isSuccess());
 			if (rs.isSuccess())
 				return true;
 			else

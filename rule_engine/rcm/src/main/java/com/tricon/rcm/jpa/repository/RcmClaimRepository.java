@@ -177,7 +177,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" prim_date_sent primDateSent, prim_status primeStatus,prim_total_paid primeTotalPaid,"+
 			" rcm_source source, sec_date_sent secDateSend,sec_status secStatus,"+
 			" sec_submitted_total secSubmittedTotal,submitted_total submittedTotal, timely_fil_lmt_dt timeFilLimitDay,"+
-			" off.name officeName,off.uuid officeUuid,ct.id claimStatus,lTeam.name lastTeam,Cteam.name currentTeam,"+
+			" off.name officeName,off.uuid officeUuid,ct.id claimStatus,lTeam.name lastTeam,Cteam.name currentTeam,Cteam.id currentTeamId,"+
 			" pins.name primInsurance,sins.name secInsurance, cl.group_number groupNumber,cl.prime_policy_holder primePolicyHolder,"+
 			" prime_sec_submitted_total primeSecSubmittedTotal,sec_policy_holder_dob secPolicyHolderDob,"+
 			" cl.created_date createdDate,assign.assigned_to assignedTo,us.email,us.first_name firstName,us.last_name lastName,"+

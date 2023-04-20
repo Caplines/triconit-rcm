@@ -32,7 +32,7 @@ public class RcmExceptionLogs {
 	@Column(name = "stack_trace",columnDefinition ="text")
 	private String stackTrace;
 	
-	@Column(name = "occurs_in")
+	@Column(name = "occurs_in",columnDefinition ="text")
 	private String occursIn;
 	
 }

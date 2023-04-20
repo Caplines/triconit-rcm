@@ -245,4 +245,24 @@ public class ClaimUtil {
 		return ruleGen.iterator().next();
 
 	}
+	
+	public static  boolean isBillingClaimByInsuranceName(String insuranceName) {
+
+         boolean billing=false;
+         if (insuranceName.equalsIgnoreCase("HMO") || insuranceName.equalsIgnoreCase("PPO") )billing =true;
+         
+         return billing;
+ 
+
+	}
+	public static  boolean isMedcaidClaimByInsuranceName(String insuranceName) {
+
+		boolean medicaid=false;
+        if (insuranceName.toLowerCase().contains("medicaid"))medicaid =true;
+        
+        return medicaid;
+        
+
+
+	}
 }
