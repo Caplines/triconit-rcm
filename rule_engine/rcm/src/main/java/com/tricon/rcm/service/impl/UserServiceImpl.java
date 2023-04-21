@@ -22,10 +22,12 @@ import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
+import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.dto.customquery.TreatmentPlanLinkDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
+import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
@@ -54,6 +56,9 @@ public class UserServiceImpl {
 	@Autowired
 	MasterServiceImpl masterService;
 
+	@Autowired
+	RcmMappingTableRepo mappingTableRepo;
+	
 	/**
 	 * This method does update password of login user or admin
 	 * 
@@ -160,5 +165,12 @@ public class UserServiceImpl {
 				return 0;
 		}
 		return 0;
+	}
+
+	public List<RcmCompanyWithGsheetDto> getGoogleSheetLink(RcmCompany company) throws Exception {
+		if (company != null) {
+			return mappingTableRepo.findGsheetLinkByClientuuid(company.getUuid());
+		}
+		return null;
 	}
 }

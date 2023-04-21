@@ -30,6 +30,7 @@ import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UpdatePasswordDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
+import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.dto.customquery.TreatmentPlanLinkDto;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.security.JwtUser;
@@ -191,6 +192,24 @@ public class UserController extends BaseHeaderController {
 
 		try {
 			response = userService.getIssueClaimsCounts(partialHeader.getCompany());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@RequestMapping(value = "/gsheet-link", method = RequestMethod.GET)
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<?> gSheetLink(Model model) {
+		List<RcmCompanyWithGsheetDto> response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		try {
+			response = userService.getGoogleSheetLink(partialHeader.getCompany());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

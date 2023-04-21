@@ -144,6 +144,30 @@
     overflow: auto;
 }
 
+.table-wrapper-scroll-y {
+    display: block;
+  }
+  
+  .table-inner-scrollbar {
+    position: relative;
+    overflow-y: auto;
+    height: calc(100vh - 330px);
+    min-width: 100%;
+  }
+  .table-inner-scrollbar thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-top: 0px !important;
+    width: 33vw;
+}
+
+.table-inner-scrollbar tbody tr.totalRow {
+    position: sticky;
+    top: 30px;
+    z-index: 2;
+}
+
 @media only screen and (max-width: 767px) {
     .navbar-dark .navbar-brand {
         padding: 0px;
@@ -181,4 +205,5 @@
         border-bottom: 1px solid #cacaca;
     }
 }
+
 

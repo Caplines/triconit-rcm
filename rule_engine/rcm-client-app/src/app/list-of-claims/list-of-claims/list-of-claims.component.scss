@@ -69,3 +69,19 @@
 .filter-dropdown-menu label input{
     margin-right: 5px;
 }
+.table-wrapper-scroll-y {
+    display: block;
+  }
+  
+  .table-inner-scrollbar {
+    position: relative;
+    overflow-y: auto;
+    height: calc(100vh - 265px);
+    min-width: 100%;
+  }
+  .table-inner-scrollbar thead th, tbody tr.totalRow {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-top: 0px !important;
+}

@@ -51,3 +51,31 @@
 .dFlex {
     display: flex;
 }
+.table-wrapper-scroll-y {
+    display: block;
+  }
+  
+  .table-inner-scrollbar {
+    position: relative;
+    overflow-y: auto;
+    height: calc(100vh - 270px);
+    min-width: 100%;
+  }
+  .table-inner-scrollbar thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-top: 0px !important;
+    width: 20vw;
+}
+
+.table-inner-scrollbar tbody tr.totalRow {
+    position: sticky;
+    top: 51px;
+    z-index: 2;
+}
+@media only screen and (min-width: 1730px) and (max-width: 2050px) {
+    .table-inner-scrollbar tbody tr.totalRow {
+        top: 30px;
+    }
+}
