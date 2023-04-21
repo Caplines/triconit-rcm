@@ -23,6 +23,7 @@
                     </div>
                     <div class="detail-box">
                         <div class="detail-box-form">
+                            <!-- This section is for all Clients -->
                             <a data-toggle="collapse" (click)="showHide(0)" class="bold-b-text"
                                 aria-expanded="true">Claim Details: <span
                                     style="color:#ff00a8">{{infoMessage}}</span></a>
@@ -147,69 +148,72 @@
 
                                 </div>
                             </div>
-                            <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text "
-                                aria-expanded="false">Links to Related Documents:</a>
-                            <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                            <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show" id="linksToDocuments">
-                                <div class="col-md-3 mb-2">
-                                    <div class="custom-row text-number">
-                                        <label for="" class="">IV ID :</label>
-                                        <div>{{claimRcm.ivfId}}</div>
+                            <!-- This section is for SmilePoints Only -->
+                            <ng-container *ngIf="claimRcm.clientName === defaultClient">
+                                <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text "
+                                    aria-expanded="false">Links to Related Documents:</a>
+                                <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
+                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show"
+                                    id="linksToDocuments">
+                                    <div class="col-md-3 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="" class="">IV ID :</label>
+                                            <div>{{claimRcm.ivfId}}</div>
+                                        </div>
+                                        <div class="custom-row text-number">
+                                            <label for="" class="">Signed Tx Plan ID :</label>
+                                            <div>{{claimRcm.tpId}}</div>
+                                        </div>
                                     </div>
-                                    <div class="custom-row text-number">
-                                        <label for="" class="">Signed Tx Plan ID :</label>
-                                        <div>{{claimRcm.tpId}}</div>
+                                    <div class="col-md-3 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="" class="">Date of IV :</label>
+                                            <div>{{claimRcm.ivDos}}</div>
+                                        </div>
+                                        <div class="custom-row text-number">
+                                            <label for="" class="">Date of Tx. Plan :</label>
+                                            <div>{{claimRcm.tpDos}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <div><a [routerLink]="['ivf']" target="_blank" class="flex-center">IV Link<img
+                                                    src="../../../assets/img/right-arrow-blue.png" /></a></div>
+                                        <div><a [routerLink]="['tp']" target="_blank" class="flex-center">Treatment Plan
+                                                Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
                                     </div>
                                 </div>
-                                <div class="col-md-3 mb-2">
-                                    <div class="custom-row text-number">
-                                        <label for="" class="">Date of IV :</label>
-                                        <div>{{claimRcm.ivDos}}</div>
-                                    </div>
-                                    <div class="custom-row text-number">
-                                        <label for="" class="">Date of Tx. Plan :</label>
-                                        <div>{{claimRcm.tpDos}}</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <div><a [routerLink]="['ivf']" target="_blank" class="flex-center">IV Link<img
-                                                src="../../../assets/img/right-arrow-blue.png" /></a></div>
-                                    <div><a [routerLink]="['tp']" target="_blank" class="flex-center">Treatment Plan
-                                            Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
-                                </div>
-                            </div>
-                            <a data-toggle="collapse" (click)="showHide(2)" class="bold-b-text "
-                                aria-expanded="false">Remarks by Other RCM Teams:</a>
-                            <div *ngIf="loader.remarksByOther" class="loader-data"></div>
-                            <div *ngIf="!loader.remarksByOther" class="form-row  collapse show" id="teamRemarks">
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>S.No.</th>
-                                                <th>Team Name</th>
-                                                <th>Date of Remarks</th>
-                                                <th class="remark">Remarks</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <ng-container *ngIf="otherTeamRemarks?.length>0">
-                                                <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
-                                                    <td>{{idx+1}}</td>
-                                                    <td>{{rem.teamName}}</td>
-                                                    <td>{{rem.cd}}</td>
-                                                    <td>{{rem.comment}}</td>
+                                <a data-toggle="collapse" (click)="showHide(2)" class="bold-b-text "
+                                    aria-expanded="false">Remarks by Other RCM Teams:</a>
+                                <div *ngIf="loader.remarksByOther" class="loader-data"></div>
+                                <div *ngIf="!loader.remarksByOther" class="form-row  collapse show" id="teamRemarks">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>S.No.</th>
+                                                    <th>Team Name</th>
+                                                    <th>Date of Remarks</th>
+                                                    <th class="remark">Remarks</th>
                                                 </tr>
-                                            </ng-container>
-                                            <ng-container
-                                                *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
-                                                No Remarks Found.
-                                            </ng-container>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                <ng-container *ngIf="otherTeamRemarks?.length>0">
+                                                    <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
+                                                        <td>{{idx+1}}</td>
+                                                        <td>{{rem.teamName}}</td>
+                                                        <td>{{rem.cd}}</td>
+                                                        <td>{{rem.comment}}</td>
+                                                    </tr>
+                                                </ng-container>
+                                                <ng-container
+                                                    *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
+                                                    No Remarks Found.
+                                                </ng-container>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-
+                            </ng-container>
                             <a data-toggle="collapse" (click)="showHide(3)" class="bold-b-text "
                                 aria-expanded="false">Additional Requirements for Rebilled Claims:</a>
                             <div *ngIf="loader.rebilledClaims" class="loader-data"></div>

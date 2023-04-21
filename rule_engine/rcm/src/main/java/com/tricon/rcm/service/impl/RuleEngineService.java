@@ -319,17 +319,29 @@ public class RuleEngineService {
 										
 										boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(ins.getInsuranceType().getName());
 										boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(ins.getInsuranceType().getName());
+										boolean missing=true;
 										if (isBilling) {
 										claim = ClaimUtil.createClaimFromESData(claim, off, re,
 												ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()),
 												user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
 												rcmInsuranceType, timely, claimTypeEnum);
+										missing=false;
 										}
 										if (isMedicaid) {
 											claim = ClaimUtil.createClaimFromESData(claim, off, re,
 													ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()),
 													user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
 													rcmInsuranceType, timely, claimTypeEnum);
+											missing=false;
+										}
+										
+										if(missing) {//no Billing or Medicaid
+											//put in billing 
+											claim = ClaimUtil.createClaimFromESData(claim, off, re,
+													ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()),
+													user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
+													rcmInsuranceType, timely, claimTypeEnum);
+											isBilling=true;
 										}
 										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
 										RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(

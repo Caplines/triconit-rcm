@@ -122,7 +122,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " d1517 as d1517,d1517_freq as d1517Freq,d3220 as d3220,d3220_freq as d3220Freq,out_network_message as outNetworkMessage,"
 			+ " os_plan_type as osPlanType,sm_age_limit as smAgeLimit,perio_d4921 as perioD4921, d4921_frequency as d4921Frequency,perio_d4266 as perioD4266,d4266_frequency as d4266Frequency,"
 			+ " perio_d9910 as perioD9910, d9910_frequency as d9910Frequency, oonbenfits as oonbenfits, d9630 as d9630,d9630fr as d9630fr,d0431 as d0431,d0431fr as d0431fr,d4999 as d4999,d4999fr as d4999fr,"
-			+ " d2962 as d2962,d2962fr as d2962fr,history_count as  historyCount,"
+			+ " d2962 as d2962,d2962_fr as d2962fr,history_count as  historyCount,"
 			+ " d0145 as d0145, d0150 as d0150,d2750 as d2750,d2750_fr as d2750fr,"
 			+ " d0220 as d0220,d0220_freq as d0220Freq,d0230 as d0230,"
 			+ " bwx as bwx,d0210 as d0210,d0210_freq as d0210Freq,"
@@ -141,7 +141,10 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " d8090_fr as d8090fr,d8670_fr as d8670fr,d8680_fr as d8680fr,"
 			+ " d8690_fr as d8690fr,apptype as apptype,sec_provider_name as secProviderName,"
 			+ " sec_prov_network as secProvNetwork,yes_no_assign_to_office as yesNoAssignToffice,"
-			+ " policy18 as d0120,d1110 as d1110, d1120 as d1120, d7953_extraction as d7953Extraction ";
+			+ " policy18 as d0120,d1110 as d1110, d1120 as d1120, d7953_extraction as d7953Extraction, "
+			+ " d8660 as d8660 ,d8660_fr as d8660fr,d8210 as d8210, d8210_fr as d8210fr,"
+			+ " d8220 as d8220,d8220_fr as d8220fr,d8020 as d8020,d8020_fr as d8020fr,"
+			+ " d8692 as d8692,d8692_fr as d8692fr";
 	
 	@Override
 	public Patient checkforPatientWithId(String patientid, Office off) {

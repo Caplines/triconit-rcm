@@ -1,4 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { ClaimService } from '../../service/claim.service';
 import { ClaimAssignToTeamModel } from '../../models/claim_assign_to_team';
@@ -57,7 +59,7 @@ export class BillingClaimsComponent implements OnInit {
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
-    private route: ActivatedRoute, private title: Title) {
+    private route: ActivatedRoute, private title: Title, private location: Location, private router: Router) {
     this.claimRcm = { claimId: "" };
     title.setTitle("RCM tool - Claim Detail");
 
@@ -78,6 +80,8 @@ export class BillingClaimsComponent implements OnInit {
   fetchClaimsByUuid(uuid: string) {
 
     let ths = this;
+    ths.claimUUid = uuid;
+    ths.updateUrl("/billing-claims/" + uuid);
     this.loader.claimDetail = this.loader.linkToRelatedDoc = true;
     ths.claimService.fetchBillingClaimsByUuid(uuid, (res: any) => {
       if (res.status === 200) {
@@ -701,5 +705,13 @@ export class BillingClaimsComponent implements OnInit {
 
   get isRoleSuperAdmin() {
     return Utils.checkRoleSuperAdmin();
+  }
+
+  get defaultClient(): string {
+    return Utils.getDefaultClient();
+  }
+
+  updateUrl(url: string) {
+    if ('/billing-claims/' + url != this.router.url) this.location.go(url);
   }
 }

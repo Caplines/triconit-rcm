@@ -448,6 +448,18 @@ public class IVFFormConversionUtil {
 		pd2.setPolicy18(d.getD0120());
 		pd2.setD7953Extraction(d.getD7953Extraction());
 		
+		pd2.setD8660(d.getD8660());
+		pd2.setD8660fr(d.getD8660fr());
+		pd2.setD8210(d.getD8210());
+		pd2.setD8210fr(d.getD8210fr());
+		pd2.setD8220(d.getD8220());
+		pd2.setD8220fr(d.getD8220fr());
+		pd2.setD8020(d.getD8020());
+		pd2.setD8020fr(d.getD8020fr());
+		pd2.setD8692(d.getD8692());
+		pd2.setD8692fr(d.getD8692fr());
+		
+		
 		pd.setPatientDetails2(pd2);
 		
 		Set<PatientDetail2> p2Set = new HashSet<>();
@@ -881,6 +893,16 @@ public class IVFFormConversionUtil {
 				pd.setD1110(d.getD1110());
 				pd.setPolicy18(d.getD0120());
 				pd.setD7953Extraction(d.getD7953Extraction());
+				pd.setD8660(d.getD8660());
+				pd.setD8660fr(d.getD8660fr());
+				pd.setD8210(d.getD8210());
+				pd.setD8210fr(d.getD8210fr());
+				pd.setD8220(d.getD8220());
+				pd.setD8220fr(d.getD8220fr());
+				pd.setD8020(d.getD8020());
+				pd.setD8020fr(d.getD8020fr());
+				pd.setD8692(d.getD8692());
+				pd.setD8692fr(d.getD8692fr());
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -1403,6 +1425,16 @@ public class IVFFormConversionUtil {
 		pd2.setD1110(d.getD1110());
 		pd2.setPolicy18(d.getD0120());
 		pd2.setD7953Extraction(d.getD7953Extraction());
+		pd2.setD8660(d.getD8660());
+		pd2.setD8660fr(d.getD8660fr());
+		pd2.setD8210(d.getD8210());
+		pd2.setD8210fr(d.getD8210fr());
+		pd2.setD8220(d.getD8220());
+		pd2.setD8220fr(d.getD8220fr());
+		pd2.setD8020(d.getD8020());
+		pd2.setD8020fr(d.getD8020fr());
+		pd2.setD8692(d.getD8692());
+		pd2.setD8692fr(d.getD8692fr());
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();

@@ -172,7 +172,7 @@ export default class Utils {
 
    static isSmilePoint() {
       let ls: any = localStorage;
-      if (ls.getItem('currentUser') && ls.getItem('selected_clientName') && ls.getItem('selected_clientName') === 'Smilepoint') {
+      if (ls.getItem('currentUser') && ls.getItem('selected_clientName') && ls.getItem('selected_clientName') === this.getDefaultClient()) {
          return true;
       }
       return false;
@@ -225,6 +225,10 @@ export default class Utils {
 
    static selectedTeam() {
       return Number(localStorage.getItem('selected_teamId'));
+   }
+
+   static getDefaultClient() {
+      return "Smilepoint";
    }
 
 }
