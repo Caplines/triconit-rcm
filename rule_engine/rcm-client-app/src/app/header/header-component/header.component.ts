@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit {
       this.getRoles();
     }
 
-    if(this.userInfo.currentClientName){
+    if(this.userInfo.currentClientName && this.userInfo.currentTeamId != "-1"){
       this.issueClaim();
     }
      this.checkClientExist();

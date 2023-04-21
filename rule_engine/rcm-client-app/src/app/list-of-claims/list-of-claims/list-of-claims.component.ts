@@ -111,7 +111,7 @@ export class ListOfClaimsComponent implements OnInit {
   exportToCsv() {
     let options: any = {
       showLabels: true,
-      headers: ["Office Name", "Patient ID", 'Date of Service', "Patient Name","LastTeam","Timely Filing Limit (Days)",  "Insurance Name", "Claim Age", "Insurance Type", "Estimated Amount", "Action Required", "Claim Type"]
+      headers: ["Office Name", "Patient ID", "Patient Name",'Date of Service', "LastTeam","Timely Filing Limit (Days)",  "Insurance Name", "Claim Age", "Insurance Type", "Estimated Amount", "Action Required", "Claim Type"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];
@@ -134,7 +134,7 @@ export class ListOfClaimsComponent implements OnInit {
         e = { ...e, ['claimType']: "Secondary" };
       }
       if(e.lastTeam == null){
-        e = {...e,lastTeam:'N/A'}
+        e = {...e,lastTeam:'-'}
       }
       return e;
     })

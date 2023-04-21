@@ -13,7 +13,7 @@
         <div class="drop-show" *ngIf="showDropDown && isClient">
             <label>
                 <input type="checkbox" (change)="selectAll($event,'client')" [checked]="selectAllChecked">
-                <span>Select All</span>
+                <span>{{list.length == clientCheckedList.length ? 'Clear All' : 'Select All'}}</span>
             </label>
             <label *ngFor="let a of list;let idx = index">
                 <input type="checkbox" [(ngModel)]="a.checked" 
@@ -24,7 +24,7 @@
         <div class="drop-show" *ngIf="showDropDown && isClient && isFromUserSetting">
             <label>
                 <input type="checkbox" (change)="selectAll($event,'client')" [checked]="selectAllChecked">
-                <span>Select All</span>
+                <span>{{list.length == clientCheckedList.length ? 'Clear All' : 'Select All'}}</span>
             </label>
             <label *ngFor="let a of list;let idx = index">
                 <input type="checkbox" [(ngModel)]="a.checked" 
@@ -35,7 +35,7 @@
         <div class="drop-show-team" *ngIf="showDropDown && isTeam">
             <label>
                 <input type="checkbox" (change)="selectAll($event,'team')" [checked]="selectAllChecked">
-                <span>Select All</span>
+                <span>{{list.length == teamCheckedList.length ? 'Clear All' : 'Select All'}}</span>
             </label>
             <label *ngFor="let a of list;let idx = index">
                 <input type="checkbox" [(ngModel)]="a.checked" 
