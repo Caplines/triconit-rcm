@@ -15,8 +15,9 @@ public class ClaimEditDto {
 	List<ClaimServiceDto> serCVDto;
 	String claimRemark;
 	boolean submission;
-	boolean assignToTL;
+	//boolean assignToTL;
 	boolean assignToOtherTeam;
+	String assignToComment;
 	String assignTouuid;
 	int assignToTeam;
 }

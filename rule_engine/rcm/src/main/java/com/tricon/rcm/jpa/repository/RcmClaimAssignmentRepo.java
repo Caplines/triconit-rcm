@@ -44,16 +44,27 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			 +" from  rcm_claim_assignment assign inner join rcm_user us on us.uuid=assign.assigned_by "
 			 +" inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
 			 +" inner join rcm_team tm on tm.id=rut.team_Id "
-			 +"  where claim_id=:claim_id and rut.team_id!=:teamId order by assign.created_date"
+			 +"  where claim_id=:claim_id and assign.current_team_id!=:teamId and comment_assigned_by<>'' order by assign.created_date asc "
 	+ "")
     List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
 	
-	
+	/*
+	 * Before calling this Method Make sure u see claim is for valid Client 
+	 */
 	@Query(nativeQuery = true, value = "  "
-			+" SELECT count(*) FROM rule_engine_2.rcm_claim_assignment rca "
+			+" SELECT count(*) FROM rcm_claim_assignment rca "
 			+" inner join rcm_team rt on rt.id=rca.current_team_id "
-			+"  where rca.claim_id=:claim_id and rt.id<>:teamId and rca.active is false")
-   int claimAssignedToOtherTeamByGivenTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
+			+"  where rca.claim_id=:claim_id  and rca.active is true and assigned_to is not null")
+    int claimAssignedToSomeoneAlready(@Param("claim_id") String claimId);
+	
+	/*
+	 * Before calling this Method Make sure u seed claim is for valid Client 
+	 */
+	@Query(nativeQuery = true, value = "  "
+			+" SELECT count(*) FROM rcm_claim_assignment rca "
+			+" inner join rcm_team rt on rt.id=rca.current_team_id "
+			+"  where rca.claim_id=:claim_id and  rt.id<>:teamId  and rca.active is false")
+   int claimWorkedBySomeEarlierByTLTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
 	
 	
 	

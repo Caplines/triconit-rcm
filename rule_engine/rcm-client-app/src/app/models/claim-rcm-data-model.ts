@@ -57,6 +57,8 @@ export interface ClaimRcmDataModel {
 	estSecondaryES?: string;
 	descriptionES?: string;
 	assignedToTeam?: number;
+	assignedToRoleName?: string;
+	assignedToTeamName?: string;
 	ivfId?: string;
 	tpId?: string;
 	ivDos?: string;
@@ -86,6 +88,7 @@ export interface ClaimEditModel {
 	assignToOtherTeam?: boolean;
 	assignTouuid?: string;
 	assignToTeam?: number;
+	assignToComment?: string;
 
 
 }

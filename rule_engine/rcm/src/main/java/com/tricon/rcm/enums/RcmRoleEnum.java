@@ -61,4 +61,13 @@ public enum RcmRoleEnum {
 			}
 			return null;
 		}
+	
+	public static String getRoleFullName(String role) {		
+		String removePrefix=role.substring(5);
+		Optional<RcmRoleEnum> data = Arrays.stream(values()).filter(x -> x.getName().equals(removePrefix)).findFirst();
+		if (data.isPresent()) {
+				return data.get().getFullName();
+			}
+			return null;
+		}
 }

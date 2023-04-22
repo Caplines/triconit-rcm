@@ -59,6 +59,10 @@ public class RcmClaimAssignment extends BaseAuditEntity implements Serializable{
 	private String commentAssignedTo;
 	
 	
+	@Column(name = "system_comment")
+	private String systemComment;
+	
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "status_id",referencedColumnName="id")
 	private RcmClaimStatusType rcmClaimStatus;

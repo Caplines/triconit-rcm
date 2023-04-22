@@ -231,4 +231,14 @@ export default class Utils {
       return "Smilepoint";
    }
 
+   static isBilling(): boolean {
+      return (Number(localStorage.getItem('selected_teamId')) == 7);
+   }
+
+
+   static getTimeZone(): string {
+      return new Date().toString().split("GMT")[1].split(" (")[0]; // timezone, i.e. -0700
+   }
+
+
 }

@@ -63,8 +63,8 @@ export class BaseService {
     'getClients': '/master/getClients',
     'allpendency': '/api/allpendency',
     'assigntotl': '/api/assign_to_tl',
-    'findUserByDetail':'/finduserbydetail',
-    'fetchTpData':'/tp-link-data',
+    'findUserByDetail': '/finduserbydetail',
+    'fetchTpData': '/tp-link-data',
     'fetchIssueClaimCounts': '/issue-claim-counts'
   }
 

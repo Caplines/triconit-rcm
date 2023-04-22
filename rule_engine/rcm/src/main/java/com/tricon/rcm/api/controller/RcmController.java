@@ -388,8 +388,8 @@ public class RcmController extends BaseHeaderController{
 				claimServiceImpl.saveFullClaim(partialHeader,dto)));
 	}
 	
-	
-	@ApiOperation(value = "Api For Assigning Claim to other user", response = String.class)
+	/*
+	@ApiOperation(value = "Api For Assigning Claim to other Team", response = String.class)
 	@PostMapping("/api/assign-other-team")
 	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> assignToOtherOrTeamLead(@RequestBody ClaimAssignDto dto, Model model) {
@@ -399,10 +399,11 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.assignToOtherTeam(partialHeader,dto)));
 	}
+	*/
 	
 	@ApiOperation(value = "Api For Assigning Claim to TL", response = KeyValueDto.class,responseContainer = "List")
 	@PostMapping("/api/assign_to_tl")
-	//@PreAuthorize("hasAnyRole('BILLING_TL','BILLING_ASSO')")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
 	public ResponseEntity<Object> assignClaimToTL(@RequestBody ClaimAssignDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
@@ -412,7 +413,7 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	
-	@ApiOperation(value = "Api For Assigning Un Assigned Claim to Users", response = String.class)
+	@ApiOperation(value = "Api For Assigning Un Assigned Claim to Assocaited Users", response = String.class)
 	@GetMapping("/api/assign-unsassigned_claims")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
 	public ResponseEntity<Object> assignUnsAsignedClaims(Model model) {

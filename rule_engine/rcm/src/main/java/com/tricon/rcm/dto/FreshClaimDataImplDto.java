@@ -69,6 +69,9 @@ public class FreshClaimDataImplDto {
 
 	//AssignedTo
 	int assignedToTeam;
+	String assignedToTeamName;
+	String assignedToRoleName;
+	
 	String assignedToUuid;
 	String assignedToName;
 	String assignedByRemark;

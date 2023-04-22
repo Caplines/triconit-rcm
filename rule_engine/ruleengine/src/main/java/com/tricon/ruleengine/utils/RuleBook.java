@@ -4457,7 +4457,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 						+ "This is created by Using Tooth Number from Treatment Plan, if that tooth No's service code"
 						+ "is found in the Fields where we have to Check for Frequncy Limits ..Rest codes are ignored.-tpToothMap "
 						+ "", Constants.rule_log_debug, bw);
-
+				List<TPValidationResponseDto> xL = new ArrayList<>();
 				if (mapFlIVF != null && tpToothMap!=null) {
 
 					for (Map.Entry<String, List<String>> entry : tpToothMap.entrySet()) {
@@ -4489,10 +4489,10 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 											fcodes.add(scivfTFD.getServiceCode());
 										}
 										
-										List<TPValidationResponseDto> xL=  FreqencyUtils.ivfFrequencyLogic(dataIVF, tpCode, tooth, historyD, c2,
+										List<TPValidationResponseDto> xL1=  FreqencyUtils.ivfFrequencyLogic(dataIVF, tpCode, tooth, historyD, c2,
                                     		   bw, CurrentYear, planDate, messageSource, rule, ivf, TP_Date, locale,
                                                 mapFlIVFFinal,surfaces,teethC,fcodes);
-										if (xL.size()>0) return xL;
+										if (xL1.size()>0) xL.addAll(xL1);
  
 										// }
 									}
@@ -4502,6 +4502,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 					}
 
 				}
+				if (xL.size()>0) return xL;
 				// MAIN LOGIC ALIKE CODES
 				/*
 				 * D1206 and D1208 D4341 and D4342 D1110 and D1120 D0272 and D0274 D0150, D0120,
@@ -4509,6 +4510,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 				 * 
 				 */
 				// D1206 and D1208
+				
 				for (Map.Entry<String, List<ServiceCodeIvfTimesFreqFieldDto>> entry : mapFlIVFFinal.entrySet()) {
 
 					String tooth = entry.getKey();
@@ -10340,6 +10342,13 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 			if (pass)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,"","",""));
+			else {
+				List<TPValidationResponseDto> uniqueV = d
+                        .stream()
+                        .distinct()
+                        .collect(Collectors.toList());
+				d=uniqueV;
+			}
 		} catch (Exception x) {
 
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -10482,7 +10491,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
           }else {
         	  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
   					messageSource.getMessage("rule49.error.message", new Object[] {chip,issueSet}, locale),
-  					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", issueSet)));
+  					Constants.FAIL,String.join(",", surfaces),String.join(",", issueSet),String.join(",", fcodes)));
           }
 		} catch (Exception ex) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),

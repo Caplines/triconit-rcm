@@ -212,22 +212,9 @@ public class RcmCommonServiceImpl {
 			return null;
 	}
 	
-	/*public RcmCompany getCompanyFormJwtAndCompanyId(String companyuuid, JwtUser jwtUser) {
-
-	
-		List<RcmCompany> filter = jwtUser.getCompanies().stream().filter(e -> e.getUuid().equals(companyuuid))
-				.collect(Collectors.toList());
-		if (filter.size() == 1)
-			return filter.get(0);
-		else
-			return null;
-	}*/
-	
 	
 	public RcmCompany getCompanyFormParitalHeaderCompanyId(String companyuuid, RcmCompany company) {
 
-		
-		
 		if (company.getUuid().equals(companyuuid))
 			return company;
 		else

@@ -52,6 +52,7 @@ export class BillingClaimsComponent implements OnInit {
   count: any = { 'pass': 0, 'fail': 0, 'alert': 0 };
   mtype: string = '1';//Fail By Default.
   tlErrormsg = "";
+  otherErrormsg = "";
   loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false }
   //ivfData:any=[];
 
@@ -177,6 +178,7 @@ export class BillingClaimsComponent implements OnInit {
     }
     else if (type === 'submit') {
       //do From Validation
+
       let valid = ths.validateData();
       if (valid) {
         ths.claimEditModel.submission = true;
@@ -527,8 +529,8 @@ export class BillingClaimsComponent implements OnInit {
   }
 
   makeReadOnly(): boolean {
-
-    if (!this.claimRcm.pending) return true;
+    if (!this.isBilling) return true;
+    else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
     return false;
   }
@@ -553,10 +555,12 @@ export class BillingClaimsComponent implements OnInit {
       } else if (this.alert.alertMsg === 'Submitted') {
         this.alert.alertMsg = "Claim Submitted Successfully!!";
         this.claimRcm.allowEdit = false;
+        window.location.reload();
 
       } else if (this.alert.alertMsg === 'OtherTeam') {
         this.alert.alertMsg = "Claim Assigned To Other Team Successfully!!";
         this.claimRcm.allowEdit = false;
+        window.location.reload();
       } else if (this.alert.alertMsg === 'TL') {
         this.alert.alertMsg = "Claim Assigned To TL For Preview!!";
         this.claimRcm.allowEdit = false;
@@ -634,13 +638,26 @@ export class BillingClaimsComponent implements OnInit {
 
   assignToOtherTeam() {
     let ths = this;
+    ths.otherErrormsg = "";
     ths.claimEditModel.assignToOtherTeam = true;
     ths.claimEditModel.assignToTL = false;
     ths.claimEditModel.assignTouuid = '';
     ths.removeErrorDisplay(document.getElementById("selectTeam"));
+    ths.removeErrorDisplay(document.getElementById("assignToComment"));
+    let valid = true;
+
+    let rem: any = document.getElementById("assignToComment");
+    if (rem.value.trim() === '') {
+      ths.addErrorDisplay(document.getElementById("assignToComment"));
+      valid = false;
+    }
+    debugger;
     if (ths.claimEditModel.assignToTeam == -1) {
       ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
-    } else {
+      valid = false;
+    }
+
+    if (valid) {
       //assign
       ths.inSave = true;
       ths.closeModal();
@@ -709,6 +726,14 @@ export class BillingClaimsComponent implements OnInit {
 
   get defaultClient(): string {
     return Utils.getDefaultClient();
+  }
+
+  get isBilling(): boolean {
+    return Utils.isBilling();
+  }
+
+  get timeZone(): string {
+    return Utils.getTimeZone();
   }
 
   updateUrl(url: string) {

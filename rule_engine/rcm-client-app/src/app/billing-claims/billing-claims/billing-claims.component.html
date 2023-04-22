@@ -144,6 +144,10 @@
                                         <label for="" class="">Claim Staus:</label>
                                         <div [innerHTML]="claimRcm.pending?'Pending':'Submiited'"></div>
                                     </div>
+                                    <div class="custom-row">
+                                        <label for="" class="">Assigned Team Role:</label>
+                                        <div [innerHTML]="claimRcm.assignedToRoleName"></div>
+                                    </div>
 
 
                                 </div>
@@ -182,38 +186,39 @@
                                                 Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
                                     </div>
                                 </div>
-                                <a data-toggle="collapse" (click)="showHide(2)" class="bold-b-text "
-                                    aria-expanded="false">Remarks by Other RCM Teams:</a>
-                                <div *ngIf="loader.remarksByOther" class="loader-data"></div>
-                                <div *ngIf="!loader.remarksByOther" class="form-row  collapse show" id="teamRemarks">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>S.No.</th>
-                                                    <th>Team Name</th>
-                                                    <th>Date of Remarks</th>
-                                                    <th class="remark">Remarks</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <ng-container *ngIf="otherTeamRemarks?.length>0">
-                                                    <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
-                                                        <td>{{idx+1}}</td>
-                                                        <td>{{rem.teamName}}</td>
-                                                        <td>{{rem.cd}}</td>
-                                                        <td>{{rem.comment}}</td>
-                                                    </tr>
-                                                </ng-container>
-                                                <ng-container
-                                                    *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
-                                                    No Remarks Found.
-                                                </ng-container>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
                             </ng-container>
+                            <a data-toggle="collapse" (click)="showHide(2)" class="bold-b-text "
+                                aria-expanded="false">Remarks by Other RCM Teams:</a>
+                            <div *ngIf="loader.remarksByOther" class="loader-data"></div>
+                            <div *ngIf="!loader.remarksByOther" class="form-row  collapse show" id="teamRemarks">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No.</th>
+                                                <th>Team Name</th>
+                                                <th>Date of Remarks</th>
+                                                <th class="remark">Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngIf="otherTeamRemarks?.length>0">
+                                                <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
+                                                    <td>{{idx+1}}</td>
+                                                    <td>{{rem.teamName}}</td>
+                                                    <td>{{rem.cd | date:'yyyy-MM-dd hh:mm:ss a':'UTC '+timeZone}}</td>
+                                                    <td>{{rem.comment}}</td>
+                                                </tr>
+                                            </ng-container>
+                                            <ng-container
+                                                *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
+                                                No Remarks Found.
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                             <a data-toggle="collapse" (click)="showHide(3)" class="bold-b-text "
                                 aria-expanded="false">Additional Requirements for Rebilled Claims:</a>
                             <div *ngIf="loader.rebilledClaims" class="loader-data"></div>
@@ -538,7 +543,7 @@
                                                             <textarea class="form-control" id="" rows="1"
                                                                 id="SUB_DET_CLA"
                                                                 (click)="removeErrorDisplayKeyById('SUB_DET_CLA')"
-                                                                [disabled]="claimNoEnable()"
+                                                                [disabled]="claimNoEnable() || !this.isBilling"
                                                                 [(ngModel)]='submissionDto.claimNumber'></textarea>
                                                         </div>
 
@@ -584,14 +589,14 @@
                                                             [ngClass]="{active:submissionDto.preauth==false}">
                                                             <input type="radio" name="atch" value=""
                                                                 (click)="submissionDto.preauth=false;removeErrorDisplayKeyById('SUB_DET_PRE');removeErrorDisplayKeyById('SUB_DET_PRENO')"
-                                                                [disabled]="makeReadOnly()" [disabled]="makeReadOnly()">
+                                                                [disabled]="makeReadOnly()">
                                                             No
                                                         </label>
                                                         <div class="preauthcla">
                                                             <textarea class="form-control" id="" rows="1"
                                                                 id="SUB_DET_PRENO"
                                                                 (click)="removeErrorDisplayKeyById('SUB_DET_PRENO')"
-                                                                [disabled]="preAuthEnable()"
+                                                                [disabled]="preAuthEnable() || !this.isBilling"
                                                                 [(ngModel)]='submissionDto.preauthNo'></textarea>
                                                         </div>
                                                     </div>
@@ -642,7 +647,7 @@
 
                                     <ng-container *ngIf="assignModel.toLead" sytle="">
                                         <div class="table-responsive">
-                                            <div role="alert" class="alert alert-info"><img
+                                            <div role="alert" class="alert alert-info" *ngIf="isBilling"><img
                                                     src="../../assets/img/info-icon-border.png">Any Data Saved for
                                                 latter processing will be lost</div>
                                             <select class="form-control" id="selectLeadName" name=""
@@ -663,16 +668,19 @@
 
                                     <ng-container *ngIf="assignModel.toOtherTeam">
                                         <div class="table-responsive">
-                                            <div class="team-name-box">
-                                                <label>Team Name:</label>
-                                                <select class="form-control" id="selectTeam" name="w"
-                                                    [(ngModel)]='claimEditModel.assignToTeam'>
-                                                    <option selected="true" value="-1">Select Team</option>
-                                                    <ng-container *ngFor="let tl of teamsMs">
-                                                        <option value="{{tl.teamId}}">{{tl.teamName}}</option>
-                                                    </ng-container>
-                                                </select>
-                                            </div>
+
+                                            <select class="form-control" id="selectTeam" name="w"
+                                                [(ngModel)]='claimEditModel.assignToTeam'>
+                                                <option selected="true" value="-1">Select Team</option>
+                                                <ng-container *ngFor="let tl of teamsMs">
+                                                    <option value="{{tl.teamId}}">{{tl.teamName}}</option>
+                                                </ng-container>
+                                            </select>
+                                            <div class="remark-box"><label>Remark:</label><input name="assignToComment"
+                                                    id="assignToComment" class="form-control"
+                                                    [(ngModel)]='claimEditModel.assignToComment' /></div>
+                                            <div [innerHTML]="otherErrormsg" class="success-msg"></div>
+
                                         </div>
                                         <div class="alert fade show text-center" *ngIf="alert.showAlertPopup"
                                             [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
@@ -705,17 +713,15 @@
                         <div class="action-buttons">
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
-                                                       )" type="button" class="btn btn-success" [disabled]="inSave"
-                                (click)="saveClaim('latter')">Save For Later Processing</button>
-                            <button
-                                *ngIf="claimRcm.pending && (isRoleLead || isRoleSuperAdmin) && selectedTeam== claimRcm.currentTeamId"
-                                type="button" class="btn btn-success" [disabled]="inSave"
-                                (click)="saveClaim('assigntl')">Assign to
+                                                       ) && isBilling " type="button" class="btn btn-success"
+                                [disabled]="inSave" (click)="saveClaim('latter')">Save For Later Processing</button>
+                            <button *ngIf="claimRcm.pending  && selectedTeam== claimRcm.currentTeamId" type="button"
+                                class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assigntl')">Assign to
                                 Team Lead</button>
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
-                                                         (claimRcm.primary && claimRcm.pending) 
-                                                       )" type="button" class="btn btn-success" [disabled]="inSave"
-                                (click)="saveClaim('submit')">Mark as Submittted</button>
+                                                          (claimRcm.primary && claimRcm.pending) 
+                                                       ) && isBilling " type="button" class="btn btn-success"
+                                [disabled]="inSave" (click)="saveClaim('submit')">Mark as Submittted</button>
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
                                                        )" type="button" class="btn btn-success" [disabled]="inSave"

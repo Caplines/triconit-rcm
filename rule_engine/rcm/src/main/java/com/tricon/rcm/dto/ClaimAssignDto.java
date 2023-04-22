@@ -10,5 +10,6 @@ public class ClaimAssignDto {
 	int otherTeamId;
 	String remark;
 	String teamLeadUuid;
+	int assignToTeam;
 	
 }
