@@ -52,14 +52,14 @@ public class RcmClaimAssignment extends BaseAuditEntity implements Serializable{
 	@JoinColumn(name = "current_team_id",referencedColumnName="id")
 	private RcmTeam currentTeamId;
 	
-	@Column(name = "comment_assigned_by")
+	@Column(name = "comment_assigned_by" ,columnDefinition="text")
 	private String commentAssignedBy;
 	
-	@Column(name = "comment_assigned_to")
+	@Column(name = "comment_assigned_to" ,columnDefinition="text")
 	private String commentAssignedTo;
 	
 	
-	@Column(name = "system_comment")
+	@Column(name = "system_comment" ,columnDefinition="text")
 	private String systemComment;
 	
 	
