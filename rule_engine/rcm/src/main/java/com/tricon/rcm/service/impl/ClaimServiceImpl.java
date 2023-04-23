@@ -646,7 +646,7 @@ public class ClaimServiceImpl {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-										assignedUserBilling.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
+										assignedUserBilling.getUser(), claimUUid, claim, "",
 										systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
@@ -655,7 +655,7 @@ public class ClaimServiceImpl {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-										assignedUserInternalAudit.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
+										assignedUserInternalAudit.getUser(), claimUUid, claim, "",
 										systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
@@ -865,7 +865,7 @@ public class ClaimServiceImpl {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-										assignedUserBilling.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
+										assignedUserBilling.getUser(), claimUUid, claim, "",
 										systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
@@ -874,7 +874,7 @@ public class ClaimServiceImpl {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-										assignedUserInternalAudit.getUser(), claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT,
+										assignedUserInternalAudit.getUser(), claimUUid, claim, "",
 										systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);

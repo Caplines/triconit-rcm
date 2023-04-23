@@ -7,18 +7,18 @@ import { TeamModel } from '../models/team.model';
 @Injectable()
 export class ToolUserPermission implements CanActivate {
 
-  constructor(private router: Router,private appConstants: AppConstants) { }
+  constructor(private router: Router, private appConstants: AppConstants) { }
 
-  canActivate( ) {
-    
+  canActivate() {
+
     let ut: any = localStorage.getItem('selected_teamId');
-    let roleAsso:any= localStorage.getItem("selected_roleName");
-    
+    let roleAsso: any = localStorage.getItem("selected_roleName");
+
     if (!ut) {
       this.router.navigate(['/']);
       return false;
     }
-    if(ut!='-1'){
+    if (ut != '-1') {
 
       let ntKey: Number = new Number(ut).valueOf();
       let team: any = this.appConstants.TEAMS_CONFIG.get(ntKey);
@@ -28,26 +28,26 @@ export class ToolUserPermission implements CanActivate {
         x === window.location.pathname);
       //in case wrong url is accessed
       if (typeof ph == "undefined") {
-          if(roleAsso === "ASSO" && ut == 3){
-            window.location.href = "/list-of-claims";
-          }else{
-            window.location.href = teamM.defaultpath;
-          }
+        if (roleAsso === "ASSO") {
+          window.location.href = "/list-of-claims";
+        } else {
+          window.location.href = teamM.defaultpath;
+        }
         return false;
       }
-      
-     if(ph && roleAsso === "ASSO"  && ut == 3){
-        if(window.location.pathname == "/list-of-claims"){
+
+      if (ph && roleAsso === "ASSO") {
+        if (window.location.pathname == "/list-of-claims") {
           return true;
-        }else{
+        } else {
           window.location.href = "/list-of-claims";
         }
-    }
+      }
       return true;
     }
 
     this.router.navigate(['/login'], { queryParams: { returnUrl: window.location.pathname } });
     return false;
-    }
-    }
+  }
+}
 

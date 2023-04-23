@@ -356,7 +356,7 @@ public class RuleEngineService {
 											//
 											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 													assignedUserBilling.getUser(), claimUUid, claim,
-													Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
+													"", systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
 										}
@@ -365,7 +365,7 @@ public class RuleEngineService {
 											//
 											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 													assignedUserInternalAudit.getUser(), claimUUid, claim,
-													Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
+													"", systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
 										}
@@ -887,7 +887,7 @@ public class RuleEngineService {
 			if (assignedUser!=null) { 
 				    rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy,
 					assignedUser.getUser(), claimUUid, claim,
-					Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling,assignedTeam,Constants.SYSTEM_INITIAL_COMMENT);
+					"", systemStatusBilling,assignedTeam,Constants.SYSTEM_INITIAL_COMMENT);
 				    rcmClaimAssignmentRepo.save(rcmAssigment);
 			}
 
