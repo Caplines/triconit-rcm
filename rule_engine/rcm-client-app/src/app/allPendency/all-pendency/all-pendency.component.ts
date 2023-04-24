@@ -16,6 +16,7 @@ export class AllPendencyComponent {
   currentTeamId:any;
   showLoader:boolean=false;
   date:any;
+  totalCount:any=[{"teamId":3,'count':0},{"teamId":4,"count":0},{"teamId":5,"count":0},{"teamId":6,"count":0},{"teamId":7,"count":0}];
 
   constructor(private _service:ApplicationServiceService){}
   ngOnInit(): void {
@@ -40,10 +41,28 @@ export class AllPendencyComponent {
             teamId:countObj? countObj.teamId:null
           };
         });    //loops are used to merge count data (count) and DateCount data (minDate) into offices array with corresponding Team ID.
+        this.total(this.pendencyData);
         console.log(this.pendencyData);
         
       }
     })
+  }
+
+  total(data:any){
+        data.forEach((e:any)=>{
+          this.totalCount.forEach((ele:any)=>{
+            if(ele.teamId === e.teamId){
+              if(!e.count){
+                e.count = 0;
+                ele.count = ele.count + e.count;
+              }else{
+                ele.count = ele.count + e.count;
+              }
+            }
+          })
+        })
+        console.log(this.totalCount);
+        
   }
 
   saveToPdf(e:any){

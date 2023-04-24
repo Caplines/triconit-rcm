@@ -13,6 +13,7 @@ export class ApplicationServiceService extends BaseService {
   setPaddingContainer: boolean = false;
   private isTpActive = new Subject();
   private isIvfActive = new Subject();
+  public billingPage = new Subject();
   message$:any = this.isTpActive.asObservable();
 
   constructor(router: Router, http: HttpClient, tokenStorage: TokenStorageService) {
@@ -340,8 +341,7 @@ fetchTpData(claimUuid:any,callback:any){
   }
 
   isTpIvfPage(event:any){
-    console.log("TPPPpppppppp");
-    
+
     if(event.page === 'tp'){
       this.isTpActive.next(event.value);
     } else if(event.page === 'ivf'){
@@ -349,8 +349,16 @@ fetchTpData(claimUuid:any,callback:any){
     }
   }
 
+  isBillingPage(value:any){
+    console.log("BILINGG");
+      this.billingPage.next(value);
+  }
+
   fetchIssueClaimCounts(callback: any){
     this.getData({}, this.httpUrl['fetchIssueClaimCounts'], callback)
   }
 
+  fetchGSheet(callback:any){
+    this.getData({},this.httpUrl['googleSheetLink'],callback);
+  }
 }

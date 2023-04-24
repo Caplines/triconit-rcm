@@ -65,7 +65,8 @@ export class BaseService {
     'assigntotl': '/api/assign_to_tl',
     'findUserByDetail': '/finduserbydetail',
     'fetchTpData': '/tp-link-data',
-    'fetchIssueClaimCounts': '/issue-claim-counts'
+    'fetchIssueClaimCounts': '/issue-claim-counts',
+    'googleSheetLink': '/gsheet-link',
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

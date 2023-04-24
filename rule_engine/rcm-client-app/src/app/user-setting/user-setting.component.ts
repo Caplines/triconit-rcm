@@ -70,7 +70,8 @@ export class UserSettingComponent implements OnInit {
           this.editedUserDetails.controls.firstName.setValue(this.user.firstName);
           this.editedUserDetails.controls.lastName.setValue(this.user.lastName);
           this.editedUserDetails.controls.role.setValue(this.user.roles.roleId)
-          console.log(this.editedUserDetails.value);
+          this.selectUserRole({'target':{'value':this.user.roles.roleId}});    //method is called to update validators as per the Role ID.
+          console.log(this.editedUserDetails.controls);
         } else {
           this.showActionPopup = false;
           this.showAlertPopup(callback);

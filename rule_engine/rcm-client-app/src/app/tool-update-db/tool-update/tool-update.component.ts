@@ -34,6 +34,7 @@ export class ToolUpdateComponent implements OnInit {
   issueClientName:any='';
   ele:any={'modal':'','span':''}
   date:any;
+  gsLink:any='';
   
   constructor(public appService: ApplicationServiceService,private title:Title) { 
 
@@ -262,6 +263,24 @@ this.sourceType="";
     new ngxCsv(excelData,`${localStorage.getItem("cname")}_Tool_To_Update_Database_${this.date}`, options);
 
   }
+
+  fetchGSheet(){
+    if(!this.gsLink){
+      this.appService.fetchGSheet((res:any)=>{
+        if(res.status==200){
+        res.data.find((e:any)=>{
+          if(e.name === 'RCM DataBase'){
+            this.gsLink = e.google_sheet_id;
+            window.open(`https://docs.google.com/spreadsheets/d/${this.gsLink}`,"_blank");
+            return;
+          }
+        })
+      }
+    })
+  }else{
+    window.open(`https://docs.google.com/spreadsheets/d/${this.gsLink}`,"_blank");
+  }
+}
 
  showAlertPopup(res:any){
   this.alert.showAlertPopup = true;
