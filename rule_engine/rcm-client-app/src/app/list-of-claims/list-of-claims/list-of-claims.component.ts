@@ -137,7 +137,7 @@ export class ListOfClaimsComponent implements OnInit {
       pdf.addImage(content, "PNG", 0, 0, width, height)
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${localStorage.getItem("cname")}_List_of_Claims_${this.date}`);
+      pdf.save(`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`);
     });
   }
 
@@ -177,8 +177,7 @@ export class ListOfClaimsComponent implements OnInit {
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       console.log(excelData.sort());
-      
-    // new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
+      new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
   }
 
   logout() {

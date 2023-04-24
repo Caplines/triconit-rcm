@@ -228,7 +228,7 @@ this.sourceType="";
       pdf.addImage(content, "PNG", 0, 0, width, height)
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${localStorage.getItem("cname")}_Tool_To_Update_Database_${this.date}`);
+      pdf.save(`${localStorage.getItem("selected_clientName")}_Tool_To_Update_Database_${this.date}`);
     });
 
   }
@@ -260,7 +260,7 @@ this.sourceType="";
     excelData = excelData.map(({ officeUuid, ...newData }: any) => newData) //to remove required properties in excel
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-    new ngxCsv(excelData,`${localStorage.getItem("cname")}_Tool_To_Update_Database_${this.date}`, options);
+    new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Tool_To_Update_Database_${this.date}`, options);
 
   }
 

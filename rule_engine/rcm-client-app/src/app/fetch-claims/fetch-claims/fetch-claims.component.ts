@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-fetch-claims',
@@ -23,8 +24,9 @@ export class FetchClaimsComponent implements OnInit {
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0}
   date:any;
 
-    constructor(private appService: ApplicationServiceService,public appConstants: AppConstants) {
+    constructor(private appService: ApplicationServiceService,public appConstants: AppConstants,private title:Title) {
     this.selectedBtype=this.appConstants.BILLING_ID;
+    title.setTitle('Fetch-Claims')
     this.log = [];
    }
   
@@ -86,7 +88,7 @@ export class FetchClaimsComponent implements OnInit {
       pdf.addImage(content, "PNG", 0, 0, width, height)
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${localStorage.getItem("cname")}_Fetch_Claims_${this.date}`)
+      pdf.save(`${localStorage.getItem("selected_clientName")}_Fetch_Claims_${this.date}`)
     });
   }
 
@@ -116,7 +118,7 @@ export class FetchClaimsComponent implements OnInit {
     excelData = excelData.map(({officeUuid,...newData}:any)=>newData)
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-    new ngxCsv(excelData,`${localStorage.getItem("cname")}_Fetch_Claims_${this.date}`, options);
+    new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Fetch_Claims_${this.date}`, options);
   }
 
   logout() {

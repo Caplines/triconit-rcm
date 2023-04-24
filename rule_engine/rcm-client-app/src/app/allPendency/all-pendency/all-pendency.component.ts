@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { ngxCsv } from 'ngx-csv';
@@ -18,7 +19,9 @@ export class AllPendencyComponent {
   date:any;
   totalCount:any=[{"teamId":3,'count':0},{"teamId":4,"count":0},{"teamId":5,"count":0},{"teamId":6,"count":0},{"teamId":7,"count":0}];
 
-  constructor(private _service:ApplicationServiceService){}
+  constructor(private _service:ApplicationServiceService,private title:Title){
+    title.setTitle("All Pendency")
+  }
   ngOnInit(): void {
     this.teamData=[{"teamName":"Internal Audit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];
     this.getAllPendencyDetails();

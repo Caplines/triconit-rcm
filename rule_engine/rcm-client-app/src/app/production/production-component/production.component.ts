@@ -8,6 +8,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -23,7 +24,10 @@ export class ProductionComponent implements OnInit {
   days:any=0;
   date:any;
   log : any=[];
-  constructor(private appService: ApplicationServiceService) {  this.log = [];}
+  constructor(private appService: ApplicationServiceService,private title:Title) { 
+     this.log = [];
+     title.setTitle("Production")
+    }
 
   ngOnInit(): void {
    
@@ -53,7 +57,6 @@ export class ProductionComponent implements OnInit {
        // (<HTMLInputElement>document.getElementById("eDate")).value='';
  }
  saveToPdf(divName: any) {
-  debugger;
   html2canvas(<any>document.getElementById(divName)).then(canvas => {
     const content = canvas.toDataURL('image/png');
     let pdf = new jsPDF('p', 'mm', 'a4');
@@ -62,7 +65,7 @@ export class ProductionComponent implements OnInit {
     pdf.addImage(content, "PNG", 0, 0, width, height)
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-    pdf.save(`${localStorage.getItem("cname")}_Production_${this.date}`);
+    pdf.save(`${localStorage.getItem("selected_clientName")}_Production_${this.date}`);
   });
 
 }
@@ -75,7 +78,6 @@ exportToCsv() {
   let excelData: any;
   excelData = [...this.log];
   excelData = excelData.map((e: any) => {
-    console.log(excelData);
     if (e.cd) {
       let date: Date = new Date(e.cd);
       e = { ...e, cd: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` }
@@ -91,7 +93,6 @@ exportToCsv() {
   excelData = excelData.map(({uuid,fname,lname,cd,...excelData }: any) => excelData) //to remove required properties in excel
   this.date = new Date();
   this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-  console.log(excelData);
   
   new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Production_${this.date}`, options);
 
