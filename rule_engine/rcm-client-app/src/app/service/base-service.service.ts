@@ -91,7 +91,6 @@ export class BaseService {
           }
         },
         () => {
-          console.log(`done`);
         })
   }
   postData(d: any, url: string, callback: any) {
@@ -113,7 +112,6 @@ export class BaseService {
         }
       },
       () => {
-        console.log(`done`);
       })
 
       ;
@@ -140,7 +138,6 @@ export class BaseService {
         }
       },
       () => {
-        console.log(`done`);
       })
 
       ;

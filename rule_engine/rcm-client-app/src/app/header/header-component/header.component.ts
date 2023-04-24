@@ -62,8 +62,6 @@ export class HeaderComponent implements OnInit {
     this.loginUserType = localStorage.getItem("loginAs");
     //  }
     this.loggedInUserName = localStorage.getItem("name");
-    console.log(this.userInfo.currentTeamId);
-    console.log(this.staticUtil.isRoleLead());
 
     if (this.roleData.length == 0) {
       this.getRoles();

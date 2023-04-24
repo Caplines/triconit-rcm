@@ -54,7 +54,8 @@ export class ListOfClaimsComponent implements OnInit {
     let ths = this;
     ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, (res: any) => {
       if (res.status === 200) {
-        ths.claimDetail = res.data;
+        ths.claimDetail =  this.removePrefix(res.data);
+        // ths.claimDetail =  res.data;
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
@@ -70,6 +71,31 @@ export class ListOfClaimsComponent implements OnInit {
     });
   }
 
+  removePrefix(data:any){
+    const arr: any = data;
+
+    const claimIdCounts = new Map();
+    const result = [];
+
+    for (const obj of arr) {
+      const claimId = obj.claimId.slice(0, -2); // remove the "_P" or "_S" suffix
+      const count = claimIdCounts.get(claimId) || 0;
+      claimIdCounts.set(claimId, count + 1);
+    }
+
+    for (const obj of arr) {
+      const claimId = obj.claimId.slice(0, -2); // remove the "_P" or "_S" suffix
+      const count = claimIdCounts.get(claimId);
+      if (count > 1 && obj.claimId.endsWith("_P")) {
+        result.push(obj);
+      } else if (count === 1) {
+        result.push(obj);
+      }
+    }
+    // this.claimDetail = result;
+    return result;
+  }
+
   sortData(data: any, sortProp: string, order: any, sortType: string) {
     this.appService.sortData(data, sortProp, order, sortType);
   }
@@ -78,9 +104,16 @@ export class ListOfClaimsComponent implements OnInit {
     this.filteredOfficeName = data;
     this.filteredOfficeName.forEach((e: any) => {
       this.claimDetail.forEach((ele: any) => {
-          e['checked'] = !e['checked'];
+          e['checked'] = true;
+          if(ele['claimId'].includes("_P")){
+            ele['claimType'] ="Primary" 
+          }else if(ele['claimId'].includes("_S")){
+            ele['claimType']="Secondary"
+          }
       })
     });
+    console.log(this.claimDetail);
+    
   }
 
   filterOfficeName(e?: any) {
@@ -111,7 +144,7 @@ export class ListOfClaimsComponent implements OnInit {
   exportToCsv() {
     let options: any = {
       showLabels: true,
-      headers: ["Office Name", "Patient ID", "Patient Name",'Date of Service', "LastTeam","Timely Filing Limit (Days)",  "Insurance Name", "Claim Age", "Insurance Type", "Estimated Amount", "Action Required", "Claim Type"]
+      headers: ["Last Team","Timely Filing Limit (Days)", 'Date of Service', "Patient Name", "Office Name", "Patient ID", "Claim Age","Insurance Type", "Insurance Name", "Claim Type",  "Estimated Amount", "Action Required",]
     }
     let excelData: any;
     excelData = [...this.filteredItems];
@@ -140,10 +173,12 @@ export class ListOfClaimsComponent implements OnInit {
     })
 
     excelData = excelData.map(
-      ({ claimId, opdos, opdt, secName, secTotal, uuid, secondaryInsurance, billedAmount, statusType, ...newClaimData }: any) => newClaimData);
+      ({ claimId,claimType ,opdos, opdt, secName, secTotal, uuid, billedAmount, statusType,primTotal,  ...newClaimData }: any) => newClaimData);
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-    new ngxCsv(excelData,`${localStorage.getItem("cname")}_List_of_Claims_${this.date}`, options);
+      console.log(excelData.sort());
+      
+    // new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
   }
 
   logout() {

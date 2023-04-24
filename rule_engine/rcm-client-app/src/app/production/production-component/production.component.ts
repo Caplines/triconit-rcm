@@ -70,7 +70,7 @@ export class ProductionComponent implements OnInit {
 exportToCsv() {
   let options: any = {
     showLabels: true,
-    headers: ["Average Production (Per Day)", "	Total Production", "Associate Name"]
+    headers: ["Total Production", "Average Production (Per Day)","Associate Name"]
   }
   let excelData: any;
   excelData = [...this.log];
@@ -83,12 +83,17 @@ exportToCsv() {
     else {
       e = {...e,cd : ''};
     }
+    if(e.fname){
+      e['fullName'] = e.fname + " "+ e.lname;
+    }
     return e;
   })
-  excelData = excelData.map(({uuid,...excelData }: any) => excelData) //to remove required properties in excel
+  excelData = excelData.map(({uuid,fname,lname,cd,...excelData }: any) => excelData) //to remove required properties in excel
   this.date = new Date();
   this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-  new ngxCsv(excelData,`${localStorage.getItem("cname")}_Production_${this.date}`, options);
+  console.log(excelData);
+  
+  new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Production_${this.date}`, options);
 
 }
 }
