@@ -22,7 +22,7 @@
                                 </div>
                                 <div class="form-check-inline">
                                     <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" (click)="selectSource('GOOGLESHEET')">
-                                    <label class="form-check-label gs-link" for="flexRadioDefault2">Through Google Sheet</label>
+                                    <label class="form-check-label gs-link" for="flexRadioDefault2" (click)="fetchGSheet()">Through Google Sheet</label>
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
