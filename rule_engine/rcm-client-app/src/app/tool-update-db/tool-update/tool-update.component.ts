@@ -236,7 +236,7 @@ this.sourceType="";
   exportToCsv() {
     let options: any = {
       showLabels: true,
-      headers: ["Total No. of New Claims Added", "Office Name", "Source", "Database Updation Done", "Last Updated On"]
+      headers: ["Source","Database Updation Done","Total No. of New Claims Added", "Office Name", "Last Updated On"]
     }
     let excelData: any;
     excelData = [...this.log];
