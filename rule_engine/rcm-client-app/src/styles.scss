@@ -114,9 +114,8 @@ body {
     position: relative;
     padding: 5px 5px;
     margin-bottom: 20px;
-    border-top: 1px solid #eaeced;
+    //border-top: 1px solid #eaeced;
 }
-
 
 .sticky-top .navbar-nav {
     flex-direction: row;
@@ -681,10 +680,11 @@ a.flex-center:hover {
 .custom-row {
     display: flex;
     padding: 0 10px;
-    height: 30px;
+    min-height: 30px;
     align-items: center;
     color: #2d4047;
     font-weight: 600;
+    line-height: normal;
 }
 
 .custom-row label {
@@ -733,12 +733,6 @@ select, select:focus {
 
 
 
-.main-container {
-    margin-top: 5px;
-    position: relative;
-    padding: 5px 5px;
-    margin-bottom: 20px;
-}
 
 .form-control {
     width: 300px;

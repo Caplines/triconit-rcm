@@ -23,7 +23,7 @@
                         <div class="detail-box-form">
                             <div class="form-row  without-heading">
                                 <div class="table-responsive">
-                                    <table class="table" id="table">
+                                    <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar" id="table">
                                         <thead>
                                             <tr>
                                                 <th>
@@ -103,7 +103,7 @@
                         <div class="detail-box-form">
                             <div class="form-row  without-heading">
                                 <div class="table-responsive">
-                                    <table class="table" id="dos-table">
+                                    <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar" id="dos-table">
                                         <thead>
                                             <tr>
                                                 <th>
@@ -119,20 +119,12 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th *ngIf="last"></th>
+                                                    <!-- <th *ngIf="last"></th> -->
                                                 </ng-container>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="totalRow">
-                                                <td>Total</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
+
                                             <tr *ngIf="showLoader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
                                             <ng-container *ngFor="let officeData of pendencyData">
                                                 <tr>
