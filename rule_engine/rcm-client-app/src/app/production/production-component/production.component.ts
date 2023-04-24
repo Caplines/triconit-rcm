@@ -4,6 +4,9 @@ import { BaseService } from 'src/app/service/base-service.service';
 import { AuthService } from '../../service/auth-service.service';
 import { TokenStorageService } from '../../service/token-storage.service';
 import Utils from '../../util/utils';
+import html2canvas from 'html2canvas';
+import jsPDF from "jspdf";
+import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 
 
@@ -18,7 +21,9 @@ export class ProductionComponent implements OnInit {
   alert:any={'showAlertPopup':false,'alertMsg':''}
   total:any=0;
   days:any=0;
-  constructor(private appService: ApplicationServiceService) { }
+  date:any;
+  log : any=[];
+  constructor(private appService: ApplicationServiceService) {  this.log = [];}
 
   ngOnInit(): void {
    
@@ -30,6 +35,7 @@ export class ProductionComponent implements OnInit {
   if(startDate !=='' && endDate !==''){
   this.appService.saveProductionData({ "startDate": startDate,"endDate":endDate }, (callback: any) => {
     if (callback.status == 200 && callback.data) {
+      this.log=callback.data;
    this. productionData = callback.data;
    this. productionData.forEach((x:any) =>{
             Object.entries(x).forEach(([key, value])=>{
@@ -46,6 +52,45 @@ export class ProductionComponent implements OnInit {
        // (<HTMLInputElement>document.getElementById("sDate")).value='';
        // (<HTMLInputElement>document.getElementById("eDate")).value='';
  }
+ saveToPdf(divName: any) {
+  debugger;
+  html2canvas(<any>document.getElementById(divName)).then(canvas => {
+    const content = canvas.toDataURL('image/png');
+    let pdf = new jsPDF('p', 'mm', 'a4');
+    let width = pdf.internal.pageSize.getWidth();
+    let height = canvas.height * width / canvas.width;
+    pdf.addImage(content, "PNG", 0, 0, width, height)
+    this.date = new Date();
+    this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+    pdf.save(`${localStorage.getItem("cname")}_Production_${this.date}`);
+  });
+
+}
+
+exportToCsv() {
+  let options: any = {
+    showLabels: true,
+    headers: ["Average Production (Per Day)", "	Total Production", "Associate Name"]
+  }
+  let excelData: any;
+  excelData = [...this.log];
+  excelData = excelData.map((e: any) => {
+    console.log(excelData);
+    if (e.cd) {
+      let date: Date = new Date(e.cd);
+      e = { ...e, cd: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` }
+    }
+    else {
+      e = {...e,cd : ''};
+    }
+    return e;
+  })
+  excelData = excelData.map(({uuid,...excelData }: any) => excelData) //to remove required properties in excel
+  this.date = new Date();
+  this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+  new ngxCsv(excelData,`${localStorage.getItem("cname")}_Production_${this.date}`, options);
+
+}
 }
 
 
