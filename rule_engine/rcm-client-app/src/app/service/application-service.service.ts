@@ -340,20 +340,6 @@ fetchTpData(claimUuid:any,callback:any){
   this.getData({},this.httpUrl['fetchTpData']+"/"+claimUuid,callback)
   }
 
-  isTpIvfPage(event:any){
-
-    if(event.page === 'tp'){
-      this.isTpActive.next(event.value);
-    } else if(event.page === 'ivf'){
-      this.isIvfActive.next(event.value);
-    }
-  }
-
-  isBillingPage(value:any){
-    console.log("BILINGG");
-      this.billingPage.next(value);
-  }
-
   fetchIssueClaimCounts(callback: any){
     this.getData({}, this.httpUrl['fetchIssueClaimCounts'], callback)
   }

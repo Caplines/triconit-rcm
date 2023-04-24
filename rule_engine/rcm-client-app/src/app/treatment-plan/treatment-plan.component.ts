@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ApplicationServiceService } from '../service/application-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-treatment-plan',
@@ -14,8 +15,8 @@ export class TreatmentPlanComponent {
   showLoader:boolean=false;
   count:any={'Fee':0,'Ins':0,'Pat':0};
 
-  constructor(private _service: ApplicationServiceService,private router:Router) {
-    this._service.isTpIvfPage({'page':'tp',value:true});
+  constructor(private _service: ApplicationServiceService,private router:Router,private title:Title) {
+    title.setTitle("Treament Plan")
   }
 
 
