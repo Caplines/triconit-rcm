@@ -27,6 +27,7 @@ export class ListOfClaimsComponent implements OnInit {
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
   date:any;
+  isFilterAllSelected:boolean=true;
 
   constructor(private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
     this.selectedBtype = this.appConstants.BILLING_ID;
@@ -119,12 +120,22 @@ export class ListOfClaimsComponent implements OnInit {
     if (!e) {
       this.filteredItems = this.claimDetail;
     } else {
+      let isAllSelected: boolean = true;
+      for (let i = 0; i < this.filteredOfficeName.length; i++) {
+        if (this.filteredOfficeName[i].checked == false) {
+          isAllSelected = false;
+          break;
+        }
+      }
+      this.isFilterAllSelected = isAllSelected;
       this.filteredItems = this.claimDetail.filter((item: any) => {
         return this.filteredOfficeName.some((checkbox: any) => {
           return checkbox.checked && checkbox.name === item.officeName;
         });
       });
+
     }
+    
   }
 
   saveToPdf(divName: any) {
@@ -200,6 +211,20 @@ export class ListOfClaimsComponent implements OnInit {
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       console.log(excelData.sort());
       new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
+  }
+
+
+  selectAll(event:any){
+    if(event.target.value == "selectAll"){
+      this.filteredOfficeName.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+    }
+    this.filterOfficeName("selectAll");
   }
 
   logout() {
