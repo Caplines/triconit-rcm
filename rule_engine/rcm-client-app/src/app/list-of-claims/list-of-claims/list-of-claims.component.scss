@@ -79,9 +79,14 @@
     height: calc(100vh - 265px);
     min-width: 100%;
   }
-  .table-inner-scrollbar thead th, tbody tr.totalRow {
+
+  .table-inner-scrollbar thead th {
     position: sticky;
     top: 0;
     z-index: 1;
     border-top: 0px !important;
+    width: 20vw;
+}
+.table-inner-scrollbar thead th:first-child {
+    z-index: 9;
 }

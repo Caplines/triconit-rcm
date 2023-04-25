@@ -200,12 +200,12 @@ exportToCsv(){
   excelData = this.claimData.forEach((e:any)=>
   {
     e['officeAssignedTo'] = e.fname ? e.fname+ " "+ e.lname : "-";
-    e.opdos == null ? e.opdos = '-' : e.opdos;
+    e.opdos == null ? e.opdos = 'N/A' : e.opdos;
     if(e.opdt){
       let date:Date = new Date(e.opdt);
       e.opdt =  `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
     }else{
-        e.opdt = '-';
+        e.opdt = 'N/A';
     }
     e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
   })

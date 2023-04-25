@@ -67,7 +67,7 @@
                                             <th colspan="6" style="min-width: 170px;">Office Name</th>
                                             <th colspan="6">Source</th>
                                             <th colspan="6">Database Updation Done?</th>
-                                            <th colspan="6">Last Updated On</th>
+                                            <th colspan="6">Last Attempted On</th>
                                             <th colspan="6">Total No. of New Claims Added</th>
                                             <th colspan="6">Update Claims &nbsp; <button class="btn btn-danger" style="min-width: 105px;justify-content: center;" (click)="selectAll(hasUpdateClaims.length==0 ? true : false)">{{hasUpdateClaims.length==0 ?  'Select All' : 'Unselect All'}}</button></th>
                                            
@@ -89,7 +89,7 @@
                                     </ng-container>
                                 </table>
                             </div>
-                            <div class="update-button" style="float: right; margin-right: 12px;" *ngIf="!loader"><a  href="javascript:void(0);" [ngClass]="{'disabled':hasUpdateClaims.length==0}"  class="btn btn-success" (click)="pullFreshClaims()" >Update Latest Claim</a></div>
+                            <!-- <div class="update-button" style="float: right; margin-right: 12px;" *ngIf="!loader"><a  href="javascript:void(0);" [ngClass]="{'disabled':hasUpdateClaims.length==0}"  class="btn btn-success" (click)="pullFreshClaims()" >Update Latest Claim</a></div> -->
                         </div>
 
                     </div>
