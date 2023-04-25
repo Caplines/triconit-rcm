@@ -152,7 +152,7 @@ export class OfficeAssignmentComponent implements OnInit {
   pdf.addImage(content,"PNG",0,0,width,height)
   this.date = new Date();
   this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-  pdf.save(`${this.clientName}_Office_Assignemnt_${this.date}`);
+  pdf.save(`${this.clientName}_Pendency_${this.date}`);
   this.loader.exportPDFLoader = false;
   m.classList.add('table-wrapper-scroll-y')
   m.classList.add('table-inner-scrollbar')
@@ -192,7 +192,7 @@ exportToCsv(){
   let excelData:any;
   excelData = this.claimData.forEach((e:any)=>
   {
-    e['officeAssignedTo'] = e.fname+" "+e.lname;
+    e['officeAssignedTo'] = e.fname ? e.fname+ " "+ e.lname : "-";
     e.opdos == null ? e.opdos = '-' : e.opdos;
     if(e.opdt){
       let date:Date = new Date(e.opdt);
@@ -219,7 +219,7 @@ exportToCsv(){
   })  
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`
-    new ngxCsv(excelData, `${this.clientName}_Office_Assignemnt_${this.date}`,options);
+    new ngxCsv(excelData, `${this.clientName}_Pendency_${this.date}`,options);
     this.loader.exportCSVLoader=false;
     this.fetchClaimAssignments();
     

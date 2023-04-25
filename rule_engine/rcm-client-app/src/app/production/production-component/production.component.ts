@@ -78,7 +78,7 @@ export class ProductionComponent implements OnInit {
 exportToCsv() {
   let options: any = {
     showLabels: true,
-    headers: ["Total Production", "Average Production (Per Day)","Associate Name"]
+    headers: ["Associate Name","Total Production", "Average Production (Per Day)"]
   }
   let excelData: any;
   excelData = [...this.log];
@@ -91,11 +91,18 @@ exportToCsv() {
       e = {...e,cd : ''};
     }
     if(e.fname){
-      e['fullName'] = e.fname + " "+ e.lname;
+      e['fullName'] = e.fname ? e.fname+ " "+ e.lname : "-";
     }
     return e;
   })
   excelData = excelData.map(({uuid,fname,lname,cd,...excelData }: any) => excelData) //to remove required properties in excel
+  excelData = excelData.map((e:any)=>{
+    return{
+      "Associate Name":e.fullName,
+      "Total Production":e.total,
+      "Average Production (Per Day)":e.days,
+    }
+  })
   this.date = new Date();
   this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
   

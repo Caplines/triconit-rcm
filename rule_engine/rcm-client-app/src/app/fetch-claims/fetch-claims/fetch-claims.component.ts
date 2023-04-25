@@ -107,13 +107,13 @@ export class FetchClaimsComponent implements OnInit {
     excelData = excelData.map((e:any)=>{
       if(e.opdos){
         let date:Date = new Date(e.opdos);
-        e = {...e,opdos : `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`};
+        e = {...e,opdos : `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`};
       } else {
         e = {...e,opdos:'-'};
       }
       if(e.opdt){
         let date:Date = new Date(e.opdt);
-        e = {...e,opdt : `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`};
+        e = {...e,opdt : `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`};
       } else {
         e = {...e,opdt:'-'};
       }
