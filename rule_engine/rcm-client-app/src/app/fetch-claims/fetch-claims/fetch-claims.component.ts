@@ -80,6 +80,9 @@ export class FetchClaimsComponent implements OnInit {
   }
 
   saveToPdf(divName: any) {
+    let m:any=document.querySelector(".table-wrapper-scroll-y");
+    m.classList.remove('table-wrapper-scroll-y');
+    m.classList.remove('table-inner-scrollbar');
     html2canvas(<any>document.getElementById(divName)).then(canvas => {
       const content = canvas.toDataURL('image/png');
       let pdf = new jsPDF('p', 'mm', 'a4');
@@ -89,6 +92,8 @@ export class FetchClaimsComponent implements OnInit {
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_Fetch_Claims_${this.date}`)
+      m.classList.add('table-wrapper-scroll-y');
+      m.classList.add('table-inner-scrollbar');
     });
   }
 
@@ -104,18 +109,27 @@ export class FetchClaimsComponent implements OnInit {
         let date:Date = new Date(e.opdos);
         e = {...e,opdos : `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`};
       } else {
-        e = {...e,opdos:''};
+        e = {...e,opdos:'-'};
       }
       if(e.opdt){
         let date:Date = new Date(e.opdt);
         e = {...e,opdt : `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`};
       } else {
-        e = {...e,opdt:''};
+        e = {...e,opdt:'-'};
       }
       return e;
     })
 
-    excelData = excelData.map(({officeUuid,...newData}:any)=>newData)
+    excelData = excelData.map(({officeUuid,...newData}:any)=>newData);
+    excelData = excelData.map((e:any)=>{
+      return{
+        "Office Name":e.officeName,
+        "OldestPendingDate":e.opdt,
+        "OldestPendingDOS":e.opdos,
+        'NumberofPendingFreshCases':e.count,
+        "NumberofPendingRemoteliteRejections":e.remoteLiteRejections
+      }
+    })
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Fetch_Claims_${this.date}`, options);

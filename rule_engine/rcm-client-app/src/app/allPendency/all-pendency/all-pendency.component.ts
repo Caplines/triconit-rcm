@@ -44,9 +44,6 @@ export class AllPendencyComponent {
             teamId:countObj? countObj.teamId:null
           };
         });    //loops are used to merge count data (count) and DateCount data (minDate) into offices array with corresponding Team ID.
-        this.total(this.pendencyData);
-        console.log(this.pendencyData);
-        
       }
     })
   }
@@ -69,6 +66,9 @@ export class AllPendencyComponent {
   }
 
   saveToPdf(e:any){
+    let m:any=document.querySelector(".table-wrapper-scroll-y");
+    m.classList.remove('table-wrapper-scroll-y');
+    m.classList.remove('table-inner-scrollbar');
     html2canvas(<any>document.getElementById(e)).then(canvas => {
       const content = canvas.toDataURL('image/png');
       let pdf = new jsPDF('p', 'mm', 'a4');
@@ -78,6 +78,8 @@ export class AllPendencyComponent {
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_All_Pendency_${this.date}`);
+      m.classList.add('table-wrapper-scroll-y');
+      m.classList.add('table-inner-scrollbar');
     });
   }
 
@@ -102,13 +104,39 @@ export class AllPendencyComponent {
         e = { ...e, count: `0` };
       }
       if(!e.minDate && fromTable == 'dos-table'){
-        e = {...e,minDate:''};
+        e = {...e,minDate:'-'};
       }
       return e;
     })
 
+    if(fromTable == 'table'){
+      excelData = excelData.map((e:any)=>{
+        this.teamData.map((ele:any,idx:any)=>{
+          if(ele.teamId != this.currentTeamId && ele.teamId === e.teamId && this.teamData.length != idx){
+            e[`PendencyWith${ele.teamName}`] = e.count;
+          }else if(ele.teamId != this.currentTeamId){
+            e[`PendencyWith${ele.teamName}`] = "0";
+          }
+        })
+        return e;
+      })
+    }
+    else if(fromTable == 'dos-table'){
+      excelData = excelData.map((e:any)=>{
+        this.teamData.map((ele:any,idx:any)=>{
+          if(ele.teamId != this.currentTeamId && ele.teamId === e.teamId){
+            e[`PendencyWith${ele.teamName}`] = e.minDate ;
+          }else if(ele.teamId != this.currentTeamId){
+            e[`PendencyWith${ele.teamName}`] = "-";
+          }
+        })
+        return e;
+      })
+    }
+    
     excelData = excelData.map(
-      ({ key, uuid, teamId, teamName, ...newClaimData }: any) => newClaimData);
+      ({ key, uuid, teamId, count,teamName,minDate, ...newClaimData }: any) => newClaimData);
+
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       console.log(excelData);

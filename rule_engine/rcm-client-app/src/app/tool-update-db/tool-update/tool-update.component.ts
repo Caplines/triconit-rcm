@@ -220,6 +220,9 @@ this.sourceType="";
   }
 
   saveToPdf(divName: any) {
+    let m:any=document.querySelector(".table-wrapper-scroll-y");
+    m.classList.remove('table-wrapper-scroll-y');
+    m.classList.remove('table-inner-scrollbar');
     html2canvas(<any>document.getElementById(divName)).then(canvas => {
       const content = canvas.toDataURL('image/png');
       let pdf = new jsPDF('p', 'mm', 'a4');
@@ -229,6 +232,8 @@ this.sourceType="";
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_Tool_To_Update_Database_${this.date}`);
+      m.classList.add('table-wrapper-scroll-y');
+      m.classList.add('table-inner-scrollbar');
     });
 
   }
@@ -236,7 +241,7 @@ this.sourceType="";
   exportToCsv() {
     let options: any = {
       showLabels: true,
-      headers: ["Source","Database Updation Done","Total No. of New Claims Added", "Office Name", "Last Updated On"]
+      headers: ["Office Name", "Source","Database Updation Done","Last Updated On","Total No. of New Claims Added", ]
     }
     let excelData: any;
     excelData = [...this.log];
@@ -245,7 +250,7 @@ this.sourceType="";
         let date: Date = new Date(e.cd);
         e = { ...e, cd: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` }
       } else {
-        e = {...e,cd : ''};
+        e = {...e,cd : '-'};
       }
       if (e.status == 1) {
         e = { ...e, status: "YES" }
@@ -258,6 +263,15 @@ this.sourceType="";
       return e;
     })
     excelData = excelData.map(({ officeUuid, ...newData }: any) => newData) //to remove required properties in excel
+    excelData = excelData.map((e:any)=>{
+      return{
+        "OfficeName":e.officeName,
+        "Source":e.source,
+        "DatabaseUpdationDone":e.status,
+        "LastUpdatedOn":e.cd,
+        "TotalNo.ofNewClaimsAdded":e.newClaimsCount
+      }
+    })
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Tool_To_Update_Database_${this.date}`, options);

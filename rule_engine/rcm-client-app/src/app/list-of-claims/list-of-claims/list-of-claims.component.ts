@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
-import { ClaimAssociateLogModel } from '../../models/claim-associate-log-model';
 import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
 import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
@@ -129,6 +128,9 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   saveToPdf(divName: any) {
+    let m:any=document.querySelector(".table-wrapper-scroll-y");
+    m.classList.remove('table-wrapper-scroll-y');
+    m.classList.remove('table-inner-scrollbar');
     html2canvas(<any>document.getElementById(divName)).then(canvas => {
       const content = canvas.toDataURL('image/png');
       let pdf = new jsPDF('p', 'mm', 'a4');
@@ -138,16 +140,18 @@ export class ListOfClaimsComponent implements OnInit {
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`);
+      m.classList.add('table-wrapper-scroll-y');
+      m.classList.add('table-inner-scrollbar');
     });
   }
 
   exportToCsv() {
     let options: any = {
-      showLabels: true,
-      headers: ["Last Team","Timely Filing Limit (Days)", 'Date of Service', "Patient Name", "Office Name", "Patient ID", "Claim Age","Insurance Type", "Insurance Name", "Claim Type",  "Estimated Amount", "Action Required",]
+      showLabels:true,
+      headers: ["Office", "Patient ID", "Patient Name",'Date of Service',  "Claim Age","Timely Filing Limit (Days)", "Claim Type","Action Required", "Insurance Name","Insurance Type",  "Estimated Amount","Last Team that Worked on this claim", ]
     }
     let excelData: any;
-    excelData = [...this.filteredItems];
+    excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
     excelData = excelData.map((e: any) => {
       if (e.dos) {
         let date: Date = new Date(e.dos);
@@ -170,10 +174,28 @@ export class ListOfClaimsComponent implements OnInit {
         e = {...e,lastTeam:'-'}
       }
       return e;
-    })
+    })      //method add value as "-" or "0", if its empty or null.
 
     excelData = excelData.map(
-      ({ claimId,claimType ,opdos, opdt, secName, secTotal, uuid, billedAmount, statusType,primTotal,  ...newClaimData }: any) => newClaimData);
+      ({ claimId,opdos, opdt, secTotal, uuid, billedAmount, statusType,  ...newClaimData }: any) => newClaimData);    //methods removes unwanted properties that are not going to display in CSV.
+
+      excelData = excelData.map((e:any)=>{
+        return{
+          "Office Name":e.officeName,
+          "Patient ID":e.patientId,
+          "Patient Name":e.patientName,
+          'Date of Service':e.dos,
+          "Claim Age":e.claimAge,
+          "Timely Filing Limit (Days)":e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          "Claim Type":e.claimType,
+          "Action Required":e.actionRequired,
+          "Insurance Name":e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type":e.prName? e.prName : e.secName,
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? e.primTotal : "0") : e.secTotal ? e.secTotal : "0",
+          'Last Team':e.lastTeam,
+        }
+      })  //method aligns the header to the value in CSV.
+
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       console.log(excelData.sort());

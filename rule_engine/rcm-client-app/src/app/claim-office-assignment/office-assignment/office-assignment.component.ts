@@ -32,7 +32,7 @@ export class OfficeAssignmentComponent implements OnInit {
   userByTeam:any=[];
   assignOfficeDetails:any={'assignOfficeDetails':[],'teamId':''};
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
-  loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false}
+  loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false};
   showExportLoader:boolean=false;
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0,'totalcountAndRemLiteReject':0}
   clientName:string='';
@@ -75,16 +75,6 @@ export class OfficeAssignmentComponent implements OnInit {
         ths.calcRemLiteReject(ths.claimData)
         ths.calcCountAndRemLiteReject(ths.claimData)
         ths.loader.showLoader=false;
-        // let k = ths.claimData.forEach((e:any,idx:any)=>{
-        //   if(!e.fname && idx % 2 == 0 ){
-        //     e.fname = "Puneet"
-        //   }else{
-        //     if(!e.fname && idx %2 !== 0)
-        //     e.fname= "Kuldeep"
-        //   }
-        // })
-        // console.log(k)
-
        }else{
          //ERROR
        }
@@ -135,8 +125,6 @@ export class OfficeAssignmentComponent implements OnInit {
       console.log(this.assignOfficeDetails.assignOfficeDetails)
     }
   
-  
- //
  saveAssignments(){
   this.appService.assignOffice(this.assignOfficeDetails,(callback:any)=>{
     if(callback.status == 200){
@@ -153,13 +141,12 @@ export class OfficeAssignmentComponent implements OnInit {
  saveToPdf(divName:any){
    this.loader.exportPDFLoader= true;
    let m:any=document.querySelector(".table-wrapper-scroll-y");
-   m.classList.remove('table-wrapper-scroll-y')
-   m.classList.remove('table-inner-scrollbar')
+   m.classList.remove('table-wrapper-scroll-y');
+   m.classList.remove('table-inner-scrollbar');
   html2canvas(<any>document.getElementById(divName)).then(canvas => {
   const content = canvas.toDataURL('image/png');
   let pdf= new jsPDF('p','mm','a4');
   let width= pdf.internal.pageSize.getWidth();
-  pdf.text('Paranyan loves jsPDF',10,10)
   let height = canvas.height  * width / canvas.width;
   console.log(width,height)
   pdf.addImage(content,"PNG",0,0,width,height)
@@ -200,24 +187,36 @@ exportToCsv(){
   this.loader.exportCSVLoader=true;
   let options:any={
     showLabels:true,
-    headers: ["Office Name", "Oldest Pending Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Office Assigned To","Total (Pending For Billing & Remote Lite Rejections)"],
+    headers: ["Office Name","Office Assigned To", "Oldest Pending Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Total (Pending For Billing & Remote Lite Rejections)"],
   }
   let excelData:any;
   excelData = this.claimData.forEach((e:any)=>
   {
-    e['office Assigned To'] = e.fname+" "+e.lname;
-    e.opdos == null ? e.opdos = '' : e.opdos;
+    e['officeAssignedTo'] = e.fname+" "+e.lname;
+    e.opdos == null ? e.opdos = '-' : e.opdos;
     if(e.opdt){
       let date:Date = new Date(e.opdt);
       e.opdt =  `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
     }else{
-        e.opdt = '';
+        e.opdt = '-';
     }
     e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
   })
 
   excelData = this.claimData.map(
-    ({officeUuid,assignedUser,fname,lname,...newClaimData})=> newClaimData);
+    ({officeUuid,assignedUser,...newClaimData})=> newClaimData);
+
+  excelData = excelData.map((e:any)=>{
+    return{
+      "OfficeName":e.officeName,
+      "officeAssignedTo":e.officeAssignedTo,
+      "OldestPendingDate":e.opdt,
+      "OldestPending DOS":e.opdos,
+      "NumberofPendingClaimstobeBilled":e.count,
+      "NoofRemoteLiteRejectionsPendingtobeHandled" : e.remoteLiteRejections,
+      "Total(Pending For Billing & Remote Lite Rejections)": e.count ? e.count+e.remoteLiteRejections : '0'
+    }
+  })  
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`
     new ngxCsv(excelData, `${this.clientName}_Office_Assignemnt_${this.date}`,options);

@@ -57,6 +57,9 @@ export class ProductionComponent implements OnInit {
        // (<HTMLInputElement>document.getElementById("eDate")).value='';
  }
  saveToPdf(divName: any) {
+  let m:any=document.querySelector(".table-wrapper-scroll-y");
+  m.classList.remove('table-wrapper-scroll-y');
+  m.classList.remove('table-inner-scrollbar');
   html2canvas(<any>document.getElementById(divName)).then(canvas => {
     const content = canvas.toDataURL('image/png');
     let pdf = new jsPDF('p', 'mm', 'a4');
@@ -66,6 +69,8 @@ export class ProductionComponent implements OnInit {
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     pdf.save(`${localStorage.getItem("selected_clientName")}_Production_${this.date}`);
+    m.classList.add('table-wrapper-scroll-y');
+    m.classList.add('table-inner-scrollbar');
   });
 
 }
