@@ -54,6 +54,26 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-sm">
+                        <ng-container *ngIf="selectedRole == 'SUPER_ADMIN'"
+                            style="align-items: flex-start;">
+                            <div class="form-group d-flex login-radio-box">
+                                <label class="font-weight-bolder">Login As:</label>
+                                <div class="form-check-inline-radio ">
+                                    <span>
+                                        <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Admin" name="loginAs" id="admin">
+                                        <label class="form-check-label" for="admin">Admin</label>
+                                    </span>
+                                    <span>
+                                        <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Normal" name="loginAs"  id="normal">
+                                        <label class="form-check-label" for="enable">Tool User</label>
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
                         <div class="form-group d-flex justify-content-around">
                             <label class="font-weight-bolder">Client Names:</label>
                             <select class="form-control" id="selectClientAC" name="selectClientAC" (change)="checkBtnDisabled()" [(ngModel)]="selectedClient" [disabled]="cwModel?.companies?.length == 1 ? true : false">
@@ -90,26 +110,6 @@
                                 </ng-container>
                             </select>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <ng-container *ngIf="selectedRole == 'SUPER_ADMIN'"
-                            style="align-items: flex-start;">
-                            <div class="form-group d-flex login-radio-box">
-                                <label class="font-weight-bolder">Login As:</label>
-                                <div class="form-check-inline-radio ">
-                                    <span>
-                                        <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Admin" name="loginAs" id="admin">
-                                        <label class="form-check-label" for="admin">Admin</label>
-                                    </span>
-                                    <span>
-                                        <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Normal" name="loginAs"  id="normal">
-                                        <label class="form-check-label" for="enable">Tool User</label>
-                                    </span>
-                                </div>
-                            </div>
-                        </ng-container>
                     </div>
                 </div>
             </div>
