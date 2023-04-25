@@ -21,6 +21,8 @@ export class  BillingList {
     }
     setUpInsurance(){
     	
+      
+    	this.insTypes.push(new BillingModel("All","All"));
     	this.insTypes.push(new BillingModel("Medicaid","Medicaid"));
     	this.insTypes.push(new BillingModel("PPO","PPO"));
     	

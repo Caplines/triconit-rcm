@@ -153,9 +153,9 @@ export class ApplicationServiceService extends BaseService {
         }
       }) : data.sort((a: any, b: any) => {
         if (a[sortBy] === null || a[sortBy] === "null") {
-          return -1;
-        } else if (b.fname === null || b[sortBy] === "null") {
           return 1;
+        } else if (b[sortBy] === null || b[sortBy] === "null") {
+          return -1;
         } else {
           return b[sortBy].localeCompare(a[sortBy]);
         }
@@ -180,7 +180,22 @@ export class ApplicationServiceService extends BaseService {
         if (a[sortBy] === null && b[sortBy] === null) return 0;
         else if (a[sortBy] === null) return 1;
         else if (b[sortBy] === null) return -1;
-        else return <any>new Date(b[sortBy]).getTime() - <any>new Date(a[sortBy]).getTime();
+        else return <any>new Date(a[sortBy]).getTime() - <any>new Date(b[sortBy]).getTime();
+      });
+    
+    }
+     else if (sortType === 'dateOnly') {
+
+      order === 'asc' ? data.sort((a: any, b: any) => {
+        if (a[sortBy] === null && b[sortBy] === null) return 0;
+        else if (a[sortBy] === null) return 1;
+        else if (b[sortBy] === null) return -1;
+        else return <any>new Date(a[sortBy]) - <any>new Date(b[sortBy]);
+      }) : data.sort((a: any, b: any) => {
+        if (a[sortBy] === null && b[sortBy] === null) return 0;
+        else if (a[sortBy] === null) return 1;
+        else if (b[sortBy] === null) return -1;
+        else return <any>new Date(b[sortBy]) - <any>new Date(a[sortBy]);
       });
 
     }

@@ -64,8 +64,8 @@
                                                     <div class="dFlex">
                                                         Oldest Pending Date
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'opdt','asc','date'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'opdt','desc','date');isSorted = true"></a>
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'opdt','asc','dateOnly'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'opdt','desc','dateOnly');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -73,8 +73,8 @@
                                                     <div class="dFlex">
                                                         Oldest Pending DOS
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'opdos','asc','date'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'opdos','desc','date');isSorted = true"></a>
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(claimData,'opdos','asc','dateOnly'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"  (click)="sortData(claimData,'opdos','desc','dateOnly');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>

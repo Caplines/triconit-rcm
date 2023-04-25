@@ -65,7 +65,14 @@ export class OfficeAssignmentComponent implements OnInit {
     }else{
       ths.claimAssigmentPullModel.claimType.push(Number(ths.bType));
     }
-    ths.claimAssigmentPullModel.insuranceType.push(ths.insType);
+    if(ths.insType=='All'){
+      ths.bl.insTypes.forEach(e => {
+        if(e.key != 'All')
+        ths.claimAssigmentPullModel.insuranceType.push(String(e.key))   
+      });
+    }else{
+      ths.claimAssigmentPullModel.insuranceType.push(ths.insType);
+    }
 
     ths.appService.fetchClaimAssignments(ths.claimAssigmentPullModel,(res:any)=>{
        
