@@ -67,6 +67,10 @@ export class BaseService {
     'fetchTpData': '/tp-link-data',
     'fetchIssueClaimCounts': '/issue-claim-counts',
     'googleSheetLink': '/gsheet-link',
+
+    //For PDF CSV
+    'listOfClaim': '/api/list-of-claim/d',
+    //
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {
@@ -97,6 +101,37 @@ export class BaseService {
     this.generateRefreshToken().pipe(switchMap(data => {
       Utils.setRefreshToken(data);
       return this.http.post(environment.API_URL + url, d);
+    },
+    )
+    ).subscribe((data) => {
+      callback((<any>data));
+    },
+      (error: any) => {
+        console.log(error)
+        if (error.status == 401) {
+          Utils.logout();
+        }
+        if (error.status == 500) {
+          callback(error);
+        }
+      },
+      () => {
+      })
+
+      ;
+
+  }
+
+  postDataPdf(d: any, url: string, callback: any) {
+    let headers = new HttpHeaders();
+    headers = headers.append('Accept', 'application/pdf; charset=utf-8');
+    this.generateRefreshToken().pipe(switchMap(data => {
+      Utils.setRefreshToken(data);
+      return this.http.post(environment.API_URL + url, d, {
+        headers: headers,
+        observe: 'response',
+        responseType: 'arraybuffer'
+      });
     },
     )
     ).subscribe((data) => {
