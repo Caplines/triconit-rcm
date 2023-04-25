@@ -344,8 +344,8 @@
                                             </tr>
                                             <ng-container *ngIf="claimRcm.claimNotes">
                                                 <tr>
-                                                    <td colspan="2" class="text-right">{{claimRcm.claimNotes[0]?.key}} 
-                                                     </td>
+                                                    <td colspan="2" class="text-right">{{claimRcm.claimNotes[0]?.key}}
+                                                    </td>
                                                     <td colspan="4"><textarea class="form-control mandatory"
                                                             id="CL_N_{{claimRcm.claimNotes[0].id}}" rows="1"
                                                             [(ngModel)]='claimRcm.claimNotes[0].value'
@@ -721,7 +721,7 @@
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                           (claimRcm.primary && claimRcm.pending) 
                                                        ) && isBilling " type="button" class="btn btn-success"
-                                [disabled]="inSave" (click)="saveClaim('submit')">Mark as Submittted</button>
+                                [disabled]="inSave" (click)="saveClaim('submit')">Mark as Submitted</button>
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
                                                        )" type="button" class="btn btn-success" [disabled]="inSave"
