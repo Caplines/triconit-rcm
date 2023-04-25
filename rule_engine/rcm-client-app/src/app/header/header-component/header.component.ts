@@ -200,14 +200,7 @@ export class HeaderComponent implements OnInit {
   checkValidationSuperAdmin() {
     if (this.cwModel?.companies?.length > 0 && this.cwModel?.roles?.length > 0 && this.selectedClient && this.selectedRole && this.loginUserType) {
       localStorage.setItem("loginAs", this.loginUserType)
-      if(this.loginUserType =="Normal" && this.selectedTeam){
-        this.btnDisabled = false;
-      }else if(this.loginUserType =="Admin"){
-        this.btnDisabled = false;
-      }
-      else{
-        this.btnDisabled = true;
-      }
+      this.btnDisabled = false;
     } else {
       this.btnDisabled = true;
     }
