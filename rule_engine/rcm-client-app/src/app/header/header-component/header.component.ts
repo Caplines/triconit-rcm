@@ -274,5 +274,14 @@ export class HeaderComponent implements OnInit {
     this.ele.modal.style.display = "none";
   }
 
+  
+openHelp() {
+  if (window.location.pathname === "/tool-update") {   //curerntly help link is only available for Tool To Update Page.
+    window.open(
+      "https://docs.google.com/document/d/1VjkBGvwpUPlhQG0JAprO8moTleo0cEbFPCmaYIYa2CM/edit#heading=h.lfah6ew7mnj1",
+      "_blank");   
+  }
+}
+
 
 }

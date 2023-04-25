@@ -14,7 +14,7 @@
               </svg></button> </li>
             <li><img src="../../assets/img/user-blue.png" /> Welcome, {{loggedInUserName}}</li>
             <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0);"><img src="../../assets/img/help.png" /> Help</a>
+                <a class="nav-link" href="javascript:void(0);" (click)="openHelp()"><img src="../../assets/img/help.png" /> Help</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign out</a>
