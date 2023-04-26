@@ -9,6 +9,7 @@ import Utils from '../../util/utils';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { ClientModel } from 'src/app/models/client.model';
 import { IssueClaimModel } from 'src/app/models/issue.claim.model';
+import { AppConstants } from 'src/app/constants/app.constants';
 
 @Component({
   selector: 'app-header-component',
@@ -48,10 +49,11 @@ export class HeaderComponent implements OnInit {
   clients : Array<ClientModel>;
   issueCl : Array<IssueClaimModel>;
   isSingleRole:boolean=false;
-  constructor(private appSer: ApplicationServiceService, private router: Router) {
+  constructor(private appSer: ApplicationServiceService, private router: Router,public appConstants: AppConstants) {
 
     this.cwModel = {};
-    this.teamData = [{ "teamName": "Internal Audit", "teamId": 3 }, { "teamName": "Aging", "teamId": 4 }, { "teamName": "Posting", "teamId": 5 }, { "teamName": "Quality", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
+    
+    this.appConstants.teamData = [{ "teamName": "Internal Audit", "teamId": 3 }, { "teamName": "Aging", "teamId": 4 }, { "teamName": "Posting", "teamId": 5 }, { "teamName": "Quality", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
   }
 
   ngOnInit(): void {
@@ -94,7 +96,7 @@ export class HeaderComponent implements OnInit {
   }
 
   setTeamName() {
-    this.userInfo.currentTeamId = this.teamData.find((e: any) => {
+    this.userInfo.currentTeamId = this.appConstants.teamData.find((e: any) => {
       if (e.teamId == this.userInfo.currentTeamId) {
         this.userInfo.currentTeamId = e.teamName;
         return e.teamName;
@@ -179,7 +181,7 @@ export class HeaderComponent implements OnInit {
   selectLoginType(event: any) {
     this.loginUserType = event.target.value;
     if (this.loginUserType == 'Normal') {
-      this.cwModel.teams = this.teamData;
+      this.cwModel.teams = this.appConstants.teamData;
       this.btnDisabled = true;
     } else if (this.loginUserType == 'Admin') {
       this.selectedTeam = '';

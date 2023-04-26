@@ -22,12 +22,18 @@ export class ListOfClaimsComponent implements OnInit {
   switchBox: any = { 'billing': true, 'reBilling': false };
   isSorted: boolean = false;
   loader: any = { 'billingLoader': false, 'listClaimLoader': false };
-  showFilteredDropdown: boolean = false;
+  showFilteredDropdown: any= {'officeName':false,'claimType':false,'insuranceType':false,'insuranceName':false,'lastTeamWorked':false,'actionRequired':false};
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
   date:any;
-  isFilterAllSelected:boolean=true;
+
+  isFilterAllSelected:any={'officeName':false,'claimType':false,'insuranceType':false,'insuranceName':false,'lastTeamWorked':false,'actionRequired':false};
+  filteredClaimType:any=[];
+  filteredInsuranceName:any=[];
+  filteredInsuranceType:any=[];
+  filteredActionRequired:any=[];
+  filteredLastTeamWorked:any=[];
 
   constructor(private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
     this.selectedBtype = this.appConstants.BILLING_ID;
@@ -42,6 +48,12 @@ export class ListOfClaimsComponent implements OnInit {
   fetchOfficeByUuid() {
     this.appService.fetchOfficeByUuid((res: any) => {
       if (res.status) {
+        res.data = res.data.map((e:any)=>{
+          return{
+            ...e,
+            "officeName":e.name,
+          }
+        })
         this.showFilterOptionOfficeName(res.data);
       }
     })
@@ -59,7 +71,11 @@ export class ListOfClaimsComponent implements OnInit {
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
-
+        this.filterOptionClaimType();
+        this.filterOptionActionRequired();
+        this.filterOptionInsuranceName();
+        this.filterOptionInsuranceType();
+        this.filterOptionLastTeamWorked();
       } 
       // else {
       //   this.loader.listClaimLoader = false;
@@ -69,6 +85,55 @@ export class ListOfClaimsComponent implements OnInit {
       // }
 
     });
+  }
+
+  filterOptionClaimType(){
+  
+    this.filteredClaimType.push({'checked':true,'claimType':'Primary'},{'checked':true,'claimType':'Secondary'})
+    this.isFilterAllSelected.claimType = true;
+  }
+
+  filterOptionActionRequired(){
+    this.filteredActionRequired.push({'checked':true,'actionRequired':"Billing","statusType":1},{'checked':true,'actionRequired':"Re-Billing","statusType":2});
+    this.isFilterAllSelected.actionRequired = true;
+  }
+
+  filterOptionInsuranceName(){
+    this.filteredItems.forEach((e:any)=>{
+      if(e.claimId.includes("_P")){
+        this.filteredInsuranceName.push({'checked':true,'insuranceName':e.primaryInsurance});
+        e['insuranceName']=e.primaryInsurance;
+      }else if(e.claimId.includes("_S")){
+        this.filteredInsuranceName.push({'checked':true,'insuranceName':e.secondaryInsurance});
+        e['insuranceName']=e.secondaryInsurance;
+      }
+    })
+    this.isFilterAllSelected.insuranceName = true;
+  }
+
+  filterOptionInsuranceType(){
+    this.filteredItems.forEach((e:any)=>{
+      if(e.claimId.includes("_P")){
+        this.filteredInsuranceType.push({'checked':true,'insuranceType':e.prName});
+        e['insuranceType']=e.prName;
+      }else if(e.claimId.includes("_S")){
+        this.filteredInsuranceType.push({'checked':true,'insuranceType':e.secName});
+        e['insuranceType']=e.secName;
+      }
+    })
+    this.filteredInsuranceType = Array.from(new Set(this.filteredInsuranceType.map((a:any) => a.insuranceType)))
+      .map((insuranceType:any) => {
+        return this.filteredInsuranceType.find((a:any) => a.insuranceType === insuranceType);
+      });
+
+    this.isFilterAllSelected.insuranceType = true;
+  }
+
+  filterOptionLastTeamWorked(){
+    this.appConstants.teamData.forEach((e:any)=>{
+      this.filteredLastTeamWorked.push({'checked':true,'lastTeam':e.teamName});
+    })
+    this.isFilterAllSelected.lastTeamWorked = true;
   }
 
   removePrefix(data:any){
@@ -112,13 +177,13 @@ export class ListOfClaimsComponent implements OnInit {
           }
       })
     });
-    console.log(this.claimDetail);
     
   }
 
-  filterOfficeName(e?: any) {
+  filterOfficeName(e?: any,filterProperty?:any) {
     if (!e) {
       this.filteredItems = this.claimDetail;
+      this.isFilterAllSelected.officeName = true;
     } else {
       let isAllSelected: boolean = true;
       for (let i = 0; i < this.filteredOfficeName.length; i++) {
@@ -127,15 +192,94 @@ export class ListOfClaimsComponent implements OnInit {
           break;
         }
       }
-      this.isFilterAllSelected = isAllSelected;
+      this.isFilterAllSelected.officeName = isAllSelected;
       this.filteredItems = this.claimDetail.filter((item: any) => {
         return this.filteredOfficeName.some((checkbox: any) => {
-          return checkbox.checked && checkbox.name === item.officeName;
+          return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
         });
       });
-
     }
     
+  }
+
+  filterClaimType(filterProperty:any){
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredClaimType.length; i++) {
+      if (this.filteredClaimType[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.claimType = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredClaimType.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+      });
+    });
+  }
+
+  filterActionRequired(filterProperty:any){
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredActionRequired.length; i++) {
+      if (this.filteredActionRequired[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.actionRequired = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredActionRequired.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
+      });
+    });
+  }
+
+  filterInsuranceName(filterProperty:any){
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredInsuranceName.length; i++) {
+      if (this.filteredInsuranceName[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.insuranceName = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
+      });
+    });
+  }
+
+  filterInsuranceType(filterProperty:any){
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredInsuranceType.length; i++) {
+      if (this.filteredInsuranceType[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.insuranceType = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
+      });
+    });
+  }
+
+  filterLastTeamWorked(filterProperty:any){
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredLastTeamWorked.length; i++) {
+      if (this.filteredLastTeamWorked[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.lastTeam = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredLastTeamWorked.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
+      });
+    });
   }
 
   saveToPdf(divName: any) {
@@ -214,8 +358,8 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
 
-  selectAll(event:any){
-    if(event.target.value == "selectAll"){
+  selectAll(event:any,filterProperty:any){
+    if(filterProperty == "officeName"){
       this.filteredOfficeName.forEach((e: any) => {
         if (event.target.checked) {
           e.checked = true;
@@ -223,8 +367,58 @@ export class ListOfClaimsComponent implements OnInit {
           e.checked = false;
         }
       });
+      this.filterOfficeName("selectAll");
     }
-    this.filterOfficeName("selectAll");
+    if(filterProperty == "claimType"){
+      this.filteredClaimType.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterClaimType("claimType");
+    }
+    if(filterProperty == "actionRequired"){
+      this.filteredActionRequired.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterActionRequired("actionRequired");
+    }
+    if(filterProperty == "insuranceName"){
+      this.filteredInsuranceName.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterInsuranceName("insuranceName");
+    }
+    if(filterProperty == "insuranceType"){
+      this.filteredInsuranceType.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterInsuranceType("insuranceType");
+    }
+    if(filterProperty == "lastTeam"){
+      this.filteredLastTeamWorked.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterLastTeamWorked("lastTeam");
+    }
   }
 
   logout() {

@@ -53,5 +53,6 @@ export class AppConstants {
 
      ]);
 
+    public teamData:any= [{ "teamName": "Internal Audit", "teamId": 3 }, { "teamName": "Aging", "teamId": 4 }, { "teamName": "Posting", "teamId": 5 }, { "teamName": "Quality", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
 
 }
