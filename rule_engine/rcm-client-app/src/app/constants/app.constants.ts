@@ -29,8 +29,12 @@ export class AppConstants {
             "name":"Quality","paths":["/update-pass"],"defaultpath":"/update-pass"
         }],
         [7, {
-            "name": "Billing Team", "paths": ["/claim-assignment","/tool-update","/list-of-claims","/fetch-claims","/production","/all-pendency"], "defaultpath": "/claim-assignment"
+            "name": "Billing Team", "paths": ["/claim-assignment","/tool-update","/list-of-claims","/fetch-claims","/production","/all-pendency","/update-pass"], "defaultpath": "/claim-assignment"
         }],
+
+        // [9,{
+        //     "name":"Reporting","paths":["/update-pass"],"defaultpath":"/update-pass"
+        // }],
 
     ]);
 
@@ -45,6 +49,7 @@ export class AppConstants {
         [5,"POSTING"],
         [6,"QUALITY"],
         [7,"BILLING"],
+        // [9,"REPORTING"],
 
      ]);
 
