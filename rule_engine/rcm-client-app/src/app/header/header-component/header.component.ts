@@ -47,6 +47,7 @@ export class HeaderComponent implements OnInit {
   issueClientName:any='';
   clients : Array<ClientModel>;
   issueCl : Array<IssueClaimModel>;
+  isSingleRole:boolean=false;
   constructor(private appSer: ApplicationServiceService, private router: Router) {
 
     this.cwModel = {};
@@ -114,6 +115,7 @@ export class HeaderComponent implements OnInit {
   }
 
   switchAccount() {
+    
     if(this.cwModel.roles.length != 1 && this.cwModel.companies.length != 1 && this.cwModel.teams.length != 1)
     this.modelElement.modal.style.display = "none";
     if (this.selectedTeam == '') {
@@ -159,14 +161,17 @@ export class HeaderComponent implements OnInit {
       if (this.cwModel.teams.length == 1) {
         this.selectedTeam = this.cwModel.teams[0].id;
       }
-      if(this.cwModel.roles.length == 1 && this.cwModel.companies.length == 1 && this.cwModel.teams.length == 1){
+      
+      if(this.cwModel.roles.length == 1 && this.cwModel.companies.length == 1 && ( localStorage.getItem("roles") == "ROLE_ADMIN" || this.cwModel.teams.length == 1)){
+        this.isSingleRole=true;
         this.switchAccount();
       }
 
-
-      this.modelElement.modal = document.getElementById("switch-modal");
-      this.modelElement.modal.style.display = "block";
-      this.showPopup = true;
+      if(!this.isSingleRole){
+        this.modelElement.modal = document.getElementById("switch-modal");
+        this.modelElement.modal.style.display = "block";
+        this.showPopup = true;
+      }
       this.checkClientExist();
     }
   }
@@ -200,7 +205,13 @@ export class HeaderComponent implements OnInit {
   checkValidationSuperAdmin() {
     if (this.cwModel?.companies?.length > 0 && this.cwModel?.roles?.length > 0 && this.selectedClient && this.selectedRole && this.loginUserType) {
       localStorage.setItem("loginAs", this.loginUserType)
-      this.btnDisabled = false;
+      if (this.loginUserType == "Normal" && this.selectedTeam) {
+        this.btnDisabled = false;
+      } else if (this.loginUserType == "Admin") {
+        this.btnDisabled = false;
+      } else {
+        this.btnDisabled = true;
+      }
     } else {
       this.btnDisabled = true;
     }
