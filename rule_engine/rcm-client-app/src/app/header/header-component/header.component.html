@@ -114,8 +114,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" [disabled]="btnDisabled"
-                (click)="switchAccount()">{{modelTitle}}</button>
+                <button type="button" class="btn btn-success"
+                [ngClass]="{'disabled':btnDisabled}" (click)="switchAccount()">{{modelTitle}}</button>
                 <!-- <button type="button" class="btn btn-success" [disabled]="(cwModel?.teams?.length==0 && !this.selectedRole &&  !this.selectedClient)  ||  (!this.selectedRole  ||  !this.selectedClient) "
                 (click)="switchAccount()">{{modelTitle}}</button> -->
             </div>
