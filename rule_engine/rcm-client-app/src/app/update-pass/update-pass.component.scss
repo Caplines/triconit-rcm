@@ -45,3 +45,8 @@
 .date-range-box input {
     margin:0px;
 }
+.disabled{
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+    background: #b3b3b3 !important;
+}

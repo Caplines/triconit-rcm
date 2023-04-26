@@ -155,7 +155,7 @@
                         </div>
 
                         <div class="action-buttons" *ngIf="!loader.showLoader">
-                            <button type="button" class="btn btn-success"   [disabled]="assignOfficeDetails.assignOfficeDetails.length==0" (click)="saveAssignments()">Save
+                            <button type="button" class="btn btn-success"    [ngClass]="{'disabled':assignOfficeDetails.assignOfficeDetails.length==0}" (click)="saveAssignments()">Save
                                 Assignment</button>
                         </div>
                     </div>

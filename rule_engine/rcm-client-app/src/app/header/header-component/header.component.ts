@@ -162,7 +162,7 @@ export class HeaderComponent implements OnInit {
         this.selectedTeam = this.cwModel.teams[0].id;
       }
       
-      if(this.cwModel.roles.length == 1 && this.cwModel.companies.length == 1 && ( localStorage.getItem("roles") == "ROLE_ADMIN" || this.cwModel.teams.length == 1)){
+      if(this.cwModel.roles.length == 1 && this.cwModel.companies.length == 1 && ( localStorage.getItem("roles") == "ROLE_ADMIN" || localStorage.getItem("roles") == "ROLE_REPORTING"  || this.cwModel.teams.length == 1)){
         this.isSingleRole=true;
         this.switchAccount();
       }

@@ -128,7 +128,7 @@ a.arrow-down.selected{
     bottom: -1px;
     border-bottom: 2px solid #b3b3b3 !important;
 }
-@media only screen and (min-width: 1830px) and (max-width: 2050px) {
+@media only screen and (min-width: 3000px) and (max-width: 2050px) {
     .table-inner-scrollbar tbody tr.totalRow {
         top: 30px;
     }
@@ -142,5 +142,11 @@ a.arrow-down.selected{
     .table-inner-scrollbar tbody tr.totalRow {
         top: 94px;
     }
+}
+
+.disabled{
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+    background: #b3b3b3 !important;
 }
 

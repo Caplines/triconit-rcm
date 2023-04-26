@@ -30,7 +30,7 @@
                                             >
                                     </div>
                                     <div class="find-btn">
-                                        <button type="button" class="btn btn-success" [disabled]="!user['oldPassword'] || !user['newPassword'] || user['oldPassword'].length<6 || user['newPassword'].length<6" (click)="changePassword()">Change
+                                        <button type="button" class="btn btn-success" [disabled]="!user['oldPassword'] || !user['newPassword'] || user['oldPassword'].length<6 || user['newPassword'].length<6"  [ngClass]="{'disabled':!user['oldPassword'] || !user['newPassword'] || user['oldPassword'].length<6 || user['newPassword'].length<6}"(click)="changePassword()">Change
                                             Password</button>
                                     </div>
                                 </div>
