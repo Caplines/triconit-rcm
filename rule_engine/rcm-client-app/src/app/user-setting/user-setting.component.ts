@@ -31,7 +31,7 @@ export class UserSettingComponent implements OnInit {
   selectedFromDropDown: boolean = false;
 
   constructor(public appService: ApplicationServiceService, private title: Title, private fb: FormBuilder) {
-    title.setTitle("User-Setting");
+    title.setTitle(Utils.defaultTitle + "User Setting");
     this.editedUserDetails = this.fb.group({
       'firstName': ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25), Validators.pattern("[a-zA-Z]*")]],
       'lastName': ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25), Validators.pattern("[a-zA-Z]*")]],

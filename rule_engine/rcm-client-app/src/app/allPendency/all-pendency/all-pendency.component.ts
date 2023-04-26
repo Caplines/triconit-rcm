@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { ngxCsv } from 'ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
-
+import Utils from '../../util/utils';
 @Component({
   selector: 'all-pendency',
   templateUrl: './all-pendency.component.html',
@@ -20,7 +20,7 @@ export class AllPendencyComponent {
   totalCount:any=[{"teamId":3,'count':0},{"teamId":4,"count":0},{"teamId":5,"count":0},{"teamId":6,"count":0},{"teamId":7,"count":0}];
 
   constructor(private _service:ApplicationServiceService,private title:Title){
-    title.setTitle("All Pendency")
+    title.setTitle(Utils.defaultTitle + "All Pendency")
   }
   ngOnInit(): void {
     this.teamData=[{"teamName":"Internal Audit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];

@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { BaseService } from 'src/app/service/base-service.service';
+import Utils from '../../util/utils';
 
 
 @Component({
@@ -22,7 +23,7 @@ export class ManageClientComponent implements OnInit {
   //https://www.bezkoder.com/angular-13-jwt-auth/
 
   constructor(private _base: BaseService,public appService:ApplicationServiceService ,private title : Title) { 
-    title.setTitle("Manage Office");
+    title.setTitle(Utils.defaultTitle + "Manage Client");
   }
 
   ngOnInit(): void {

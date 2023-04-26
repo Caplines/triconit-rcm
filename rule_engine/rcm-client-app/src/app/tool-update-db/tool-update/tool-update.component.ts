@@ -8,6 +8,7 @@ import { Title } from '@angular/platform-browser';
 import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
+import Utils from '../../util/utils';
 
 @Component({
   selector: 'tool-update-db',
@@ -42,7 +43,7 @@ export class ToolUpdateComponent implements OnInit {
     this.clients = [];
     this.smilePoint={};
     this.issueCl=[];
-    title.setTitle("RCM - Tool to update database.");
+    title.setTitle(Utils.defaultTitle + "Tool to Update Database");
   }
 
   ngOnInit(): void {

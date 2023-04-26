@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { BaseService } from 'src/app/service/base-service.service';
-
+import Utils from '../../util/utils';
 
 @Component({
   selector: 'app-manage-office',
@@ -20,7 +20,7 @@ export class ManageOfficeComponent implements OnInit {
 
 
   constructor(public appService:ApplicationServiceService ,private title : Title) { 
-    title.setTitle("Manage Office");
+    title.setTitle(Utils.defaultTitle + "Manage Office");
   }
 
   ngOnInit(): void {

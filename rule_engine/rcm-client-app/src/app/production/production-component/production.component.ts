@@ -26,7 +26,7 @@ export class ProductionComponent implements OnInit {
   log : any=[];
   constructor(private appService: ApplicationServiceService,private title:Title) { 
      this.log = [];
-     title.setTitle("Production")
+     title.setTitle(Utils.defaultTitle + "Production")
     }
 
   ngOnInit(): void {

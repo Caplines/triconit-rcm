@@ -240,5 +240,6 @@ export default class Utils {
       return new Date().toString().split("GMT")[1].split(" (")[0]; // timezone, i.e. -0700
    }
 
+   static defaultTitle:string = 'RCM Tool - ';
 
 }

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ApplicationServiceService } from '../service/application-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
+import Utils from '../util/utils';
 
 @Component({
   selector: 'app-treatment-plan',
@@ -16,7 +17,7 @@ export class TreatmentPlanComponent {
   count:any={'Fee':0,'Ins':0,'Pat':0};
 
   constructor(private _service: ApplicationServiceService,private router:Router,private title:Title) {
-    title.setTitle("Treament Plan")
+    title.setTitle(Utils.defaultTitle + "Treament Plan")
   }
 
 

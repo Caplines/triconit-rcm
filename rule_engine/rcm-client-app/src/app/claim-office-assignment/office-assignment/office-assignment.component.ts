@@ -9,6 +9,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { Router } from '@angular/router';
+import Utils from '../../util/utils';
 
 @Component({
   selector: 'claim-office-assignment',
@@ -38,7 +39,7 @@ export class OfficeAssignmentComponent implements OnInit {
   clientName:string='';
   date:any;
   constructor(private appService: ApplicationServiceService,private title:Title,private router:Router) { 
-    title.setTitle("Claim-Office Assignment");
+    title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
     this.claimData = [];//{} as FreshClaimPLogs;
     console.log(this.router.url)
   }

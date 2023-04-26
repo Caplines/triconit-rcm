@@ -25,7 +25,7 @@ export class UserStatusComponent implements OnInit {
   roleData: any = [];
 
   constructor(public appService: ApplicationServiceService, private title: Title) {
-    title.setTitle("User-Status");
+    title.setTitle(Utils.defaultTitle + "User Status");
 
   }
 

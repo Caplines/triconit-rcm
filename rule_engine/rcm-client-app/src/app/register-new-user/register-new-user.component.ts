@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder,Validators} from "@angular/forms";
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
+import Utils from '../util/utils';
 
 @Component({
   selector: 'app-register-new-user',
@@ -20,7 +21,7 @@ export class RegisterNewUserComponent implements OnInit {
   showPassword:boolean=false;
   activeUserClients:any=[];
   constructor(private fb : FormBuilder, public appService: ApplicationServiceService,private title : Title) {
-    title.setTitle("Register New User");
+    title.setTitle(Utils.defaultTitle + "Register New User");
     this.userDetails = this.fb.group({
       'firstName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
       'lastName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],

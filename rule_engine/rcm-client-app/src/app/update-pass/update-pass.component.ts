@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
+import Utils from '../util/utils';
 
 @Component({
   selector: 'app-update-pass',
@@ -16,7 +17,7 @@ export class UpdatePasswordComponent implements OnInit {
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
 
   constructor(public appService: ApplicationServiceService, private title: Title) { 
-    title.setTitle("Update-Password");
+    title.setTitle(Utils.defaultTitle + "Update Password");
   }
 
   ngOnInit(): void {

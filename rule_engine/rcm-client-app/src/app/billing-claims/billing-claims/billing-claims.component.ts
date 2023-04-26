@@ -62,7 +62,7 @@ export class BillingClaimsComponent implements OnInit {
     private claimService: ClaimService,
     private route: ActivatedRoute, private title: Title, private location: Location, private router: Router) {
     this.claimRcm = { claimId: "" };
-    title.setTitle("RCM tool - Claim Detail");
+    title.setTitle(Utils.defaultTitle + "Claim Detail");
 
   }
 

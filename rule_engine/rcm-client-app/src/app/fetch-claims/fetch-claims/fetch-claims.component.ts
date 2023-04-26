@@ -26,7 +26,7 @@ export class FetchClaimsComponent implements OnInit {
 
     constructor(private appService: ApplicationServiceService,public appConstants: AppConstants,private title:Title) {
     this.selectedBtype=this.appConstants.BILLING_ID;
-    title.setTitle('Fetch-Claims')
+    title.setTitle(Utils.defaultTitle + 'Fetch Claims')
     this.log = [];
    }
   
