@@ -8,10 +8,6 @@
                 <div class="main-container">
                     <div class="detail-box">
                         <div class="detail-box-form">
-                            <a data-toggle="collapse" href="javascript:void(0);" class="bold-b-text "
-                             [ngClass]="{'collapsed':!expandCollapse}" (click)="expandCollapse=!expandCollapse" aria-expanded="false">
-                             List of Claims:</a>
-                            
                             <div class="form-row  collapse"  [ngClass]="{'show':expandCollapse}" id="ruleEngine" >
                                 <div class="listClaimBox">
                                     <div class="form-check-inline">
@@ -170,6 +166,11 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <tr  *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
+                                                <td colspan="12">       
+                                                            <div class="text-center mt-2"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
+                                                </td>
+                                            </tr>
                                             <ng-container *ngIf="!loader.listClaimLoader">
                                                     <!-- <ng-container *ngFor="let data of filteredOfficeName">
                                                         <label>
@@ -219,10 +220,7 @@
                                 </table>
                                 <ng-container *ngIf="loader.listClaimLoader">
                                     <div class="text-center"><span class="loader-data"></span> </div>
-                                </ng-container>        
-                                    <ng-container *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
-                                        <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
-                                    </ng-container>
+                                </ng-container> 
                                 </div>
                             </div>
 
