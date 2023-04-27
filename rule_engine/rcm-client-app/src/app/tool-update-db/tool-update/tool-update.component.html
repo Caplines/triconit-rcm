@@ -11,7 +11,7 @@
                     <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
                 </ng-container>
                     <div class="detail-box-form" *ngIf="log.length>0">
-                        <ng-container>
+                        <ng-container *ngIf="cName == '614c4beb-7df2-11e8-8432-8c16451459cd'">
                             <a data-toggle="collapse"  href="javascript:void(0)"  (click)="expandCollapseBox('claimDetails')"  class="bold-b-text " [ngClass]="{'collapsed':!expandCollapse.expandClaim}" aria-expanded="true">How would you like to update the database:</a>
                             <div class="form-row elementBlock collapse" [ngClass]="{'show':expandCollapse.expandClaim}"  id="claimDetails" >
                             <div class="updateData">
@@ -25,15 +25,20 @@
                                     <label class="form-check-label gs-link" for="flexRadioDefault2" (click)="fetchGSheet()">Through Google Sheet</label>
                                 </div>
                             </ng-container>
-                            <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
+                            <!-- <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
                                 <div class="form-check-inline">
                                     <label class="form-check-label gs-link" (click)="fetchGSheet()" >Through Google Sheet</label>
                                 </div>
-                            </ng-container>
+                            </ng-container> -->
                             </div>
                             <div class="alert alert-info" role="alert">
                                 <img src="../../assets/img/info-icon-border.png"> If you'd like to update the database using Google Sheet, please paste the data in required format in this sheet
                             </div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
+                        <div class="form-check-inline">
+                            <label class="form-check-label gs-btn" (click)="fetchGSheet()" >Through Google Sheet</label>
                         </div>
                     </ng-container>
                     <ng-container *ngIf="alert.showAlertPopup">
