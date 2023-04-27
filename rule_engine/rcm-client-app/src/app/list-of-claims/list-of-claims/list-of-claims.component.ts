@@ -274,7 +274,7 @@ export class ListOfClaimsComponent implements OnInit {
         break;
       }
     }
-    this.isFilterAllSelected.lastTeam = isAllSelected;
+    this.isFilterAllSelected.lastTeamWorked = isAllSelected;
     this.filteredItems = this.claimDetail.filter((item: any) => {
       return this.filteredLastTeamWorked.some((checkbox: any) => {
         return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
@@ -387,7 +387,7 @@ export class ListOfClaimsComponent implements OnInit {
           e.checked = false;
         }
       });
-      this.filterActionRequired("actionRequired");
+      this.filterActionRequired("statusType");
     }
     if(filterProperty == "insuranceName"){
       this.filteredInsuranceName.forEach((e: any) => {
