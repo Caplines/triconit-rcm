@@ -1,5 +1,7 @@
 package com.tricon.rcm.dto;
 
+
+
 import java.math.BigInteger;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.tricon.rcm.util.Constants;
+
 
 
 @XmlRootElement
@@ -748,6 +751,20 @@ public class CaplineIVFFormDto {
 	private String yesNoAssignToffice;
 	private String d1120;
 	private String d1110;
+	private String d0120;
+	private String d7953Extraction;
+	
+	private String d8660;
+	private String d8660fr;
+	private String d8210;
+	private String d8210fr;
+	private String d8220;
+	private String d8220fr;
+	private String d8020;
+	private String d8020fr;
+	private String d8692;
+	private String d8692fr;
+	
     //END
     
     public String getFill1() {
@@ -3806,6 +3823,102 @@ public class CaplineIVFFormDto {
 
 	public void setD1110(String d1110) {
 		this.d1110 = d1110;
+	}
+
+	public String getD0120() {
+		return d0120;
+	}
+
+	public void setD0120(String d0120) {
+		this.d0120 = d0120;
+	}
+
+	public String getD7953Extraction() {
+		return d7953Extraction;
+	}
+
+	public void setD7953Extraction(String d7953Extraction) {
+		this.d7953Extraction = d7953Extraction;
+	}
+
+	public String getD8660() {
+		return d8660;
+	}
+
+	public void setD8660(String d8660) {
+		this.d8660 = d8660;
+	}
+
+	public String getD8660fr() {
+		return d8660fr;
+	}
+
+	public void setD8660fr(String d8660fr) {
+		this.d8660fr = d8660fr;
+	}
+
+	public String getD8210() {
+		return d8210;
+	}
+
+	public void setD8210(String d8210) {
+		this.d8210 = d8210;
+	}
+
+	public String getD8210fr() {
+		return d8210fr;
+	}
+
+	public void setD8210fr(String d8210fr) {
+		this.d8210fr = d8210fr;
+	}
+
+	public String getD8220() {
+		return d8220;
+	}
+
+	public void setD8220(String d8220) {
+		this.d8220 = d8220;
+	}
+
+	public String getD8220fr() {
+		return d8220fr;
+	}
+
+	public void setD8220fr(String d8220fr) {
+		this.d8220fr = d8220fr;
+	}
+
+	public String getD8020() {
+		return d8020;
+	}
+
+	public void setD8020(String d8020) {
+		this.d8020 = d8020;
+	}
+
+	public String getD8020fr() {
+		return d8020fr;
+	}
+
+	public void setD8020fr(String d8020fr) {
+		this.d8020fr = d8020fr;
+	}
+
+	public String getD8692() {
+		return d8692;
+	}
+
+	public void setD8692(String d8692) {
+		this.d8692 = d8692;
+	}
+
+	public String getD8692fr() {
+		return d8692fr;
+	}
+
+	public void setD8692fr(String d8692fr) {
+		this.d8692fr = d8692fr;
 	}
 	
 	

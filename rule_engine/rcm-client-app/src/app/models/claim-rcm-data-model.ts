@@ -63,6 +63,8 @@ export interface ClaimRcmDataModel {
 	tpId?: string;
 	ivDos?: string;
 	tpDos?: string;
+	billedAmount?: number;
+
 }
 
 

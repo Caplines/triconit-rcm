@@ -59,18 +59,18 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Billed Amount :</label>
-                                        <div></div>
+                                        <div>{{claimRcm.billedAmount}}</div>
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Estimated Amount :</label>
-                                        <div></div>
+                                        <div>{{claimRcm.estSecondaryES}}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
                                         <label for="" class="">Insurance Type :</label>
-                                        <div *ngIf="claimRcm.primary">{{claimRcm.primInsurance}}</div>
-                                        <div *ngIf="!claimRcm.primary">{{claimRcm.secInsurance}}</div>
+                                        <div *ngIf="claimRcm.primary">{{claimRcm.primaryInsType}}</div>
+                                        <div *ngIf="!claimRcm.primary">{{claimRcm.secondaryInsType}}</div>
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Member ID :</label>
