@@ -113,11 +113,16 @@ export class HeaderComponent implements OnInit {
   }
 
   closeModal() {
+    this.loginUserType = localStorage.getItem('loginAs');
     this.modelElement.modal.style.display = "none";
+    this.showPopup= false;
+    (<HTMLInputElement>document.getElementById('admin')).checked = false;
+    (<HTMLInputElement>document.getElementById('normal')).checked = false;
   }
 
   switchAccount() {
     
+    localStorage.setItem("loginAs", this.loginUserType)
     if(this.cwModel.roles.length != 1 && this.cwModel.companies.length != 1 && this.cwModel.teams.length != 1)
     this.modelElement.modal.style.display = "none";
     if (this.selectedTeam == '') {
@@ -140,6 +145,7 @@ export class HeaderComponent implements OnInit {
   openPopUp(open: boolean) {
     if (!open) {
       this.modelTitle = "Select Account";
+
     }
     else {
       this.modelTitle = "Switch Account";
@@ -206,7 +212,6 @@ export class HeaderComponent implements OnInit {
 
   checkValidationSuperAdmin() {
     if (this.cwModel?.companies?.length > 0 && this.cwModel?.roles?.length > 0 && this.selectedClient && this.selectedRole && this.loginUserType) {
-      localStorage.setItem("loginAs", this.loginUserType)
       if (this.loginUserType == "Normal" && this.selectedTeam) {
         this.btnDisabled = false;
       } else if (this.loginUserType == "Admin") {
