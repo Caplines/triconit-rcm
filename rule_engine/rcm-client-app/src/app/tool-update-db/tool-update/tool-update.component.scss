@@ -70,7 +70,7 @@
 .table-inner-scrollbar {
   position: relative;
   overflow-y: auto;
-  height: calc(100vh - 430px);
+  height: calc(100vh - 360px);
   min-width: 100%;
 }
 .table-inner-scrollbar thead th {
@@ -99,4 +99,10 @@
   margin-bottom: 20px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.update-database{
+  margin-right: 10px;
+  font-size: 15px;
+  color: #2d4047;
 }
