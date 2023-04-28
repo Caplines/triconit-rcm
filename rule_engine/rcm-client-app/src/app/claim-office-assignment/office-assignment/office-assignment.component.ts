@@ -195,7 +195,7 @@ exportToCsv(){
   this.loader.exportCSVLoader=true;
   let options:any={
     showLabels:true,
-    headers: ["Office Name","Office Assigned To", "Oldest Pending Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Total (Pending For Billing & Remote Lite Rejections)"],
+    headers: ["Office Name","Office Assigned To", "Oldest Pending Since Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Total (Pending For Billing & Remote Lite Rejections)"],
   }
   let excelData:any;
   excelData = this.claimData.forEach((e:any)=>
@@ -218,7 +218,7 @@ exportToCsv(){
     return{
       "OfficeName":e.officeName,
       "officeAssignedTo":e.officeAssignedTo,
-      "OldestPendingDate":e.opdt,
+      "Oldest Pending Since Date":e.opdt,
       "OldestPending DOS":e.opdos,
       "NumberofPendingClaimstobeBilled":e.count,
       "NoofRemoteLiteRejectionsPendingtobeHandled" : e.remoteLiteRejections,

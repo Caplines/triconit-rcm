@@ -24,6 +24,8 @@ export class ProductionComponent implements OnInit {
   days:any=0;
   date:any;
   log : any=[];
+  loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false};
+  
   constructor(private appService: ApplicationServiceService,private title:Title) { 
      this.log = [];
      title.setTitle(Utils.defaultTitle + "Production")
@@ -41,6 +43,9 @@ export class ProductionComponent implements OnInit {
     if (callback.status == 200 && callback.data) {
       this.log=callback.data;
    this. productionData = callback.data;
+   if( this. productionData.length==0){
+    this.loader.showLoader = true;
+   }
    this. productionData.forEach((x:any) =>{
             Object.entries(x).forEach(([key, value])=>{
              if(key=='total')
@@ -48,6 +53,7 @@ export class ProductionComponent implements OnInit {
              if(key=='days')
               this.days=this.days+value;           
             })
+            
    });
   } else this.alert.alertMsg = callback.message ? callback.message :'Something went wrong';
     });

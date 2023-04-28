@@ -100,7 +100,7 @@ export class FetchClaimsComponent implements OnInit {
   exportToCsv() {
     let options: any = {
       showLabels: true,
-      headers: ["Office Name","Oldest Pending Date","Oldest Pending DOS",`${this.selectedBtype==this.appConstants.BILLING_ID? 'Number of Pending Fresh Cases' : 'Number of Pending Rebilling Cases'}`, "Number of Pending Remotelite Rejections"]
+      headers: ["Office Name","Oldest Pending Since Date","Oldest Pending DOS",`${this.selectedBtype==this.appConstants.BILLING_ID? 'Number of Pending Fresh Cases' : 'Number of Pending Rebilling Cases'}`, "Number of Pending Remotelite Rejections"]
     }
     let excelData: any;
     excelData= [...this.log];  
@@ -124,7 +124,7 @@ export class FetchClaimsComponent implements OnInit {
     excelData = excelData.map((e:any)=>{
       return{
         "Office Name":e.officeName,
-        "OldestPendingDate":e.opdt,
+        "Oldest Pending Since Date":e.opdt,
         "OldestPendingDOS":e.opdos,
         'NumberofPendingFreshCases':e.count,
         "NumberofPendingRemoteliteRejections":e.remoteLiteRejections
