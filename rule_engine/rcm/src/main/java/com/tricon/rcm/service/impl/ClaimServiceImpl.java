@@ -1,5 +1,6 @@
 package com.tricon.rcm.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -1009,7 +1010,31 @@ public class ClaimServiceImpl {
 			if (l != null) {
 				for (AssignFreshClaimLogsDto logD : l) {
 					dF = new AssignFreshClaimLogsImplDto();
-					BeanUtils.copyProperties(logD, dF);
+					dF.setOfficeName(logD.getOfficeName());
+					dF.setAssignedUser(logD.getAssignedUser());
+					dF.setCount(logD.getCount());
+					dF.setFName(logD.getFName());
+					dF.setLName(logD.getLName());
+					dF.setOfficeUuid(logD.getOfficeUuid());
+					if (logD.getOpdos()!=null) {
+						//2022-10-12
+						try {
+						Date date=Constants.SDF_MYSL_DATE.parse(logD.getOpdos());  
+						dF.setOpdosd(date);
+						}catch(Exception c) {
+							c.printStackTrace();
+						}
+					}//2023-04-13 03:30:03
+					if (logD.getOpdt()!=null) {
+						try {
+						Date date=Constants.SDF_MYSL_DATE_TIME.parse(logD.getOpdt());  
+						dF.setOpdtd(date);
+						}catch(Exception c) {
+							c.printStackTrace();			
+						}
+					}
+										
+					//BeanUtils.copyProperties(logD, dF);
 					counts = remoteLiteMap.get(logD.getOfficeName());
 					if (counts != null) {
 						dF.setRemoteLiteRejections(counts.getRejectedCount());

@@ -1,14 +1,14 @@
 
-export interface  ClaimAssignmentDataModel {
+export interface ClaimAssignmentDataModel {
 
     officeUuid: string;
-    officeName:string;
-    count:number;
-    opdt:Date;
-    opdos:Date;
-    fname:string;
-    lname:string;
-    assignedUser:string;
-    remoteLiteRejections:number;
+    officeName: string;
+    count: number;
+    opdtd: Date;
+    opdosd: Date;
+    fname: string;
+    lname: string;
+    assignedUser: string;
+    remoteLiteRejections: number;
 
 }

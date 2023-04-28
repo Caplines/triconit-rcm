@@ -11,9 +11,13 @@ public class AssignFreshClaimLogsImplDto implements AssignFreshClaimLogsDto{
 
 	String officeName;
 
-	Date opdt;
+	String opdt;
 
-	Date opdos;
+	String opdos;
+	
+	Date opdtd;
+
+	Date opdosd;
 
 	int count;
 	

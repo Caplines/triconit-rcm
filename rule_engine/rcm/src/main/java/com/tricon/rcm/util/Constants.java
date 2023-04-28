@@ -25,6 +25,11 @@ public class Constants {
 	public static final SimpleDateFormat SDF_SHEET_PROVIDER_DATE = new SimpleDateFormat("MMM dd, yyyy");
 	
 	public static final SimpleDateFormat SDF_UI = new SimpleDateFormat("MM-dd-YYYY"); 
+	
+   //FROM MYSQL DB	
+	public static final SimpleDateFormat SDF_MYSL_DATE = new SimpleDateFormat("yyyy-MM-dd");
+	public static final SimpleDateFormat SDF_MYSL_DATE_TIME = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
 	public static final int CLAIM_WITH_SYSTEM = 1;
 
 	// public static final String billingClaim="Billing";
