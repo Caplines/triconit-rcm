@@ -161,7 +161,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
 				+"     inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
 				+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to  "
-				+" 	and  assign.created_date between STR_TO_DATE( :startDate, '%Y-%m-%d')"
+				+" 	and  CAST(assign.created_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
 				+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
 				+" 	left join rcm_claims cl on cl.claim_uuid=assign.claim_id "
 				+"     and rut.team_id=:teamId and taken_back is false and  cl.pending is true  "
