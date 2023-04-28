@@ -1,4 +1,9 @@
 
+<div class="sticky-top bg-dark">
+    <div class="topbar">
+        <h1>Revenue Cycle Management(RCM)</h1>
+    </div>
+</div>
 <div class="right-container" >
 <div class="inner-bg">
 		<div *ngIf="reportDataInd!=null">
@@ -921,6 +926,6 @@
 
 		</div>
 		
-		<div *ngIf="reportDataInd==null" style="margin-top: 100px;margin-left: 71px;"> {{this.message}}</div>
+		<div *ngIf="reportDataInd==null" style="display: flex;justify-content: center;" class="text-light bg-secondary">{{this.message}}</div>
 		<!--showReportData DIV  -->
 	</div>
