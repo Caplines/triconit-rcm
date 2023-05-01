@@ -203,12 +203,17 @@ exportToCsv(){
   excelData = this.claimData.forEach((e:any)=>
   {
     e['officeAssignedTo'] = e.fname ? e.fname+ " "+ e.lname : "-";
-    e.opdos == null ? e.opdos = 'N/A' : e.opdos;
-    if(e.opdt){
-      let date:Date = new Date(e.opdt);
-      e.opdt =  `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+    if(e.opdosd){
+      let date:Date = new Date(e.opdosd);
+      e.opdosd =  `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
     }else{
-        e.opdt = 'N/A';
+      e.opdosd = 'N/A';
+    }
+    if(e.opdtd){
+      let date:Date = new Date(e.opdtd);
+      e.opdtd =  `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+    }else{
+        e.opdtd = 'N/A';
     }
     e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
   })
@@ -220,8 +225,8 @@ exportToCsv(){
     return{
       "OfficeName":e.officeName,
       "officeAssignedTo":e.officeAssignedTo,
-      "Oldest Pending Since Date":e.opdt,
-      "OldestPending DOS":e.opdos,
+      "Oldest Pending Since Date":e.opdtd,
+      "OldestPending DOS":e.opdosd,
       "NumberofPendingClaimstobeBilled":e.count,
       "NoofRemoteLiteRejectionsPendingtobeHandled" : e.remoteLiteRejections,
       "Total(Pending For Billing & Remote Lite Rejections)": e.count ? e.count+e.remoteLiteRejections : '0'

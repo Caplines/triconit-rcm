@@ -215,7 +215,7 @@
                                                         </div>
                                                     </th>
                                                 </ng-container>
-                                                <th class="lc3Row">
+                                                <!-- <th class="lc3Row">
                                                     <div class="dFlex">
                                                         Last Team that Worked on this claim
                                                         <div class="dropdown" (mouseleave)="showFilteredDropdown.lastTeamWorked=false">
@@ -237,7 +237,7 @@
                                                             <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}" (click)="sortData(filteredItems,'lastTeam','desc','string');isSorted = true"></a>
                                                         </span>
                                                     </div>
-                                                </th>
+                                                </th> -->
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -287,7 +287,7 @@
                                                     <td *ngIf="! (det.claimId | claimTypeFilter)">{{det.secTotal}}</td>
                                                     <!-- Insurance Type START-->
                                                     <td *ngIf="selectedSubtype!='Fresh'">{{det.billedAmount}}</td>
-                                                    <td class="NA">{{det.lastTeam==null?'N/A':det.lastTeam}}</td>
+                                                    <!-- <td class="NA">{{det.lastTeam==null?'N/A':det.lastTeam}}</td> -->
                                                 </tr>
                                             </ng-container>
                                         </ng-container>
