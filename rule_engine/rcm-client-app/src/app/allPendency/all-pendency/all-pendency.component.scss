@@ -35,3 +35,10 @@
     top: 30px;
     z-index: 2;
 }
+
+
+@media screen and (max-width: 1400px) {
+  .table-inner-scrollbar tbody tr.totalRow {
+      top: 51px;
+  }
+}
