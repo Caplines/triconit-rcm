@@ -60,6 +60,7 @@ import com.tricon.rcm.dto.ClaimEditDetailDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.PartialHeader;
+import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
@@ -1159,6 +1160,44 @@ public class ClaimServiceImpl {
 					implDto.setAssoicatedClaimStatus((boolean) s[1]);
 				}
 			}
+			
+			if (implDto.getTreatingProvider()==null) {
+			//Provider Sheet
+				String sheetProvider="";
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(new Date());
+				try {
+			    Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
+					"1g9VtQVT5T0-Fp_beLSYhRIbUn-KBqP4TGmYuteMbsd4", "Provider", CLIENT_SECRET_DIR,
+					CREDENTIALS_FOLDER);
+			   HashMap<String, String> doc1NameMap = ConnectAndReadSheets.readProviderScheduleGSheet(
+					"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA",
+					calendar.get(Calendar.YEAR) + " Provider Schedule", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+               String officeName=implDto.getOfficeName();// officeRepo.findById(claim.getOffice().getUuid()).get().getName();
+               String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
+               String doc1FromProvider = doc1NameMap.get(officeName + "->" + sheetDate);
+               List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
+   			   List<ProviderCodeWithOffice> pCodeList = pro.stream()
+   					.filter(e -> e.getOffice().trim().equalsIgnoreCase(officeName)
+   							&& e.getProviderCode().trim().equalsIgnoreCase(doc1FromProvider))
+   					.collect(Collectors.toList());
+   			if (pCodeList != null && pCodeList.size() > 0) {
+   			 	sheetProvider = pCodeList.get(0).getEsCode();
+   			   
+   				
+   			}
+   			if (!sheetProvider.equals("")) {
+   				implDto.setTreatingProvider(sheetProvider);
+   				RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUuid);
+   				claim.setTreatingProvider(sheetProvider);
+   				rcmClaimRepository.save(claim);
+   			}
+				}catch(Exception c) {
+					
+				}
+			}
+			
+			
 			// Run Auto Rules
 			//runAutomatedRules(jwtUser, claimUuid);//not from here 
 		
@@ -2195,11 +2234,9 @@ public class ClaimServiceImpl {
 					Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
 							"1g9VtQVT5T0-Fp_beLSYhRIbUn-KBqP4TGmYuteMbsd4", "Provider", CLIENT_SECRET_DIR,
 							CREDENTIALS_FOLDER);
-					HashMap<String, String> doc1NameMap = ConnectAndReadSheets.readProviderScheduleGSheet(
-							"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA",
-							calendar.get(Calendar.YEAR) + " Provider Schedule", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
-	                String officeName=officeRepo.findById(claim.getOffice().getUuid()).get().getName();
-					allLIst.addAll(ruleBookService.rule304(rule, doc1NameMap, claim, officeName, providerSheetData));
+					
+					String officeName=officeRepo.findById(claim.getOffice().getUuid()).get().getName();
+					allLIst.addAll(ruleBookService.rule304(rule, claim));
 
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_305);
 					List<CredentialData> creList = ConnectAndReadSheets.readCredentialGSheet(

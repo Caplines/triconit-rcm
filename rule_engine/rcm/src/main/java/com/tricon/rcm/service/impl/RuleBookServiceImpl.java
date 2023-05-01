@@ -220,8 +220,7 @@ public class RuleBookServiceImpl {
 	 * @param rcmClaim
 	 * @return
 	 */
-	public List<TPValidationResponseDto> rule304(RcmRules rule, HashMap<String, String> doc1NameMap, RcmClaims rcmClaim,
-			String claimofficeName, Object[] providerSheetData) {
+	public List<TPValidationResponseDto> rule304(RcmRules rule,  RcmClaims rcmClaim	 ) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -229,20 +228,8 @@ public class RuleBookServiceImpl {
 		try {
 
 			String claimProvider = rcmClaim.getProviderId();
-			Date claimDate = rcmClaim.getDos();
-			String sheetProvider = "";
-			String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(claimDate);
-			String doc1FromProvider = doc1NameMap.get(claimofficeName + "->" + sheetDate);
-			List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
-
-			List<ProviderCodeWithOffice> pCodeList = pro.stream()
-					.filter(e -> e.getOffice().trim().equalsIgnoreCase(claimofficeName)
-							&& e.getProviderCode().trim().equalsIgnoreCase(doc1FromProvider))
-					.collect(Collectors.toList());
-			if (pCodeList != null && pCodeList.size() > 0) {
-				sheetProvider = pCodeList.get(0).getEsCode();
-			}
-
+			String sheetProvider =rcmClaim.getTreatingProvider();
+			
 			if (claimProvider == null) {
 
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),

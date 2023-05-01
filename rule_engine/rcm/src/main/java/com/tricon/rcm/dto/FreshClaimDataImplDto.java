@@ -98,4 +98,5 @@ public class FreshClaimDataImplDto {
 	String estSecondaryES;
 	String descriptionES;
 		
+	String treatingProvider;
 }

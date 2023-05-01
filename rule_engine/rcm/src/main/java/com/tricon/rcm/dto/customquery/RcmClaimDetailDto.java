@@ -49,8 +49,12 @@ public interface RcmClaimDetailDto {
 	String getSecPolicyHolder();
 	boolean getAutoRuleRun();
 	
+	
     String getDateLastUpdatedES();// This is DOS but not considered-- we have use Current Date as DOS in TP but in Claim we will consider this .
 	String getStatusES();
 	String getEstSecondaryES();
 	String getDescriptionES();
+	String getTreatingProvider();
+	String getProviderOnClaim();
+	
 }
