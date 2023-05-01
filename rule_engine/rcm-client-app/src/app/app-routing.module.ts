@@ -61,7 +61,7 @@ const  routes: Routes = [
 
   {
     path:'billing-claims/:uuid',
-    loadChildren :()=> import("./billing-claims/billing-claims.module").then(m=>m.BillingClaimsModule),
+    loadChildren :()=> import("./claims/claims.module").then(m=>m.ClaimsModule),
   },
   {
     path:'billing-claims/:uuid/ivf',

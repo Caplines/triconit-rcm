@@ -15,7 +15,7 @@ export class AllPendencyComponent {
   pendencyData:any=[];
   teamData:any=[];
   currentTeamId:any;
-  showLoader:boolean=false;
+  showLoader:any={'loader':false,'exportPDFLoader':false,'exportCSVLoader':false};
   date:any;
   totalCount:any=[{"teamId":3,'count':0},{"teamId":4,"count":0},{"teamId":5,"count":0},{"teamId":6,"count":0},{"teamId":7,"count":0}];
 
@@ -28,10 +28,10 @@ export class AllPendencyComponent {
     this.currentTeamId = localStorage.getItem("selected_teamId");
   }
   getAllPendencyDetails(){
-    this.showLoader=true;
+    this.showLoader.loader=true;
     this._service.fetchAllPendency((res:any)=>{
       if(res.status==200){
-        this.showLoader=false;
+        this.showLoader.loader=false;
 
           this.pendencyData = res.data.offices.map((office:any) => {
           const countObj = res.data.count.find((obj:any) => obj.officeName === office.name && obj.teamId != this.currentTeamId);
@@ -66,6 +66,7 @@ export class AllPendencyComponent {
   }
 
   saveToPdf(divName:any){
+    this.showLoader.exportPDFLoader=true;
     let m:any=document.querySelectorAll(".table-wrapper-scroll-y");
     m.forEach((e:any)=>{
       e.classList.remove('table-wrapper-scroll-y');
@@ -80,6 +81,7 @@ export class AllPendencyComponent {
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_All_Pendency_${this.date}`);
+      this.showLoader.exportPDFLoader=false;
        m.forEach((e:any)=>{
       e.classList.add('table-wrapper-scroll-y');
       e.classList.add('table-inner-scrollbar');
@@ -88,7 +90,7 @@ export class AllPendencyComponent {
   }
 
   exportToCsv(fromTable:any){
-
+    this.showLoader.exportCSVLoader=true;
     let headers:any=[];
     headers.push("Office Name");
     this.teamData.forEach((e:any)=>{
@@ -146,5 +148,6 @@ export class AllPendencyComponent {
       console.log(excelData);
       
     new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_All_Pendency_${this.date}`, options);
+    this.showLoader.exportCSVLoader=false;
   }
 }

@@ -33,7 +33,7 @@ export class OfficeAssignmentComponent implements OnInit {
   userByTeam:any=[];
   assignOfficeDetails:any={'assignOfficeDetails':[],'teamId':''};
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
-  loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false};
+  loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false,'assignLoader':false};
   showExportLoader:boolean=false;
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0,'totalcountAndRemLiteReject':0}
   clientName:string='';
@@ -134,10 +134,12 @@ export class OfficeAssignmentComponent implements OnInit {
     }
   
  saveAssignments(){
+  this.loader.assignLoader=true;
   this.appService.assignOffice(this.assignOfficeDetails,(callback:any)=>{
     if(callback.status == 200){
+      this.loader.assignLoader=false;
       this.showAlertPopup(callback);
-      scrollTo(0,0);
+      // scrollTo(0,0);
       this.assignOfficeDetails.assignOfficeDetails= [];
     }else{
       this.showAlertPopup(callback);

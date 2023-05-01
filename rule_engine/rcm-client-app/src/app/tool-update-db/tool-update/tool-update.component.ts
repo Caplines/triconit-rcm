@@ -26,7 +26,7 @@ export class ToolUpdateComponent implements OnInit {
   smilePoint: ClientModel;
   esAgent:any;
   googleSheet:any;
-  loader:boolean=false;
+  loader:any={'showLoader':false,'updateClaims':false,'exportPDFLoader':false,'exportCSVLoader':false};
   cName:string="-1";
   sourceType:string="";
   expandCollapse:any={'expandClaim':true,'expandTeamRemarks':true}
@@ -64,7 +64,7 @@ this.sourceType="";
        
        if (res.status=== 200){
         ths.log=res.data;
-        this.loader = false;
+        this.loader.showLoader = false;
        }else{
          //ERROR
        }
@@ -92,6 +92,7 @@ this.sourceType="";
 
   pullFreshClaims(){
     let ths=this;
+    ths.loader.updateClaims=true;
     ths.freshClaimPullModel.officeuuids=[];
    
     if (this.sourceType =='' &&  this.smilePoint.uuid==this.cName) {
@@ -110,10 +111,11 @@ this.sourceType="";
     });
     ths.freshClaimPullModel.companyuuid=this.cName;
     if (ths.freshClaimPullModel.officeuuids.length>0){
-      ths.loader=true;
+      ths.loader.showLoader=true;
+      ths.loader.updateClaims=false;
       this.appService.pullFreshClaims(ths.freshClaimPullModel,(res:any)=>{
         if (res.status=== 200){
-          ths.loader=false;
+          ths.loader.showLoader=false;
           res.data.forEach((d:FreshClaimPLogs) => {
              
              let filteredData:Array<FreshClaimPLogs> = ths.log.filter((l:any) => l.officeUuid === d.officeUuid);
@@ -168,7 +170,7 @@ this.sourceType="";
 
   fetchAllClients() {
     let ths = this;
-    this.loader = true;
+    this.loader.showLoader = true;
     ths.appService.getClientsName((res: any) => {
 
       if (res.status === 200) {
@@ -221,6 +223,7 @@ this.sourceType="";
   }
 
   saveToPdf(divName: any) {
+    this.loader.exportPDFLoader=true;
     let m:any=document.querySelector(".table-wrapper-scroll-y");
     m.classList.remove('table-wrapper-scroll-y');
     m.classList.remove('table-inner-scrollbar');
@@ -233,6 +236,7 @@ this.sourceType="";
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_Tool_To_Update_Database_${this.date}`);
+      this.loader.exportPDFLoader=false;
       m.classList.add('table-wrapper-scroll-y');
       m.classList.add('table-inner-scrollbar');
     });
@@ -240,6 +244,7 @@ this.sourceType="";
   }
 
   exportToCsv() {
+    this.loader.exportCSVLoader=true;
     let options: any = {
       showLabels: true,
       headers: ["Office Name", "Source","Database Updation Done","Last Attempted On","Total No. of New Claims Added", ]
@@ -276,6 +281,7 @@ this.sourceType="";
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Tool_To_Update_Database_${this.date}`, options);
+    this.loader.exportCSVLoader=false;
 
   }
 

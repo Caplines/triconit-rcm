@@ -1,8 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { BaseService } from 'src/app/service/base-service.service';
-import { AuthService } from '../../service/auth-service.service';
-import { TokenStorageService } from '../../service/token-storage.service';
 import Utils from '../../util/utils';
 import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
@@ -23,11 +19,10 @@ export class ProductionComponent implements OnInit {
   total:any=0;
   days:any=0;
   date:any;
-  log : any=[];
-  loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false};
+  selectedDate:any={'startDate':'','endDate':''};
+  loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false,'fetch':false};
   
   constructor(private appService: ApplicationServiceService,private title:Title) { 
-     this.log = [];
      title.setTitle(Utils.defaultTitle + "Production")
     }
 
@@ -35,18 +30,20 @@ export class ProductionComponent implements OnInit {
    
   }
 
- save(startDate:string,endDate:string){
+ save(){
+  this.loader.showLoader=true;
+  this.loader.fetch = true;
   this.total=0;
   this.days=0;
-  if(startDate !=='' && endDate !==''){
-  this.appService.saveProductionData({ "startDate": startDate,"endDate":endDate }, (callback: any) => {
+  this.appService.saveProductionData({ "startDate": this.selectedDate.startDate,"endDate": this.selectedDate.endDate }, (callback: any) => {
     if (callback.status == 200 && callback.data) {
-      this.log=callback.data;
-   this. productionData = callback.data;
+      this.loader.showLoader=false;
+      this.loader.fetch = false;
+   this.productionData = callback.data;
    if( this. productionData.length==0){
     this.loader.showLoader = true;
    }
-   this. productionData.forEach((x:any) =>{
+   this.productionData.forEach((x:any) =>{
             Object.entries(x).forEach(([key, value])=>{
              if(key=='total')
                 this.total=this.total+value;            
@@ -57,12 +54,19 @@ export class ProductionComponent implements OnInit {
    });
   } else this.alert.alertMsg = callback.message ? callback.message :'Something went wrong';
     });
-  }
-       //clear date field
-       // (<HTMLInputElement>document.getElementById("sDate")).value='';
-       // (<HTMLInputElement>document.getElementById("eDate")).value='';
+    
  }
+
+ selectDate(event:any,from:any){
+  if(from == 'start') this.selectedDate.startDate = event.target.value ;
+  if(from=='end') this.selectedDate.endDate = event.target.value;
+  console.log(this.selectedDate.startDate,this.selectedDate.endDate );
+  
+  
+ }
+
  saveToPdf(divName: any) {
+  this.loader.exportPDFLoader=true;
   let m:any=document.querySelector(".table-wrapper-scroll-y");
   m.classList.remove('table-wrapper-scroll-y');
   m.classList.remove('table-inner-scrollbar');
@@ -75,6 +79,7 @@ export class ProductionComponent implements OnInit {
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     pdf.save(`${localStorage.getItem("selected_clientName")}_Production_${this.date}`);
+    this.loader.exportPDFLoader=false;
     m.classList.add('table-wrapper-scroll-y');
     m.classList.add('table-inner-scrollbar');
   });
@@ -82,12 +87,13 @@ export class ProductionComponent implements OnInit {
 }
 
 exportToCsv() {
+  this.loader.exportCSVLoader=true;
   let options: any = {
     showLabels: true,
     headers: ["Associate Name","Total Production", "Average Production (Per Day)"]
   }
   let excelData: any;
-  excelData = [...this.log];
+  excelData = [...this.productionData];
   excelData = excelData.map((e: any) => {
     if (e.cd) {
       let date: Date = new Date(e.cd);
@@ -113,6 +119,7 @@ exportToCsv() {
   this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
   
   new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Production_${this.date}`, options);
+  this.loader.exportCSVLoader=false;
 
 }
 }

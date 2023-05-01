@@ -242,4 +242,7 @@ export default class Utils {
 
    static defaultTitle:string = 'RCM Tool - ';
 
+   static currentUserEmail(){
+      return (localStorage.getItem("currentUser"));
+   }
 }

@@ -1,22 +1,21 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
-import { ApplicationServiceService } from '../../service/application-service.service';
-import { ClaimService } from '../../service/claim.service';
-import { ClaimAssignToTeamModel } from '../../models/claim_assign_to_team';
 
-import { AppConstants } from '../../constants/app.constants';
 import {
   ClaimRcmDataModel, ClaimEditModel, ServiceLevelCodeModel, SubmissionDetailModel,
   ClaimRuleModel, ClaimRuleRemarkModel, RuleEngineValModel,
   ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem
-} from '../../models/claim-rcm-data-model';
-import { ClaimRulesPullDataModel } from '../../models/claim-rules-pull-data-model';
+} from '../models/claim-rcm-data-model';
 
 import { Title } from '@angular/platform-browser';
-import Utils from '../../util/utils';
 import { ActivatedRoute } from '@angular/router';
-
+import { ApplicationServiceService } from '../service/application-service.service';
+import { AppConstants } from '../constants/app.constants';
+import { ClaimService } from '../service/claim.service';
+import { ClaimAssignToTeamModel } from '../models/claim_assign_to_team';
+import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
+import Utils from '../util/utils';
 
 @Component({
   selector: 'app-billing-claims',
@@ -24,9 +23,9 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./billing-claims.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class BillingClaimsComponent implements OnInit {
 
-
+export class BillingClaimsComponent {
+  
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertAssign: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   claimRcm: ClaimRcmDataModel;
@@ -55,17 +54,14 @@ export class BillingClaimsComponent implements OnInit {
   otherErrormsg = "";
   loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false }
   //ivfData:any=[];
-
+  
   modelElement: any = { 'modal': '', 'span': '' }
-
-  constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
-    private claimService: ClaimService,
-    private route: ActivatedRoute, private title: Title, private location: Location, private router: Router) {
+constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
+  private claimService: ClaimService,
+  private route: ActivatedRoute, private title: Title, private location: Location, private router: Router){
     this.claimRcm = { claimId: "" };
     title.setTitle(Utils.defaultTitle + "Claim Detail");
-
   }
-
 
   ngOnInit(): void {
     this.smilePoint = Utils.isSmilePoint();

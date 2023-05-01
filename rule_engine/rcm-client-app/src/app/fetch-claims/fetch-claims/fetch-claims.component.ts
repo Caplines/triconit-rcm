@@ -20,7 +20,7 @@ export class FetchClaimsComponent implements OnInit {
   expandCollapse:boolean=true;
   switchBox:any={'billing':true,'reBilling':false};
   isSorted:boolean=false;
-  loader:any={'billingLoader':false,'listClaimLoader':false};
+  loader:any={'billingLoader':false,'listClaimLoader':false,'exportPDFLoader':false,'exportCSVLoader':false};
   totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0}
   date:any;
 
@@ -80,6 +80,7 @@ export class FetchClaimsComponent implements OnInit {
   }
 
   saveToPdf(divName: any) {
+    this.loader.exportPDFLoader=true;
     let m:any=document.querySelector(".table-wrapper-scroll-y");
     m.classList.remove('table-wrapper-scroll-y');
     m.classList.remove('table-inner-scrollbar');
@@ -92,12 +93,14 @@ export class FetchClaimsComponent implements OnInit {
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_Fetch_Claims_${this.date}`)
+      this.loader.exportPDFLoader=false;
       m.classList.add('table-wrapper-scroll-y');
       m.classList.add('table-inner-scrollbar');
     });
   }
 
   exportToCsv() {
+    this.loader.exportCSVLoader=true;
     let options: any = {
       showLabels: true,
       headers: ["Office Name","Oldest Pending Since Date","Oldest Pending DOS",`${this.selectedBtype==this.appConstants.BILLING_ID? 'Number of Pending Fresh Cases' : 'Number of Pending Rebilling Cases'}`, "Number of Pending Remotelite Rejections"]
@@ -133,6 +136,7 @@ export class FetchClaimsComponent implements OnInit {
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Fetch_Claims_${this.date}`, options);
+    this.loader.exportCSVLoader=false;
   }
 
   logout() {

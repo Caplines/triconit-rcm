@@ -2,30 +2,23 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { BillingClaimsRoutingModule } from './billing-claims-routing.module';
-import { BillingClaimsComponent } from './billing-claims/billing-claims.component';
-import { PipesModule } from '../pipe/pipe-module';
-import { HeaderComponent } from '../header/header-component/header.component';
+import { BillingClaimsComponent } from './billing-claims.component';
+import { FormsModule } from '@angular/forms';
 import { ApplicationServiceService } from '../service/application-service.service';
 import { ClaimService } from '../service/claim.service';
 import { DownLoadService } from '../service/download.service';
+import { PipesModule } from '../pipe/pipe-module';
 
-import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    BillingClaimsComponent
-  ],
-  providers: [ApplicationServiceService, ClaimService, DownLoadService],
+  declarations: [BillingClaimsComponent],
   imports: [
     CommonModule,
-    FormsModule,
     BillingClaimsRoutingModule,
-    PipesModule,
-    HeaderComponent
-  ]
+    FormsModule,
+    PipesModule
+  ],
+  providers:[ApplicationServiceService,ClaimService, DownLoadService],
+  exports:[BillingClaimsComponent]
 })
-export class BillingClaimsModule {
-  constructor() {
-
-  }
-}
+export class BillingClaimsModule { }

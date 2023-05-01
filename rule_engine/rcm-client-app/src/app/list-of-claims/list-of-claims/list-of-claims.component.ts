@@ -21,7 +21,7 @@ export class ListOfClaimsComponent implements OnInit {
   expandCollapse: boolean = true;
   switchBox: any = { 'billing': true, 'reBilling': false };
   isSorted: boolean = false;
-  loader: any = { 'billingLoader': false, 'listClaimLoader': false };
+  loader: any = { 'billingLoader': false, 'listClaimLoader': false,'exportPDFLoader':false,'exportCSVLoader':false };
   showFilteredDropdown: any= {'officeName':false,'claimType':false,'insuranceType':false,'insuranceName':false,'lastTeamWorked':false,'actionRequired':false};
   filteredItems: any = [];
   filteredOfficeName: any = [];
@@ -283,6 +283,7 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   saveToPdf(divName: any) {
+    this.loader.exportPDFLoader=true;
     let m:any=document.querySelector(".table-wrapper-scroll-y");
     m.classList.remove('table-wrapper-scroll-y');
     m.classList.remove('table-inner-scrollbar');
@@ -295,12 +296,14 @@ export class ListOfClaimsComponent implements OnInit {
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`);
+      this.loader.exportPDFLoader=false;
       m.classList.add('table-wrapper-scroll-y');
       m.classList.add('table-inner-scrollbar');
     });
   }
 
   exportToCsv() {
+    this.loader.exportCSVLoader=true;
     let options: any = {
       showLabels:true,
       headers: ["Office", "Patient ID", "Patient Name",'Date of Service',  "Claim Age","Timely Filing Limit (Days)", "Claim Type","Action Required", "Insurance Name","Insurance Type",  "Estimated Amount","Last Team that Worked on this claim", ]
@@ -355,6 +358,7 @@ export class ListOfClaimsComponent implements OnInit {
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       console.log(excelData.sort());
       new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
+      this.loader.exportCSVLoader=false;
   }
 
 
