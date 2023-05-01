@@ -287,7 +287,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " inner join office off on off.uuid=rc.office_id inner join rcm_claim_assignment rca "
 			+ " on rc.claim_uuid=rca.claim_id inner join rcm_team rt on rt.id=rca.current_team_id "
 			+ "  inner join company cmp on cmp.uuid=off.company_id"
-			+ "  where rc.pending is true and rca.active is false and cmp.uuid=:companyId"
+			+ "  where rc.pending is true and rca.active is true and cmp.uuid=:companyId"
 			+ "  group by rt.name" )
 	List<AllPendencyDto> allPendencyCount(@Param("companyId") String companyId);
 	
@@ -296,7 +296,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " inner join office off on off.uuid=rc.office_id inner join rcm_claim_assignment rca "
 			+ " on rc.claim_uuid=rca.claim_id inner join rcm_team rt on rt.id=rca.current_team_id "
 			+ "  inner join company cmp on cmp.uuid=off.company_id"
-			+ "  where rc.pending is true and rca.active is false and cmp.uuid=:companyId"
+			+ "  where rc.pending is true and rca.active is true and cmp.uuid=:companyId"
 			+ "  group by rt.name" )
 	List<AllPendencyDateDto> allPendencyDateCount(@Param("companyId") String companyId);
 	
