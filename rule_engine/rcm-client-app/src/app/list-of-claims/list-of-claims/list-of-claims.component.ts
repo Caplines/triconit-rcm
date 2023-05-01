@@ -292,7 +292,6 @@ export class ListOfClaimsComponent implements OnInit {
       let pdf = new jsPDF('p', 'mm', 'a4');
       let width = pdf.internal.pageSize.getWidth();
       let height = canvas.height * width / canvas.width;
-      pdf.text(`${localStorage.getItem("selected_clientName")} - List of Claims`,5,10);
       pdf.addImage(content, "PNG", 0, 15, width, height)
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
