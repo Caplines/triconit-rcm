@@ -117,25 +117,35 @@
                 z-index: 999;
                 .filter-dropdown-menu {
                     width: 460px;
+                    left: -115px;
                 }
             }
             &:nth-child(10){
                 
-                z-index: 99;
-                .filter-dropdown-menu {
-                    width: 360px;
-                    left: -90px;
-                }
-            }
-            &:nth-child(12){
                 z-index: 9;
-                min-width: 140px;
                 .filter-dropdown-menu {
-                    left: inherit;
-                    right: -27px;
+                    width: 340px;
+                    left: -144px;
                 }
             }
+            // &:nth-child(10){
+            //     z-index: 9;
+            //     min-width: 140px;
+            //     .filter-dropdown-menu {
+            //         left: inherit;
+            //         right: -27px;
+            //     }
+            // }
     
         }    
     }
 }
+
+.filter-dropdown-menu label:first-child{
+    color: #dc3545;
+    font-weight: 700;
+    width: 100%;
+}
+.filter-dropdown-menu label:first-child input[type=checkbox] {
+    accent-color:#dc3545;
+  }
