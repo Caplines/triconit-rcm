@@ -122,7 +122,8 @@ export class HeaderComponent implements OnInit {
 
   switchAccount() {
     
-    localStorage.setItem("loginAs", this.loginUserType)
+    localStorage.setItem("loginAs", this.loginUserType);
+    Utils.clearLastPageVisited();
     if(this.cwModel.roles.length != 1 && this.cwModel.companies.length != 1 && this.cwModel.teams.length != 1)
     this.modelElement.modal.style.display = "none";
     if (this.selectedTeam == '') {

@@ -220,7 +220,16 @@ export default class Utils {
 
    static logout() {
       localStorage.clear();
+      this.setLastPageVisited();
       window.location.href = "/login";
+   }
+
+   static setLastPageVisited(){
+      localStorage.setItem("lastVisitedPage",location.pathname);
+   }
+
+   static clearLastPageVisited(){
+      localStorage.removeItem("lastVisitedPage");
    }
 
    static selectedTeam() {

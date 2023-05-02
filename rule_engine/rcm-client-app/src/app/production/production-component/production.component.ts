@@ -21,6 +21,7 @@ export class ProductionComponent implements OnInit {
   date:any;
   selectedDate:any={'startDate':'','endDate':''};
   loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false,'fetch':false};
+  isDataAvailable:boolean=false;
   
   constructor(private appService: ApplicationServiceService,private title:Title) { 
      title.setTitle(Utils.defaultTitle + "Production")
@@ -40,8 +41,9 @@ export class ProductionComponent implements OnInit {
       this.loader.showLoader=false;
       this.loader.fetch = false;
    this.productionData = callback.data;
-   if( this. productionData.length==0){
+   if( this.productionData.length==0){
     this.loader.showLoader = true;
+    this.isDataAvailable= true;
    }
    this.productionData.forEach((x:any) =>{
             Object.entries(x).forEach(([key, value])=>{

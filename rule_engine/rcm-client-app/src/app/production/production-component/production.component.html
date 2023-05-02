@@ -37,25 +37,27 @@
                                         </thead>
                                         <tbody>
                                             <tr *ngIf="loader.showLoader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
-                                            <tr class="totalRow">
-                                                <td>Total</td>
+                                            <ng-container *ngIf="!loader.showLoader">
+                                                <tr class="totalRow">
+                                                    <td>Total</td>
                                                 <td>{{total}}</td>
                                                 <td>{{days}}</td>
                                             </tr>
                                             
                                             <ng-container *ngFor="let data of productionData;">
-                                                <tr>
+                                                <tr >
                                                     <td>{{data.fname}} {{data.lname}}</td>
                                                     <td>{{data.total}}</td>
                                                     <td>{{data.days}}</td>
                                                 </tr>
                                             </ng-container>
+                                        </ng-container>
                                         </tbody>
                                        
                                     </table>
                                 </div>
                             </div>
-                            <ng-container *ngIf="productionData.length==0 && loader.showLoader" >
+                            <ng-container *ngIf="productionData.length==0 && isDataAvailable" >
                                 <div class="text-center mt-5">
                                     <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
                                 </div>
