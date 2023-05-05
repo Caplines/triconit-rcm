@@ -22,7 +22,7 @@ public class Constants {
 	public static final SimpleDateFormat SDF_SHEET_DATE = new SimpleDateFormat("yyyy-MM-dd");
 
 	// Date Format from Google Sheet Provider .
-	public static final SimpleDateFormat SDF_SHEET_PROVIDER_DATE = new SimpleDateFormat("MMM dd, yyyy");
+	public static final SimpleDateFormat SDF_SHEET_PROVIDER_DATE = new SimpleDateFormat("MMM d, yyyy");
 	
 	public static final SimpleDateFormat SDF_UI = new SimpleDateFormat("MM-dd-YYYY"); 
 	

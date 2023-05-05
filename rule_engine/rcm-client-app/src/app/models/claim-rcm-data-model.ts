@@ -65,6 +65,7 @@ export interface ClaimRcmDataModel {
 	tpDos?: string;
 	billedAmount?: number;
 	treatingProvider?: String;
+	providerOnClaim?: string;
 
 }
 

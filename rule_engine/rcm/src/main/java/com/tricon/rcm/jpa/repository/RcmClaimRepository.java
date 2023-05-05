@@ -203,9 +203,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	@Query(nativeQuery = true, value = "select ivf_form_id,date_of_service from reports_claim r inner join " + 
 			"report_claim_detail rd on rd.report_id=r.id where "
-			+ " office_id=:officeId and claim_id=:claimid and  patient_id=:patientId limit 1 ")
+			+ " office_id=:officeId and claim_id=:claimid and  patient_id=:patientId and insurance_type in (:insTypes) limit 1 ")
 	Object getIVIdOfClaim(@Param("claimid") String claimid,@Param("officeId") String officeId,
-			@Param("patientId") String patientId);
+			@Param("patientId") String patientId,@Param("insTypes") Set<String> insTypes);
 	
 	/*
 	@Query(nativeQuery = true, value = "select treatement_plan_id from reports where "

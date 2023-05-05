@@ -227,7 +227,7 @@ public class RuleBookServiceImpl {
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
 
-			String claimProvider = rcmClaim.getProviderId();
+			String claimProvider = rcmClaim.getProviderOnClaim();
 			String sheetProvider =rcmClaim.getTreatingProvider();
 			
 			if (claimProvider == null) {

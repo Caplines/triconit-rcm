@@ -99,4 +99,5 @@ public class FreshClaimDataImplDto {
 	String descriptionES;
 		
 	String treatingProvider;
+	String providerOnClaim;
 }
