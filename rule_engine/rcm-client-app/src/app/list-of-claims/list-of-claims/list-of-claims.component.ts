@@ -313,7 +313,7 @@ export class ListOfClaimsComponent implements OnInit {
     excelData = excelData.map((e: any) => {
       if (e.dos) {
         let date: Date = new Date(e.dos);
-        e = { ...e, dos: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` };
+        e = { ...e, dos: `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}` };
       }
       else {
         e = { ...e, dos: '' };

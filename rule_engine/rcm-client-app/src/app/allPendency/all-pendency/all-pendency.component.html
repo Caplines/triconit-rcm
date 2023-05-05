@@ -134,7 +134,7 @@
                                                     <td>{{officeData.name}}</td>
                                                     <ng-container *ngFor="let team of teamData;let last=last">
                                                             <td *ngIf="!last">
-                                                                {{ team.teamId == officeData.teamId && officeData.teamId != currentTeamId ? officeData.minDate: ''}}
+                                                                {{ team.teamId == officeData.teamId && officeData.teamId != currentTeamId ? (officeData.minDate| date: 'MM/dd/yyyy'): ''}}
                                                             </td>
                                                             <td *ngIf="last"></td>
                                                     </ng-container>

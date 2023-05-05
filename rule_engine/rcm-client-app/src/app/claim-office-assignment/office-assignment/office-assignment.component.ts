@@ -205,13 +205,13 @@ exportToCsv(){
     e['officeAssignedTo'] = e.fname ? e.fname+ " "+ e.lname : "-";
     if(e.opdosd){
       let date:Date = new Date(e.opdosd);
-      e.opdosd =  `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+      e.opdosd =  `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}`;
     }else{
       e.opdosd = 'N/A';
     }
     if(e.opdtd){
       let date:Date = new Date(e.opdtd);
-      e.opdtd =  `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+      e.opdtd =  `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}`;
     }else{
         e.opdtd = 'N/A';
     }

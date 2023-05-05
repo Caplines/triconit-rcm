@@ -254,7 +254,7 @@ this.sourceType="";
     excelData = excelData.map((e: any) => {
       if (e.cd) {
         let date: Date = new Date(e.cd);
-        e = { ...e, cd: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` }
+        e = { ...e, cd: `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}` }
       } else {
         e = {...e,cd : '-'};
       }

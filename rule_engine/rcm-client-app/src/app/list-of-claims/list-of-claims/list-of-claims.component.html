@@ -261,7 +261,7 @@
                                                             target="_blank">{{det.patientId}}</a></td>
                                                     <td><a [routerLink]="['/billing-claims/', det.uuid]"
                                                             target="_blank">{{det.patientName}}</a></td>
-                                                    <td>{{det.dos | date: 'dd/MM/yyyy'}}</td>
+                                                    <td>{{det.dos | date: 'MM/dd/yyyy'}}</td>
                                                     <td>{{det.claimAge}}</td>
                                                     <td>{{det.timelyFilingLimitData}}</td>
                                                     <!-- Claim Type START-->

@@ -131,6 +131,8 @@ export class AllPendencyComponent {
       excelData = excelData.map((e:any)=>{
         this.teamData.map((ele:any,idx:any)=>{
           if(ele.teamId != this.currentTeamId && ele.teamId === e.teamId){
+            let date: Date = new Date(e.minDate);
+             e = { ...e, minDate: `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}` }
             e[`PendencyWith${ele.teamName}`] = e.minDate ;
           }else if(ele.teamId != this.currentTeamId){
             e[`PendencyWith${ele.teamName}`] = "-";
