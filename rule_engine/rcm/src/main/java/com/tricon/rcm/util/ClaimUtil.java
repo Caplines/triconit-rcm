@@ -129,22 +129,23 @@ public class ClaimUtil {
 			 claims.setSecMemberId(re.getPrimaryMemberId());
 			 claims.setGroupNumber(re.getPrimaryGroupNumber());
 			 try {
-			 claims.setPrimeSecSubmittedTotal(Float.parseFloat(re.getPrimaryBilledAmount().replaceAll("[^0-9]", "")));
+			 claims.setSubmittedTotal(Float.parseFloat(re.getPrimaryBilledAmount().replaceAll("[^.0-9]", "")));
 			 }catch(Exception q) {
-				 claims.setPrimeSecSubmittedTotal(0);
+				 claims.setSubmittedTotal(0);
 			 }
 			 claims.setPrimStatus(re.getPrimaryClaimStatus());
 			 claims.setPrimePolicyHolder(re.getPrimaryPolicyHolderName());
 			 try {
-			 claims.setSubmittedTotal(Float.parseFloat(re.getPrimaryEstAmount().replaceAll("[^0-9]", "")));
+			 claims.setPrimeSecSubmittedTotal(Float.parseFloat(re.getPrimaryEstAmount().replaceAll("[^.0-9]", "")));
 			 }catch(Exception q) {
-				 claims.setSubmittedTotal(0);
+				 claims.setPrimeSecSubmittedTotal(0);
 			 }
 			 
 			 try {
 					claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPrimaryPolicyHolderDob()).getTime()));
 				} catch (Exception dt) {
 			}
+			 
 			 claims.setPrimStatus(re.getPrimaryClaimStatus());
 		}
          if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
@@ -152,18 +153,25 @@ public class ClaimUtil {
         	 claims.setProviderId(re.getProviderIdReport());
         	 claims.setSecMemberId(re.getSecondaryMemberId());
         	 claims.setGroupNumber(re.getSecondaryGroupNumber());
-        	 try {
-        	 claims.setPrimeSecSubmittedTotal(Float.parseFloat(re.getSecondaryBIlledAmount().replaceAll("[^0-9]", "")));
-        	 }catch(Exception q) {
-				 claims.setPrimeSecSubmittedTotal(0);
-			 }
-     		 claims.setSecStatus(re.getSecondaryClaimStatus());
+        	 claims.setSecStatus(re.getSecondaryClaimStatus());
      		 claims.setSecPolicyHolder(re.getSecondaryPolicyHolder());
+        	 try {
+					claims.setPrimTotalPaid(Float.parseFloat(re.getPrimaryPaid().replaceAll("[^.0-9]", "")));
+				} catch (Exception dt) {
+					claims.setPrimTotalPaid(0);
+			}
+        	 
+        	 try {
+        	 claims.setSecSubmittedTotal(Float.parseFloat(re.getSecondaryEstAmount().replaceAll("[^.0-9]", "")));
+        	 }catch(Exception q) {
+				 claims.setSecSubmittedTotal(0);
+			 }
+     		 
      		 try {
-     		 claims.setPrimTotalPaid(Float.parseFloat(re.getSecondaryPaid().replaceAll("[^0-9]", "")));//extra
-     		 }catch(Exception q) {
-     			claims.setPrimTotalPaid(0);
-     		 }
+					claims.setSubmittedTotal(Float.parseFloat(re.getSecondaryBIlledAmount().replaceAll("[^.0-9]", "")));
+				} catch (Exception dt) {
+			}
+     		 
     		 try {
     			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecondaryClaimSubmissionDate()).getTime()));////extra
     		} catch (Exception dt) {

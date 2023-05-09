@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,9 +21,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.tricon.ruleengine.dao.CompanyDao;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.IVFDumpDto;
+import com.tricon.ruleengine.dto.OrthoGoogleSheetDto;
+import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.PatientHistory;
@@ -62,6 +66,12 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 	@Autowired
 	UserDao userDao;
 
+	@Autowired
+	OfficeDao officeDao;
+	
+	@Autowired
+	CompanyDao companyDao;
+	
 	@Override
 	public String dumpOldData(IVFDumpDto dto,IVFormType iVFormType) {
         String p="";
@@ -151,14 +161,73 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
   return p;
 	}
 
-	private static void test() throws Exception{
+	@Override
+	public String dumpOLDataOrtho(IVFormType iVFormType) {
+        String p="";
+        
+        	Map<String, List<Object>> ivfMap = null;
+        	List<Office> officeList= new ArrayList<>();
+        	Company company = companyDao.getCompanyByName(Constants.COMPANY_NAME);
 		try {
-			String d=null;
-			System.out.println(d.equals("d"));
-		}finally {
-			System.out.println("999");
+			
+			ivfMap = ConnectAndReadSheets.readSheetIvOrtho("1ZW0ppOhi4IxDpZZsqKqwzQCpDWsWUKhBLAUsAEz6180", "IV",
+					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+			// ivfMap = ConnectAndReadSheets.readSheetNewDump(dto.getSheetId(), "TEST", null,
+			//		CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);
+			OrthoGoogleSheetDto sh = null;
+			User user = userDao.findUserByUsername(Constants.admin_email);
+			if (ivfMap != null) {
+				int ss=0;
+				//Correct the Date formats
+				for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
+
+					//String key = entry.getKey();
+					List<Object> obL = entry.getValue();
+					for (Object obj : obL) {
+						sh = (OrthoGoogleSheetDto) obj;
+						sh.setPatientDOB(DateUtils.correctDateformat(sh.getPatientDOB()));
+						sh.setPolicyHolderDOB(DateUtils.correctDateformat(sh.getPolicyHolderDOB()));
+						sh.setEffectiveDate(DateUtils.correctDateformat(sh.getEffectiveDate()));
+						sh.setCompletionDate(DateUtils.correctDateformat(sh.getCompletionDate()));
+						//sh.setAptDate(DateUtils.correctDateformat(sh.getAptDate()));
+						}
+					officeList.stream().findFirst();
+					final String fName=sh.getOffice();
+					Office off = officeList.stream()
+							  .filter(q -> q.getName().equalsIgnoreCase(fName))
+							  .findAny()
+							  .orElse(null);
+					if (off==null) {
+						off = officeDao.getOfficeByName(sh.getOffice(), company.getUuid());
+						officeList.add(off);
+					 }
+						sh.setOfficeDb(off);
+						Object[] objR=caplineIVFGoogleFormService.saveAllData(IVFFormConversionUtil.copyValueToPatient(sh,iVFormType), sh.getOfficeDb(), new Date(), user,false,true,iVFormType);
+						if (!((String)objR[1]).equals("Success")) {
+						p=p+"PatId: "+sh.getEsid()+" Completion: "+sh.getCompletionDate()+"  Reason: - <div class='error'>"+(String)objR[1]+"</div><br>";
+						sh.setStatusDump("This IV Already Exists in the RDBMS.");
+						}else {
+							sh.setStatusDump("DONE");
+						}
+						
+					
+					
+				}
+				ConnectAndReadSheets.updateDumpSheet("", "0",	CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, ivfMap);
+				
+			}
+		} catch (Exception c) {
+			
+			StringWriter sw = new StringWriter();
+            c.printStackTrace(new java.io.PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            c.printStackTrace();
+             p=p+"-"+exceptionAsString;
+
+              //p=p+"-"+ex.getMessage()+" Please contact Admin..";
 		}
-		
+		if (p.equals("")) p="Success";
+       return p;
 	}
 	private static boolean updateHistortList(IVFHistorySheet his,List<IVFHistorySheet> li) {
 		int noOFhistory = Constants.history_codes_size;
@@ -244,12 +313,6 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 	public static void main(String[] aa) {
 		System.out.println(DateUtils.correctDateformat("4/12/2019"));
 		System.out.println(DateUtils.correctDateformat("2018-10-17"));
-		try {
-		test();
-		}catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO: handle exception
-		}
+		
 	}
 }

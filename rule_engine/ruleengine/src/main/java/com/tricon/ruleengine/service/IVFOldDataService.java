@@ -6,5 +6,7 @@ import com.tricon.ruleengine.model.db.IVFormType;
 public interface IVFOldDataService {
 	
 	public String dumpOldData(IVFDumpDto dto,IVFormType iVFormType);
+	
+	public String dumpOLDataOrtho(IVFormType iVFormType);
 
 }

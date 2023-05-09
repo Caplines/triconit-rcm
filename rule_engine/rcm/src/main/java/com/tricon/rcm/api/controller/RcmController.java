@@ -202,7 +202,7 @@ public class RcmController extends BaseHeaderController{
 		
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchIndividualClaim(claimUuid, partialHeader)));
+				claimServiceImpl.fetchIndividualClaim(claimUuid, partialHeader,false)));
 	}
 
     @ApiOperation(value = "Api For Fetching Service Code Validation Data by uuid", response = RcmClaimsServiceRuleValidationDto.class , responseContainer = "List")
@@ -465,4 +465,6 @@ public class RcmController extends BaseHeaderController{
 			return new Object[] { jwtUser, false };
 		}
 	}*/
+	
+	
 }

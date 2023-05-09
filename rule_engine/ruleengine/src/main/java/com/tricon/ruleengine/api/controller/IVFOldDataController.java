@@ -55,5 +55,18 @@ public class IVFOldDataController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", data));
 
 	}
+	
+	//Only One time Process
+	@CrossOrigin
+	@PostMapping
+	@RequestMapping(value = "/dumpOldIVFDataOtho11999555", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Object> dumpIOLDataOrtho() {
+
+		//Map<String, List<TPValidationResponseDto>> map = null;
+		
+		String data = iVFOldDataService.dumpOLDataOrtho(iVformTypeDao.getIVFormTypeByName(Constants.IV_ORTHO_FORM_NAME));
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", data));
+
+	}
 
 }

@@ -75,7 +75,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
 			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
-			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal " + " from rcm_claims claims "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
@@ -92,7 +92,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
 			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
-			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal " + " from rcm_claims claims "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal, prime_sec_submitted_total primeSecSubmittedTotal from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid "
@@ -112,7 +112,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
 			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
-			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal " + " from rcm_claims claims "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
@@ -184,7 +184,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" pinst.name primaryInsType,sinst.name secondaryInsType,cmp.name clientName,cl.regenerated regenerated, " +
 			" cl.sec_member_id secMemberId,cl.sec_policy_holder secPolicyHolder, "+ 
 			" cl.provider_id providerId,cl.created_date pulledDate, "+
-			" cl.treating_provider treatingProvider , provider_on_claim providerOnClaim" +
+			" cl.treating_provider treatingProvider , provider_on_claim providerOnClaim," +
+			" cl.prime_policy_holder_dob primePolicyHolderDob "+
 			"  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+

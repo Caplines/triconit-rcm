@@ -566,34 +566,34 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "d7953_extraction", length = 50)
 	private String d7953Extraction;
 	
-	@Column(name = "d8660", length = 10)
+	@Column(name = "d8660", length = 15)
 	private String d8660;
 	
-	@Column(name = "d8660_fr", length = 10)
+	@Column(name = "d8660_fr", length = 15)
 	private String d8660fr;
 	
-	@Column(name = "d8210", length = 10)
+	@Column(name = "d8210", length = 15)
 	private String d8210;
 	
-	@Column(name = "d8210_fr", length = 10)
+	@Column(name = "d8210_fr", length = 15)
 	private String d8210fr;
 	
-	@Column(name = "d8220", length = 10)
+	@Column(name = "d8220", length = 15)
 	private String d8220;
 	
-	@Column(name = "d8220_fr", length = 10)
+	@Column(name = "d8220_fr", length = 15)
 	private String d8220fr;
 	
-	@Column(name = "d8020", length = 10)
+	@Column(name = "d8020", length = 15)
 	private String d8020;
 	
-	@Column(name = "d8020_fr", length = 10)
+	@Column(name = "d8020_fr", length = 15)
 	private String d8020fr;
 	
-	@Column(name = "d8692", length = 10)
+	@Column(name = "d8692", length = 15)
 	private String d8692;
 	
-	@Column(name = "d8692_fr", length = 10)
+	@Column(name = "d8692_fr", length = 15)
 	private String d8692fr;
 	
 

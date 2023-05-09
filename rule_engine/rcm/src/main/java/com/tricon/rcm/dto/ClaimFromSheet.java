@@ -28,7 +28,7 @@ public class ClaimFromSheet {
 	
 	private String secondaryBIlledAmount;
 	private String secondaryClaimSubmissionDate;
-	private String secondaryPaid;
+	private String primaryPaid;
 	private String claimTypeS;
 	private String secondaryClaimStatus;
 	private String providerIdReport;
@@ -50,7 +50,7 @@ public class ClaimFromSheet {
 			String providerIdProviderName, String primaryEstAmount, String primaryInsuranceCompany,
 			String insuranceName, String primaryMemberId, String primaryInsuranceAddress, String primaryGroupNumber,
 			String primaryPolicyHolderName, String primaryPolicyHolderDob, String secondaryBIlledAmount,
-			String secondaryClaimSubmissionDate, String secondaryPaid, String claimTypeS, String secondaryClaimStatus,
+			String secondaryClaimSubmissionDate, String primaryPaid, String claimTypeS, String secondaryClaimStatus,
 			String providerIdReport, String secondaryEstAmount, String secondaryInsuranceCompany,
 			String secondaryInsuranceName, String secondaryMemberId, String secondaryInsuranceAddress,
 			String secondaryGroupNumber, String secondaryPolicyHolder, String secondaryPolicyHolderDob) {
@@ -77,7 +77,7 @@ public class ClaimFromSheet {
 		this.primaryPolicyHolderDob = primaryPolicyHolderDob;
 		this.secondaryBIlledAmount = secondaryBIlledAmount;
 		this.secondaryClaimSubmissionDate = secondaryClaimSubmissionDate;
-		this.secondaryPaid = secondaryPaid;
+		this.primaryPaid = primaryPaid;
 		this.claimTypeS = claimTypeS;
 		this.secondaryClaimStatus = secondaryClaimStatus;
 		this.providerIdReport = providerIdReport;

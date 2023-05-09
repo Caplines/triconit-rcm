@@ -11,6 +11,7 @@ import java.util.Set;
 
 
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
+import com.tricon.ruleengine.dto.OrthoGoogleSheetDto;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
@@ -1536,6 +1537,87 @@ public class IVFFormConversionUtil {
 
 		return p;
 	}
+	
+	
+	    //data Dump only for IVF ORTHO FORM... for  now
+		public static Patient copyValueToPatient(OrthoGoogleSheetDto d,IVFormType iVFormType) {
+
+			Patient p = new Patient();
+			PatientDetail pd = new PatientDetail();
+			PatientDetail2 pd2= new PatientDetail2();
+	        pd.setiVFormType(iVFormType);
+	         //Could have used Beanutil but avoided for safer side;
+			p.setPatientId(d.getEsid());
+			pd.setOrthoAgeLimit(d.getAgeLimitForOrtho());
+			pd.setAptDate(d.getAppointmentDate());
+			pd2.setBenefitPeriod(d.getCalender());//need to see
+			pd.setGeneralDateIVwasDone(d.getCompletionDate());
+			d.getCoordinationBenefits();//Question
+			
+			d.getCsrName();//Question
+			pd2.setD8070(d.getD8070());
+			pd2.setD8080(d.getD8080());
+			pd2.setD8670(d.getD8670());
+			pd2.setD8090(d.getD8090());
+			pd2.setD8690(d.getD8690());
+			pd.setPlanIndividualDeductible(d.getDeductibleForOrtho());
+			pd.setPlanDependentsCoveredtoAge(d.getDependentCoveredUpToAge());
+			pd.setPlanEffectiveDate(d.getEffectiveDate());
+			pd.setEmployerName(d.getEmployerName());
+			pd.setGroup(d.getGroupNo());
+			pd.setInsAddress(d.getInsuranceAddress());
+			pd2.setInsBillingC(d.getInsuranceBillingCycle());
+			pd.setInsContact(d.getInsuranceContactNo());
+			pd.setInsName(d.getInsuranceName());
+			pd.setiVFormType(iVFormType);
+			//d.getiVType();
+			pd.setGeneralBenefitsVerifiedBy(d.getIVUpdatedBy());
+			pd.setMemberId(d.getMemberID());
+			pd.setMemberSSN(d.getSsn());
+			pd.setPlanNetwork(d.getNetwork());
+			pd.setOffice(d.getOfficeDb());
+			d.getOrthoCoverragePer();//Question
+			pd.setOrthoMax(d.getOrthoMax());
+			pd.setOrthoRemaining(d.getOrthoMaxRemaining());
+			p.setDob(d.getPatientDOB());
+			pd.setPayerId(d.getPayerId());
+			pd.setPolicyHolderDOB(d.getPolicyHolderDOB());
+			pd.setPolicyHolder(d.getPolicyHolderName());
+			pd.setPlanTermedDate(d.getPolicyTermDate());
+			pd.setProviderName(d.getProviderName());
+			pd.setRef(d.getReferenceNo());
+			pd.setComments(d.getRemarks());
+			
+			d.getStatus();//Question
+			pd.setClaimFillingLimit(d.getTimelyFilingLimit());
+			//d.getUniqId();
+			pd2.setWaitingPeriod(d.getWaitingPeriodForOrtho());
+	 	    pd2.setWip(d.getWorkInProgress());
+			pd.setPatientDetails2(pd2);
+			Set<PatientDetail2> p2Set = new HashSet<>();
+			p2Set.add(pd2);
+			
+			p.setPatientDetails2(p2Set);
+
+			pd.setUniqueID(d.getOffice() + "_");// -- will set latter;
+			
+			String fname = d.getPatientName();
+			if (fname != null) {
+				String[] f = fname.split(" ");
+				p.setFirstName(f[0]);
+				if (f.length > 1) {
+					p.setLastName(fname.replace(f[0] + " ", ""));
+				}
+			}
+			p.setPatientId(d.getEsid());
+			p.setSalutation("");
+			Set<PatientDetail> pl = new HashSet<>();
+			pl.add(pd);
+			p.setPatientDetails(pl);
+			p.setOffice(d.getOfficeDb());
+
+			return p;
+		}
 
 
 }

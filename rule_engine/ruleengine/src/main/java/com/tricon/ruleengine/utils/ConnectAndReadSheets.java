@@ -49,6 +49,7 @@ import com.tricon.ruleengine.api.enums.HighLevelReportMessageStatusEnum;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.DigitizationRuleEngineResult;
 import com.tricon.ruleengine.dto.ExceptionDataDto;
+import com.tricon.ruleengine.dto.OrthoGoogleSheetDto;
 import com.tricon.ruleengine.dto.RemoteLiteData;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
@@ -1919,5 +1920,86 @@ public class ConnectAndReadSheets {
 		}
 		return list;
 	  }
+	
+	public static Map<String, List<Object>> readSheetIvOrtho(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		List<List<Object>> values = response.getValues();
+		Map<String, List<Object>> map = null;
+		ListIterator li = values.listIterator();
+		OrthoGoogleSheetDto vif = null;
+		
+		
+		// IVFHistorySheet vifH = null;
+		List<Object> ivList = null;
+		// int maxlength= values.size();
+		// int maxlengthT= values.size();
+		// System.out.println("maxlengthT30::"+maxlengthT);
+		//int Column_NO_UNIQUE = 312;
+		//int Column_NO_PATIENT = 129;
+        int rowCounter=-1;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			String uniqueId = "";
+			try {
+				if (obj.get(1).toLowerCase().startsWith("Office".toLowerCase()))
+					continue;
+				// System.out.println("id---" + ivds.get(0));
+				// System.out.println("id---" + officeName + "_" + ivds.get(0));
+				// System.out.println("888888:;" + (obj.get(157)));
+				//Collection<String> ruleGen = null;
+				int x = -1;
+					vif = new OrthoGoogleSheetDto(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+							obj.get(++x), obj.get(++x), obj.get(++x)
+					       );
+					
+					vif.setRowCounter(++rowCounter);
+					vif.setStatusDump("OK");
+					
+					x++;
+					boolean add=false;
+					
+					
+					if (vif.getEsid().trim().equals(""))continue;
+				 //For new Added Columns
+				
+				
+
+				
+			} catch (Exception ex) {
+				continue;
+			}
+			// System.out.println(uniqueId);
+
+			if (map == null)
+				map = new HashMap<>();
+
+			if (map.containsKey(uniqueId)) {
+				// if the key has already been used,
+				// we'll just grab the array list and add the value to it
+				ivList = map.get(uniqueId);
+				ivList.add(vif);
+			} else {
+				// if the key hasn't been used yet,
+				// we'll create a new ArrayList<String> object, add the value
+				// and put it in the array list with the new key
+				ivList = new ArrayList<>();
+				ivList.add(vif);
+				map.put(uniqueId, ivList);
+			}
+
+			
+		}
+		
+		return map;
+	}
 
 }

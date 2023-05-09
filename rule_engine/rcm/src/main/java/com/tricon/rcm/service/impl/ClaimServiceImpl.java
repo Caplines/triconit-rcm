@@ -1051,7 +1051,7 @@ public class ClaimServiceImpl {
 		return finalList;
 	}
 
-	public FreshClaimDataImplDto fetchIndividualClaim(String claimUuid, PartialHeader partialHeader) {
+	public FreshClaimDataImplDto fetchIndividualClaim(String claimUuid, PartialHeader partialHeader,boolean pdf) {
 		FreshClaimDataImplDto implDto = null;
 		RcmClaimDetailDto dto = rcmClaimRepository.fetchIndividualClaim(partialHeader.getCompany().getUuid(), claimUuid);
 		// RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
@@ -1165,7 +1165,7 @@ public class ClaimServiceImpl {
 				}
 			}
 			
-			if (implDto.getTreatingProvider()==null) {
+			if (implDto.getTreatingProvider()==null && !pdf) {
 				
 			//Provider Sheet
 				String sheetProvider="";

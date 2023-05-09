@@ -35,6 +35,17 @@ public class DtoToXmlConverted {
 
 	}
 	
+	public  String convertClaimToXML(ClaimListDownloadDto dto, String dir ) throws Exception{
+		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
+		JAXBContext contextObj = JAXBContext.newInstance(ClaimListDownloadDto.class);
+
+		Marshaller marshallerObj = contextObj.createMarshaller();
+		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		return 	filePath;
+
+	}
+	
 	public byte[] createHtml(String xmlPath, String xslPath)
 		    throws IOException, TransformerException {
 		    ByteArrayOutputStream baos = new ByteArrayOutputStream();

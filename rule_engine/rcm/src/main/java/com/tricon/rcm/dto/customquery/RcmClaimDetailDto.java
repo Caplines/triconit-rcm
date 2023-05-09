@@ -48,6 +48,7 @@ public interface RcmClaimDetailDto {
 	Date getPulledDate();
 	String getSecPolicyHolder();
 	boolean getAutoRuleRun();
+	String getPrimePolicyHolderDob();
 	
 	
     String getDateLastUpdatedES();// This is DOS but not considered-- we have use Current Date as DOS in TP but in Claim we will consider this .

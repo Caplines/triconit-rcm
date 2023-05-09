@@ -21,5 +21,6 @@ public interface FreshClaimDataDto {
 	float getBilledAmount();
 	float getPrimTotal();
 	float getSecTotal();
+	Float getPrimeSecSubmittedTotal();
 	
 }

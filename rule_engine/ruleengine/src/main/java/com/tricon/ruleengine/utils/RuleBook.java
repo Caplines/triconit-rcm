@@ -3700,8 +3700,10 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 					RuleEngineLogger.generateLogs(clazz, "EST INS.-"+tp.getEstInsurance(),
 							Constants.rule_log_debug, bw);
 						
-					if (insZero && (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
-						||	tp.getEstInsurance().equals("0.0"))) continue;
+					RuleEngineLogger.generateLogs(clazz, "TP code.-"+tp.getServiceCode(),
+							Constants.rule_log_debug, bw);
+					//if (insZero && (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0") || tp.getEstInsurance().equals("0.00")
+					//	||	tp.getEstInsurance().equals("0.0"))) continue;
 
 					Collection<Mappings> mL = Collections2.filter(mapps,
 							y -> y.getAdaCodes().getCode().equals((tp.getServiceCode())));
@@ -3764,7 +3766,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 																	new Object[] { tp.getServiceCode(), fcal,
 																			m.getDowngrading() },
 																	locale),
-															Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+															Constants.FAIL,tp.getSurface(),tp.getTooth(),tp.getServiceCode()));
 
 												} else {
 													// Unique case
@@ -3792,7 +3794,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 								} // if END
 
 							}
-							break;// Because only one row needed to checked
+							//break;// Because only one row needed to checked
 						}
 					}
 				}
@@ -13170,7 +13172,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 		for (Mappings rule : ruleGen) {
 			r = rule;
 		}
-		// Debug me for nulll
+		// Debug me for null
 		return r;
 	}
 	

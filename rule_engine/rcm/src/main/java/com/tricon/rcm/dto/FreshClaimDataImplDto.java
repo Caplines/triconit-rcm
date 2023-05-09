@@ -100,4 +100,6 @@ public class FreshClaimDataImplDto {
 		
 	String treatingProvider;
 	String providerOnClaim;
+	
+	String primePolicyHolderDob;
 }
