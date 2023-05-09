@@ -735,4 +735,8 @@ constructor(public appService: ApplicationServiceService, public appConstants: A
   updateUrl(url: string) {
     if ('/billing-claims/' + url != this.router.url) this.location.go(url);
   }
+
+  goToListofClaimsPage(){
+    window.location.href = "/list-of-claims";
+  }
 }
