@@ -7,3 +7,44 @@
     border-radius: 20px;
     cursor: pointer;
 }
+.passed,
+.failed {
+    display: inline-flex;
+    align-items: center;
+    background: #00915f;
+}
+
+.failed {
+    background: #ff0000;
+}
+
+.passed span,
+.failed span 
+{
+    border: 2px solid #008f5a;
+    height: 24px;
+    display: inline-flex;
+    width: 50px;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    color: #008f5a;
+    line-height: 24px;
+    font-size: 14px;
+    text-transform: uppercase;
+    background: #fff;
+}
+
+
+
+.failed span {
+    border: 2px solid #ff0000;
+    color: #ff0000;
+}
+
+.passed img,
+.failed img {
+    filter: brightness(0) invert(1);
+    margin: 0 3px;
+}
+

@@ -289,14 +289,14 @@
 
                                                         <div data-toggle="buttons" class="btn-group btn-group-toggle"
                                                             style="display: flex;width: 50%">
-                                                            <label class="btn btn-light"
-                                                                [ngClass]="{active:rule.messageType==2}">
-                                                                <input type="radio" name="amant{{idx}}" value="2"> Yes
-                                                            </label>
-                                                            <label class="btn btn-light"
-                                                                [ngClass]="{active:rule.messageType==1}">
-                                                                <input type="radio" name="amant{{idx}}" value="1"> No
-                                                            </label>
+                                                          
+                                                    
+                                                            <div *ngIf="rule.messageType == 2" class="passed"><img src="../../assets/img/correct_mark.png" /><span>Pass</span></div>
+                                                        
+                                                            
+                                                            <div *ngIf="rule.messageType==1" class="failed"><img src="../../assets/img/cross_incorrec.png" /><span>Fail</span></div>
+                                                         
+                                                            <!-- <div *ngIf="rule.messageType==0" class="notrun"><img src="../../assets/img/warn_icon.png" /><span>Not Run</span></div> -->
                                                         </div>
 
                                                     </td>

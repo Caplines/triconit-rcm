@@ -66,7 +66,9 @@
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="changepass">Change Password :</label>
-                                        <input type="text" class="form-control" [(ngModel)]="user['changedPassword']" [ngClass]="{'is-invalid': user.changedPassword && (user.changedPassword=='' || user.changedPassword.length<6)}" required="true">
+                                        <input   #x type="password" class="form-control" [(ngModel)]="user['changedPassword']" [ngClass]="{'is-invalid': user.changedPassword && (user.changedPassword=='' || user.changedPassword.length<6)}" required="true">
+                                        <div style="padding-top: 15px;">
+                                        <input type="checkbox" name="myCheckbox" (click)="x.type=x.type=='password'?'text':'password'"><span for="myCheckbox" style="margin-left: 8px;">Show Password</span></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-3 find-btn">
