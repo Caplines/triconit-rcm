@@ -1,6 +1,7 @@
 <div class="sticky-top bg-dark">
     <div class="topbar" style="justify-content: flex-start;">
-        <a class="backBtn" (click)="goToListofClaimsPage()"><img src="../../assets/img/arrow-back.png" [style]="{width:'16px'}"></a>
+        <a class="backBtn" (click)="goToListofClaimsPage()"><img src="../../assets/img/arrow-back.png"
+                [style]="{width:'16px'}"></a>
         <h1>Revenue Cycle Management(RCM)</h1>
     </div>
 </div>
@@ -64,7 +65,8 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Estimated Amount :</label>
-                                        <div>{{claimRcm.primeSecSubmittedTotal}}</div>
+                                        <div *ngIf="claimRcm.primary">{{claimRcm.primeSecSubmittedTotal}}</div>
+                                        <div *ngIf="!claimRcm.primary">{{claimRcm.secSubmittedTotal}}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-2">
@@ -91,11 +93,15 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Subscriber Name :</label>
-                                        <div>{{claimRcm.primePolicyHolder}}</div>
+                                        <div *ngIf="claimRcm.primary">{{claimRcm.primePolicyHolder}}</div>
+                                        <div *ngIf="!claimRcm.primary">{{claimRcm.secPolicyHolder}}</div>
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Subscriber DOB :</label>
-                                        <div></div>
+                                        <div *ngIf="claimRcm.primary">{{claimRcm.primePolicyHolderDob | date:
+                                            'MM/dd/yyyy'}}</div>
+                                        <div *ngIf="!claimRcm.primary">{{claimRcm.secPolicyHolderDob | date:
+                                            'MM/dd/yyyy'}}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-2">

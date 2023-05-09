@@ -66,6 +66,8 @@ export interface ClaimRcmDataModel {
 	billedAmount?: number;
 	treatingProvider?: String;
 	providerOnClaim?: string;
+	primePolicyHolderDob?: string;
+	secPolicyHolderDob?: string;
 
 }
 
