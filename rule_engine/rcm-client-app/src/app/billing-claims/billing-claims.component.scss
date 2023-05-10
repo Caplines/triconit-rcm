@@ -8,7 +8,7 @@
     cursor: pointer;
 }
 .passed,
-.failed {
+.failed, .notRun {
     display: inline-flex;
     align-items: center;
     background: #00915f;
@@ -17,9 +17,11 @@
 .failed {
     background: #ff0000;
 }
-
+.notRun {background: #ffebb2;
+    border: 2px solid #ffebb2;}
 .passed span,
-.failed span 
+.failed span ,
+.notRun span
 {
     border: 2px solid #008f5a;
     height: 24px;
@@ -34,7 +36,11 @@
     text-transform: uppercase;
     background: #fff;
 }
-
+.notRun span {
+    width: 75px;
+    border: 2px solid #ffffff;
+    color: #ffb000;
+}
 
 
 .failed span {
@@ -47,4 +53,18 @@
     filter: brightness(0) invert(1);
     margin: 0 3px;
 }
-
+.notRun img {margin: 0 3px;}
+.passedNum {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 1px;
+    background: #009f76;
+    border-radius: 20px;
+    padding: 0 7px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+.passedNum.fail {
+    background: #dc3545;
+}

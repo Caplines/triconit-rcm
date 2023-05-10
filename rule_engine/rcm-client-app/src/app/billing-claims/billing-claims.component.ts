@@ -431,7 +431,15 @@ constructor(public appService: ApplicationServiceService, public appConstants: A
       if (res.status === 200) {
         ths.loader.automatedValidation = ths.loader.manualValidation = false;
         ths.claimRules = res.data;
-
+        this.count.pass = this.count.fail = this.count.alert = 0;
+        ths.claimRules.forEach((e: any) => {
+          if (e.messageType == 1) {
+            this.count.fail = this.count.fail + 1;
+          }
+          else if (e.messageType == 2) {
+            this.count.pass = this.count.pass + 1;
+          }
+        });
         ths.getRuleRemarks();
         // if (ths.submissionDto==null) ths.submissionDto={};
       }

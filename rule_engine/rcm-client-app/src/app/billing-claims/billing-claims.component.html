@@ -260,7 +260,17 @@
                                     Automated
                                     Claims</a>
                                 <a data-toggle="collapse" (click)="showHide(4)" class="bold-b-text "
-                                    aria-expanded="false">Claim Level Validations (Automated):</a>
+                                    aria-expanded="false">Claim Level Validations (Automated): <span class="passedNum">Pass:{{count.pass}}</span> <span  class="passedNum fail">Fail:{{count.fail}}</span></a>
+                                <!-- <button type="button" class="btn btn-success" style=" pointer-events: none;
+                                    cursor: not-allowed;" (click)="switchType('pass')">Pass:
+                                    {{count.pass}}</button>
+                                <button type="button" class="btn btn-danger mx-1" style=" pointer-events: none;
+                                    cursor: not-allowed;" (click)="switchType('fail')">Fail:
+                                    {{count.fail}}</button> -->
+                                    
+                                <!-- <button type="button" class="btn btn-info" style=" pointer-events: none;
+                                cursor: not-allowed;" (click)="switchType('alert')">Not Run:
+                                    {{count.alert-1}}</button> -->
                                 <div *ngIf="loader.automatedValidation" class="loader-data"></div>
                                 <div *ngIf="!loader.automatedValidation" class="form-row  collapse show"
                                     id="claimValidations">
@@ -289,14 +299,18 @@
 
                                                         <div data-toggle="buttons" class="btn-group btn-group-toggle"
                                                             style="display: flex;width: 50%">
-                                                          
-                                                    
-                                                            <div *ngIf="rule.messageType == 2" class="passed"><img src="../../assets/img/correct_mark.png" /><span>Pass</span></div>
-                                                        
-                                                            
-                                                            <div *ngIf="rule.messageType==1" class="failed"><img src="../../assets/img/cross_incorrec.png" /><span>Fail</span></div>
-                                                         
-                                                            <!-- <div *ngIf="rule.messageType==0" class="notrun"><img src="../../assets/img/warn_icon.png" /><span>Not Run</span></div> -->
+
+
+                                                            <div *ngIf="rule.messageType == 2" class="passed"><img
+                                                                    src="../../assets/img/correct_mark.png" /><span>Pass</span>
+                                                            </div>
+
+
+                                                            <div *ngIf="rule.messageType==1" class="failed"><img
+                                                                    src="../../assets/img/cross_incorrec.png" /><span>Fail</span>
+                                                            </div>
+
+                                                            <div *ngIf="rule.messageType==0" class="notRun"><img src="../../assets/img/warn_icon.png" /><span>Not Run</span></div>
                                                         </div>
 
                                                     </td>

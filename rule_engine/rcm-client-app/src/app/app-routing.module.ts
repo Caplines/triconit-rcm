@@ -15,11 +15,11 @@ const  routes: Routes = [
     loadChildren: () => import('./login/login.module').then(m => m.LoginModule),
     canActivate: [CheckUserLoggedInState]
   },
-  {
-    path: 'fetch-claims',
-    loadChildren: () => import('./fetch-claims/fetch-claims.module').then(m => m.FetchClaimsModule),
-    canActivate: [ToolUserPermission]
-  },
+  // {
+  //   path: 'fetch-claims',
+  //   loadChildren: () => import('./fetch-claims/fetch-claims.module').then(m => m.FetchClaimsModule),
+  //   canActivate: [ToolUserPermission]
+  // },
   {
     path:'register',
     loadChildren :()=> import("./register-new-user/register-new-user/register-new-user.module").then(m=>m.RegisterNewUserModule),
