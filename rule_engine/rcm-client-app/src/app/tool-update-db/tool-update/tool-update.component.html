@@ -36,11 +36,11 @@
                             </div>
                         </div>
                     </ng-container>
-                    <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
+                    <!-- <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
                         <div class="form-check-inline">
                             <label class="form-check-label gs-btn" (click)="fetchGSheet()" >Through Google Sheet</label>
                         </div>
-                    </ng-container>
+                    </ng-container> -->
                     <ng-container *ngIf="alert.showAlertPopup">
                         <div >
                             <div class="alert fade show text-center" [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">

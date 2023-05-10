@@ -131,7 +131,8 @@
      <div id="myModal" class="modal claim-issue-modal">
         <div class="modal-content">
             <div class="close-modal">
-                <h5>{{issueClientName}} Issues</h5> <span (click)="closeModalIC()">&times;</span>
+                <h5>{{issueClientName}} Issues <span class="number-of-claims">Number Of Claims: {{numberOfClaims}}</span></h5> 
+                <span (click)="closeModalIC()">&times;</span>
             </div>
             <div class="table-responsive">
                 <table class="table" *ngIf="issueCl?.length>0">

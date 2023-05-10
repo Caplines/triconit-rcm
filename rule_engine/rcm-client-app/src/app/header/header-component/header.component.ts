@@ -49,6 +49,8 @@ export class HeaderComponent implements OnInit {
   clients : Array<ClientModel>;
   issueCl : Array<IssueClaimModel>;
   isSingleRole:boolean=false;
+  numberOfClaims: number;
+  numberOfClaimsOfficeWise: any = [];
   constructor(private appSer: ApplicationServiceService, private router: Router,public appConstants: AppConstants) {
 
     this.cwModel = {};
@@ -275,6 +277,14 @@ export class HeaderComponent implements OnInit {
     if(this.clientUuid){
       this.appSer.fetchIssueClaims(this.clientUuid, (res: any) => {
        if (res.status === 200) {
+        this.numberOfClaims = res.data.length;
+        this.numberOfClaimsOfficeWise = Object.values(res.data.reduce((acc:any, {officeName}:any) => {
+          if (acc[officeName] === undefined)
+              acc[officeName] = {name: officeName, count: 1};
+          else
+              acc[officeName].count++;
+          return acc;
+        },{}));
           this.issueCl = res.data;
           this.modal();
         }

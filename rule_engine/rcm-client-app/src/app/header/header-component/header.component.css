@@ -292,3 +292,12 @@
         text-align :left;
 
       }
+
+      .number-of-claims{
+        font-size: 14px;
+        background: #00c290;
+        padding: 3px 10px;
+        border-radius: 20px;
+        color: #fff;
+        margin-left: 5px;
+      }
