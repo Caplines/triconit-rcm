@@ -35,6 +35,11 @@ export class UserStatusComponent implements OnInit {
     this.getcompanyData();
     this.appService.setPaddingRightContainer();
     this.getRoles();
+    window.onscroll = ()=> {
+      if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
+           this.loadMoreData();
+       }
+  };
   }
   logout() {
     localStorage.clear();
@@ -59,8 +64,10 @@ export class UserStatusComponent implements OnInit {
       else if (this.companyName == 'All')
         this.companyUuid = 'All';
     });
+    this.showLoader=true;
     this.appService.fetchAllUser(pageNumber, this.companyUuid, (callback: any) => {
       if (callback.status == 200 && callback.data) {
+        this.showLoader=false;
         if (this.pageNumber == -1) {
           this.allUser = callback.data;
         }

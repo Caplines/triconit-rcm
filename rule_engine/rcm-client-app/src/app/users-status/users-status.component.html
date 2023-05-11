@@ -28,7 +28,6 @@
                                                     {{comp.name}}</option>
                                             </ng-container>
                                         </select>
-                                        <div class="spinner-border text-success" role="status" *ngIf="showLoader"></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-3 find-btn"><button type="button" class="btn btn-secondary" [disabled]="companyName =='' || isFindUserBtnDisable"
@@ -69,13 +68,12 @@
                                     </table>
                                 </div>
                             </ng-container>
+                            <span *ngIf="showLoader" class="loader-data"></span> 
                             <ng-container *ngIf="allUser.length != 0">
                                 <div class="action-buttons text-left">
                                     <button type="button" class="btn btn-success" (click)="updateAllUserStatus()"
                                         [disabled]="this.userStatusArray.userActiveStatus.length === 0">Update
                                         Status</button>
-                                    <button type="button" class="btn btn-success" (click)="loadMoreData()"
-                                        [style.visibility]="hasNext ? 'visible' : 'hidden'">Load More Data</button>
                                 </div>
                             </ng-container>
 
