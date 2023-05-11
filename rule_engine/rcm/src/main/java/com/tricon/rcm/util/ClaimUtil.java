@@ -274,4 +274,15 @@ public class ClaimUtil {
 
 
 	}
+	
+	public static  boolean isMedicareClaimByInsuranceName(String insuranceName) {
+
+		boolean medicaid=false;
+        if (insuranceName.toLowerCase().contains("medicare"))medicaid =true;
+        
+        return medicaid;
+        
+
+
+	}
 }

@@ -11,6 +11,7 @@ public class RuleConstants {
 	public static final String RULE_ID_303="ES vs. IV Comparison - Patient/Subscriber Details";
 	public static final String RULE_ID_304="Treating vs. Billing Provider";
 	public static final String RULE_ID_305="Credentialing Status";
+	public static final String RULE_ID_306="Assignment of Benefits";
 	
 	
 }

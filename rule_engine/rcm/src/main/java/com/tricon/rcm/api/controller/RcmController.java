@@ -434,7 +434,7 @@ public class RcmController extends BaseHeaderController{
 		if (partialHeader ==null) return null;
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.runAutomatedRules(partialHeader,claimuuid,reRun)));
+				claimServiceImpl.runAutomatedRules(null,partialHeader,claimuuid,reRun,false)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching pendency Report Data (All Billing Pendency Dashboard)", response = AllPendencyReportDto.class, responseContainer = "List")

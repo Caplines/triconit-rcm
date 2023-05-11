@@ -19,6 +19,7 @@ import com.tricon.rcm.dto.customquery.AllPendencyDateDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.ClaimXDaysDto;
+import com.tricon.rcm.dto.customquery.DataPatientRuleDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 
@@ -185,7 +186,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" cl.sec_member_id secMemberId,cl.sec_policy_holder secPolicyHolder, "+ 
 			" cl.provider_id providerId,cl.created_date pulledDate, "+
 			" cl.treating_provider treatingProvider , provider_on_claim providerOnClaim," +
-			" cl.prime_policy_holder_dob primePolicyHolderDob "+
+			" cl.prime_policy_holder_dob primePolicyHolderDob, cl.ivf_id ivId,iv_dos ivDos,tp_id tpId,tp_dos tpDos, "+
+			" cl.claim_type claimType "+
 			"  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+
@@ -316,4 +318,11 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "")
 	List<ClaimXDaysDto> getClaimIdsdWithNoDetailForGivenLastDayForOffice(@Param("companyName") String companyName,
 			@Param("days") int days,@Param("offuuid") String offuuid);
+	
+	@Query(nativeQuery = true, value = ""
+			+" select plan_assignment_of_benefits  as planAssignmentofBenefits ,memberId as basicInfo16,group_p as basicInfo14," 
+			+" concat(coalesce(p.first_name,''),' ',coalesce(p.last_name,'')) as basicInfo2, p.dob as basicInfo6," 
+		    +" policy_holder as basicInfo5 from patient p inner join patient_detail pd  on p.id=pd.patient_id "
+			+ " where pd.id=:ivId ")
+	DataPatientRuleDto getDataForRuleCheckFromIV(@Param("ivId") String ivId);
 }

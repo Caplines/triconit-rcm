@@ -25,7 +25,7 @@ import Utils from '../util/utils';
 })
 
 export class BillingClaimsComponent {
-  
+
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertAssign: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   claimRcm: ClaimRcmDataModel;
@@ -49,16 +49,17 @@ export class BillingClaimsComponent {
   infoMessage: string = "";
   ruleData: any = [];
   count: any = { 'pass': 0, 'fail': 0, 'alert': 0 };
+  countA: any = { 'pass': 0, 'fail': 0, 'alert': 0 };
   mtype: string = '1';//Fail By Default.
   tlErrormsg = "";
   otherErrormsg = "";
   loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false }
   //ivfData:any=[];
-  
+
   modelElement: any = { 'modal': '', 'span': '' }
-constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
-  private claimService: ClaimService,
-  private route: ActivatedRoute, private title: Title, private location: Location, private router: Router){
+  constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
+    private claimService: ClaimService,
+    private route: ActivatedRoute, private title: Title, private location: Location, private router: Router) {
     this.claimRcm = { claimId: "" };
     title.setTitle(Utils.defaultTitle + "Claim Detail");
   }
@@ -431,13 +432,13 @@ constructor(public appService: ApplicationServiceService, public appConstants: A
       if (res.status === 200) {
         ths.loader.automatedValidation = ths.loader.manualValidation = false;
         ths.claimRules = res.data;
-        this.count.pass = this.count.fail = this.count.alert = 0;
+        this.countA.pass = this.countA.fail = this.countA.alert = 0;
         ths.claimRules.forEach((e: any) => {
           if (e.messageType == 1) {
-            this.count.fail = this.count.fail + 1;
+            this.countA.fail = this.countA.fail + 1;
           }
           else if (e.messageType == 2) {
-            this.count.pass = this.count.pass + 1;
+            this.countA.pass = this.countA.pass + 1;
           }
         });
         ths.getRuleRemarks();
@@ -744,7 +745,7 @@ constructor(public appService: ApplicationServiceService, public appConstants: A
     if ('/billing-claims/' + url != this.router.url) this.location.go(url);
   }
 
-  goToListofClaimsPage(){
+  goToListofClaimsPage() {
     window.location.href = "/list-of-claims";
   }
 }

@@ -57,5 +57,9 @@ public interface RcmClaimDetailDto {
 	String getDescriptionES();
 	String getTreatingProvider();
 	String getProviderOnClaim();
-	
+	String getIvId();
+	String getIvDos();
+	String getTpId();
+	String getTpDos();
+	String getClaimType();
 }

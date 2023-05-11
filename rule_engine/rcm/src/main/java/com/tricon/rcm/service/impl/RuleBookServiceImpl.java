@@ -19,6 +19,7 @@ import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.TPValidationResponseDto;
+import com.tricon.rcm.dto.customquery.DataPatientRuleDto;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.RuleConstants;
@@ -45,13 +46,13 @@ public class RuleBookServiceImpl {
 	 * @param claimData
 	 *            ClaimData For a Claim
 	 */
-	public List<TPValidationResponseDto> rule301(RcmRules rule, CaplineIVFFormDto ivf, String memberId) {
+	public List<TPValidationResponseDto> rule301(RcmRules rule, DataPatientRuleDto ivf, String memberId) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
-
+//System.out.println(ivf.getBasicInfo16());
 			if (ivf == null) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule301.error.message1", new Object[] {}, locale), Constants.FAIL, "",
@@ -88,7 +89,7 @@ public class RuleBookServiceImpl {
 	 * @param claimData
 	 *            ClaimData For a Claim
 	 */
-	public List<TPValidationResponseDto> rule302(RcmRules rule, CaplineIVFFormDto ivf, String groupNo) {
+	public List<TPValidationResponseDto> rule302(RcmRules rule, DataPatientRuleDto ivf, String groupNo) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -130,7 +131,7 @@ public class RuleBookServiceImpl {
 	 * @param rcmClaim
 	 * @return
 	 */
-	public List<TPValidationResponseDto> rule303(RcmRules rule, CaplineIVFFormDto ivf, RcmClaims rcmClaim) {
+	public List<TPValidationResponseDto> rule303(RcmRules rule, DataPatientRuleDto ivf, RcmClaims rcmClaim) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -322,6 +323,43 @@ public class RuleBookServiceImpl {
 							messageSource.getMessage("rule305.error.message", new Object[] { claimProvider }, locale),
 							Constants.FAIL, "", "", ""));
 				}
+			
+		} catch (Exception n) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL, "", "", ""));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+
+	}
+	
+	
+	public List<TPValidationResponseDto> rule306(RcmRules rule, DataPatientRuleDto dto, RcmClaims rcmClaim) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		
+		try {
+
+			
+					// pass
+			if (dto!=null && dto.getPlanAssignmentofBenefits()!=null && dto.getPlanAssignmentofBenefits().equalsIgnoreCase("yes")) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule306.pass.message", new Object[] {}, locale), Constants.PASS,
+							"", "", ""));
+
+			} else if (dto!=null) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule306.error.message", new Object[] { "IV not Found." }, locale),
+							Constants.FAIL, "", "", ""));
+			}else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule306.error.message", new Object[] { dto.getPlanAssignmentofBenefits() }, locale),
+						Constants.FAIL, "", "", ""));
+			}
 			
 		} catch (Exception n) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
