@@ -106,7 +106,9 @@ a.arrow-down.selected{
     z-index: 1;
     border-top: 0px !important;
 }
-
+.table-inner-scrollbar thead th {
+    width: 20vw;
+}
 .table-inner-scrollbar tbody tr.totalRow {
     position: sticky;
     top: 51px;
@@ -128,17 +130,17 @@ a.arrow-down.selected{
     bottom: -1px;
     border-bottom: 2px solid #b3b3b3 !important;
 }
-@media only screen and (min-width: 3000px) and (max-width: 2050px) {
+@media only screen and (min-width: 3000px){
     .table-inner-scrollbar tbody tr.totalRow {
         top: 30px;
     }
 }
-@media screen and (max-width:1520px) {
+@media screen and (max-width:1885px) {
     .table-inner-scrollbar tbody tr.totalRow {
         top: 73px;
     }
 }
-@media screen and (max-width: 1370px) {
+@media screen and (max-width: 1500px) {
     .table-inner-scrollbar tbody tr.totalRow {
         top: 94px;
     }

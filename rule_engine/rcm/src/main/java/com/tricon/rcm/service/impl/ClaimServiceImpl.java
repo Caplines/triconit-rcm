@@ -2442,7 +2442,7 @@ public class ClaimServiceImpl {
 			paginationDto.setPageNumber(pageNumber);
 			paginationDto.setTotalElements((long) totalElements);
 			paginationDto.setPageSize(totalRecordsperPage);
-			paginationDto.setTotalPages((long) Math.ceil((double) totalElements / totalRecordsperPage));
+			paginationDto.setTotalPages((int) Math.ceil((double) totalElements / totalRecordsperPage));
 			paginationData.add(paginationDto);
 			return paginationData;
 		}

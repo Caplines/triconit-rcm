@@ -14,8 +14,8 @@ import lombok.ToString;
 public class RcmIssuClaimPaginationDto {
 	
 	private List<IssueClaimDto> data;
-	private Integer pageSize;
-	private Integer pageNumber;
-	private Long totalElements;
-	private Long totalPages;
+	private int totalPages;
+	private int pageSize;
+	private int pageNumber;
+	private long totalElements;
 }
