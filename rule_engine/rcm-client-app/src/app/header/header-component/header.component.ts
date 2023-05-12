@@ -268,7 +268,7 @@ export class HeaderComponent implements OnInit {
     });
   }
 
- fetchIssueClaims(pageNumber: any){
+  fetchIssueClaims(){
     let cName = JSON.parse(localStorage.getItem('clients'));
     cName.find((ele:any)=>{
       if(ele.name == this.userInfo.currentClientName){
@@ -276,7 +276,7 @@ export class HeaderComponent implements OnInit {
       }
     });
     if(this.clientUuid){
-      this.appSer.fetchIssueClaims(pageNumber,this.clientUuid, (res: any) => {
+      this.appSer.fetchIssueClaims(this.clientUuid, (res: any) => {
        if (res.status === 200) {
         this.numberOfClaims = res.data.length;
         this.numberOfClaimsOfficeWise = Object.values(res.data.reduce((acc:any, {officeName}:any) => {

@@ -298,10 +298,12 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['getClientsName'], callback)
   }
 
-
-  fetchIssueClaims(page: any,cid: string, callback: any) {
-    this.getData({}, this.httpUrl['issueclaim'] + "/" + cid+ "/" + page, callback)
+  fetchIssueClaims(cid: string, callback: any) {
+     this.getData({}, this.httpUrl['issueclaim'] + "/" + cid, callback)
   }
+  // fetchIssueClaims(page: any,cid: string, callback: any) {
+  //   this.getData({}, this.httpUrl['issueclaim'] + "/" + cid+ "/" + page, callback)
+  // }
 
   fetchivfDataForClaim(cuuid: string, callback: any) {
     this.getData({}, this.httpUrl['ivfdata'] + "/" + cuuid, callback)
