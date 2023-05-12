@@ -139,10 +139,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(claimData,'remoteLiteRejections','asc','number'); isSorted = false"></a>
+                                                                (click)="sortData(claimData,'totalBillingRejection','asc','number'); isSorted = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(claimData,'remoteLiteRejections','desc','number');isSorted = true"></a>
+                                                                (click)="sortData(claimData,'totalBillingRejection','desc','number');isSorted = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -183,8 +183,8 @@
                                                             </select>
                                                         </a>
                                                     </td>
-                                                    <td>{{lg.opdtd | date: 'MM/dd/yyyy'}}</td>
-                                                    <td>{{lg.opdosd | date: 'MM/dd/yyyy'}}</td>
+                                                    <td>{{lg.opdtd  ? (lg.opdtd | date: 'MM/dd/yyyy') : ''}}</td>
+                                                    <td>{{lg.opdosd  ? (lg.opdosd | date: 'MM/dd/yyyy') : ''}}</td>
                                                     <td>{{lg.count}}</td>
                                                     <td>{{lg.remoteLiteRejections}}</td>
                                                     <td>{{lg.remoteLiteRejections+lg.count}}</td>

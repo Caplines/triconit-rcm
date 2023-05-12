@@ -190,6 +190,7 @@ calcRemLiteReject(data:any){
 calcCountAndRemLiteReject(data:any){
   data.forEach((e:any)=>{
     this.totalClaimData.totalcountAndRemLiteReject  = this.totalClaimData.totalcountAndRemLiteReject+ e.count + e.remoteLiteRejections;
+    e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
  });
 }
 
@@ -199,8 +200,8 @@ exportToCsv(){
     showLabels:true,
     headers: ["Office Name","Office Assigned To", "Oldest Pending Since Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Total (Pending For Billing & Remote Lite Rejections)"],
   }
-  let excelData:any;
-  excelData = this.claimData.forEach((e:any)=>
+  let excelData:any = JSON.parse(JSON.stringify(this.claimData));
+  excelData = excelData.map((e:any)=>
   {
     e['officeAssignedTo'] = e.fname ? e.fname+ " "+ e.lname : "-";
     if(e.opdosd){
@@ -216,10 +217,11 @@ exportToCsv(){
         e.opdtd = 'N/A';
     }
     e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
+    return e;
   })
 
-  excelData = this.claimData.map(
-    ({officeUuid,assignedUser,...newClaimData})=> newClaimData);
+  excelData = excelData.map(
+    ({officeUuid,assignedUser,...newClaimData}:any)=> newClaimData);
 
   excelData = excelData.map((e:any)=>{
     return{
@@ -236,7 +238,6 @@ exportToCsv(){
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`
     new ngxCsv(excelData, `${this.clientName}_Pendency_${this.date}`,options);
     this.loader.exportCSVLoader=false;
-    this.fetchClaimAssignments();
     
 }
 
