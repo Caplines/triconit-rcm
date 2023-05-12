@@ -50,6 +50,12 @@ public class RcmClaimsServiceRuleValidation  extends BaseAuditEntity implements 
 	@Column(name = "description", length = 255)
 	private String description;
 	
+	@Column(name = "team", length = 255)
+	private String teamName;
+	
+	@Column(name = "display_values", length = 255)
+	private String displayValues;
+	
 	@Column(name = "active", columnDefinition = "BIT default 1")
 	private boolean active;
 	
@@ -61,5 +67,11 @@ public class RcmClaimsServiceRuleValidation  extends BaseAuditEntity implements 
 	
 	@Column(name = "remark", columnDefinition = "text", nullable = true)
 	private String remark;
+	
+	@Column(name = "manual_auto", length = 30, nullable = true)
+	private String manualAuto;
+	
+	@Column(name = "answer",  length = 100, nullable = true)
+	private String answer;
 	
 }

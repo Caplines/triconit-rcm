@@ -18,6 +18,7 @@ import java.util.Set;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -632,6 +633,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				CaplineIVFFormDto form = li.get(0);
 				obj[0]=form.getBasicInfo2();
 				form.setPdfAlert("");
+				if (form.getPolicy4()!=null)form.setPolicy4(WordUtils.wrap(form.getPolicy4(), 10, " ", true));
 				if (form.getBasicInfo3()!=null) {
 					String insName=form.getBasicInfo3().toLowerCase();
 					if (insName.contains("geha") || insName.contains("connection dental") ||

@@ -18,5 +18,13 @@ public class RcmClaimsServiceRuleValidationDto {
 	private int messageType;
 
 	private String remark;
+	
+	private String manualAuto;
+	
+	private String answer;
+	
+    private String teamName;
+	
+	private String displayValues;
 
 }

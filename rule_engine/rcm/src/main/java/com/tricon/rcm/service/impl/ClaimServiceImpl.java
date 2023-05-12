@@ -1350,14 +1350,14 @@ public class ClaimServiceImpl {
 			// RcmTeamEnum.BILLING.getId()
 			if (serviceData != null && serviceData.size() == 0) {
 
-				HashMap<String, List<ClaimServiceValidationGSheet>> sheetServiceData = readServiceValidationFromGSheet();
+				HashMap<String, List<ClaimServiceValidationGSheetData>> sheetServiceData = readServiceValidationFromGSheet();
 				if (sheetServiceData != null) {
 					// Save Data in Table First Time.
 					RcmClaimsServiceRuleValidation v = null;
-					for (Map.Entry<String, List<ClaimServiceValidationGSheet>> entry : sheetServiceData.entrySet()) {
+					for (Map.Entry<String, List<ClaimServiceValidationGSheetData>> entry : sheetServiceData.entrySet()) {
 						logger.info("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-						for (ClaimServiceValidationGSheet d : entry.getValue()) {
-							for (ClaimServiceValidationGSheetData qq : d.getData()) {
+						//for (ClaimServiceValidationGSheet d : entry.getValue()) {
+							for (ClaimServiceValidationGSheetData qq : entry.getValue()) {
 								String codeFromES = "";
 								List<RcmClaimDetail> cdFilter = cddList.stream()
 										.filter(p -> entry.getKey().equals(p.getServiceCode()))
@@ -1375,13 +1375,16 @@ public class ClaimServiceImpl {
 										.equalsIgnoreCase("As per code sheet -This is not a valid CDT any longer."))
 									continue;
 
-								logger.info("HEAD: " + qq.getHeading() + "   VALUE: " + qq.getValue());
+								//logger.info("HEAD: " + qq.getHeading() + "   VALUE: " + qq.getValue());
 								v = new RcmClaimsServiceRuleValidation();
 								v.setActive(true);
 								v.setDescription(qq.getDescription());
 								v.setClaim(claim);
-								v.setName(qq.getHeading());
+								v.setName(qq.getNameOfService());
 								v.setServiceCode(entry.getKey());
+								v.setTeamName(qq.getTeam());
+								v.setManualAuto(qq.getAutoOrManual());
+								v.setDisplayValues(qq.getValues());
 								v.setValue(qq.getValue());
 								String uu = rcmClaimsServiceRuleValidationRepo.save(v).getRemarkUuid();
 								one = new RcmClaimsServiceRuleValidationDto();
@@ -1389,10 +1392,10 @@ public class ClaimServiceImpl {
 								one.setRemarkUuid(uu);
 								one.setServiceCode(entry.getKey());
 								one.setValue(qq.getValue());
-								one.setName(qq.getHeading());
+								one.setName(qq.getNameOfService());
 								list.add(one);
 							}
-						}
+						//}
 
 						pullSuccess = true;
 					}
@@ -1410,6 +1413,10 @@ public class ClaimServiceImpl {
 					one.setValue(s.getValue());
 					one.setName(s.getName());
 					one.setMessageType(s.getMessageType());
+					one.setManualAuto(s.getManualAuto());
+					one.setAnswer(s.getAnswer());
+					one.setTeamName(s.getTeamName());
+					one.setDisplayValues(s.getDisplayValues());
 					one.setRemark(s.getRemark());
 					list.add(one);
 				}
@@ -1454,9 +1461,9 @@ public class ClaimServiceImpl {
 		return dto;
 	}
 
-	private HashMap<String, List<ClaimServiceValidationGSheet>> readServiceValidationFromGSheet() {
+	public HashMap<String, List<ClaimServiceValidationGSheetData>> readServiceValidationFromGSheet() {
 
-		HashMap<String, List<ClaimServiceValidationGSheet>> data = null;
+		HashMap<String, List<ClaimServiceValidationGSheetData>> data = null;
 		try {
 			data = ConnectAndReadSheets.readServiceValidationFromGSheet("1Ba44zmvoNzNBPNaxGPUNVxUu_O41r7HAWq2hyZuCDJc",
 					"Service-Code based Validations", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);

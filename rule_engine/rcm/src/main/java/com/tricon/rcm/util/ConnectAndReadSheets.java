@@ -421,14 +421,23 @@ public class ConnectAndReadSheets {
 		return list;
 	}
 
-	public static HashMap<String, List<ClaimServiceValidationGSheet>> readServiceValidationFromGSheet(
+	/**
+	 * Service Code based validations
+	 * @param spreadsheetId
+	 * @param sheetName
+	 * @param clientDir
+	 * @param clientFolder
+	 * @return
+	 * @throws IOException
+	 */
+	public static HashMap<String, List<ClaimServiceValidationGSheetData>> readServiceValidationFromGSheet(
 			String spreadsheetId, String sheetName, String clientDir, String clientFolder) throws IOException {
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
 		List<List<Object>> values = response.getValues();
 
-		HashMap<String, List<ClaimServiceValidationGSheet>> map = new LinkedHashMap<>();
+		HashMap<String, List<ClaimServiceValidationGSheetData>> map = new LinkedHashMap<>();
 		ClaimServiceValidationGSheet dto = null;
 		ListIterator li = values.listIterator();
 		List cache = new ArrayList<>();
@@ -439,7 +448,7 @@ public class ConnectAndReadSheets {
 			cache.add(obj);
 			ctr++;
 			int x = -1;
-			if (ctr < 3)
+			if (ctr < 6)
 				continue;
 			else {
 
@@ -451,34 +460,79 @@ public class ConnectAndReadSheets {
 			int x = -1;// Ignore Service Code.
 			ctr++;
 			ArrayList<String> obj = (ArrayList<String>) n;
-			if (ctr == 1) {// For Heading
-				for (String obj11 : obj) {
+			if (ctr == 1 || ctr == 2 || ctr == 3 || ctr == 4 || ctr == 5) {// For Headings
+				
+				//ClaimServiceValidationGSheetData gs = new ClaimServiceValidationGSheetData();
+				try {
+				//	gs.setobj.get(l++);
+				}catch(Exception p) {
+					
+				}
+				
+				
 					int x1 = ++x;
-					if (x1 == 0)
-						continue;
-					for (Map.Entry<String, List<ClaimServiceValidationGSheet>> entry : map.entrySet()) {
+					//if (x1 == 0)
+					//	continue;
+					for (int p=1;p<obj.size();p++) {
+					for (Map.Entry<String, List<ClaimServiceValidationGSheetData>> entry : map.entrySet()) {
 						String code = entry.getKey();
-
-						List<ClaimServiceValidationGSheet> sqL = entry.getValue();
-						ClaimServiceValidationGSheet one = new ClaimServiceValidationGSheet();
+						//int l=0;
+						
+						List<ClaimServiceValidationGSheetData> sqL = entry.getValue();
+						//if (sqL.size()==0) {
+							//ClaimServiceValidationGSheet one = new ClaimServiceValidationGSheet();
+						if (ctr ==1) {
+							ClaimServiceValidationGSheetData gs = new ClaimServiceValidationGSheetData();
+							gs.setTeam(obj.get(p));
+							//if (l==1)gs.setNameOfService(obj.get(p));
+							//if (l==2)gs.setAutoOrManual(obj.get(p));
+							//if (l==3)gs.setValues(obj.get(p));
+							//if (l==4)gs.setDescription(obj.get(p));
+							//List<ClaimServiceValidationGSheetData> qq = new ArrayList<>();
+							//qq.add(gs);
+							//one.setData(qq);
+							sqL.add(gs);
+						}else {
+							ClaimServiceValidationGSheetData gs= sqL.get(p-1);
+							if (ctr==2)gs.setNameOfService(obj.get(p));
+							if (ctr==3)gs.setAutoOrManual(obj.get(p));
+							if (ctr==4)gs.setValues(obj.get(p));
+							if (ctr==5)gs.setDescription(obj.get(p));
+						}
+							// String head=obj.get(x1);
+						//}
+						/*else {
+							ClaimServiceValidationGSheet old =sqL.get(l-1);
+							List<ClaimServiceValidationGSheetData> qq =old.getData();
+							ClaimServiceValidationGSheetData gs =qq.get(0);
+							if (l==1)gs.setNameOfService(obj.get(p));
+							if (l==2)gs.setAutoOrManual(obj.get(p));
+							if (l==3)gs.setValues(obj.get(p));
+							if (l==4)gs.setDescription(obj.get(p));
+							
+						    }*/
+							//l++;
+						 }//map
+						/*ClaimServiceValidationGSheet one = new ClaimServiceValidationGSheet();
 						ClaimServiceValidationGSheetData gs = new ClaimServiceValidationGSheetData();
 						// String head=obj.get(x1);
 
-						gs.setHeading(obj11);
+						//gs.setHeading(obj11);
 						List<ClaimServiceValidationGSheetData> qq = new ArrayList<>();
 						qq.add(gs);
 						one.setData(qq);
-						sqL.add(one);
-					}
-				}
+						sqL.add(one);*/
+						//l++;
+					}//obj
+				
 
-			} else if (ctr == 2) {// For Description
+			/*} else if (ctr == 2) {// For Description
 
 				try {
 
 				} catch (Exception ex) {
 
-				}
+				}*/
 
 			} else {// other
 					// for (String obj11 : obj) {
@@ -487,21 +541,21 @@ public class ConnectAndReadSheets {
 				// if (x1==0) continue;
 
 				String code = obj.get(x1);
-				List<ClaimServiceValidationGSheet> sqL = map.get(code);
+				List<ClaimServiceValidationGSheetData> sqL = map.get(code);
 				// for (Map.Entry<String,List<ClaimServiceValidationGSheet>> entry :
 				// map.entrySet()) {
 				// String code= entry.getKey();
 
 				// List<ClaimServiceValidationGSheet> sqL=entry.getValue();
-				for (ClaimServiceValidationGSheet sq : sqL) {
+				for (ClaimServiceValidationGSheetData sq : sqL) {
 
-					List<ClaimServiceValidationGSheetData> gss = sq.getData();
-					for (ClaimServiceValidationGSheetData gs : gss) {
+					//List<ClaimServiceValidationGSheetData> gss = sq.getData();
+					//for (ClaimServiceValidationGSheetData gs : gss) {
 
 						// for (String obj11 : obj) {
-						gs.setValue(obj.get(++x1));
+						sq.setValue(obj.get(++x1));
 						// }
-					}
+					//}
 				}
 				// }
 				// }
@@ -509,13 +563,13 @@ public class ConnectAndReadSheets {
 
 		}
 
-		for (Map.Entry<String, List<ClaimServiceValidationGSheet>> entry : map.entrySet()) {
+		for (Map.Entry<String, List<ClaimServiceValidationGSheetData>> entry : map.entrySet()) {
 			logger.info("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-			for (ClaimServiceValidationGSheet d : entry.getValue()) {
-				for (ClaimServiceValidationGSheetData qq : d.getData()) {
-					logger.info("HEAD: " + qq.getHeading() + "   VALUE: " + qq.getValue());
-				}
-			}
+			//for (ClaimServiceValidationGSheet d : entry.getValue()) {
+				//for (ClaimServiceValidationGSheetData qq : d.getData()) {
+				//	logger.info("HEAD: " + qq.getHeading() + "   VALUE: " + qq.getValue());
+				//}
+			//}
 			logger.info("");
 
 		}
