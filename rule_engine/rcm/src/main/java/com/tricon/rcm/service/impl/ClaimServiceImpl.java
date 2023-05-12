@@ -63,6 +63,7 @@ import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
+import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
 import com.tricon.rcm.dto.ClaimNoteDto;
@@ -231,6 +232,11 @@ public class ClaimServiceImpl {
 	
 	@Autowired
 	RcmCommonServiceImpl rcmCommonServiceImpl;
+	
+	@Value("${data.totalRecordperPage}")
+	private int totalRecordsperPage;
+	
+
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -2412,6 +2418,35 @@ public class ClaimServiceImpl {
 		}
 
 		return r;
+	}
+	
+	public List<RcmIssuClaimPaginationDto> getIssueClaimsByPagination(int pageNumber, String companyId) throws Exception {
+		List<RcmIssuClaimPaginationDto> paginationData = null;
+		RcmIssuClaimPaginationDto paginationDto = null;
+		int totalElements = 0;
+		int offset = pageNumber * totalRecordsperPage;
+		totalElements = userRepo.findCountsOfIssueClaims(companyId);
+		if (totalElements == 0) {
+			paginationData = new ArrayList<>();
+			paginationDto = new RcmIssuClaimPaginationDto();
+			paginationDto.setTotalElements((long) totalElements);
+			paginationData.add(paginationDto);
+			return paginationData;
+		}
+		List<IssueClaimDto> pageableList = rcmClaimRepository.getIssueClaimsByPagination(companyId, offset,
+				totalRecordsperPage);
+		if (pageableList != null && !pageableList.isEmpty()) {
+			paginationData = new ArrayList<>();
+			paginationDto = new RcmIssuClaimPaginationDto();
+			paginationDto.setData(pageableList);
+			paginationDto.setPageNumber(pageNumber);
+			paginationDto.setTotalElements((long) totalElements);
+			paginationDto.setPageSize(totalRecordsperPage);
+			paginationDto.setTotalPages((long) Math.ceil((double) totalElements / totalRecordsperPage));
+			paginationData.add(paginationDto);
+			return paginationData;
+		}
+		return null;
 	}
 
 }

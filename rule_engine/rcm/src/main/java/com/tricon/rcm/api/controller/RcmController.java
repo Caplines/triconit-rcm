@@ -1,5 +1,7 @@
 package com.tricon.rcm.api.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
+import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
 import com.tricon.rcm.dto.ClaimNotesDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimRemarkDto;
@@ -465,6 +468,24 @@ public class RcmController extends BaseHeaderController{
 			return new Object[] { jwtUser, false };
 		}
 	}*/
+	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
+	@GetMapping("/api/issueClaims/{uuid}/{pageNumber}")
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','REPORTING','TL','ASSO')")
+	public ResponseEntity<Object> getIssueClaimss(@PathVariable("uuid") String companyId,
+			@PathVariable("pageNumber") int pageNumber, Model model) {
+		List<RcmIssuClaimPaginationDto> response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return null;
+		try {
+			response = claimServiceImpl.getIssueClaimsByPagination(pageNumber, companyId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 	
 	
 }

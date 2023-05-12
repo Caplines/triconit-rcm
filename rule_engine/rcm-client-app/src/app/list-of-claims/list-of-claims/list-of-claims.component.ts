@@ -34,6 +34,7 @@ export class ListOfClaimsComponent implements OnInit {
   filteredInsuranceType:any=[];
   filteredActionRequired:any=[];
   // filteredLastTeamWorked:any=[];
+  clientName:string='';
 
   constructor(private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
     this.selectedBtype = this.appConstants.BILLING_ID;
@@ -43,6 +44,7 @@ export class ListOfClaimsComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchClaims(this.selectedSubtype);
+    this.clientName = localStorage.getItem("selected_clientName");
   }
 
   fetchOfficeByUuid() {
@@ -292,7 +294,10 @@ export class ListOfClaimsComponent implements OnInit {
       let pdf = new jsPDF('p', 'mm', 'a4');
       let width = pdf.internal.pageSize.getWidth();
       let height = canvas.height * width / canvas.width;
-      pdf.addImage(content, "PNG", 0, 15, width, height)
+      // Insert office name
+      pdf.setFontSize(10);  // Adjust the font size as needed
+      pdf.text(`RCM Tool-${this.clientName}`, 3, 10);
+      pdf.addImage(content, "PNG", 0, 15, width, height);
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`);

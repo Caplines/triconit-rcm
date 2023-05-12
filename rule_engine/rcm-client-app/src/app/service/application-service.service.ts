@@ -299,8 +299,8 @@ export class ApplicationServiceService extends BaseService {
   }
 
 
-  fetchIssueClaims(cid: string, callback: any) {
-    this.getData({}, this.httpUrl['issueclaim'] + "/" + cid, callback)
+  fetchIssueClaims(page: any,cid: string, callback: any) {
+    this.getData({}, this.httpUrl['issueclaim'] + "/" + cid+ "/" + page, callback)
   }
 
   fetchivfDataForClaim(cuuid: string, callback: any) {

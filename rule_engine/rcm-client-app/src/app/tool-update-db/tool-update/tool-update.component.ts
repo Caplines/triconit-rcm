@@ -36,6 +36,7 @@ export class ToolUpdateComponent implements OnInit {
   ele:any={'modal':'','span':''}
   date:any;
   gsLink:any='';
+  clientName:string='';
   
   constructor(public appService: ApplicationServiceService,private title:Title) { 
 
@@ -50,6 +51,7 @@ export class ToolUpdateComponent implements OnInit {
     this.fetchAllClients();
     this.appService.setPaddingRightContainer();
     // this.fetchLatesClaimLLogs();
+    this.clientName = localStorage.getItem("selected_clientName");
   }
 
   fetchLatesClaimLLogs(cUuid:any){
@@ -232,7 +234,10 @@ this.sourceType="";
       let pdf = new jsPDF('p', 'mm', 'a4');
       let width = pdf.internal.pageSize.getWidth();
       let height = canvas.height * width / canvas.width;
-      pdf.addImage(content, "PNG", 0, 0, width, height)
+       // Insert office name
+       pdf.setFontSize(10);  // Adjust the font size as needed
+       pdf.text(`RCM Tool-${this.clientName}`, 3, 10);
+       pdf.addImage(content, "PNG", 0, 15, width, height);
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_Tool_To_Update_Database_${this.date}`);

@@ -158,8 +158,10 @@ export class OfficeAssignmentComponent implements OnInit {
   let pdf= new jsPDF('p','mm','a4');
   let width= pdf.internal.pageSize.getWidth();
   let height = canvas.height  * width / canvas.width;
-  console.log(width,height)
-  pdf.addImage(content,"PNG",0,0,width,height)
+  // Insert office name
+  pdf.setFontSize(10);  // Adjust the font size as needed
+  pdf.text(`RCM Tool-${this.clientName}`, 3,10);
+  pdf.addImage(content,"PNG",0,15,width,height);
   this.date = new Date();
   this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
   pdf.save(`${this.clientName}_Pendency_${this.date}`);

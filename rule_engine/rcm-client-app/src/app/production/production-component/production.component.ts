@@ -22,6 +22,7 @@ export class ProductionComponent implements OnInit {
   selectedDate:any={'startDate':'','endDate':''};
   loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false,'fetch':false};
   isDataAvailable:boolean=false;
+  clientName:string='';
   
   constructor(private appService: ApplicationServiceService,private title:Title) { 
      title.setTitle(Utils.defaultTitle + "Production")
@@ -29,6 +30,7 @@ export class ProductionComponent implements OnInit {
 
   ngOnInit(): void {
    
+    this.clientName = localStorage.getItem("selected_clientName");
   }
 
  save(){
@@ -77,7 +79,10 @@ export class ProductionComponent implements OnInit {
     let pdf = new jsPDF('p', 'mm', 'a4');
     let width = pdf.internal.pageSize.getWidth();
     let height = canvas.height * width / canvas.width;
-    pdf.addImage(content, "PNG", 0, 0, width, height)
+    // Insert office name
+    pdf.setFontSize(10);  // Adjust the font size as needed
+    pdf.text(`RCM Tool-${this.clientName}`, 3, 10);
+    pdf.addImage(content, "PNG", 0, 15, width, height);
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     pdf.save(`${localStorage.getItem("selected_clientName")}_Production_${this.date}`);

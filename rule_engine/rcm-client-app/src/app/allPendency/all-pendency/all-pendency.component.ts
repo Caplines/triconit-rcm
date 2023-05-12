@@ -18,6 +18,7 @@ export class AllPendencyComponent {
   showLoader:any={'loader':false,'exportPDFLoader':false,'exportCSVLoader':false};
   date:any;
   totalCount:any=[{"teamId":3,'count':0},{"teamId":4,"count":0},{"teamId":5,"count":0},{"teamId":6,"count":0},{"teamId":7,"count":0}];
+  clientName:string='';
 
   constructor(private _service:ApplicationServiceService,private title:Title){
     title.setTitle(Utils.defaultTitle + "All Pendency")
@@ -26,6 +27,7 @@ export class AllPendencyComponent {
     this.teamData=[{"teamName":"Internal Audit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];
     this.getAllPendencyDetails();
     this.currentTeamId = localStorage.getItem("selected_teamId");
+    this.clientName = localStorage.getItem("selected_clientName");
   }
   getAllPendencyDetails(){
     this.showLoader.loader=true;
@@ -77,7 +79,10 @@ export class AllPendencyComponent {
       let pdf = new jsPDF('p', 'mm', 'a4');
       let width = pdf.internal.pageSize.getWidth();
       let height = canvas.height * width / canvas.width;
-      pdf.addImage(content, "PNG", 0, 0, width, height)
+      // Insert office name
+      pdf.setFontSize(10);  // Adjust the font size as needed
+      pdf.text(`RCM Tool-${this.clientName}`, 3, 10);
+      pdf.addImage(content, "PNG", 0, 15, width, height);
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       pdf.save(`${localStorage.getItem("selected_clientName")}_All_Pendency_${this.date}`);

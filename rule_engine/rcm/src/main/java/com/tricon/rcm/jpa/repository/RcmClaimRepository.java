@@ -325,4 +325,11 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		    +" policy_holder as basicInfo5 from patient p inner join patient_detail pd  on p.id=pd.patient_id "
 			+ " where pd.id=:ivId ")
 	DataPatientRuleDto getDataForRuleCheckFromIV(@Param("ivId") String ivId);
+
+
+	@Query(value = "select cl.claim_id claimId,cl.issue,cl.source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "
+			+ "left join office off on off.uuid=cl.office_id "
+			+ "where off.company_id=:companyId and cl.resolved is false order by cl.id limit :offset, :limit", nativeQuery = true)
+	List<IssueClaimDto> getIssueClaimsByPagination(@Param("companyId") String companyId,@Param("offset")int offSet,@Param("limit")int limit); //and off.activeis true
+	
 }
