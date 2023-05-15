@@ -149,6 +149,9 @@ public class AdminController extends BaseHeaderController{
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		if(pageNumber==-1) {
+			return ResponseEntity.ok().body(new GenericResponse(HttpStatus.BAD_REQUEST,"", null));
+		}
 		try {
 			response = serviceImpl.getAllUsers(pageNumber,companyUuid,partialHeader.getRole(),partialHeader.getJwtUser());
 		} catch (Exception e) {

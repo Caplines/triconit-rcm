@@ -477,6 +477,9 @@ public class RcmController extends BaseHeaderController{
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return null;
+		if(pageNumber==-1) {
+			return ResponseEntity.ok().body(new GenericResponse(HttpStatus.BAD_REQUEST,"", null));
+		}
 		try {
 			response = claimServiceImpl.getIssueClaimsByPagination(pageNumber, companyId);
 		} catch (Exception e) {
