@@ -604,8 +604,14 @@ public class ClaimServiceImpl {
 							rcmInsuranceType = rcmInsuranceTypeRepo.findById(ins.getInsuranceType().getId());
 
 								
-							boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
-							boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
+							boolean isBilling= true;
+							boolean isMedicaid= false;
+							boolean isMedicare =false;
+							if (clCompany.getName().equals(Constants.COMPANY_NAME)) {
+								isBilling = ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
+								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
+								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
+							}
 							boolean missing=true;
 							if (isBilling) {
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
@@ -614,7 +620,7 @@ public class ClaimServiceImpl {
 									claimTypeEnum);
 							missing=false;
 							}
-							if (isMedicaid) {
+							if (isMedicaid || isMedicare) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
@@ -821,9 +827,20 @@ public class ClaimServiceImpl {
 							if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary))
 								newClaimSCt++;
 							rcmInsuranceType = rcmInsuranceTypeRepo.findById(ins.getInsuranceType().getId());
-							boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
-							boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
-							boolean isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
+							
+							boolean isBilling= true;
+							boolean isMedicaid= false;
+							boolean isMedicare= false;
+							//For External we always have claims in Billing 
+							if (clCompany.getName().equals(Constants.COMPANY_NAME)) {
+								isBilling = ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
+								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
+								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
+							}
+							
+							//boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
+							//boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
+							//boolean isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 							boolean missing=true;
 							if (isBilling) {
 							
