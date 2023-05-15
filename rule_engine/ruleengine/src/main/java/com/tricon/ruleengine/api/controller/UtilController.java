@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,6 +69,19 @@ public class UtilController {
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", f));
 		//	return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", ""));
+
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/open/getActiveOffices", method = RequestMethod.GET)
+	public ResponseEntity<?> getAllActiveoffifceCap() {
+		List<OfficeDto> offices = userService.getAllActiveOfficesByCompanyName(Constants.COMPANY_NAME);
+		if (offices!= null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", offices));
+		}
+
+		else
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", ""));
 
 	}
 }

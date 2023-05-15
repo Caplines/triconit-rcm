@@ -35,6 +35,8 @@ public interface UserService {
 	public GenericResponse getAllUsers(int active);
 	
 	public List<OfficeDto> getAllOfficesByCompanyName(String companyName);
+
+	public List<OfficeDto> getAllActiveOfficesByCompanyName(String companyName);
 	
 
 }

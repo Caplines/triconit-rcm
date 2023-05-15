@@ -175,6 +175,11 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return officeDao.getAllOfficesByCompanyName(companyName);
 	}
+
+	@Override
+	public List<OfficeDto> getAllActiveOfficesByCompanyName(String companyName) {
+		return officeDao.getAllActiveOfficesByCompanyName(companyName);
+	}
 	
 	
 

@@ -42,6 +42,7 @@ public class Office implements java.io.Serializable {
 	
 	
 	private int key;
+	private boolean active;
 
 	public Office() {
 	}
@@ -122,6 +123,16 @@ public class Office implements java.io.Serializable {
 	public void setKey(int key) {
 		this.key = key;
 	}
+
+	@Column(name = "active", columnDefinition = "BIT default 0")
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 
 	
 }

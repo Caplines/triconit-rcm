@@ -4,6 +4,7 @@ public class OfficeDto {
 
 	private String name;
 	private String uuid;
+	private boolean active;
 
 	public String getName() {
 		return name;
@@ -29,4 +30,15 @@ public class OfficeDto {
 	public OfficeDto() {
 	}
 
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	
+   
+	
 }
