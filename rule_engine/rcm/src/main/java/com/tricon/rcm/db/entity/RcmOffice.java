@@ -54,4 +54,7 @@ public class RcmOffice implements Serializable{
 	@Column(name = "id", unique=true)
 	private int key;
 	
+	@Column(name = "active", columnDefinition = "BIT default 0")
+	private boolean active;
+	
 }

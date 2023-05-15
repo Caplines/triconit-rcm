@@ -2345,7 +2345,7 @@ public class ClaimServiceImpl {
 		List<AllPendencyDateDto> date = rcmClaimRepository.allPendencyDateCount(company.getUuid());
 		dto.setCount(count);
 		dto.setDateCount(date);
-		dto.setOffices(officeRepo.findByCompany(company));
+		dto.setOffices(officeRepo.findByCompanyAndActiveTrue(company));
 		return dto;
 		
 		
