@@ -129,25 +129,25 @@
         <div class="row">
             <div class="col-lg-12 pt-3">
      <div id="myModal" class="modal claim-issue-modal">
-        <div class="modal-content">
+        <div class="modal-content" >
             <div class="close-modal">
-                <h5>{{issueClientName}} Issues <span class="number-of-claims">Number Of Claims: {{numberOfClaims}}</span></h5> 
+                <h5>{{issueClientName}} Issues <span class="number-of-claims">Number Of Claims: {{issueClaimsCount}}</span></h5> 
                 <span (click)="closeModalIC()">&times;</span>
             </div>
-            <div class="table-responsive">
-                <table class="table" *ngIf="issueCl?.length>0">
+            <div class="table-responsive" >
+                <table class="table table-wrapper-scroll-y table-inner-scrollbar" #modalElement (scroll)="onModalScroll()"   id="issuetable"  *ngIf="issueCl?.length>0">
                     <thead>
-                        <tr>
-                                 
+                        <tr class="totalRow">
                             <th colspan="6">Office Name</th>
                             <th colspan="6" >Claim Id</th>
                             <th colspan="6">Created Date</th>
                             <th colspan="6" style="min-width: 170px;">Issue</th>
-                            <th colspan="6">source</th>
+                            <th colspan="6">Source</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let lg of issueCl">
+                        <tr *ngFor="let lg of issueCl;let idx=index;">
+
                             <td colspan="6">{{lg.officeName}}</td>
                             <td colspan="6">{{lg.claimId}}</td>
                             <td colspan="6">{{lg.createdDate | date: 'dd/MM/yyyy HH:mm:ss'}}</td>

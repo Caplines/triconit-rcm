@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { BaseService } from 'src/app/service/base-service.service';
@@ -46,11 +46,13 @@ export class HeaderComponent implements OnInit {
   clientUuid:string="-1";
   ele:any={'modal':'','span':''}
   issueClientName:any='';
-  clients : Array<ClientModel>;
-  issueCl : Array<IssueClaimModel>;
+  issueCl : any=[];
   isSingleRole:boolean=false;
-  numberOfClaims: number;
-  numberOfClaimsOfficeWise: any = [];
+
+  issueClaimPageNum:any=0;
+  totalPages:number;
+
+  @ViewChild('modalElement')modalElementRef!:ElementRef;
 
   constructor(private appSer: ApplicationServiceService, private router: Router,public appConstants: AppConstants) {
 
@@ -78,6 +80,7 @@ export class HeaderComponent implements OnInit {
     }
      this.checkClientExist();
   }
+
   getRoles() {
     this.appSer.fetchRoles((res: any) => {
       if (res.status) {
@@ -276,21 +279,26 @@ export class HeaderComponent implements OnInit {
       }
     });
     if(this.clientUuid){
-      this.appSer.fetchIssueClaims(this.clientUuid, (res: any) => {
-       if (res.status === 200) {
-        this.numberOfClaims = res.data.length;
-        this.numberOfClaimsOfficeWise = Object.values(res.data.reduce((acc:any, {officeName}:any) => {
-          if (acc[officeName] === undefined)
-              acc[officeName] = {name: officeName, count: 1};
-          else
-              acc[officeName].count++;
-          return acc;
-        },{}));
-          this.issueCl = res.data;
+      this.appSer.fetchIssueClaims(this.clientUuid+`/${this.issueClaimPageNum}`, (res: any) => {
+       if (res.status === 200 && res.data) {
+          this.totalPages = res.data[0].totalPages;
+         if (this.issueClaimPageNum == 0) {
+           this.issueCl = res.data[0].data;
+         }
+         if (this.issueClaimPageNum != 0 && res.data[0].totalPages != this.issueClaimPageNum) {
+           this.issueCl.push.apply(this.issueCl, res.data[0].data);
+         }
           this.modal();
         }
       });
     }
+  }
+
+  loadMore(){
+      ++this.issueClaimPageNum;
+      if(this.issueClaimPageNum < this.totalPages){
+        this.fetchIssueClaims();
+      }
   }
 
  modal(){
@@ -300,8 +308,21 @@ export class HeaderComponent implements OnInit {
     this.ele.modal.style.display = "block";
   }
 
+  onModalScroll(){
+    const modalElement = this.modalElementRef.nativeElement;
+    const scrollTop = modalElement.scrollTop;
+    const scrollHeight = modalElement.scrollHeight;
+    const clientHeight = modalElement.clientHeight;
+
+    if (scrollTop + clientHeight >= scrollHeight) {
+      this.loadMore();
+    }
+  }
+
  closeModalIC(){
     this.ele.modal.style.display = "none";
+    this.issueClaimPageNum=0;
+    this.issueCl=[];
   }
 
   
