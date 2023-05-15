@@ -203,12 +203,19 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	RcmClaimDetailDto fetchIndividualClaim(@Param("companyId")  String companyId,@Param("claimUuid")  String claimUuid) ;
 	
 	
+	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos " + 
+			" from  patient p , patient_detail pd where pd.patient_id=p.id and p.patient_id=:patientId " + 
+			" and p.office_id=:officeId and pd.cob_status in (:insTypes) " + 
+			" and STR_TO_DATE(:dos,'%Y-%m-%d')<=STR_TO_DATE(general_date_iv_wasdone,'%Y-%m-%d') order by " + 
+			" STR_TO_DATE(general_date_iv_wasdone,'%Y-%m-%d') desc limit 1 ")
+	IVFDto getIVIdOfClaimByDos(@Param("dos") String dos,@Param("officeId") String officeId,
+			@Param("patientId") String patientId,@Param("insTypes") Set<String> insTypes);
 	
-	@Query(nativeQuery = true, value = "select ivf_form_id,date_of_service from reports_claim r inner join " + 
+	/*@Query(nativeQuery = true, value = "select ivf_form_id,date_of_service from reports_claim r inner join " + 
 			"report_claim_detail rd on rd.report_id=r.id where "
 			+ " office_id=:officeId and claim_id=:claimid and  patient_id=:patientId and insurance_type in (:insTypes) limit 1 ")
 	Object getIVIdOfClaim(@Param("claimid") String claimid,@Param("officeId") String officeId,
-			@Param("patientId") String patientId,@Param("insTypes") Set<String> insTypes);
+			@Param("patientId") String patientId,@Param("insTypes") Set<String> insTypes);*/
 	
 	/*
 	@Query(nativeQuery = true, value = "select treatement_plan_id from reports where "
@@ -252,14 +259,14 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("patientid") String patientId,@Param("claim_id") String claimId);
 	
 	
-	@Query(nativeQuery = true, value = ""+
+	/*@Query(nativeQuery = true, value = ""+
 			" SELECT ivf_form_id ivId,r.office_id officeId FROM reports_claim r inner join report_claim_detail rd "+
 			" on rd.report_id=r.id inner join patient_detail pd on pd.id=r.ivf_form_id  and  pd.office_id=r.office_id "+
 			" where r.claim_id=:claim_id and r.patient_id=:patientid and pd.cob_status in (:primarysecnnoifo) and "+
 			"  r.office_id=:office_id order by STR_TO_DATE( iv_date, '%m/%d/%Y'),rd.group_run desc limit 1"	)
 	IVFDto getLatestIvfNumberForClaim(@Param("office_id") String officeId,
 			@Param("patientid") String patientId,@Param("claim_id") String claimId,
-			@Param("primarysecnnoifo") List<String> primarysecnnoifo);//Primary Secondary no information
+			@Param("primarysecnnoifo") List<String> primarysecnnoifo);//Primary Secondary no information*/
 	
 	
 	@Query(nativeQuery = true, value = "select claim_uuid,pending from rcm_claims where "

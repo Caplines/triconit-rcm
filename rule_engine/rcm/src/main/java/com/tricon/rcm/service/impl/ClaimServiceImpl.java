@@ -1088,18 +1088,21 @@ public class ClaimServiceImpl {
 			try {
 				Set<String> insTypes = new HashSet<>();
 				insTypes.add(claimSubTy);
-				if (claimSubTy.equalsIgnoreCase(Constants.insuranceTypePrimary)) insTypes.add("");
-				Object ivd = rcmClaimRepository.getIVIdOfClaim(clT[0], implDto.getOfficeUuid(), implDto.getPatientId(),insTypes);
-				Object ivDet[] = null;
-				if (ivd != null)
-					ivDet = (Object[]) ivd;
-				if (ivDet != null && ivDet.length == 2) {
-					ivDet = (Object[]) ivd;
-					ivfId = (String) ivDet[0];
-					ivDos = (String) ivDet[1];
+				if (claimSubTy.equalsIgnoreCase(Constants.insuranceTypePrimary)) {
+					insTypes.add("");
+					insTypes.add("No Information");
+				}
+				
+				IVFDto ivfDto = rcmClaimRepository.getIVIdOfClaimByDos(Constants.SDF_MYSL_DATE.format(implDto.getDos()), implDto.getOfficeUuid(), implDto.getPatientId(),insTypes);
+				//Object ivDet[] = null;
+				if (ivfDto != null) {
+					
+					
+					ivfId = ivfDto.getIvId();
+					ivDos = ivfDto.getDos();
 					
 					Object tp  = rcmClaimRepository.getLatestTPIdForPatientDosAndIV(implDto.getOfficeUuid(),
-							implDto.getPatientId(), (String) ivDet[1]);
+							implDto.getPatientId(), ivfDto.getDos());
 					if (tp != null) {
 						Object[] tpDet = (Object[]) tp;
 						if (tpDet != null && tpDet.length == 2) {
@@ -1107,7 +1110,7 @@ public class ClaimServiceImpl {
 							tpDos = (String) tpDet[1];
 						}
 					}
-					
+				
 				}	
 				
 			} catch (Exception issueIV) {
@@ -1506,23 +1509,24 @@ public class ClaimServiceImpl {
 
 		if (claims != null) {
 			RcmOffice off = claims.getOffice();
-			String[] clT = claims.getClaimId().split("_");
+		//	String[] clT = claims.getClaimId().split("_");
 			//String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
-			List<String> types= new ArrayList<>();
-			if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
-				types.add("Primary");
-				types.add("No Information");
-				types.add("");
-				
-			} else {
-				types.add("Secondary");
-				
-			}
+//			Set<String> types= new HashSet<>();
+//			if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
+//				types.add("Primary");
+//				types.add("No Information");
+//				types.add("");
+//				
+//			} else {
+//				types.add("Secondary");
+//				
+//			}
 			
-			IVFDto iVFDto = rcmClaimRepository.getLatestIvfNumberForClaim(off.getUuid(), claims.getPatientId(),
-					clT[0],types);
-			if (iVFDto != null) {
-				return ruleEngineService.pullIVFDataFromRE(iVFDto.getIvId(), claims.getPatientId(), companyId,
+			//IVFDto iVFDto = rcmClaimRepository.getIVIdOfClaimByDos(Constants.SDF_MYSL_DATE.format(claims.getDos()), off.getUuid(), claims.getPatientId(),types);
+			//IVFDto iVFDto = rcmClaimRepository.getLatestIvfNumberForClaim(off.getUuid(), claims.getPatientId(),
+			//		clT[0],types);
+			if (claims.getIvfId() != null) {
+				return ruleEngineService.pullIVFDataFromRE(claims.getIvfId(), claims.getPatientId(), companyId,
 						off.getUuid());
 			} else {
 				// For testing..

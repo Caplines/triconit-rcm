@@ -190,6 +190,9 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "ivf_id")
 	private String ivfId;
 	
+	@Column(name = "ivf_id_system")
+	private String ivfIdSystem;
+	
 	@Column(name = "iv_dos")
 	private String ivDos;
 	

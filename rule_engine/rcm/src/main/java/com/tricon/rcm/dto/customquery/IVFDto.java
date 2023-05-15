@@ -5,4 +5,6 @@ public interface IVFDto {
 	String getIvId();
 
 	String getOfficeId();
+	
+	String getDos();
 }
