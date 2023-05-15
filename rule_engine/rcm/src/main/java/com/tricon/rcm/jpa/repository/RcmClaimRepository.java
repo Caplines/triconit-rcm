@@ -67,7 +67,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " select created_date,created_by,new_claims_count,source,office_id,status from rcm_claim_log where id in ( "
 			+ " select max(id) as id from  rcm_claim_log log group by log.office_id))  l "
 			+ " on off.uuid=l.office_id "
-			+ " inner join company cmp on cmp.uuid=off.company_id where cmp.uuid=:companyId")
+			+ " inner join company cmp on cmp.uuid=off.company_id where cmp.uuid=:companyId and off.active is true")
 	List<FreshClaimLogDto> fetchFreshClaimLogs(@Param("companyId") String companyId);
 
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
@@ -151,7 +151,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where off.company_id=:companyId  group by off.uuid")
+			+ "  where off.company_id=:companyId and off.active is true group by off.uuid")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignments(@Param("companyId") String companyId,
 			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst);
 	
