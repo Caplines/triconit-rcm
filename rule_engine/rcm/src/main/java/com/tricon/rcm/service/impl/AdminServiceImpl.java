@@ -514,6 +514,7 @@ public class AdminServiceImpl {
 				office.setName(dto.getName());
 				office.setCompany(company);
 				office.setKey(maxId+1);
+				office.setActive(true);
 				office=officeRepo.save(office);
 				officeResponse.setOfficeUuid(office.getUuid());
 				officeResponse.setId(maxId);
