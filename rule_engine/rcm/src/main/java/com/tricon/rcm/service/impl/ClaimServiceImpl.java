@@ -63,7 +63,6 @@ import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
-import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLogDto;
@@ -2468,11 +2467,6 @@ public class ClaimServiceImpl {
 			paginationData.add(paginationDto);
 			return paginationData;
 		}
-		return null;
-	}
-
-	public String updateIvf(RcmIVfDto dto) throws Exception {
-		System.out.println(dto);
 		return null;
 	}
 

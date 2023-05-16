@@ -25,7 +25,6 @@ import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
-import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
 import com.tricon.rcm.dto.ClaimNotesDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
@@ -53,7 +52,6 @@ import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
 
-import com.tricon.rcm.util.MessageConstants;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -493,24 +491,4 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	
-	@PostMapping("/api/updateIV")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','REPORTING','TL','ASSO')")
-	public ResponseEntity<Object> updateIVF(@RequestBody RcmIVfDto dto, Model model) {
-		String response = null;
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if (partialHeader == null)
-			return null;
-		if (dto.getClaimUuid() == null || dto.getClaimUuid().trim().equals("") || dto.getIvfId() == null
-				|| dto.getIvfId().trim().equals("")) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE,null));
-		}
-		try {
-			response = claimServiceImpl.updateIvf(dto);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
 }
