@@ -364,4 +364,8 @@ fetchTpData(claimUuid:any,callback:any){
   fetchGSheet(callback:any){
     this.getData({},this.httpUrl['googleSheetLink'],callback);
   }
+
+  updateIvId(params:any,callback:any){
+    this.postData(params, this.httpUrl['updateIv'], callback)
+  }
 }

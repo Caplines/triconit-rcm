@@ -17,7 +17,7 @@ export class AppConstants {
         "name":"Admin","paths":["/register",'/user-setting','/manage-office','/users-status','/manage-client'],"defaultpath":"/register"
         }],
         [3,{
-        "name":"Internal Audit Team","paths":["/list-of-claims","/claim-assignment","/update-pass"],"defaultpath":"/claim-assignment"
+        "name":"Internal Audit Team","paths":["/list-of-claims","/claim-assignment","/update-pass","/all-pendency"],"defaultpath":"/claim-assignment"
         }],
         [4,{
             "name":"Aging","paths":["/update-pass"],"defaultpath":"/update-pass"

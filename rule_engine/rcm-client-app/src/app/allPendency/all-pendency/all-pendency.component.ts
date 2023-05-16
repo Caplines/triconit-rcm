@@ -148,7 +148,7 @@ export class AllPendencyComponent {
     }
     
     excelData = excelData.map(
-      ({ key, uuid, teamId, count,teamName,minDate, ...newClaimData }: any) => newClaimData);
+      ({ key, uuid, teamId, count,teamName,minDate,active, ...newClaimData }: any) => newClaimData);
 
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;

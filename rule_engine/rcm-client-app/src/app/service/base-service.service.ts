@@ -67,6 +67,7 @@ export class BaseService {
     'fetchTpData': '/tp-link-data',
     'fetchIssueClaimCounts': '/issue-claim-counts',
     'googleSheetLink': '/gsheet-link',
+    'updateIv':'/api/updateivfid',
 
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',
