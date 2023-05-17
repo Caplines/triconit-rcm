@@ -730,6 +730,7 @@ export class BillingClaimsComponent {
   closeIvPopup(){
     let popup:any = document.getElementById("ivUpdate");
     popup.style.display ='none';
+    this.updatedIvfId = '';
   }
 
   updateIV(claimUuid:any,ivId:any){
