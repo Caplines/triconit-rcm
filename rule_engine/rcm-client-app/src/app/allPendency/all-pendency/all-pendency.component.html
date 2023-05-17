@@ -116,8 +116,8 @@
                                                     </div>
                                                 </th>
                                                 <ng-container *ngFor="let data of teamData;let last=last">
-                                                    <th>
-                                                        <div class="dFlex" *ngIf="currentTeamId != data.teamId">
+                                                    <th *ngIf="currentTeamId != data.teamId">
+                                                        <div class="dFlex">
                                                             Pendency with {{data.teamName}} <span class="sorting">
                                                             </span>
                                                         </div>
@@ -133,8 +133,8 @@
                                                 <tr>
                                                     <td>{{officeData.name}}</td>
                                                     <ng-container *ngFor="let team of teamData;let last=last">
-                                                            <td *ngIf="!last">
-                                                                {{ team.teamId == officeData.teamId && officeData.teamId != currentTeamId ? (officeData.minDate| date: 'MM/dd/yyyy'): ''}}
+                                                            <td *ngIf="team.teamId != currentTeamId">
+                                                                {{ team.teamId == officeData.teamId && officeData.teamId != currentTeamId ? (officeData.minDate| date: 'MM/dd/yyyy'): '-'}}
                                                             </td>
                                                             <td *ngIf="last"></td>
                                                     </ng-container>
