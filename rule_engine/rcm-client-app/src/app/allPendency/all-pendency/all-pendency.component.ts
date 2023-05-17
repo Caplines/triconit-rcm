@@ -47,6 +47,7 @@ export class AllPendencyComponent {
           };
         });    //loops are used to merge count data (count) and DateCount data (minDate) into offices array with corresponding Team ID.
       }
+      this.total(this.pendencyData);
     })
   }
 

@@ -169,7 +169,7 @@
                             <ng-container>
                                 <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text "
                                     aria-expanded="false">Links to Related Documents:<span
-                                    class="passedNum" (click)="openUpdateIvPopup()">Update IV ID ?</span></a>
+                                    class="passedNum"  style="cursor: pointer;" (click)="openUpdateIvPopup()">Update IV ID ?</span></a>
                                 <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                 <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show"
                                     id="linksToDocuments">
