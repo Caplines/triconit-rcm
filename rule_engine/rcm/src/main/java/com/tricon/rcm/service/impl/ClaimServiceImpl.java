@@ -1029,7 +1029,7 @@ public class ClaimServiceImpl {
 		}
 		List<AssignFreshClaimLogsDto> l = null;
 		try {
-			l = rcmClaimRepository.fetchClaimsForAssignments(partialHeader.getCompany().getUuid(), ct, instDB,partialHeader.getTeamId());
+			l = rcmClaimRepository.fetchClaimsForAssignments(partialHeader.getCompany().getUuid(), ct, instDB);
 			HashMap<String, RemoteLietStatusCount> remoteLiteMap = ruleEngineService.pullAndSaveRemoteLiteData();
 			RemoteLietStatusCount counts = null;
 

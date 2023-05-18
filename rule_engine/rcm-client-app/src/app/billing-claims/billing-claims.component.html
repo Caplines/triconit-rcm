@@ -390,6 +390,64 @@
                                 </div>
                             </div>
                             <ng-container *ngIf="smilePoint">
+                                <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text "
+                                    aria-expanded="false">Rule Engine Validations:</a>
+                                <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
+                                <div *ngIf="!loader.ruleEngValid" class="form-row  collapse show"
+                                    id="claimValidationsRE">
+                                    <ng-container *ngIf="ruleEngineReport.length>0">
+                                        <div class="rule-detail" [innerHTML]="reheading">
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-bordered">
+                                                <thead>
+                                                    <tr class="total-row">
+                                                        <th>
+                                                            <div style="display: flex; width: 455px;"
+                                                                class="rule-switch"> Rule Name <button type="button"
+                                                                    class="btn btn-success"
+                                                                    (click)="switchType('pass')">Pass:
+                                                                    {{count.pass}}</button> <button type="button"
+                                                                    class="btn btn-danger mx-1"
+                                                                    (click)="switchType('fail')">Fail:
+                                                                    {{count.fail}}</button><button type="button"
+                                                                    class="btn btn-info"
+                                                                    (click)="switchType('alert')">Alert:
+                                                                    {{count.alert}}</button> </div>
+                                                        </th>
+                                                        <th> Service Codes</th>
+                                                        <th> Tooth#</th>
+                                                        <th> Surface#</th>
+                                                        <th> Messages</th>
+                                                        <th> Remark</th>
+                                                    </tr>
+
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let rule of ruleEngineReport;let idx=index">
+                                                        <ng-container *ngIf="rule.mtype===mtype">
+                                                            <td>{{rule.ruleName}}</td>
+                                                            <td>{{rule.codes}}</td>
+                                                            <td>{{rule.tooth}} </td>
+                                                            <td>{{rule.surface}}</td>
+                                                            <td [innerHTML]="rule.message"></td>
+                                                            <td> <input type="text" maxlength="100"
+                                                                    [(ngModel)]='rule.remark'
+                                                                    id="ENG_REP_{{rule.ruleId}}"
+                                                                    (click)="removeErrorDisplayKeyById('ENG_REP_',rule.ruleId)"
+                                                                    [disabled]="makeReadOnly()"> </td>
+                                                        </ng-container>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="ruleEngineReport.length==0 && !loader.ruleEngValid">
+                                        Rule Not Run in Rule Engine
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text "
                                     aria-expanded="false" id="serviceCodeValidations">Service Code Level
                                     Validations:</a>
@@ -450,64 +508,7 @@
                                     </div>
                                 </div>
                             </ng-container>
-                            <ng-container *ngIf="smilePoint">
-                                <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text "
-                                    aria-expanded="false">Rule Engine Validations:</a>
-                                <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
-                                <div *ngIf="!loader.ruleEngValid" class="form-row  collapse show"
-                                    id="claimValidationsRE">
-                                    <ng-container *ngIf="ruleEngineReport.length>0">
-                                        <div class="rule-detail" [innerHTML]="reheading">
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="table table-striped table-bordered">
-                                                <thead>
-                                                    <tr class="total-row">
-                                                        <th>
-                                                            <div style="display: flex; width: 455px;"
-                                                                class="rule-switch"> Rule Name <button type="button"
-                                                                    class="btn btn-success"
-                                                                    (click)="switchType('pass')">Pass:
-                                                                    {{count.pass}}</button> <button type="button"
-                                                                    class="btn btn-danger mx-1"
-                                                                    (click)="switchType('fail')">Fail:
-                                                                    {{count.fail}}</button><button type="button"
-                                                                    class="btn btn-info"
-                                                                    (click)="switchType('alert')">Alert:
-                                                                    {{count.alert}}</button> </div>
-                                                        </th>
-                                                        <th> Service Codes</th>
-                                                        <th> Tooth#</th>
-                                                        <th> Surface#</th>
-                                                        <th> Messages</th>
-                                                        <th> Remark</th>
-                                                    </tr>
 
-                                                </thead>
-                                                <tbody>
-                                                    <tr *ngFor="let rule of ruleEngineReport;let idx=index">
-                                                        <ng-container *ngIf="rule.mtype===mtype">
-                                                            <td>{{rule.ruleName}}</td>
-                                                            <td>{{rule.codes}}</td>
-                                                            <td>{{rule.tooth}} </td>
-                                                            <td>{{rule.surface}}</td>
-                                                            <td [innerHTML]="rule.message"></td>
-                                                            <td> <input type="text" maxlength="100"
-                                                                    [(ngModel)]='rule.remark'
-                                                                    id="ENG_REP_{{rule.ruleId}}"
-                                                                    (click)="removeErrorDisplayKeyById('ENG_REP_',rule.ruleId)"
-                                                                    [disabled]="makeReadOnly()"> </td>
-                                                        </ng-container>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </ng-container>
-                                    <ng-container *ngIf="ruleEngineReport.length==0 && !loader.ruleEngValid">
-                                        Rule Not Run in Rule Engine
-                                    </ng-container>
-                                </div>
-                            </ng-container>
                             <a data-toggle="collapse" (click)="showHide(8)" class="bold-b-text "
                                 aria-expanded="false">Enter Claim Submission Details:</a>
                             <div class="form-row  collapse show" id="claimSubmissionDetails">
