@@ -796,6 +796,32 @@ public class RuleEngineService {
 		return dto;
 	}
 	
+	public List<ClaimDetailDto> pullTPDetailFromFromRE(String tpId, String companyId, String officeId) {
+
+		logger.info(" In pull TPDetail From RE");
+		List<ClaimDetailDto> dto = null;
+		try {
+			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			String param = "?cmpId=" + companyId;
+			param = param + "&office=" + officeId;
+			param = param + "&tpId=" + tpId;
+			// Call Rule Engine API..
+			ResponseEntity<RcmClaimDetMainRootDto> result = restTemplate.exchange(ev.getProperty("rcm.tpESdataurl") + param,
+					HttpMethod.GET, entity, RcmClaimDetMainRootDto.class);
+
+			RcmClaimDetMainRootDto rootDto = result.getBody();
+			if (rootDto.getData() != null && rootDto.getData().size() > 0) {
+				dto = rootDto.getData().get(tpId);
+			}
+
+		} catch (Exception n) {
+			logger.error("Error in " + tpId);
+			logger.error(n.getMessage());
+		}
+
+		return dto;
+	}
+	
 
 	public void saveRcmIssueClaim(String claimId, RcmOffice off, RcmUser user, String error, String source,
 			ClaimTypeEnum claimTypeEnum) {

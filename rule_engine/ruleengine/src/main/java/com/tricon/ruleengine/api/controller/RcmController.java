@@ -405,6 +405,35 @@ public class RcmController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Claim DATA Fetched Successfully", data));
 	}
 	
+	@RequestMapping(value = "/tp-data-form-es", method = RequestMethod.GET)
+	public ResponseEntity<?> TPDataFromES(@RequestHeader("x-api-key") String apiKey,
+			@RequestParam(value = "office", required = true) String officeUuid,
+			@RequestParam(value = "cmpId", required = true) String cmpId,
+			@RequestParam(value = "tpId", required = true) String tpId)
+			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+
+		RuleEngineLogger.generateLogs(clazz, "ENTER Treatment Data From ES" + new Date(), " INFO", null);
+
+		if (!checkForKey(apiKey)) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created", "Key Error"));
+		}
+
+		TreatmentClaimDto dto = new TreatmentClaimDto();
+		Office office = od.getOfficeByUuid(officeUuid, cmpId);
+		dto.setOfficeId(office.getUuid());
+		dto.setDataId(tpId);
+		dto.setType(Constants.userType_TR);
+		Object data=null;
+		try {
+			data =tPService.getTreatmentClaimDataForRCM(dto,cmpId);
+			
+		} catch (Exception n) {
+
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "TP DATA Fetched Successfully", data));
+	}
+	
+	
 	private boolean checkForKey(String apiKey) {
 
 		if (apiKey == null || !apiKey.equals(rcmEnvPrimaryClaim.getApiKey())) {

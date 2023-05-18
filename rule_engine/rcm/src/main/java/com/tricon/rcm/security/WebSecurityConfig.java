@@ -131,6 +131,7 @@ public class WebSecurityConfig {
 						"/billing-claims/{pathvariable:[0-9A-Za-z]+}/tp",
 						"/billing-claims/*/tp",
 						"/list-of-claims","/all-pendency","/production","/update-pass",
+						"/api/testSVSheet",
 						 "/*.html",
 			                "/index.jsp",
 			                "/favicon.ico",

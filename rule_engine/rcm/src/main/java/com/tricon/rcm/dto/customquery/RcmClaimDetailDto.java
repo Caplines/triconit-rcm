@@ -62,4 +62,6 @@ public interface RcmClaimDetailDto {
 	String getTpId();
 	String getTpDos();
 	String getClaimType();
+	String getFirstTeam();
+	int getFirstTeamId();
 }

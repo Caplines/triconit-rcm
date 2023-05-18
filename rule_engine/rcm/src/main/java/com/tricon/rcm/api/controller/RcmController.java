@@ -34,6 +34,7 @@ import com.tricon.rcm.dto.ClaimRuleRemarkDto;
 import com.tricon.rcm.dto.ClaimRuleVaidationValueDto;
 import com.tricon.rcm.dto.ClaimRuleValidationsDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
+import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
@@ -494,7 +495,7 @@ public class RcmController extends BaseHeaderController{
 	@PostMapping("/api/updateivfid")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN','REPORTING','TL','ASSO')")
     public ResponseEntity<Object> updateIvfId(@RequestBody RcmIVfDto dto, Model model) {
-        String response = null;
+		ClaimSubDet response = null;
         PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
         if (partialHeader == null)
             return null;
@@ -503,7 +504,7 @@ public class RcmController extends BaseHeaderController{
             return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE,null));
         }
         try {
-            //response = claimServiceImpl.updateIvf(dto);
+        	response = claimServiceImpl.updateAutoIvId(dto,partialHeader);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());

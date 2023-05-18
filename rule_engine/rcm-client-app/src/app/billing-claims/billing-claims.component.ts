@@ -55,7 +55,7 @@ export class BillingClaimsComponent {
   otherErrormsg = "";
   loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false }
   //ivfData:any=[];
-  updatedIvfId:any;
+  updatedIvfId: any;
 
   modelElement: any = { 'modal': '', 'span': '' }
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -722,27 +722,36 @@ export class BillingClaimsComponent {
     }
   }
 
-  openUpdateIvPopup(){
-      let popup:any = document.getElementById("ivUpdate");
-      popup.style.display ='block';
+  openUpdateIvPopup(event: any) {
+    event.stopPropagation();
+    let popup: any = document.getElementById("ivUpdate");
+    popup.style.display = 'block';
   }
 
-  closeIvPopup(){
-    let popup:any = document.getElementById("ivUpdate");
-    popup.style.display ='none';
+  closeIvPopup() {
+    let popup: any = document.getElementById("ivUpdate");
+    popup.style.display = 'none';
     this.updatedIvfId = '';
   }
 
-  updateIV(claimUuid:any,ivId:any){
-      let params:any ={
-        'claimUuid':claimUuid,
-        'ivfId':ivId
-      };
-      this.appService.updateIvId(params,(res:any)=>{
-        if(res.status){
-          console.log(res);
+  updateIV(claimUuid: any, ivId: any) {
+    let params: any = {
+      'claimUuid': claimUuid,
+      'ivfId': ivId
+    };
+    this.appService.updateIvId(params, (res: any) => {
+      if (res.status) {
+        if (res.data.success) {
+
+          this.claimRcm.ivfId = res.data.ivfId;
+          this.claimRcm.ivDos = res.data.ivDos;
+          this.claimRcm.tpId = res.data.tpId;
+          this.claimRcm.tpDos = res.data.tpDos;
+
         }
-      })
+      }
+      this.closeIvPopup();
+    })
   }
 
   get isRoleLead() {

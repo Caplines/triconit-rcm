@@ -3837,7 +3837,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 			inv=Constants.invalidStr_Cl;
 		}
 
-		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<TPValidationResponseDto> dList = new HashSet<>();
 		Set<String> fcodes=new HashSet<>();
 		Set<String> surfaces=new HashSet<>();
 		Set<String> teethC=new HashSet<>();
@@ -3846,7 +3846,8 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						Constants.errorMessOPen + inv + Constants.errorMessClose, Constants.FAIL
 						,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
-				return dList;
+				
+				return dList.stream().collect(Collectors.toList());
 			}
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVF = new HashMap<>();
@@ -4411,7 +4412,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 				List<String> list = null;
 				for (Object t : tpList) {
 					CommonDataCheck tp = (CommonDataCheck)  t;
-					if (userType==Constants.userType_CL) {
+					if (userType==Constants.userType_CL) {//Mark
 						TP_Date= Constants.SIMPLE_DATE_FORMAT.parse(tp.getCdDetails().getDateLastUpdated());
 						
 					}
@@ -4459,7 +4460,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 						+ "This is created by Using Tooth Number from Treatment Plan, if that tooth No's service code"
 						+ "is found in the Fields where we have to Check for Frequncy Limits ..Rest codes are ignored.-tpToothMap "
 						+ "", Constants.rule_log_debug, bw);
-				List<TPValidationResponseDto> xL = new ArrayList<>();
+				Set<TPValidationResponseDto> xL = new HashSet<>();
 				if (mapFlIVF != null && tpToothMap!=null) {
 
 					for (Map.Entry<String, List<String>> entry : tpToothMap.entrySet()) {
@@ -4504,7 +4505,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 					}
 
 				}
-				if (xL.size()>0) return xL;
+				if (xL.size()>0) return xL.stream().collect(Collectors.toList());
 				// MAIN LOGIC ALIKE CODES
 				/*
 				 * D1206 and D1208 D4341 and D4342 D1110 and D1120 D0272 and D0274 D0150, D0120,
@@ -4971,7 +4972,7 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 					Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 
 		}
-		return dList;
+		return dList.stream().collect(Collectors.toList());
 
 	}
 

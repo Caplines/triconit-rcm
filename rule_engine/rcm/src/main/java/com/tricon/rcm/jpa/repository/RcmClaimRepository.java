@@ -187,12 +187,13 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" cl.provider_id providerId,cl.created_date pulledDate, "+
 			" cl.treating_provider treatingProvider , provider_on_claim providerOnClaim," +
 			" cl.prime_policy_holder_dob primePolicyHolderDob, cl.ivf_id ivId,iv_dos ivDos,tp_id tpId,tp_dos tpDos, "+
-			" cl.claim_type claimType "+
+			" cl.claim_type claimType,Fteam.name firstTeam,Fteam.id firstTeamId "+
 			"  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+
 			"  left join rcm_team Cteam  on Cteam.id=cl.current_team_id"+
 			"  left join rcm_team lTeam  on lTeam.id=cl.last_work_team_id"+
+			"  left join rcm_team Fteam  on Fteam.id=cl.first_worked_team_id"+
 			"  left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id"+
 			"  left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id"+
 			"  left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id"+
@@ -226,12 +227,12 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	@Query(nativeQuery = true, value = ""
 			+" SELECT treatement_plan_id,tx_plan_date FROM reports r inner join report_detail rd on rd.report_id=r.id "
 			+" where office_id=:officeId and patient_id=:patientId "
-			+" and treatement_plan_id not in ('PREBATCHMODE','SEALANTMODE') and iv_date is not null "
-			+" and STR_TO_DATE(iv_date, '%m/%d/%Y')<=STR_TO_DATE(:dos,'%m/%d/%Y') "
+			+" and treatement_plan_id not in ('PREBATCHMODE','SEALANTMODE') and iv_date is not null and ivf_form_id=:ivid "
+			//+" and STR_TO_DATE(iv_date, '%m/%d/%Y')<=STR_TO_DATE(:dos,'%m/%d/%Y') "
 			+" order by STR_TO_DATE(iv_date, '%m/%d/%Y') desc limit 1"
 			)
-	Object getLatestTPIdForPatientDosAndIV(@Param("officeId") String officeId,
-			@Param("patientId") String patientId,@Param("dos") String dos);
+	Object getLatestTPIdForPatientByIVId(@Param("officeId") String officeId,
+			@Param("patientId") String patientId,@Param("ivid") String ivid);
 	
 	@Query(nativeQuery = true, value = ""+
 			" select claim_id claimId,issue,source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "+
@@ -269,8 +270,10 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("primarysecnnoifo") List<String> primarysecnnoifo);//Primary Secondary no information*/
 	
 	
-	@Query(nativeQuery = true, value = "select claim_uuid,pending from rcm_claims where "
-			+ " office_id=:officeId and claim_id=:claimid ")
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.pending,sins.name secInsurance from rcm_claims cl "
+			+ " left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id "
+			+ " where "
+			+ " cl.office_id=:officeId and cl.claim_id=:claimid ")
 	Object getClaimsUuidClaimId(@Param("claimid") String claimid,@Param("officeId") String officeId);
 	
 	
@@ -338,5 +341,21 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "left join office off on off.uuid=cl.office_id "
 			+ "where off.company_id=:companyId and cl.resolved is false order by cl.id limit :offset, :limit", nativeQuery = true)
 	List<IssueClaimDto> getIssueClaimsByPagination(@Param("companyId") String companyId,@Param("offset")int offSet,@Param("limit")int limit); //and off.activeis true
+	
+	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos " + 
+			" from  patient p , patient_detail pd where pd.patient_id=p.id and p.patient_id=:patientId " + 
+			" and p.office_id=:officeId and pd.id=:ivid " + 
+			" order by " + 
+			" STR_TO_DATE(general_date_iv_wasdone,'%Y-%m-%d') desc limit 1 ")
+	IVFDto getIVDosByIvId(@Param("ivid") String ivid,@Param("officeId") String officeId,
+			@Param("patientId") String patientId);
+	
+	
+	@Query(nativeQuery = true, value = " select  sins.name secInsurance "+
+			"  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
+			"  inner join company cmp on cmp.uuid=off.company_id"+
+			"  left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id"+
+			"  where claim_uuid=:claimUuid and cmp.uuid=:companyId")
+	String fetchSecInsuranceOfClaim(@Param("companyId")  String companyId,@Param("claimUuid")  String claimUuid) ;
 	
 }

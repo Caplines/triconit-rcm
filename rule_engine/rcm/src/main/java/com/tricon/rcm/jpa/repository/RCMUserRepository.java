@@ -115,9 +115,9 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 
 	//TreatmentPlan-link data query
 	
-	@Query(value = "select rc.date_last_updated_es as DatePlan,rcd.appt_id as Appt,rc.provider_id as Provider,rcd.service_code as Service,"
-			+ "rcd.description as Description,rcd.tooth as Tth,rcd.surface as Surface,rcd.fee as Fee,rcd.est_insurance as Ins,rcd.patient_portion as Pat "
-			+ "FROM rcm_claim_detail rcd inner join rcm_claims rc on rc.claim_uuid=rcd.claim_id "
+	@Query(value = "select rc.date_last_updated_es as DatePlan,rtd.appt_id as Appt,rc.provider_id as Provider,rtd.service_code as Service,"
+			+ "rtd.description as Description,rtd.tooth as Tth,rtd.surface as Surface,rtd.fee as Fee,rtd.est_insurance as Ins,rtd.patient_portion as Pat "
+			+ "FROM rcm_tp_detail rtd inner join rcm_claims rc on rc.claim_uuid=rtd.claim_id "
 			+ "where rc.claim_uuid=:claimUuid", nativeQuery = true)
 	List<TreatmentPlanLinkDto> findTreatmentPlanLinkData(@Param("claimUuid") String claimUuid);
 	

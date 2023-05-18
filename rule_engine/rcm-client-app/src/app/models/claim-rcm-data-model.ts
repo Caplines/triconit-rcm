@@ -69,6 +69,8 @@ export interface ClaimRcmDataModel {
 	primePolicyHolderDob?: string;
 	secPolicyHolderDob?: string;
 	claimType?: string;//this is Specialty not confuse with actual Type (primary/secondary)
+	firstTeam?: string;
+	firstTeamId?: number;
 
 }
 

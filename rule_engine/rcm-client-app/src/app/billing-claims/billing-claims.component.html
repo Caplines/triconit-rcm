@@ -168,8 +168,10 @@
                             <!-- This section is for SmilePoints Only -->
                             <ng-container>
                                 <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text "
-                                    aria-expanded="false">Links to Related Documents:<span
-                                    class="passedNum"  style="cursor: pointer;" (click)="openUpdateIvPopup()">Update IV ID ?</span></a>
+                                    aria-expanded="false">Links to Related Documents:<span class="passedNum"
+                                        *ngIf="claimRcm.allowEdit && claimRcm.pending" style="cursor: pointer;"
+                                        (click)="openUpdateIvPopup($event)">Update IV ID
+                                        ?</span></a>
                                 <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                 <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show"
                                     id="linksToDocuments">
@@ -783,26 +785,28 @@
         </div>
 
         <!-- Update IV ID Popup -->
-               <!-- Modal -->
-                   <div id="ivUpdate" class="modal ivUpdate">
-                       <div class="modal-content">
-                    <div _ngcontent-qaa-c48="" class="modal-header">
-                        <h5 class="modal-title">Update IV ID</h5>
-                        <button type="button" (click)="closeIvPopup()" class="close"><span>×</span></button>
-                    </div>
-                    <div class="modal-body">
-                        <ng-container>
-                            <div class="table-responsive d-flex justify-content-around align-items-center">
-                                    <label for="ivId">Enter IV ID : </label>
-                                    <input type="text" class="form-control" [(ngModel)]="updatedIvfId">
-                               <button class="btn btn-success" [disabled]="!updatedIvfId" (click)="updateIV(claimUUid,updatedIvfId)">Update IV</button>
-                            </div>
-                            <div class="alert fade show text-center" *ngIf="alert.showAlertPopup"
-                                [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">
-                                <strong>{{alert.alertMsg}}</strong>
-                            </div>
-            
-                        </ng-container>
-                    </div>
+        <!-- Modal -->
+        <div id="ivUpdate" class="modal ivUpdate">
+            <div class="modal-content">
+                <div _ngcontent-qaa-c48="" class="modal-header">
+                    <h5 class="modal-title">Update IV ID</h5>
+                    <button type="button" (click)="closeIvPopup()" class="close"><span>×</span></button>
+                </div>
+                <div class="modal-body">
+                    <ng-container>
+                        <div class="table-responsive d-flex justify-content-around align-items-center">
+                            <label for="ivId">Enter IV ID : </label>
+                            <input type="text" class="form-control" [(ngModel)]="updatedIvfId">
+                            <button class="btn btn-success" [disabled]="!updatedIvfId"
+                                (click)="updateIV(claimUUid,updatedIvfId)">Update IV</button>
+                        </div>
+                        <div class="alert fade show text-center" *ngIf="alert.showAlertPopup"
+                            [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
+                            role="alert">
+                            <strong>{{alert.alertMsg}}</strong>
+                        </div>
+
+                    </ng-container>
                 </div>
             </div>
+        </div>

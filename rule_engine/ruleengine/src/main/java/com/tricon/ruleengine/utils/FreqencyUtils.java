@@ -1408,6 +1408,7 @@ public class FreqencyUtils {
 			Set<String> teethC) {
 		boolean present = false;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		RuleEngineLogger.generateLogs(clazz, "planDate :" + planDate, Constants.rule_log_debug, bw);
 		for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF) {
 			String freq = scivfTFD.getFreqency();
 

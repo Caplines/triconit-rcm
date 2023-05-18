@@ -105,7 +105,8 @@ public class FreshClaimDataImplDto {
 	
 	String primePolicyHolderDob;
 	String claimType;
-	
+	String firstTeam;
+	int firstTeamId;
 	
 
 

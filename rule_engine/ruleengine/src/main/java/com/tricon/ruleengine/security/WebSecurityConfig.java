@@ -182,6 +182,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/diagnostic_check_for_rcm",
                 "/diagnostic_check_for_rcm",
                 "/claim-data-form-es",
+                "/tp-data-form-es",
                 "/ivf-data-for-rcm",
                 "/allrulereport",
                 "/",
