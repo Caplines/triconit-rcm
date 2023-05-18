@@ -151,9 +151,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where off.company_id=:companyId and off.active is true group by off.uuid")
+			+ "  where off.company_id=:companyId and off.active is true and assig.team_id=:teamId group by off.uuid")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignments(@Param("companyId") String companyId,
-			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst);
+			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 	
 	@Query(nativeQuery = true, value = 
 	            " select count(distinct assign.claim_id) as total,count(distinct DATE(assign.created_date)) as days ,"
