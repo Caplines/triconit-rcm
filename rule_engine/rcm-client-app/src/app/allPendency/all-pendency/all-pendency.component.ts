@@ -19,6 +19,10 @@ export class AllPendencyComponent {
   date:any;
   totalCount:any=[{"teamId":3,'count':0},{"teamId":4,"count":0},{"teamId":5,"count":0},{"teamId":6,"count":0},{"teamId":7,"count":0}];
   clientName:string='';
+  showFilteredDropdown: any= {'officeName':false};
+  isFilterAllSelected:any={'officeName':false};
+  filteredOfficeName: any = [];
+  filteredItems: any = [];
 
   constructor(private _service:ApplicationServiceService,private title:Title){
     title.setTitle(Utils.defaultTitle + "All Pendency")
@@ -48,6 +52,8 @@ export class AllPendencyComponent {
         });    //loops are used to merge count data (count) and DateCount data (minDate) into offices array with corresponding Team ID.
       }
       this.total(this.pendencyData);
+      this.fetchOfficeByUuid();
+      this.filterOfficeName();
     })
   }
 
@@ -157,5 +163,62 @@ export class AllPendencyComponent {
       
     new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_All_Pendency_${this.date}`, options);
     this.showLoader.exportCSVLoader=false;
+  }
+  selectAll(event:any,filterProperty:any){
+
+    if(filterProperty == "officeName"){
+      this.filteredOfficeName.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterOfficeName("selectAll");
+    }
+  }
+  filterOfficeName(e?: any,filterProperty?:any) {
+    if (!e) {
+      this.filteredItems = this.pendencyData;
+      this.isFilterAllSelected.officeName = true;
+    } else {
+      let isAllSelected: boolean = true;
+      for (let i = 0; i < this.filteredOfficeName.length; i++) {
+        if (this.filteredOfficeName[i].checked == false) {
+          isAllSelected = false;
+          break;
+        }
+      }
+      this.isFilterAllSelected.officeName = isAllSelected;
+      this.filteredItems = this.pendencyData.filter((item: any) => {
+        return this.filteredOfficeName.some((checkbox: any) => {
+          return checkbox.checked && (checkbox[filterProperty] ? checkbox[filterProperty] : checkbox.name) === item.name?item.name:item[filterProperty];
+        });
+      });
+    }
+    
+  }
+  fetchOfficeByUuid() {
+    this._service.fetchOfficeByUuid((res: any) => {
+      if (res.status) {
+        res.data = res.data.map((e:any)=>{
+          return{
+            ...e,
+            "officeName":e.name,
+          }
+        })
+        this.showFilterOptionOfficeName(res.data);
+      }
+    })
+  }
+  showFilterOptionOfficeName(data: any) {
+    this.filteredOfficeName = data;
+    console.log(this.filterOfficeName)
+    this.filteredOfficeName.forEach((e: any) => {
+      this.pendencyData.forEach((ele: any) => {
+          e['checked'] = true;
+      })
+    });
+    
   }
 }

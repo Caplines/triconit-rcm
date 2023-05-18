@@ -42,3 +42,31 @@
       top: 51px;
   }
 }
+.filter-dropdown-menu{
+  display: flex;
+  min-width: 250px;
+  padding: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-dropdown-menu label{
+  width: 45%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.filter-dropdown-menu label input{
+  margin-right: 5px;
+}
+.filter-dropdown-menu label:first-child{
+  color: #dc3545;
+  font-weight: 700;
+  width: 100%;
+}
+.filter-dropdown-menu label:first-child input[type=checkbox] {
+  accent-color:#dc3545;
+}
+.dFlex {
+  display: flex;
+}
