@@ -1414,6 +1414,7 @@ public class ClaimServiceImpl {
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUuid);
 		RcmOffice off = claim.getOffice();
 		List<RcmClaimDetail> cddList= new ArrayList<>();
+		RcmInsuranceType insurancetype=rcmInsuranceTypeRepo.findById(claim.getRcmInsuranceType().getId());
 		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(off.getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		
 		if (rcmCompany!=null) {
@@ -1520,7 +1521,10 @@ public class ClaimServiceImpl {
 								if (qq.getValue().trim()
 										.equalsIgnoreCase("As per code sheet -This is not a valid CDT any longer."))
 									continue;
-
+								if (insurancetype==null) {
+									continue;
+								}
+								if (!isInsuranceCodeMatch(insurancetype.getCode(), qq.getInsuranceTypes()))  continue;
 								//logger.info("HEAD: " + qq.getHeading() + "   VALUE: " + qq.getValue());
 								v = new RcmClaimsServiceRuleValidation();
 								v.setActive(true);
@@ -2559,6 +2563,19 @@ public class ClaimServiceImpl {
 		}
 
 		return r;
+	}
+	
+	private boolean isInsuranceCodeMatch(String insuranceTypecode, String insuranceNames) {
+		
+	if (insuranceNames==null) return false;
+	if (insuranceNames.trim().equalsIgnoreCase("ALL")) return true;
+	String[] nArray=insuranceNames.split(",");
+	for(String n:nArray ) {
+		if (n.trim().equalsIgnoreCase(insuranceTypecode)) {
+			return true;
+		}
+	  }
+	 return false;
 	}
 	
 	public List<RcmIssuClaimPaginationDto> getIssueClaimsByPagination(int pageNumber, String companyId) throws Exception {
