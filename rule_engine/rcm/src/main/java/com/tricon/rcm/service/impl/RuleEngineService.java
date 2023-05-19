@@ -320,6 +320,7 @@ public class RuleEngineService {
 										boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(ins.getInsuranceType().getName());
 										boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(ins.getInsuranceType().getName());
 										boolean isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
+										boolean isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
 										boolean missing=true;
 										if (isBilling) {
 										claim = ClaimUtil.createClaimFromESData(claim, off, re,
@@ -328,7 +329,7 @@ public class RuleEngineService {
 												rcmInsuranceType, timely, claimTypeEnum);
 										missing=false;
 										}
-										if (isMedicaid || isMedicare) {
+										if (isMedicaid || isMedicare || isChip) {
 											claim = ClaimUtil.createClaimFromESData(claim, off, re,
 													ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()),
 													user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),

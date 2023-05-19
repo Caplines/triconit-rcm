@@ -613,10 +613,13 @@ public class ClaimServiceImpl {
 							boolean isBilling= true;
 							boolean isMedicaid= false;
 							boolean isMedicare =false;
+							boolean isChip =false;
+							
 							if (clCompany.getName().equals(Constants.COMPANY_NAME)) {
 								isBilling = ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
+								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
 							}
 							boolean missing=true;
 							if (isBilling) {
@@ -626,7 +629,7 @@ public class ClaimServiceImpl {
 									claimTypeEnum);
 							missing=false;
 							}
-							if (isMedicaid || isMedicare) {
+							if (isMedicaid || isMedicare || isChip) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
@@ -837,11 +840,13 @@ public class ClaimServiceImpl {
 							boolean isBilling= true;
 							boolean isMedicaid= false;
 							boolean isMedicare= false;
+							boolean isChip= false;
 							//For External we always have claims in Billing 
 							if (clCompany.getName().equals(Constants.COMPANY_NAME)) {
 								isBilling = ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
+								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
 							}
 							
 							//boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
@@ -856,7 +861,7 @@ public class ClaimServiceImpl {
 									claimTypeEnum);
 							missing=false;
 							}
-							if (isMedicaid || isMedicare) {
+							if (isMedicaid || isMedicare || isChip) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,

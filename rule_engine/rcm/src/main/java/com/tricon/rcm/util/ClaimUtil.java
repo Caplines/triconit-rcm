@@ -267,7 +267,9 @@ public class ClaimUtil {
 	public static  boolean isMedcaidClaimByInsuranceName(String insuranceName) {
 
 		boolean medicaid=false;
-        if (insuranceName.toLowerCase().contains("medicaid"))medicaid =true;
+        if (insuranceName.equalsIgnoreCase("Adult Medicaid"))medicaid =true;
+        else if (insuranceName.equalsIgnoreCase("Child Medicaid"))medicaid =true;
+        else if (insuranceName.equalsIgnoreCase("medicaid"))medicaid =true;
         
         return medicaid;
         
@@ -277,10 +279,21 @@ public class ClaimUtil {
 	
 	public static  boolean isMedicareClaimByInsuranceName(String insuranceName) {
 
-		boolean medicaid=false;
-        if (insuranceName.toLowerCase().contains("medicare"))medicaid =true;
+		boolean medicare=false;
+        if (insuranceName.equalsIgnoreCase("medicare"))medicare =true;
         
-        return medicaid;
+        return medicare;
+        
+
+
+	}
+	
+	public static  boolean isChipClaimByInsuranceName(String insuranceName) {
+
+		boolean chip=false;
+        if (insuranceName.equalsIgnoreCase("chip"))chip =true;
+        
+        return chip;
         
 
 
