@@ -70,3 +70,32 @@
 .dFlex {
   display: flex;
 }
+
+.sorting {
+  display: inline-flex;
+  flex-flow: column;
+  margin-left: 10px;
+  margin-top: 7px;
+}       
+
+  .arrow-up {
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid #b4b5b5;
+      margin-bottom: 4px;
+  }
+  a.arrow-down.selected{
+      border-top-color: #2d4047;
+  }
+  .arrow-down {
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid #b4b5b5;
+  }
+  .sorting .selected {
+      border-bottom-color: #2d4047;
+  }

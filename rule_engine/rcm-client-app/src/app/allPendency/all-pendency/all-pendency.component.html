@@ -6,16 +6,17 @@
                     <div class="row">
                         <div class="col-md-12 mb-2">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                <label class="btn btn-light active">
-                                    <input class="form-check-input" type="radio" name="options" id="option1" autocomplete="off" 
-                                    id="option1"  checked>Pendency From Other Teams
+                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.withoutDos}">
+                                    <input class="form-check-input" type="radio" name="options" id="option1" 
+                                    id="option1" (change)="switchTab(tabSwitch)">Pendency From Other Teams
                                 </label>
-                                <label class="btn btn-light">
-                                    <input class="form-check-input" type="radio" name="options" id="option2" autocomplete="off" id="option2" checked>Pendency From Other Teams (DOS or Date Pending)
+                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.withDos}">
+                                    <input class="form-check-input" type="radio" (change)="switchTab(tabSwitch)" name="options" id="option2" id="option2">Pendency From Other Teams (DOS or Date Pending)
                                 </label>
                             </div>
                             <!-- <div class="pendancy-label">Pendency From Other Teams</div> -->
-                            <div>
+
+                            <div *ngIf="tabSwitch.withoutDos">
                                 <button type="button" class="btn btn-outline-danger" (click)="saveToPdf('table')" [disabled]="pendencyData.length==0">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-pdf" viewBox="0 0 16 16">
                                     <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
@@ -30,6 +31,7 @@
                             </div>
                         </div>
                     </div>
+                    <ng-container *ngIf="tabSwitch.withoutDos">
                     <div class="detail-box">
                         <div class="detail-box-form">
                             <div class="form-row  without-heading">
@@ -39,7 +41,15 @@
                                             <tr>
                                                 <th style="z-index: 9;">
                                                     <div class="dFlex">
-                                                        Office Name <div class="dropdown"
+                                                        Office Name    <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted}"
+                                                                (click)="sortData(filteredItems,'name','asc','string'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted}"
+                                                                (click)="sortData(filteredItems,'name','desc','string');isSorted = true"></a>
+                                                        </span> 
+                                                        <div class="dropdown"
                                                         (mouseleave)="showFilteredDropdown.officeName=false">
                                                         <svg (click)="showFilteredDropdown.officeName = !showFilteredDropdown.officeName"
                                                             style="cursor:pointer;display: inline-block; float: left;background: #e5e5e5;border-radius: 5px;padding: 1px;/* margin-right: 3px; */margin-left: 6px;"
@@ -109,7 +119,7 @@
                                                 </ng-container>
                                             </tr>
                                             <tr *ngIf="showLoader.loader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
-                                            <ng-container *ngFor="let officeData of pendencyData;let id= index;">
+                                            <ng-container *ngFor="let officeData of filteredItems;let id= index;">
                                                 <tr>
                                                     <td>{{officeData.name}}</td>
                                                     <ng-container *ngFor="let team of teamData;let last=last;">
@@ -129,12 +139,12 @@
                             </div>
                         </div>
                     </div>
-
+                </ng-container>
                 </div>
-
             </div>
         </div>
     </div>
+    <ng-container *ngIf="tabSwitch.withDos">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 pt-3">
@@ -166,7 +176,14 @@
                                             <tr>
                                                 <th  style="z-index: 9;">
                                                     <div class="dFlex">
-                                                        Office Name
+                                                        Office Name <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted}"
+                                                                (click)="sortData(filteredItems,'name','asc','string'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted}"
+                                                                (click)="sortData(filteredItems,'name','desc','string');isSorted = true"></a>
+                                                        </span> 
                                                         <div class="dropdown"
                                                             (mouseleave)="showFilteredDropdown.officeName=false">
                                                             <svg (click)="showFilteredDropdown.officeName = !showFilteredDropdown.officeName"
@@ -257,5 +274,6 @@
             </div>
         </div>
     </div>
+</ng-container>
 
 </div>

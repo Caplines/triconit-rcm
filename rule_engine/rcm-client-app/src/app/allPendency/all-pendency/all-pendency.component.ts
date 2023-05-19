@@ -23,6 +23,8 @@ export class AllPendencyComponent {
   isFilterAllSelected:any={'officeName':false};
   filteredOfficeName: any = [];
   filteredItems: any = [];
+  tabSwitch:any={'withoutDos':true,'withDos':false};
+  isSorted:boolean=false;
 
   constructor(private _service:ApplicationServiceService,private title:Title){
     title.setTitle(Utils.defaultTitle + "All Pendency")
@@ -70,8 +72,6 @@ export class AllPendencyComponent {
             }
           })
         })
-        console.log(this.totalCount);
-        
   }
 
   saveToPdf(divName:any){
@@ -159,8 +159,6 @@ export class AllPendencyComponent {
 
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      console.log(excelData);
-      
     new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_All_Pendency_${this.date}`, options);
     this.showLoader.exportCSVLoader=false;
   }
@@ -213,7 +211,6 @@ export class AllPendencyComponent {
   }
   showFilterOptionOfficeName(data: any) {
     this.filteredOfficeName = data;
-    console.log(this.filterOfficeName)
     this.filteredOfficeName.forEach((e: any) => {
       this.pendencyData.forEach((ele: any) => {
           e['checked'] = true;
@@ -221,4 +218,18 @@ export class AllPendencyComponent {
     });
     
   }
+
+  switchTab(tab:any){
+    tab.withoutDos = !tab.withoutDos;
+    tab.withDos = !tab.withDos;
+    let event = {target:{checked:true}};  //added so that when tab is swtiched then by default all data should show.
+    this.selectAll(event,'officeName');
+    this.isSorted=false;
+    this.sortData(this.filteredItems,'name','asc','string');
+  }
+
+  sortData(data:any,sortProp:string,order:any,sortType:string){
+    this._service.sortData(data,sortProp,order,sortType);
+  }
+  
 }
