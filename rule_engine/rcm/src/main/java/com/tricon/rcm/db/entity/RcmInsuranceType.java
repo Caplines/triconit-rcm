@@ -26,6 +26,9 @@ public class RcmInsuranceType {
 	@Column(name = "name", nullable = false)
 	private String name;
 	
+	@Column(name = "code", nullable = true)
+	private String code;
+	
 	
 	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id", referencedColumnName = "id")

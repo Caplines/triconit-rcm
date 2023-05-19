@@ -50,8 +50,8 @@ public class RcmClaimsServiceRuleValidation  extends BaseAuditEntity implements 
 	@Column(name = "description", length = 255)
 	private String description;
 	
-	@Column(name = "team", length = 255)
-	private String teamName;
+	@Column(name = "insurance_types", length = 255)
+	private String insuranceTypes;
 	
 	@Column(name = "display_values", length = 255)
 	private String displayValues;

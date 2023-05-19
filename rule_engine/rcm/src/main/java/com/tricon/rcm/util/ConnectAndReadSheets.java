@@ -483,7 +483,7 @@ public class ConnectAndReadSheets {
 							//ClaimServiceValidationGSheet one = new ClaimServiceValidationGSheet();
 						if (ctr ==1) {
 							ClaimServiceValidationGSheetData gs = new ClaimServiceValidationGSheetData();
-							gs.setTeam(obj.get(p));
+							gs.setInsuranceTypes(obj.get(p));
 							//if (l==1)gs.setNameOfService(obj.get(p));
 							//if (l==2)gs.setAutoOrManual(obj.get(p));
 							//if (l==3)gs.setValues(obj.get(p));

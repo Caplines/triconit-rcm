@@ -23,7 +23,7 @@ public class RcmClaimsServiceRuleValidationDto {
 	
 	private String answer;
 	
-    private String teamName;
+    private String insuranceTypes;
 	
 	private String displayValues;
 

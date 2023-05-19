@@ -1110,7 +1110,7 @@ public class ClaimServiceImpl {
 			RcmClaims claim = null;
 			IVFDto ivfDto =null;
 			try {
-				if (implDto.getIvfId()==null) {
+				if (implDto.getIvfId()==null || implDto.getIvfId().equals("")) {
 					
 				Set<String> insTypes = new HashSet<>();
 				insTypes.add(claimSubTy);
@@ -1528,7 +1528,7 @@ public class ClaimServiceImpl {
 								v.setClaim(claim);
 								v.setName(qq.getNameOfService());
 								v.setServiceCode(entry.getKey());
-								v.setTeamName(qq.getTeam());
+								v.setInsuranceTypes(qq.getInsuranceTypes());
 								v.setManualAuto(qq.getAutoOrManual());
 								v.setDisplayValues(qq.getValues());
 								v.setValue(qq.getValue());
@@ -1561,7 +1561,7 @@ public class ClaimServiceImpl {
 					one.setMessageType(s.getMessageType());
 					one.setManualAuto(s.getManualAuto());
 					one.setAnswer(s.getAnswer());
-					one.setTeamName(s.getTeamName());
+					one.setInsuranceTypes(s.getInsuranceTypes());
 					one.setDisplayValues(s.getDisplayValues());
 					one.setRemark(s.getRemark());
 					list.add(one);

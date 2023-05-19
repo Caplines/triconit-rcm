@@ -7,6 +7,7 @@ import com.tricon.rcm.db.entity.RcmInsuranceType;
 public interface RcmInsuranceTypeRepo extends JpaRepository<RcmInsuranceType, Integer>{
 
 	RcmInsuranceType findByName(String name);
+	RcmInsuranceType findByCode(String code);
 	RcmInsuranceType findById(int id);
 	
 }
