@@ -8,5 +8,7 @@ public class ClaimServiceDto {
 	String remarkUuid;
 	String remark;
 	int messageType;
+	String answer;
+	
 	
 }

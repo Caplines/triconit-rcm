@@ -11,4 +11,6 @@ public interface RcmRuleRepo extends JpaRepository<RcmRules, Integer>{
 	
 	List<RcmRules> findByRuleTypeInAndActiveAndManualAuto(List<String> type,int active,String manualAuto);	
 	List<RcmRules> findByRuleTypeInAndActive(List<String> type,int active);
+	RcmRules findById(int id);
+	
 }

@@ -9,6 +9,7 @@ public class ServiceValidationDataDto {
 
    boolean claimFound;
    List<RcmClaimsServiceRuleValidationDto> dto;
+   List<ClaimRuleVaidationValueDto> rules;
    String esDate;
    String esTime;
 }

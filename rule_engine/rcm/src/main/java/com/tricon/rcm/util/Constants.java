@@ -23,8 +23,8 @@ public class Constants {
 
 	// Date Format from Google Sheet Provider .
 	public static final SimpleDateFormat SDF_SHEET_PROVIDER_DATE = new SimpleDateFormat("MMM d, yyyy");
-	
 	public static final SimpleDateFormat SDF_UI = new SimpleDateFormat("MM-dd-YYYY"); 
+	public static final SimpleDateFormat SDF_CredentialSheetAnes = new SimpleDateFormat("MM/dd/YYYY"); 
 	
    //FROM MYSQL DB	
 	public static final SimpleDateFormat SDF_MYSL_DATE = new SimpleDateFormat("yyyy-MM-dd");
@@ -54,6 +54,7 @@ public class Constants {
 	public static String OfficeNeedToTakeInfo_r = "Office Need To Take Info";
 	public static final String RULE_TYPE_RULE_ENGINE = "R";
 	public static final String RULE_TYPE_RCM = "C";
+	public static final String RULE_TYPE_GSHEET= "G";
 	public static final String RULE_TYPE_RULE_ENGINE_AND_RCM = RULE_TYPE_RULE_ENGINE + "," + RULE_TYPE_RCM;
 	public static final String RULE_TYPE_MANUAL = "MANUAL";
 	public static final String RULE_TYPE_AUTO = "AUTO";

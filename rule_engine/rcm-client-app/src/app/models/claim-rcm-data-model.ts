@@ -111,6 +111,10 @@ export interface ServiceLevelCodeDataModel {
 	value?: string;
 	messageType?: number;
 	remark?: string;
+	manualAuto?: string;
+	answer?: string;
+	message?: string;
+	ruleId?: number;
 }
 
 export interface ServiceLevelCodeModel {
@@ -144,6 +148,8 @@ export interface ClaimRuleModel {
 	ruleDesc: string;
 	manualAuto: string;
 	remark?: string;
+	sectionName: string;
+	ruleType: string;
 }
 
 
@@ -155,6 +161,7 @@ export interface ClaimRuleRemarkModel {
 	fName?: string;
 	lLName?: string;
 	ruleId?: number;
+	sectionName?: string;
 
 }
 
@@ -164,13 +171,16 @@ export class ClaimRuleRemarkModelS implements ClaimRuleRemarkModel {
 	fName?: string;
 	lLName?: string;
 	ruleId?: number;
+	sectionName?: string;
 
-	constructor(remark: string, cd: Date, fName: string, lLName: string, ruleId: number) {
+	constructor(remark: string, cd: Date, fName: string, lLName: string, ruleId: number,
+		sectionName: string) {
 		this.remark = remark;
 		this.cd = cd;
 		this.fName = fName;
 		this.lLName = lLName;
 		this.ruleId = ruleId;
+		this.sectionName = sectionName;
 	}
 }
 export interface RuleEngineValModel {

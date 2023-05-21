@@ -634,6 +634,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				obj[0]=form.getBasicInfo2();
 				form.setPdfAlert("");
 				if (form.getPolicy4()!=null)form.setPolicy4(WordUtils.wrap(form.getPolicy4(), 10, " ", true));
+				if (form.getPolicy16()!=null)form.setPolicy16(WordUtils.wrap(form.getPolicy16(), 10, " ", true));
 				if (form.getBasicInfo3()!=null) {
 					String insName=form.getBasicInfo3().toLowerCase();
 					if (insName.contains("geha") || insName.contains("connection dental") ||

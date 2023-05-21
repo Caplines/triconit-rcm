@@ -26,5 +26,7 @@ public class RcmClaimsServiceRuleValidationDto {
     private String insuranceTypes;
 	
 	private String displayValues;
+	
+	private int ruleId;
 
 }

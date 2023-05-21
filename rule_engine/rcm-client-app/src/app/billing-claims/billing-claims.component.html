@@ -294,7 +294,7 @@
                                             </thead>
                                             <tbody>
                                                 <tr
-                                                    *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'AUTO';let idx=index">
+                                                    *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'AUTO':'ruleType':'C';let idx=index">
                                                     <td>{{idx+1}}</td>
                                                     <td>{{rule.ruleName}}</td>
                                                     <td>Full Claim</td>
@@ -392,9 +392,9 @@
                                 </div>
                             </div>
                             <ng-container *ngIf="smilePoint">
-                                <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text "
-                                    aria-expanded="false" id="serviceCodeValidations">Service Code Level
-                                    Validations:</a>
+                                <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text "
+                                    aria-expanded="false" id="serviceCodeValidationsM">Service Code Level
+                                    Validations (Manual):</a>
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                 <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
                                     <div class="table-responsive">
@@ -405,6 +405,81 @@
                                                     <th>Name</th>
                                                     <th>Service Codes</th>
                                                     <th style="width:40%">Description</th>
+                                                    <th>Status</th>
+                                                    <th>Remarks</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <ng-container *ngIf="claimServiceLevelModel?.claimFound==false">
+                                                    <tr>
+                                                        <td colspan="6">Data Not Found..</td>
+                                                    </tr>
+                                                </ng-container>
+                                                <ng-container *ngIf="claimServiceLevelModel?.claimFound">
+
+                                                    <tr
+                                                        *ngFor="let d of claimServiceLevelModel.dto | generalFilter : 'manualAuto':'Manual';let i=index">
+                                                        <td>{{i+1}}</td>
+                                                        <td>{{d.name}}</td>
+                                                        <td>{{d.serviceCode}}</td>
+                                                        <td>{{d.description}}</td>
+                                                        <td>
+                                                            <div data-toggle="buttons" id="serviceCodeValidationsM{{i}}"
+                                                                class="btn-group btn-group-toggle"
+                                                                style="display: flex;width: 100%">
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:d.answer=='Not Available'}">
+                                                                    <input type="radio" name="mt{{i}}"
+                                                                        value="Not Available"
+                                                                        (click)="d.answer='Not Available';removeErrorDisplayKeyById('SERV_C_V_M',i);
+                                                                        removeErrorDisplayKeyById('serviceCodeValidationsM',i);"
+                                                                        [(ngModel)]='d.answer'
+                                                                        [disabled]="makeReadOnly()"> Not Available
+                                                                </label>
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:d.answer=='Complete'}">
+                                                                    <input type="radio" name="mt{{i}}" value="Complete"
+                                                                        (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',i);
+                                                                        removeErrorDisplayKeyById('serviceCodeValidationsM',i);"
+                                                                        [(ngModel)]='d.answer'
+                                                                        [disabled]="makeReadOnly()"> Complete
+                                                                </label>
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:d.answer=='Incorrect'}">
+                                                                    <input type="radio" name="mt{{i}}" value="Incorrect"
+                                                                        (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',i);
+                                                                        removeErrorDisplayKeyById('serviceCodeValidationsM',i);"
+                                                                        [(ngModel)]='d.answer'
+                                                                        [disabled]="makeReadOnly()"> Incorrect
+                                                                </label>
+                                                            </div>
+                                                        </td>
+                                                        <td><textarea class="form-control" id="" rows="1"
+                                                                [(ngModel)]='d.remark' id="SERV_C_V_M{{i}}"
+                                                                (click)="removeErrorDisplayKeyById('SERV_C_V_M',i);"
+                                                                [disabled]="makeReadOnly()"></textarea></td>
+                                                    </tr>
+                                                </ng-container>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="smilePoint">
+                                <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text "
+                                    aria-expanded="false" id="serviceCodeValidationsA">Service Code Level
+                                    Validations (Automated):</a>
+                                <div *ngIf="loader.serviceCode" class="loader-data"></div>
+                                <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Number</th>
+                                                    <th>Name</th>
+                                                    <th>Service Codes</th>
+                                                    <th style="width:40%">Description</th>
+                                                    <th>Messages</th>
                                                     <th>Passed/Failed</th>
                                                     <th>Remarks</th>
                                                 </tr>
@@ -417,33 +492,33 @@
                                                 </ng-container>
                                                 <ng-container *ngIf="claimServiceLevelModel?.claimFound">
 
-                                                    <tr *ngFor="let d of claimServiceLevelModel.dto; let i = index">
+                                                    <tr
+                                                        *ngFor="let d of claimServiceLevelModel.dto | generalFilter : 'manualAuto':'Automated';let i=index">
                                                         <td>{{i+1}}</td>
                                                         <td>{{d.name}}</td>
                                                         <td>{{d.serviceCode}}</td>
                                                         <td>{{d.description}}</td>
+                                                        <td></td>
                                                         <td>
                                                             <div data-toggle="buttons"
                                                                 class="btn-group btn-group-toggle"
                                                                 style="display: flex;width: 50%">
                                                                 <label class="btn btn-light"
                                                                     [ngClass]="{active:d.messageType==2}">
-                                                                    <input type="radio" name="mt{{i}}" value="2"
-                                                                        (click)="d.messageType=2;removeErrorDisplayKeyById('SERV_C_V_',i)"
-                                                                        [(ngModel)]='d.messageType'
-                                                                        [disabled]="makeReadOnly()"> Yes
+                                                                    <input type="radio" name="mta{{i}}" value="2"
+                                                                        [(ngModel)]='d.messageType' [disabled]="true">
+                                                                    Yes
                                                                 </label>
                                                                 <label class="btn btn-light"
                                                                     [ngClass]="{active:d.messageType==1}">
-                                                                    <input type="radio" name="mt{{i}}" value="1"
-                                                                        (click)="d.messageType=1;removeErrorDisplayKeyById('SERV_C_V_',i)"
-                                                                        [(ngModel)]='d.messageType'
-                                                                        [disabled]="makeReadOnly()"> No
+                                                                    <input type="radio" name="mta{{i}}" value="1"
+                                                                        [(ngModel)]='d.messageType' [disabled]="true">
+                                                                    No
                                                                 </label>
                                                             </div>
                                                         </td>
                                                         <td><textarea class="form-control" id="" rows="1"
-                                                                [(ngModel)]='d.remark' id="SERV_C_V_{{i}}"
+                                                                [(ngModel)]='d.remark' id="SERV_C_V_A{{i}}"
                                                                 [disabled]="makeReadOnly()"></textarea></td>
                                                     </tr>
                                                 </ng-container>
@@ -453,7 +528,7 @@
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="smilePoint">
-                                <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text "
+                                <a data-toggle="collapse" (click)="showHide(8)" class="bold-b-text "
                                     aria-expanded="false">Rule Engine Validations:</a>
                                 <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
                                 <div *ngIf="!loader.ruleEngValid" class="form-row  collapse show"
@@ -498,7 +573,8 @@
                                                                     [(ngModel)]='rule.remark'
                                                                     id="ENG_REP_{{rule.ruleId}}"
                                                                     (click)="removeErrorDisplayKeyById('ENG_REP_',rule.ruleId)"
-                                                                    [disabled]="makeReadOnly()"> </td>
+                                                                    [disabled]="isSectionReadOnly()">
+                                                            </td>
                                                         </ng-container>
                                                     </tr>
                                                 </tbody>
@@ -510,7 +586,7 @@
                                     </ng-container>
                                 </div>
                             </ng-container>
-                            <a data-toggle="collapse" (click)="showHide(8)" class="bold-b-text "
+                            <a data-toggle="collapse" (click)="showHide(9)" class="bold-b-text "
                                 aria-expanded="false">Enter Claim Submission Details:</a>
                             <div class="form-row  collapse show" id="claimSubmissionDetails">
                                 <div class="table-responsive">
@@ -531,12 +607,12 @@
                                                         <input class="form-control" id="" rows="1" id="SUB_DET_DT"
                                                             placeholder="yyyy-mm-dd"
                                                             (click)="removeErrorDisplayKeyById('SUB_DET_DT')"
-                                                            [disabled]="makeReadOnly()"
+                                                            [disabled]="isSectionReadOnly()"
                                                             [(ngModel)]='submissionDto.esDate' type="date" />
                                                         <span class="and-space">&</span> <input class="form-control"
                                                             id="" rows="1" id="SUB_DET_TI"
                                                             (click)="removeErrorDisplayKeyById('SUB_DET_TI')"
-                                                            [disabled]="makeReadOnly()"
+                                                            [disabled]="isSectionReadOnly()"
                                                             [(ngModel)]='submissionDto.esTime' type="time" />
                                                     </div>
                                                 </td>
@@ -552,25 +628,25 @@
                                                             [ngClass]="{active:submissionDto.channel=='RemoteLite'}">
                                                             <input type="radio" name="channel" value="RemoteLite"
                                                                 (click)="submissionDto.channel='RemoteLite';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA')"
-                                                                [disabled]="makeReadOnly()"> RemoteLite
+                                                                [disabled]="isSectionReadOnly()"> RemoteLite
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Fax'}">
                                                             <input type="radio" name="channel" value="Fax"
                                                                 (click)="submissionDto.channel='Fax';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA')"
-                                                                [disabled]="makeReadOnly()"> Fax
+                                                                [disabled]="isSectionReadOnly()"> Fax
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Mail'}">
                                                             <input type="radio" name="channel" value="Mail"
                                                                 (click)="submissionDto.channel='Mail';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA')"
-                                                                [disabled]="makeReadOnly()"> Mail
+                                                                [disabled]="isSectionReadOnly()"> Mail
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Portal'}">
                                                             <input type="radio" name="channel" value="Portal"
                                                                 (click)="submissionDto.channel='Portal';removeErrorDisplayKeyById('SUB_DET_CHA')"
-                                                                [disabled]="makeReadOnly()"> Portal
+                                                                [disabled]="isSectionReadOnly()"> Portal
                                                         </label>
                                                         <div class="portalcla">
                                                             <textarea class="form-control" id="" rows="1"
@@ -593,13 +669,13 @@
                                                             [ngClass]="{active:submissionDto.attachmentSend}">
                                                             <input type="radio" name="atch" value=""
                                                                 (click)="submissionDto.attachmentSend=true;removeErrorDisplayKeyById('SUB_DET_ATT')"
-                                                                [disabled]="makeReadOnly()"> Yes
+                                                                [disabled]="isSectionReadOnly()"> Yes
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.attachmentSend==false}">
                                                             <input type="radio" name="atch" value=""
                                                                 (click)="submissionDto.attachmentSend=false;removeErrorDisplayKeyById('SUB_DET_ATT')"
-                                                                [disabled]="makeReadOnly()"> No
+                                                                [disabled]="isSectionReadOnly()"> No
                                                         </label>
                                                     </div>
 
@@ -615,14 +691,14 @@
                                                             [ngClass]="{active:submissionDto.preauth}">
                                                             <input type="radio" name="atch" value=""
                                                                 (click)="submissionDto.preauth=true;removeErrorDisplayKeyById('SUB_DET_PRE')"
-                                                                [disabled]="makeReadOnly()" [disabled]="makeReadOnly()">
+                                                                [disabled]="isSectionReadOnly()">
                                                             Yes
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.preauth==false}">
                                                             <input type="radio" name="atch" value=""
                                                                 (click)="submissionDto.preauth=false;removeErrorDisplayKeyById('SUB_DET_PRE');removeErrorDisplayKeyById('SUB_DET_PRENO')"
-                                                                [disabled]="makeReadOnly()">
+                                                                [disabled]="isSectionReadOnly()">
                                                             No
                                                         </label>
                                                         <div class="preauthcla">
@@ -646,13 +722,13 @@
                                                             [ngClass]="{active:submissionDto.refferalLetter}">
                                                             <input type="radio" name="atch" value=""
                                                                 (click)="submissionDto.refferalLetter=true;removeErrorDisplayKeyById('SUB_DET_REF')"
-                                                                [disabled]="makeReadOnly()"> Yes
+                                                                [disabled]="isSectionReadOnly()"> Yes
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.refferalLetter==false}">
                                                             <input type="radio" name="atch" value=""
                                                                 (click)="submissionDto.refferalLetter=false;removeErrorDisplayKeyById('SUB_DET_REF')"
-                                                                [disabled]="makeReadOnly()"> No
+                                                                [disabled]="isSectionReadOnly()"> No
                                                         </label>
                                                     </div>
 

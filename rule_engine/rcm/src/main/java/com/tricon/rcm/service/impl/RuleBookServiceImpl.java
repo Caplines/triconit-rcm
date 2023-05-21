@@ -1,10 +1,12 @@
 package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import com.tricon.rcm.db.entity.RcmRules;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.CredentialData;
+import com.tricon.rcm.dto.CredentialDataAnesthesia;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.TPValidationResponseDto;
 import com.tricon.rcm.dto.customquery.DataPatientRuleDto;
@@ -353,11 +356,11 @@ public class RuleBookServiceImpl {
 
 			} else if (dto!=null) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule306.error.message", new Object[] { "IV not Found." }, locale),
+							messageSource.getMessage("rule306.error.message", new Object[] { dto.getPlanAssignmentofBenefits() }, locale),
 							Constants.FAIL, "", "", ""));
 			}else {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule306.error.message", new Object[] { dto.getPlanAssignmentofBenefits() }, locale),
+						messageSource.getMessage("rule306.error.message1", new Object[] { "IV not found." }, locale),
 						Constants.FAIL, "", "", ""));
 			}
 			
@@ -371,4 +374,233 @@ public class RuleBookServiceImpl {
 		return dList;
 
 	}
+	
+	public List<TPValidationResponseDto> rule307(RcmRules rule,Set<String> claimCodes) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+		List<String> list= new ArrayList<>();
+		String array[]  = { "D0603", "D0602", "D0603" };
+		 Collections.addAll(list, array);
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean pass=false;
+		try {
+
+			   for(String code:claimCodes ) {
+				   if (list.contains(code)){
+					   pass=true;
+					   break;
+				   }
+			   }
+
+				if (pass) {
+					// pass
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule307.pass.message", new Object[] {}, locale), Constants.PASS,
+							"", "", ""));
+
+				} else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule307.error.message", new Object[] {  }, locale),
+							Constants.FAIL, "", "", ""));
+				}
+			
+		} catch (Exception n) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL, "", "", ""));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+
+	}
+	
+	public List<TPValidationResponseDto> rule308(RcmRules rule,Set<String> claimCodes,
+			String providerCode,List<CredentialDataAnesthesia> sheetData,Date claimDos) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+		
+		String cd  = "D0145";
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean found=false;
+		boolean pass=false;
+		try {
+
+			   for(String code:claimCodes ) {
+				   if (code.equalsIgnoreCase(cd)){
+					   found=true;
+					   break;
+				   }
+			   }
+
+				if (found) {
+					List<CredentialDataAnesthesia> filterList = sheetData.stream().filter(c -> c.getProviderCodes().equals(providerCode))
+					.collect(Collectors.toList());
+					if (filterList.size()>0) {
+					 String effDate = filterList.get(0).getFDHEffectiveDate();
+					 String firstHome = filterList.get(0).getFirstHomeD0145();
+					 if (firstHome.equalsIgnoreCase("yes")) {
+						 if (!effDate.equals("")) {
+							Date eff=  Constants.SDF_CredentialSheetAnes.parse(effDate);
+							if (eff.compareTo(claimDos)<0) {
+								pass = true;
+							}
+						 }
+					 }else {
+						 pass = false;//no is fail
+					 }
+					 pass = false;//not listed then Fail.
+					}
+					// pass
+					
+
+				} else {
+					// N/A
+					pass = true;
+					
+				}
+				
+				if (pass) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule308.pass.message", new Object[] {  }, locale),
+							Constants.PASS, "", "", ""));
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule308.error.message", new Object[] {}, locale), Constants.FAIL,
+							"", "", ""));
+				}
+			
+		} catch (Exception n) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL, "", "", ""));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+
+	}
+	
+	public List<TPValidationResponseDto> rule309(RcmRules rule,Set<String> claimCodes,
+			String providerCode,List<CredentialDataAnesthesia> sheetData) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+		
+		String cd  = "D9230";
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean found=false;
+		boolean pass=false;
+		try {
+
+			   for(String code:claimCodes ) {
+				   if (code.equalsIgnoreCase(cd)){
+					   found=true;
+					   break;
+				   }
+			   }
+
+				if (found) {
+					List<CredentialDataAnesthesia> filterList = sheetData.stream().filter(c -> c.getProviderCodes().equals(providerCode))
+					.collect(Collectors.toList());
+					if (filterList.size()>0) {
+					
+					 String firstHome = filterList.get(0).getD9230Nirtrous();
+					 if (firstHome.equalsIgnoreCase("yes")) {
+						 pass = true;
+					 }else {
+						 pass = false;//no is fail
+					 }
+					 pass = false;//not listed then Fail.
+					}
+					// pass
+					
+
+				} else {
+					// N/A
+					pass = true;
+					
+				}
+				
+				if (pass) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule309.pass.message", new Object[] {  }, locale),
+							Constants.PASS, "", "", ""));
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule309.error.message", new Object[] {}, locale), Constants.FAIL,
+							"", "", ""));
+				}
+			
+		} catch (Exception n) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL, "", "", ""));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+
+	}
+	
+	public List<TPValidationResponseDto> rule310(RcmRules rule,Set<String> claimCodes,
+			String providerCode,List<CredentialDataAnesthesia> sheetData) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+		
+		String cd  = "D9248";
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean found=false;
+		boolean pass=false;
+		try {
+
+			   for(String code:claimCodes ) {
+				   if (code.equalsIgnoreCase(cd)){
+					   found=true;
+					   break;
+				   }
+			   }
+
+				if (found) {
+					List<CredentialDataAnesthesia> filterList = sheetData.stream().filter(c -> c.getProviderCodes().equals(providerCode))
+					.collect(Collectors.toList());
+					if (filterList.size()>0) {
+					
+					 String firstHome = filterList.get(0).getD9248Anesthesia();
+					 if (firstHome.equalsIgnoreCase("yes")) {
+						 pass = true;
+					 }else {
+						 pass = false;//no is fail
+					 }
+					 pass = false;//not listed then Fail.
+					}
+					// pass
+					
+
+				} else {
+					// N/A
+					pass = true;
+					
+				}
+				
+				if (pass) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule310.pass.message", new Object[] {  }, locale),
+							Constants.PASS, "", "", ""));
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule310.error.message", new Object[] {}, locale), Constants.FAIL,
+							"", "", ""));
+				}
+			
+		} catch (Exception n) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL, "", "", ""));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+
+	}
+	
 }

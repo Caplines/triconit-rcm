@@ -54,8 +54,8 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	@Query(nativeQuery = true, value = "  "
 			+" SELECT count(*) FROM rcm_claim_assignment rca "
 			+" inner join rcm_team rt on rt.id=rca.current_team_id "
-			+"  where rca.claim_id=:claim_id  and rca.active is true and assigned_to is not null")
-    int claimAssignedToSomeoneAlready(@Param("claim_id") String claimId);
+			+"  where rca.claim_id=:claim_id  and rca.active is true and rca.current_team_id!=:team_id and assigned_to is not null")
+    int claimAssignedToSomeoneAlreadyofOtherTeam(@Param("claim_id") String claimId,@Param("team_id") int teamId);
 	
 	/*
 	 * Before calling this Method Make sure u seed claim is for valid Client 

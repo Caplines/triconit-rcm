@@ -36,6 +36,7 @@ import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimServiceValidationGSheet;
 import com.tricon.rcm.dto.ClaimServiceValidationGSheetData;
 import com.tricon.rcm.dto.CredentialData;
+import com.tricon.rcm.dto.CredentialDataAnesthesia;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
@@ -774,7 +775,7 @@ public class ConnectAndReadSheets {
 		while (li.hasNext()) {
 			ArrayList<String> obj = (ArrayList<String>) li.next();
 			ctr++;
-			if (ctr ==1)
+			if (ctr ==1 || ctr ==2)
 				continue;
 			try {
 				int x = -1;
@@ -787,6 +788,45 @@ public class ConnectAndReadSheets {
 						obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 						obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 						obj.get(++x));
+
+				list.add(dto);
+			} catch (Exception ex) {
+				continue;
+			}
+
+		}
+
+		// fulldto.setDataList(list);
+		// fulldto.setStatusCount(statusCount);
+		return list;
+
+	}
+	
+	public static List<CredentialDataAnesthesia> readCredentialTrackerAnesthesiaGSheet(String spreadsheetId, String sheetName, String clientDir,
+			String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+
+		ValueRange range = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+
+		List<List<Object>> values = range.getValues();
+
+		List<CredentialDataAnesthesia> list = new ArrayList<>();
+		ListIterator li = values.listIterator();
+		CredentialDataAnesthesia dto = null;
+		// IVFHistorySheet vifH = null;
+
+		int ctr = 0;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			ctr++;
+			if (ctr ==1)
+				continue;
+			try {
+				int x = -1;
+					dto = new CredentialDataAnesthesia(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+						obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
+						obj.get(++x), obj.get(++x));
 
 				list.add(dto);
 			} catch (Exception ex) {

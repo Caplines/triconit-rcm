@@ -65,6 +65,10 @@ public class RcmClaimsServiceRuleValidation  extends BaseAuditEntity implements 
 	@Column(name = "message_type")
 	private int messageType;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "rule_id", referencedColumnName = "id" ,nullable = true)
+	private RcmRules rule;
+	
 	@Column(name = "remark", columnDefinition = "text", nullable = true)
 	private String remark;
 	

@@ -90,9 +90,9 @@ export class BillingClaimsComponent {
         ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
         ths.fetchOtherTeamRemarks();
         ths.fetchClaimNotes();
-        if (this.smilePoint) ths.getServiceLevelCodes();//Only In case of Smile point. other does not have it.
+        if (ths.smilePoint) ths.getServiceLevelCodes();//Only In case of Smile point. other does not have it.
         ths.getSubmissionDetails();
-        if (this.smilePoint) ths.getClaimRuleData();//Only In case of Smile point. other does not have it.
+        //if (this.smilePoint) ths.getClaimRuleData();//Only In case of Smile point. other does not have it.
         //ths.runAutoRules(false);
         ths.fetchTLUsers();
         ths.fetchOtherTeams();
@@ -159,11 +159,12 @@ export class BillingClaimsComponent {
     ths.claimEditModel.submissionDto = ths.submissionDto;
     ths.claimEditModel.ruleRemarkDto = [];
     ths.claimRules.forEach(x => {
+      x.sectionName = "ClaimLevelValidation"
       if (x.remark != null && x.remark.trim() != '') ths.claimEditModel.ruleRemarkDto.push(x);
     });
     ths.ruleEngineReport.forEach(x => {
 
-      let c = new ClaimRuleRemarkModelS(x.remark, null, null, null, Number(x.ruleId));
+      let c = new ClaimRuleRemarkModelS(x.remark, null, null, null, Number(x.ruleId), "RuleEngine");
       if (x.remark != null && x.remark.trim() != '') ths.claimEditModel.ruleRemarkDto.push(c);
     });
 
@@ -330,14 +331,27 @@ export class BillingClaimsComponent {
       if (ths.claimServiceLevelModel.claimFound) {
 
         ths.claimServiceLevelModel.dto.forEach((x, i) => {
-          if ((x.remark == null || x.remark.trim() === '') && x.messageType === 1) {//on NO only
-            ths.addErrorDisplay(document.getElementById("SERV_C_V_" + i));
+          debugger;
+          if ((x.manualAuto == 'Automated' && (x.remark == null || x.remark.trim() === '')) && x.messageType === 1) {//on NO only
+            ths.addErrorDisplay(document.getElementById("SERV_C_V_A" + i));
             valid = false;
           }
 
         });
+        ths.claimServiceLevelModel.dto.forEach((x, i) => {
+          if ((x.manualAuto == 'Manual' && x.answer === null || x.answer.trim() === '')) {//on NO only
+            ths.addErrorDisplay(document.getElementById("serviceCodeValidationsM" + i));
+            valid = false;
+          } else if ((x.manualAuto == 'Manual' && (x.remark == null || x.remark.trim() === '')) && x.answer === 'Incorrect') {//on NO only
+            ths.addErrorDisplay(document.getElementById("SERV_C_V_M" + i));
+            valid = false; {
+
+            }
+          }
+        });
       } else {
-        ths.addErrorDisplay(document.getElementById("serviceCodeValidations"));
+        ths.addErrorDisplay(document.getElementById("serviceCodeValidationsA"));
+        ths.addErrorDisplay(document.getElementById("serviceCodeValidationsM"));
       }
     }
     if (this.smilePoint) {
@@ -412,6 +426,7 @@ export class BillingClaimsComponent {
         this.loader.serviceCode = false;
         ths.claimServiceLevelModel;
       }
+      ths.getClaimRuleData();
     })
 
   }
@@ -435,13 +450,17 @@ export class BillingClaimsComponent {
         ths.claimRules = res.data;
         this.countA.pass = this.countA.fail = this.countA.alert = 0;
         ths.claimRules.forEach((e: any) => {
-          if (e.messageType == 1) {
+          if (e.messageType == 1 && (e.ruleType === 'C' || e.ruleType === 'R,C')) {
             this.countA.fail = this.countA.fail + 1;
           }
-          else if (e.messageType == 2) {
+          else if (e.messageType == 2 && (e.ruleType === 'C' || e.ruleType === 'R,C')) {
             this.countA.pass = this.countA.pass + 1;
           }
+          else if (e.manualAuto == 'AUTO' && (e.ruleType === 'G')) {
+            //add filter here
+          }
         });
+
         ths.getRuleRemarks();
         // if (ths.submissionDto==null) ths.submissionDto={};
       }
@@ -498,7 +517,7 @@ export class BillingClaimsComponent {
       if (res.status === 200) {
         ths.loader.ruleEngValid = false;
         ths.getRulesClaimdata();
-        ths.ruleEngineReport = res.data;
+        ths.ruleEngineReport = res.data;////Rule Engine Data
         if (ths.ruleEngineReport.length > 0)
           ths.generateRuleEngineReportHeading(ths.ruleEngineReport[0]);
 
@@ -539,6 +558,15 @@ export class BillingClaimsComponent {
     else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
     return false;
+  }
+
+  isSectionReadOnly(): boolean {
+    if (!this.claimRcm.pending) return true;
+    if (this.claimRcm.firstTeamId == this.claimRcm.currentTeamId
+      && this.claimRcm.allowEdit) {
+      return false;
+    }
+    return true;
   }
 
   getTeamName(teamId: string): string {

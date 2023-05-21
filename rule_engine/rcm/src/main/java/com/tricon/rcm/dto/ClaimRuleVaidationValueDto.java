@@ -11,4 +11,5 @@ public class ClaimRuleVaidationValueDto {
 	String ruleName;
 	String ruleDesc;
 	String manualAuto;
+	String ruleType;
 }

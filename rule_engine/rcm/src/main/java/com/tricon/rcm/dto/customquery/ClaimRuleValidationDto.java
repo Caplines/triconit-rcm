@@ -12,5 +12,6 @@ public interface ClaimRuleValidationDto {
 	String getManualAuto();
 	String getName();
 	int getMessageType();
+	String getRuleType();
 
 }
