@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import {
   ClaimRcmDataModel, ClaimEditModel, ServiceLevelCodeModel, SubmissionDetailModel,
-  ClaimRuleModel, ClaimRuleRemarkModel, RuleEngineValModel,
+  ClaimRuleModel, ClaimRuleRemarkModel, RuleEngineValModel, ServiceLevelCodeDataModel,
   ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem
 } from '../models/claim-rcm-data-model';
 
@@ -331,7 +331,7 @@ export class BillingClaimsComponent {
       if (ths.claimServiceLevelModel.claimFound) {
 
         ths.claimServiceLevelModel.dto.forEach((x, i) => {
-          debugger;
+          //debugger;
           if ((x.manualAuto == 'Automated' && (x.remark == null || x.remark.trim() === '')) && x.messageType === 1) {//on NO only
             ths.addErrorDisplay(document.getElementById("SERV_C_V_A" + i));
             valid = false;
@@ -443,6 +443,7 @@ export class BillingClaimsComponent {
 
   getRulesClaimdata() {
     let ths = this;
+    //debugger;
     ths.loader.automatedValidation = ths.loader.manualValidation = true;
     ths.claimService.getRulesClaimdata(ths.claimRcm.uuid, (res: any) => {
       if (res.status === 200) {
@@ -457,7 +458,16 @@ export class BillingClaimsComponent {
             this.countA.pass = this.countA.pass + 1;
           }
           else if (e.manualAuto == 'AUTO' && (e.ruleType === 'G')) {
-            //add filter here
+            //add filter here and update .. claimServiceLevelModel
+            //dec6e068-1977-4881-8893-26182b0368ec
+            if (this.claimServiceLevelModel != undefined && this.claimServiceLevelModel.dto != undefined) {
+              let v: ServiceLevelCodeDataModel = this.claimServiceLevelModel.dto.find(x => x.ruleId == e.ruleId);
+              if (v != null) {
+                v.message = e.message;
+                v.messageType = e.messageType;
+              }
+
+            }
           }
         });
 
@@ -685,7 +695,7 @@ export class BillingClaimsComponent {
       ths.addErrorDisplay(document.getElementById("assignToComment"));
       valid = false;
     }
-    debugger;
+    //debugger;
     if (ths.claimEditModel.assignToTeam == -1) {
       ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
       valid = false;

@@ -498,28 +498,21 @@
                                                         <td>{{d.name}}</td>
                                                         <td>{{d.serviceCode}}</td>
                                                         <td>{{d.description}}</td>
-                                                        <td></td>
+                                                        <td [innerHTML]="d.message"></td>
                                                         <td>
-                                                            <div data-toggle="buttons"
-                                                                class="btn-group btn-group-toggle"
-                                                                style="display: flex;width: 50%">
-                                                                <label class="btn btn-light"
-                                                                    [ngClass]="{active:d.messageType==2}">
-                                                                    <input type="radio" name="mta{{i}}" value="2"
-                                                                        [(ngModel)]='d.messageType' [disabled]="true">
-                                                                    Yes
-                                                                </label>
-                                                                <label class="btn btn-light"
-                                                                    [ngClass]="{active:d.messageType==1}">
-                                                                    <input type="radio" name="mta{{i}}" value="1"
-                                                                        [(ngModel)]='d.messageType' [disabled]="true">
-                                                                    No
-                                                                </label>
+                                                            <div *ngIf="d.messageType == 2" class="passed"><img
+                                                                    src="../../assets/img/correct_mark.png" /><span>Pass</span>
                                                             </div>
+
+
+                                                            <div *ngIf="d.messageType == 1" class="failed"><img
+                                                                    src="../../assets/img/cross_incorrec.png" /><span>Fail</span>
+                                                            </div>
+
                                                         </td>
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='d.remark' id="SERV_C_V_A{{i}}"
-                                                                [disabled]="makeReadOnly()"></textarea></td>
+                                                                [disabled]="isSectionReadOnly()"></textarea></td>
                                                     </tr>
                                                 </ng-container>
                                             </tbody>
