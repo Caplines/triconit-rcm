@@ -102,6 +102,7 @@ export class AllPendencyComponent {
   }
 
   exportToCsv(fromTable:any){
+    let totalRow:any={};
     this.showLoader.exportCSVLoader=true;
     let headers:any=[];
     headers.push("Office Name");
@@ -156,6 +157,16 @@ export class AllPendencyComponent {
     
     excelData = excelData.map(
       ({ key, uuid, teamId, count,teamName,minDate,active, ...newClaimData }: any) => newClaimData);
+
+      if(fromTable == 'table'){
+        for(let i=0;i<this.teamData.length;i++){          //loop is used to insert a new object Total Row for CSV
+          if(this.currentTeamId != this.teamData[i].teamId){
+            totalRow['name']='Total';
+            totalRow[`PendencyWith${this.teamData[i].teamName}`] = this.totalCount[i].count;
+          }
+        }      
+        excelData.unshift(totalRow);
+      }
 
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
