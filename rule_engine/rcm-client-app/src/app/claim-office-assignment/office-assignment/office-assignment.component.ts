@@ -236,6 +236,19 @@ exportToCsv(){
       "Total(Pending For Billing & Remote Lite Rejections)": e.count ? e.count+e.remoteLiteRejections : '0'
     }
   })  
+
+  excelData.unshift(                                        //method is used to show Total Row in CSV.
+    {
+      "OfficeName":'Total',
+      "officeAssignedTo":'-',
+      "Oldest Pending Since Date":'-',
+      "OldestPending DOS":'-',
+      "NumberofPendingClaimstobeBilled":this.totalClaimData.totalCount,
+      "NoofRemoteLiteRejectionsPendingtobeHandled" : this.totalClaimData.totalRemLiteReject,
+      "Total(Pending For Billing & Remote Lite Rejections)": this.totalClaimData.totalcountAndRemLiteReject
+    }
+  )  
+
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`
     new ngxCsv(excelData, `${this.clientName}_Pendency_${this.date}`,options);
