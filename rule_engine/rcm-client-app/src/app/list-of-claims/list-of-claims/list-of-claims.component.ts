@@ -20,7 +20,7 @@ export class ListOfClaimsComponent implements OnInit {
   claimDetail: Array<ClaimAssociateDetailModel>;
   expandCollapse: boolean = true;
   switchBox: any = { 'billing': true, 'reBilling': false };
-  isSorted: boolean = false;
+  isSorted: any = {};
   loader: any = { 'billingLoader': false, 'listClaimLoader': false,'exportPDFLoader':false,'exportCSVLoader':false };
   showFilteredDropdown: any= {'officeName':false,'claimType':false,'insuranceType':false,'insuranceName':false,'lastTeamWorked':false,'actionRequired':false};
   filteredItems: any = [];

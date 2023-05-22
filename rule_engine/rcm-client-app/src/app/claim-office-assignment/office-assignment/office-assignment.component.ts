@@ -28,7 +28,7 @@ export class OfficeAssignmentComponent implements OnInit {
   bType:string="-1";
   insType:string="PPO";
 
-  isSorted:boolean=false;
+  isSorted:any={};
   teamId:any;
   userByTeam:any=[];
   assignOfficeDetails:any={'assignOfficeDetails':[],'teamId':''};

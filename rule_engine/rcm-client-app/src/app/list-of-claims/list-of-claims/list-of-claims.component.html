@@ -99,11 +99,11 @@
                                                             </div>
                                                         </div> <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'officeName','asc','string'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'officeName','desc','string');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                         </span>
 
                                                     </div>
@@ -112,11 +112,11 @@
                                                     <div class="dFlex">
                                                         Patient ID<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'patientId','asc','number'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['patientId']}"
+                                                                (click)="sortData(filteredItems,'patientId','asc','number'); isSorted['patientId'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'patientId','desc','number');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['patientId']}"
+                                                                (click)="sortData(filteredItems,'patientId','desc','number');isSorted['patientId'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -124,11 +124,11 @@
                                                     <div class="dFlex">
                                                         Patient Name<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'patientName','asc','string'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['patientName']}"
+                                                                (click)="sortData(filteredItems,'patientName','asc','string'); isSorted['patientName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'patientName','desc','string');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['patientName']}"
+                                                                (click)="sortData(filteredItems,'patientName','desc','string');isSorted['patientName'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -136,11 +136,11 @@
                                                     <div class="dFlex">
                                                         Date of Service<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'dos','asc','dateOnly'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['dos']}"
+                                                                (click)="sortData(filteredItems,'dos','asc','dateOnly'); isSorted['dos'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'dos','desc','dateOnly');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['dos']}"
+                                                                (click)="sortData(filteredItems,'dos','desc','dateOnly');isSorted['dos'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -148,11 +148,11 @@
                                                     <div class="dFlex">
                                                         Claim Age<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'claimAge','asc','number'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['claimAge']}"
+                                                                (click)="sortData(filteredItems,'claimAge','asc','number'); isSorted['claimAge'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'claimAge','desc','number');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['claimAge']}"
+                                                                (click)="sortData(filteredItems,'claimAge','desc','number');isSorted['claimAge'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -160,8 +160,8 @@
                                                     <div class="dFlex">
                                                         Timely Filing Limit (Days)
                                                         <!-- <span class="sorting">
-                                                          <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}" (click)="isSorted = true"></a>
+                                                          <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['officeName']}" (click)="isSorted['officeName'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['officeName']}" (click)="isSorted['officeName'] = true"></a>
                                                         </span> -->
                                                     </div>
                                                 </th>
@@ -214,8 +214,8 @@
                                                                 </ng-container>
                                                             </div>
                                                             <!-- <span class="sorting">
-                                                          <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(filteredItems,'officeName','asc','string'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}" (click)="sortData(filteredItems,'officeName','desc','string');isSorted = true"></a>
+                                                          <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['officeName']}" (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['officeName']}" (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                         </span> -->
                                                         </div>
                                                     </div>
@@ -271,8 +271,8 @@
                                                             </div>
                                                         </div>
                                                         <!-- <span class="sorting">
-                                                          <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}" (click)="sortData(filteredItems,'officeName','asc','string'); isSorted = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}" (click)="sortData(filteredItems,'officeName','desc','string');isSorted = true"></a>
+                                                          <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['officeName']}" (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['officeName']}" (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                         </span> -->
                                                     </div>
                                                 </th>
@@ -328,11 +328,11 @@
                                                         </div>
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'primaryInsurance','asc','string'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['primaryInsurance']}"
+                                                                (click)="sortData(filteredItems,'primaryInsurance','asc','string'); isSorted['primaryInsurance'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'primaryInsurance','desc','string');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['primaryInsurance']}"
+                                                                (click)="sortData(filteredItems,'primaryInsurance','desc','string');isSorted['primaryInsurance'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -388,11 +388,11 @@
                                                         </div>
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'prName','asc','string'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['prName']}"
+                                                                (click)="sortData(filteredItems,'prName','asc','string'); isSorted['prName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'prName','desc','string');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['prName']}"
+                                                                (click)="sortData(filteredItems,'prName','desc','string');isSorted['prName'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -400,11 +400,11 @@
                                                     <div class="dFlex">
                                                         Estimated Amount<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'primTotal','asc','number'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['primTotal']}"
+                                                                (click)="sortData(filteredItems,'primTotal','asc','number'); isSorted['primTotal'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'primTotal','desc','number');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['primTotal']}"
+                                                                (click)="sortData(filteredItems,'primTotal','desc','number');isSorted['primTotal'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -413,11 +413,11 @@
                                                         <div class="dFlex">
                                                             Billing Amount<span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted}"
-                                                                    (click)="sortData(filteredItems,'billedAmount','asc','number'); isSorted = false"></a>
+                                                                    [ngClass]="{'selected': !isSorted['billedAmount']}"
+                                                                    (click)="sortData(filteredItems,'billedAmount','asc','number'); isSorted['billedAmount'] = false"></a>
                                                                 <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted}"
-                                                                    (click)="sortData(filteredItems,'billedAmount','desc','number');isSorted = true"></a>
+                                                                    [ngClass]="{'selected': isSorted['billedAmount']}"
+                                                                    (click)="sortData(filteredItems,'billedAmount','desc','number');isSorted['billedAmount'] = true"></a>
                                                             </span>
                                                         </div>
                                                     </th>

@@ -60,11 +60,11 @@
                                                         Office Name
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(claimData,'officeName','asc','string'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['officeName']}"
+                                                                (click)="sortData(claimData,'officeName','asc','string'); isSorted['officeName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(claimData,'officeName','desc','string');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['officeName']}"
+                                                                (click)="sortData(claimData,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -73,11 +73,11 @@
                                                         Office Assigned To
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(claimData,'fname','asc','string'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['fname']}"
+                                                                (click)="sortData(claimData,'fname','asc','string'); isSorted['fname'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(claimData,'fname','desc','string');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['fname']}"
+                                                                (click)="sortData(claimData,'fname','desc','string');isSorted['fname'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -86,11 +86,11 @@
                                                         Oldest Pending Since Date
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(claimData,'opdtd','asc','dateOnly'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['opdtd']}"
+                                                                (click)="sortData(claimData,'opdtd','asc','dateOnly'); isSorted['opdtd'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(claimData,'opdtd','desc','dateOnly');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['opdtd']}"
+                                                                (click)="sortData(claimData,'opdtd','desc','dateOnly');isSorted['opdtd'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -99,11 +99,11 @@
                                                         Oldest Pending DOS
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(claimData,'opdosd','asc','dateOnly'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['opdosd']}"
+                                                                (click)="sortData(claimData,'opdosd','asc','dateOnly'); isSorted['opdosd'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(claimData,'opdosd','desc','dateOnly');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['opdosd']}"
+                                                                (click)="sortData(claimData,'opdosd','desc','dateOnly');isSorted['opdosd'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -112,11 +112,11 @@
                                                         Number of Pending Claims to be Billed
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(claimData,'count','asc','number'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['count']}"
+                                                                (click)="sortData(claimData,'count','asc','number'); isSorted['count'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(claimData,'count','desc','number');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['count']}"
+                                                                (click)="sortData(claimData,'count','desc','number');isSorted['count'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -125,11 +125,11 @@
                                                         No. of RemoteLite Rejections Pending to be Handled
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(claimData,'remoteLiteRejections','asc','number'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['remoteLiteRejections']}"
+                                                                (click)="sortData(claimData,'remoteLiteRejections','asc','number'); isSorted['remoteLiteRejections'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(claimData,'remoteLiteRejections','desc','number');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['remoteLiteRejections']}"
+                                                                (click)="sortData(claimData,'remoteLiteRejections','desc','number');isSorted['remoteLiteRejections'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -138,11 +138,11 @@
                                                         Total (Pending For Billing & Remote Lite Rejections)
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(claimData,'totalBillingRejection','asc','number'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['totalBillingRejection']}"
+                                                                (click)="sortData(claimData,'totalBillingRejection','asc','number'); isSorted['totalBillingRejection'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(claimData,'totalBillingRejection','desc','number');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['totalBillingRejection']}"
+                                                                (click)="sortData(claimData,'totalBillingRejection','desc','number');isSorted['totalBillingRejection'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
