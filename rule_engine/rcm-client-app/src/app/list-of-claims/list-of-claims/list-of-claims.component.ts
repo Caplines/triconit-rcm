@@ -110,6 +110,7 @@ export class ListOfClaimsComponent implements OnInit {
         e['insuranceName']=e.secondaryInsurance;
       }
     })
+    this.sortFiltereData(this.filteredInsuranceName);
     this.isFilterAllSelected.insuranceName = true;
   }
 
@@ -125,9 +126,9 @@ export class ListOfClaimsComponent implements OnInit {
     })
     this.filteredInsuranceType = Array.from(new Set(this.filteredInsuranceType.map((a:any) => a.insuranceType)))
       .map((insuranceType:any) => {
-        return this.filteredInsuranceType.find((a:any) => a.insuranceType === insuranceType);
+      return this.filteredInsuranceType.find((a:any) => a.insuranceType === insuranceType);
       });
-
+      this.sortFiltereData(this.filteredInsuranceType);
     this.isFilterAllSelected.insuranceType = true;
   }
 
@@ -179,7 +180,7 @@ export class ListOfClaimsComponent implements OnInit {
           }
       })
     });
-    
+    this.sortFiltereData(this.filteredOfficeName);
   }
 
   filterOfficeName(e?: any,filterProperty?:any) {
@@ -427,6 +428,26 @@ export class ListOfClaimsComponent implements OnInit {
     //   });
     //   this.filterLastTeamWorked("lastTeam");
     // }
+  }
+
+  sortFiltereData(filterValue:any){
+      filterValue.sort((a:any,b:any)=>{
+        const nameA = Object.keys(filterValue[0])[1]=='insuranceType' ? a.insuranceType.toUpperCase() 
+                      : Object.keys(filterValue[0])[1]=='insuranceName' ? a.insuranceName.toUpperCase() 
+                      : Object.keys(filterValue[0])[4] == 'officeName' ? a.officeName.toUpperCase(): '';// ignore upper and lowercase
+        const nameB = Object.keys(filterValue[0])[1]=='insuranceType' ? b.insuranceType.toUpperCase() 
+                      : Object.keys(filterValue[0])[1]=='insuranceName' ? b.insuranceName.toUpperCase() 
+                      : Object.keys(filterValue[0])[4] == 'officeName' ? b.officeName.toUpperCase(): '';// ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+        // names must be equal
+        return 0;
+      });
+    
   }
 
   logout() {

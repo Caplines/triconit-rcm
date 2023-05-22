@@ -217,6 +217,7 @@ export class AllPendencyComponent {
       })
     });
     
+    this.sortFiltereData(this.filteredOfficeName);
   }
 
   switchTab(tab:any){
@@ -231,5 +232,21 @@ export class AllPendencyComponent {
   sortData(data:any,sortProp:string,order:any,sortType:string){
     this._service.sortData(data,sortProp,order,sortType);
   }
+
+  sortFiltereData(filterValue:any){
+    filterValue.sort((a:any,b:any)=>{
+      const nameA = Object.keys(filterValue[0])[4] == 'officeName' ? a.officeName.toUpperCase(): '';// ignore upper and lowercase
+      const nameB = Object.keys(filterValue[0])[4] == 'officeName' ? b.officeName.toUpperCase(): '';// ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      // names must be equal
+      return 0;
+    });
+  
+}
   
 }
