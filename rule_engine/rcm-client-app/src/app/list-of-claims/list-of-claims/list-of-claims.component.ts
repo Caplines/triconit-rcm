@@ -355,7 +355,7 @@ export class ListOfClaimsComponent implements OnInit {
           "Action Required":e.actionRequired,
           "Insurance Name":e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type":e.prName? e.prName : e.secName,
-          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? e.primTotal : "0") : e.secTotal ? e.secTotal : "0",
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? e.primTotal : "0") : e.primeSecSubmittedTotal ? e.primeSecSubmittedTotal : "0",
         }
       })  //method aligns the header to the value in CSV.
 

@@ -122,6 +122,13 @@ exportToCsv() {
       "Average Production (Per Day)":e.days,
     }
   })
+  excelData.unshift(                                        //method is used to show Total Row in CSV.
+  {
+    "OfficeName":'Total',
+    "Total Production":this.total,
+    "Average Production (Per Day)":this.days
+  }
+) 
   this.date = new Date();
   this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
   
