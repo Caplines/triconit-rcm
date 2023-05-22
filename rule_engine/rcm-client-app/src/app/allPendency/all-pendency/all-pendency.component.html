@@ -57,14 +57,14 @@
                                                     <div class="dFlex">
                                                         Office Name    <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'name','asc','string'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['name']}"
+                                                                (click)="sortData(filteredItems,'name','asc','string'); isSorted['name'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'name','desc','string');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['name']}"
+                                                                (click)="sortData(filteredItems,'name','desc','string');isSorted['name'] = true"></a>
                                                         </span> 
                                                         <div class="dropdown"
-                                                        (mouseleave)="showFilteredDropdown.officeName=false">
+                                                        >
                                                         <svg (click)="showFilteredDropdown.officeName = !showFilteredDropdown.officeName"
                                                             style="cursor:pointer;display: inline-block; float: left;background: #e5e5e5;border-radius: 5px;padding: 1px;/* margin-right: 3px; */margin-left: 6px;"
                                                             version="1.1" viewBox="0 0 24 24" xml:space="preserve"
@@ -116,8 +116,15 @@
                                                 <ng-container *ngFor="let data of teamData;let last = last;">
                                                     <th  *ngIf="currentTeamId != data.teamId">
                                                         <div class="dFlex">
-                                                            Pendency with {{data.teamName}} <span class="sorting">
-                                                            </span>
+                                                          
+                                                            Pendency with {{data.teamName}}   <span class="sorting">
+                                                                <a href="javascript:void(0);" class="arrow-up"
+                                                                    [ngClass]="{'selected': !isSorted[data.teamId]}"
+                                                                    (click)="sortData(filteredItems,'count','asc','number'); isSorted[data.teamId] = false"></a>
+                                                                <a href="javascript:void(0);" class="arrow-down"
+                                                                    [ngClass]="{'selected': isSorted[data.teamId]}"
+                                                                    (click)="sortData(filteredItems,'count','desc','number');isSorted[data.teamId] = true"></a>
+                                                            </span> 
                                                         </div>
                                                     </th>
                                                     <th *ngIf="last"></th>
@@ -167,13 +174,14 @@
                                                     <div class="dFlex">
                                                         Office Name <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted}"
-                                                                (click)="sortData(filteredItems,'name','asc','string'); isSorted = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['name']}"
+                                                                (click)="sortData(filteredItems,'name','asc','string'); isSorted['name'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted}"
-                                                                (click)="sortData(filteredItems,'name','desc','string');isSorted = true"></a>
+                                                                [ngClass]="{'selected': isSorted['name']}"
+                                                                (click)="sortData(filteredItems,'name','desc','string');isSorted['name'] = true"></a>
                                                         </span> 
-                                                        <div class="dropdown">
+                                                        <div class="dropdown"
+                                                            (mouseleave)="showFilteredDropdown.officeName=false">
                                                             <svg (click)="showFilteredDropdown.officeName = !showFilteredDropdown.officeName"
                                                                 style="cursor:pointer;display: inline-block; float: left;background: #e5e5e5;border-radius: 5px;padding: 1px;/* margin-right: 3px; */margin-left: 6px;"
                                                                 version="1.1" viewBox="0 0 24 24" xml:space="preserve"
@@ -225,8 +233,14 @@
                                                 <ng-container *ngFor="let data of teamData;let last=last">
                                                     <th *ngIf="currentTeamId != data.teamId">
                                                         <div class="dFlex">
-                                                            Pendency with {{data.teamName}} <span class="sorting">
-                                                            </span>
+                                                            Pendency with {{data.teamName}}<span class="sorting">
+                                                                <a href="javascript:void(0);" class="arrow-up"
+                                                                    [ngClass]="{'selected': !isSorted[data.teamId]}"
+                                                                    (click)="sortData(filteredItems,'count','asc','number'); isSorted[data.teamId] = false"></a>
+                                                                <a href="javascript:void(0);" class="arrow-down"
+                                                                    [ngClass]="{'selected': isSorted[data.teamId]}"
+                                                                    (click)="sortData(filteredItems,'count','desc','number');isSorted[data.teamId] = true"></a>
+                                                            </span> 
                                                         </div>
                                                     </th>
                                                     <th *ngIf="last"></th>

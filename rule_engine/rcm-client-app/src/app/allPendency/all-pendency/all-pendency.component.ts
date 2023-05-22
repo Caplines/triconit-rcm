@@ -24,7 +24,7 @@ export class AllPendencyComponent {
   filteredOfficeName: any = [];
   filteredItems: any = [];
   tabSwitch:any={'withoutDos':true,'withDos':false};
-  isSorted:boolean=false;
+  isSorted:any={};
 
   constructor(private _service:ApplicationServiceService,private title:Title){
     title.setTitle(Utils.defaultTitle + "All Pendency")
@@ -225,8 +225,6 @@ export class AllPendencyComponent {
     tab.withDos = !tab.withDos;
     let event = {target:{checked:true}};  //added so that when tab is swtiched then by default all data should show.
     this.selectAll(event,'officeName');
-    this.isSorted=false;
-    this.sortData(this.filteredItems,'name','asc','string');
   }
 
   sortData(data:any,sortProp:string,order:any,sortType:string){
