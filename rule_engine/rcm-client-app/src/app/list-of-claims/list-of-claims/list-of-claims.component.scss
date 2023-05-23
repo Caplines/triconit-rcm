@@ -149,3 +149,10 @@
 .filter-dropdown-menu label:first-child input[type=checkbox] {
     accent-color:#dc3545;
   }
+
+  .filter-dropdown-menu .close{
+    position: absolute;
+    right: 7px;
+    top: 4px;
+    outline: none;
+  }

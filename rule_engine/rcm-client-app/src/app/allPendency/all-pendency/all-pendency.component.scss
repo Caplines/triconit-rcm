@@ -99,3 +99,10 @@
   .sorting .selected {
       border-bottom-color: #2d4047;
   }
+
+  .filter-dropdown-menu .close{
+    position: absolute;
+    right: 7px;
+    top: 4px;
+    outline: none;
+  }

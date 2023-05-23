@@ -12,6 +12,8 @@
     display: inline-flex;
     align-items: center;
     background: #00915f;
+    border-radius: 30px;
+    padding: 0 10px;
 }
 
 .failed {
@@ -24,20 +26,20 @@
 .notRun span
 {
     border: 2px solid #008f5a;
-    height: 24px;
+    height: 22px;
     display: inline-flex;
-    width: 50px;
+    width: 40px;
     justify-content: center;
     align-items: center;
     font-weight: 700;
     color: #008f5a;
-    line-height: 24px;
-    font-size: 14px;
+    line-height: 21px;
+    font-size: 12px;
     text-transform: uppercase;
     background: #fff;
 }
 .notRun span {
-    width: 75px;
+    width: 64px;
     border: 2px solid #ffffff;
     color: #ffb000;
 }
