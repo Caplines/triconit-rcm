@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit ,LOCALE_ID,Inject} from '@angular/core';
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
@@ -7,6 +7,7 @@ import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
 import { Title } from '@angular/platform-browser';
+import { DecimalPipe,formatNumber } from '@angular/common';
 
 @Component({
   selector: 'app-list-of-claims',
@@ -36,7 +37,7 @@ export class ListOfClaimsComponent implements OnInit {
   // filteredLastTeamWorked:any=[];
   clientName:string='';
 
-  constructor(private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
+  constructor(@Inject(LOCALE_ID) private locale: string,private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
     this.selectedBtype = this.appConstants.BILLING_ID;
     title.setTitle(Utils.defaultTitle + "List Of Claims");
   }
@@ -355,7 +356,7 @@ export class ListOfClaimsComponent implements OnInit {
           "Action Required":e.actionRequired,
           "Insurance Name":e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type":e.prName? e.prName : e.secName,
-          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? e.primTotal : "0") : e.primeSecSubmittedTotal ? e.primeSecSubmittedTotal : "0",
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? e.primTotal : "0") : e.primeSecSubmittedTotal ? formatNumber(e.primeSecSubmittedTotal,this.locale,'1.2-2') : "0",
         }
       })  //method aligns the header to the value in CSV.
 
