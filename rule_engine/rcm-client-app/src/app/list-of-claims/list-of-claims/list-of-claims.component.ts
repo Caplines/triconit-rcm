@@ -36,6 +36,7 @@ export class ListOfClaimsComponent implements OnInit {
   filteredActionRequired:any=[];
   // filteredLastTeamWorked:any=[];
   clientName:string='';
+  isFilterValueExist  : boolean = false;
 
   constructor(@Inject(LOCALE_ID) private locale: string,private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
     this.selectedBtype = this.appConstants.BILLING_ID;
@@ -74,9 +75,9 @@ export class ListOfClaimsComponent implements OnInit {
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
-        this.filterOptionClaimType();
-        this.filterOptionActionRequired();
-        this.filterOptionInsuranceName();
+        this.filterOptionClaimType(subType);
+        this.filterOptionActionRequired(subType);
+        this.filterOptionInsuranceName(subType);
         this.filterOptionInsuranceType();
         // this.filterOptionLastTeamWorked();
       } 
@@ -90,27 +91,44 @@ export class ListOfClaimsComponent implements OnInit {
     });
   }
 
-  filterOptionClaimType(){
-  
-    this.filteredClaimType.push({'checked':true,'claimType':'Primary'},{'checked':true,'claimType':'Secondary'})
+  filterOptionClaimType(subType:string){
+    if(subType == 'Fresh' && this.isFilterValueExist){
+      this.filteredClaimType = [];
+    }
+    if(subType == 'Fresh'){
+      this.filteredClaimType.push({'checked':true,'claimType':'Primary'},{'checked':true,'claimType':'Secondary'});
+      this.isFilterValueExist = true;
+    }
     this.isFilterAllSelected.claimType = true;
   }
 
-  filterOptionActionRequired(){
-    this.filteredActionRequired.push({'checked':true,'actionRequired':"Billing","statusType":1},{'checked':true,'actionRequired':"Re-Billing","statusType":2});
+  filterOptionActionRequired(subType:string){
+    if(subType == 'Fresh' && this.isFilterValueExist){
+      this.filteredActionRequired = [];
+    }
+    if(subType == 'Fresh'){
+      this.filteredActionRequired.push({'checked':true,'actionRequired':"Billing","statusType":1},{'checked':true,'actionRequired':"Re-Billing","statusType":2});
+      this.isFilterValueExist = true;
+    }
     this.isFilterAllSelected.actionRequired = true;
   }
 
-  filterOptionInsuranceName(){
-    this.filteredItems.forEach((e:any)=>{
-      if(e.claimId.includes("_P")){
-        this.filteredInsuranceName.push({'checked':true,'insuranceName':e.primaryInsurance});
-        e['insuranceName']=e.primaryInsurance;
-      }else if(e.claimId.includes("_S")){
-        this.filteredInsuranceName.push({'checked':true,'insuranceName':e.secondaryInsurance});
-        e['insuranceName']=e.secondaryInsurance;
-      }
-    })
+  filterOptionInsuranceName(subType:string){
+    if(subType == 'Fresh' && this.isFilterValueExist){
+     this.filteredInsuranceName = [];
+    }
+    if(subType == 'Fresh'){
+      this.filteredItems.forEach((e:any)=>{
+        if(e.claimId.includes("_P")){
+          this.filteredInsuranceName.push({'checked':true,'insuranceName':e.primaryInsurance});
+          e['insuranceName']=e.primaryInsurance;
+        }else if(e.claimId.includes("_S")){
+          this.filteredInsuranceName.push({'checked':true,'insuranceName':e.secondaryInsurance});
+          e['insuranceName']=e.secondaryInsurance;
+        }
+      });
+      this.isFilterValueExist = true;
+    }
     this.sortFiltereData(this.filteredInsuranceName);
     this.isFilterAllSelected.insuranceName = true;
   }
