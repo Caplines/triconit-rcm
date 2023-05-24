@@ -209,13 +209,13 @@ export class AllPendencyComponent {
     }
     
     excelData = excelData.map(
-      ({ key, uuid, teamId, count,teamName,minDate,active, ...newClaimData }: any) => newClaimData);
+      ({ key, uuid, teamId, count,teamName,minDate,active,Aging,Posting,Billing,InternalAudit,Quality, ...newClaimData }: any) => newClaimData);
 
       if(fromTable == 'table'){
         for(let i=0;i<this.teamData.length;i++){          //loop is used to insert a new object Total Row for CSV
           if(this.currentTeamId != this.teamData[i].teamId){
             totalRow['name']='Total';
-            totalRow[`PendencyWith${this.teamData[i].teamName}`] = this.totalCount[i].count;
+            totalRow[`PendencyWith${this.teamData[i].teamName}`] = this.totalCount[this.teamData[i].teamName];
           }
         }      
         excelData.unshift(totalRow);
