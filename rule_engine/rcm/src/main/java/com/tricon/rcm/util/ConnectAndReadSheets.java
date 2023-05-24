@@ -38,6 +38,7 @@ import com.tricon.rcm.dto.ClaimServiceValidationGSheetData;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
+import com.tricon.rcm.dto.ProivderHelpingSheetDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
@@ -660,6 +661,37 @@ public class ConnectAndReadSheets {
 		}
 
 		return map1;
+	}
+	
+	public static List<ProivderHelpingSheetDto> readProviderScheduleHelpingGSheet(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		List<List<Object>> values = response.getValues();
+
+		List<ProivderHelpingSheetDto> l= new ArrayList<>();
+		ProivderHelpingSheetDto dto = null;
+		ListIterator li = values.listIterator();
+		// List cache = new ArrayList<>();
+		//int ctr = 0;
+		
+		
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			int x=-1;
+			//ctr++;
+			try {
+			dto= new ProivderHelpingSheetDto(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
+			l.add(dto);
+			}catch(Exception n) {
+				n.printStackTrace();
+			}
+
+		}
+
+
+		return l;
 	}
 
 	/**

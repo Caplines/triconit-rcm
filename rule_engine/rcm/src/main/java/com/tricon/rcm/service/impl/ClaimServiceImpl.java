@@ -60,6 +60,7 @@ import com.tricon.rcm.dto.ClaimEditDetailDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.PartialHeader;
+import com.tricon.rcm.dto.ProivderHelpingSheetDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
@@ -1102,6 +1103,13 @@ public class ClaimServiceImpl {
 			BeanUtils.copyProperties(dto, implDto);
 			implDto.setIvfId(dto.getIvId());
 			List<String> linkedClaims = rcmLinkedClaimsRepo.getLinkedClaims(dto.getUuid());
+			if (linkedClaims!=null && linkedClaims.size()==0) {
+				linkedClaims.add("N/A");
+			}else if (linkedClaims ==null) {
+				linkedClaims = new ArrayList<>();
+				linkedClaims.add("N/A");
+			}
+			implDto.setLinkedClaims(linkedClaims);
 			String ivfId = "", tpId = "",ivDos="",tpDos="";
 			String[] clT = implDto.getClaimId().split("_");
 			String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
@@ -1109,6 +1117,7 @@ public class ClaimServiceImpl {
 			if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
 				claimSubTy = Constants.insuranceTypePrimary;
 				implDto.setPrimary(true);
+				implDto.setSecMemberId("N/A");
 			} else {
 				implDto.setPrimary(false);
 			}
@@ -1217,8 +1226,7 @@ public class ClaimServiceImpl {
 			if (comment != null) {
 				implDto.setClaimRemarks(comment.getComments());
 			}
-			if (linkedClaims != null)
-				implDto.setLinkedClaims(linkedClaims);
+			
 			//
 			// If Secondary
 			
@@ -1247,68 +1255,72 @@ public class ClaimServiceImpl {
 			if (implDto.getTreatingProvider()==null && !pdf) {
 				
 			//Provider Sheet
-				String sheetProvider="";
-				String claimProvider="";
-				String providerCode="";
+				String treatingProvider="";
+				String treatingProviderFromClaim="";
+				String providerOnClaim="";
+				String providerOnClaimFromSheet="";
 				String specialty="";
+				
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(new Date());
 				try {
 			    Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
 					"1g9VtQVT5T0-Fp_beLSYhRIbUn-KBqP4TGmYuteMbsd4", "Provider", CLIENT_SECRET_DIR,
 					CREDENTIALS_FOLDER);
-			   HashMap<String, String> doc1NameMap = ConnectAndReadSheets.readProviderScheduleGSheet(
+			   /*HashMap<String, String> doc1NameMap = ConnectAndReadSheets.readProviderScheduleGSheet(
 					"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA",
 					calendar.get(Calendar.YEAR) + " Provider Schedule", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+			  */	
+			   List<ProivderHelpingSheetDto> helpingList= ConnectAndReadSheets.readProviderScheduleHelpingGSheet(
+			    		"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA", "Helping", CLIENT_SECRET_DIR,
+					CREDENTIALS_FOLDER);
                String officeName=implDto.getOfficeName();// officeRepo.findById(claim.getOffice().getUuid()).get().getName();
-               String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
-               String doc1FromProvider = doc1NameMap.get(officeName + "->" + sheetDate);
+               //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
+               String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE_HELPING.format(implDto.getDos());
+               //String doc1FromProvider = doc1NameMap.get(officeName + "->" + sheetDate);
+               treatingProvider = getDocsFromHelpingData(helpingList,sheetDate,officeName);
+               final String  treatingProviderF=treatingProvider;
                List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
-   			   List<ProviderCodeWithOffice> pCodeList = pro.stream()
+   			   
+               final String proIdFinal=implDto.getProviderId();
+               List<ProviderCodeWithOffice> pCodeList = pro.stream()
    					.filter(e -> e.getOffice().trim().equalsIgnoreCase(officeName)
-   							&& e.getProviderCode().trim().equalsIgnoreCase(doc1FromProvider))
+   							&& e.getEsCode().trim().equalsIgnoreCase(proIdFinal))
    					.collect(Collectors.toList());
+               
    			if (pCodeList != null && pCodeList.size() > 0) {
-   			 	sheetProvider = pCodeList.get(0).getEsCode();
-   			    providerCode = pCodeList.get(0).getProviderCode();
+   				treatingProviderFromClaim = pCodeList.get(0).getProviderCode();
 			 	
    			 List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
    			 List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equals(pCodeList.get(0).getProviderCode()))
 			.collect(Collectors.toList());
    			 if (proEsF!=null && proEsF.size()>0) {
-   				sheetProvider =proEsF.get(0).getProviderNames();
+   				providerOnClaim =proEsF.get(0).getProviderNames();
    				specialty = proEsF.get(0).getSpecialty();
    			 }
    				
    			}
-   			//Get Provider From Claim
-   			final String fromClaim=implDto.getProviderId();
-   			List<ProviderCodeWithOffice> pCodeList1 = pro.stream()
-					.filter(e -> e.getOffice().trim().equalsIgnoreCase(officeName)
-							&& e.getEsCode().trim().equalsIgnoreCase(fromClaim))
-					.collect(Collectors.toList());
-			
-		  if (pCodeList1 != null && pCodeList1.size() > 0) {
-			  List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
-	   			 List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equals(pCodeList1.get(0).getProviderCode()))
-				.collect(Collectors.toList());
-	   			 if (proEsF!=null && proEsF.size()>0) {
-	   				implDto.setProviderOnClaim(proEsF.get(0).getProviderNames());
-	   				claimProvider=proEsF.get(0).getProviderNames();
-	   			 }
-		  }
-		  //Get Provider From Claim End 
    			
-   			if (!sheetProvider.equals("") ||  !claimProvider.equals("")) {
-   				implDto.setTreatingProvider(sheetProvider);
-   				implDto.setClaimType(specialty);
-   				implDto.setProviderOnClaim(claimProvider);
-   				if (claim ==null) claim= rcmClaimRepository.findByClaimUuid(claimUuid);
-   				claim.setTreatingProvider(sheetProvider);
-   				claim.setProviderOnClaim(claimProvider);
-   				claim.setClaimType(specialty);
-   				claim.setProviderCode(providerCode);
+   			List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
+   			List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equals(treatingProviderF))
+   					.collect(Collectors.toList());
+   			if (proEsF!=null && proEsF.size()>0) {
+   				providerOnClaimFromSheet =proEsF.get(0).getProviderNames();
    			}
+   			//if (!sheetProvider.equals("") ||  !claimProvider.equals("")) {
+   				implDto.setTreatingProvider(treatingProvider);
+   				implDto.setTreatingProviderFromClaim(treatingProviderFromClaim);
+   				implDto.setClaimType(specialty);
+   				implDto.setProviderOnClaim(providerOnClaim);
+   				implDto.setProviderOnClaimFromSheet(providerOnClaimFromSheet);
+   				
+   				if (claim ==null) claim= rcmClaimRepository.findByClaimUuid(claimUuid);
+   				claim.setTreatingProvider(treatingProvider);
+   				claim.setTreatingProviderFromClaim(treatingProviderFromClaim);
+   				claim.setClaimType(specialty);
+   				claim.setProviderOnClaim(providerOnClaim);
+   				claim.setProviderOnClaimFromSheet(providerOnClaimFromSheet);
+   			///}
 				}catch(Exception c) {
 					
 				}
@@ -2696,6 +2708,29 @@ public class ClaimServiceImpl {
 	 return false;
 	}
 	
+	private String getDocsFromHelpingData(List<ProivderHelpingSheetDto> helpingList,String sheetDate,
+			String officeName) {
+		
+	List<ProivderHelpingSheetDto> filteredList =	helpingList.stream().filter(re -> re.getDate().equals(sheetDate) &&  re.getOfficeName().equalsIgnoreCase(officeName))
+	      .collect(Collectors.toList());
+	String provider="";
+	if (filteredList!=null && filteredList.size()>0) {
+		for(ProivderHelpingSheetDto d:filteredList) {
+			if (d.getType().equals("Doc - 1")){
+				provider= d.getTreatingProvider();
+				break;
+			}else if (d.getType().equals("Doc - 2")) {
+				
+				provider= d.getTreatingProvider();
+			}
+			
+		}
+		
+	}else {
+		
+	}
+		return provider;
+	}
 	public List<RcmIssuClaimPaginationDto> getIssueClaimsByPagination(int pageNumber, String companyId) throws Exception {
 		List<RcmIssuClaimPaginationDto> paginationData = null;
 		RcmIssuClaimPaginationDto paginationDto = null;

@@ -231,27 +231,35 @@ public class RuleBookServiceImpl {
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
 
-			String claimProvider = rcmClaim.getProviderOnClaim();
-			String sheetProvider =rcmClaim.getTreatingProvider();
+			String providerOnClaim = rcmClaim.getProviderOnClaim();
+			String providerOnClaimFromSheet = rcmClaim.getProviderOnClaimFromSheet();//sheet
+			String treatingProvider =rcmClaim.getTreatingProvider();//sheet
+			String treatingProviderFromClaim=rcmClaim.getTreatingProviderFromClaim();
 			
-			if (claimProvider == null) {
+			if (providerOnClaim ==null)  providerOnClaim="";
+			if (providerOnClaimFromSheet ==null)  providerOnClaimFromSheet="";
+			if (treatingProvider ==null)  treatingProvider="";
+			if (treatingProviderFromClaim ==null)  treatingProviderFromClaim="";
+			
+			if (!treatingProviderFromClaim.equals("") && !treatingProvider.equals("")) {
 
-				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule304.error.message1", new Object[] {}, locale), Constants.FAIL, "",
-						"", ""));
-			} else {
-				if (claimProvider.equalsIgnoreCase(sheetProvider)) {
-					// pass
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule304.pass.message", new Object[] {}, locale), Constants.PASS,
-							"", "", ""));
-				} else {
-					// Fail..
+				if (!treatingProviderFromClaim.equalsIgnoreCase(treatingProvider)) {
+					
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule304.error.message",
-									new Object[] { claimProvider, sheetProvider }, locale),
+									new Object[] { providerOnClaim, providerOnClaimFromSheet }, locale),
 							Constants.FAIL, "", "", ""));
 				}
+				
+				
+			}else if(!treatingProviderFromClaim.equals("")){
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule304.error.message1", new Object[] {" Missing Data for Treating Proivder in sheet For provider Id -"+rcmClaim.getProviderId()}, locale), Constants.FAIL, "",
+						"", ""));
+			}else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule304.error.message1", new Object[] {" Missing Data for Treating Proivder in sheet For DOS -("+Constants.SDF_SHEET_PROVIDER_DATE_HELPING.format(rcmClaim.getDos())+") "}, locale), Constants.FAIL, "",
+						"", ""));
 			}
 
 		} catch (Exception n) {

@@ -785,7 +785,7 @@ export class BillingClaimsComponent {
           this.claimRcm.ivDos = res.data.ivDos;
           this.claimRcm.tpId = res.data.tpId;
           this.claimRcm.tpDos = res.data.tpDos;
-
+          this.reval();
         }
       }
       this.closeIvPopup();

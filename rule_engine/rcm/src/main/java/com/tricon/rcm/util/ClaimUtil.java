@@ -106,6 +106,7 @@ public class ClaimUtil {
 		} catch (Exception dt) {
 		}
 
+		claims.setPrimaryEob("N/A");
 		return claims;
 	}
 	
@@ -208,7 +209,7 @@ public class ClaimUtil {
 			claims.setDos(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getDos()).getTime()));
 		} catch (Exception dt) {
 		}
-
+		claims.setPrimaryEob("N/A");
 		return claims;
 	}
 	

@@ -57,6 +57,8 @@ public interface RcmClaimDetailDto {
 	String getDescriptionES();
 	String getTreatingProvider();
 	String getProviderOnClaim();
+	String getProviderOnClaimFromSheet();//Provider Name from ES using TreatingProvider
+	String getTreatingProviderFromClaim();//using ProviderId(ES Code) and Sheet
 	String getIvId();
 	String getIvDos();
 	String getTpId();
@@ -64,4 +66,5 @@ public interface RcmClaimDetailDto {
 	String getClaimType();
 	String getFirstTeam();
 	int getFirstTeamId();
+	String getPrimaryEob();
 }

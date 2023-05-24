@@ -65,8 +65,10 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Estimated Amount :</label>
-                                      <div *ngIf="claimRcm.primary">{{claimRcm.primeSecSubmittedTotal | currency:'USD':true:'1.2-2'}}</div>
-                                     <div *ngIf="!claimRcm.primary">{{claimRcm.secSubmittedTotal | currency:'USD':true:'1.2-2'}}</div>
+                                        <div *ngIf="claimRcm.primary">{{claimRcm.primeSecSubmittedTotal |
+                                            currency:'USD':true:'1.2-2'}}</div>
+                                        <div *ngIf="!claimRcm.primary">{{claimRcm.secSubmittedTotal |
+                                            currency:'USD':true:'1.2-2'}}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-2">
@@ -111,7 +113,7 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Primary EOB :</label>
-                                        <div></div>
+                                        <div>{{claimRcm.primaryEob}}</div>
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Secondary Insurance :</label>
@@ -136,7 +138,7 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Linked Claim IDs :</label>
-                                        <div></div>
+                                        <div>{{claimRcm.linkedClaims.toString()}}</div>
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Claim Type :</label>

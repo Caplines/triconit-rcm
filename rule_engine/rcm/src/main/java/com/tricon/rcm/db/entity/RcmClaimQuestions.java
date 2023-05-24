@@ -27,7 +27,5 @@ public class RcmClaimQuestions {
 	@Column(name = "question")
 	private String question;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "team_id",referencedColumnName="id")
-	private RcmTeam rcmTeam;
+	
 }
