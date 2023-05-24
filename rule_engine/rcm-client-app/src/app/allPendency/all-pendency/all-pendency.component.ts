@@ -25,6 +25,7 @@ export class AllPendencyComponent {
   filteredItems: any = [];
   tabSwitch:any={'withoutDos':true,'withDos':false};
   isSorted:any={};
+  data:any={};
 
   constructor(private _service:ApplicationServiceService,private title:Title){
     title.setTitle(Utils.defaultTitle + "All Pendency")
@@ -40,73 +41,15 @@ export class AllPendencyComponent {
     this._service.fetchAllPendency((res:any)=>{
       if(res.status==200){
         this.showLoader.loader=false;
-          let resultArray:any=[];
-          res.data.offices.forEach((officeObj:any) => {
-            const matchingCounts = res.data.count.filter((countObj:any) => countObj.officeName === officeObj.name);
-            const matchingDateCount = res.data.dateCount.find((dateCountObj:any) => dateCountObj.officeName === officeObj.name);
-          
-            if (matchingCounts.length > 0) {
-              matchingCounts.forEach((countObj:any) => {
-                const resultObj = {
-                  count: countObj.count,
-                  teamName: countObj.teamName,
-                  teamId: countObj.teamId,
-                  officeName: officeObj.name,
-                  minDate: matchingDateCount ? matchingDateCount.minDate : null,
-                  key: officeObj.key,
-                  active: officeObj.active,
-                  uuid: officeObj.uuid
-                };
-          
-                resultArray.push(resultObj);
-              });
-            } else {
-              const resultObj:any = {
-                count: null,
-                teamName: null,
-                teamId: null,
-                officeName: officeObj.name,
-                minDate: matchingDateCount ? matchingDateCount.minDate : null,
-                key: officeObj.key,
-                active: officeObj.active,
-                uuid: officeObj.uuid
-              };
-          
-              resultArray.push(resultObj);
-            }
-          });    //loops are used to merge count data (count) and DateCount data (minDate) into offices array with corresponding Team ID.
-         
-          
-        const modifiedResultArray: any = [];
-
-        resultArray.forEach((obj: any) => {
-          const existingObj = modifiedResultArray.find((item: any) => item.officeName === obj.officeName);
-
-          if (existingObj) {
-            const teamName = this.teamData.find((team: any) => team.teamId === obj.teamId).teamName;
-            const propertyName =  `${teamName.replace(/\s/g, '')}`;
-            existingObj[propertyName] = obj.count;
-          } else {
-            const modifiedObj = {
-              ...obj,
-              count: obj.count,
-            };
-
-            this.teamData.forEach((team: any) => {
-              const propertyName = `${team.teamName.replace(/\s/g, '')}`;
-              modifiedObj[propertyName] = team.teamId === obj.teamId ? obj.count : null;
-            });
-
-            modifiedResultArray.push(modifiedObj);
-          }
-        });
-        console.log(modifiedResultArray);
-        
-        this.pendencyData = modifiedResultArray;
-      }
+      this.data['count'] = res.data.count;
+      this.data['date'] = res.data.dateCount;
+      this.data['offices'] = res.data.offices;
       this.total(this.pendencyData);
       this.fetchOfficeByUuid();
       this.filterOfficeName();
+      console.log(this.data.offices.length, !this.showLoader.loader);
+      
+      }
     })
     
   }
@@ -311,6 +254,15 @@ export class AllPendencyComponent {
       return 0;
     });
   
+}
+
+getCount(officeName: string, teamId: number) {
+  const countItem = this.data.count.find((item:any) => item.teamId === teamId && item.officeName === officeName);
+  return countItem ? countItem.count : '0';
+}
+getDateCount(officeName: string, teamId: number) {
+  const countItem = this.data.date.find((item:any) => item.teamId === teamId && item.officeName === officeName);
+  return countItem ? countItem.minDate : '-';
 }
   
 }

@@ -143,20 +143,22 @@
                                                         <td></td>
                                             </tr>
                                             <tr *ngIf="showLoader.loader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
-                                            <ng-container *ngFor="let officeData of filteredItems;let id= index;">
+                                            <ng-container *ngFor="let office of data.offices;let id= index;let last;">
                                                 <tr>
-                                                    <td>{{officeData.officeName}}</td>
-                                                    <ng-container *ngFor="let team of teamData;let last=last;">
-                                                            <td *ngIf="team.teamId != currentTeamId">
-                                                                {{officeData[team.teamName] ? officeData[team.teamName] : '0'}}
+                                                    <td>{{office.name}}</td>
+                                                    <ng-container *ngFor="let team of teamData">
+                                                        <ng-container *ngIf="team.teamId != currentTeamId">
+                                                            <td>
+                                                                {{ getCount(office.name, team.teamId) }}
                                                             </td>
-                                                            <td *ngIf="last"></td>
+                                                        </ng-container>
                                                     </ng-container>
+                                                    <td *ngIf="last"></td>
                                                 </tr>
                                             </ng-container>
                                         </tbody>
                                     </table>
-                                    <ng-container  *ngIf="pendencyData == 0 && !showLoader.loader">
+                                    <ng-container  *ngIf="data.offices?.length == 0 && !showLoader.loader">
                                         <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
                                     </ng-container>
                                 </div>
@@ -254,20 +256,22 @@
                                         <tbody>
 
                                             <tr *ngIf="showLoader.loader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
-                                            <ng-container *ngFor="let officeData of filteredItems">
+                                            <ng-container *ngFor="let office of data.offices;let id= index;let last;">
                                                 <tr>
-                                                    <td>{{officeData.officeName}}</td>
-                                                    <ng-container *ngFor="let team of teamData;let last=last">
-                                                            <td *ngIf="team.teamId != currentTeamId">
-                                                                {{ team.teamId == officeData.teamId && officeData.teamId != currentTeamId ? (officeData.minDate| date: 'MM/dd/yyyy'): '-'}}
+                                                    <td>{{office.name}}</td>
+                                                    <ng-container *ngFor="let team of teamData">
+                                                        <ng-container *ngIf="team.teamId != currentTeamId">
+                                                            <td>
+                                                                {{ getDateCount(office.name, team.teamId) }}
                                                             </td>
-                                                            <td *ngIf="last"></td>
+                                                        </ng-container>
                                                     </ng-container>
+                                                    <td *ngIf="last"></td>
                                                 </tr>
                                             </ng-container>
                                         </tbody>
                                     </table>
-                                    <ng-container  *ngIf="pendencyData == 0 && !showLoader.loader">
+                                    <ng-container  *ngIf="data.offices?.length == 0 && !showLoader.loader">
                                         <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
                                     </ng-container>
                                 </div>
