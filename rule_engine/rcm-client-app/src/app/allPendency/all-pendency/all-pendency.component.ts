@@ -17,7 +17,7 @@ export class AllPendencyComponent {
   currentTeamId:any;
   showLoader:any={'loader':false,'exportPDFLoader':false,'exportCSVLoader':false};
   date:any;
-  totalCount:any=[{"teamId":3,'count':0},{"teamId":4,"count":0},{"teamId":5,"count":0},{"teamId":6,"count":0},{"teamId":7,"count":0}];
+  totalCount:any=[];
   clientName:string='';
   showFilteredDropdown: any= {'officeName':false};
   isFilterAllSelected:any={'officeName':false};
@@ -30,7 +30,7 @@ export class AllPendencyComponent {
     title.setTitle(Utils.defaultTitle + "All Pendency")
   }
   ngOnInit(): void {
-    this.teamData=[{"teamName":"Internal Audit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];
+    this.teamData=[{"teamName":"InternalAudit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];
     this.getAllPendencyDetails();
     this.currentTeamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
@@ -40,38 +40,91 @@ export class AllPendencyComponent {
     this._service.fetchAllPendency((res:any)=>{
       if(res.status==200){
         this.showLoader.loader=false;
+          let resultArray:any=[];
+          res.data.offices.forEach((officeObj:any) => {
+            const matchingCounts = res.data.count.filter((countObj:any) => countObj.officeName === officeObj.name);
+            const matchingDateCount = res.data.dateCount.find((dateCountObj:any) => dateCountObj.officeName === officeObj.name);
+          
+            if (matchingCounts.length > 0) {
+              matchingCounts.forEach((countObj:any) => {
+                const resultObj = {
+                  count: countObj.count,
+                  teamName: countObj.teamName,
+                  teamId: countObj.teamId,
+                  officeName: officeObj.name,
+                  minDate: matchingDateCount ? matchingDateCount.minDate : null,
+                  key: officeObj.key,
+                  active: officeObj.active,
+                  uuid: officeObj.uuid
+                };
+          
+                resultArray.push(resultObj);
+              });
+            } else {
+              const resultObj:any = {
+                count: null,
+                teamName: null,
+                teamId: null,
+                officeName: officeObj.name,
+                minDate: matchingDateCount ? matchingDateCount.minDate : null,
+                key: officeObj.key,
+                active: officeObj.active,
+                uuid: officeObj.uuid
+              };
+          
+              resultArray.push(resultObj);
+            }
+          });    //loops are used to merge count data (count) and DateCount data (minDate) into offices array with corresponding Team ID.
+         
+          
+        const modifiedResultArray: any = [];
 
-          this.pendencyData = res.data.offices.map((office:any) => {
-          const countObj = res.data.count.find((obj:any) => obj.officeName === office.name && obj.teamId != this.currentTeamId);
-          const dateObj= res.data.dateCount.find((e:any)=> e.officeName === office.name && e.teamId != this.currentTeamId) ;
-          return {
-            ...office,
-            count: countObj ? countObj.count : null,
-            teamName:countObj ? countObj.teamName : null,
-            minDate:dateObj? dateObj.minDate: null,
-            teamId:countObj? countObj.teamId:null
-          };
-        });    //loops are used to merge count data (count) and DateCount data (minDate) into offices array with corresponding Team ID.
+        resultArray.forEach((obj: any) => {
+          const existingObj = modifiedResultArray.find((item: any) => item.officeName === obj.officeName);
+
+          if (existingObj) {
+            const teamName = this.teamData.find((team: any) => team.teamId === obj.teamId).teamName;
+            const propertyName =  `${teamName.replace(/\s/g, '')}`;
+            existingObj[propertyName] = obj.count;
+          } else {
+            const modifiedObj = {
+              ...obj,
+              count: obj.count,
+            };
+
+            this.teamData.forEach((team: any) => {
+              const propertyName = `${team.teamName.replace(/\s/g, '')}`;
+              modifiedObj[propertyName] = team.teamId === obj.teamId ? obj.count : null;
+            });
+
+            modifiedResultArray.push(modifiedObj);
+          }
+        });
+        console.log(modifiedResultArray);
+        
+        this.pendencyData = modifiedResultArray;
       }
       this.total(this.pendencyData);
       this.fetchOfficeByUuid();
       this.filterOfficeName();
     })
+    
   }
 
-  total(data:any){
-        data.forEach((e:any)=>{
-          this.totalCount.forEach((ele:any)=>{
-            if(ele.teamId === e.teamId){
-              if(!e.count){
-                e.count = 0;
-                ele.count = ele.count + e.count;
-              }else{
-                ele.count = ele.count + e.count;
-              }
-            }
-          })
-        })
+  total(data: any) {
+    const totalCount = data.reduce((acc: any, item: any) => {
+      const { Aging, Posting, Quality, Billing, InternalAudit } = item;
+      acc.Aging = (acc.Aging || 0) + (Aging !== null ? Aging : 0);
+      acc.Posting = (acc.Posting || 0) + (Posting !== null ? Posting : 0);
+      acc.Quality = (acc.Quality || 0) + (Quality !== null ? Quality : 0);
+      acc.Billing = (acc.Billing || 0) + (Billing !== null ? Billing : 0);
+      acc.InternalAudit = (acc.InternalAudit || 0) + (InternalAudit !== null ? InternalAudit : 0);
+
+      return acc;
+    }, {});
+
+    this.totalCount = totalCount;
+
   }
 
   saveToPdf(divName:any){
@@ -199,12 +252,14 @@ export class AllPendencyComponent {
         }
       }
       this.isFilterAllSelected.officeName = isAllSelected;
-      this.filteredItems = this.pendencyData.filter((item: any) => {
-        return this.filteredOfficeName.some((checkbox: any) => {
-          return checkbox.checked && (checkbox[filterProperty] ? checkbox[filterProperty] : checkbox.name) === item.name?item.name:item[filterProperty];
-        });
-      });
+      this.filteredItems = this.pendencyData.filter((item:any)=>{
+          return this.filteredOfficeName.some((checkbox:any)=>{
+              return checkbox.checked && item.officeName == checkbox.name;
+          })
+      })
     }
+    console.log(this.filteredItems);
+    
     
   }
   fetchOfficeByUuid() {

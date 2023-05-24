@@ -57,11 +57,11 @@
                                                     <div class="dFlex">
                                                         Office Name    <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted['name']}"
-                                                                (click)="sortData(filteredItems,'name','asc','string'); isSorted['name'] = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted['name']}"
-                                                                (click)="sortData(filteredItems,'name','desc','string');isSorted['name'] = true"></a>
+                                                                [ngClass]="{'selected': isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                         </span> 
                                                         <div class="dropdown"
                                                         >
@@ -100,7 +100,7 @@
                                                                 {{isFilterAllSelected.officeName ? 'Clear
                                                                 All':'Select All'}}</label>
                                                                 <button  (click)="showFilteredDropdown.officeName=false;"  type="button" class="close" data-dismiss="modal" aria-label="Close"><span  >&times;</span></button>
-                                                            <ng-container *ngFor="let data of filteredOfficeName">
+                                                            <ng-container *ngFor="let data of this.filteredOfficeName">
                                                                 <label class="mx-1">
                                                                     <input type="checkbox" checked="true"
                                                                         [(ngModel)]="data.checked"
@@ -135,18 +135,20 @@
                                         <tbody>
                                             <tr class="totalRow">
                                                 <td>Total</td>
-                                                <ng-container *ngFor="let total of totalCount;let last=last">
-                                                    <td *ngIf="total.teamId != currentTeamId " >{{total.count}}</td>
-                                                    <td *ngIf="last"></td>
-                                                </ng-container>
+                                                        <td *ngIf="currentTeamId!=3">{{totalCount.InternalAudit}}</td>
+                                                        <td *ngIf="currentTeamId!=4">{{totalCount.Aging}}</td>
+                                                        <td *ngIf="currentTeamId!=5">{{totalCount.Posting}}</td>
+                                                        <td *ngIf="currentTeamId!=6">{{totalCount.Quality}}</td>
+                                                        <td *ngIf="currentTeamId!=7">{{totalCount.Billing}}</td>
+                                                        <td></td>
                                             </tr>
                                             <tr *ngIf="showLoader.loader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
                                             <ng-container *ngFor="let officeData of filteredItems;let id= index;">
                                                 <tr>
-                                                    <td>{{officeData.name}}</td>
+                                                    <td>{{officeData.officeName}}</td>
                                                     <ng-container *ngFor="let team of teamData;let last=last;">
                                                             <td *ngIf="team.teamId != currentTeamId">
-                                                                {{ team.teamId == officeData.teamId && officeData.teamId != currentTeamId ? officeData.count: '0'}}
+                                                                {{officeData[team.teamName] ? officeData[team.teamName] : '0'}}
                                                             </td>
                                                             <td *ngIf="last"></td>
                                                     </ng-container>
@@ -175,14 +177,14 @@
                                                     <div class="dFlex">
                                                         Office Name <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted['name']}"
-                                                                (click)="sortData(filteredItems,'name','asc','string'); isSorted['name'] = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted['name']}"
-                                                                (click)="sortData(filteredItems,'name','desc','string');isSorted['name'] = true"></a>
+                                                                [ngClass]="{'selected': isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                         </span> 
                                                         <div class="dropdown"
-                                                            (mouseleave)="showFilteredDropdown.officeName=false">
+                                                           >
                                                             <svg (click)="showFilteredDropdown.officeName = !showFilteredDropdown.officeName"
                                                                 style="cursor:pointer;display: inline-block; float: left;background: #e5e5e5;border-radius: 5px;padding: 1px;/* margin-right: 3px; */margin-left: 6px;"
                                                                 version="1.1" viewBox="0 0 24 24" xml:space="preserve"
@@ -254,7 +256,7 @@
                                             <tr *ngIf="showLoader.loader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
                                             <ng-container *ngFor="let officeData of filteredItems">
                                                 <tr>
-                                                    <td>{{officeData.name}}</td>
+                                                    <td>{{officeData.officeName}}</td>
                                                     <ng-container *ngFor="let team of teamData;let last=last">
                                                             <td *ngIf="team.teamId != currentTeamId">
                                                                 {{ team.teamId == officeData.teamId && officeData.teamId != currentTeamId ? (officeData.minDate| date: 'MM/dd/yyyy'): '-'}}
