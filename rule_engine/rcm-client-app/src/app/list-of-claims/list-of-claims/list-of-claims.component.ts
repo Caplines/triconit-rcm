@@ -374,7 +374,7 @@ export class ListOfClaimsComponent implements OnInit {
           "Action Required":e.actionRequired,
           "Insurance Name":e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type":e.prName? e.prName : e.secName,
-          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? e.primTotal : "0") : e.primeSecSubmittedTotal ? formatNumber(e.primeSecSubmittedTotal,this.locale,'1.2-2') : "0",
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$'+e.primTotal.toString() : "$0") : e.primeSecSubmittedTotal ? '$'+formatNumber(e.primeSecSubmittedTotal,this.locale,'1.2-2').toString() : "$0",
         }
       })  //method aligns the header to the value in CSV.
 

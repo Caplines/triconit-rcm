@@ -61,12 +61,12 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Billed Amount :</label>
-                                        <div>{{claimRcm.submittedTotal| number:'1.2-2'}}</div>
+                                        <div>{{claimRcm.submittedTotal | currency:'USD':true:'1.2-2'}}</div>
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Estimated Amount :</label>
-                                        <div *ngIf="claimRcm.primary">{{claimRcm.primeSecSubmittedTotal| number:'1.2-2'}}</div>
-                                        <div *ngIf="!claimRcm.primary">{{claimRcm.secSubmittedTotal| number:'1.2-2'}}</div>
+                                      <div *ngIf="claimRcm.primary">{{claimRcm.primeSecSubmittedTotal | currency:'USD':true:'1.2-2'}}</div>
+                                     <div *ngIf="!claimRcm.primary">{{claimRcm.secSubmittedTotal | currency:'USD':true:'1.2-2'}}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-2">

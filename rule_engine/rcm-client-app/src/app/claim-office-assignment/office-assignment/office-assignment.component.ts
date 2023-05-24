@@ -26,7 +26,7 @@ export class OfficeAssignmentComponent implements OnInit {
   claimData : Array<ClaimAssignmentDataModel>;
 
   bType:string="-1";
-  insType:string="PPO";
+  insType:string="All";
 
   isSorted:any={};
   teamId:any;

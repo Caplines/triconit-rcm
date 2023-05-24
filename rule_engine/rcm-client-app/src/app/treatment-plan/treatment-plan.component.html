@@ -97,9 +97,9 @@
                                                     <td>{{tp.service}}</td>
                                                     <td>{{tp.tth}}</td>
                                                     <td>{{tp.surf}}</td>
-                                                    <td>&#36; {{tp.fee| number:'1.2-2'}}</td>
-                                                    <td>&#36; {{tp.ins| number:'1.2-2'}}</td>
-                                                    <td>&#36; {{tp.pat| number:'1.2-2'}}</td>
+                                                    <td> {{tp.fee|  currency:'USD':true:'1.2-2'}}</td>
+                                                    <td> {{tp.ins|  currency:'USD':true:'1.2-2'}}</td>
+                                                    <td> {{tp.pat|  currency:'USD':true:'1.2-2'}}</td>
                                                 </tr>
                                             </ng-container>
                                             <tr>
@@ -108,9 +108,9 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td colspan="2" class="text-right"> <strong>Subtotal for this Phase:</strong></td>
-                                                <td> <strong>&#36; {{count.Fee | number:'1.2-2' }}</strong> </td>
-                                                <td> <strong>&#36; {{count.Ins | number:'1.2-2' }}</strong> </td>
-                                                <td> <strong>&#36; {{count.Pat | number:'1.2-2' }}</strong> </td>
+                                                <td> <strong>{{count.Fee | currency:'USD':true:'1.2-2' }}</strong> </td>
+                                                <td> <strong>{{count.Ins | currency:'USD':true:'1.2-2' }}</strong> </td>
+                                                <td> <strong>{{count.Pat | currency:'USD':true:'1.2-2' }}</strong> </td>
                                             </tr>
                                         </tbody>
                                     </table>
