@@ -9,7 +9,7 @@
     <div class="container-fluid cldet">
         <div class="row">
             <div class="col-lg-12 pt-5">
-                <h6 class="page-heading">Claims</h6>
+                <h6 class="page-heading">Claim Detail Page</h6>
                 <div class="main-container">
                     <div class="row">
                         <div class="col-md-12 mb-2">
@@ -51,7 +51,7 @@
                                         <label for="" class="">Client Name :</label>
                                         <div>{{claimRcm.clientName}}</div>
                                     </div>
-                                    <div class="custom-row">
+                                    <div class="custom-row flexAlign">
                                         <label for="" class="">Claim ID :</label>
                                         <div>{{claimRcm.claimId | claimIdPipe}}</div>
                                     </div>
@@ -59,11 +59,11 @@
                                         <label for="" class="">DOS :</label>
                                         <div>{{claimRcm.dos | date: 'MM/dd/yyyy'}}</div>
                                     </div>
-                                    <div class="custom-row">
+                                    <div class="custom-row flexAlign">
                                         <label for="" class="">Billed Amount :</label>
                                         <div>{{claimRcm.submittedTotal | currency:'USD':true:'1.2-2'}}</div>
                                     </div>
-                                    <div class="custom-row">
+                                    <div class="custom-row flexAlign">
                                         <label for="" class="">Estimated Amount :</label>
                                         <div *ngIf="claimRcm.primary">{{claimRcm.primeSecSubmittedTotal |
                                             currency:'USD':true:'1.2-2'}}</div>
@@ -78,10 +78,10 @@
                                         <div *ngIf="!claimRcm.primary">{{claimRcm.secondaryInsType}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Member ID :</label>
+                                        <label for="" class="">Insurance Member ID :</label>
                                         <div> {{claimRcm.secMemberId}}</div>
                                     </div>
-                                    <div class="custom-row">
+                                    <div class="custom-row flexAlign">
                                         <label for="" class="">Patient ID :</label>
                                         <div>{{claimRcm.patientId}}</div>
                                     </div>
@@ -287,8 +287,8 @@
                                                 <tr>
                                                     <th>Number</th>
                                                     <th>Name</th>
-                                                    <th>Scope</th>
-                                                    <th>Description</th>
+                                                    <!-- <th>Scope</th>
+                                                    <th>Description</th> -->
                                                     <th>Passed/Failed</th>
                                                     <th>Fail Message</th>
                                                     <th>Remarks</th>
@@ -299,8 +299,8 @@
                                                     *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'AUTO':'ruleType':'C';let idx=index">
                                                     <td>{{idx+1}}</td>
                                                     <td>{{rule.ruleName}}</td>
-                                                    <td>Full Claim</td>
-                                                    <td>{{rule.ruleDesc}}</td>
+                                                    <!-- <td>Full Claim</td>
+                                                    <td>{{rule.ruleDesc}}</td> -->
 
                                                     <td id="CL_P_F_{{rule.ruleId}}">
 

@@ -470,12 +470,12 @@
                                                     </tr>
                                                     <tr>
                                                         <td>{{det.officeName}}</td>
-                                                        <td><a [routerLink]="['/billing-claims/', det.uuid]"
+                                                        <td class="alignRight"><a [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
                                                         <td><a [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td>{{det.dos | date: 'MM/dd/yyyy'}}</td>
-                                                        <td>{{det.claimAge}}</td>
+                                                        <td class="alignRight">{{det.claimAge}}</td>
                                                         <td>{{det.timelyFilingLimitData}}</td>
                                                         <!-- Claim Type START-->
                                                         <td *ngIf="det.claimId | claimTypeFilter">Primary</td>
@@ -500,10 +500,10 @@
                                                         </td>
                                                         <!-- Insurance Type START-->
                                                         <!-- Insurance Type START-->
-                                                        <td *ngIf="det.claimId | claimTypeFilter">
+                                                        <td class="alignRight" *ngIf="det.claimId | claimTypeFilter">
                                                             {{det.primeSecSubmittedTotal | currency:'USD':true:'1.2-2'}}
                                                         </td>
-                                                        <td *ngIf="! (det.claimId | claimTypeFilter)">
+                                                        <td class="alignRight" *ngIf="! (det.claimId | claimTypeFilter)">
                                                             {{det.primeSecSubmittedTotal | currency:'USD':true:'1.2-2'}}
                                                         </td>
                                                         <!-- Insurance Type START-->

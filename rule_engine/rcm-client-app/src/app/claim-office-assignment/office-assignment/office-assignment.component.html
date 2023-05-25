@@ -157,9 +157,9 @@
                                                 <td>10/30/2022</td> -->
                                                 <td></td>
                                                 <td></td>
-                                                <td>{{totalClaimData.totalCount}}</td>
-                                                <td>{{totalClaimData.totalRemLiteReject}}</td>
-                                                <td>{{totalClaimData.totalcountAndRemLiteReject}}</td>
+                                                <td class="alignRight">{{totalClaimData.totalCount}}</td>
+                                                <td class="alignRight">{{totalClaimData.totalRemLiteReject}}</td>
+                                                <td class="alignRight">{{totalClaimData.totalcountAndRemLiteReject}}</td>
                                             </tr>
                                             <tr *ngIf="loader.showLoader">
                                                 <td colspan="7" class="text-center"><span class="loader-data "></span>
@@ -185,9 +185,9 @@
                                                     </td>
                                                     <td>{{lg.opdtd  ? (lg.opdtd | date: 'MM/dd/yyyy') : ''}}</td>
                                                     <td>{{lg.opdosd  ? (lg.opdosd | date: 'MM/dd/yyyy') : ''}}</td>
-                                                    <td>{{lg.count}}</td>
-                                                    <td>{{lg.remoteLiteRejections}}</td>
-                                                    <td>{{lg.remoteLiteRejections+lg.count}}</td>
+                                                    <td class="alignRight">{{lg.count}}</td>
+                                                    <td class="alignRight">{{lg.remoteLiteRejections}}</td>
+                                                    <td class="alignRight">{{lg.remoteLiteRejections+lg.count}}</td>
                                                 </tr>
                                             </ng-container>
                                         </tbody>

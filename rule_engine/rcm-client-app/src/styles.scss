@@ -878,3 +878,15 @@ button:disabled,button[disabled]{
     padding: 6px 15px;
     box-shadow: none;
 }
+
+.alignRight {
+    text-align: right;
+    padding-right: 35px!important;
+}
+.alignLeft {
+    text-align: left;
+}
+
+.flexAlign{
+    justify-content: space-between;
+}
