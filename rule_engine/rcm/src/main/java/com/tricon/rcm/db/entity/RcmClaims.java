@@ -74,7 +74,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	private Date secDateSent;// C10
 
 	@Column(name = "provider_id")
-	private String providerId;// C11
+	private String providerId;// C11 //ES CODE
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "prim_insurance_company_id", referencedColumnName = "id")
@@ -181,11 +181,17 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	private String descriptionES;
 	
 	@Column(name = "treating_provider")
-	private String treatingProvider;
+	private String treatingProvider;//From GSheet
 	//From ES - END
 	
 	@Column(name = "provider_on_claim")
-	private String providerOnClaim;//not used For now
+	private String providerOnClaim;//Provider Name from ES using ES code
+	
+	@Column(name = "provider_on_claim_from_sheet")
+	private String providerOnClaimFromSheet;//Provider Name from ES using TreatingProvider
+	
+	@Column(name = "treating_provider_from_claim")
+	private String treatingProviderFromClaim;//using ProviderId(ES Code) and Sheet
 	
 	@Column(name = "ivf_id")
 	private String ivfId;
@@ -205,9 +211,11 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "claim_type")//Ortho/General/etc from provider Sheet.
 	private String claimType;
 	
-	@Column(name = "provider_code")//Ortho/General/etc from provider Sheet.
+	@Column(name = "provider_code")
 	private String providerCode;
 	
+	@Column(name = "primary_eob")
+	private String primaryEob;
 	
 
 }
