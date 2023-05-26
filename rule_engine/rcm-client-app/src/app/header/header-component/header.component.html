@@ -1,6 +1,6 @@
 <div class=" navbar-dark sticky-top bg-dark">
     <div class="topbar">
-        <h1>Revenue Cycle Management(RCM)</h1>
+        <h1>Capline RCM</h1>
             <div class="activeUsername">
             <span> <strong>Client:</strong>  {{userInfo.currentClientName}}</span>
             <span><strong>Role:</strong> {{userInfo.currentRoleName?.roleName}}</span>
@@ -30,10 +30,10 @@
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a href="javascript:void(0);" [routerLink]="['/users-status']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/user-status-active.png':'../../assets/img/user-status.png'" />Users Status</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);" [routerLink]="['/manage-client']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/clientManage-active.png':'../../assets/img/clientManage.png'" />Manage Client</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || (currentTeamId == 3 && userInfo.currentRoleName != 'ASSO' ))) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3 && userInfo.currentRoleName != 'ASSO'))"><a href="javascript:void(0);" [routerLink]="['/claim-assignment']"  routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/pendency-green-icon.png':'../../assets/img/pendency-gray-icon.png'" />Pendency</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3))"><a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />All Pendency</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (staticUtil.isRoleLead() && currentTeamId == 7) "><a href="javascript:void(0);" [routerLink]="['/tool-update']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Tool to Update Database</a></li>
             <!-- <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7) || (staticUtil.isRoleLead() && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/dashboard-active.png':'../../assets/img/dashboard.png'" />Billing Pendency Dashboard</a></li> -->
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7 || currentTeamId == 3) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />List Of Claims</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3))"><a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />All Pendency</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7) || (staticUtil.isRoleLead() && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/production']"routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a></li>
             <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/updatePassword-active.png':'../../assets/img/updatePassword.png'" />Update Password</a></li> 
         </ul>
@@ -131,7 +131,7 @@
      <div id="myModal" class="modal claim-issue-modal">
         <div class="modal-content" >
             <div class="close-modal">
-                <h5>{{issueClientName}} Issues <span class="number-of-claims">Number Of Claims: {{issueClaimsCount}}</span></h5> 
+                <h6 style="color: black;">Upload Errors : <span class="number-of-claims" style="pointer-events:none;">Number of Claims Not Uploaded: {{issueClaimsCount}}</span></h6> 
                 <span (click)="closeModalIC()">&times;</span>
             </div>
             <div class="table-responsive" >
