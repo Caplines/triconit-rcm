@@ -298,21 +298,19 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 	
 	@Query(nativeQuery = true, value = ""
-			+ " select count(concat(rt.name,off.name)) as count,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc "
-			+ " inner join office off on off.uuid=rc.office_id inner join rcm_claim_assignment rca "
-			+ " on rc.claim_uuid=rca.claim_id inner join rcm_team rt on rt.id=rca.current_team_id "
-			+ "  inner join company cmp on cmp.uuid=off.company_id"
-			+ "  where rc.pending is true and rca.active is true and cmp.uuid=:companyId"
-			+ "  group by rt.name" )
+			+ "select count(concat(rt.name,off.name)) as count,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
+			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
+			" inner join company cmp on cmp.uuid=off.company_id" + 
+			" where rc.pending is true  and cmp.uuid=:companyId " + 
+			" group by rc.office_id,rt.name ")
 	List<AllPendencyDto> allPendencyCount(@Param("companyId") String companyId);
 	
 	@Query(nativeQuery = true, value = ""
-			+ " select  min(rc.dos) minDate,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc "
-			+ " inner join office off on off.uuid=rc.office_id inner join rcm_claim_assignment rca "
-			+ " on rc.claim_uuid=rca.claim_id inner join rcm_team rt on rt.id=rca.current_team_id "
-			+ "  inner join company cmp on cmp.uuid=off.company_id"
-			+ "  where rc.pending is true and rca.active is true and cmp.uuid=:companyId"
-			+ "  group by rt.name" )
+			+ "select min(rc.dos) minDate,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
+			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
+			" inner join company cmp on cmp.uuid=off.company_id" + 
+			" where rc.pending is true  and cmp.uuid=:companyId " + 
+			" group by rc.office_id,rt.name ")
 	List<AllPendencyDateDto> allPendencyDateCount(@Param("companyId") String companyId);
 	
 	@Query(nativeQuery = true, value = ""
