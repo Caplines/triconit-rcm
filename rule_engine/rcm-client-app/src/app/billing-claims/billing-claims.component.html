@@ -344,7 +344,7 @@
                             <div *ngIf="!loader.manualValidation" class="form-row  collapse show"
                                 id="claimValidationsManual">
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table class="table" style="margin-bottom: 0px;">
                                         <tbody>
                                             <tr
                                                 *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';">
@@ -353,9 +353,9 @@
                                                     <td *ngIf="rule.ruleId==318">1</td>
                                                     <td *ngIf="rule.ruleId==319">2</td>
                                                     <td>{{rule.ruleName}}</td>
-                                                    <td>Full Claim</td>
-                                                    <td>{{rule.ruleDesc}}</td>
-                                                    <td>
+                                                    <!-- <td>Full Claim</td>
+                                                    <td>{{rule.ruleDesc}}</td> -->
+                                                    <td class="no-wrap-text">
 
                                                         <div data-toggle="buttons" class="btn-group btn-group-toggle"
                                                             style="display: flex;width: 50%"
@@ -396,9 +396,9 @@
                                                 <ng-container *ngIf="rule.ruleId==300"><!--only for provider Notes-->
                                                     <td>3</td>
                                                     <td>{{rule.ruleName}}</td>
-                                                    <td>Full Claim</td>
-                                                    <td>{{rule.ruleDesc}}</td>
-                                                    <td>
+                                                    <!-- <td>Full Claim</td>
+                                                    <td>{{rule.ruleDesc}}</td> -->
+                                                    <td class="no-wrap-text">
 
                                                         <div data-toggle="buttons" class="btn-group btn-group-toggle"
                                                             style="display: flex;width: 50%"
@@ -445,7 +445,7 @@
                                                             [disabled]="makeReadOnly()"></textarea></td>
                                                 </tr>
                                             </ng-container>
-                                            <tr
+                                            <tr class="no-wrap-text "
                                                 *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                 <ng-container
                                                     *ngIf="((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
@@ -460,9 +460,9 @@
                                                     <td *ngIf="rule.ruleId==317">10</td>
 
                                                     <td>{{rule.ruleName}}</td>
-                                                    <td>Full Claim</td>
-                                                    <td>{{rule.ruleDesc}}</td>
-                                                    <td>
+                                                    <!-- <td>Full Claim</td>
+                                                    <td>{{rule.ruleDesc}}</td> -->
+                                                    <td >
 
                                                         <div data-toggle="buttons" class="btn-group btn-group-toggle"
                                                             style="display: flex;width: 50%"
@@ -494,39 +494,39 @@
 
                                         </tbody>
                                     </table>
-                                    <table>
-                                        <tr
+                                    <table style="width: 100%;">
+                                        <tr style="background: #f9f9f9;"
                                             *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                             <ng-container *ngIf="((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
                                                                                                ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )
                                                                                                 && (rule.ruleId==317)">
-                                                <table>
+                                                <table class="table sub-content-td" style="margin-top: 0px;">
                                                     <tr>
-                                                        <td>a)filling (tooth# + surface) </td>
+                                                        <td><strong>a)</strong> Filling (tooth# + surface) </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>b)extraction - which side, tooth and how is it done,
+                                                        <td><strong>b)</strong> Extraction - which side, tooth and how is it done,
                                                             instrument used </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>c)crown - tooth# </td>
+                                                        <td><strong>c)</strong> Crown - tooth# </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>d)Denture - Impression taken </td>
+                                                        <td><strong>d)</strong> Denture - Impression taken </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>e)RCT - Steps and how it is done and which file is
+                                                        <td><strong>e)</strong> RCT - Steps and how it is done and which file is
                                                             used to open access to roots and canal </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>f)Material, Brand name of buildup, crown and all
+                                                        <td><strong>f)</strong> Material, Brand name of buildup, crown and all
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>g)Findings of exam - service specific </td>
+                                                        <td><strong>g)</strong> Findings of exam - service specific </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>h)Sealant - tooth# and surface should be there </td>
+                                                        <td><strong>h)</strong> Sealant - tooth# and surface should be there </td>
                                                     </tr>
                                                 </table>
                                             </ng-container>

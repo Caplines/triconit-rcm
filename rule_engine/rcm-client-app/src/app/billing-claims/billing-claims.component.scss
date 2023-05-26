@@ -74,3 +74,13 @@
 .ivUpdate .modal-content{
     width: 50% !important;
 }
+.no-wrap-text label{
+white-space: nowrap;
+}
+.sub-content-row {
+    background: #f9f9f9;
+}
+.sub-content-row td:first-child{ padding-left: 50px!important;}
+.sub-content-td {margin-left: 122px; width: calc(100% - 122px); }
+.sub-content-td td {border-top:0px!important}
+.sub-content-td td strong { margin-right: 5px;}
