@@ -60,5 +60,7 @@ export class TreatmentPlanComponent {
     })
   }
 
-
+  goToClaimDetailPage() {
+    window.location.href = "/billing-claims/"+ this.claimUuid+"";
+  }
 }
