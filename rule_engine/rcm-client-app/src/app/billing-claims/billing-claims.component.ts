@@ -375,7 +375,7 @@ export class BillingClaimsComponent {
     }
     console.log("valid", valid);
 
-    return valid;
+    return false;//valid;
 
   }
 

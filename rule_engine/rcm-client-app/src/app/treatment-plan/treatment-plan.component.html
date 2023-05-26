@@ -1,8 +1,8 @@
 <div class="sticky-top bg-dark">
     <div class="topbar" style="justify-content: flex-start;">
         <a class="backBtn" (click)="goToClaimDetailPage()"><img src="../../assets/img/arrow-back.png"
-            [style]="{width:'16px'}"></a>
-        <h1>Revenue Cycle Management(RCM)</h1>
+                [style]="{width:'16px'}"></a>
+        <h1>Capline RCM</h1>
     </div>
 </div>
 <div class="">
@@ -41,7 +41,7 @@
                                                 </th>
                                                 <th>
                                                     <div class="dFlex">
-                                                       Appt <span class="sorting">
+                                                        Appt <span class="sorting">
                                                         </span>
                                                     </div>
                                                 </th>
@@ -90,7 +90,10 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr *ngIf="showLoader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
+                                            <tr *ngIf="showLoader">
+                                                <td colspan="7" class="text-center"><span class="loader-data"></span>
+                                                </td>
+                                            </tr>
                                             <ng-container *ngFor="let tp of tpData">
                                                 <tr>
                                                     <td>{{tp.datePlan}}</td>
@@ -99,9 +102,9 @@
                                                     <td>{{tp.service}}</td>
                                                     <td>{{tp.tth}}</td>
                                                     <td>{{tp.surf}}</td>
-                                                    <td> {{tp.fee|  currency:'USD':true:'1.2-2'}}</td>
-                                                    <td> {{tp.ins|  currency:'USD':true:'1.2-2'}}</td>
-                                                    <td> {{tp.pat|  currency:'USD':true:'1.2-2'}}</td>
+                                                    <td> {{tp.fee| currency:'USD':true:'1.2-2'}}</td>
+                                                    <td> {{tp.ins| currency:'USD':true:'1.2-2'}}</td>
+                                                    <td> {{tp.pat| currency:'USD':true:'1.2-2'}}</td>
                                                 </tr>
                                             </ng-container>
                                             <tr>
@@ -109,7 +112,8 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td colspan="2" class="text-right"> <strong>Subtotal for this Phase:</strong></td>
+                                                <td colspan="2" class="text-right"> <strong>Subtotal for this
+                                                        Phase:</strong></td>
                                                 <td> <strong>{{count.Fee | currency:'USD':true:'1.2-2' }}</strong> </td>
                                                 <td> <strong>{{count.Ins | currency:'USD':true:'1.2-2' }}</strong> </td>
                                                 <td> <strong>{{count.Pat | currency:'USD':true:'1.2-2' }}</strong> </td>
@@ -117,7 +121,9 @@
                                         </tbody>
                                     </table>
                                     <ng-container *ngIf="tpData.length == 0 && !showLoader">
-                                        <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
+                                        <div class="text-center mt-5">
+                                            <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
+                                        </div>
                                     </ng-container>
                                 </div>
                             </div>
@@ -129,4 +135,4 @@
             </div>
         </div>
     </div>
-    </div>
+</div>
