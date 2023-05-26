@@ -62,6 +62,8 @@ public class FreshClaimDataImplDto {
 	String lastName;
 	String primaryInsType;
 	String secondaryInsType;
+	String primaryInsCode;
+	String secondaryInsCode;
 	String clientName;
 	boolean regenerated;
 	String secMemberId;

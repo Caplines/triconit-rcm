@@ -347,36 +347,92 @@
                                     <table class="table">
                                         <tbody>
                                             <tr
+                                                *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';">
+                                                <ng-container
+                                                    *ngIf="rule.ruleId==318 || rule.ruleId==319"><!--only for provider Notes-->
+                                                    <td *ngIf="rule.ruleId==318">1</td>
+                                                    <td *ngIf="rule.ruleId==319">2</td>
+                                                    <td>{{rule.ruleName}}</td>
+                                                    <td>Full Claim</td>
+                                                    <td>{{rule.ruleDesc}}</td>
+                                                    <td>
+
+                                                        <div data-toggle="buttons" class="btn-group btn-group-toggle"
+                                                            style="display: flex;width: 50%"
+                                                            id="CL_P_F_{{rule.ruleId}}">
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==2}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="2"
+                                                                    (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Not Available
+                                                            </label>
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==1}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="1"
+                                                                    (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Complete
+                                                            </label>
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==1}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="3"
+                                                                    (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Incorrect
+                                                            </label>
+                                                        </div>
+
+                                                    </td>
+                                                    <td><textarea class="form-control" id="" rows="1"
+                                                            [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
+                                                            (keydown)="removeErrorDisplayKey($event)"
+                                                            [disabled]="makeReadOnly()"></textarea></td>
+
+                                                </ng-container>
+                                            </tr>
+                                            <tr
                                                 *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
-                                                <td>{{idx+1}}</td>
-                                                <td>{{rule.ruleName}}</td>
-                                                <td>Full Claim</td>
-                                                <td>{{rule.ruleDesc}}</td>
-                                                <td>
+                                                <ng-container *ngIf="rule.ruleId==300"><!--only for provider Notes-->
+                                                    <td>3</td>
+                                                    <td>{{rule.ruleName}}</td>
+                                                    <td>Full Claim</td>
+                                                    <td>{{rule.ruleDesc}}</td>
+                                                    <td>
 
-                                                    <div data-toggle="buttons" class="btn-group btn-group-toggle"
-                                                        style="display: flex;width: 50%" id="CL_P_F_{{rule.ruleId}}">
-                                                        <label class="btn btn-light"
-                                                            [ngClass]="{active:rule.messageType==2}">
-                                                            <input type="radio" name="mant{{idx}}" value="2"
-                                                                (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
-                                                                [(ngModel)]='rule.messageType'
-                                                                [disabled]="makeReadOnly()"> Yes
-                                                        </label>
-                                                        <label class="btn btn-light"
-                                                            [ngClass]="{active:rule.messageType==1}">
-                                                            <input type="radio" name="mant{{idx}}" value="1"
-                                                                (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
-                                                                [(ngModel)]='rule.messageType'
-                                                                [disabled]="makeReadOnly()"> No
-                                                        </label>
-                                                    </div>
+                                                        <div data-toggle="buttons" class="btn-group btn-group-toggle"
+                                                            style="display: flex;width: 50%"
+                                                            id="CL_P_F_{{rule.ruleId}}">
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==2}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="2"
+                                                                    (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Not Available
+                                                            </label>
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==1}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="1"
+                                                                    (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Complete
+                                                            </label>
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==1}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="3"
+                                                                    (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Incorrect
+                                                            </label>
+                                                        </div>
 
-                                                </td>
-                                                <td><textarea class="form-control" id="" rows="1"
-                                                        [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
-                                                        (keydown)="removeErrorDisplayKey($event)"
-                                                        [disabled]="makeReadOnly()"></textarea></td>
+                                                    </td>
+                                                    <td><textarea class="form-control" id="" rows="1"
+                                                            [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
+                                                            (keydown)="removeErrorDisplayKey($event)"
+                                                            [disabled]="makeReadOnly()"></textarea></td>
+
+                                                </ng-container>
                                             </tr>
                                             <ng-container *ngIf="claimRcm.claimNotes">
                                                 <tr>
@@ -389,7 +445,92 @@
                                                             [disabled]="makeReadOnly()"></textarea></td>
                                                 </tr>
                                             </ng-container>
+                                            <tr
+                                                *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
+                                                <ng-container
+                                                    *ngIf="((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
+                                                   ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )
+                                                    && (rule.ruleId==311 || rule.ruleId==312 ||rule.ruleId==313 ||rule.ruleId==314 ||rule.ruleId==315 ||rule.ruleId==316 ||rule.ruleId==317)">
+                                                    <td *ngIf="rule.ruleId==311">4</td>
+                                                    <td *ngIf="rule.ruleId==312">5</td>
+                                                    <td *ngIf="rule.ruleId==313">6</td>
+                                                    <td *ngIf="rule.ruleId==314">7</td>
+                                                    <td *ngIf="rule.ruleId==315">8</td>
+                                                    <td *ngIf="rule.ruleId==316">9</td>
+                                                    <td *ngIf="rule.ruleId==317">10</td>
+
+                                                    <td>{{rule.ruleName}}</td>
+                                                    <td>Full Claim</td>
+                                                    <td>{{rule.ruleDesc}}</td>
+                                                    <td>
+
+                                                        <div data-toggle="buttons" class="btn-group btn-group-toggle"
+                                                            style="display: flex;width: 50%"
+                                                            id="CL_P_F_{{rule.ruleId}}">
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==2}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="2"
+                                                                    (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Available
+                                                            </label>
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==1}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="1"
+                                                                    (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Not Available
+                                                            </label>
+                                                        </div>
+
+                                                    </td>
+                                                    <td><textarea class="form-control" id="" rows="1"
+                                                            [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
+                                                            (keydown)="removeErrorDisplayKey($event)"
+                                                            [disabled]="makeReadOnly()"></textarea></td>
+
+                                                </ng-container>
+                                            </tr>
+
                                         </tbody>
+                                    </table>
+                                    <table>
+                                        <tr
+                                            *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
+                                            <ng-container *ngIf="((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
+                                                                                               ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )
+                                                                                                && (rule.ruleId==317)">
+                                                <table>
+                                                    <tr>
+                                                        <td>a)filling (tooth# + surface) </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>b)extraction - which side, tooth and how is it done,
+                                                            instrument used </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>c)crown - tooth# </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>d)Denture - Impression taken </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>e)RCT - Steps and how it is done and which file is
+                                                            used to open access to roots and canal </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>f)Material, Brand name of buildup, crown and all
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>g)Findings of exam - service specific </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>h)Sealant - tooth# and surface should be there </td>
+                                                    </tr>
+                                                </table>
+                                            </ng-container>
+                                        </tr>
                                     </table>
                                 </div>
                             </div>

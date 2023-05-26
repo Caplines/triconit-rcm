@@ -182,7 +182,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" pins.name primInsurance,sins.name secInsurance, cl.group_number groupNumber,cl.prime_policy_holder primePolicyHolder,"+
 			" prime_sec_submitted_total primeSecSubmittedTotal,sec_policy_holder_dob secPolicyHolderDob,"+
 			" cl.created_date createdDate,assign.assigned_to assignedTo,us.email,us.first_name firstName,us.last_name lastName,"+
-			" pinst.name primaryInsType,sinst.name secondaryInsType,cmp.name clientName,cl.regenerated regenerated, " +
+			" pinst.name primaryInsType,sinst.name secondaryInsType,pinst.code primaryInsCode,sinst.code secondaryInsCode," +
+			"cmp.name clientName,cl.regenerated regenerated, " +
 			" cl.sec_member_id secMemberId,cl.sec_policy_holder secPolicyHolder, "+ 
 			" cl.provider_id providerId,cl.created_date pulledDate, "+
 			" cl.treating_provider treatingProvider , provider_on_claim providerOnClaim," +

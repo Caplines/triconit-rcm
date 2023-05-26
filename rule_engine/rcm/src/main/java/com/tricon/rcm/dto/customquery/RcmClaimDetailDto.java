@@ -41,6 +41,8 @@ public interface RcmClaimDetailDto {
 	String getLastName();
 	String getPrimaryInsType();
 	String getSecondaryInsType();
+	String getPrimaryInsCode();
+	String getSecondaryInsCode();
 	String getClientName();
 	boolean getRegenerated();
 	String getSecMemberId();
