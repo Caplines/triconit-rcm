@@ -224,11 +224,11 @@ export default class Utils {
       window.location.href = "/login";
    }
 
-   static setLastPageVisited(){
-      localStorage.setItem("lastVisitedPage",location.pathname);
+   static setLastPageVisited() {
+      localStorage.setItem("lastVisitedPage", location.pathname);
    }
 
-   static clearLastPageVisited(){
+   static clearLastPageVisited() {
       localStorage.removeItem("lastVisitedPage");
    }
 
@@ -244,14 +244,18 @@ export default class Utils {
       return (Number(localStorage.getItem('selected_teamId')) == 7);
    }
 
+   static isInternalAudit(): boolean {
+      return (Number(localStorage.getItem('selected_teamId')) == 3);
+   }
+
 
    static getTimeZone(): string {
       return new Date().toString().split("GMT")[1].split(" (")[0]; // timezone, i.e. -0700
    }
 
-   static defaultTitle:string = 'RCM Tool - ';
+   static defaultTitle: string = 'RCM Tool - ';
 
-   static currentUserEmail(){
+   static currentUserEmail() {
       return (localStorage.getItem("currentUser"));
    }
 }

@@ -564,6 +564,7 @@ export class BillingClaimsComponent {
   }
 
   makeReadOnly(): boolean {
+    if (this.claimRcm == undefined) return true;
     if (!this.isBilling) return true;
     else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
@@ -571,9 +572,20 @@ export class BillingClaimsComponent {
   }
 
   isSectionReadOnly(): boolean {
+    debugger;
+    if (this.claimRcm == undefined) return true;
+    if (!this.claimRcm.allowEdit) return true;
     if (!this.claimRcm.pending) return true;
-    if (this.claimRcm.firstTeamId == this.claimRcm.currentTeamId
-      && this.claimRcm.allowEdit) {
+    if (this.claimRcm.firstTeamId == 3 && this.isBilling
+    ) {
+      return true;
+    }
+    if (this.claimRcm.firstTeamId == 7 && this.isBilling
+    ) {
+      return false;
+    }
+    if (this.claimRcm.firstTeamId == 3 && this.isInternalAudit
+    ) {
       return false;
     }
     return true;
@@ -806,6 +818,10 @@ export class BillingClaimsComponent {
 
   get isBilling(): boolean {
     return Utils.isBilling();
+  }
+
+  get isInternalAudit(): boolean {
+    return Utils.isInternalAudit();
   }
 
   get timeZone(): string {

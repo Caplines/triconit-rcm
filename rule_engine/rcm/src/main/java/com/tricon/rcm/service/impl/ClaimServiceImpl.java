@@ -1863,7 +1863,7 @@ public class ClaimServiceImpl {
 		});
 	}
 
-	private void saveClaimRuleManualMessageType(List<RuleRemarkDto> data, RcmUser user, RcmClaims claim, PartialHeader partialHeader) {
+	private void saveClaimRuleManualAutoMessageType(List<RuleRemarkDto> data, RcmUser user, RcmClaims claim, PartialHeader partialHeader) {
 		data.forEach(s -> {
 
 			
@@ -2273,10 +2273,12 @@ public class ClaimServiceImpl {
 					partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId() ) {
 					if (dto.getRuleRemarkDto() != null) {
 						//Filter List with section name =="RuleEngine" //This is set from UI 
-					List<RuleRemarkDto> fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals("RuleEngine"))
+					    List<RuleRemarkDto> fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals(Constants.UI_RULEENIGNE_SECTION))
 					      .collect(Collectors.toList());
-						saveClaimRuleRemark(fList, user, claim, partialHeader);
-						//saveClaimRuleManualMessageType(dto.getRuleRemarkDto(), user, claim, partialHeader);
+						if (fList!=null) saveClaimRuleRemark(fList, user, claim, partialHeader);
+						 /*fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals(Constants.UI_CLAIM_VALIDATION_SECTION))
+							      .collect(Collectors.toList());
+						 if (fList!=null)saveClaimRuleManualAutoMessageType(fList, user, claim, partialHeader);*/
 
 					}
 					
@@ -2291,9 +2293,11 @@ public class ClaimServiceImpl {
 					if(dto.getClaimManualRuleValidationList() != null)	saveClaimManualRules(dto.getClaimManualRuleValidationList(), user, claim, partialHeader);
 					if (dto.getClaimNoteDtoList() != null)	notesSaved = saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, partialHeader);
 					if (dto.getRuleRemarkDto() != null) {
-						saveClaimRuleRemark(dto.getRuleRemarkDto(), user, claim, partialHeader);
-						saveClaimRuleManualMessageType(dto.getRuleRemarkDto(), user, claim, partialHeader);
-
+						
+							saveClaimRuleRemark(dto.getRuleRemarkDto(), user, claim, partialHeader);
+							List<RuleRemarkDto> fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals(Constants.UI_CLAIM_VALIDATION_SECTION))
+							      .collect(Collectors.toList());
+						 if (fList!=null)saveClaimRuleManualAutoMessageType(fList, user, claim, partialHeader);
 					}
 					if (dto.getClaimRemark() != null) {
 						saveClaimRemark(dto.getClaimRemark(), claim, user, partialHeader);
@@ -2303,6 +2307,7 @@ public class ClaimServiceImpl {
 						saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
 					if (dto.getSerCVDto() != null)
 						saveClaimServiceCodeValidation(dto.getSerCVDto(), user, claim, partialHeader);
+					
 				    
 				}
 				else if ((claim.getFirstWorkedTeamId().getId()==RcmTeamEnum.INTERNAL_AUDIT.getId()) && 
@@ -2313,10 +2318,12 @@ public class ClaimServiceImpl {
 					if (dto.getClaimNoteDtoList() != null)	notesSaved = saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, partialHeader);
 					
 					if (dto.getRuleRemarkDto() != null) {
-						List<RuleRemarkDto> fList= dto.getRuleRemarkDto().stream().filter(re -> !re.getSectionName().equals("RuleEngine"))
+						List<RuleRemarkDto> fList= dto.getRuleRemarkDto().stream().filter(re -> !re.getSectionName().equals(Constants.UI_RULEENIGNE_SECTION))
 							      .collect(Collectors.toList());
 						saveClaimRuleRemark(fList, user, claim, partialHeader);
-						saveClaimRuleManualMessageType(dto.getRuleRemarkDto(), user, claim, partialHeader);
+						fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals(Constants.UI_CLAIM_VALIDATION_SECTION))
+					      .collect(Collectors.toList());
+				        if (fList!=null)saveClaimRuleManualAutoMessageType(fList, user, claim, partialHeader);
 
 					}
 					if (dto.getSerCVDto() != null)
