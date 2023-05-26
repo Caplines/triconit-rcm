@@ -48,6 +48,7 @@ export class ReportComponent implements OnInit {
 	}
 	goToClaimDetailPage() {
 		window.location.href = "/billing-claims/"+ this.claimUuid+"";
+		window.close();
 	  }
 
 }
