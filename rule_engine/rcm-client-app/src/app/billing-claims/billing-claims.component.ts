@@ -160,7 +160,9 @@ export class BillingClaimsComponent {
     ths.claimEditModel.ruleRemarkDto = [];
     ths.claimRules.forEach(x => {
       x.sectionName = "ClaimLevelValidation"
-      if (x.remark != null && x.remark.trim() != '') ths.claimEditModel.ruleRemarkDto.push(x);
+      //if (x.remark != null && x.remark.trim() != '') 
+      ths.claimEditModel.ruleRemarkDto.push(x);
+
     });
     ths.ruleEngineReport.forEach(x => {
 
@@ -191,7 +193,7 @@ export class BillingClaimsComponent {
     else if (type === 'assign') {
       ths.claimEditModel.assignTouuid = "";
       ths.claimEditModel.assignToTeam = -1;
-
+      debugger;
       ths.assignModel.toOtherTeam = true;
       let valid = ths.validateData();
       if (valid) {
@@ -240,23 +242,32 @@ export class BillingClaimsComponent {
     let ths = this;
     let valid: boolean = true;
 
-    ths.claimRcm.claimNotes.forEach(no => {
-      if (no.value == null || no.value.trim() === '') {
-        ths.addErrorDisplay(document.getElementById("CL_N_" + no.id));
-        valid = false;
-
-      }
-    });
-
-
     ths.claimRules.forEach(x => {
-      if ((x.remark == null || x.remark.trim() === '') && x.messageType === 1) {//on NO only
+      //console.log(x.ruleId);
+      if ((x.remark == null || x.remark.trim() === '') && x.messageType === 1 && x.ruleType == 'C'
+        && document.getElementById("CL_RU" + x.ruleId) != null) {//on NO only
         ths.addErrorDisplay(document.getElementById("CL_RU" + x.ruleId));
         valid = false;
       }
-      if (x.messageType === 0) {//mark the Yes or No
+      if (x.messageType === 0 && x.ruleType == 'C' && document.getElementById("CL_P_F_" + x.ruleId) != null) {//mark the Yes or No
         ths.addErrorDisplay(document.getElementById("CL_P_F_" + x.ruleId));
         valid = false;
+      }
+
+      if (x.ruleId == 300) {
+        if (x.messageType === 2) {
+          ths.claimRcm.claimNotes.forEach(no => {
+            if (no.value == null || no.value.trim() === '') {
+              ths.addErrorDisplay(document.getElementById("CL_N_" + no.id));
+              valid = false;
+
+            }
+          });
+        } else {
+          ths.claimRcm.claimNotes.forEach(no => {
+            ths.removeErrorDisplayKeyById("CL_N_" + no.id);
+          });
+        }
       }
     });
 
@@ -327,23 +338,34 @@ export class BillingClaimsComponent {
 
     }
 
+    if (ths.claimServiceLevelModel.claimFound) {
+
+      ths.claimServiceLevelModel.dto.forEach((x, i) => {
+        //debugger;
+        if ((x.manualAuto == 'Automated' && (x.remark == null || x.remark.trim() === '')) && x.messageType === 1) {//on NO only
+          ths.removeErrorDisplayKeyById("SERV_C_V_A" + x.remarkUuid);
+
+        }
+
+      });
+    }
     if (this.smilePoint) {
       if (ths.claimServiceLevelModel.claimFound) {
 
         ths.claimServiceLevelModel.dto.forEach((x, i) => {
           //debugger;
           if ((x.manualAuto == 'Automated' && (x.remark == null || x.remark.trim() === '')) && x.messageType === 1) {//on NO only
-            ths.addErrorDisplay(document.getElementById("SERV_C_V_A" + i));
+            ths.addErrorDisplay(document.getElementById("SERV_C_V_A" + x.remarkUuid));
             valid = false;
           }
 
         });
         ths.claimServiceLevelModel.dto.forEach((x, i) => {
-          if ((x.manualAuto == 'Manual' && x.answer === null || x.answer.trim() === '')) {//on NO only
-            ths.addErrorDisplay(document.getElementById("serviceCodeValidationsM" + i));
+          if ((x.manualAuto == 'Manual') && (x.answer == null || x.answer.trim() === '')) {//on NO only
+            ths.addErrorDisplay(document.getElementById("serviceCodeValidationsM" + x.remarkUuid));
             valid = false;
           } else if ((x.manualAuto == 'Manual' && (x.remark == null || x.remark.trim() === '')) && x.answer === 'Incorrect') {//on NO only
-            ths.addErrorDisplay(document.getElementById("SERV_C_V_M" + i));
+            ths.addErrorDisplay(document.getElementById("SERV_C_V_M" + x.remarkUuid));
             valid = false; {
 
             }
@@ -367,7 +389,7 @@ export class BillingClaimsComponent {
       if (ths.ruleEngineReport.length == 0) {
         ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
 
-        valid = false;
+        // valid = false;//Deepak
 
       } else {
         ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
@@ -375,7 +397,7 @@ export class BillingClaimsComponent {
     }
     console.log("valid", valid);
 
-    return false;//valid;
+    return valid;
 
   }
 
@@ -563,22 +585,31 @@ export class BillingClaimsComponent {
     t = type;
   }
 
+  /*
+  The claims that will be parked in the Internal Audit Team's bucket first, only sections billing team will be filling will include:
+  a) Rules Engine Validations
+  b) Enter Claim Submission Details:
+  */
   makeReadOnly(): boolean {
     if (this.claimRcm == undefined) return true;
-    if (!this.isBilling) return true;
+    //if (!this.isBilling) return true;
     else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
+    if (this.claimRcm.firstTeamId == 3 && this.isBilling
+    ) {
+      return true;
+    }
     return false;
   }
 
   isSectionReadOnly(): boolean {
-    debugger;
+    //debugger;
     if (this.claimRcm == undefined) return true;
     if (!this.claimRcm.allowEdit) return true;
     if (!this.claimRcm.pending) return true;
     if (this.claimRcm.firstTeamId == 3 && this.isBilling
     ) {
-      return true;
+      return false;
     }
     if (this.claimRcm.firstTeamId == 7 && this.isBilling
     ) {

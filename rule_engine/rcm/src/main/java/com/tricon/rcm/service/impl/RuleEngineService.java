@@ -236,10 +236,12 @@ public class RuleEngineService {
 									System.out.println(re.getClaimId() + "--<ID");
 									List<String> allCl = Arrays.asList(re.getClaimId() + claimTypeEnum.getSuffix());
 									List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
+									
 									UserAssignOffice assignedUserBilling = userAssignOfficeRepo
 											.findByOfficeUuidAndTeamId(off.getUuid(), RcmTeamEnum.BILLING.getId());
 									UserAssignOffice assignedUserInternalAudit = userAssignOfficeRepo
 											.findByOfficeUuidAndTeamId(off.getUuid(), RcmTeamEnum.INTERNAL_AUDIT.getId());
+									
 									assignedTeamBilling = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
 									assignedTeamInternalAudit= rcmTeamRepo.findById(RcmTeamEnum.INTERNAL_AUDIT.getId());
 									RcmInsuranceType rcmInsuranceType = null;
@@ -362,7 +364,7 @@ public class RuleEngineService {
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
 										}
-										if (assignedUserInternalAudit != null && (isMedicaid|| isMedicare)) {
+										if (assignedUserInternalAudit != null && (isMedicaid|| isMedicare || isChip)) {
 											rcmAssigment = new RcmClaimAssignment();
 											//
 											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -902,6 +904,7 @@ public class RuleEngineService {
 		List<String> claims =rcmClaimRepository.getUnAsignedClaims(companyId);
 		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
 				.findByStatus(ClaimStatusEnum.Billing.getType());
+		RcmTeam assignedTeam  = rcmTeamRepo.findById(teamId);
 		logger.info(claims.size()+"");
 		int ct=0;
 		for(String claimUUid:claims) {
@@ -909,16 +912,17 @@ public class RuleEngineService {
 			RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 			//
 			RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUUid);
+			if (claim.getFirstWorkedTeamId().getId() == teamId) {
 			UserAssignOffice assignedUser = userAssignOfficeRepo
 					.findByOfficeUuidAndTeamId(claim.getOffice().getUuid(), teamId);
-			 RcmTeam assignedTeam  = rcmTeamRepo.findById(teamId);
+			 
 			if (assignedUser!=null) { 
 				    rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy,
 					assignedUser.getUser(), claimUUid, claim,
 					"", systemStatusBilling,assignedTeam,Constants.SYSTEM_INITIAL_COMMENT);
 				    rcmClaimAssignmentRepo.save(rcmAssigment);
 			}
-
+			}
 			
 		}
 		}catch(Exception ex) {

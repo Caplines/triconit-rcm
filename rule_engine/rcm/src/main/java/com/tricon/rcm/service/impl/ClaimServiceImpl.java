@@ -678,7 +678,7 @@ public class ClaimServiceImpl {
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
 							}
-							if (assignedUserInternalAudit != null && isMedicaid) {
+							if (assignedUserInternalAudit != null && (isMedicaid|| isMedicare || isChip)) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -911,7 +911,7 @@ public class ClaimServiceImpl {
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
 							}
-							if (assignedUserInternalAudit != null && (isMedicaid || isMedicare)) {
+							if (assignedUserInternalAudit != null && (isMedicaid|| isMedicare || isChip)) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -1042,7 +1042,7 @@ public class ClaimServiceImpl {
 		}
 		List<AssignFreshClaimLogsDto> l = null;
 		try {
-			l = rcmClaimRepository.fetchClaimsForAssignments(partialHeader.getCompany().getUuid(), ct, instDB,partialHeader.getTeamId());
+			l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam(partialHeader.getCompany().getUuid(), ct, instDB,partialHeader.getTeamId());
 			HashMap<String, RemoteLietStatusCount> remoteLiteMap = ruleEngineService.pullAndSaveRemoteLiteData();
 			RemoteLietStatusCount counts = null;
 
@@ -1085,6 +1085,18 @@ public class ClaimServiceImpl {
 			}
 		} catch (Exception n) {
 			n.printStackTrace();
+		}
+		List<RcmOfficeDto> offices = officeRepo.findByCompanyAndActiveTrue(partialHeader.getCompany());
+		for(RcmOfficeDto offDto:offices) {
+			AssignFreshClaimLogsImplDto fil=	finalList.stream().filter(o -> "James".equals(o.getOfficeUuid()))
+			  .findAny()
+			  .orElse(null);
+			if (fil==null) {
+				fil = new AssignFreshClaimLogsImplDto();
+				fil.setOfficeUuid(offDto.getUuid());
+				fil.setOfficeName(offDto.getName());
+				finalList.add(fil);
+			}
 		}
 		return finalList;
 	}
@@ -1208,7 +1220,8 @@ public class ClaimServiceImpl {
 				assTo = userRepo.findByUuid(assTo.getUuid());
 				implDto.setAssignedToName(assTo.getFirstName() + " " + assTo.getLastName());
 				implDto.setAssignedToUuid(assTo.getUuid());
-				implDto.setAllowEdit(partialHeader.getJwtUser().getUuid().equals(assTo.getUuid()));
+				implDto.setAllowEdit(partialHeader.getJwtUser().getUuid().equals(assTo.getUuid()) &&
+						assign.getCurrentTeamId().getId()==partialHeader.getTeamId());
 				}
 				implDto.setAssignedToTeam(assign.getCurrentTeamId().getId());
 				
@@ -1333,6 +1346,7 @@ public class ClaimServiceImpl {
 		} else {
 			// Wrong claimId;
 		}
+		if (implDto.getSecInsurance()==null) implDto.setSecInsurance("N/A");
 		return implDto;
 
 	}
@@ -1770,7 +1784,7 @@ public class ClaimServiceImpl {
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimuuid);
 		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
-			list = rcmClaimRuleRemarkRepo.fetchClaimRuleRemarks(claimuuid, RcmTeamEnum.BILLING.getId());
+			list = rcmClaimRuleRemarkRepo.fetchClaimRuleRemarksAnyTeam(claimuuid);
 		} else {
 			logger.error("Wrong Client");
 		}
@@ -2331,6 +2345,9 @@ public class ClaimServiceImpl {
 					if (dto.getClaimRemark() != null) {
 						saveClaimRemark(dto.getClaimRemark(), claim, user, partialHeader);
 					}
+					
+					if (dto.getSubmissionDto() != null)
+						saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
 				}
 				
 				

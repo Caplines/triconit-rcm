@@ -23,27 +23,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import com.tricon.rcm.db.entity.RcmClaimAssignment;
-import com.tricon.rcm.db.entity.RcmClaimStatusType;
-import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
-import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserCompany;
 import com.tricon.rcm.db.entity.RcmUserRole;
-import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.RcmUserTeam;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
-import com.tricon.rcm.dto.ClaimAssignmentDto;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
@@ -82,9 +72,7 @@ import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
 import com.tricon.rcm.jpa.repository.RcmUserTeamRepo;
 //import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
-import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
-import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.MessageConstants;
@@ -116,8 +104,6 @@ public class AdminServiceImpl {
 	@Autowired
 	RcmCommonServiceImpl commonService;
 	
-	@Autowired
-	UserAssignOfficeRepo userAssignRepo;
 	
 	@Value("${data.totalRecordperPage}")
 	private int totalRecordsperPage;

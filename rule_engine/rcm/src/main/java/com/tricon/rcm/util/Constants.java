@@ -26,7 +26,7 @@ public class Constants {
 	
 	public static final SimpleDateFormat SDF_UI = new SimpleDateFormat("MM-dd-YYYY"); 
 	public static final SimpleDateFormat SDF_CredentialSheetAnes = new SimpleDateFormat("MM/dd/YYYY");
-	public static final SimpleDateFormat SDF_SHEET_PROVIDER_DATE_HELPING = new SimpleDateFormat("M/dd/YYYY");
+	public static final SimpleDateFormat SDF_SHEET_PROVIDER_DATE_HELPING = new SimpleDateFormat("M/d/YYYY");
 	
    //FROM MYSQL DB	
 	public static final SimpleDateFormat SDF_MYSL_DATE = new SimpleDateFormat("yyyy-MM-dd");
@@ -47,7 +47,7 @@ public class Constants {
 	public static final String SYSTEM_INITIAL_COMMENT = "Please Work on New Claim";
 
 	public static final String SYSTEM_OTHER_TEAM_ASSIGN_COMMENT = "Please Work on the Claim";
-	public static final String SYSTEM_TRANSFER_TO_TEAM_COMMENT = "Claim Tranfered To Team";
+	public static final String SYSTEM_TRANSFER_TO_TEAM_COMMENT = "Claim Transfered To Team";
 	// Taken From Rule Engine
 	public static String socketworkingFine = "Connection to office working fine. Agent is running successfully.";
 	public static String socketnotworkingFine = "Connection to office is <b style=\"color:red\" class=\"error-message-api\">not</b> working propertly. Make sure Agent is running / router is configured properly.";
@@ -95,5 +95,8 @@ public class Constants {
 	public static final String CLIENT_VIEW_ONLY = "CLIENT_VIEW_ONLY";
 	public static final String SUPER_ADMIN = "SUPER_ADMIN";
 	public static final String REPORTING = "REPORTING";
+	public static final String UI_RULEENIGNE_SECTION = "RuleEngine";
+	public static final String UI_CLAIM_VALIDATION_SECTION = "ClaimLevelValidation";
+	
 
 }

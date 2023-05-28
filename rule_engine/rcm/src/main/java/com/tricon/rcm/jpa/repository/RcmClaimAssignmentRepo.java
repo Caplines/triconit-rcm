@@ -44,7 +44,7 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			 +" from  rcm_claim_assignment assign inner join rcm_user us on us.uuid=assign.assigned_by "
 			 +" inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
 			 +" inner join rcm_team tm on tm.id=rut.team_Id "
-			 +"  where claim_id=:claim_id and assign.current_team_id!=:teamId and comment_assigned_by<>'' order by assign.created_date asc "
+			 +"  where claim_id=:claim_id and assign.current_team_id!=:teamId and tm.id!=:teamId and comment_assigned_by<>'' order by assign.created_date asc "
 	+ "")
     List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
 	

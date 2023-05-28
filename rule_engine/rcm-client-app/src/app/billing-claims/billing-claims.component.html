@@ -358,28 +358,28 @@
                                                     <td class="no-wrap-text">
 
                                                         <div data-toggle="buttons" class="btn-group btn-group-toggle"
-                                                            style="display: flex;width: 50%"
+                                                            style="display: flex;width: 100%"
                                                             id="CL_P_F_{{rule.ruleId}}">
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==3}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="3"
+                                                                    (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Not Available
+                                                            </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:rule.messageType==2}">
                                                                 <input type="radio" name="mant{{rule.ruleId}}" value="2"
                                                                     (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                     [(ngModel)]='rule.messageType'
-                                                                    [disabled]="isSectionReadOnly()"> Not Available
+                                                                    [disabled]="makeReadOnly()"> Complete
                                                             </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:rule.messageType==1}">
                                                                 <input type="radio" name="mant{{rule.ruleId}}" value="1"
                                                                     (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                     [(ngModel)]='rule.messageType'
-                                                                    [disabled]="isSectionReadOnly()"> Complete
-                                                            </label>
-                                                            <label class="btn btn-light"
-                                                                [ngClass]="{active:rule.messageType==3}">
-                                                                <input type="radio" name="mant{{rule.ruleId}}" value="3"
-                                                                    (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
-                                                                    [(ngModel)]='rule.messageType'
-                                                                    [disabled]="isSectionReadOnly()"> Incorrect
+                                                                    [disabled]="makeReadOnly()"> Incorrect
                                                             </label>
                                                         </div>
 
@@ -387,7 +387,7 @@
                                                     <td><textarea class="form-control" id="" rows="1"
                                                             [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                             (keydown)="removeErrorDisplayKey($event)"
-                                                            [disabled]="isSectionReadOnly()"></textarea></td>
+                                                            [disabled]="makeReadOnly()"></textarea></td>
 
                                                 </ng-container>
                                             </tr>
@@ -401,28 +401,28 @@
                                                     <td class="no-wrap-text">
 
                                                         <div data-toggle="buttons" class="btn-group btn-group-toggle"
-                                                            style="display: flex;width: 50%"
+                                                            style="display: flex;width: 100%"
                                                             id="CL_P_F_{{rule.ruleId}}">
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==3}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="3"
+                                                                    (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Not Available
+                                                            </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:rule.messageType==2}">
                                                                 <input type="radio" name="mant{{rule.ruleId}}" value="2"
                                                                     (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                     [(ngModel)]='rule.messageType'
-                                                                    [disabled]="isSectionReadOnly()"> Not Available
+                                                                    [disabled]="makeReadOnly()"> Complete
                                                             </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:rule.messageType==1}">
                                                                 <input type="radio" name="mant{{rule.ruleId}}" value="1"
                                                                     (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                     [(ngModel)]='rule.messageType'
-                                                                    [disabled]="isSectionReadOnly()"> Complete
-                                                            </label>
-                                                            <label class="btn btn-light"
-                                                                [ngClass]="{active:rule.messageType==3}">
-                                                                <input type="radio" name="mant{{rule.ruleId}}" value="3"
-                                                                    (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
-                                                                    [(ngModel)]='rule.messageType'
-                                                                    [disabled]="isSectionReadOnly()"> Incorrect
+                                                                    [disabled]="makeReadOnly()"> Incorrect
                                                             </label>
                                                         </div>
 
@@ -430,7 +430,7 @@
                                                     <td><textarea class="form-control" id="" rows="1"
                                                             [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                             (keydown)="removeErrorDisplayKey($event)"
-                                                            [disabled]="isSectionReadOnly()"></textarea></td>
+                                                            [disabled]="makeReadOnly()"></textarea></td>
 
                                                 </ng-container>
                                             </tr>
@@ -442,7 +442,7 @@
                                                             id="CL_N_{{claimRcm.claimNotes[0].id}}" rows="1"
                                                             [(ngModel)]='claimRcm.claimNotes[0].value'
                                                             (keydown)="removeErrorDisplayKey($event)"
-                                                            [disabled]="isSectionReadOnly()"></textarea></td>
+                                                            [disabled]="makeReadOnly()"></textarea></td>
                                                 </tr>
                                             </ng-container>
                                             <tr class="no-wrap-text "
@@ -465,21 +465,21 @@
                                                     <td>
 
                                                         <div data-toggle="buttons" class="btn-group btn-group-toggle"
-                                                            style="display: flex;width: 50%"
+                                                            style="display: flex;width: 100%"
                                                             id="CL_P_F_{{rule.ruleId}}">
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:rule.messageType==2}">
                                                                 <input type="radio" name="mant{{rule.ruleId}}" value="2"
                                                                     (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                     [(ngModel)]='rule.messageType'
-                                                                    [disabled]="isSectionReadOnly()"> Available
+                                                                    [disabled]="makeReadOnly()"> Available
                                                             </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:rule.messageType==1}">
                                                                 <input type="radio" name="mant{{rule.ruleId}}" value="1"
                                                                     (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                     [(ngModel)]='rule.messageType'
-                                                                    [disabled]="isSectionReadOnly()"> Not Available
+                                                                    [disabled]="makeReadOnly()"> Not Available
                                                             </label>
                                                         </div>
 
@@ -487,7 +487,7 @@
                                                     <td><textarea class="form-control" id="" rows="1"
                                                             [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                             (keydown)="removeErrorDisplayKey($event)"
-                                                            [disabled]="isSectionReadOnly()"></textarea></td>
+                                                            [disabled]="makeReadOnly()"></textarea></td>
 
                                                 </ng-container>
                                             </tr>
@@ -572,7 +572,8 @@
                                                         <td>{{d.serviceCode}}</td>
                                                         <td>{{d.description}}</td>
                                                         <td>
-                                                            <div data-toggle="buttons" id="serviceCodeValidationsM{{i}}"
+                                                            <div data-toggle="buttons"
+                                                                id="serviceCodeValidationsM{{d.remarkUuid}}"
                                                                 class="btn-group btn-group-toggle"
                                                                 style="display: flex;width: 100%">
                                                                 <label class="btn btn-light"
@@ -580,7 +581,7 @@
                                                                     <input type="radio" name="mt{{i}}"
                                                                         value="Not Available"
                                                                         (click)="d.answer='Not Available';removeErrorDisplayKeyById('SERV_C_V_M',i);
-                                                                        removeErrorDisplayKeyById('serviceCodeValidationsM',i);"
+                                                                        removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()"> Not Available
                                                                 </label>
@@ -588,7 +589,7 @@
                                                                     [ngClass]="{active:d.answer=='Complete'}">
                                                                     <input type="radio" name="mt{{i}}" value="Complete"
                                                                         (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',i);
-                                                                        removeErrorDisplayKeyById('serviceCodeValidationsM',i);"
+                                                                        removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()"> Complete
                                                                 </label>
@@ -596,7 +597,7 @@
                                                                     [ngClass]="{active:d.answer=='Incorrect'}">
                                                                     <input type="radio" name="mt{{i}}" value="Incorrect"
                                                                         (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',i);
-                                                                        removeErrorDisplayKeyById('serviceCodeValidationsM',i);"
+                                                                        removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()"> Incorrect
                                                                 </label>
@@ -604,7 +605,7 @@
                                                         </td>
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='d.remark' id="SERV_C_V_M{{i}}"
-                                                                (click)="removeErrorDisplayKeyById('SERV_C_V_M',i);"
+                                                                (click)="removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);"
                                                                 [disabled]="makeReadOnly()"></textarea></td>
                                                     </tr>
                                                 </ng-container>
@@ -659,7 +660,7 @@
 
                                                         </td>
                                                         <td><textarea class="form-control" id="" rows="1"
-                                                                [(ngModel)]='d.remark' id="SERV_C_V_A{{i}}"
+                                                                [(ngModel)]='d.remark' id="SERV_C_V_A{{d.remarkUuid}}"
                                                                 [disabled]="isSectionReadOnly()"></textarea></td>
                                                     </tr>
                                                 </ng-container>
@@ -793,7 +794,7 @@
                                                             <textarea class="form-control" id="" rows="1"
                                                                 id="SUB_DET_CLA"
                                                                 (click)="removeErrorDisplayKeyById('SUB_DET_CLA')"
-                                                                [disabled]="claimNoEnable() || !this.isBilling"
+                                                                [disabled]="claimNoEnable()"
                                                                 [(ngModel)]='submissionDto.claimNumber'></textarea>
                                                         </div>
 
@@ -846,7 +847,7 @@
                                                             <textarea class="form-control" id="" rows="1"
                                                                 id="SUB_DET_PRENO"
                                                                 (click)="removeErrorDisplayKeyById('SUB_DET_PRENO')"
-                                                                [disabled]="preAuthEnable() || !this.isBilling"
+                                                                [disabled]="preAuthEnable()"
                                                                 [(ngModel)]='submissionDto.preauthNo'></textarea>
                                                         </div>
                                                     </div>
@@ -897,9 +898,11 @@
 
                                     <ng-container *ngIf="assignModel.toLead" sytle="">
                                         <div class="table-responsive">
-                                            <div role="alert" class="alert alert-info" *ngIf="isBilling"><img
+                                            <div role="alert" class="alert alert-info" *ngIf="isBilling">
+                                                <!--<img
                                                     src="../../assets/img/info-icon-border.png">Any Data Saved for
-                                                latter processing will be lost</div>
+                                                latter processing will be lost-->
+                                            </div>
                                             <select class="form-control" id="selectLeadName" name=""
                                                 [(ngModel)]='claimEditModel.assignTouuid'>
                                                 <option selected="true" value="">Select Lead Name</option>
@@ -963,8 +966,8 @@
                         <div class="action-buttons">
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
-                                                       ) && isBilling " type="button" class="btn btn-success"
-                                [disabled]="inSave" (click)="saveClaim('latter')">Save For Later Processing</button>
+                                                       )  " type="button" class="btn btn-success" [disabled]="inSave"
+                                (click)="saveClaim('latter')">Save For Later Processing</button>
                             <button *ngIf="claimRcm.pending  && selectedTeam== claimRcm.currentTeamId" type="button"
                                 class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assigntl')">Assign to
                                 Team Lead</button>
