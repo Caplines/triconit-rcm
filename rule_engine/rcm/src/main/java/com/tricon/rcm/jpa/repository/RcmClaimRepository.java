@@ -143,9 +143,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("teamid") int teamid);
 
 	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
-			+ " count(Case When claim_status_type_id in :status and pending is true and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
-			+ " min(Case When claim_status_type_id in :status and pending=true  and cl.rcm_insurance_type in :inst Then cl.created_date End)   as 'opdt',"
-			+ " min(Case When claim_status_type_id in :status and pending=true  and cl.rcm_insurance_type in :inst Then cl.dos End) as 'opdos',0 as remoteLiteRejections, "
+			+ " count(Case When claim_status_type_id in :status and pending is true and cl.first_worked_team_id=:teamId and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
+			+ " min(Case When claim_status_type_id in :status and pending=true and cl.first_worked_team_id=:teamId  and cl.rcm_insurance_type in :inst Then cl.created_date End)   as 'opdt',"
+			+ " min(Case When claim_status_type_id in :status and pending=true and cl.first_worked_team_id=:teamId  and cl.rcm_insurance_type in :inst Then cl.dos End) as 'opdos',0 as remoteLiteRejections, "
 			+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName,assig.team_id as assignTeamId " + " FROM "
 			+ "  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
