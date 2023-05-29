@@ -218,11 +218,11 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			"  where claim_uuid=:claimUuid and cmp.uuid=:companyId")
 	RcmClaimDetailDto fetchIndividualClaim(@Param("companyId")  String companyId,@Param("claimUuid")  String claimUuid) ;
 	
-	
+	//9 May 2023 and IV Date is 5th May 2023 -
 	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos " + 
 			" from  patient p , patient_detail pd where pd.patient_id=p.id and p.patient_id=:patientId " + 
 			" and p.office_id=:officeId and pd.cob_status in (:insTypes) " + 
-			" and STR_TO_DATE(:dos,'%Y-%m-%d')<=STR_TO_DATE(general_date_iv_wasdone,'%Y-%m-%d') order by " + 
+			" and STR_TO_DATE(:dos,'%Y-%m-%d')>=STR_TO_DATE(general_date_iv_wasdone,'%Y-%m-%d') order by " + 
 			" STR_TO_DATE(general_date_iv_wasdone,'%Y-%m-%d') desc limit 1 ")
 	IVFDto getIVIdOfClaimByDos(@Param("dos") String dos,@Param("officeId") String officeId,
 			@Param("patientId") String patientId,@Param("insTypes") Set<String> insTypes);

@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,8 @@ import com.tricon.rcm.dto.ClaimEditDetailDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.PartialHeader;
+import com.tricon.rcm.dto.PendencyDataCountDto;
+import com.tricon.rcm.dto.PendencyKeyValDto;
 import com.tricon.rcm.dto.ProivderHelpingSheetDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
@@ -1086,18 +1089,7 @@ public class ClaimServiceImpl {
 		} catch (Exception n) {
 			n.printStackTrace();
 		}
-		List<RcmOfficeDto> offices = officeRepo.findByCompanyAndActiveTrue(partialHeader.getCompany());
-		for(RcmOfficeDto offDto:offices) {
-			AssignFreshClaimLogsImplDto fil=	finalList.stream().filter(o -> "James".equals(o.getOfficeUuid()))
-			  .findAny()
-			  .orElse(null);
-			if (fil==null) {
-				fil = new AssignFreshClaimLogsImplDto();
-				fil.setOfficeUuid(offDto.getUuid());
-				fil.setOfficeName(offDto.getName());
-				finalList.add(fil);
-			}
-		}
+		
 		return finalList;
 	}
 
@@ -2642,6 +2634,69 @@ public class ClaimServiceImpl {
 		dto.setCount(count);
 		dto.setDateCount(date);
 		dto.setOffices(officeRepo.findByCompanyAndActiveTrue(company));
+		List<RcmOfficeDto> offices=officeRepo.findByCompanyAndActiveTrue(company);
+		
+		List<PendencyDataCountDto> header=  new ArrayList<>();
+		//List<PendencyKeyValDto> keyData =new ArrayList<>();
+		List<RcmTeamEnum> teams= Arrays.asList(RcmTeamEnum.values());   
+		
+		List<PendencyDataCountDto> rowData=  new ArrayList<>();
+		//List<PendencyKeyValDto> keyRowData =new ArrayList<>();
+
+		
+		boolean headerDone=false;
+		for(RcmOfficeDto office: offices) {
+			PendencyDataCountDto offLi = new PendencyDataCountDto();
+			offLi.setOfficeName(office.getName());
+			offLi.setOfficeUUid(office.getUuid());
+			List<PendencyKeyValDto> keyData= new ArrayList<>();
+			for(RcmTeamEnum team:teams) {
+				Stream<AllPendencyDto> streamCount= count.stream();
+				Stream<AllPendencyDateDto> streamDate= date.stream();
+				PendencyKeyValDto xx = new PendencyKeyValDto();
+				if (team.isRoleVisible()) {
+					offLi.setTeamId(team.getId());
+					offLi.setTeamName(team.getName());
+					if (!headerDone){
+						
+						  PendencyDataCountDto head= new PendencyDataCountDto();
+					      head.setTeamId(team.getId());
+				       	  head.setTeamName(team.getName());
+				       	 // keyData.add(head);
+				       	  header.add(head);
+					}
+					AllPendencyDto filCt = streamCount.filter(re -> re.getOfficeName().equals(office.getName())
+							 && re.getTeamId()==team.getId())
+							.findAny() .orElse(null);
+					//PendencyKeyValDto xx = new PendencyKeyValDto();
+					xx.setTeamId(team.getId());
+					xx.setTeamName(team.getName());
+					if (filCt!=null) {
+						xx.setCount(filCt.getCount());
+						AllPendencyDateDto yyy=	streamDate.filter(re -> re.getOfficeName().equals(office.getName())
+								 && re.getTeamId()==team.getId())
+								.findAny() .orElse(null);
+					if (yyy!=null)	xx.setMinDate(yyy.getMinDate());
+						
+					}else {
+						xx.setCount(0);
+					}
+					
+					//rowData.add(offLi);
+					keyData.add(xx);
+					offLi.setKeyData(keyData);
+				}//if 
+				
+				
+			}//Teams
+			headerDone=true;
+			offLi.setKeyData(keyData);
+			rowData.add(offLi);
+			
+		}//Office
+		
+		dto.setHeader(header);
+		dto.setRowData(rowData);
 		return dto;
 		
 		
