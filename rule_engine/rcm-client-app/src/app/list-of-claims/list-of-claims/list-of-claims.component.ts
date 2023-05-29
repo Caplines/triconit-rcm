@@ -34,9 +34,10 @@ export class ListOfClaimsComponent implements OnInit {
   filteredInsuranceName:any=[];
   filteredInsuranceType:any=[];
   filteredActionRequired:any=[];
-  // filteredLastTeamWorked:any=[];
+  filteredLastTeamWorked:any=[];
   clientName:string='';
   isFilterValueExist : boolean = false;
+  isLastTeam:boolean=false;
 
   constructor(@Inject(LOCALE_ID) private locale: string,private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
     this.selectedBtype = this.appConstants.BILLING_ID;
@@ -68,6 +69,11 @@ export class ListOfClaimsComponent implements OnInit {
   fetchClaims(subType: string) {
     this.loader.listClaimLoader = true;
     let ths = this;
+    if(subType=='sendBack'){
+      this.isLastTeam=true;
+    }else{
+      this.isLastTeam=false;
+    }
     ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, (res: any) => {
       if (res.status === 200) {
         ths.claimDetail =  this.removePrefix(res.data);
@@ -79,7 +85,7 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionActionRequired(subType);
         this.filterOptionInsuranceName(subType);
         this.filterOptionInsuranceType();
-        // this.filterOptionLastTeamWorked();
+        this.filterOptionLastTeamWorked();
       } 
       // else {
       //   this.loader.listClaimLoader = false;
@@ -151,12 +157,12 @@ export class ListOfClaimsComponent implements OnInit {
     this.isFilterAllSelected.insuranceType = true;
   }
 
-  // filterOptionLastTeamWorked(){
-  //   this.appConstants.teamData.forEach((e:any)=>{
-  //     this.filteredLastTeamWorked.push({'checked':true,'lastTeam':e.teamName});
-  //   })
-  //   this.isFilterAllSelected.lastTeamWorked = true;
-  // }
+  filterOptionLastTeamWorked(){
+    this.appConstants.teamData.forEach((e:any)=>{
+      this.filteredLastTeamWorked.push({'checked':true,'lastTeam':e.teamName});
+    })
+    this.isFilterAllSelected.lastTeamWorked = true;
+  }
 
   removePrefix(data:any){
     const arr: any = data;
@@ -288,21 +294,21 @@ export class ListOfClaimsComponent implements OnInit {
     });
   }
 
-  // filterLastTeamWorked(filterProperty:any){
-  //   let isAllSelected: boolean = true;
-  //   for (let i = 0; i < this.filteredLastTeamWorked.length; i++) {
-  //     if (this.filteredLastTeamWorked[i].checked == false) {
-  //       isAllSelected = false;
-  //       break;
-  //     }
-  //   }
-  //   this.isFilterAllSelected.lastTeamWorked = isAllSelected;
-  //   this.filteredItems = this.claimDetail.filter((item: any) => {
-  //     return this.filteredLastTeamWorked.some((checkbox: any) => {
-  //       return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
-  //     });
-  //   });
-  // }
+  filterLastTeamWorked(filterProperty:any){
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredLastTeamWorked.length; i++) {
+      if (this.filteredLastTeamWorked[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.lastTeamWorked = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredLastTeamWorked.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
+      });
+    });
+  }
 
   saveToPdf(divName: any) {
     this.loader.exportPDFLoader=true;
@@ -331,7 +337,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.loader.exportCSVLoader=true;
     let options: any = {
       showLabels:true,
-      headers: ["Office", "Patient ID", "Patient Name",'Date of Service',  "Claim Age","Timely Filing Limit (Days)", "Claim Type","Action Required", "Insurance Name","Insurance Type",  "Estimated Amount" ]
+      headers: ["Office", "Patient ID", "Patient Name",'DOS',  "Claim Age","TFL", "Claim Type","Action Required", "Insurance Name","Insurance Type", "Estimated Amount",this.isLastTeam==true?"Last Team that Worked on this claim":""]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -367,14 +373,15 @@ export class ListOfClaimsComponent implements OnInit {
           "Office Name":e.officeName,
           "Patient ID":e.patientId,
           "Patient Name":e.patientName,
-          'Date of Service':e.dos,
+          'DOS':e.dos,
           "Claim Age":e.claimAge,
-          "Timely Filing Limit (Days)":e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          "TFL":e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
           "Claim Type":e.claimType,
           "Action Required":e.actionRequired,
           "Insurance Name":e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type":e.prName? e.prName : e.secName,
           "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$'+e.primTotal.toString() : "$0") : e.primeSecSubmittedTotal ? '$'+formatNumber(e.primeSecSubmittedTotal,this.locale,'1.2-2').toString() : "$0",
+          "Last Team that Worked on this claim":this.isLastTeam==true?e.lastTeam:""
         }
       })  //method aligns the header to the value in CSV.
 

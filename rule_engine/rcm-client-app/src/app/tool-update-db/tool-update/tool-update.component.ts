@@ -44,7 +44,7 @@ export class ToolUpdateComponent implements OnInit {
     this.clients = [];
     this.smilePoint={};
     this.issueCl=[];
-    title.setTitle(Utils.defaultTitle + "Tool to Update Database");
+    title.setTitle(Utils.defaultTitle + "Upload Claims");
   }
 
   ngOnInit(): void {
@@ -240,7 +240,7 @@ this.sourceType="";
        pdf.addImage(content, "PNG", 0, 15, width, height);
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${localStorage.getItem("selected_clientName")}_Tool_To_Update_Database_${this.date}`);
+      pdf.save(`${localStorage.getItem("selected_clientName")}_Upload Claims_${this.date}`);
       this.loader.exportPDFLoader=false;
       m.classList.add('table-wrapper-scroll-y');
       m.classList.add('table-inner-scrollbar');
@@ -252,7 +252,7 @@ this.sourceType="";
     this.loader.exportCSVLoader=true;
     let options: any = {
       showLabels: true,
-      headers: ["Office Name", "Source","Database Updation Done","Last Attempted On","Total No. of New Claims Added", ]
+      headers: ["Office", "Source","Upload Status","Latest Attempt","# of Claims Uploaded"]
     }
     let excelData: any;
     excelData = [...this.log];
@@ -276,16 +276,16 @@ this.sourceType="";
     excelData = excelData.map(({ officeUuid, ...newData }: any) => newData) //to remove required properties in excel
     excelData = excelData.map((e:any)=>{
       return{
-        "OfficeName":e.officeName,
+        "Office":e.officeName,
         "Source":e.source,
-        "DatabaseUpdationDone":e.status,
-        "Last Attempted On":e.cd,
-        "TotalNo.ofNewClaimsAdded":e.newClaimsCount
+        "Upload Status":e.status,
+        "Latest Attempt":e.cd,
+        "# of Claims Uploaded":e.newClaimsCount
       }
     })
     this.date = new Date();
     this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-    new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Tool_To_Update_Database_${this.date}`, options);
+    new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Upload Claims_${this.date}`, options);
     this.loader.exportCSVLoader=false;
 
   }

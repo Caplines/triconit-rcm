@@ -8,7 +8,7 @@
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                 <label class="btn btn-light" style="min-width: 270px;" [ngClass]="{'active':tabSwitch.withoutDos}">
                                     <input class="form-check-input" type="radio" name="options" id="option1" 
-                                    id="option1" (change)="switchTab(tabSwitch)">Pendency From Other Teams
+                                    id="option1" (change)="switchTab(tabSwitch)">Claims Pending to be BIlled - Assigned to Other Teams
                                 </label>
                                 <label class="btn btn-light"  style="min-width: 270px;" [ngClass]="{'active':tabSwitch.withDos}">
                                     <input class="form-check-input" type="radio" (change)="switchTab(tabSwitch)" name="options" id="option2" id="option2">Pendency From Other Teams (DOS or Date Pending)
@@ -55,7 +55,7 @@
                                             <tr>
                                                 <th style="z-index: 9;">
                                                     <div class="dFlex">
-                                                        Office Name    <span class="sorting">
+                                                        Office <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['officeName']}"
                                                                 (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
@@ -92,6 +92,7 @@
                                                         </svg>
                                                         <div class="dropdown-menu filter-dropdown-menu"
                                                             *ngIf="showFilteredDropdown.officeName">
+                                                            <div class="clearClose">
                                                             <label class="mx-1">
                                                                 <input type="checkbox"
                                                                     [checked]="isFilterAllSelected.officeName"
@@ -99,7 +100,7 @@
                                                                     (change)="selectAll($event,'officeName')">
                                                                 {{isFilterAllSelected.officeName ? 'Clear
                                                                 All':'Select All'}}</label>
-                                                                <button  (click)="showFilteredDropdown.officeName=false;"  type="button" class="close" data-dismiss="modal" aria-label="Close"><span  >&times;</span></button>
+                                                                <button  (click)="showFilteredDropdown.officeName=false;"  type="button" class="close" data-dismiss="modal" aria-label="Close"><span  >&times;</span></button></div>
                                                             <ng-container *ngFor="let data of this.filteredOfficeName">
                                                                 <label class="mx-1">
                                                                     <input type="checkbox" checked="true"
@@ -177,7 +178,7 @@
                                             <tr>
                                                 <th  style="z-index: 9;">
                                                     <div class="dFlex">
-                                                        Office Name <span class="sorting">
+                                                        Office <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['officeName']}"
                                                                 (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
@@ -214,6 +215,7 @@
                                                             </svg>
                                                             <div class="dropdown-menu filter-dropdown-menu"
                                                                 *ngIf="showFilteredDropdown.officeName">
+                                                                <div class="clearClose">
                                                                 <label class="mx-1">
                                                                     <input type="checkbox"
                                                                         [checked]="isFilterAllSelected.officeName"
@@ -221,7 +223,7 @@
                                                                         (change)="selectAll($event,'officeName')">
                                                                     {{isFilterAllSelected.officeName ? 'Clear
                                                                     All':'Select All'}}</label>
-                                                                <button  (click)="showFilteredDropdown.officeName=false;"  type="button" class="close" data-dismiss="modal" aria-label="Close"><span  >&times;</span></button>
+                                                                <button  (click)="showFilteredDropdown.officeName=false;"  type="button" class="close" data-dismiss="modal" aria-label="Close"><span  >&times;</span></button></div>
                                                                 <ng-container *ngFor="let data of filteredOfficeName">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"

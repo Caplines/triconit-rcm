@@ -890,3 +890,44 @@ button:disabled,button[disabled]{
 .flexAlign{
     justify-content: space-between;
 }
+.filter-dropdown-menu {
+    overflow-y: auto;
+    max-height: 270px;
+    padding-top: 0px!important;
+    margin-top: 5px;
+}
+
+.clearClose {
+   width: 100%;
+position: sticky;
+top: 0px;
+background: #fff;
+z-index: 99;
+height: 30px;
+padding-top: 5px; 
+}
+
+.filter-dropdown-menu .close {
+    right: 0;
+    top: 2px;
+
+}
+
+
+.filter-dropdown-menu::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .filter-dropdown-menu::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  
+  }
+   
+  .filter-dropdown-menu::-webkit-scrollbar-thumb {
+    background: #069d72; 
+    border-radius: 25px;
+  }
+  
+  .filter-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }

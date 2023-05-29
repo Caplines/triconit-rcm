@@ -28,7 +28,7 @@ export class AllPendencyComponent {
   data:any={};
 
   constructor(private _service:ApplicationServiceService,private title:Title){
-    title.setTitle(Utils.defaultTitle + "All Pendency")
+    title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
   }
   ngOnInit(): void {
     this.teamData=[{"teamName":"InternalAudit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];
@@ -101,7 +101,7 @@ export class AllPendencyComponent {
     let totalRow:any={};
     this.showLoader.exportCSVLoader=true;
     let headers:any=[];
-    headers.push("Office Name");
+    headers.push("Office");
     this.teamData.forEach((e:any)=>{
       if(e.teamId != this.currentTeamId){
         headers.push(`Pendency with ${e.teamName}`);
@@ -166,7 +166,7 @@ export class AllPendencyComponent {
 
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-    new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_All_Pendency_${this.date}`, options);
+    new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Pendency - Other Teams_${this.date}`, options);
     this.showLoader.exportCSVLoader=false;
   }
   selectAll(event:any,filterProperty:any){

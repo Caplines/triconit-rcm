@@ -156,3 +156,10 @@
     top: 4px;
     outline: none;
   }
+  .lastTeam .dropdown-menu {
+    right: 0px;
+    left: auto;
+  }
+  .addLast .insuranceName .dropdown-menu {     left: -95px!important; }
+  .addLast .insuranceType .dropdown-menu{  left: -97px!important;}
+

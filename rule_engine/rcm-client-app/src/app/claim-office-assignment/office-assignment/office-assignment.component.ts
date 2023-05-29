@@ -200,7 +200,7 @@ exportToCsv(){
   this.loader.exportCSVLoader=true;
   let options:any={
     showLabels:true,
-    headers: ["Office Name","Office Assigned To", "Oldest Pending Since Date","Oldest Pending DOS","Number of Pending Claims to be Billed","No. of RemoteLite Rejections Pending to be Handled","Total (Pending For Billing & Remote Lite Rejections)"],
+    headers: ["Office","User Assignment", "Oldest Pending Date","Oldest Pending DOS","# of Claims to be Billed","# of RemoteLite Rejections","Total Pendency"],
   }
   let excelData:any = JSON.parse(JSON.stringify(this.claimData));
   excelData = excelData.map((e:any)=>
@@ -227,25 +227,25 @@ exportToCsv(){
 
   excelData = excelData.map((e:any)=>{
     return{
-      "OfficeName":e.officeName,
-      "officeAssignedTo":e.officeAssignedTo,
-      "Oldest Pending Since Date":e.opdtd,
-      "OldestPending DOS":e.opdosd,
-      "NumberofPendingClaimstobeBilled":e.count,
-      "NoofRemoteLiteRejectionsPendingtobeHandled" : e.remoteLiteRejections,
-      "Total(Pending For Billing & Remote Lite Rejections)": e.count ? e.count+e.remoteLiteRejections : '0'
+      "Office":e.officeName,
+      "User Assignment":e.officeAssignedTo,
+      "Oldest Pending Date":e.opdtd,
+      "Oldest Pending DOS":e.opdosd,
+      "# of Claims to be Billed":e.count,
+      "# of RemoteLite Rejections" : e.remoteLiteRejections,
+      "Total Pendency": e.count ? e.count+e.remoteLiteRejections : '0'
     }
   })  
 
   excelData.unshift(                                        //method is used to show Total Row in CSV.
     {
-      "OfficeName":'Total',
-      "officeAssignedTo":'-',
-      "Oldest Pending Since Date":'-',
-      "OldestPending DOS":'-',
-      "NumberofPendingClaimstobeBilled":this.totalClaimData.totalCount,
-      "NoofRemoteLiteRejectionsPendingtobeHandled" : this.totalClaimData.totalRemLiteReject,
-      "Total(Pending For Billing & Remote Lite Rejections)": this.totalClaimData.totalcountAndRemLiteReject
+      "Office":'Total',
+      "User Assignment":'-',
+      "Oldest Pending Date":'-',
+      "Oldest Pending DOS":'-',
+      "# of Claims to be Billed":this.totalClaimData.totalCount,
+      "# of RemoteLite Rejections" : this.totalClaimData.totalRemLiteReject,
+      "Total Pendency": this.totalClaimData.totalcountAndRemLiteReject
     }
   )  
 
