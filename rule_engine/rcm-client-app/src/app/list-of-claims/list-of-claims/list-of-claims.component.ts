@@ -36,7 +36,7 @@ export class ListOfClaimsComponent implements OnInit {
   filteredActionRequired:any=[];
   // filteredLastTeamWorked:any=[];
   clientName:string='';
-  isFilterValueExist  : boolean = false;
+  isFilterValueExist : boolean = false;
 
   constructor(@Inject(LOCALE_ID) private locale: string,private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
     this.selectedBtype = this.appConstants.BILLING_ID;
@@ -471,5 +471,13 @@ export class ListOfClaimsComponent implements OnInit {
 
   logout() {
     Utils.logout();
+  }
+
+  showHideFilteredDropdown(filterName:any){
+    filterName == 'officeName' ? this.showFilteredDropdown.officeName = true  : this.showFilteredDropdown.officeName = false;
+    filterName == 'claimType' ? this.showFilteredDropdown.claimType = true  : this.showFilteredDropdown.claimType = false;
+    filterName == 'actionRequired' ? this.showFilteredDropdown.actionRequired  = true : this.showFilteredDropdown.actionRequired  = false;
+    filterName == 'insuranceName' ? this.showFilteredDropdown.insuranceName  = true : this.showFilteredDropdown.insuranceName  = false;
+    filterName == 'insuranceType' ? this.showFilteredDropdown.insuranceType  = true : this.showFilteredDropdown.insuranceType  = false;
   }
 }
