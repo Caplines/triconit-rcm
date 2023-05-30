@@ -118,14 +118,13 @@
                                                 <ng-container *ngFor="let data of teamData;let last = last;">
                                                     <th  *ngIf="currentTeamId != data.teamId">
                                                         <div class="dFlex">
-                                                          
-                                                            Pendency with {{data.teamName}}   <span class="sorting">
+                                                           {{data.teamName == 'Internal_Audit' ? 'Interal Audit' : data.teamName}}   <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted[data.teamId]}"
-                                                                    (click)="sortData(filteredItems,'count','asc','number'); isSorted[data.teamId] = false"></a>
+                                                                    [ngClass]="{'selected': !isSorted[data.teamName]}"
+                                                                    (click)="sortData(filteredItems,'count','asc','nestedCount',data.teamName); isSorted[data.teamName] = false"></a>
                                                                 <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted[data.teamId]}"
-                                                                    (click)="sortData(filteredItems,'count','desc','number');isSorted[data.teamId] = true"></a>
+                                                                    [ngClass]="{'selected': isSorted[data.teamName]}"
+                                                                    (click)="sortData(filteredItems,'count','desc','nestedCount',data.teamName);isSorted[data.teamName] = true"></a>
                                                             </span> 
                                                         </div>
                                                     </th>
@@ -136,30 +135,30 @@
                                         <tbody>
                                             <tr class="totalRow">
                                                 <td>Total</td>
-                                                        <td *ngIf="currentTeamId!=3">{{totalCount.InternalAudit}}</td>
-                                                        <td *ngIf="currentTeamId!=4">{{totalCount.Aging}}</td>
-                                                        <td *ngIf="currentTeamId!=5">{{totalCount.Posting}}</td>
-                                                        <td *ngIf="currentTeamId!=6">{{totalCount.Quality}}</td>
-                                                        <td *ngIf="currentTeamId!=7">{{totalCount.Billing}}</td>
-                                                        <td></td>
+                                                <ng-container *ngFor="let ct of totalCount;let last;">
+                                                    <ng-container *ngIf="ct.teamId != currentTeamId">
+                                                        <td>{{ct.count}}</td>
+                                                    </ng-container>
+                                                </ng-container>
+                                                <td></td>
                                             </tr>
                                             <tr *ngIf="showLoader.loader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
-                                            <ng-container *ngFor="let office of data.offices;let id= index;let last;">
+                                            <ng-container *ngFor="let office of filteredItems;let id= index;let last;">
                                                 <tr>
-                                                    <td>{{office.name}}</td>
-                                                    <ng-container *ngFor="let team of teamData">
-                                                        <ng-container *ngIf="team.teamId != currentTeamId">
-                                                            <td>
-                                                                {{ getCount(office.name, team.teamId) }}
-                                                            </td>
+                                                    <td>{{office.officeName}}</td>
+                                                        <ng-container *ngFor="let team of teamData;">
+                                                            <ng-container *ngIf="team.teamId != currentTeamId">
+                                                                <td>
+                                                                    {{office.counts1[team.teamName|uppercase]}}
+                                                                </td>
+                                                            </ng-container>
                                                         </ng-container>
-                                                    </ng-container>
                                                     <td *ngIf="last"></td>
                                                 </tr>
                                             </ng-container>
                                         </tbody>
                                     </table>
-                                    <ng-container  *ngIf="data.offices?.length == 0 && !showLoader.loader">
+                                    <ng-container  *ngIf="pendencyData?.length == 0 && !showLoader.loader">
                                         <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
                                     </ng-container>
                                 </div>
@@ -241,13 +240,13 @@
                                                 <ng-container *ngFor="let data of teamData;let last=last">
                                                     <th *ngIf="currentTeamId != data.teamId">
                                                         <div class="dFlex">
-                                                            Pendency with {{data.teamName}}<span class="sorting">
+                                                            {{data.teamName == 'Internal_Audit' ? 'Internal Audit' : data.teamName}} <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted[data.teamId]}"
-                                                                    (click)="sortData(filteredItems,'count','asc','number'); isSorted[data.teamId] = false"></a>
+                                                                    [ngClass]="{'selected': !isSorted[data.teamName]}"
+                                                                    (click)="sortData(filteredItems,'count','asc','nestedDate',data.teamName); isSorted[data.teamName] = false"></a>
                                                                 <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted[data.teamId]}"
-                                                                    (click)="sortData(filteredItems,'count','desc','number');isSorted[data.teamId] = true"></a>
+                                                                    [ngClass]="{'selected': isSorted[data.teamName]}"
+                                                                    (click)="sortData(filteredItems,'count','desc','nestedDate',data.teamName);isSorted[data.teamName] = true"></a>
                                                             </span> 
                                                         </div>
                                                     </th>
@@ -258,13 +257,13 @@
                                         <tbody>
 
                                             <tr *ngIf="showLoader.loader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
-                                            <ng-container *ngFor="let office of data.offices;let id= index;let last;">
+                                            <ng-container *ngFor="let office of pendencyData;let id= index;let last;">
                                                 <tr>
-                                                    <td>{{office.name}}</td>
+                                                    <td>{{office.officeName}}</td>
                                                     <ng-container *ngFor="let team of teamData">
                                                         <ng-container *ngIf="team.teamId != currentTeamId">
                                                             <td>
-                                                                {{ getDateCount(office.name, team.teamId) }}
+                                                                {{office.dates1[team.teamName|uppercase] ? office.dates1[team.teamName|uppercase] : "-"}}
                                                             </td>
                                                         </ng-container>
                                                     </ng-container>
@@ -273,7 +272,7 @@
                                             </ng-container>
                                         </tbody>
                                     </table>
-                                    <ng-container  *ngIf="data.offices?.length == 0 && !showLoader.loader">
+                                    <ng-container  *ngIf="pendencyData?.length == 0 && !showLoader.loader">
                                         <div class="text-center mt-5"> <h5 class="text-light bg-secondary p-1"> No Data Available!</h5></div>
                                     </ng-container>
                                 </div>

@@ -17,7 +17,6 @@ export class AllPendencyComponent {
   currentTeamId:any;
   showLoader:any={'loader':false,'exportPDFLoader':false,'exportCSVLoader':false};
   date:any;
-  totalCount:any=[];
   clientName:string='';
   showFilteredDropdown: any= {'officeName':false};
   isFilterAllSelected:any={'officeName':false};
@@ -25,13 +24,14 @@ export class AllPendencyComponent {
   filteredItems: any = [];
   tabSwitch:any={'withoutDos':true,'withDos':false};
   isSorted:any={};
-  data:any={};
+
+  totalCount:any=[{"teamName":"Internal_Audit","count":0,"teamId":3},{"teamName":"Aging","count":0,"teamId":4},{"teamName":"Posting","count":0,"teamId":5},{"teamName":"Quality","count":0,"teamId":6},{"teamName":"Billing","count":0,"teamId":7}];
 
   constructor(private _service:ApplicationServiceService,private title:Title){
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
   }
   ngOnInit(): void {
-    this.teamData=[{"teamName":"InternalAudit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];
+    this.teamData=[{"teamName":"Internal_Audit","teamId":3},{"teamName":"Aging","teamId":4},{"teamName":"Posting","teamId":5},{"teamName":"Quality","teamId":6},{"teamName":"Billing","teamId":7}];
     this.getAllPendencyDetails();
     this.currentTeamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
@@ -41,32 +41,31 @@ export class AllPendencyComponent {
     this._service.fetchAllPendency((res:any)=>{
       if(res.status==200){
         this.showLoader.loader=false;
-      this.data['count'] = res.data.count;
-      this.data['date'] = res.data.dateCount;
-      this.data['offices'] = res.data.offices;
+        this.pendencyData = res.data.onlyOffices;
       this.total(this.pendencyData);
       this.fetchOfficeByUuid();
       this.filterOfficeName();
-      console.log(this.data.offices.length, !this.showLoader.loader);
       
       }
     })
     
   }
 
+  
+
   total(data: any) {
-    const totalCount = data.reduce((acc: any, item: any) => {
-      const { Aging, Posting, Quality, Billing, InternalAudit } = item;
-      acc.Aging = (acc.Aging || 0) + (Aging !== null ? Aging : 0);
-      acc.Posting = (acc.Posting || 0) + (Posting !== null ? Posting : 0);
-      acc.Quality = (acc.Quality || 0) + (Quality !== null ? Quality : 0);
-      acc.Billing = (acc.Billing || 0) + (Billing !== null ? Billing : 0);
-      acc.InternalAudit = (acc.InternalAudit || 0) + (InternalAudit !== null ? InternalAudit : 0);
-
-      return acc;
-    }, {});
-
-    this.totalCount = totalCount;
+   
+    data.forEach((e:any)=>{
+      this.teamData.forEach((team:any)=>{
+        if(team.teamId != this.currentTeamId){
+          this.totalCount.find((ele:any)=>{
+            if(ele.teamName == team.teamName){
+              ele.count = ele.count + e.counts1[team.teamName.toUpperCase()];
+            }
+          })
+        }
+      })
+    })
 
   }
 
@@ -84,7 +83,7 @@ export class AllPendencyComponent {
       let height = canvas.height * width / canvas.width;
       // Insert office name
       pdf.setFontSize(10);  // Adjust the font size as needed
-      pdf.text(`RCM Tool-${this.clientName}`, 3, 10);
+      pdf.text(`Pendency - Other Teams-${this.clientName}`, 2,6);
       pdf.addImage(content, "PNG", 0, 15, width, height);
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
@@ -104,7 +103,7 @@ export class AllPendencyComponent {
     headers.push("Office");
     this.teamData.forEach((e:any)=>{
       if(e.teamId != this.currentTeamId){
-        headers.push(`Pendency with ${e.teamName}`);
+        headers.push(e.teamName);
       }
     })
 
@@ -113,62 +112,72 @@ export class AllPendencyComponent {
       headers: headers
     }
     let excelData: any;
-    excelData = [...this.pendencyData];
-    excelData = excelData.map((e: any) => {
-      if (!e.count && fromTable == 'table') {
-        e = { ...e, count: `0` };
-      }
-      if(!e.minDate && fromTable == 'dos-table'){
-        e = {...e,minDate:'-'};
-      }
-      return e;
+    excelData = JSON.parse(JSON.stringify(this.pendencyData));
+
+    if (fromTable == 'table') {
+      let data:any={};
+            excelData = excelData.map((e: any) => {
+            return {
+              'Office': e.officeName,
+              'InternalAudit':  e.counts1['INTERNAL_AUDIT'],
+              'Aging': e.counts1['AGING'],
+              'Posting': e.counts1['POSTING'],
+              'Quality': e.counts1['QUALITY'],
+              'Billing': e.counts1['BILLING'],
+            }
     })
 
-    if(fromTable == 'table'){
-      excelData = excelData.map((e:any)=>{
-        this.teamData.map((ele:any,idx:any)=>{
-          if(ele.teamId != this.currentTeamId && ele.teamId === e.teamId && this.teamData.length != idx){
-            e[`PendencyWith${ele.teamName}`] = e.count;
-          }else if(ele.teamId != this.currentTeamId){
-            e[`PendencyWith${ele.teamName}`] = "0";
-          }
-        })
-        return e;
+        this.totalCount.forEach((e: any) => {
+            if (e.teamId != this.currentTeamId) {
+            totalRow['name'] = 'Total';
+            totalRow[`${e.teamName}`] = e.count;
+             }
       })
+      excelData.unshift(totalRow);
     }
+
     else if(fromTable == 'dos-table'){
-      excelData = excelData.map((e:any)=>{
-        this.teamData.map((ele:any,idx:any)=>{
-          if(ele.teamId != this.currentTeamId && ele.teamId === e.teamId){
-            let date: Date = new Date(e.minDate);
-             e = { ...e, minDate: `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}` }
-            e[`PendencyWith${ele.teamName}`] = e.minDate ;
-          }else if(ele.teamId != this.currentTeamId){
-            e[`PendencyWith${ele.teamName}`] = "-";
-          }
-        })
-        return e;
+      excelData = excelData.map((e: any) => {
+        return {
+          'Office': e.officeName,
+          'InternalAudit': e.dates1['INTERNAL_AUDIT'] ? e.dates1['INTERNAL_AUDIT'] : "-" ,
+          'Aging': e.dates1['AGING'] ? e.dates1['AGING'] : "-",
+          'Posting': e.dates1['POSTING'] ? e.dates1['POSTING'] : "-",
+          'Quality': e.dates1['QUALITY'] ? e.dates1['QUALITY'] : "-",
+          'Billing': e.dates1['BILLING'] ? e.dates1['BILLING'] : "-",
+        }
       })
     }
     
-    excelData = excelData.map(
-      ({ key, uuid, teamId, count,teamName,minDate,active,Aging,Posting,Billing,InternalAudit,Quality, ...newClaimData }: any) => newClaimData);
-
-      if(fromTable == 'table'){
-        for(let i=0;i<this.teamData.length;i++){          //loop is used to insert a new object Total Row for CSV
-          if(this.currentTeamId != this.teamData[i].teamId){
-            totalRow['name']='Total';
-            totalRow[`PendencyWith${this.teamData[i].teamName}`] = this.totalCount[this.teamData[i].teamName];
-          }
-        }      
-        excelData.unshift(totalRow);
-      }
-
+   excelData =  this.removeCurrentTeamNameFromExcel(excelData);
+    
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Pendency - Other Teams_${this.date}`, options);
     this.showLoader.exportCSVLoader=false;
   }
+
+  removeCurrentTeamNameFromExcel(excelData:any){
+switch(true){
+  case this.currentTeamId == 3:
+    excelData = excelData.map(({InternalAudit,...newData}:any)=>newData);
+    return excelData;
+  case this.currentTeamId == 4:
+    excelData = excelData.map(({Aging,...newData}:any)=>newData);
+    return excelData;
+  case this.currentTeamId == 5:
+    excelData = excelData.map(({Posting,...newData}:any)=>newData);
+    return excelData;
+  case this.currentTeamId == 6:
+    excelData = excelData.map(({Quality,...newData}:any)=>newData);
+    return excelData;
+  case this.currentTeamId == 7:
+    excelData = excelData.map(({Billing,...newData}:any)=>newData);
+    return excelData;
+}
+
+  }
+
   selectAll(event:any,filterProperty:any){
 
     if(filterProperty == "officeName"){
@@ -176,7 +185,7 @@ export class AllPendencyComponent {
         if (event.target.checked) {
           e.checked = true;
         } else {
-          e.checked = false;
+          e['checked'] = false;
         }
       });
       this.filterOfficeName("selectAll");
@@ -184,7 +193,7 @@ export class AllPendencyComponent {
   }
   filterOfficeName(e?: any,filterProperty?:any) {
     if (!e) {
-      this.filteredItems = this.pendencyData;
+      this.filteredItems = JSON.parse(JSON.stringify(this.pendencyData));
       this.isFilterAllSelected.officeName = true;
     } else {
       let isAllSelected: boolean = true;
@@ -197,12 +206,10 @@ export class AllPendencyComponent {
       this.isFilterAllSelected.officeName = isAllSelected;
       this.filteredItems = this.pendencyData.filter((item:any)=>{
           return this.filteredOfficeName.some((checkbox:any)=>{
-              return checkbox.checked && item.officeName == checkbox.name;
+              return checkbox.checked && item.officeName == checkbox.officeName;
           })
       })
     }
-    console.log(this.filteredItems);
-    
     
   }
   fetchOfficeByUuid() {
@@ -232,12 +239,13 @@ export class AllPendencyComponent {
   switchTab(tab:any){
     tab.withoutDos = !tab.withoutDos;
     tab.withDos = !tab.withDos;
+    this.filteredItems = this.pendencyData;
     let event = {target:{checked:true}};  //added so that when tab is swtiched then by default all data should show.
     this.selectAll(event,'officeName');
   }
 
-  sortData(data:any,sortProp:string,order:any,sortType:string){
-    this._service.sortData(data,sortProp,order,sortType);
+  sortData(data:any,sortProp:string,order:any,sortType:string,teamName?:any){
+    this._service.sortData(data,sortProp,order,sortType,teamName);
   }
 
   sortFiltereData(filterValue:any){
@@ -254,15 +262,6 @@ export class AllPendencyComponent {
       return 0;
     });
   
-}
-
-getCount(officeName: string, teamId: number) {
-  const countItem = this.data.count.find((item:any) => item.teamId === teamId && item.officeName === officeName);
-  return countItem ? countItem.count : '0';
-}
-getDateCount(officeName: string, teamId: number) {
-  const countItem = this.data.date.find((item:any) => item.teamId === teamId && item.officeName === officeName);
-  return countItem ? countItem.minDate : '-';
 }
   
 }

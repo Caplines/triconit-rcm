@@ -141,7 +141,7 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['editClient'], callback)
   }
 
-  sortData(data: any, sortBy: any, order: any, sortType: string) {
+  sortData(data: any, sortBy: any, order: any, sortType: string, teamName?:any) {
     if (sortType === 'string') {
       order === 'asc' ? data.sort((a: any, b: any) => {
         if (a[sortBy] === null || a[sortBy] === "null") {
@@ -200,7 +200,28 @@ export class ApplicationServiceService extends BaseService {
 
     }
 
+    else if (sortType === 'nestedCount'){
+      order === 'asc' ? data.sort((a:any,b:any)=>{
+          return a.counts1[teamName.toUpperCase()] - b.counts1[teamName.toUpperCase()];
+      }): data.sort((a:any,b:any)=>{
+        return b.counts1[teamName.toUpperCase()] - a.counts1[teamName.toUpperCase()];
+      })
+    }
+    else if (sortType === 'nestedDate'){
+      order === 'asc' ? data.sort((a:any,b:any)=>{
+        if(a.dates1[teamName.toUpperCase()] === null && b.dates1[teamName.toUpperCase()] === null) return 0;
+        else if(a.dates1[teamName.toUpperCase()] === null) return 1;
+        else if(b.dates1[teamName.toUpperCase()] === null) return -1;
+        else return <any> new Date(a.dates1[teamName.toUpperCase()]) - <any> new Date(b.dates1[teamName.toUpperCase()]);
+      }): data.sort((a:any,b:any)=>{
+        if(a.dates1[teamName.toUpperCase()] === null && b.dates1[teamName.toUpperCase()] === null) return 0;
+        else if(a.dates1[teamName.toUpperCase()] === null) return 1;
+        else if(b.dates1[teamName.toUpperCase()] === null) return -1;
+        else return <any> new Date(b.dates1[teamName.toUpperCase()]) - <any> new Date(a.dates1[teamName.toUpperCase()]);
+      })
+    }
   }
+
   sortDataOld(data: any, sortBy: any, sortingColm: any, order: any, sortingType: any, sortType: string) {
     if (sortType === 'string') {
       if (sortingColm == 'officeAssigned') {
