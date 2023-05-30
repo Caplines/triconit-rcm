@@ -452,7 +452,7 @@ public class RcmController extends BaseHeaderController{
 		}
 				
 		return ResponseEntity
-				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.getAllPendencyReport(partialHeader.getCompany())));
+				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.getAllPendencyReport(partialHeader.getCompany(),partialHeader.getTeamId())));
 	}
 	
 

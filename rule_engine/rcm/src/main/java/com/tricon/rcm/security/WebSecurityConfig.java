@@ -129,7 +129,7 @@ public class WebSecurityConfig {
 						"/manage-client","/user-setting","/claim-assignment","/billing-claims/*","/billing-claims/*/ivf",
 						"/billing-claims/{pathvariable:[0-9A-Za-z]+}/ivf",
 						"/billing-claims/{pathvariable:[0-9A-Za-z]+}/tp",
-						"/billing-claims/*/tp",
+						"/billing-claims/*/tp","/tool-update/issue-claims",
 						"/list-of-claims","/all-pendency","/production","/update-pass",
 						"/api/testSVSheet",
 						 "/*.html",

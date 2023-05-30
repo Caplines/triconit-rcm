@@ -15,5 +15,7 @@ public class AllPendencyReportDto {
 	List<RcmOfficeDto> offices;
 	List<PendencyDataCountDto> header;
 	List<PendencyDataCountDto> rowData;
+	List<Integer> headerNew;
+	List<PendencyWithOfficeOnlyDto>  onlyOffice;
 	
 }

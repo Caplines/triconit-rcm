@@ -284,7 +284,7 @@ export class BillingClaimsComponent {
         ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
       }
       ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
-      ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
+      //ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
       valid = false;
     } else {
       if (ths.submissionDto.channel === undefined || ths.submissionDto.channel === null) {
@@ -329,11 +329,11 @@ export class BillingClaimsComponent {
         valid = false;
       }
 
-      let SUB_DET_TI: any = document.getElementById("SUB_DET_TI");
+      /*let SUB_DET_TI: any = document.getElementById("SUB_DET_TI");
       if (SUB_DET_TI.value.trim() === '') {
         ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
         valid = false;
-      }
+      }*/
 
 
     }

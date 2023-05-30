@@ -128,7 +128,7 @@ public class RcmCommonServiceImpl {
 	public List<RcmOfficeDto> getOfficesByUuid(String companyUuid) {
 		RcmCompany company = rcmCompanyRepo.findByUuid(companyUuid);
 		if (company != null) {
-			List<RcmOfficeDto> office = officeRepo.findByCompanyAndActiveTrue(company);
+			List<RcmOfficeDto> office = officeRepo.findByCompanyAndActiveTrueOrderByNameAsc(company);
 			return office;
 		}
 		return null;

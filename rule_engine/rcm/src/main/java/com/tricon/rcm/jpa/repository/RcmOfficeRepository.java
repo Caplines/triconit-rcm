@@ -22,5 +22,5 @@ public interface RcmOfficeRepository extends JpaRepository<RcmOffice, String> {
 	@Query(value="select max(id) from office",nativeQuery=true)
 	int getMaxKeyFromOffice();
 	
-	List<RcmOfficeDto> findByCompanyAndActiveTrue(RcmCompany company);
+	List<RcmOfficeDto> findByCompanyAndActiveTrueOrderByNameAsc(RcmCompany company);
 }

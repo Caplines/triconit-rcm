@@ -22,12 +22,14 @@
                                             <div class="form-check-inline">
                                                 <input class="form-check-input" type="radio" name="flexRadioDefault"
                                                     id="flexRadioDefault1" (click)="selectSource('EAGLESOFT')">
-                                                <label class="form-check-label " for="flexRadioDefault1">Eaglesoft Agent</label>
+                                                <label class="form-check-label " for="flexRadioDefault1">Eaglesoft
+                                                    Agent</label>
                                             </div>
                                             <div class="form-check-inline">
                                                 <input class="form-check-input" type="radio" name="flexRadioDefault"
                                                     id="flexRadioDefault2" (click)="selectSource('GOOGLESHEET')">
-                                                <label class="form-check-label" for="flexRadioDefault2"> Google Sheet</label>
+                                                <label class="form-check-label" for="flexRadioDefault2"> Google
+                                                    Sheet</label>
                                             </div>
                                         </ng-container>
                                         <!-- <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
@@ -44,11 +46,14 @@
                                     </div>
                                 </div>
                             </ng-container>
-                            <!-- <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
-                        <div class="form-check-inline">
-                            <label class="form-check-label gs-btn" (click)="fetchGSheet()" >Through Google Sheet</label>
-                        </div>
-                    </ng-container> -->
+                            <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
+                                <div class="alert alert-info" role="alert">
+                                    <img src="../../assets/img/info-icon-border.png">we need to upload data in the&nbsp;
+                                    <span class="gs-link" style=" color: blue;" (click)="fetchGSheet()"> Sheet</span>
+                                    &nbsp; for
+                                    uploading the claims
+                                </div>
+                            </ng-container>
                             <ng-container *ngIf="alert.showAlertPopup">
                                 <div>
                                     <div class="alert fade show text-center"
