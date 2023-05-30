@@ -414,6 +414,13 @@ export class BillingClaimsComponent {
     } return true;
   }
 
+  /*Refferal Letter Changed to Provider Change Reference Number Needed*/
+  providerRefNoEnable(): boolean {
+    if (this.submissionDto?.refferalLetter == true) {
+      return false;
+    } return true;
+  }
+
   switchType(type: any) {
     if (type == 'pass') {
       this.mtype = '2';

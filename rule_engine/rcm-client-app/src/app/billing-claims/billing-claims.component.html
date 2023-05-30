@@ -345,6 +345,14 @@
                                 id="claimValidationsManual">
                                 <div class="table-responsive">
                                     <table class="table" style="margin-bottom: 0px;">
+                                        <thead>
+                                            <tr>
+                                                <th>Number</th>
+                                                <th>Name</th>
+                                                <th>Status</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             <tr
                                                 *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';">
@@ -856,22 +864,30 @@
                                             </tr>
                                             <tr>
                                                 <td>05</td>
-                                                <td>Refferal Letter </td>
+                                                <td>Provider Change Reference Number Needed? </td>
+                                                <!--Refferal Letter Changed to Provider Change Reference Number Needed-->
                                                 <td>
                                                     <div data-toggle="buttons" class="btn-group btn-group-toggle"
                                                         id="SUB_DET_REF">
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.refferalLetter}">
-                                                            <input type="radio" name="atch" value=""
+                                                            <input type="radio" name="atchpro" value=""
                                                                 (click)="submissionDto.refferalLetter=true;removeErrorDisplayKeyById('SUB_DET_REF')"
                                                                 [disabled]="isSectionReadOnly()"> Yes
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.refferalLetter==false}">
-                                                            <input type="radio" name="atch" value=""
-                                                                (click)="submissionDto.refferalLetter=false;removeErrorDisplayKeyById('SUB_DET_REF')"
+                                                            <input type="radio" name="atchpro" value=""
+                                                                (click)="submissionDto.refferalLetter=false;removeErrorDisplayKeyById('SUB_DET_REF');removeErrorDisplayKeyById('SUB_DET_PORVIDER_RENO')"
                                                                 [disabled]="isSectionReadOnly()"> No
                                                         </label>
+                                                        <div class="preauthcla">
+                                                            <textarea class="form-control" id="" rows="1"
+                                                                id="SUB_DET_PORVIDER_RENO"
+                                                                (click)="removeErrorDisplayKeyById('SUB_DET_PORVIDER_RENO')"
+                                                                [disabled]="providerRefNoEnable()"
+                                                                [(ngModel)]='submissionDto.providerRefNo'></textarea>
+                                                        </div>
                                                     </div>
 
                                                 </td>
