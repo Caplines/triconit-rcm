@@ -327,7 +327,7 @@ export class ListOfClaimsComponent implements OnInit {
       let height = canvas.height * width / canvas.width;
       // Insert office name
       pdf.setFontSize(10);  // Adjust the font size as needed
-      pdf.text(`RCM Tool-${this.clientName}`, 3, 10);
+      pdf.text(`List Of Claims - ${this.clientName}`, 2,6);
       pdf.addImage(content, "PNG", 0, 15, width, height);
       this.date = new Date();
       this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;

@@ -1,0 +1,52 @@
+<div class="sticky-top bg-dark">
+    <div class="topbar" style="justify-content: flex-start;">
+        <a class="backBtn" (click)="goToClaimDetailPage()"><img src="../../assets/img/arrow-back.png"
+                [style]="{width:'16px'}"></a>
+        <h1>Capline RCM</h1>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 pt-5">
+            <h6 class="page-heading">Issue Claims</h6>
+            <div class="main-container">
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <div class="detail-box">
+                            <div class="detail-box-form">
+                                <div class="form-row collapse show" style="border-radius: 10px 10px 0px 0px;">
+                                    <h6 style="color: black;">Upload Errors : <span class="number-of-claims" style="pointer-events:none;">Number of Claims Not Uploaded: {{issueClaimsCount}}</span></h6> 
+                                    <div class="table-responsive" >
+                                        <table class="table table-wrapper-scroll-y table-inner-scrollbar" #modalElement (scroll)="onModalScroll()"   id="issuetable"  *ngIf="issueCl?.length>0">
+                                            <thead>
+                                                <tr class="totalRow">
+                                                    <th colspan="6">Office Name</th>
+                                                    <th colspan="6" >Claim ID</th>
+                                                    <th colspan="6">Upload Date</th>
+                                                    <th colspan="6" style="min-width: 170px;">Issue due to which Claim could not be Uploaded</th>
+                                                    <th colspan="6">Source</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let lg of issueCl;let idx=index;">
+                        
+                                                    <td colspan="6">{{lg.officeName}}</td>
+                                                    <td colspan="6">{{lg.claimId}}</td>
+                                                    <td colspan="6">{{lg.createdDate | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                                                    <td colspan="6">{{lg.issue}}</td>
+                                                    <td colspan="6">{{lg.source}}</td>
+                                                    
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+            
+    </div>
+    </div>
+    </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>

@@ -1,5 +1,5 @@
 <div class="top-content">
-      <ng-container *ngIf="isLoggedIn && !isBillPage">
+      <ng-container *ngIf="isLoggedIn && !isBillPage && !isIssueClaimsPage">
             <app-header-component></app-header-component>
       </ng-container>
       <router-outlet></router-outlet>

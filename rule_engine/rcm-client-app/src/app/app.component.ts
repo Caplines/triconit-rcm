@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
 
   isLoggedIn: Boolean = false;
   isBillPage:boolean=false;
+  isIssueClaimsPage:boolean=false;
   constructor(private title: Title, public baseService: BaseService,private _service:ApplicationServiceService) {
     this.title.setTitle('Rcm Tool');
     if (localStorage.getItem("token")) {
@@ -30,6 +31,9 @@ export class AppComponent implements OnInit {
     
     if(window.location.pathname.includes("billing-claims")){
       this.isBillPage = true;
+    }
+    if(window.location.pathname.includes("issue-claims")){
+     this.isIssueClaimsPage=true;
     }
   }
 
