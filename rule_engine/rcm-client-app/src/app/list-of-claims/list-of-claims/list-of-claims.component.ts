@@ -133,6 +133,11 @@ export class ListOfClaimsComponent implements OnInit {
           e['insuranceName']=e.secondaryInsurance;
         }
       });
+      this.filteredInsuranceName = Object.values(this.filteredInsuranceName.reduce((acc:any, {insuranceName}:any) => {
+        if (!acc[insuranceName])
+            acc[insuranceName] = {checked: true, insuranceName: insuranceName};
+        return acc;
+      },{}));
       this.isFilterValueExist = true;
     }
     this.sortFiltereData(this.filteredInsuranceName);
