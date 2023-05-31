@@ -242,7 +242,7 @@ export class AllPendencyComponent {
     if (!this.pendencyData) return;
     tab.withoutDos = !tab.withoutDos;
     tab.withDos = !tab.withDos;
-    this.filteredItems = this.pendencyData;
+    // this.filteredItems = this.pendencyData;
     let event = { target: { checked: true } };  //added so that when tab is swtiched then by default all data should show.
     this.selectAll(event, 'officeName');
   }

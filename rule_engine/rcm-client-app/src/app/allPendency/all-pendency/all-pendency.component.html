@@ -302,7 +302,7 @@
                                                             class="loader-data"></span> </td>
                                                 </tr>
                                                 <ng-container
-                                                    *ngFor="let office of pendencyData;let id= index;let last;">
+                                                    *ngFor="let office of filteredItems;let id= index;let last;">
                                                     <tr>
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData">
