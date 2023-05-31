@@ -1708,11 +1708,17 @@ public class ClaimServiceImpl {
 		return data;
 	}
 
-	public List<ProductionDto> claimsProductionReportByTeam(int teamId, ClaimProductionLogDto dto,PartialHeader partialHeader) {
+	public List<ProductionDto> claimsProductionReportByTeam(ClaimProductionLogDto dto,PartialHeader partialHeader) {
 
 		
-		return rcmClaimRepository.claimProductionByTeamMember(partialHeader.getCompany().getUuid(), teamId, dto.getStartDate(),
-				dto.getEndDate());
+		if (partialHeader.getTeamId() == RcmTeamEnum.BILLING.getId() ) {
+			return rcmClaimRepository.claimProductionByForBilling(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+					dto.getEndDate());
+		}else if (partialHeader.getTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId() ) {
+			return rcmClaimRepository.claimProductionForInternalAudit(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+					dto.getEndDate());
+		}
+		return null;
 
 	}
 

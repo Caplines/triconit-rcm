@@ -90,7 +90,7 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
 		
-		if (partialHeader.getTeamId()!=RcmTeamEnum.BILLING.getId()) {
+		if (!(partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId() || partialHeader.getTeamId()!=RcmTeamEnum.INTERNAL_AUDIT.getId())) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
 		Object sucess = null;
@@ -193,7 +193,7 @@ public class RcmController extends BaseHeaderController{
 		if (partialHeader ==null) return null;
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.claimsProductionReportByTeam(RcmTeamEnum.BILLING.getId(), dto,partialHeader)));
+				claimServiceImpl.claimsProductionReportByTeam(dto,partialHeader)));
 	}
 
 	//@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
