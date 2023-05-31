@@ -241,14 +241,19 @@ public class RuleBookServiceImpl {
 			if (treatingProvider ==null)  treatingProvider="";
 			if (treatingProviderFromClaim ==null)  treatingProviderFromClaim="";
 			
-			if (!treatingProviderFromClaim.equals("") && !treatingProvider.equals("")) {
+			if (!providerOnClaim.equals("") && !providerOnClaimFromSheet.equals("")) {
 
-				if (!treatingProviderFromClaim.equalsIgnoreCase(treatingProvider)) {
+				if (!providerOnClaim.equalsIgnoreCase(providerOnClaimFromSheet)) {
 					
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule304.error.message",
-									new Object[] { providerOnClaim, providerOnClaimFromSheet }, locale),
+									new Object[] { treatingProvider, treatingProviderFromClaim }, locale),
 							Constants.FAIL, "", "", ""));
+				}else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule304.pass.message",
+									new Object[] { }, locale),
+							Constants.PASS, "", "", ""));
 				}
 				
 				

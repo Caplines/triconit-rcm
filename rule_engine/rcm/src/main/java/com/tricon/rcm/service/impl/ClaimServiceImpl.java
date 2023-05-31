@@ -1101,7 +1101,7 @@ public class ClaimServiceImpl {
 		if (dto != null) {
 
 			implDto = new FreshClaimDataImplDto();
-			implDto.setSecInsurance("N/A");
+			//implDto.setSecInsurance("N/A");
 			// RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUuid);
 			// Fetch Data from RCM Tool Checks and Validations Sheets //141479965
 
@@ -1192,7 +1192,7 @@ public class ClaimServiceImpl {
 				issueIV.printStackTrace();
 			}
 			
-			if (!dto.getAutoRuleRun())runAutomatedRules(claim, partialHeader, claimUuid,false,true);
+			
 			
 			
 			
@@ -1333,7 +1333,10 @@ public class ClaimServiceImpl {
 					
 				}
 			}
-			if (claim!=null  && !pdf) rcmClaimRepository.save(claim);
+			if (claim!=null  && !pdf) {
+				if (!dto.getAutoRuleRun())runAutomatedRules(claim, partialHeader, claimUuid,false,true);
+				rcmClaimRepository.save(claim);
+			}
 			
 			// Run Auto Rules
 			//runAutomatedRules(jwtUser, claimUuid);//not from here 
@@ -1341,7 +1344,8 @@ public class ClaimServiceImpl {
 		} else {
 			// Wrong claimId;
 		}
-		if (implDto.getSecInsurance()==null) implDto.setSecInsurance("N/A");
+		//if (implDto.getSecInsurance()==null) implDto.setSecInsurance("N/A");
+		
 		return implDto;
 
 	}
