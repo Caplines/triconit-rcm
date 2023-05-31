@@ -84,7 +84,7 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionClaimType(subType);
         this.filterOptionActionRequired(subType);
         this.filterOptionInsuranceName(subType);
-        this.filterOptionInsuranceType();
+        this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
       } 
       // else {
@@ -120,10 +120,27 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   filterOptionInsuranceName(subType:string){
-    if(subType == 'Fresh' && this.isFilterValueExist){
+    if((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist)){
      this.filteredInsuranceName = [];
     }
     if(subType == 'Fresh'){
+      this.filteredItems.forEach((e:any)=>{
+        if(e.claimId.includes("_P")){
+          this.filteredInsuranceName.push({'checked':true,'insuranceName':e.primaryInsurance});
+          e['insuranceName']=e.primaryInsurance;
+        }else if(e.claimId.includes("_S")){
+          this.filteredInsuranceName.push({'checked':true,'insuranceName':e.secondaryInsurance});
+          e['insuranceName']=e.secondaryInsurance;
+        }
+      });
+      this.filteredInsuranceName = Object.values(this.filteredInsuranceName.reduce((acc:any, {insuranceName}:any) => {
+        if (!acc[insuranceName])
+            acc[insuranceName] = {checked: true, insuranceName: insuranceName};
+        return acc;
+      },{}));
+      this.isFilterValueExist = true;
+    }
+    if(subType == 'sendBack'){
       this.filteredItems.forEach((e:any)=>{
         if(e.claimId.includes("_P")){
           this.filteredInsuranceName.push({'checked':true,'insuranceName':e.primaryInsurance});
@@ -144,7 +161,11 @@ export class ListOfClaimsComponent implements OnInit {
     this.isFilterAllSelected.insuranceName = true;
   }
 
-  filterOptionInsuranceType(){
+  filterOptionInsuranceType(subType:string){
+    if((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist)){
+      this.filteredInsuranceType = [];
+     }
+     if(subType == 'Fresh'){
     this.filteredItems.forEach((e:any)=>{
       if(e.claimId.includes("_P")){
         this.filteredInsuranceType.push({'checked':true,'insuranceType':e.prName});
@@ -158,7 +179,23 @@ export class ListOfClaimsComponent implements OnInit {
       .map((insuranceType:any) => {
       return this.filteredInsuranceType.find((a:any) => a.insuranceType === insuranceType);
       });
-      this.sortFiltereData(this.filteredInsuranceType);
+    }
+    if(subType == 'sendBack'){
+      this.filteredItems.forEach((e:any)=>{
+        if(e.claimId.includes("_P")){
+          this.filteredInsuranceType.push({'checked':true,'insuranceType':e.prName});
+          e['insuranceType']=e.prName;
+        }else if(e.claimId.includes("_S")){
+          this.filteredInsuranceType.push({'checked':true,'insuranceType':e.secName});
+          e['insuranceType']=e.secName;
+        }
+      })
+      this.filteredInsuranceType = Array.from(new Set(this.filteredInsuranceType.map((a:any) => a.insuranceType)))
+        .map((insuranceType:any) => {
+        return this.filteredInsuranceType.find((a:any) => a.insuranceType === insuranceType);
+        });
+      }
+    this.sortFiltereData(this.filteredInsuranceType);
     this.isFilterAllSelected.insuranceType = true;
   }
 
@@ -385,7 +422,7 @@ export class ListOfClaimsComponent implements OnInit {
           "Action Required":e.actionRequired,
           "Insurance Name":e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type":e.prName? e.prName : e.secName,
-          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$'+e.primTotal.toString() : "$0") : e.primeSecSubmittedTotal ? '$'+formatNumber(e.primeSecSubmittedTotal,this.locale,'1.2-2').toString() : "$0",
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$'+e.primTotal.toString() : "$0") : e.primeSecSubmittedTotal ? '$'+formatNumber(e.primeSecSubmittedTotal,this.locale,'.0-0').toString() : "$0",
           "Last Team that Worked on this claim":this.isLastTeam==true?e.lastTeam:""
         }
       })  //method aligns the header to the value in CSV.

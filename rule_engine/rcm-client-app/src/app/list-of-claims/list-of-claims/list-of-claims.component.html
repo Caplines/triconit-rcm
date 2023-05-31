@@ -507,10 +507,10 @@
                                                         <!-- Insurance Type START-->
                                                         <!-- Insurance Type START-->
                                                         <td class="alignRight" *ngIf="det.claimId | claimTypeFilter">
-                                                            {{det.primeSecSubmittedTotal | currency:'USD':true:'1.2-2'}}
+                                                            {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
                                                         <td class="alignRight" *ngIf="! (det.claimId | claimTypeFilter)">
-                                                            {{det.primeSecSubmittedTotal | currency:'USD':true:'1.2-2'}}
+                                                            {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
                                                         <!-- Insurance Type START-->
                                                         <td *ngIf="selectedSubtype!='Fresh'">{{det.billedAmount}}</td>
