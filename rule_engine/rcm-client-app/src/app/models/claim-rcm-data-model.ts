@@ -74,6 +74,7 @@ export interface ClaimRcmDataModel {
 	firstTeam?: string;
 	firstTeamId?: number;
 	primaryEob?: string;
+	providerOnClaimFromSheet?: string
 
 }
 
