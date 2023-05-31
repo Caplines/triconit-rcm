@@ -30,6 +30,14 @@ export class AllPendencyComponent {
   datePipeString:any;
   fliterName:string= '';
 
+  @HostListener('mouseleave') onMouseLeave(event: Event){
+    if(event?.target) {
+      setTimeout(() => {
+        this.showFilteredDropdown.officeName = false;
+      }, 500);
+    }
+  } 
+
   constructor(private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
   }
