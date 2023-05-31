@@ -1,4 +1,4 @@
-import { Component, OnInit ,LOCALE_ID,Inject} from '@angular/core';
+import { Component, OnInit ,LOCALE_ID,Inject, HostListener} from '@angular/core';
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
@@ -38,6 +38,15 @@ export class ListOfClaimsComponent implements OnInit {
   clientName:string='';
   isFilterValueExist : boolean = false;
   isLastTeam:boolean=false;
+  fliterName:string= '';
+
+  @HostListener('mouseleave') onMouseLeave(event: Event){
+    if(event?.target) {
+      setTimeout(() => {
+        this.showFilteredDropdown[this.fliterName] = false;
+      }, 500);
+    }
+  } 
 
   constructor(@Inject(LOCALE_ID) private locale: string,private appService: ApplicationServiceService, public appConstants: AppConstants,private title:Title) {
     this.selectedBtype = this.appConstants.BILLING_ID;
@@ -528,5 +537,6 @@ export class ListOfClaimsComponent implements OnInit {
     filterName == 'actionRequired' ? this.showFilteredDropdown.actionRequired  = true : this.showFilteredDropdown.actionRequired  = false;
     filterName == 'insuranceName' ? this.showFilteredDropdown.insuranceName  = true : this.showFilteredDropdown.insuranceName  = false;
     filterName == 'insuranceType' ? this.showFilteredDropdown.insuranceType  = true : this.showFilteredDropdown.insuranceType  = false;
+    this.fliterName = filterName;
   }
 }
