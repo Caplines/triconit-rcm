@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -28,6 +28,14 @@ export class AllPendencyComponent {
 
   totalCount: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Aging", "count": 0, "teamId": 4 }, { "teamName": "Posting", "count": 0, "teamId": 5 }, { "teamName": "Quality", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
   datePipeString:any;
+
+  @HostListener('mouseleave') onMouseLeave(event: Event){
+    if(event?.target) {
+      setTimeout(() => {
+        this.showFilteredDropdown.officeName = false;
+      }, 500);
+    }
+  } 
 
   constructor(private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
