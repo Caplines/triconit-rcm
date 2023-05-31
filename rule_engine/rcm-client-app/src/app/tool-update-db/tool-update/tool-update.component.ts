@@ -103,6 +103,7 @@ this.sourceType="";
       this.alert.showAlertPopup= true;
       this.alert.isError=true;
       this.alert.alertMsg= "Please Select Source to Update Database from";
+      ths.loader.updateClaims=false;
       
       return;
     } 
@@ -115,6 +116,7 @@ this.sourceType="";
     if (ths.freshClaimPullModel.officeuuids.length>0){
       ths.loader.showLoader=true;
       ths.loader.updateClaims=false;
+      ths.loader.updateClaims=true;
       this.appService.pullFreshClaims(ths.freshClaimPullModel,(res:any)=>{
         if (res.status=== 200){
           ths.loader.showLoader=false;
@@ -135,6 +137,7 @@ this.sourceType="";
           ths.log.forEach((e:any) => {
             if (e.update) e.update=false;
             this.hasUpdateClaims=[];
+            ths.loader.updateClaims=false;
           });
         }else{
           //ERROR

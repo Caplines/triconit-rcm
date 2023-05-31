@@ -84,7 +84,7 @@
                                                                     (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                             </span>
                                                             <div class="dropdown">
-                                                                <svg (click)="showFilteredDropdown.officeName = !showFilteredDropdown.officeName"
+                                                                <svg  (click)="showHideFilteredDropdown('officeName')"
                                                                     style="cursor:pointer;display: inline-block; float: left;background: #e5e5e5;border-radius: 5px;padding: 1px;/* margin-right: 3px; */margin-left: 6px;"
                                                                     version="1.1" viewBox="0 0 24 24"
                                                                     xml:space="preserve"
@@ -110,7 +110,7 @@
                                                                         </path>
                                                                     </g>
                                                                 </svg>
-                                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.officeName">
                                                                     <div class="clearClose">
                                                                         <label class="mx-1">
@@ -220,7 +220,7 @@
                                                                     (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                             </span>
                                                             <div class="dropdown">
-                                                                <svg (click)="showFilteredDropdown.officeName = !showFilteredDropdown.officeName"
+                                                                <svg (click)="showHideFilteredDropdown('officeName')"
                                                                     style="cursor:pointer;display: inline-block; float: left;background: #e5e5e5;border-radius: 5px;padding: 1px;/* margin-right: 3px; */margin-left: 6px;"
                                                                     version="1.1" viewBox="0 0 24 24"
                                                                     xml:space="preserve"
@@ -246,7 +246,7 @@
                                                                         </path>
                                                                     </g>
                                                                 </svg>
-                                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.officeName">
                                                                     <div class="clearClose">
                                                                         <label class="mx-1">

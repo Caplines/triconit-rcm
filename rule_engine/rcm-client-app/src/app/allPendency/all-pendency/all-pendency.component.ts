@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -28,6 +28,7 @@ export class AllPendencyComponent {
 
   totalCount: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Aging", "count": 0, "teamId": 4 }, { "teamName": "Posting", "count": 0, "teamId": 5 }, { "teamName": "Quality", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
   datePipeString:any;
+  fliterName:string= '';
 
   constructor(private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
@@ -85,11 +86,11 @@ export class AllPendencyComponent {
       let height = canvas.height * width / canvas.width;
       // Insert office name
       pdf.setFontSize(10);  // Adjust the font size as needed
-      pdf.text(`Pendency - Other Teams-${this.clientName}`, 2, 6);
+      pdf.text(`Pendency - Other Teams - ${this.clientName}`, 2, 6);
       pdf.addImage(content, "PNG", 0, 15, width, height);
       this.date = new Date();
       this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${localStorage.getItem("selected_clientName")}_All_Pendency_${this.date}`);
+      pdf.save(`${localStorage.getItem("selected_clientName")}_Pendency - Other Teams_${this.date}`);
       this.showLoader.exportPDFLoader = false;
       m.forEach((e: any) => {
         e.classList.add('table-wrapper-scroll-y');
@@ -268,5 +269,17 @@ export class AllPendencyComponent {
     });
 
   }
+  showHideFilteredDropdown(filterName:any){
+    filterName == 'officeName' ? this.showFilteredDropdown.officeName = true  : this.showFilteredDropdown.officeName = false;
+   this.fliterName = filterName;
+  }
+
+  @HostListener('mouseleave') onMouseLeave(event: Event){
+    if(event?.target) {
+      setTimeout(() => {
+       this.showFilteredDropdown[this.fliterName] = false;
+      }, 500);
+    }
+  } 
 
 }
