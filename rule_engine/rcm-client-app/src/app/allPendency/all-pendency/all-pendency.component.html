@@ -309,7 +309,7 @@
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
                                                                 <td>
                                                                     {{office.dates1[team.teamName|uppercase] ?
-                                                                    office.dates1[team.teamName|uppercase] : "-"}}
+                                                                    (office.dates1[team.teamName|uppercase]| date: 'MM/dd/yyyy') : "-"}}
                                                                 </td>
                                                             </ng-container>
                                                         </ng-container>

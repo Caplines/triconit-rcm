@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 import { AllPendencyRoutingModule } from './all-pendency-routing.module';
 import { AllPendencyComponent } from './all-pendency.component';
@@ -17,6 +17,7 @@ import { HeaderComponent } from '../../header/header-component/header.component'
     AllPendencyRoutingModule,
     FormsModule,
     HeaderComponent
-  ]
+  ],
+  providers:[DatePipe]
 })
 export class AllPendencyModule { }

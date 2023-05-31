@@ -5,6 +5,7 @@ import jsPDF from 'jspdf';
 import { ngxCsv } from 'ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import Utils from '../../util/utils';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'all-pendency',
   templateUrl: './all-pendency.component.html',
@@ -26,8 +27,9 @@ export class AllPendencyComponent {
   isSorted: any = {};
 
   totalCount: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Aging", "count": 0, "teamId": 4 }, { "teamName": "Posting", "count": 0, "teamId": 5 }, { "teamName": "Quality", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
+  datePipeString:any;
 
-  constructor(private _service: ApplicationServiceService, private title: Title) {
+  constructor(private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
   }
   ngOnInit(): void {
@@ -140,11 +142,11 @@ export class AllPendencyComponent {
       excelData = excelData.map((e: any) => {
         return {
           'Office': e.officeName,
-          'InternalAudit': e.dates1['INTERNAL_AUDIT'] ? e.dates1['INTERNAL_AUDIT'] : "-",
-          'Aging': e.dates1['AGING'] ? e.dates1['AGING'] : "-",
-          'Posting': e.dates1['POSTING'] ? e.dates1['POSTING'] : "-",
-          'Quality': e.dates1['QUALITY'] ? e.dates1['QUALITY'] : "-",
-          'Billing': e.dates1['BILLING'] ? e.dates1['BILLING'] : "-",
+          'InternalAudit': e.dates1['INTERNAL_AUDIT'] ? this.datePipe.transform(new Date(e.dates1['INTERNAL_AUDIT']),'MM/dd/yyyy') : "-",
+          'Aging': e.dates1['AGING'] ? this.datePipe.transform(new Date(e.dates1['AGING']),'MM/dd/yyyy') : "-",
+          'Posting': e.dates1['POSTING'] ? this.datePipe.transform(new Date(e.dates1['POSTING']),'MM/dd/yyyy') : "-",
+          'Quality': e.dates1['QUALITY'] ? this.datePipe.transform(new Date(e.dates1['QUALITY']),'MM/dd/yyyy') : "-",
+          'Billing': e.dates1['BILLING'] ? this.datePipe.transform(new Date(e.dates1['BILLING']),'MM/dd/yyyy') : "-",
         }
       })
     }
