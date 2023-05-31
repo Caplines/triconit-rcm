@@ -1122,11 +1122,13 @@ public class ClaimServiceImpl {
 			if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
 				claimSubTy = Constants.insuranceTypePrimary;
 				implDto.setPrimary(true);
-				implDto.setSecMemberId("N/A");
+				implDto.setSecMemberId(dto.getSecMemberId());
 			} else {
 				implDto.setPrimary(false);
 			}
-			
+			if (dto.getSecMemberId()==null) {
+				implDto.setSecMemberId("N/A");
+			}
 			RcmClaims claim = null;
 			IVFDto ivfDto =null;
 			try {

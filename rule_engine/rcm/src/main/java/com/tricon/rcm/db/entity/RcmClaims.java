@@ -143,7 +143,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "timely_fil_lmt_dt")
 	private String  timelyFilingLimitData;
 	
-	
+	//Same for Primary and secondary 
 	@Column(name = "sec_member_id")
 	private String  secMemberId;
 	
