@@ -23,6 +23,7 @@ export class ProductionComponent implements OnInit {
   loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false,'fetch':false};
   isDataAvailable:boolean=false;
   clientName:string='';
+  fetchbtnDisable=true;
   
   constructor(private appService: ApplicationServiceService,private title:Title) { 
      title.setTitle(Utils.defaultTitle + "Production")
@@ -42,6 +43,7 @@ export class ProductionComponent implements OnInit {
     if (callback.status == 200 && callback.data) {
       this.loader.showLoader=false;
       this.loader.fetch = false;
+      this.fetchbtnDisable=false;
    this.productionData = callback.data;
    if( this.productionData.length==0){
     this.loader.showLoader = true;
@@ -64,6 +66,7 @@ export class ProductionComponent implements OnInit {
  selectDate(event:any,from:any){
   if(from == 'start') this.selectedDate.startDate = event.target.value ;
   if(from=='end') this.selectedDate.endDate = event.target.value;
+  this.fetchbtnDisable=true;
   console.log(this.selectedDate.startDate,this.selectedDate.endDate );
   
   

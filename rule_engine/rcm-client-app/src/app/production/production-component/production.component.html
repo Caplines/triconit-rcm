@@ -63,7 +63,7 @@
                                 </div>
                             </ng-container>
                             <div class="text-center">
-                                <button  [ngClass]="{'disabled':!selectedDate.startDate || !selectedDate.endDate,'btn-success':selectedDate.startDate && selectedDate.endDate}" type="button" class="btn "
+                                <button  [ngClass]="{'disabled':!selectedDate.startDate || !selectedDate.endDate || !fetchbtnDisable,'btn-success':selectedDate.startDate && selectedDate.endDate}" type="button" class="btn "
                                     (click)="save()"><span *ngIf="loader.fetch" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>Fetch</button>
                             </div>
                            

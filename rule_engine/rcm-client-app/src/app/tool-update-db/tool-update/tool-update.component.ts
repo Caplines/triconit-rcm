@@ -37,6 +37,7 @@ export class ToolUpdateComponent implements OnInit {
   date:any;
   gsLink:any='';
   clientName:string='';
+  updateClaimbtnDisable=true;
   
   constructor(public appService: ApplicationServiceService,private title:Title) { 
 
@@ -96,6 +97,9 @@ this.sourceType="";
     let ths=this;
     ths.loader.updateClaims=true;
     ths.freshClaimPullModel.officeuuids=[];
+    this.updateClaimbtnDisable=false;
+    let esRadio:any = document.getElementById("flexRadioDefault1");
+    let gsRadio:any = document.getElementById("flexRadioDefault2");
    
     if (this.sourceType =='' &&  this.smilePoint.uuid==this.cName) {
       console.log("Please select Source");
@@ -105,6 +109,7 @@ this.sourceType="";
       this.alert.alertMsg= "Please Select Source to Update Database from";
       ths.loader.updateClaims=false;
       
+      this.updateClaimbtnDisable=true;
       return;
     } 
     ths.setSource();
@@ -138,6 +143,10 @@ this.sourceType="";
             if (e.update) e.update=false;
             this.hasUpdateClaims=[];
             ths.loader.updateClaims=false;
+            this.updateClaimbtnDisable=true;
+            esRadio.checked = false;        
+            gsRadio.checked = false;
+            this.sourceType="";
           });
         }else{
           //ERROR

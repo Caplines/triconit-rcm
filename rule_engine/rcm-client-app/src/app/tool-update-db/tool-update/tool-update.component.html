@@ -91,7 +91,7 @@
                             <div class="form-row collapse" style="border-radius: 10px 10px 0px 0px;"
                                 [ngClass]="{'show':expandCollapse.expandTeamRemarks}" id="teamRemarks">
                                 <div class="update-button" style="float: right; margin-right: 12px;"><a
-                                        href="javascript:void(0);" [ngClass]="{'disabled':hasUpdateClaims.length==0}"
+                                        href="javascript:void(0);" [ngClass]="{'disabled':hasUpdateClaims.length==0 || !updateClaimbtnDisable}"
                                         class="btn btn-success" (click)="pullFreshClaims()"><span
                                             *ngIf="loader.updateClaims" class="spinner-grow spinner-grow-sm"
                                             role="status" aria-hidden="true"></span>
