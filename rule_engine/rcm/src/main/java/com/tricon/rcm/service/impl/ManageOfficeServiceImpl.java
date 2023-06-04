@@ -24,6 +24,7 @@ import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
+import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 
@@ -48,7 +49,8 @@ public class ManageOfficeServiceImpl {
 	 * @throws Exception
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse assignOfficeByAdmin(AssignOfficesToBillingUserDto dto,RcmCompany logedIncompany,int teamId) throws Exception {
+	public GenericResponse assignOfficeByAdmin(AssignOfficesToBillingUserDto dto,RcmCompany logedIncompany,int teamId,
+			JwtUser jwtUser) throws Exception {
 		List<AssignUserOfficeDto> userOfficeData = dto.getAssignOfficeDetails();
 		List<String> listOfUserId = userOfficeData.stream().map(x -> x.getUserId()).collect(Collectors.toList());
 		List<String> listOfOfficeId = userOfficeData.stream().map(x -> x.getOfficeId()).collect(Collectors.toList());
@@ -108,6 +110,7 @@ public class ManageOfficeServiceImpl {
 				}
 			}
 			RcmUser user= userRepo.findByEmail(Constants.SYSTEM_USER_EMAIL);
+			ruleEngineService.reAssignClaimToUserByOffices( logedIncompany, teamId, jwtUser);
 			ruleEngineService.assignedUnsAssignedClaimsByTeam(logedIncompany.getUuid(),user,teamId);
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);
 		}

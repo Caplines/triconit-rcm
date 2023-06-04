@@ -12,6 +12,7 @@ import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.IVFDto;
 import com.tricon.rcm.dto.customquery.IssueClaimDto;
+import com.tricon.rcm.dto.customquery.PendingClaimToReAssignDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
@@ -389,4 +390,11 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 			"  where claim_uuid=:claimUuid and cmp.uuid=:companyId")
 	String fetchSecInsuranceOfClaim(@Param("companyId")  String companyId,@Param("claimUuid")  String claimUuid) ;
 	
+	@Query(nativeQuery = true, value = ""+
+		"	select cl.claim_uuid claimUuid,rca.assigned_to claimAssignedTo,rca.id  claimAssignmentId,cl.office_id officeId from rcm_claims cl inner join office off on off.uuid=cl.office_id "+
+		"	inner join company com on com.uuid =off.company_id "+
+		"	inner join rcm_claim_assignment rca on rca.claim_id=cl.claim_uuid and rca.active is true  and rca.current_team_id =:teamId "+
+		"	where  com.uuid=:companyId and pending is true")
+	List<PendingClaimToReAssignDto> fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(@Param("companyId") String companyId,@Param("teamId")  int teamId) ;
+
 }

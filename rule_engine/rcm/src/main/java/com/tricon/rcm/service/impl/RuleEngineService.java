@@ -14,6 +14,7 @@ import com.tricon.rcm.dto.RcmIvFMainRootDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.dto.customquery.ClaimXDaysDto;
+import com.tricon.rcm.dto.customquery.PendingClaimToReAssignDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
@@ -34,6 +35,7 @@ import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmRemoteLiteRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
+import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.ConnectAndReadSheets;
@@ -54,6 +56,8 @@ import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
+import com.tricon.rcm.dto.AssignOfficesToBillingUserDto;
+import com.tricon.rcm.dto.AssignUserOfficeDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimDataDetails;
 import com.tricon.rcm.dto.ClaimDetailDto;
@@ -71,6 +75,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -976,6 +981,66 @@ public class RuleEngineService {
 		}
 		
 		}
+	}
+	
+	/**
+	 * From Pendency Page( Claim Assignment)
+	 * This Api Reassigns the The Pending claims to new Users. that are selected 
+	 * @param dto 
+	 * @param company
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void reAssignClaimToUserByOffices(RcmCompany company,
+			int teamId,JwtUser jwtUser) {
+		
+		List<PendingClaimToReAssignDto> claimList= rcmClaimRepository.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(company.getUuid(),teamId);
+		List<UserAssignOffice> userAssignOffices = new ArrayList<>();
+		RcmUser assignedBy= userRepo.findByUuid(jwtUser.getUuid()) ;
+		for(PendingClaimToReAssignDto cl:claimList) {
+			 
+			   //Logic added so that we do minimum Data base call to rcm_user_assign_office table
+			  // if assigned to Same User and Team Then do not do anything else reassign
+				UserAssignOffice exists = userAssignOffices.stream().filter(s -> {
+					   return s.getOffice().getUuid().equals(cl.getOfficeId()) && s.getTeam().getId()==teamId ;
+					   }).findAny().orElse(null);
+				if (exists==null) {
+					UserAssignOffice uo =userAssignOfficeRepo.findByOfficeUuidAndTeamId(cl.getOfficeId(),teamId);
+					if (uo!=null) {
+					userAssignOffices.add(uo);
+					}
+				}
+				
+				exists = userAssignOffices.stream().filter(s -> {
+					   return s.getOffice().getUuid().equals(cl.getOfficeId())  && s.getTeam().getId()==teamId ;
+					   }).findAny().orElse(null);
+				
+				if (exists != null) {
+					
+					if (!exists.getUser().getUuid().equals(cl.getClaimAssignedTo())) {
+						//do reassignment
+						Optional<RcmClaimAssignment> rcaOpt = rcmClaimAssignmentRepo.findById(cl.getClaimAssignmentId());
+						if (rcaOpt.isPresent()) {
+							RcmClaimAssignment rca = rcaOpt.get();
+							rca.setActive(false);
+							rca.setSystemComment("Claim taken back from Pendency Screen by :"+assignedBy.getEmail());
+							rcmClaimAssignmentRepo.save(rca);
+							
+							rcmClaimAssignmentRepo.assignClaimToUser(assignedBy.getUuid(), 
+									exists.getUser().getUuid(), teamId, rca.getRcmClaimStatus().getId(), Constants.SYSTEM_INITIAL_COMMENT, cl.getClaimUuid());
+						  
+								    
+							
+							
+	;					}
+					}
+					
+				}
+				
+				
+			
+		}
+		
+		
 	}
 
 }

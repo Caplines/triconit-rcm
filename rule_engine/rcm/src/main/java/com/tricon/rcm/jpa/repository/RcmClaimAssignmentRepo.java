@@ -2,6 +2,8 @@ package com.tricon.rcm.jpa.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -65,6 +67,17 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			+" inner join rcm_team rt on rt.id=rca.current_team_id "
 			+"  where rca.claim_id=:claim_id and  rt.id<>:teamId  and rca.active is false")
    int claimWorkedBySomeEarlierByTLTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery = true, value = "  "
+			+" insert into rcm_claim_assignment (created_date,updated_date,active,taken_back,created_by,assigned_by,"
+			+ " assigned_to,current_team_id,status_id,system_comment,"
+			+ "claim_id) values (now(),now(),true,false,:usBy,:usBy,:usTo,:teamId,:statusId,:systemCom,:claimId)")
+   Integer assignClaimToUser(@Param("usBy") String usBy,@Param("usTo") String usTo,
+		   @Param("teamId") int teamId,@Param("statusId") int statusId,@Param("systemCom") String systemCom,
+		   @Param("claimId") String claimId);
+	
 	
 	
 	

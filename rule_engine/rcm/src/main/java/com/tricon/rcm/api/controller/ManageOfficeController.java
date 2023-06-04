@@ -62,7 +62,8 @@ public class ManageOfficeController extends BaseHeaderController {
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		try {
-			response = officeService.assignOfficeByAdmin(dto, partialHeader.getCompany(),partialHeader.getTeamId());//why is this in ADMIN
+			response = officeService.assignOfficeByAdmin(dto, partialHeader.getCompany(),partialHeader.getTeamId(),
+					partialHeader.getJwtUser());//why is this in ADMIN
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
