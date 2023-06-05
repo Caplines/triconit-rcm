@@ -180,32 +180,43 @@
                                     <div class="col-md-3 mb-2">
                                         <div class="custom-row text-number">
                                             <label for="" class="">IV ID :</label>
-                                            <div *ngIf="claimRcm.ivfId==''">IV Not Found</div>
-                                            <div *ngIf="claimRcm.ivfId!=''">{{claimRcm.ivfId}}</div>
+                                            <div *ngIf="claimRcm.ivfId!=null && claimRcm.ivfId!=''">{{claimRcm.ivfId}}
+                                            </div>
+                                            <div *ngIf="!(claimRcm.ivfId!=null && claimRcm.ivfId!='')">IV Not Found
+                                            </div>
                                         </div>
                                         <div class="custom-row text-number">
                                             <label for="" class="">Signed Tx Plan ID :</label>
-                                            <div *ngIf="claimRcm.tpId==''">Tx Plan Not Found</div>
-                                            <div *ngIf="claimRcm.tpId!=''">{{claimRcm.tpId}}</div>
+                                            <div *ngIf="claimRcm.tpId!=null && claimRcm.tpId!=''">{{claimRcm.tpId}}
+                                            </div>
+                                            <div *ngIf="!(claimRcm.tpId!=null && claimRcm.tpId!='')">Tx Plan Not Found
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-3 mb-2">
                                         <div class="custom-row text-number">
                                             <label for="" class="">Date of IV :</label>
-                                            <div>{{claimRcm.ivDos | date: 'MM/dd/yyyy'}}</div>
+                                            <div *ngIf="claimRcm.ivDos!=null && claimRcm.ivDos!=''">{{claimRcm.ivDos |
+                                                date: 'MM/dd/yyyy'}}
+                                            </div>
+                                            <div *ngIf="!(claimRcm.ivDos!=null && claimRcm.ivDos!='')">IV Not Found
+                                            </div>
 
                                         </div>
                                         <div class="custom-row text-number">
                                             <label for="" class="">Date of Tx. Plan :</label>
-                                            <div>{{claimRcm.tpDos}}</div>
+                                            <div *ngIf="claimRcm.tpDos!=null && claimRcm.tpDos!=''">{{claimRcm.tpDos}}
+                                            </div>
+                                            <div *ngIf="!(claimRcm.tpDos!=null && claimRcm.tpDos!='')">Tx Plan Not Found
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-2">
-                                        <div *ngIf="claimRcm.ivfId!=''"><a [routerLink]="['ivf']" target="_blank"
-                                                class="flex-center">IV Link<img
+                                        <div *ngIf="claimRcm.ivfId!=null && claimRcm.ivfId!=''"><a
+                                                [routerLink]="['ivf']" target="_blank" class="flex-center">IV Link<img
                                                     src="../../../assets/img/right-arrow-blue.png" /></a></div>
-                                        <div *ngIf="claimRcm.tpId!=''"><a [routerLink]="['tp']" target="_blank"
-                                                class="flex-center">Treatment Plan
+                                        <div *ngIf="claimRcm.tpId!=null && claimRcm.tpId!=''"><a [routerLink]="['tp']"
+                                                target="_blank" class="flex-center">Treatment Plan
                                                 Link<img src="../../../assets/img/right-arrow-blue.png" /></a></div>
                                     </div>
                                 </div>
@@ -775,8 +786,6 @@
                                             <tr>
                                                 <td>02</td>
                                                 <td>Channel used to submit the Claim Insurance (Submission type)
-                                                    <span style="color:#685f5f;display: block;">Enter Claim ID from the
-                                                        Portal</span>
                                                 </td>
 
                                                 <td>
@@ -812,6 +821,9 @@
                                                                 (click)="removeErrorDisplayKeyById('SUB_DET_CLA')"
                                                                 [disabled]="claimNoEnable()"
                                                                 [(ngModel)]='submissionDto.claimNumber'></textarea>
+                                                            <span style="color:#a59b9b;font-size: 13px">Enter Claim ID
+                                                                from the
+                                                                Portal</span>
                                                         </div>
 
                                                     </div>
