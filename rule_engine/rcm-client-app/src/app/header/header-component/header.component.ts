@@ -75,10 +75,23 @@ export class HeaderComponent implements OnInit {
       this.getRoles();
     }
 
-    if(this.userInfo.currentClientName && this.userInfo.currentTeamId != "-1"){
-      this.issueClaim();
-    }
+    // if(this.userInfo.currentClientName && this.userInfo.currentTeamId != "-1"){
+    //   this.issueClaim();
+    // }
      this.checkClientExist();
+     window.addEventListener("click",(event:any) =>{
+      if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+     })
+     
   }
 
   getRoles() {
@@ -260,16 +273,16 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  issueClaim(){
-    this.appSer.fetchIssueClaimCounts((res:any)=>{
-      if(res.status==200){
-         this.issueClaimsCount = res.data;
-      }
-      else{
-        //ERROR
-      }
-    });
-  }
+  // issueClaim(){
+  //   this.appSer.fetchIssueClaimCounts((res:any)=>{
+  //     if(res.status==200){
+  //        this.issueClaimsCount = res.data;
+  //     }
+  //     else{
+  //       //ERROR
+  //     }
+  //   });
+  // }
 
   fetchIssueClaims(){
     let cName = JSON.parse(localStorage.getItem('clients'));
@@ -333,6 +346,15 @@ openHelp() {
       "_blank");   
   }
 }
+
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+ myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+
 
 
 }

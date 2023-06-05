@@ -208,13 +208,14 @@ exportToCsv(){
     e['officeAssignedTo'] = e.fname ? e.fname+ " "+ e.lname : "-";
     if(e.opdosd){
       let date:Date = new Date(e.opdosd);
-      e.opdosd =  `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}`;
+      e.opdosd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
+      //e.opdosd =  "Jan 14', 2023";
     }else{
       e.opdosd = 'N/A';
     }
     if(e.opdtd){
       let date:Date = new Date(e.opdtd);
-      e.opdtd =  `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}`;
+      e.opdtd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
     }else{
         e.opdtd = 'N/A';
     }
@@ -261,5 +262,12 @@ showAlertPopup(res:any){
   setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
   res.status==400 ? this.alert.isError=true : this.alert.isError=false;
   this.alert.alertMsg = res.message ? res.message : res.result.message;
+}
+getMonthName(month:any) {
+  const monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  return monthNames[month];
 }
 }

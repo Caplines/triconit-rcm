@@ -143,11 +143,11 @@ export class AllPendencyComponent {
       excelData = excelData.map((e: any) => {
         return {
           'Office': e.officeName,
-          'InternalAudit': e.dates1['INTERNAL_AUDIT'] ? this.datePipe.transform(new Date(e.dates1['INTERNAL_AUDIT']),'MM/dd/yyyy') : "-",
-          'Aging': e.dates1['AGING'] ? this.datePipe.transform(new Date(e.dates1['AGING']),'MM/dd/yyyy') : "-",
-          'Posting': e.dates1['POSTING'] ? this.datePipe.transform(new Date(e.dates1['POSTING']),'MM/dd/yyyy') : "-",
-          'Quality': e.dates1['QUALITY'] ? this.datePipe.transform(new Date(e.dates1['QUALITY']),'MM/dd/yyyy') : "-",
-          'Billing': e.dates1['BILLING'] ? this.datePipe.transform(new Date(e.dates1['BILLING']),'MM/dd/yyyy') : "-",
+          'InternalAudit': e.dates1['INTERNAL_AUDIT'] ? this.datePipe.transform(new Date(e.dates1['INTERNAL_AUDIT']),'MMM dd, YYYY') : "-",
+          'Aging': e.dates1['AGING'] ? this.datePipe.transform(new Date(e.dates1['AGING']),'MMM dd, YYYY') : "-",
+          'Posting': e.dates1['POSTING'] ? this.datePipe.transform(new Date(e.dates1['POSTING']),'MMM dd, YYYY') : "-",
+          'Quality': e.dates1['QUALITY'] ? this.datePipe.transform(new Date(e.dates1['QUALITY']),'MMM dd, YYYY') : "-",
+          'Billing': e.dates1['BILLING'] ? this.datePipe.transform(new Date(e.dates1['BILLING']),'MMM dd, YYYY') : "-",
         }
       })
     }

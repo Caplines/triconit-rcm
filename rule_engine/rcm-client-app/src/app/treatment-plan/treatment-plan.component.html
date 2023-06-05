@@ -96,7 +96,7 @@
                                             </tr>
                                             <ng-container *ngFor="let tp of tpData">
                                                 <tr>
-                                                    <td>{{tp.datePlan}}</td>
+                                                    <td>{{tp.datePlan | date:'MMM dd, YYYY'}}</td>
                                                     <td>{{tp.appt}}</td>
                                                     <td>{{tp.provider}}</td>
                                                     <td>{{tp.service}}</td>

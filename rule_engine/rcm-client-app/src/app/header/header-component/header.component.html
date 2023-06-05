@@ -1,25 +1,40 @@
-<div class=" navbar-dark sticky-top bg-dark">
+<div class=" navbar-dark sticky-top bg-dark" (click)="myFunction()">
     <div class="topbar">
         <h1>Capline RCM</h1>
-            <div class="activeUsername">
-            <span> <strong>Client:</strong>  {{userInfo.currentClientName}}</span>
-            <span><strong>Role:</strong> {{userInfo.currentRoleName?.roleName}}</span>
-            <span *ngIf="userInfo.currentRoleName?.roleId != 'ADMIN' && (userInfo.currentRoleName?.roleId != 'SUPER_ADMIN' || loginUserType != 'Admin') && userInfo.currentRoleName?.roleId != 'REPORTING' "> <strong>Team:</strong>  {{userInfo.currentTeamId?.teamName}}</span>
-        </div>
-        <ul class="navbar-nav px-3">
-            <li *ngIf="issueClaimsCount > 0 && currentTeamId!=-1">  <a [routerLink]="['tool-update/issue-claims']" target="_blank" class="btn btn-danger" title="Issue Claim"><img src="../../assets/img/claim-issue.png"/> </a>
-               </li>
-            <li> <button type="button" class="btn btn-success btn-sm" title="Switch Account" (click)="openPopUp(true)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+
+        <div class=" px-3 dropBox">
+            
+        <ul class="navbar-nav">
+            <!-- <li *ngIf="issueClaimsCount > 0 && currentTeamId!=-1">  <a [routerLink]="['tool-update/issue-claims']" target="_blank" class="btn btn-danger" title="Issue Claim"><img src="../../assets/img/claim-issue.png"/> </a>
+               </li> -->
+            <!-- <li> <button type="button" class="btn btn-success btn-sm" title="Switch Account" (click)="openPopUp(true)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
-              </svg></button> </li>
-            <li [title]="staticUtil.currentUserEmail()"><img src="../../assets/img/user-blue.png" /> Welcome, {{loggedInUserName}}</li>
+              </svg></button> </li> -->
+
             <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0);" (click)="openHelp()"><img src="../../assets/img/help.png" /> Help</a>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign out</a>
-            </li>
+            </li> -->
         </ul>
+        <div class="dropdown"  (onclick)="myFunction()">
+            <a [title]="staticUtil.currentUserEmail()" class="dropbtn"><img src="../../assets/img/user-blue.png" /> Welcome, {{loggedInUserName}} <span class="caretDown"></span></a>
+            <div id="myDropdown" class="dropdown-content">
+                <li><span> <strong>Client:</strong>  {{userInfo.currentClientName}}</span></li>
+                <!-- <li><span><strong>Role:</strong> {{userInfo.currentRoleName?.roleName}}</span></li> -->
+                <li><span *ngIf="userInfo.currentRoleName?.roleId != 'ADMIN' && (userInfo.currentRoleName?.roleId != 'SUPER_ADMIN' || loginUserType != 'Admin') && userInfo.currentRoleName?.roleId != 'REPORTING' "> <strong>Team:</strong>  {{userInfo.currentTeamId?.teamName}}</span></li>
+             <li> <a href="javascript:void(0);"  title="Switch Account" (click)="openPopUp(true)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="margin-right:2px" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+               </svg> Switch Account</a> </li>
+               <li _ngcontent-sjo-c48=""><a _ngcontent-sjo-c48="" href="/update-pass" routerlinkactive="active" ng-reflect-router-link-active="active" ng-reflect-router-link="/update-pass"><img _ngcontent-sjo-c48="" src="../../assets/img/updatePassword-active.png" width="16">Update Password</a></li>
+               <li><a href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign out</a></li>
+              
+            </div>
+          </div>
+      
+    </div>
+ 
     </div>
 
     <div class="gray-bar">
@@ -35,7 +50,7 @@
             <!-- <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7) || (staticUtil.isRoleLead() && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/dashboard-active.png':'../../assets/img/dashboard.png'" />Billing Pendency Dashboard</a></li> -->
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7 || currentTeamId == 3) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />List Of Claims</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || currentTeamId == 3)) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3))"><a href="javascript:void(0);" [routerLink]="['/production']"routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a></li>
-            <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/updatePassword-active.png':'../../assets/img/updatePassword.png'" />Update Password</a></li> 
+            <!-- <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/updatePassword-active.png':'../../assets/img/updatePassword.png'" />Update Password</a></li>  -->
         </ul>
 
     </div>

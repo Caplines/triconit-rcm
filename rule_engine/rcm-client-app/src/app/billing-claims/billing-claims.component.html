@@ -57,7 +57,7 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">DOS :</label>
-                                        <div>{{claimRcm.dos | date: 'MM/dd/yyyy'}}</div>
+                                        <div>{{claimRcm.dos | date: 'MMM dd, YYYY'}}</div>
                                     </div>
                                     <div class="custom-row flexAlign">
                                         <label for="" class="">Billed Amount :</label>
@@ -91,7 +91,7 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Patient DOB :</label>
-                                        <div>{{claimRcm.patientDob | date: 'MM/dd/yyyy'}}</div>
+                                        <div>{{claimRcm.patientDob | date: 'MMM dd, YYYY'}}</div>
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Subscriber Name :</label>
@@ -101,9 +101,9 @@
                                     <div class="custom-row">
                                         <label for="" class="">Subscriber DOB :</label>
                                         <div *ngIf="claimRcm.primary">{{claimRcm.primePolicyHolderDob | date:
-                                            'MM/dd/yyyy'}}</div>
+                                            'MMM dd, YYYY'}}</div>
                                         <div *ngIf="!claimRcm.primary">{{claimRcm.secPolicyHolderDob | date:
-                                            'MM/dd/yyyy'}}</div>
+                                            'MMM dd, YYYY'}}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-2">
@@ -197,7 +197,7 @@
                                         <div class="custom-row text-number">
                                             <label for="" class="">Date of IV :</label>
                                             <div *ngIf="claimRcm.ivDos!=null && claimRcm.ivDos!=''">{{claimRcm.ivDos |
-                                                date: 'MM/dd/yyyy'}}
+                                                date: 'MMM dd, YYYY'}}
                                             </div>
                                             <div *ngIf="!(claimRcm.ivDos!=null && claimRcm.ivDos!='')">IV Not Found
                                             </div>
@@ -240,7 +240,7 @@
                                                 <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                     <td>{{idx+1}}</td>
                                                     <td>{{rem.teamName}}</td>
-                                                    <td>{{rem.cd | date:'MM/dd/yyyy hh:mm:ss a':'UTC '+timeZone}}</td>
+                                                    <td>{{rem.cd | date:'MMM dd, YYYY hh:mm:ss a':'UTC '+timeZone}}</td>
                                                     <td>{{rem.comment}}</td>
                                                 </tr>
                                             </ng-container>

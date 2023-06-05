@@ -38,6 +38,7 @@ export class ToolUpdateComponent implements OnInit {
   gsLink:any='';
   clientName:string='';
   updateClaimbtnDisable=true;
+  issueClaimsCount: number = 0;
   
   constructor(public appService: ApplicationServiceService,private title:Title) { 
 
@@ -53,6 +54,9 @@ export class ToolUpdateComponent implements OnInit {
     this.appService.setPaddingRightContainer();
     // this.fetchLatesClaimLLogs();
     this.clientName = localStorage.getItem("selected_clientName");
+    if(this.clientName){
+      this.issueClaim();
+    }
   }
 
   fetchLatesClaimLLogs(cUuid:any){
@@ -144,9 +148,11 @@ this.sourceType="";
             this.hasUpdateClaims=[];
             ths.loader.updateClaims=false;
             this.updateClaimbtnDisable=true;
-            esRadio.checked = false;        
-            gsRadio.checked = false;
-            this.sourceType="";
+            if (this.clientName == 'Smilepoint') {
+              esRadio.checked = false;
+              gsRadio.checked = false;
+              this.sourceType = "";
+            }
           });
         }else{
           //ERROR
@@ -271,7 +277,7 @@ this.sourceType="";
     excelData = excelData.map((e: any) => {
       if (e.cd) {
         let date: Date = new Date(e.cd);
-        e = { ...e, cd: `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}` }
+        e = { ...e, cd: `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}` }
       } else {
         e = {...e,cd : '-'};
       }
@@ -327,4 +333,21 @@ this.sourceType="";
   this.alert.alertMsg = res.message ? res.message : res.result.message;
 }
 
+getMonthName(month:any) {
+  const monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  return monthNames[month];
+}
+issueClaim(){
+  this.appService.fetchIssueClaimCounts((res:any)=>{
+    if(res.status==200){
+       this.issueClaimsCount = res.data;
+    }
+    else{
+      //ERROR
+    }
+  });
+}
 }

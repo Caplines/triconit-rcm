@@ -395,7 +395,7 @@ export class ListOfClaimsComponent implements OnInit {
     excelData = excelData.map((e: any) => {
       if (e.dos) {
         let date: Date = new Date(e.dos);
-        e = { ...e, dos: `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}` };
+        e = { ...e, dos: `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}` };
       }
       else {
         e = { ...e, dos: '' };
@@ -538,5 +538,12 @@ export class ListOfClaimsComponent implements OnInit {
     filterName == 'insuranceName' ? this.showFilteredDropdown.insuranceName  = true : this.showFilteredDropdown.insuranceName  = false;
     filterName == 'insuranceType' ? this.showFilteredDropdown.insuranceType  = true : this.showFilteredDropdown.insuranceType  = false;
     this.fliterName = filterName;
+  }
+  getMonthName(month:any) {
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    return monthNames[month];
   }
 }
