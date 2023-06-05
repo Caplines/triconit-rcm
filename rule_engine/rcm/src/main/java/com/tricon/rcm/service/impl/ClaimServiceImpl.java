@@ -2644,8 +2644,8 @@ public class ClaimServiceImpl {
 		AllPendencyReportDto dto= new AllPendencyReportDto();
 		List<AllPendencyDto> count= rcmClaimRepository.allPendencyCount(company.getUuid());
 		List<AllPendencyDateDto> date = rcmClaimRepository.allPendencyDateCount(company.getUuid());
-		dto.setCount(count);
-		dto.setDateCount(date);
+		//dto.setCount(count);
+		//dto.setDateCount(date);
 		dto.setOffices(officeRepo.findByCompanyAndActiveTrueOrderByNameAsc(company));
 		List<RcmOfficeDto> offices=officeRepo.findByCompanyAndActiveTrueOrderByNameAsc(company);
 		
@@ -2653,7 +2653,7 @@ public class ClaimServiceImpl {
 		//List<PendencyKeyValDto> keyData =new ArrayList<>();
 		List<RcmTeamEnum> teams= Arrays.asList(RcmTeamEnum.values());   
 		
-		List<PendencyDataCountDto> rowData=  new ArrayList<>();
+		//List<PendencyDataCountDto> rowData=  new ArrayList<>();
 		//List<PendencyKeyValDto> keyRowData =new ArrayList<>();
        List<PendencyWithOfficeOnlyDto> onlyOffices= new ArrayList<>();
        
@@ -2663,25 +2663,27 @@ public class ClaimServiceImpl {
 			PendencyWithOfficeOnlyDto onlyOffice = new PendencyWithOfficeOnlyDto();
 			 HashMap<String, Object> counts1 = new HashMap<>();
 			 HashMap<String, Object> dates1 = new HashMap<>();
+			 HashMap<String, Object> datesPending = new HashMap<>();
 			onlyOffice.setOfficeName(office.getName());
-			List<Integer> c= new ArrayList<>();
-			List<Date> d= new ArrayList<>();
-			onlyOffice.setCounts(c);
-			onlyOffice.setDates(d);
+			//List<Integer> c= new ArrayList<>();
+			//List<Date> d= new ArrayList<>();
+			//onlyOffice.setCounts(c);
+			//onlyOffice.setDates(d);
 			onlyOffice.setCounts1(counts1);
 			onlyOffice.setDates1(dates1);
+			onlyOffice.setDatesPending(datesPending);
 			
-			PendencyDataCountDto offLi = new PendencyDataCountDto();
-			offLi.setOfficeName(office.getName());
-			offLi.setOfficeUUid(office.getUuid());
-			List<PendencyKeyValDto> keyData= new ArrayList<>();
+			//PendencyDataCountDto offLi = new PendencyDataCountDto();
+			//offLi.setOfficeName(office.getName());
+			//offLi.setOfficeUUid(office.getUuid());
+			//List<PendencyKeyValDto> keyData= new ArrayList<>();
 			for(RcmTeamEnum team:teams) {
 				Stream<AllPendencyDto> streamCount= count.stream();
 				Stream<AllPendencyDateDto> streamDate= date.stream();
 				PendencyKeyValDto xx = new PendencyKeyValDto();
 				if (team.isRoleVisible()) {
-					offLi.setTeamId(team.getId());
-					offLi.setTeamName(team.getName());
+					//offLi.setTeamId(team.getId());
+					//offLi.setTeamName(team.getName());
 					if (!headerDone){
 						
 						  PendencyDataCountDto head= new PendencyDataCountDto();
@@ -2697,45 +2699,49 @@ public class ClaimServiceImpl {
 					xx.setTeamId(team.getId());
 					xx.setTeamName(team.getName());
 					if (filCt!=null) {
-						xx.setCount(filCt.getCount());
+						//xx.setCount(filCt.getCount());
 						counts1.put(team.getName(), filCt.getCount());
 						
-						c.add(filCt.getCount());
+						//c.add(filCt.getCount());
 						AllPendencyDateDto yyy=	streamDate.filter(re -> re.getOfficeName().equals(office.getName())
 								 && re.getTeamId()==team.getId())
 								.findAny() .orElse(null);
 					if (yyy!=null)	{
 						xx.setMinDate(yyy.getMinDate());
 						dates1.put(team.getName(),yyy.getMinDate());
-						d.add(yyy.getMinDate());
+						datesPending.put(team.getName(),yyy.getDt());
+						
+						//d.add(yyy.getMinDate());
 					}else {
-						d.add(null);
+						//d.add(null);
 						dates1.put(team.getName(),null);
+						datesPending.put(team.getName(),null);
 					}
 						
 					}else {
 						xx.setCount(0);
-						c.add(0);
+						//c.add(0);
 						counts1.put(team.getName(), 0);
 						dates1.put(team.getName(),null);
-						d.add(null);
+						datesPending.put(team.getName(),null);
+						//d.add(null);
 					}
 					
 					//rowData.add(offLi);
-					keyData.add(xx);
-					offLi.setKeyData(keyData);
+					//keyData.add(xx);
+					//offLi.setKeyData(keyData);
 				}//if 
 				
 				
 			}//Teams
 			headerDone=true;
-			offLi.setKeyData(keyData);
-			rowData.add(offLi);
+			//offLi.setKeyData(keyData);
+			//rowData.add(offLi);
 			onlyOffices.add(onlyOffice);
 		}//Office
 		
 		dto.setHeader(header);
-		dto.setRowData(rowData);
+		//dto.setRowData(rowData);
 		dto.setOnlyOffice(onlyOffices);
 		return dto;
 		

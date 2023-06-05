@@ -10,12 +10,12 @@ import lombok.Data;
 @Data
 public class AllPendencyReportDto {
 
-	List<AllPendencyDto> count;
-	List<AllPendencyDateDto> dateCount;
+	//List<AllPendencyDto> count;
+	//List<AllPendencyDateDto> dateCount;
 	List<RcmOfficeDto> offices;
 	List<PendencyDataCountDto> header;
-	List<PendencyDataCountDto> rowData;
-	List<Integer> headerNew;
+	//List<PendencyDataCountDto> rowData;
+	//List<Integer> headerNew;
 	List<PendencyWithOfficeOnlyDto>  onlyOffice;
 	
 }

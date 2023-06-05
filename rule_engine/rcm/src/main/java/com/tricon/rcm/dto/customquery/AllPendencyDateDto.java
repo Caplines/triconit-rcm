@@ -5,6 +5,8 @@ import java.util.Date;
 public interface AllPendencyDateDto {
 
 	Date getMinDate();
+	
+	Date getDt();
 
 	String getOfficeName();
 

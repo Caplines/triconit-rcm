@@ -10,10 +10,10 @@ import lombok.Data;
 public class PendencyWithOfficeOnlyDto {
 
 	String officeName;
-	List<Integer> counts;
-	List<Date> dates;
+	//List<Integer> counts;
+	//List<Date> dates;
 	HashMap<String, Object> counts1;
 	HashMap<String, Object> dates1;
-
+	HashMap<String, Object> datesPending;
 	
 }

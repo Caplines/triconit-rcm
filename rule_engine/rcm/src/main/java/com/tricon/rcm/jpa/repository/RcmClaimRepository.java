@@ -338,7 +338,7 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 	List<AllPendencyDto> allPendencyCount(@Param("companyId") String companyId);
 	
 	@Query(nativeQuery = true, value = ""
-			+ "select min(rc.dos) minDate,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
+			+ "select min(rc.dos) minDate,min(cast(rc.created_date as Date)) dt,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
 			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
 			" inner join company cmp on cmp.uuid=off.company_id" + 
 			" where rc.pending is true  and cmp.uuid=:companyId " + 
