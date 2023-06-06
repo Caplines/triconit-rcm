@@ -16,7 +16,7 @@ public class Constants {
 	public static final String RCM_MAPPING_RCM_DATABASE = "RCM DataBase";// Entry needed in DB->rcm_mapping_table
 
 	// Date Format from Eagle Soft.
-	public static final SimpleDateFormat SDF_ES_DATE = new SimpleDateFormat("yyyy-MM-dd");
+	public static final SimpleDateFormat SDF_ES_DATE = new SimpleDateFormat("MMM dd, yyyy");
 
 	// Date Format from Google Sheet.
 	public static final SimpleDateFormat SDF_SHEET_DATE = new SimpleDateFormat("yyyy-MM-dd");

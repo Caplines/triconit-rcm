@@ -1,5 +1,7 @@
 package com.tricon.rcm.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -40,6 +42,8 @@ public class ClaimFromSheet {
 	private String secondaryGroupNumber;
 	private String secondaryPolicyHolder;
 	private String secondaryPolicyHolderDob;
+	private List<String> serviceCodes;
+	
 	
 	
 	public ClaimFromSheet() {

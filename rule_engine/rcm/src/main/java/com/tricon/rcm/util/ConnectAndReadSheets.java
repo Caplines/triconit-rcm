@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -440,6 +441,15 @@ public class ConnectAndReadSheets {
 					dto.setSecondaryPolicyHolderDob(obj.get(++x));//AH
 				} catch (Exception m) {
 					dto.setSecondaryPolicyHolderDob("");
+				}
+				
+				List<String> d=new ArrayList<>();
+				try {
+					
+					dto.setServiceCodes(Arrays.asList(obj.get(++x).split(",")));//AI
+					
+				} catch (Exception m) {
+					dto.setServiceCodes(d);
 				}
 
 				list.add(dto);

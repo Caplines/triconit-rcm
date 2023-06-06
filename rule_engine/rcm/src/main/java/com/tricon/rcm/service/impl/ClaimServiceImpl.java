@@ -371,7 +371,7 @@ public class ClaimServiceImpl {
 						// Simple 2023-01-12
 						// Constants.SDF_UI.format(Constants.SDF_ES_DATE.parse((d.getOpdos())
 						// System.out.println(d.getOpdos());
-						dF.setOpdos(Constants.SDF_ES_DATE.parse(d.getOpdos()));
+						dF.setOpdos(Constants.SDF_MYSL_DATE.parse(d.getOpdos()));
 					}
 				} catch (Exception dt) {
 
@@ -381,7 +381,7 @@ public class ClaimServiceImpl {
 						// Simple 2023-01-12
 						// Constants.SDF_UI.format(Constants.SDF_ES_DATE.parse((d.getOpdos())
 						// System.out.println(d.getOpdos());
-						dF.setOpdt(Constants.SDF_ES_DATE.parse(d.getOpdt()));
+						dF.setOpdt(Constants.SDF_MYSL_DATE.parse(d.getOpdt()));
 					}
 				} catch (Exception dt) {
 
@@ -653,6 +653,32 @@ public class ClaimServiceImpl {
 							}
 								
 							String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
+							//Save Data in rcm_claim_detail (new Enhancement)
+							if (re.getServiceCodes().size()>0) {
+								RcmClaimDetail det=null;
+								for(String cds:re.getServiceCodes()) {
+									det =new RcmClaimDetail();
+									det.setApptId("");
+									det.setClaim(claim);
+									det.setDescription("");
+									det.setEstInsurance("-1");
+									det.setEstPrimary("-1");
+									det.setFee("-1");
+									det.setIdEs("-1");
+									det.setLineItem("-1");
+									det.setPatientPortion("-1");
+									det.setPatientPortionSec("-1");
+									det.setProviderLastName("");
+									det.setServiceCode(cds.trim());
+									det.setStatus("");
+									det.setSurface("");
+									det.setTooth("");
+									rcmClaimDetailRepo.save(det);
+								}
+									
+							}
+							
+							
 							RcmClaimLog l = logMap.get(off.getName());
 							if (l == null) {
 								l = new RcmClaimLog();
@@ -886,6 +912,30 @@ public class ClaimServiceImpl {
 							
 							
 							String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
+							//Save Data in rcm_claim_detail (new Enhancement)
+							if (re.getServiceCodes().size()>0) {
+								RcmClaimDetail det=null;
+								for(String cds:re.getServiceCodes()) {
+									det =new RcmClaimDetail();
+									det.setApptId("");
+									det.setClaim(claim);
+									det.setDescription("");
+									det.setEstInsurance("-1");
+									det.setEstPrimary("-1");
+									det.setFee("-1");
+									det.setIdEs("-1");
+									det.setLineItem("-1");
+									det.setPatientPortion("-1");
+									det.setPatientPortionSec("-1");
+									det.setProviderLastName("");
+									det.setServiceCode(cds.trim());
+									det.setStatus("");
+									det.setSurface("");
+									det.setTooth("");
+									rcmClaimDetailRepo.save(det);
+								}
+									
+							}
 							RcmClaimLog l = logMap.get(off.getName());
 							if (l == null) {
 								l = new RcmClaimLog();

@@ -60,7 +60,7 @@ public class ClaimUtil {
 			claims.setPrimStatus(re.getPrimSecStatus());
 			claims.setPrimePolicyHolder(re.getPrimeSecPolicyHolder());
 			try {
-				claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getBirthDate()).getTime()));
+				claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
 			} catch (Exception dt) {
 			}
 		}
@@ -72,7 +72,7 @@ public class ClaimUtil {
      		 
      		 claims.setPrimTotalPaid(re.getPrimTotalPaid());//extra
     		 try {
-    			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPrimDateSent()).getTime()));////extra
+    			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getPrimDateSent()).getTime()));////extra
     		} catch (Exception dt) {
     		}
 		}
@@ -92,7 +92,7 @@ public class ClaimUtil {
 		if (!re.getSecMemberId().equals(Constants.NO_DATA))claims.setSecMemberId(re.getSecMemberId());
 		if (!re.getGroupNumber().equals(Constants.NO_DATA))claims.setGroupNumber(re.getGroupNumber());
 		try {
-			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getBirthDate()).getTime()));
+			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
 		} catch (Exception dt) {
 		}
 		
@@ -102,7 +102,7 @@ public class ClaimUtil {
 //		} catch (Exception dt) {
 //		}
 		try {
-			claims.setDos(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getTranDate()).getTime()));
+			claims.setDos(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getTranDate()).getTime()));
 		} catch (Exception dt) {
 		}
 
@@ -145,6 +145,12 @@ public class ClaimUtil {
 			 try {
 					claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPrimaryPolicyHolderDob()).getTime()));
 				} catch (Exception dt) {
+					 try {
+					claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getPrimaryPolicyHolderDob()).getTime()));
+					} catch (Exception dt1) {
+							
+					}
+					
 			}
 			 
 			 claims.setPrimStatus(re.getPrimaryClaimStatus());
@@ -176,11 +182,19 @@ public class ClaimUtil {
     		 try {
     			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecondaryClaimSubmissionDate()).getTime()));////extra
     		} catch (Exception dt) {
+    			try {
+        			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getSecondaryClaimSubmissionDate()).getTime()));////extra
+        		} catch (Exception dt1) {
+        		}
     		}
     		 
     		 try {
 					claims.setSecPolicyHolderDob(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecondaryPolicyHolderDob()).getTime()));
 				} catch (Exception dt) {
+					 try {
+							claims.setSecPolicyHolderDob(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getSecondaryPolicyHolderDob()).getTime()));
+						} catch (Exception dt1) {
+					}
 			}
 		}
 		
@@ -198,6 +212,10 @@ public class ClaimUtil {
 		try {
 			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPaitentDob()).getTime()));
 		} catch (Exception dt) {
+			try {
+				claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getPaitentDob()).getTime()));
+			} catch (Exception dt1) {
+			}
 		}
 		
 
@@ -208,6 +226,10 @@ public class ClaimUtil {
 		try {
 			claims.setDos(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getDos()).getTime()));
 		} catch (Exception dt) {
+			try {
+				claims.setDos(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getDos()).getTime()));
+			} catch (Exception dt1) {
+			}
 		}
 		claims.setPrimaryEob("N/A");
 		return claims;
