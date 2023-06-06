@@ -169,7 +169,7 @@
                                                     <ng-container *ngFor="let data of teamData;let last = last;">
                                                         <th *ngIf="currentTeamId != data.teamId">
                                                             <div class="dFlex">
-                                                                {{data.teamName == 'Internal_Audit' ? 'Interal Audit' :
+                                                                {{data.teamName == 'Internal_Audit' ? 'Internal Audit' :
                                                                 data.teamName}} <span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
                                                                         [ngClass]="{'selected': !isSorted[data.teamName]}"

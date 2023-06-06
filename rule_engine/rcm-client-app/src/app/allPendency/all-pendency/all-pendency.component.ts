@@ -106,7 +106,11 @@ export class AllPendencyComponent {
     headers.push("Office");
     this.teamData.forEach((e: any) => {
       if (e.teamId != this.currentTeamId) {
-        headers.push(e.teamName);
+        if(e.teamName == 'Internal_Audit'){
+          headers.push("Internal Audit")
+        }else{
+          headers.push(e.teamName);
+        }
       }
     })
 
