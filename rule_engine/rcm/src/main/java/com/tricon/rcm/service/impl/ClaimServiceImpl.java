@@ -1110,24 +1110,25 @@ public class ClaimServiceImpl {
 					dF.setFName(logD.getFName());
 					dF.setLName(logD.getLName());
 					dF.setOfficeUuid(logD.getOfficeUuid());
-					if (logD.getOpdos()!=null) {
-						//2022-10-12
-						try {
-						Date date=Constants.SDF_MYSL_DATE.parse(logD.getOpdos());  
-						dF.setOpdosd(date);
-						}catch(Exception c) {
-							c.printStackTrace();
-						}
-					}//2023-04-13 03:30:03
-					if (logD.getOpdt()!=null) {
-						try {
-						Date date=Constants.SDF_MYSL_DATE_TIME.parse(logD.getOpdt());  
-						dF.setOpdtd(date);
-						}catch(Exception c) {
-							c.printStackTrace();			
-						}
-					}
-										
+//					if (logD.getOpdos()!=null) {
+//						//2022-10-12
+//						try {
+//						Date date=Constants.SDF_MYSL_DATE.parse(logD.getOpdos());  
+//						dF.setOpdosd(date);
+//						}catch(Exception c) {
+//							c.printStackTrace();
+//						}
+//					}//2023-04-13 03:30:03
+//					if (logD.getOpdt()!=null) {
+//						try {
+//						Date date=Constants.SDF_MYSL_DATE_TIME.parse(logD.getOpdt());  
+//						dF.setOpdtd(date);
+//						}catch(Exception c) {
+//							c.printStackTrace();			
+//						}
+//					}
+					dF.setOpdtd(logD.getOpdt()==null?"0":logD.getOpdt());
+					dF.setOpdosd(logD.getOpdos()==null?"0":logD.getOpdos());
 					//BeanUtils.copyProperties(logD, dF);
 					counts = remoteLiteMap.get(logD.getOfficeName());
 					if (counts != null) {

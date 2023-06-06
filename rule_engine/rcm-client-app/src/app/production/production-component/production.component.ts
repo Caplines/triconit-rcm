@@ -35,6 +35,7 @@ export class ProductionComponent implements OnInit {
   }
 
  save(){
+  this.fetchbtnDisable=false;
   this.loader.showLoader=true;
   this.loader.fetch = true;
   this.total=0;

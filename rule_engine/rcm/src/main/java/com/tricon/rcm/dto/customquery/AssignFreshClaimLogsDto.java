@@ -8,9 +8,9 @@ public interface AssignFreshClaimLogsDto {
 	
 	int getCount();
 	//
-	String getOpdt();
+	String getOpdt(); 
 
-	String getOpdos();
+	String getOpdos(); 
 	
 	String getOfficeUuid();
 	

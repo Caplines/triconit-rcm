@@ -15,9 +15,9 @@ public class AssignFreshClaimLogsImplDto implements AssignFreshClaimLogsDto{
 
 	String opdos;
 	
-	Date opdtd;
+	String opdtd;
 
-	Date opdosd;
+	String opdosd;
 
 	int count;
 	

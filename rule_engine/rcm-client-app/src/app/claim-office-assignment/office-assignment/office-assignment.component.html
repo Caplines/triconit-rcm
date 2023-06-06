@@ -87,10 +87,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['opdtd']}"
-                                                                (click)="sortData(claimData,'opdtd','asc','dateOnly'); isSorted['opdtd'] = false"></a>
+                                                                (click)="sortData(claimData,'opdtd','asc','number'); isSorted['opdtd'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['opdtd']}"
-                                                                (click)="sortData(claimData,'opdtd','desc','dateOnly');isSorted['opdtd'] = true"></a>
+                                                                (click)="sortData(claimData,'opdtd','desc','number');isSorted['opdtd'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -100,10 +100,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['opdosd']}"
-                                                                (click)="sortData(claimData,'opdosd','asc','dateOnly'); isSorted['opdosd'] = false"></a>
+                                                                (click)="sortData(claimData,'opdosd','asc','number'); isSorted['opdosd'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['opdosd']}"
-                                                                (click)="sortData(claimData,'opdosd','desc','dateOnly');isSorted['opdosd'] = true"></a>
+                                                                (click)="sortData(claimData,'opdosd','desc','number');isSorted['opdosd'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -183,8 +183,8 @@
                                                             </select>
                                                         </a>
                                                     </td>
-                                                    <td>{{lg.opdtd  ? (lg.opdtd | date: 'MMM dd, YYYY') : ''}}</td>
-                                                    <td>{{lg.opdosd  ? (lg.opdosd | date: 'MMM dd, YYYY') : ''}}</td>
+                                                    <td>{{lg.opdtd}}</td>
+                                                    <td>{{lg.opdosd}}</td>
                                                     <td class="alignRight">{{lg.count}}</td>
                                                     <td class="alignRight">{{lg.remoteLiteRejections}}</td>
                                                     <td class="alignRight">{{lg.remoteLiteRejections+lg.count}}</td>

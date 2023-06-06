@@ -206,19 +206,19 @@ exportToCsv(){
   excelData = excelData.map((e:any)=>
   {
     e['officeAssignedTo'] = e.fname ? e.fname+ " "+ e.lname : "-";
-    if(e.opdosd){
-      let date:Date = new Date(e.opdosd);
-      e.opdosd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
-      //e.opdosd =  "Jan 14', 2023";
-    }else{
-      e.opdosd = 'N/A';
-    }
-    if(e.opdtd){
-      let date:Date = new Date(e.opdtd);
-      e.opdtd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
-    }else{
-        e.opdtd = 'N/A';
-    }
+    // if(e.opdosd){
+    //   let date:Date = new Date(e.opdosd);
+    //   e.opdosd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
+    //   //e.opdosd =  "Jan 14', 2023";
+    // }else{
+    //   e.opdosd = 'N/A';
+    // }
+    // if(e.opdtd){
+    //   let date:Date = new Date(e.opdtd);
+    //   e.opdtd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
+    // }else{
+    //     e.opdtd = 'N/A';
+    // }
     e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
     return e;
   })
