@@ -3,140 +3,204 @@
         <h1>Capline RCM</h1>
 
         <div class=" px-3 dropBox">
-            
-        <ul class="navbar-nav">
-            <!-- <li *ngIf="issueClaimsCount > 0 && currentTeamId!=-1">  <a [routerLink]="['tool-update/issue-claims']" target="_blank" class="btn btn-danger" title="Issue Claim"><img src="../../assets/img/claim-issue.png"/> </a>
+
+            <ul class="navbar-nav">
+                <!-- <li *ngIf="issueClaimsCount > 0 && currentTeamId!=-1">  <a [routerLink]="['tool-update/issue-claims']" target="_blank" class="btn btn-danger" title="Issue Claim"><img src="../../assets/img/claim-issue.png"/> </a>
                </li> -->
-            <!-- <li> <button type="button" class="btn btn-success btn-sm" title="Switch Account" (click)="openPopUp(true)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                <!-- <li> <button type="button" class="btn btn-success btn-sm" title="Switch Account" (click)="openPopUp(true)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
               </svg></button> </li> -->
 
-            <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0);" (click)="openHelp()"><img src="../../assets/img/help.png" /> Help</a>
-            </li>
-            <!-- <li class="nav-item">
+                <li class="nav-item">
+                    <a class="nav-link" href="javascript:void(0);" (click)="openHelp()"><img
+                            src="../../assets/img/help.png" /> Help</a>
+                </li>
+                <!-- <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign out</a>
             </li> -->
-        </ul>
-        <div class="dropdown"  (onclick)="myFunction()">
-            <a [title]="staticUtil.currentUserEmail()" class="dropbtn"><img src="../../assets/img/user-blue.png" /> Welcome, {{loggedInUserName}} <span class="caretDown"></span></a>
-            <div id="myDropdown" class="dropdown-content">
-                <li><span> <strong>Client:</strong>  {{userInfo.currentClientName}}</span></li>
-                <!-- <li><span><strong>Role:</strong> {{userInfo.currentRoleName?.roleName}}</span></li> -->
-                <li><span *ngIf="userInfo.currentRoleName?.roleId != 'ADMIN' && (userInfo.currentRoleName?.roleId != 'SUPER_ADMIN' || loginUserType != 'Admin') && userInfo.currentRoleName?.roleId != 'REPORTING' "> <strong>Team:</strong>  {{userInfo.currentTeamId?.teamName}}</span></li>
-             <li> <a href="javascript:void(0);"  title="Switch Account" (click)="openPopUp(true)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="margin-right:2px" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
-               </svg> Switch Account</a> </li>
-               <li _ngcontent-sjo-c48=""><a _ngcontent-sjo-c48="" href="/update-pass" routerlinkactive="active" ng-reflect-router-link-active="active" ng-reflect-router-link="/update-pass"><img _ngcontent-sjo-c48="" src="../../assets/img/updatePassword-active.png" width="16">Update Password</a></li>
-               <li><a href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign out</a></li>
-              
+            </ul>
+            <div class="dropdown" (onclick)="myFunction()">
+                <a [title]="staticUtil.currentUserEmail()" class="dropbtn"><img src="../../assets/img/user-blue.png" />
+                    Welcome, {{loggedInUserName}} <span class="caretDown"></span></a>
+                <div id="myDropdown" class="dropdown-content">
+                    <li><span> <strong>Client:</strong> {{userInfo.currentClientName}}</span></li>
+                    <!-- <li><span><strong>Role:</strong> {{userInfo.currentRoleName?.roleName}}</span></li> -->
+                    <li><span
+                            *ngIf="userInfo.currentRoleName?.roleId != 'ADMIN' && (userInfo.currentRoleName?.roleId != 'SUPER_ADMIN' || loginUserType != 'Admin') && userInfo.currentRoleName?.roleId != 'REPORTING' ">
+                            <strong>Team:</strong> {{userInfo.currentTeamId?.teamName}}</span></li>
+                    <li> <a href="javascript:void(0);" title="Switch Profile" (click)="openPopUp(true)"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="margin-right:2px"
+                                fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                            </svg> Switch Profile</a> </li>
+                    <li _ngcontent-sjo-c48=""><a _ngcontent-sjo-c48="" href="/update-pass" routerlinkactive="active"
+                            ng-reflect-router-link-active="active" ng-reflect-router-link="/update-pass"><img
+                                _ngcontent-sjo-c48="" src="../../assets/img/updatePassword-active.png" width="16">Update
+                            Password</a></li>
+                    <li><a href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign
+                            out</a></li>
+
+                </div>
             </div>
-          </div>
-      
-    </div>
- 
+
+        </div>
+
     </div>
 
     <div class="gray-bar">
         <ul>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a href="javascript:void(0);" [routerLink]="['/register']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/register.png':'../../assets/img/register-gray.png'" />Register New User</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a href="javascript:void(0);" [routerLink]="['/user-setting']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive ? '../../assets/img/user-setting.png' : '../../assets/img/user-setting-gray.png'" />User Settings</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);" [routerLink]="['/manage-office']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Manage Offices</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a href="javascript:void(0);" [routerLink]="['/users-status']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/user-status-active.png':'../../assets/img/user-status.png'" />Users Status</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);" [routerLink]="['/manage-client']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/clientManage-active.png':'../../assets/img/clientManage.png'" />Manage Client</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (staticUtil.isRoleLead() && currentTeamId == 7) "><a href="javascript:void(0);" [routerLink]="['/tool-update']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Upload Claims</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || (currentTeamId == 3 && userInfo.currentRoleName != 'ASSO' ))) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3 && userInfo.currentRoleName != 'ASSO'))"><a href="javascript:void(0);" [routerLink]="['/claim-assignment']"  routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/pendency-green-icon.png':'../../assets/img/pendency-gray-icon.png'" />Pendency</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3))"><a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency - Other Teams</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a
+                    href="javascript:void(0);" [routerLink]="['/register']" routerLinkActive="active"
+                    #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/register.png':'../../assets/img/register-gray.png'" />Register
+                    New User</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a
+                    href="javascript:void(0);" [routerLink]="['/user-setting']" routerLinkActive="active"
+                    #rla="routerLinkActive"><img
+                        [src]="rla.isActive ? '../../assets/img/user-setting.png' : '../../assets/img/user-setting-gray.png'" />User
+                    Settings</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);"
+                    [routerLink]="['/manage-office']" routerLinkActive="active" #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/manage-office.png':'../../assets/img/manage-office-gray.png'" />Manage
+                    Offices</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a
+                    href="javascript:void(0);" [routerLink]="['/users-status']" routerLinkActive="active"
+                    #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/user-status-active.png':'../../assets/img/user-status.png'" />Users
+                    Status</a></li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);"
+                    [routerLink]="['/manage-client']" routerLinkActive="active" #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/clientManage-active.png':'../../assets/img/clientManage.png'" />Manage
+                    Client</a></li>
+            <li
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (staticUtil.isRoleLead() && currentTeamId == 7) ">
+                <a href="javascript:void(0);" [routerLink]="['/tool-update']" routerLinkActive="active"
+                    #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Upload
+                    Claims</a></li>
+            <li
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || (currentTeamId == 3 && userInfo.currentRoleName != 'ASSO' ))) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3 && userInfo.currentRoleName != 'ASSO'))">
+                <a href="javascript:void(0);" [routerLink]="['/claim-assignment']" routerLinkActive="active"
+                    #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/pendency-green-icon.png':'../../assets/img/pendency-gray-icon.png'" />Pendency</a>
+            </li>
+            <li
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3))">
+                <a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active"
+                    #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency
+                    - Other Teams</a></li>
             <!-- <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7) || (staticUtil.isRoleLead() && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/dashboard-active.png':'../../assets/img/dashboard.png'" />Billing Pendency Dashboard</a></li> -->
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7 || currentTeamId == 3) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />List Of Claims</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || currentTeamId == 3)) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3))"><a href="javascript:void(0);" [routerLink]="['/production']"routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a></li>
+            <li
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7 || currentTeamId == 3) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && currentTeamId == 7)">
+                <a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active"
+                    #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />List Of
+                    Claims</a></li>
+            <li
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || currentTeamId == 3)) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3))">
+                <a href="javascript:void(0);" [routerLink]="['/production']" routerLinkActive="active"
+                    #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a>
+            </li>
             <!-- <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/updatePassword-active.png':'../../assets/img/updatePassword.png'" />Update Password</a></li>  -->
         </ul>
 
     </div>
-    
+
     <!-- Switch Account popup-->
 
     <div class="modal" id="switch-modal">
         <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLongTitle">{{modelTitle}}</h5>
-              <button (click)="closeModal()" *ngIf="modelTitle == 'Switch Account'" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span  >&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-sm">
-                        <ng-container *ngIf="selectedRole == 'SUPER_ADMIN'"
-                            style="align-items: flex-start;">
-                            <div class="form-group d-flex login-radio-box">
-                                <label class="font-weight-bolder">Login As:</label>
-                                <div class="form-check-inline-radio ">
-                                    <span>
-                                        <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Admin" name="loginAs" id="admin">
-                                        <label class="form-check-label" for="admin">Admin</label>
-                                    </span>
-                                    <span>
-                                        <input class="form-check-input" type="radio" (change)="selectLoginType($event)" value="Normal" name="loginAs"  id="normal">
-                                        <label class="form-check-label" for="enable">Tool User</label>
-                                    </span>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">{{modelTitle}}</h5>
+                    <button (click)="closeModal()" *ngIf="modelTitle == 'Switch Account'" type="button" class="close"
+                        data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm">
+                            <ng-container *ngIf="selectedRole == 'SUPER_ADMIN'" style="align-items: flex-start;">
+                                <div class="form-group d-flex login-radio-box">
+                                    <label class="font-weight-bolder">Login As:</label>
+                                    <div class="form-check-inline-radio ">
+                                        <span>
+                                            <input class="form-check-input" type="radio"
+                                                (change)="selectLoginType($event)" value="Admin" name="loginAs"
+                                                id="admin">
+                                            <label class="form-check-label" for="admin">Admin</label>
+                                        </span>
+                                        <span>
+                                            <input class="form-check-input" type="radio"
+                                                (change)="selectLoginType($event)" value="Normal" name="loginAs"
+                                                id="normal">
+                                            <label class="form-check-label" for="enable">Tool User</label>
+                                        </span>
+                                    </div>
                                 </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group d-flex justify-content-around">
+                                <label class="font-weight-bolder">Client Names:</label>
+                                <select class="form-control" id="selectClientAC" name="selectClientAC"
+                                    (change)="checkBtnDisabled()" [(ngModel)]="selectedClient"
+                                    [disabled]="cwModel?.companies?.length == 1 ? true : false">
+                                    <option selected="true" hidden="true" value="">Select Client Name</option>
+                                    <ng-container *ngFor="let tl of cwModel?.companies">
+                                        <option value="{{tl.name}}">{{tl.name}}</option>
+                                    </ng-container>
+                                </select>
                             </div>
-                        </ng-container>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <div class="form-group d-flex justify-content-around">
-                            <label class="font-weight-bolder">Client Names:</label>
-                            <select class="form-control" id="selectClientAC" name="selectClientAC" (change)="checkBtnDisabled()" [(ngModel)]="selectedClient" [disabled]="cwModel?.companies?.length == 1 ? true : false">
-                                <option selected="true" hidden="true" value="">Select Client Name</option>
-                                <ng-container *ngFor="let tl of cwModel?.companies">
-                                    <option value="{{tl.name}}">{{tl.name}}</option>
-                                </ng-container>
-                            </select>
+                    <div class="row" [hidden]="cwModel?.roles?.length == 1 ? true : false">
+                        <div class="col-sm">
+                            <div class="form-group d-flex justify-content-around">
+                                <label class="font-weight-bolder">Select Roles:</label>
+                                <select class="form-control" id="selectRolesAC" name="selectRolesAC"
+                                    (change)="checkBtnDisabled()" [(ngModel)]="selectedRole"
+                                    [disabled]="cwModel?.roles?.length == 1 ? true : false">
+                                    <option selected="true" hidden="true" value="">Select Roles</option>
+                                    <ng-container *ngFor="let tl of cwModel?.roles">
+                                        <option value="{{tl.roleId}}">{{tl.roleName}}</option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group d-flex justify-content-around">
+                                <label class="font-weight-bolder">Team Name:</label>
+                                <select class="form-control" id="selectTeamAC" name="selectTeamAC"
+                                    (change)="checkBtnDisabled()" [(ngModel)]="selectedTeam"
+                                    [disabled]="(cwModel?.teams?.length==0 || cwModel?.teams?.length == 1) || loginUserType=='Admin'">
+                                    <option selected="true" hidden="true" value="">Select Team</option>
+                                    <ng-container *ngFor="let tl of cwModel?.teams">
+                                        <option value="{{tl.id ? tl.id : tl.teamId}}">{{tl.name ? tl.name :
+                                            tl.teamName}}</option>
+                                    </ng-container>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="row" [hidden]="cwModel?.roles?.length == 1 ? true : false">
-                    <div class="col-sm">
-                        <div class="form-group d-flex justify-content-around">
-                            <label class="font-weight-bolder">Select Roles:</label>
-                            <select class="form-control"  id="selectRolesAC" name="selectRolesAC" (change)="checkBtnDisabled()" [(ngModel)]="selectedRole" [disabled]="cwModel?.roles?.length == 1 ? true : false">
-                                <option selected="true" hidden="true" value="">Select Roles</option>
-                                <ng-container *ngFor="let tl of cwModel?.roles">
-                                    <option  value="{{tl.roleId}}">{{tl.roleName}}</option>
-                                </ng-container>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <div class="form-group d-flex justify-content-around">
-                            <label class="font-weight-bolder">Team Name:</label>
-                            <select class="form-control" id="selectTeamAC" name="selectTeamAC" (change)="checkBtnDisabled()" [(ngModel)]="selectedTeam"
-                                [disabled]="(cwModel?.teams?.length==0 || cwModel?.teams?.length == 1) || loginUserType=='Admin'">
-                                <option selected="true" hidden="true" value="">Select Team</option>
-                                <ng-container *ngFor="let tl of cwModel?.teams">
-                                    <option value="{{tl.id ? tl.id : tl.teamId}}">{{tl.name ? tl.name : tl.teamName}}</option>
-                                </ng-container>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success"
-                [ngClass]="{'disabled':btnDisabled}" (click)="switchAccount()">{{modelTitle}}</button>
-                <!-- <button type="button" class="btn btn-success" [disabled]="(cwModel?.teams?.length==0 && !this.selectedRole &&  !this.selectedClient)  ||  (!this.selectedRole  ||  !this.selectedClient) "
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" [ngClass]="{'disabled':btnDisabled}"
+                        (click)="switchAccount()">{{modelTitle}}</button>
+                    <!-- <button type="button" class="btn btn-success" [disabled]="(cwModel?.teams?.length==0 && !this.selectedRole &&  !this.selectedClient)  ||  (!this.selectedRole  ||  !this.selectedClient) "
                 (click)="switchAccount()">{{modelTitle}}</button> -->
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
     <!-- Switch Account popup END -->
 
     <!-- Modal -->
@@ -180,7 +244,7 @@
         </div>
     </div> -->
     <!-- Modal End -->
- 
+
 
     <div class="modal-backdrop fade show" [ngClass]="{'modalShow':showPopup}"></div>
 </div>

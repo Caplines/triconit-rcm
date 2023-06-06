@@ -270,65 +270,65 @@ export class BillingClaimsComponent {
         }
       }
     });
-
-    if (Object.keys(ths.submissionDto).length == 0) {
-      ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
-      ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
-      ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
-      ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
-      if (!ths.claimNoEnable()) {
-
-        ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
-      }
-      if (!ths.preAuthEnable()) {
-        ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
-      }
-      ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
-      //ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
-      valid = false;
-    } else {
-      if (ths.submissionDto.channel === undefined || ths.submissionDto.channel === null) {
+    if (!ths.isInternalAudit) {//Only Non Audit can Submit
+      if (Object.keys(ths.submissionDto).length == 0) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
-        valid = false;
-      }
-      if (ths.submissionDto.attachmentSend === undefined || ths.submissionDto.attachmentSend === null) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
-        valid = false;
-      }
-      if (ths.submissionDto.preauth === undefined || ths.submissionDto.preauth === null) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
-        valid = false;
-      }
-      if (ths.submissionDto.refferalLetter === undefined || ths.submissionDto.refferalLetter === null) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
-        valid = false;
-      }
-      if (!ths.claimNoEnable()) {
+        if (!ths.claimNoEnable()) {
 
-
-        let SUB_DET_CLA: any = document.getElementById("SUB_DET_CLA");
-        if (SUB_DET_CLA.value.trim() === '') {
           ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
-          valid = false;
         }
-      } else {
-        ths.removeErrorDisplayKeyById('SUB_DET_CLA');
-      }
-      if (!ths.preAuthEnable()) {
-        let SUB_DET_PRENO: any = document.getElementById("SUB_DET_PRENO");
-        if (SUB_DET_PRENO.value.trim() === '') {
+        if (!ths.preAuthEnable()) {
           ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+        }
+        ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
+        //ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
+        valid = false;
+      } else {
+        if (ths.submissionDto.channel === undefined || ths.submissionDto.channel === null) {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
           valid = false;
         }
-      } else {
-        ths.removeErrorDisplayKeyById('SUB_DET_PRENO');
-      }
-      let SUB_DET_DT: any = document.getElementById("SUB_DET_DT");
-      if (SUB_DET_DT.value.trim() === '') {
-        ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
-        valid = false;
-      }
+        if (ths.submissionDto.attachmentSend === undefined || ths.submissionDto.attachmentSend === null) {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
+          valid = false;
+        }
+        if (ths.submissionDto.preauth === undefined || ths.submissionDto.preauth === null) {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
+          valid = false;
+        }
+        if (ths.submissionDto.refferalLetter === undefined || ths.submissionDto.refferalLetter === null) {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
+          valid = false;
+        }
+        if (!ths.claimNoEnable()) {
 
+
+          let SUB_DET_CLA: any = document.getElementById("SUB_DET_CLA");
+          if (SUB_DET_CLA.value.trim() === '') {
+            ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
+            valid = false;
+          }
+        } else {
+          ths.removeErrorDisplayKeyById('SUB_DET_CLA');
+        }
+        if (!ths.preAuthEnable()) {
+          let SUB_DET_PRENO: any = document.getElementById("SUB_DET_PRENO");
+          if (SUB_DET_PRENO.value.trim() === '') {
+            ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+            valid = false;
+          }
+        } else {
+          ths.removeErrorDisplayKeyById('SUB_DET_PRENO');
+        }
+        let SUB_DET_DT: any = document.getElementById("SUB_DET_DT");
+        if (SUB_DET_DT.value.trim() === '') {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
+          valid = false;
+        }
+      }
       /*let SUB_DET_TI: any = document.getElementById("SUB_DET_TI");
       if (SUB_DET_TI.value.trim() === '') {
         ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
@@ -389,7 +389,7 @@ export class BillingClaimsComponent {
       if (ths.ruleEngineReport.length == 0) {
         ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
 
-        // valid = false;//Deepak
+        valid = false;//Deepak
 
       } else {
         ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
@@ -850,6 +850,9 @@ export class BillingClaimsComponent {
     return Utils.isRoleLead();
   }
 
+  get isInternalAuditLogin() {
+    return (Utils.selectedTeam() == 3);
+  }
   get isRoleSuperAdmin() {
     return Utils.checkRoleSuperAdmin();
   }

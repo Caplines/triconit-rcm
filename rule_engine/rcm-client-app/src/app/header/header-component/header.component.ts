@@ -41,23 +41,23 @@ export class HeaderComponent implements OnInit {
   loginUserType: any = '';
   btnDisabled: boolean = true;
   teamData: any = [];
-  currentTeamId:any;
+  currentTeamId: any;
   issueClaimsCount: number = 0;
-  clientUuid:string="-1";
-  ele:any={'modal':'','span':''}
-  issueClientName:any='';
-  issueCl : any=[];
-  isSingleRole:boolean=false;
+  clientUuid: string = "-1";
+  ele: any = { 'modal': '', 'span': '' }
+  issueClientName: any = '';
+  issueCl: any = [];
+  isSingleRole: boolean = false;
 
-  issueClaimPageNum:any=0;
-  totalPages:number;
+  issueClaimPageNum: any = 0;
+  totalPages: number;
 
-  @ViewChild('modalElement')modalElementRef!:ElementRef;
+  @ViewChild('modalElement') modalElementRef!: ElementRef;
 
-  constructor(private appSer: ApplicationServiceService, private router: Router,public appConstants: AppConstants) {
+  constructor(private appSer: ApplicationServiceService, private router: Router, public appConstants: AppConstants) {
 
     this.cwModel = {};
-    
+
     this.appConstants.teamData = [{ "teamName": "Internal Audit", "teamId": 3 }, { "teamName": "Aging", "teamId": 4 }, { "teamName": "Posting", "teamId": 5 }, { "teamName": "Quality", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
   }
 
@@ -66,7 +66,7 @@ export class HeaderComponent implements OnInit {
     this.userInfo.currentClientName = localStorage.getItem("selected_clientName");
     this.userInfo.currentRoleName = localStorage.getItem("selected_roleName");
     this.userInfo.currentTeamId = localStorage.getItem("selected_teamId");
-    this.currentTeamId=this.userInfo.currentTeamId;
+    this.currentTeamId = this.userInfo.currentTeamId;
     this.loginUserType = localStorage.getItem("loginAs");
     //  }
     this.loggedInUserName = localStorage.getItem("name");
@@ -78,8 +78,8 @@ export class HeaderComponent implements OnInit {
     // if(this.userInfo.currentClientName && this.userInfo.currentTeamId != "-1"){
     //   this.issueClaim();
     // }
-     this.checkClientExist();
-     window.addEventListener("click",(event:any) =>{
+    this.checkClientExist();
+    window.addEventListener("click", (event: any) => {
       if (!event.target.matches('.dropbtn')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
         var i;
@@ -90,8 +90,8 @@ export class HeaderComponent implements OnInit {
           }
         }
       }
-     })
-     
+    })
+
   }
 
   getRoles() {
@@ -134,17 +134,17 @@ export class HeaderComponent implements OnInit {
   closeModal() {
     this.loginUserType = localStorage.getItem('loginAs');
     this.modelElement.modal.style.display = "none";
-    this.showPopup= false;
+    this.showPopup = false;
     (<HTMLInputElement>document.getElementById('admin')).checked = false;
     (<HTMLInputElement>document.getElementById('normal')).checked = false;
   }
 
   switchAccount() {
-    
+
     localStorage.setItem("loginAs", this.loginUserType);
     Utils.clearLastPageVisited();
-    if(this.cwModel.roles.length != 1 && this.cwModel.companies.length != 1 && this.cwModel.teams.length != 1)
-    this.modelElement.modal.style.display = "none";
+    if (this.cwModel.roles.length != 1 && this.cwModel.companies.length != 1 && this.cwModel.teams.length != 1)
+      this.modelElement.modal.style.display = "none";
     if (this.selectedTeam == '') {
       this.selectedTeam = '-1'
     }
@@ -154,21 +154,21 @@ export class HeaderComponent implements OnInit {
     if (this.selectedTeam != -1 && this.selectedRole != "ASSO") {
       window.location.href = "/claim-assignment";
     }
-    else if(this.selectedRole == "ASSO"){
+    else if (this.selectedRole == "ASSO") {
       window.location.href = "/list-of-claims";
     }
-     else {
+    else {
       window.location.href = "/register";
     }
   }
 
   openPopUp(open: boolean) {
     if (!open) {
-      this.modelTitle = "Select Account";
+      this.modelTitle = "Select Profile";
 
     }
     else {
-      this.modelTitle = "Switch Account";
+      this.modelTitle = "Switch Profile";
     }
     if (open || this.staticUtil.isAccountpopupNeeded()) {
       this.cwModel.companies = this.staticUtil.getClientsFromLS();
@@ -189,13 +189,13 @@ export class HeaderComponent implements OnInit {
       if (this.cwModel.teams.length == 1) {
         this.selectedTeam = this.cwModel.teams[0].id;
       }
-      
-      if(this.cwModel.roles.length == 1 && this.cwModel.companies.length == 1 && ( localStorage.getItem("roles") == "ROLE_ADMIN" || localStorage.getItem("roles") == "ROLE_REPORTING"  || this.cwModel.teams.length == 1)){
-        this.isSingleRole=true;
+
+      if (this.cwModel.roles.length == 1 && this.cwModel.companies.length == 1 && (localStorage.getItem("roles") == "ROLE_ADMIN" || localStorage.getItem("roles") == "ROLE_REPORTING" || this.cwModel.teams.length == 1)) {
+        this.isSingleRole = true;
         this.switchAccount();
       }
 
-      if(!this.isSingleRole){
+      if (!this.isSingleRole) {
         this.modelElement.modal = document.getElementById("switch-modal");
         this.modelElement.modal.style.display = "block";
         this.showPopup = true;
@@ -284,44 +284,44 @@ export class HeaderComponent implements OnInit {
   //   });
   // }
 
-  fetchIssueClaims(){
+  fetchIssueClaims() {
     let cName = JSON.parse(localStorage.getItem('clients'));
-    cName.find((ele:any)=>{
-      if(ele.name == this.userInfo.currentClientName){
+    cName.find((ele: any) => {
+      if (ele.name == this.userInfo.currentClientName) {
         this.clientUuid = ele.id;
       }
     });
-    if(this.clientUuid){
-      this.appSer.fetchIssueClaims(this.clientUuid+`/${this.issueClaimPageNum}`, (res: any) => {
-       if (res.status === 200 && res.data) {
+    if (this.clientUuid) {
+      this.appSer.fetchIssueClaims(this.clientUuid + `/${this.issueClaimPageNum}`, (res: any) => {
+        if (res.status === 200 && res.data) {
           this.totalPages = res.data[0].totalPages;
-         if (this.issueClaimPageNum == 0) {
-           this.issueCl = res.data[0].data;
-         }
-         if (this.issueClaimPageNum != 0 && res.data[0].totalPages != this.issueClaimPageNum) {
-           this.issueCl.push.apply(this.issueCl, res.data[0].data);
-         }
+          if (this.issueClaimPageNum == 0) {
+            this.issueCl = res.data[0].data;
+          }
+          if (this.issueClaimPageNum != 0 && res.data[0].totalPages != this.issueClaimPageNum) {
+            this.issueCl.push.apply(this.issueCl, res.data[0].data);
+          }
           this.modal();
         }
       });
     }
   }
 
-  loadMore(){
-      ++this.issueClaimPageNum;
-      if(this.issueClaimPageNum < this.totalPages){
-        this.fetchIssueClaims();
-      }
+  loadMore() {
+    ++this.issueClaimPageNum;
+    if (this.issueClaimPageNum < this.totalPages) {
+      this.fetchIssueClaims();
+    }
   }
 
- modal(){
-   this.issueClientName = localStorage.getItem("selected_clientName");
+  modal() {
+    this.issueClientName = localStorage.getItem("selected_clientName");
     this.ele.modal = document.getElementById("myModal");
     this.ele.span = document.getElementsByClassName("close")[0];
     this.ele.modal.style.display = "block";
   }
 
-  onModalScroll(){
+  onModalScroll() {
     const modalElement = this.modalElementRef.nativeElement;
     const scrollTop = modalElement.scrollTop;
     const scrollHeight = modalElement.scrollHeight;
@@ -332,28 +332,28 @@ export class HeaderComponent implements OnInit {
     }
   }
 
- closeModalIC(){
+  closeModalIC() {
     this.ele.modal.style.display = "none";
-    this.issueClaimPageNum=0;
-    this.issueCl=[];
+    this.issueClaimPageNum = 0;
+    this.issueCl = [];
   }
 
-  
-openHelp() {
-  if (window.location.pathname === "/tool-update") {   //curerntly help link is only available for Tool To Update Page.
-    window.open(
-      "https://docs.google.com/document/d/1VjkBGvwpUPlhQG0JAprO8moTleo0cEbFPCmaYIYa2CM/edit#heading=h.lfah6ew7mnj1",
-      "_blank");   
+
+  openHelp() {
+    if (window.location.pathname === "/tool-update") {   //curerntly help link is only available for Tool To Update Page.
+      window.open(
+        "https://docs.google.com/document/d/1VjkBGvwpUPlhQG0JAprO8moTleo0cEbFPCmaYIYa2CM/edit#heading=h.lfah6ew7mnj1",
+        "_blank");
+    }
   }
-}
 
-/* When the user clicks on the button, 
-toggle between hiding and showing the dropdown content */
- myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
+  /* When the user clicks on the button, 
+  toggle between hiding and showing the dropdown content */
+  myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
 
-// Close the dropdown if the user clicks outside of it
+  // Close the dropdown if the user clicks outside of it
 
 
 
