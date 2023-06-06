@@ -90,7 +90,7 @@ export class BillingClaimsComponent {
         ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
         ths.fetchOtherTeamRemarks();
         ths.fetchClaimNotes();
-        if (ths.smilePoint) ths.getServiceLevelCodes();//Only In case of Smile point. other does not have it.
+        ths.getServiceLevelCodes();
         ths.getSubmissionDetails();
         //if (this.smilePoint) ths.getClaimRuleData();//Only In case of Smile point. other does not have it.
         //ths.runAutoRules(false);
@@ -547,33 +547,37 @@ export class BillingClaimsComponent {
 
   getClaimRuleData() {
     let ths = this;
-    ths.loader.ruleEngValid = true;
-    ths.claimARulesPullDataModel.claimId = ths.claimRcm.claimId.split("_")[0];//"15927";///
-    ths.claimARulesPullDataModel.officeId = ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
-    ths.claimARulesPullDataModel.patientId = ths.claimRcm.patientId;//"6602";//TESTING
+    if (this.smilePoint) {
+      ths.loader.ruleEngValid = true;
+      ths.claimARulesPullDataModel.claimId = ths.claimRcm.claimId.split("_")[0];//"15927";///
+      ths.claimARulesPullDataModel.officeId = ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
+      ths.claimARulesPullDataModel.patientId = ths.claimRcm.patientId;//"6602";//TESTING
 
-    ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel, (res: any) => {
-      if (res.status === 200) {
-        ths.loader.ruleEngValid = false;
-        ths.getRulesClaimdata();
-        ths.ruleEngineReport = res.data;////Rule Engine Data
-        if (ths.ruleEngineReport.length > 0)
-          ths.generateRuleEngineReportHeading(ths.ruleEngineReport[0]);
+      ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel, (res: any) => {
+        if (res.status === 200) {
+          ths.loader.ruleEngValid = false;
+          ths.getRulesClaimdata();
+          ths.ruleEngineReport = res.data;////Rule Engine Data
+          if (ths.ruleEngineReport.length > 0)
+            ths.generateRuleEngineReportHeading(ths.ruleEngineReport[0]);
 
-        this.count.pass = this.count.fail = this.count.alert = 0;
-        this.ruleEngineReport.forEach((e: any) => {
-          if (e.mtype == 1) {
-            this.count.fail = this.count.fail + 1;
-          }
-          else if (e.mtype == 2) {
-            this.count.pass = this.count.pass + 1;
-          } else if (e.mtype == 3) {
-            this.count.alert = this.count.alert + 1;
-          }
-        });
+          this.count.pass = this.count.fail = this.count.alert = 0;
+          this.ruleEngineReport.forEach((e: any) => {
+            if (e.mtype == 1) {
+              this.count.fail = this.count.fail + 1;
+            }
+            else if (e.mtype == 2) {
+              this.count.pass = this.count.pass + 1;
+            } else if (e.mtype == 3) {
+              this.count.alert = this.count.alert + 1;
+            }
+          });
 
-      }
-    })
+        }
+      })
+    } else {
+      ths.getRulesClaimdata();
+    }
   }
 
   generateRuleEngineReportHeading(rule: RuleEngineValModel) {
