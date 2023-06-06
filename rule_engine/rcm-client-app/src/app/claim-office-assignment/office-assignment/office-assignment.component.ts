@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { ApplicationServiceService  } from '../../service/application-service.service';
-import {ClaimAssignmentDataModel} from '../../models/claim-assignmen-data-model';
-import {ClaimAssignmentModel} from '../../models/claim-assignment.model';
-import {ClaimAssignmentPullModel} from '../../models/claim-assignment-pull-model';
-import {BillingList} from '../../models/billing-list-model';
+import { ApplicationServiceService } from '../../service/application-service.service';
+import { ClaimAssignmentDataModel } from '../../models/claim-assignmen-data-model';
+import { ClaimAssignmentModel } from '../../models/claim-assignment.model';
+import { ClaimAssignmentPullModel } from '../../models/claim-assignment-pull-model';
+import { BillingList } from '../../models/billing-list-model';
 import { Title } from '@angular/platform-browser';
 import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
@@ -20,25 +20,25 @@ import Utils from '../../util/utils';
 export class OfficeAssignmentComponent implements OnInit {
 
   // claimAssignmentModel: ClaimAssignmentModel = new ClaimAssignmentModel();
-  claimAssigmentPullModel:ClaimAssignmentPullModel = new ClaimAssignmentPullModel();
-  bl:BillingList = new BillingList();
+  claimAssigmentPullModel: ClaimAssignmentPullModel = new ClaimAssignmentPullModel();
+  bl: BillingList = new BillingList();
 
-  claimData : Array<ClaimAssignmentDataModel>;
+  claimData: Array<ClaimAssignmentDataModel>;
 
-  bType:string="-1";
-  insType:string="All";
+  bType: string = "-1";
+  insType: string = "All";
 
-  isSorted:any={};
-  teamId:any;
-  userByTeam:any=[];
-  assignOfficeDetails:any={'assignOfficeDetails':[],'teamId':''};
-  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
-  loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false,'assignLoader':false};
-  showExportLoader:boolean=false;
-  totalClaimData:any={'oldestOpdt':'','oldestOpdos':'','totalCount':0,'totalRemLiteReject':0,'totalcountAndRemLiteReject':0}
-  clientName:string='';
-  date:any;
-  constructor(private appService: ApplicationServiceService,private title:Title,private router:Router) { 
+  isSorted: any = {};
+  teamId: any;
+  userByTeam: any = [];
+  assignOfficeDetails: any = { 'assignOfficeDetails': [], 'teamId': '' };
+  alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
+  loader: any = { 'showLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false, 'assignLoader': false };
+  showExportLoader: boolean = false;
+  totalClaimData: any = { 'oldestOpdt': '', 'oldestOpdos': '', 'totalCount': 0, 'totalRemLiteReject': 0, 'totalcountAndRemLiteReject': 0 }
+  clientName: string = '';
+  date: any;
+  constructor(private appService: ApplicationServiceService, private title: Title, private router: Router) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
     this.claimData = [];//{} as FreshClaimPLogs;
     console.log(this.router.url)
@@ -52,160 +52,159 @@ export class OfficeAssignmentComponent implements OnInit {
     this.assignOfficeDetails.teamId = this.teamId;
   }
 
-  fetchClaimAssignments(){
-    let ths=this;
+  fetchClaimAssignments() {
+    let ths = this;
     ths.loader.showLoader = true;
-    ths.claimAssigmentPullModel.claimType=[];
-    ths.claimAssigmentPullModel.insuranceType=[];
+    ths.claimAssigmentPullModel.claimType = [];
+    ths.claimAssigmentPullModel.insuranceType = [];
     ths.totalClaimData.totalCount = ths.totalClaimData.totalRemLiteReject = ths.totalClaimData.totalcountAndRemLiteReject = 0;
-    if (ths.bType=='-1'){
+    if (ths.bType == '-1') {
       ths.bl.bills.forEach(e => {
-        if (e.key !='-1') 
-        ths.claimAssigmentPullModel.claimType.push(Number(e.key));
+        if (e.key != '-1')
+          ths.claimAssigmentPullModel.claimType.push(Number(e.key));
       });
-    }else{
+    } else {
       ths.claimAssigmentPullModel.claimType.push(Number(ths.bType));
     }
-    if(ths.insType=='All'){
+    if (ths.insType == 'All') {
       ths.bl.insTypes.forEach(e => {
-        if(e.key != 'All')
-        ths.claimAssigmentPullModel.insuranceType.push(String(e.key))   
+        if (e.key != 'All')
+          ths.claimAssigmentPullModel.insuranceType.push(String(e.key))
       });
-    }else{
+    } else {
       ths.claimAssigmentPullModel.insuranceType.push(ths.insType);
     }
 
-    ths.appService.fetchClaimAssignments(ths.claimAssigmentPullModel,(res:any)=>{
-       
-       if (res.status=== 200){
-        ths.claimData= res.data;
+    ths.appService.fetchClaimAssignments(ths.claimAssigmentPullModel, (res: any) => {
+
+      if (res.status === 200) {
+        ths.claimData = res.data;
         ths.calcCount(ths.claimData)
         ths.calcRemLiteReject(ths.claimData)
         ths.calcCountAndRemLiteReject(ths.claimData)
-        ths.loader.showLoader=false;
-       }else{
-         //ERROR
-       }
-      
-     });
+        ths.loader.showLoader = false;
+      } else {
+        //ERROR
+      }
+
+    });
   }
 
-  getCompany(){
-    this.appService.fetchCompanyNameData((callback:any)=>{
-      if(callback){
+  getCompany() {
+    this.appService.fetchCompanyNameData((callback: any) => {
+      if (callback) {
         console.log(callback);
       }
     })
   }
 
-  getUserByTeamId(){
-    this.appService.fetchUserByTeamId((callback:any)=>{
-      if(callback){
+  getUserByTeamId() {
+    this.appService.fetchUserByTeamId((callback: any) => {
+      if (callback) {
         this.userByTeam = callback.data
       }
     })
   }
 
-  selectNewAssignedUser(evt:any,officeUuid:any){
-    
-    if(this.assignOfficeDetails.assignOfficeDetails.length==0){
+  selectNewAssignedUser(evt: any, officeUuid: any) {
+
+    if (this.assignOfficeDetails.assignOfficeDetails.length == 0) {
       this.assignOfficeDetails.assignOfficeDetails.push(
         {
-          'userId':evt.target.value,
-          'officeId':officeUuid
+          'userId': evt.target.value,
+          'officeId': officeUuid
         })
-      }else{
-        this.assignOfficeDetails.assignOfficeDetails.find((e:any)=>{
-          if(e.officeId === officeUuid){
-              e.userId = evt.target.value;
-          }
-        })
-        let officeIdExist = this.assignOfficeDetails.assignOfficeDetails.some((e:any)=>e.officeId === officeUuid);
-        if(!officeIdExist){
-          this.assignOfficeDetails.assignOfficeDetails.push(
-            {
-              'userId':evt.target.value,
-              'officeId':officeUuid
-            });
+    } else {
+      this.assignOfficeDetails.assignOfficeDetails.find((e: any) => {
+        if (e.officeId === officeUuid) {
+          e.userId = evt.target.value;
         }
-
+      })
+      let officeIdExist = this.assignOfficeDetails.assignOfficeDetails.some((e: any) => e.officeId === officeUuid);
+      if (!officeIdExist) {
+        this.assignOfficeDetails.assignOfficeDetails.push(
+          {
+            'userId': evt.target.value,
+            'officeId': officeUuid
+          });
       }
-      console.log(this.assignOfficeDetails.assignOfficeDetails)
+
     }
-  
- saveAssignments(){
-  this.loader.assignLoader=true;
-  this.appService.assignOffice(this.assignOfficeDetails,(callback:any)=>{
-    if(callback.status == 200){
-      this.loader.assignLoader=false;
-      this.showAlertPopup(callback);
-      // scrollTo(0,0);
-      this.assignOfficeDetails.assignOfficeDetails= [];
-    }else{
-      this.showAlertPopup(callback);
-      scrollTo(0,0);
-    }
-  })
- }
-
- saveToPdf(divName:any){
-   this.loader.exportPDFLoader= true;
-   let m:any=document.querySelector(".table-wrapper-scroll-y");
-   m.classList.remove('table-wrapper-scroll-y');
-   m.classList.remove('table-inner-scrollbar');
-  html2canvas(<any>document.getElementById(divName)).then(canvas => {
-  const content = canvas.toDataURL('image/png');
-  let pdf= new jsPDF('p','mm','a4');
-  let width= pdf.internal.pageSize.getWidth();
-  let height = canvas.height  * width / canvas.width;
-  // Insert office name
-  pdf.setFontSize(10);  // Adjust the font size as needed
-  pdf.text(`Pendency - ${this.clientName}`, 2,6);
-  pdf.addImage(content,"PNG",0,15,width,height);
-  this.date = new Date();
-  this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-  pdf.save(`${this.clientName}_Pendency_${this.date}`);
-  this.loader.exportPDFLoader = false;
-  m.classList.add('table-wrapper-scroll-y')
-  m.classList.add('table-inner-scrollbar')
- });
-
-}
-
-sortData(data:any,sortProp:string,order:any,sortType:string){
-  this.appService.sortData(data,sortProp,order,sortType);
-}
-
-
- calcCount(data:any){
-  data.forEach((e:any)=>{
-      this.totalClaimData.totalCount = this.totalClaimData.totalCount + e.count;
- });
-}
-
-calcRemLiteReject(data:any){
-  data.forEach((e:any)=>{
-    this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalRemLiteReject + e.remoteLiteRejections;
- });
-}
-
-calcCountAndRemLiteReject(data:any){
-  data.forEach((e:any)=>{
-    this.totalClaimData.totalcountAndRemLiteReject  = this.totalClaimData.totalcountAndRemLiteReject+ e.count + e.remoteLiteRejections;
-    e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
- });
-}
-
-exportToCsv(){
-  this.loader.exportCSVLoader=true;
-  let options:any={
-    showLabels:true,
-    headers: ["Office","User Assignment", "Oldest Pending Date","Oldest Pending DOS","# of Claims to be Billed","# of RemoteLite Rejections","Total Pendency"],
+    console.log(this.assignOfficeDetails.assignOfficeDetails)
   }
-  let excelData:any = JSON.parse(JSON.stringify(this.claimData));
-  excelData = excelData.map((e:any)=>
-  {
-    e['officeAssignedTo'] = e.fname ? e.fname+ " "+ e.lname : "-";
+
+  saveAssignments() {
+    this.loader.assignLoader = true;
+    this.appService.assignOffice(this.assignOfficeDetails, (callback: any) => {
+      if (callback.status == 200) {
+        this.loader.assignLoader = false;
+        this.showAlertPopup(callback);
+        // scrollTo(0,0);
+        this.assignOfficeDetails.assignOfficeDetails = [];
+      } else {
+        this.showAlertPopup(callback);
+        scrollTo(0, 0);
+      }
+    })
+  }
+
+  saveToPdf(divName: any) {
+    this.loader.exportPDFLoader = true;
+    let m: any = document.querySelector(".table-wrapper-scroll-y");
+    m.classList.remove('table-wrapper-scroll-y');
+    m.classList.remove('table-inner-scrollbar');
+    html2canvas(<any>document.getElementById(divName)).then(canvas => {
+      const content = canvas.toDataURL('image/png');
+      let pdf = new jsPDF('p', 'mm', 'a4');
+      let width = pdf.internal.pageSize.getWidth();
+      let height = canvas.height * width / canvas.width;
+      // Insert office name
+      pdf.setFontSize(10);  // Adjust the font size as needed
+      pdf.text(`Pendency - ${this.clientName}`, 2, 6);
+      pdf.addImage(content, "PNG", 0, 15, width, height);
+      this.date = new Date();
+      this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+      pdf.save(`${this.clientName}_Pendency_${this.date}`);
+      this.loader.exportPDFLoader = false;
+      m.classList.add('table-wrapper-scroll-y')
+      m.classList.add('table-inner-scrollbar')
+    });
+
+  }
+
+  sortData(data: any, sortProp: string, order: any, sortType: string) {
+    this.appService.sortData(data, sortProp, order, sortType);
+  }
+
+
+  calcCount(data: any) {
+    data.forEach((e: any) => {
+      this.totalClaimData.totalCount = this.totalClaimData.totalCount + e.count;
+    });
+  }
+
+  calcRemLiteReject(data: any) {
+    data.forEach((e: any) => {
+      this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalRemLiteReject + e.remoteLiteRejections;
+    });
+  }
+
+  calcCountAndRemLiteReject(data: any) {
+    data.forEach((e: any) => {
+      this.totalClaimData.totalcountAndRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject + e.count + e.remoteLiteRejections;
+      e['totalBillingRejection'] = e.remoteLiteRejections + e.count;
+    });
+  }
+
+  exportToCsv() {
+    this.loader.exportCSVLoader = true;
+    let options: any = {
+      showLabels: true,
+      headers: ["Office", "User Assignment", "Oldest Pending Date", "Oldest Pending DOS", "# of Claims to be Billed", "# of RemoteLite Rejections", "Total Pendency"],
+    }
+    let excelData: any = JSON.parse(JSON.stringify(this.claimData));
+    excelData = excelData.map((e: any) => {
+      e['officeAssignedTo'] = e.fname ? e.fname + " " + e.lname : "-";
     // if(e.opdosd){
     //   let date:Date = new Date(e.opdosd);
     //   e.opdosd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
@@ -219,55 +218,55 @@ exportToCsv(){
     // }else{
     //     e.opdtd = 'N/A';
     // }
-    e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
-    return e;
-  })
+      e['totalBillingRejection'] = e.remoteLiteRejections + e.count;
+      return e;
+    })
 
-  excelData = excelData.map(
-    ({officeUuid,assignedUser,...newClaimData}:any)=> newClaimData);
+    excelData = excelData.map(
+      ({ officeUuid, assignedUser, ...newClaimData }: any) => newClaimData);
 
-  excelData = excelData.map((e:any)=>{
-    return{
-      "Office":e.officeName,
-      "User Assignment":e.officeAssignedTo,
-      "Oldest Pending Date":e.opdtd,
-      "Oldest Pending DOS":e.opdosd,
-      "# of Claims to be Billed":e.count,
-      "# of RemoteLite Rejections" : e.remoteLiteRejections,
-      "Total Pendency": e.count ? e.count+e.remoteLiteRejections : '0'
-    }
-  })  
+    excelData = excelData.map((e: any) => {
+      return {
+        "Office": e.officeName,
+        "User Assignment": e.officeAssignedTo,
+        "Oldest Pending Date": e.opdtd,
+        "Oldest Pending DOS": e.opdosd,
+        "# of Claims to be Billed": e.count,
+        "# of RemoteLite Rejections": e.remoteLiteRejections,
+        "Total Pendency": e.count ? e.count + e.remoteLiteRejections : '0'
+      }
+    })
 
-  excelData.unshift(                                        //method is used to show Total Row in CSV.
-    {
-      "Office":'Total',
-      "User Assignment":'-',
-      "Oldest Pending Date":'-',
-      "Oldest Pending DOS":'-',
-      "# of Claims to be Billed":this.totalClaimData.totalCount,
-      "# of RemoteLite Rejections" : this.totalClaimData.totalRemLiteReject,
-      "Total Pendency": this.totalClaimData.totalcountAndRemLiteReject
-    }
-  )  
+    excelData.unshift(                                        //method is used to show Total Row in CSV.
+      {
+        "Office": 'Total',
+        "User Assignment": '-',
+        "Oldest Pending Date": '-',
+        "Oldest Pending DOS": '-',
+        "# of Claims to be Billed": this.totalClaimData.totalCount,
+        "# of RemoteLite Rejections": this.totalClaimData.totalRemLiteReject,
+        "Total Pendency": this.totalClaimData.totalcountAndRemLiteReject
+      }
+    )
 
     this.date = new Date();
-    this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`
-    new ngxCsv(excelData, `${this.clientName}_Pendency_${this.date}`,options);
-    this.loader.exportCSVLoader=false;
-    
-}
+    this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`
+    new ngxCsv(excelData, `${this.clientName}_Pendency_${this.date}`, options);
+    this.loader.exportCSVLoader = false;
 
-showAlertPopup(res:any){
-  this.alert.showAlertPopup = true;
-  setTimeout(() => {this.alert.showAlertPopup=false;}, 2000);
-  res.status==400 ? this.alert.isError=true : this.alert.isError=false;
-  this.alert.alertMsg = res.message ? res.message : res.result.message;
-}
-getMonthName(month:any) {
-  const monthNames = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-  return monthNames[month];
-}
+  }
+
+  showAlertPopup(res: any) {
+    this.alert.showAlertPopup = true;
+    setTimeout(() => { this.alert.showAlertPopup = false; }, 2000);
+    res.status == 400 ? this.alert.isError = true : this.alert.isError = false;
+    this.alert.alertMsg = res.message ? res.message : res.result.message;
+  }
+  getMonthName(month: any) {
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    return monthNames[month];
+  }
 }

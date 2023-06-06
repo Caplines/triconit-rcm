@@ -989,14 +989,16 @@ public class ClaimServiceImpl {
 					}
 
 				} // For Secondary
+				
 				ClaimLogDto claimLogDto = null;
 				for (Map.Entry<String, RcmClaimLog> entry : logMap.entrySet()) {
 
-					claimLogDto = new ClaimLogDto(source, entry.getValue().getOffice().getUuid(), 1, newClaimCt,
+					RcmClaimLog l= entry.getValue();
+					claimLogDto = new ClaimLogDto(source, l.getOffice().getUuid(), 1, claimLogDto.getNewClaimsCount(),
 							new Date(), entry.getValue().getOffice().getName());
 					System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 					commonClaimServiceImpl.saveClaimLog(entry.getValue(), user, entry.getValue().getOffice(),
-							ClaimSourceEnum.GOOGLESHEET.toString(), logStatus, newClaimCt, newClaimPCt, newClaimSCt,
+							ClaimSourceEnum.GOOGLESHEET.toString(), 1,claimLogDto.getNewClaimsCount(),l.getNewClaimsPrimaryCount(),l.getNewClaimsSecodaryCount(),
 							success);
 					mapcountNew.put(entry.getKey(), claimLogDto);
 

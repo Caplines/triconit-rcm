@@ -90,7 +90,7 @@ export class BillingClaimsComponent {
         ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
         ths.fetchOtherTeamRemarks();
         ths.fetchClaimNotes();
-        if (ths.smilePoint) ths.getServiceLevelCodes();//Only In case of Smile point. other does not have it.
+        ths.getServiceLevelCodes();
         ths.getSubmissionDetails();
         //if (this.smilePoint) ths.getClaimRuleData();//Only In case of Smile point. other does not have it.
         //ths.runAutoRules(false);
@@ -270,65 +270,65 @@ export class BillingClaimsComponent {
         }
       }
     });
-
-    if (Object.keys(ths.submissionDto).length == 0) {
-      ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
-      ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
-      ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
-      ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
-      if (!ths.claimNoEnable()) {
-
-        ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
-      }
-      if (!ths.preAuthEnable()) {
-        ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
-      }
-      ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
-      //ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
-      valid = false;
-    } else {
-      if (ths.submissionDto.channel === undefined || ths.submissionDto.channel === null) {
+    if (!ths.isInternalAudit) {//Only Non Audit can Submit
+      if (Object.keys(ths.submissionDto).length == 0) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
-        valid = false;
-      }
-      if (ths.submissionDto.attachmentSend === undefined || ths.submissionDto.attachmentSend === null) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
-        valid = false;
-      }
-      if (ths.submissionDto.preauth === undefined || ths.submissionDto.preauth === null) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
-        valid = false;
-      }
-      if (ths.submissionDto.refferalLetter === undefined || ths.submissionDto.refferalLetter === null) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
-        valid = false;
-      }
-      if (!ths.claimNoEnable()) {
+        if (!ths.claimNoEnable()) {
 
-
-        let SUB_DET_CLA: any = document.getElementById("SUB_DET_CLA");
-        if (SUB_DET_CLA.value.trim() === '') {
           ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
-          valid = false;
         }
-      } else {
-        ths.removeErrorDisplayKeyById('SUB_DET_CLA');
-      }
-      if (!ths.preAuthEnable()) {
-        let SUB_DET_PRENO: any = document.getElementById("SUB_DET_PRENO");
-        if (SUB_DET_PRENO.value.trim() === '') {
+        if (!ths.preAuthEnable()) {
           ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+        }
+        ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
+        //ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
+        valid = false;
+      } else {
+        if (ths.submissionDto.channel === undefined || ths.submissionDto.channel === null) {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
           valid = false;
         }
-      } else {
-        ths.removeErrorDisplayKeyById('SUB_DET_PRENO');
-      }
-      let SUB_DET_DT: any = document.getElementById("SUB_DET_DT");
-      if (SUB_DET_DT.value.trim() === '') {
-        ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
-        valid = false;
-      }
+        if (ths.submissionDto.attachmentSend === undefined || ths.submissionDto.attachmentSend === null) {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
+          valid = false;
+        }
+        if (ths.submissionDto.preauth === undefined || ths.submissionDto.preauth === null) {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
+          valid = false;
+        }
+        if (ths.submissionDto.refferalLetter === undefined || ths.submissionDto.refferalLetter === null) {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
+          valid = false;
+        }
+        if (!ths.claimNoEnable()) {
 
+
+          let SUB_DET_CLA: any = document.getElementById("SUB_DET_CLA");
+          if (SUB_DET_CLA.value.trim() === '') {
+            ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
+            valid = false;
+          }
+        } else {
+          ths.removeErrorDisplayKeyById('SUB_DET_CLA');
+        }
+        if (!ths.preAuthEnable()) {
+          let SUB_DET_PRENO: any = document.getElementById("SUB_DET_PRENO");
+          if (SUB_DET_PRENO.value.trim() === '') {
+            ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
+            valid = false;
+          }
+        } else {
+          ths.removeErrorDisplayKeyById('SUB_DET_PRENO');
+        }
+        let SUB_DET_DT: any = document.getElementById("SUB_DET_DT");
+        if (SUB_DET_DT.value.trim() === '') {
+          ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
+          valid = false;
+        }
+      }
       /*let SUB_DET_TI: any = document.getElementById("SUB_DET_TI");
       if (SUB_DET_TI.value.trim() === '') {
         ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
@@ -389,7 +389,7 @@ export class BillingClaimsComponent {
       if (ths.ruleEngineReport.length == 0) {
         ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
 
-        // valid = false;//Deepak
+        valid = false;//Deepak
 
       } else {
         ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
@@ -547,33 +547,37 @@ export class BillingClaimsComponent {
 
   getClaimRuleData() {
     let ths = this;
-    ths.loader.ruleEngValid = true;
-    ths.claimARulesPullDataModel.claimId = ths.claimRcm.claimId.split("_")[0];//"15927";///
-    ths.claimARulesPullDataModel.officeId = ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
-    ths.claimARulesPullDataModel.patientId = ths.claimRcm.patientId;//"6602";//TESTING
+    if (this.smilePoint) {
+      ths.loader.ruleEngValid = true;
+      ths.claimARulesPullDataModel.claimId = ths.claimRcm.claimId.split("_")[0];//"15927";///
+      ths.claimARulesPullDataModel.officeId = ths.claimRcm.officeUuid;//"cc450da8-aaae-11e8-8544-8c16451459cd";//
+      ths.claimARulesPullDataModel.patientId = ths.claimRcm.patientId;//"6602";//TESTING
 
-    ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel, (res: any) => {
-      if (res.status === 200) {
-        ths.loader.ruleEngValid = false;
-        ths.getRulesClaimdata();
-        ths.ruleEngineReport = res.data;////Rule Engine Data
-        if (ths.ruleEngineReport.length > 0)
-          ths.generateRuleEngineReportHeading(ths.ruleEngineReport[0]);
+      ths.claimService.getClaimRuleData(ths.claimARulesPullDataModel, (res: any) => {
+        if (res.status === 200) {
+          ths.loader.ruleEngValid = false;
+          ths.getRulesClaimdata();
+          ths.ruleEngineReport = res.data;////Rule Engine Data
+          if (ths.ruleEngineReport.length > 0)
+            ths.generateRuleEngineReportHeading(ths.ruleEngineReport[0]);
 
-        this.count.pass = this.count.fail = this.count.alert = 0;
-        this.ruleEngineReport.forEach((e: any) => {
-          if (e.mtype == 1) {
-            this.count.fail = this.count.fail + 1;
-          }
-          else if (e.mtype == 2) {
-            this.count.pass = this.count.pass + 1;
-          } else if (e.mtype == 3) {
-            this.count.alert = this.count.alert + 1;
-          }
-        });
+          this.count.pass = this.count.fail = this.count.alert = 0;
+          this.ruleEngineReport.forEach((e: any) => {
+            if (e.mtype == 1) {
+              this.count.fail = this.count.fail + 1;
+            }
+            else if (e.mtype == 2) {
+              this.count.pass = this.count.pass + 1;
+            } else if (e.mtype == 3) {
+              this.count.alert = this.count.alert + 1;
+            }
+          });
 
-      }
-    })
+        }
+      })
+    } else {
+      ths.getRulesClaimdata();
+    }
   }
 
   generateRuleEngineReportHeading(rule: RuleEngineValModel) {
@@ -846,6 +850,9 @@ export class BillingClaimsComponent {
     return Utils.isRoleLead();
   }
 
+  get isInternalAuditLogin() {
+    return (Utils.selectedTeam() == 3);
+  }
   get isRoleSuperAdmin() {
     return Utils.checkRoleSuperAdmin();
   }

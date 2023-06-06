@@ -563,7 +563,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <ng-container *ngIf="smilePoint">
+                            <ng-container>
                                 <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text "
                                     aria-expanded="false" id="serviceCodeValidationsM">Service Code Level
                                     Validations (Manual):</a>
@@ -638,7 +638,7 @@
                                     </div>
                                 </div>
                             </ng-container>
-                            <ng-container *ngIf="smilePoint">
+                            <ng-container>
                                 <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text "
                                     aria-expanded="false" id="serviceCodeValidationsA">Service Code Level
                                     Validations (Automated):</a>
@@ -752,9 +752,10 @@
                                     </ng-container>
                                 </div>
                             </ng-container>
-                            <a data-toggle="collapse" (click)="showHide(9)" class="bold-b-text "
-                                aria-expanded="false">Enter Claim Submission Details:</a>
-                            <div class="form-row  collapse show" id="claimSubmissionDetails">
+                            <a *ngIf="!isInternalAuditLogin" data-toggle="collapse" (click)="showHide(9)"
+                                class="bold-b-text " aria-expanded="false">Enter Claim Submission Details:</a>
+                            <div *ngIf="!isInternalAuditLogin" class="form-row  collapse show"
+                                id="claimSubmissionDetails">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -918,7 +919,7 @@
 
                                     <strong>Remarks if needed</strong>
                                     <div><textarea class="form-control" id="" rows="3"
-                                            [(ngModel)]='claimRcm.claimRemarks' [disabled]="makeReadOnly()"></textarea>
+                                            [(ngModel)]='claimRcm.claimRemarks'></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -985,8 +986,11 @@
                                             Team Lead</button>
                                     </ng-container>
                                     <ng-container *ngIf="assignModel.toOtherTeam">
-                                        <button type="button" class="btn btn-success"
-                                            (click)="assignToOtherTeam()">Assign to Other Team</button>
+                                        <button *ngIf="isInternalAuditLogin" type="button" class="btn btn-success"
+                                            (click)="assignToOtherTeam()">Ready to be Submitted</button>
+                                        <button *ngIf="!isInternalAuditLogin" type="button" class="btn btn-success"
+                                            (click)="assignToOtherTeam()">Assign to Other
+                                            Team</button>
                                     </ng-container>
                                     <ng-container *ngIf="alert.showAlertPopup">
                                         <button type="button" (click)="alert.showAlertPopup=false;" class="close"
