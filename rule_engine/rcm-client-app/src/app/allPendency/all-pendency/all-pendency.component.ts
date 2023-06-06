@@ -23,7 +23,7 @@ export class AllPendencyComponent {
   isFilterAllSelected: any = { 'officeName': false };
   filteredOfficeName: any = [];
   filteredItems: any = [];
-  tabSwitch: any = { 'withoutDos': true, 'withDos': false };
+  tabSwitch: any = { 'withoutDos': true, 'withDos': false ,'withDateOfPending':false};
   isSorted: any = {};
 
   totalCount: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Aging", "count": 0, "teamId": 4 }, { "teamName": "Posting", "count": 0, "teamId": 5 }, { "teamName": "Quality", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
@@ -151,6 +151,18 @@ export class AllPendencyComponent {
         }
       })
     }
+    else if (fromTable == 'dop-table') {
+      excelData = excelData.map((e: any) => {
+        return {
+          'Office': e.officeName,
+          'InternalAudit': e.datesPending['INTERNAL_AUDIT'] ? this.datePipe.transform(new Date(e.datesPending['INTERNAL_AUDIT']),'MMM dd, YYYY') : "-",
+          'Aging': e.datesPending['AGING'] ? this.datePipe.transform(new Date(e.datesPending['AGING']),'MMM dd, YYYY') : "-",
+          'Posting': e.datesPending['POSTING'] ? this.datePipe.transform(new Date(e.datesPending['POSTING']),'MMM dd, YYYY') : "-",
+          'Quality': e.datesPending['QUALITY'] ? this.datePipe.transform(new Date(e.datesPending['QUALITY']),'MMM dd, YYYY') : "-",
+          'Billing': e.datesPending['BILLING'] ? this.datePipe.transform(new Date(e.datesPending['BILLING']),'MMM dd, YYYY') : "-",
+        }
+      })
+    }
 
     excelData = this.removeCurrentTeamNameFromExcel(excelData);
 
@@ -243,8 +255,24 @@ export class AllPendencyComponent {
 
   switchTab(tab: any) {
     if (!this.pendencyData) return;
-    tab.withoutDos = !tab.withoutDos;
-    tab.withDos = !tab.withDos;
+    if(tab == 'withoutDos'){
+      this.tabSwitch.withoutDos = true;
+      this.tabSwitch.withDos=false;
+      this.tabSwitch.withDateOfPending = false;
+    }
+    else if(tab == 'withDOS'){
+      this.tabSwitch.withDos = true;
+      this.tabSwitch.withoutDos = false;
+      this.tabSwitch.withDateOfPending = false;
+    }
+    else if(tab == 'withDOP'){
+      this.tabSwitch.withDateOfPending = true;
+      this.tabSwitch.withoutDos = false;
+      this.tabSwitch.withDos=false;
+    }
+
+    // tab.withDos = !tab.withDos;
+    // tab.withDateOfPending = !tab.withDateOfPending;
     // this.filteredItems = this.pendencyData;
     let event = { target: { checked: true } };  //added so that when tab is swtiched then by default all data should show.
     this.selectAll(event, 'officeName');
