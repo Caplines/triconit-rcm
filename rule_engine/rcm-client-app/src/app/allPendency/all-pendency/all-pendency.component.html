@@ -189,7 +189,7 @@
                                                     <td>Total</td>
                                                     <ng-container *ngFor="let ct of totalCount;let last;">
                                                         <ng-container *ngIf="ct.teamId != currentTeamId">
-                                                            <td>{{ct.count}}</td>
+                                                            <td class="alignRight">{{ct.count}}</td>
                                                         </ng-container>
                                                     </ng-container>
                                                     <td></td>
@@ -204,7 +204,7 @@
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData;">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
-                                                                <td>
+                                                                <td class="alignRight">
                                                                     {{office.counts1[team.teamName|uppercase]}}
                                                                 </td>
                                                             </ng-container>
