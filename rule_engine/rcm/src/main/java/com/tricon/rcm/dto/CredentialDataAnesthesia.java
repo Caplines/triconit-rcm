@@ -18,6 +18,10 @@ public class CredentialDataAnesthesia {
 	String updatedWithDQ;//K
 	String updatedWithUHC;//L
 	String remark;////M
+	
+	public CredentialDataAnesthesia() {
+		
+	}
 	public CredentialDataAnesthesia(String srNo, String providers, String providerCodes, String provideStatus,
 			String d9230Nirtrous, String d9248Anesthesia, String empty, String firstHomeD0145, String fDHEffectiveDate,
 			String updatedWithMCNA, String updatedWithDQ, String updatedWithUHC, String remark) {

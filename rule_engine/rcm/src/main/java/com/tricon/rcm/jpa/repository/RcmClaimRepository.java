@@ -150,7 +150,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName,assig.team_id as assignTeamId " + " FROM "
 			+ "  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
-			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid "
+			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
 			+ "  where off.company_id=:companyId and off.active is true  group by off.uuid order by off.name asc ")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeam(@Param("companyId") String companyId,

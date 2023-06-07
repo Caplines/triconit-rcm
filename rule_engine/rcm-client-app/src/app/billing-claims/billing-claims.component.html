@@ -373,8 +373,10 @@
                                         <tbody>
                                             <tr
                                                 *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';">
-                                                <ng-container
-                                                    *ngIf="rule.ruleId==318 || rule.ruleId==319"><!--only for provider Notes-->
+                                                <ng-container *ngIf="(rule.ruleId==318 || rule.ruleId==319) &&
+                                                    ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
+                                                   ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )
+                                                    ">
                                                     <td *ngIf="rule.ruleId==318">1</td>
                                                     <td *ngIf="rule.ruleId==319">2</td>
                                                     <td>{{rule.ruleName}}</td>
@@ -419,7 +421,15 @@
                                             <tr
                                                 *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                 <ng-container *ngIf="rule.ruleId==300"><!--only for provider Notes-->
-                                                    <td>3</td>
+                                                    <td><ng-container
+                                                            *ngIf=" ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
+                                                   ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )">
+                                                            3</ng-container>
+                                                        <ng-container
+                                                            *ngIf=" !((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
+                                                                                                       ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )">
+                                                            1</ng-container>
+                                                    </td>
                                                     <td>{{rule.ruleName}}</td>
                                                     <!-- <td>Full Claim</td>
                                                     <td>{{rule.ruleDesc}}</td> -->
@@ -476,13 +486,13 @@
                                                     *ngIf="((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
                                                    ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )
                                                     && (rule.ruleId==311 || rule.ruleId==312 ||rule.ruleId==313 ||rule.ruleId==314 ||rule.ruleId==315 ||rule.ruleId==316 ||rule.ruleId==317)">
-                                                    <td *ngIf="rule.ruleId==311">4</td>
-                                                    <td *ngIf="rule.ruleId==312">5</td>
-                                                    <td *ngIf="rule.ruleId==313">6</td>
-                                                    <td *ngIf="rule.ruleId==314">7</td>
-                                                    <td *ngIf="rule.ruleId==315">8</td>
-                                                    <td *ngIf="rule.ruleId==316">9</td>
-                                                    <td *ngIf="rule.ruleId==317">10</td>
+                                                    <td *ngIf="rule.ruleId==311">a</td>
+                                                    <td *ngIf="rule.ruleId==312">b</td>
+                                                    <td *ngIf="rule.ruleId==313">c</td>
+                                                    <td *ngIf="rule.ruleId==314">d</td>
+                                                    <td *ngIf="rule.ruleId==315">e</td>
+                                                    <td *ngIf="rule.ruleId==316">f</td>
+                                                    <td *ngIf="rule.ruleId==317">g</td>
 
                                                     <td>{{rule.ruleName}}</td>
                                                     <!-- <td>Full Claim</td>

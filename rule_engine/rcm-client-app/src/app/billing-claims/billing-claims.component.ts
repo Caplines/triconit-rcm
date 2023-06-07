@@ -193,7 +193,7 @@ export class BillingClaimsComponent {
     else if (type === 'assign') {
       ths.claimEditModel.assignTouuid = "";
       ths.claimEditModel.assignToTeam = -1;
-      debugger;
+      //debugger;
       ths.assignModel.toOtherTeam = true;
       let valid = ths.validateData();
       if (valid) {
@@ -241,7 +241,7 @@ export class BillingClaimsComponent {
   validateData(): boolean {
     let ths = this;
     let valid: boolean = true;
-
+    //debugger;
     ths.claimRules.forEach(x => {
       //console.log(x.ruleId);
       if ((x.remark == null || x.remark.trim() === '') && x.messageType === 1 && x.ruleType == 'C'
@@ -270,6 +270,7 @@ export class BillingClaimsComponent {
         }
       }
     });
+
     if (!ths.isInternalAudit) {//Only Non Audit can Submit
       if (Object.keys(ths.submissionDto).length == 0) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
@@ -366,9 +367,7 @@ export class BillingClaimsComponent {
             valid = false;
           } else if ((x.manualAuto == 'Manual' && (x.remark == null || x.remark.trim() === '')) && x.answer === 'Incorrect') {//on NO only
             ths.addErrorDisplay(document.getElementById("SERV_C_V_M" + x.remarkUuid));
-            valid = false; {
-
-            }
+            valid = false;
           }
         });
       } else {
@@ -395,6 +394,7 @@ export class BillingClaimsComponent {
         ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
       }
     }
+    //valid = false;
     console.log("valid", valid);
 
     return valid;

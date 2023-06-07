@@ -158,6 +158,22 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.fetchFreshClaimDetails(partialHeader.getTeamId(), type, subType,partialHeader)));
 	}
+	
+	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDataDto.class, responseContainer = "List")
+	@GetMapping("/api/fetch-fresh-claims-det-lead/{type}/{subType}")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	public ResponseEntity<Object> fetchFreshClaimsDetailsLead(@PathVariable("type") int type,
+			@PathVariable("subType") String subType,Model model) {
+		
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		
+		
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.fetchFreshClaimDetailsLead(partialHeader.getTeamId(), type, subType,partialHeader)));
+	}
 
 	/*
 	 * @ApiOperation(value =

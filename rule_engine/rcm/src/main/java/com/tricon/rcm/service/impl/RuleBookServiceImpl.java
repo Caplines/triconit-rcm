@@ -103,7 +103,7 @@ public class RuleBookServiceImpl {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule302.error.message1", new Object[] {}, locale), Constants.FAIL, "",
 						"", ""));
-			} else if (ivf.getBasicInfo14().trim().equals(groupNo == null ? "" : groupNo)) {
+			} else if (ivf.getBasicInfo14().trim().equalsIgnoreCase(groupNo == null ? "" : groupNo)) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule302.pass.message", new Object[] {}, locale), Constants.PASS, "",
 						"", ""));
@@ -165,9 +165,9 @@ public class RuleBookServiceImpl {
 					pass= false;
 					//Fail
 				}
-				if (!Constants.SDF_ES_DATE.format(rcmClaim.getPatientBirthDate()).equals(ivf.getBasicInfo6())) {
+				if (!Constants.SDF_SHEET_DATE.format(rcmClaim.getPatientBirthDate()).equals(ivf.getBasicInfo6())) {
 					if (errorMessage==null) errorMessage= new ArrayList<>();
-					errorMessage.add("Claim Patient DOB: "+Constants.SDF_ES_DATE.format(rcmClaim.getPatientBirthDate()) +"; Claim Patient DOB: "+ivf.getBasicInfo6());
+					errorMessage.add("Claim Patient DOB: "+Constants.SDF_SHEET_DATE.format(rcmClaim.getPatientBirthDate()) +"; Claim Patient DOB: "+ivf.getBasicInfo6());
 					pass= false;
 					//Fail
 				}
@@ -288,10 +288,10 @@ public class RuleBookServiceImpl {
 	 * @return
 	 */
 	public List<TPValidationResponseDto> rule305(RcmRules rule, List<CredentialData> creList, RcmClaims rcmClaim,
-			String claimofficeName, Object[] providerSheetData) {
+			String claimofficeName, Object[] providerSheetData,String insName) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
-
+		logger.info("-->"+creList.size());
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
 
@@ -308,6 +308,7 @@ public class RuleBookServiceImpl {
 			}
 			String sheetProviderCode = "";
 			String applicationStatus = "";
+			String effectiveDate= "";
 			List<ProviderCodeWithOffice> pCodeList = pro.stream()
 					.filter(e -> e.getOffice().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getEsCode().trim().equalsIgnoreCase(claimProvider))
@@ -316,19 +317,36 @@ public class RuleBookServiceImpl {
 				sheetProviderCode = pCodeList.get(0).getProviderCode();
 			}
 
+			
 			final String testVal = sheetProviderCode;
+			final String insNameFinal = insName;
+			CredentialData ddd =creList.get(953);
 			List<CredentialData> filterCodeList = creList.stream()
 					.filter(e -> e.getLocation().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getPlanType().trim().equalsIgnoreCase(rcmClaim.getRcmInsuranceType().getName())
-							&& e.getProviderCode().trim().equalsIgnoreCase(testVal))
+							&& e.getProviderCode().trim().equalsIgnoreCase(testVal)
+							&& insNameFinal.equalsIgnoreCase(e.getInsurance()))
 					.collect(Collectors.toList());
 
 			
 				if (filterCodeList != null && filterCodeList.size() > 0) {
-					applicationStatus = filterCodeList.get(0).getApplicationStatus().toLowerCase();
+					applicationStatus = filterCodeList.get(0).getCredentialingStatus().toLowerCase();
+					effectiveDate =filterCodeList.get(0).getEffectiveDate().trim();
+					logger.info("applicationStatus --"+applicationStatus);
+					logger.info("Effective Date --"+filterCodeList.get(0).getEffectiveDate());
 				}
-
-				if (applicationStatus.contains("completed")) {
+                //Effective Date Check
+				boolean dtCheck= false;
+				try {
+				 Date effectDate = Constants.SDF_CredentialSheetAnes.parse(effectiveDate);
+				 int comp = effectDate.compareTo(rcmClaim.getDos());
+				 if (comp<=0) dtCheck=true;
+					
+				}catch(Exception dIssue) {
+					
+				}
+				if (applicationStatus.contains("completed") && dtCheck) {
+					
 					// pass
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule305.pass.message", new Object[] {}, locale), Constants.PASS,
@@ -452,7 +470,7 @@ public class RuleBookServiceImpl {
 					if (filterList.size()>0) {
 					 String effDate = filterList.get(0).getFDHEffectiveDate();
 					 String firstHome = filterList.get(0).getFirstHomeD0145();
-					 if (firstHome.equalsIgnoreCase("yes")) {
+					 if (firstHome.trim().equalsIgnoreCase("yes")) {
 						 if (!effDate.equals("")) {
 							Date eff=  Constants.SDF_CredentialSheetAnes.parse(effDate);
 							if (eff.compareTo(claimDos)<0) {
@@ -518,7 +536,7 @@ public class RuleBookServiceImpl {
 					if (filterList.size()>0) {
 					
 					 String firstHome = filterList.get(0).getD9230Nirtrous();
-					 if (firstHome.equalsIgnoreCase("yes")) {
+					 if (firstHome.trim().equalsIgnoreCase("yes")) {
 						 pass = true;
 					 }else {
 						 pass = false;//no is fail
@@ -579,12 +597,14 @@ public class RuleBookServiceImpl {
 					if (filterList.size()>0) {
 					
 					 String firstHome = filterList.get(0).getD9248Anesthesia();
-					 if (firstHome.equalsIgnoreCase("yes")) {
+					 if (firstHome.trim().equalsIgnoreCase("yes")) {
 						 pass = true;
 					 }else {
 						 pass = false;//no is fail
 					 }
-					 pass = false;//not listed then Fail.
+					
+					}else {
+						 pass = false;//not listed then Fail.
 					}
 					// pass
 					
