@@ -194,7 +194,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3 mb-2">
-                                        <div class="custom-row text-number">
+                                        <div class="custom-row">
                                             <label for="" class="">Date of IV :</label>
                                             <div *ngIf="claimRcm.ivDos!=null && claimRcm.ivDos!=''">{{claimRcm.ivDos |
                                                 date: 'MMM dd, YYYY'}}
@@ -203,9 +203,10 @@
                                             </div>
 
                                         </div>
-                                        <div class="custom-row text-number">
+                                        <div class="custom-row">
                                             <label for="" class="">Date of Tx. Plan :</label>
-                                            <div *ngIf="claimRcm.tpDos!=null && claimRcm.tpDos!=''">{{claimRcm.tpDos}}
+                                            <div *ngIf="claimRcm.tpDos!=null && claimRcm.tpDos!=''">{{claimRcm.tpDos |
+                                                date: 'MMM dd, YYYY'}}
                                             </div>
                                             <div *ngIf="!(claimRcm.tpDos!=null && claimRcm.tpDos!='')">Tx Plan Not Found
                                             </div>
