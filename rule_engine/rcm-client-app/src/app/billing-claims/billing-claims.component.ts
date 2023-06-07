@@ -450,6 +450,11 @@ export class BillingClaimsComponent {
       if (res.status === 200) {
         this.loader.serviceCode = false;
         ths.claimServiceLevelModel = res.data;
+        if (ths.claimServiceLevelModel.esDate != null) {
+          if (ths.claimServiceLevelModel.esDate != "") {
+            ths.claimRcm.dateLastUpdatedES = ths.claimServiceLevelModel.esDate;
+          }
+        }
 
       } else {
         this.loader.serviceCode = false;
@@ -479,11 +484,12 @@ export class BillingClaimsComponent {
         ths.loader.automatedValidation = ths.loader.manualValidation = false;
         ths.claimRules = res.data;
         this.countA.pass = this.countA.fail = this.countA.alert = 0;
+        //debugger;
         ths.claimRules.forEach((e: any) => {
-          if (e.messageType == 1 && (e.ruleType === 'C' || e.ruleType === 'R,C')) {
+          if (e.messageType == 1 && e.manualAuto === "AUTO" && (e.ruleType === 'C' || e.ruleType === 'R,C')) {
             this.countA.fail = this.countA.fail + 1;
           }
-          else if (e.messageType == 2 && (e.ruleType === 'C' || e.ruleType === 'R,C')) {
+          else if (e.messageType == 2 && e.manualAuto === "AUTO" && (e.ruleType === 'C' || e.ruleType === 'R,C')) {
             this.countA.pass = this.countA.pass + 1;
           }
           else if (e.manualAuto == 'AUTO' && (e.ruleType === 'G')) {

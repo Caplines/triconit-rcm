@@ -205,10 +205,14 @@
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">Date of Tx. Plan :</label>
-                                            <div *ngIf="claimRcm.tpDos!=null && claimRcm.tpDos!=''">{{claimRcm.tpDos |
+                                            <div
+                                                *ngIf="claimRcm.dateLastUpdatedES!=null && claimRcm.dateLastUpdatedES!=''">
+                                                {{claimRcm.dateLastUpdatedES |
                                                 date: 'MMM dd, YYYY'}}
                                             </div>
-                                            <div *ngIf="!(claimRcm.tpDos!=null && claimRcm.tpDos!='')">Tx Plan Not Found
+                                            <div
+                                                *ngIf="!(claimRcm.dateLastUpdatedES!=null && claimRcm.dateLastUpdatedES!='')">
+                                                Tx Plan Not Found
                                             </div>
                                         </div>
                                     </div>

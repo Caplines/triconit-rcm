@@ -320,7 +320,7 @@ public class RuleBookServiceImpl {
 			
 			final String testVal = sheetProviderCode;
 			final String insNameFinal = insName;
-			CredentialData ddd =creList.get(953);
+			//CredentialData ddd =creList.get(953);
 			List<CredentialData> filterCodeList = creList.stream()
 					.filter(e -> e.getLocation().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getPlanType().trim().equalsIgnoreCase(rcmClaim.getRcmInsuranceType().getName())

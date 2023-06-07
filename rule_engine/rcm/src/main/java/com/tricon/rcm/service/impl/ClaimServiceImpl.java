@@ -1582,8 +1582,8 @@ public class ClaimServiceImpl {
 				claim.setDateLastUpdatedES(cd.getDateLastUpdated());
 				claim.setDescriptionES(cd.getDescription());
 				claim.setEstSecondaryES(cd.getEstSecondary());
-				claim.setStatusES(cd.getStatus());
-				dto.setEsDate(cd.getDateLastUpdated());*/
+				claim.setStatusES(cd.getStatus());*/
+				dto.setEsDate(claim.getDateLastUpdatedES());
 			}
 			
 			
