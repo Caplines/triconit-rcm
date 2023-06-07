@@ -742,8 +742,8 @@
                                                     <tr *ngFor="let rule of ruleEngineReport;let idx=index">
                                                         <ng-container *ngIf="rule.mtype===mtype">
                                                             <td>{{rule.ruleName}}</td>
-                                                            <td>{{rule.codes}}</td>
-                                                            <td>{{rule.tooth}} </td>
+                                                            <td>{{replaceValue(rule.codes,', ')}}</td>
+                                                            <td>{{replaceValue(rule.tooth,', ')}}</td>
                                                             <td>{{rule.surface}}</td>
                                                             <td [innerHTML]="rule.message"></td>
                                                             <td> <input type="text" maxlength="100"

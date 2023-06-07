@@ -880,4 +880,9 @@ export class BillingClaimsComponent {
   goToListofClaimsPage() {
     window.location.href = "/list-of-claims";
   }
+
+
+  replaceValue(v: string, w: string): string {
+    return v.replace(/,/g, w);
+  }
 }
