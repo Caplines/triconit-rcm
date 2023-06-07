@@ -377,12 +377,18 @@
                                         <tbody>
                                             <tr
                                                 *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';">
-                                                <ng-container *ngIf="(rule.ruleId==318 || rule.ruleId==319) &&
+                                                <ng-container *ngIf="(rule.ruleId==318 || rule.ruleId==319 ||  rule.ruleId==321
+                                                   || rule.ruleId==322) &&
                                                     ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
                                                    ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )
                                                     ">
+                                                    <input type="hidden" id="countM300" [(ngModel)]='countM300'
+                                                        value="4">
                                                     <td *ngIf="rule.ruleId==318">1</td>
                                                     <td *ngIf="rule.ruleId==319">2</td>
+                                                    <td *ngIf="rule.ruleId==321">3</td>
+                                                    <td *ngIf="rule.ruleId==322">4</td>
+
                                                     <td>{{rule.ruleName}}</td>
                                                     <!-- <td>Full Claim</td>
                                                     <td>{{rule.ruleDesc}}</td> -->
@@ -424,15 +430,50 @@
                                             </tr>
                                             <tr
                                                 *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
+                                                <ng-container *ngIf="(rule.ruleId==320) &&
+                                                    ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC'  || claimRcm.primaryInsCode=='CHIP')) 
+                                                   ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='CHIP')) )
+                                                    ">
+                                                    <td>{{rule.srNo}}
+                                                    </td>
+                                                    <td>{{rule.ruleName}}</td>
+
+                                                    <td class="no-wrap-text">
+
+                                                        <div data-toggle="buttons" class="btn-group btn-group-toggle"
+                                                            style="display: flex;width: 100%"
+                                                            id="CL_P_F_{{rule.ruleId}}">
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==3}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="3"
+                                                                    (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> Yes
+                                                            </label>
+                                                            <label class="btn btn-light"
+                                                                [ngClass]="{active:rule.messageType==2}">
+                                                                <input type="radio" name="mant{{rule.ruleId}}" value="2"
+                                                                    (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                    [(ngModel)]='rule.messageType'
+                                                                    [disabled]="makeReadOnly()"> No
+                                                            </label>
+
+                                                        </div>
+
+
+                                                    </td>
+                                                    <!-- <td><textarea class="form-control" id="" rows="1"
+                                                            [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
+                                                            (keydown)="removeErrorDisplayKey($event)"
+                                                            [disabled]="makeReadOnly()"></textarea></td>
+                                                            -->
+
+                                                </ng-container>
+                                            </tr>
+                                            <tr
+                                                *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                 <ng-container *ngIf="rule.ruleId==300"><!--only for provider Notes-->
-                                                    <td><ng-container
-                                                            *ngIf=" ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
-                                                   ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )">
-                                                            3</ng-container>
-                                                        <ng-container
-                                                            *ngIf=" !((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
-                                                                                                       ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )">
-                                                            1</ng-container>
+                                                    <td>{{rule.srNo}}
                                                     </td>
                                                     <td>{{rule.ruleName}}</td>
                                                     <!-- <td>Full Claim</td>
@@ -531,6 +572,8 @@
                                                 </ng-container>
                                             </tr>
 
+
+
                                         </tbody>
                                     </table>
                                     <table style="width: 100%;">
@@ -619,7 +662,7 @@
                                                                     [ngClass]="{active:d.answer=='Not Available'}">
                                                                     <input type="radio" name="mt{{i}}"
                                                                         value="Not Available"
-                                                                        (click)="d.answer='Not Available';removeErrorDisplayKeyById('SERV_C_V_M',i);
+                                                                        (click)="d.answer='Not Available';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                         removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()"> Not Available
@@ -627,7 +670,7 @@
                                                                 <label class="btn btn-light"
                                                                     [ngClass]="{active:d.answer=='Complete'}">
                                                                     <input type="radio" name="mt{{i}}" value="Complete"
-                                                                        (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',i);
+                                                                        (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                         removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()"> Complete
@@ -635,7 +678,7 @@
                                                                 <label class="btn btn-light"
                                                                     [ngClass]="{active:d.answer=='Incorrect'}">
                                                                     <input type="radio" name="mt{{i}}" value="Incorrect"
-                                                                        (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',i);
+                                                                        (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                         removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()"> Incorrect
@@ -643,7 +686,7 @@
                                                             </div>
                                                         </td>
                                                         <td><textarea class="form-control" id="" rows="1"
-                                                                [(ngModel)]='d.remark' id="SERV_C_V_M{{i}}"
+                                                                [(ngModel)]='d.remark' id="SERV_C_V_M{{d.remarkUuid}}"
                                                                 (click)="removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);"
                                                                 [disabled]="makeReadOnly()"></textarea></td>
                                                     </tr>

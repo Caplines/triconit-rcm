@@ -56,6 +56,7 @@ export class BillingClaimsComponent {
   loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false }
   //ivfData:any=[];
   updatedIvfId: any;
+  countM300: number = 1
 
   modelElement: any = { 'modal': '', 'span': '' }
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -475,6 +476,51 @@ export class BillingClaimsComponent {
     })
   }
 
+  generateManualIdOfRule() {
+    let ths = this;
+    let ctr = 0;
+    ths.claimRules.forEach((rule: any) => {
+      if (rule.ruleId == 318 &&
+        ((ths.claimRcm.primary && (ths.claimRcm.primaryInsCode == 'CMC' || ths.claimRcm.primaryInsCode == 'AMC' || ths.claimRcm.primaryInsCode == 'MCR' || ths.claimRcm.primaryInsCode == 'CHIP'))
+          || (!ths.claimRcm.primary && (ths.claimRcm.secondaryInsType == 'CMC' || ths.claimRcm.secondaryInsType == 'AMC' || ths.claimRcm.secondaryInsType == 'MCR' || ths.claimRcm.secondaryInsType == 'CHIP')))) {
+        rule.srNo = 1;
+        ctr = 1;
+      } else if (rule.ruleId == 319 &&
+        ((ths.claimRcm.primary && (ths.claimRcm.primaryInsCode == 'CMC' || ths.claimRcm.primaryInsCode == 'AMC' || ths.claimRcm.primaryInsCode == 'MCR' || ths.claimRcm.primaryInsCode == 'CHIP'))
+          || (!ths.claimRcm.primary && (ths.claimRcm.secondaryInsType == 'CMC' || ths.claimRcm.secondaryInsType == 'AMC' || ths.claimRcm.secondaryInsType == 'MCR' || ths.claimRcm.secondaryInsType == 'CHIP')))) {
+        rule.srNo = 2;
+        ctr = 2;
+      } else if (rule.ruleId == 321 &&
+        ((ths.claimRcm.primary && (ths.claimRcm.primaryInsCode == 'CMC' || ths.claimRcm.primaryInsCode == 'AMC' || ths.claimRcm.primaryInsCode == 'MCR' || ths.claimRcm.primaryInsCode == 'CHIP'))
+          || (!ths.claimRcm.primary && (ths.claimRcm.secondaryInsType == 'CMC' || ths.claimRcm.secondaryInsType == 'AMC' || ths.claimRcm.secondaryInsType == 'MCR' || ths.claimRcm.secondaryInsType == 'CHIP')))) {
+        rule.srNo = 3;
+        ctr = 3;
+      } else if (rule.ruleId == 322 &&
+        ((ths.claimRcm.primary && (ths.claimRcm.primaryInsCode == 'CMC' || ths.claimRcm.primaryInsCode == 'AMC' || ths.claimRcm.primaryInsCode == 'MCR' || ths.claimRcm.primaryInsCode == 'CHIP'))
+          || (!ths.claimRcm.primary && (ths.claimRcm.secondaryInsType == 'CMC' || ths.claimRcm.secondaryInsType == 'AMC' || ths.claimRcm.secondaryInsType == 'MCR' || ths.claimRcm.secondaryInsType == 'CHIP')))) {
+        rule.srNo = 4;
+        ctr = 4
+      }
+    });
+
+    ths.claimRules.forEach((rule: any) => {
+      if ((rule.ruleId == 320) &&
+        ((ths.claimRcm.primary && (ths.claimRcm.primaryInsCode == 'CMC' || ths.claimRcm.primaryInsCode == 'CHIP'))
+          || (!ths.claimRcm.primary && (ths.claimRcm.secondaryInsType == 'CMC' || ths.claimRcm.secondaryInsType == 'CHIP')))) {
+        rule.srNo = ctr + 1;
+        ctr = ctr + 1;
+      }
+    });
+
+    ths.claimRules.forEach((rule: any) => {
+      if (rule.ruleId == 300) {
+        rule.srNo = ctr + 1;
+        ctr = ctr + 1;
+      }
+    });
+
+
+  }
   getRulesClaimdata() {
     let ths = this;
     //debugger;
@@ -483,6 +529,7 @@ export class BillingClaimsComponent {
       if (res.status === 200) {
         ths.loader.automatedValidation = ths.loader.manualValidation = false;
         ths.claimRules = res.data;
+        ths.generateManualIdOfRule();
         this.countA.pass = this.countA.fail = this.countA.alert = 0;
         //debugger;
         ths.claimRules.forEach((e: any) => {

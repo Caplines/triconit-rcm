@@ -154,6 +154,7 @@ export interface ClaimRuleModel {
 	remark?: string;
 	sectionName: string;
 	ruleType: string;
+	sNo: number;
 }
 
 

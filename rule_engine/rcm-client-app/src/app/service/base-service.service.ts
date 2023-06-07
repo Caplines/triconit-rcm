@@ -25,6 +25,7 @@ export class BaseService {
     'fetchclaimsAssignmentData': "/api/fetch-claims-log-assign",
     'fetchAssociateClaimLogs': "/api/fetch-billing-claims",
     'fetchAssociateClaimDet': "/api/fetch-fresh-claims-det",
+    'fetchLeadClaimDet': "/api/fetch-fresh-claims-det-lead",
     'registerUser': "/register",
     'findUserByEmail': "/finduser",
     'changePassword': "/resetpassword",
@@ -67,7 +68,7 @@ export class BaseService {
     'fetchTpData': '/tp-link-data',
     'fetchIssueClaimCounts': '/issue-claim-counts',
     'googleSheetLink': '/gsheet-link',
-    'updateIv':'/api/updateivfid',
+    'updateIv': '/api/updateivfid',
 
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',

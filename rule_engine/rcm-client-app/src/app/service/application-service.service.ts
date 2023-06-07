@@ -14,7 +14,7 @@ export class ApplicationServiceService extends BaseService {
   private isTpActive = new Subject();
   private isIvfActive = new Subject();
   public billingPage = new Subject();
-  message$:any = this.isTpActive.asObservable();
+  message$: any = this.isTpActive.asObservable();
 
   constructor(router: Router, http: HttpClient, tokenStorage: TokenStorageService) {
     super(router, http, tokenStorage);
@@ -52,6 +52,9 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['fetchAssociateClaimDet'] + "/" + teamId + "/" + subtype, callback);
   }
 
+  fetchLeadClaimDet(teamId: number, subtype: string, callback: any) {
+    this.getData({}, this.httpUrl['fetchLeadClaimDet'] + "/" + teamId + "/" + subtype, callback);
+  }
   fetchCompanyNameData(callback: any) {
     this.getData({}, this.httpUrl['getCompany'], callback)
   }
@@ -94,7 +97,7 @@ export class ApplicationServiceService extends BaseService {
   }
 
   fetchUserByTeamId(callback: any) {
-    this.getData({}, this.httpUrl['userByTeamId'] , callback)
+    this.getData({}, this.httpUrl['userByTeamId'], callback)
   }
 
   assignOffice(params: any, callback: any) {
@@ -141,7 +144,7 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['editClient'], callback)
   }
 
-  sortData(data: any, sortBy: any, order: any, sortType: string, teamName?:any) {
+  sortData(data: any, sortBy: any, order: any, sortType: string, teamName?: any) {
     if (sortType === 'string') {
       order === 'asc' ? data.sort((a: any, b: any) => {
         if (a[sortBy] === null || a[sortBy] === "null") {
@@ -182,9 +185,9 @@ export class ApplicationServiceService extends BaseService {
         else if (b[sortBy] === null) return -1;
         else return <any>new Date(a[sortBy]).getTime() - <any>new Date(b[sortBy]).getTime();
       });
-    
+
     }
-     else if (sortType === 'dateOnly') {
+    else if (sortType === 'dateOnly') {
 
       order === 'asc' ? data.sort((a: any, b: any) => {
         if (a[sortBy] === null && b[sortBy] === null) return 0;
@@ -200,24 +203,24 @@ export class ApplicationServiceService extends BaseService {
 
     }
 
-    else if (sortType === 'nestedCount'){
-      order === 'asc' ? data.sort((a:any,b:any)=>{
-          return a.counts1[teamName.toUpperCase()] - b.counts1[teamName.toUpperCase()];
-      }): data.sort((a:any,b:any)=>{
+    else if (sortType === 'nestedCount') {
+      order === 'asc' ? data.sort((a: any, b: any) => {
+        return a.counts1[teamName.toUpperCase()] - b.counts1[teamName.toUpperCase()];
+      }) : data.sort((a: any, b: any) => {
         return b.counts1[teamName.toUpperCase()] - a.counts1[teamName.toUpperCase()];
       })
     }
-    else if (sortType === 'nestedDate'){
-      order === 'asc' ? data.sort((a:any,b:any)=>{
-        if(a.dates1[teamName.toUpperCase()] === null && b.dates1[teamName.toUpperCase()] === null) return 0;
-        else if(a.dates1[teamName.toUpperCase()] === null) return 1;
-        else if(b.dates1[teamName.toUpperCase()] === null) return -1;
-        else return <any> new Date(a.dates1[teamName.toUpperCase()]) - <any> new Date(b.dates1[teamName.toUpperCase()]);
-      }): data.sort((a:any,b:any)=>{
-        if(a.dates1[teamName.toUpperCase()] === null && b.dates1[teamName.toUpperCase()] === null) return 0;
-        else if(a.dates1[teamName.toUpperCase()] === null) return 1;
-        else if(b.dates1[teamName.toUpperCase()] === null) return -1;
-        else return <any> new Date(b.dates1[teamName.toUpperCase()]) - <any> new Date(a.dates1[teamName.toUpperCase()]);
+    else if (sortType === 'nestedDate') {
+      order === 'asc' ? data.sort((a: any, b: any) => {
+        if (a.dates1[teamName.toUpperCase()] === null && b.dates1[teamName.toUpperCase()] === null) return 0;
+        else if (a.dates1[teamName.toUpperCase()] === null) return 1;
+        else if (b.dates1[teamName.toUpperCase()] === null) return -1;
+        else return <any>new Date(a.dates1[teamName.toUpperCase()]) - <any>new Date(b.dates1[teamName.toUpperCase()]);
+      }) : data.sort((a: any, b: any) => {
+        if (a.dates1[teamName.toUpperCase()] === null && b.dates1[teamName.toUpperCase()] === null) return 0;
+        else if (a.dates1[teamName.toUpperCase()] === null) return 1;
+        else if (b.dates1[teamName.toUpperCase()] === null) return -1;
+        else return <any>new Date(b.dates1[teamName.toUpperCase()]) - <any>new Date(a.dates1[teamName.toUpperCase()]);
       })
     }
   }
@@ -320,7 +323,7 @@ export class ApplicationServiceService extends BaseService {
   }
 
   fetchIssueClaims(cid: string, callback: any) {
-     this.getData({}, this.httpUrl['issueclaim'] + "/" + cid, callback)
+    this.getData({}, this.httpUrl['issueclaim'] + "/" + cid, callback)
   }
   // fetchIssueClaims(page: any,cid: string, callback: any) {
   //   this.getData({}, this.httpUrl['issueclaim'] + "/" + cid+ "/" + page, callback)
@@ -368,25 +371,25 @@ export class ApplicationServiceService extends BaseService {
 
   fetchAllPendency(callback: any) {
     this.getData({}, this.httpUrl['allpendency'], callback)
-}
-
-fetchUserByDetail(query:any,callback:any){
-  this.getData({},this.httpUrl['findUserByDetail']+"/"+query,callback)
   }
 
-fetchTpData(claimUuid:any,callback:any){
-  this.getData({},this.httpUrl['fetchTpData']+"/"+claimUuid,callback)
+  fetchUserByDetail(query: any, callback: any) {
+    this.getData({}, this.httpUrl['findUserByDetail'] + "/" + query, callback)
   }
 
-  fetchIssueClaimCounts(callback: any){
+  fetchTpData(claimUuid: any, callback: any) {
+    this.getData({}, this.httpUrl['fetchTpData'] + "/" + claimUuid, callback)
+  }
+
+  fetchIssueClaimCounts(callback: any) {
     this.getData({}, this.httpUrl['fetchIssueClaimCounts'], callback)
   }
 
-  fetchGSheet(callback:any){
-    this.getData({},this.httpUrl['googleSheetLink'],callback);
+  fetchGSheet(callback: any) {
+    this.getData({}, this.httpUrl['googleSheetLink'], callback);
   }
 
-  updateIvId(params:any,callback:any){
+  updateIvId(params: any, callback: any) {
     this.postData(params, this.httpUrl['updateIv'], callback)
   }
 }
