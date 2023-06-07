@@ -183,10 +183,12 @@
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedTeam"
                                     [disabled]="(cwModel?.teams?.length==0 || cwModel?.teams?.length == 1) || loginUserType=='Admin'">
                                     <option selected="true" hidden="true" value="">Select Team</option>
-                                    <ng-container *ngFor="let tl of cwModel?.teams">
+                                    <!-- <ng-container *ngFor="let tl of cwModel?.teams">
                                         <option value="{{tl.id ? tl.id : tl.teamId}}">{{tl.name ? tl.name :
                                             tl.teamName}}</option>
-                                    </ng-container>
+                                    </ng-container> -->
+                                    <option value="3">Internal Audit</option>
+                                    <option value="7">Billing</option>
                                 </select>
                             </div>
                         </div>
