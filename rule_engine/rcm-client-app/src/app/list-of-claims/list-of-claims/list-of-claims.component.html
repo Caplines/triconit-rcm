@@ -21,11 +21,11 @@
                                                     (click)="fetchClaims('sendBack')">Claims Sent back by Other Teams
                                             </label>
                                         </div>
-                                        <div class="form-check-inline" *ngIf="isRoleLead">
+                                        <!-- <div class="form-check-inline" *ngIf="isRoleLead">
                                             <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"
                                                 (change)="fetchClaimsLead('Fresh')">
                                             <label class="form-check-label" for="flexRadioDefault1">My Claims</label>
-                                        </div>
+                                        </div> --> 
                                     </div>
                                     <div>
                                         <button type="button" class="icon-btn" (click)="saveToPdf('table')" [disabled]="filteredItems.length==0">
