@@ -332,6 +332,15 @@ export class BillingClaimsComponent {
           ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
           valid = false;
         }
+        if (!ths.providerRefNoEnable()) {
+          let SUB_DET_PRENO: any = document.getElementById("SUB_DET_PORVIDER_RENO");
+          if (SUB_DET_PRENO.value.trim() === '') {
+            ths.addErrorDisplay(document.getElementById("SUB_DET_PORVIDER_RENO"));
+            valid = false;
+          }
+        } else {
+          ths.removeErrorDisplayKeyById('SUB_DET_PORVIDER_RENO');
+        }
       }
       /*let SUB_DET_TI: any = document.getElementById("SUB_DET_TI");
       if (SUB_DET_TI.value.trim() === '') {
