@@ -168,7 +168,7 @@
                                 </div>
                             </div>
                             <!-- This section is for SmilePoints Only -->
-                            <ng-container>
+                            <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text "
                                     aria-expanded="false">Links to Related Documents:<span class="passedNum"
                                         *ngIf="claimRcm.allowEdit && claimRcm.pending" style="cursor: pointer;"
@@ -359,6 +359,7 @@
                                     </div>
                                 </div>
                             </ng-container>
+                            <ng-container *ngIf="smilePoint">
                             <a data-toggle="collapse" (click)="showHide(5)" class="bold-b-text "
                                 aria-expanded="false">Claim Level Validations (Manual):</a>
                             <div *ngIf="loader.manualValidation" class="loader-data"></div>
@@ -621,6 +622,7 @@
                                     </table>
                                 </div>
                             </div>
+                            </ng-container>
                             <ng-container>
                                 <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text "
                                     aria-expanded="false" id="serviceCodeValidationsM">Service Code Level
@@ -696,7 +698,7 @@
                                     </div>
                                 </div>
                             </ng-container>
-                            <ng-container>
+                            <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text "
                                     aria-expanded="false" id="serviceCodeValidationsA">Service Code Level
                                     Validations (Automated):</a>

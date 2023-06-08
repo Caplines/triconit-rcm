@@ -346,7 +346,7 @@ a.flex-center:hover {
 }
 
 .detail-box .table-responsive .table td {
-    padding: 0.3rem 12px;
+    padding: 0.3rem 10px;
     line-height: normal;
     vertical-align: middle;
     height: 45px;
@@ -512,7 +512,9 @@ a.flex-center:hover {
 
 .listClaimBox {
     display: flex;
-    padding: 10px 5px 0px;
+    // padding: 10px 5px 0px;
+    width: 100%;
+    justify-content: space-between;
 }
 
 .form-check-input {
@@ -885,6 +887,7 @@ button:disabled,button[disabled]{
 }
 .alignLeft {
     text-align: left;
+    padding-right: 40px!important;
 }
 
 .flexAlign{
@@ -931,3 +934,10 @@ padding-top: 5px;
   .filter-dropdown-menu::-webkit-scrollbar-thumb:hover {
     background: #555; 
   }
+
+  .noWrape {white-space: nowrap;}
+  .icon-btn {    padding: 0px;
+    outline: none;
+    border: 0px;
+    margin: 0 10px;
+}

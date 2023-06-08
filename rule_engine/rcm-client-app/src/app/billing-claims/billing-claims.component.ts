@@ -266,7 +266,9 @@ export class BillingClaimsComponent {
           });
         } else {
           ths.claimRcm.claimNotes.forEach(no => {
-            ths.removeErrorDisplayKeyById("CL_N_" + no.id);
+            //condition added for external clients
+            if(document.getElementById("CL_N_" + no.id)!=null){
+            ths.removeErrorDisplayKeyById("CL_N_" + no.id);}
           });
         }
       }
