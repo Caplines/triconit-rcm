@@ -38,6 +38,8 @@ export class AllPendencyComponent {
     this.getAllPendencyDetails();
     this.currentTeamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
+    this.setTopOnTotalRow();
+    window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
   }
   getAllPendencyDetails() {
     this.showLoader.loader = true;
@@ -106,13 +108,9 @@ export class AllPendencyComponent {
     headers.push("Office");
     this.teamData.forEach((e: any) => {
       if (e.teamId != this.currentTeamId) {
-        if(e.teamName == 'Internal_Audit'){
-          headers.push("Internal Audit")
-        }else{
-          headers.push(e.teamName);
+        e.teamName === 'Internal_Audit' ?  headers.push("Internal Audit") : headers.push(e.teamName);
         }
-      }
-    })
+      })
 
     let options: any = {
       showLabels: true,
@@ -313,5 +311,13 @@ export class AllPendencyComponent {
       }, 500);
     }
   } 
+
+  setTopOnTotalRow(){
+    let thead:any =  document.querySelector("thead tr th")
+    let totalRow:any = document.querySelector(".totalRow");
+    if(totalRow){
+      totalRow.style.top = thead.clientHeight+"px";
+     }
+   } 
 
 }

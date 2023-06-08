@@ -50,6 +50,8 @@ export class OfficeAssignmentComponent implements OnInit {
     this.clientName = localStorage.getItem("selected_clientName");
     this.getUserByTeamId();
     this.assignOfficeDetails.teamId = this.teamId;
+    this.setTopOnTotalRow();
+    window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
   }
 
   fetchClaimAssignments() {
@@ -269,4 +271,13 @@ export class OfficeAssignmentComponent implements OnInit {
     ];
     return monthNames[month];
   }
+
+  setTopOnTotalRow(){
+    let thead:any =  document.querySelector("thead tr th")
+    let totalRow:any = document.querySelector(".totalRow");
+    if(totalRow){
+      totalRow.style.top = thead.clientHeight+"px";
+     }
+   } 
+
 }

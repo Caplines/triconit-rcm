@@ -11,20 +11,16 @@
                             <div class="form-row  collapse" [ngClass]="{'show':expandCollapse}" id="ruleEngine">
                                 <div class="listClaimBox mt-2 mb-1">
                                     <div>
-                                        <div class="form-check-inline">
-                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"
-                                                (change)="fetchClaims('Fresh')" checked>
-                                            <label class="form-check-label" for="flexRadioDefault1">Fresh Claims</label>
+                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn-light" [ngClass]="{'active':selectedSubtype=='Fresh'}">
+                                                <input class="form-check-input" type="radio" name="options" id="option1" (change)="fetchClaims('Fresh')">Fresh
+                                                Claims
+                                            </label>
+                                            <label class="btn btn-light" [ngClass]="{'active':selectedSubtype=='sendBack'}">
+                                                <input class="form-check-input" type="radio" name="options" id="option1"
+                                                    (click)="fetchClaims('sendBack')">Claims Sent back by Other Teams
+                                            </label>
                                         </div>
-                                
-                                        <div class="form-check-inline">
-                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2"
-                                                (click)="fetchClaims('sendBack')">
-                                            <label class="form-check-label" for="flexRadioDefault2">Claims Sent back by
-                                                Other
-                                                Teams</label>
-                                        </div>
-                                
                                         <div class="form-check-inline" *ngIf="isRoleLead">
                                             <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"
                                                 (change)="fetchClaimsLead('Fresh')">
@@ -495,7 +491,7 @@
                                         </thead>
                                         <tbody>
                                             <tr *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
-                                                <td colspan="12" style="min-height:200px;">
+                                                <td colspan="13" style="min-height:200px;">
                                                     <div class="text-center mt-2">
                                                         <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
                                                     </div>
