@@ -267,8 +267,9 @@ export class BillingClaimsComponent {
         } else {
           ths.claimRcm.claimNotes.forEach(no => {
             //condition added for external clients
-            if(document.getElementById("CL_N_" + no.id)!=null){
-            ths.removeErrorDisplayKeyById("CL_N_" + no.id);}
+            if (document.getElementById("CL_N_" + no.id) != null) {
+              ths.removeErrorDisplayKeyById("CL_N_" + no.id);
+            }
           });
         }
       }
@@ -398,9 +399,11 @@ export class BillingClaimsComponent {
       });
 
       if (ths.ruleEngineReport.length == 0) {
-        ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
+        if (!this.isInternalAudit) {
+          ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
 
-        valid = false;//Deepak
+          valid = false;//Deepak
+        }
 
       } else {
         ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
@@ -464,7 +467,7 @@ export class BillingClaimsComponent {
         ths.claimServiceLevelModel = res.data;
         if (ths.claimServiceLevelModel.esDate != null) {
           if (ths.claimServiceLevelModel.esDate != "") {
-            ths.claimRcm.dateLastUpdatedES = ths.claimServiceLevelModel.esDate;
+            //ths.claimRcm.dateLastUpdatedES = ths.claimServiceLevelModel.esDate;
           }
         }
 

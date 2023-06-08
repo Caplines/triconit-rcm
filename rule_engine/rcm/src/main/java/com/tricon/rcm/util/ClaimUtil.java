@@ -60,6 +60,7 @@ public class ClaimUtil {
 			claims.setPrimStatus(re.getPrimSecStatus());
 			claims.setPrimePolicyHolder(re.getPrimeSecPolicyHolder());
 			try {
+				if (re.getPrimeSecPolicyHolder().equalsIgnoreCase(re.getPatientName()))
 				claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
 			} catch (Exception dt) {
 			}
@@ -75,6 +76,11 @@ public class ClaimUtil {
     			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getPrimDateSent()).getTime()));////extra
     		} catch (Exception dt) {
     		}
+    		 try {
+ 				if (re.getPrimeSecPolicyHolder().equalsIgnoreCase(re.getPatientName()))
+ 				claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
+ 			} catch (Exception dt) {
+ 			}
 		}
 		
 		

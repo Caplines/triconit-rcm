@@ -239,7 +239,7 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 	RcmClaimDetailDto fetchIndividualClaim(@Param("companyId")  String companyId,@Param("claimUuid")  String claimUuid) ;
 	
 	//9 May 2023 and IV Date is 5th May 2023 -
-	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos " + 
+	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos,policy_holder_dob pdob " + 
 			" from  patient p , patient_detail pd where pd.patient_id=p.id and p.patient_id=:patientId " + 
 			" and p.office_id=:officeId and pd.cob_status in (:insTypes) " + 
 			" and STR_TO_DATE(:dos,'%Y-%m-%d')>=STR_TO_DATE(general_date_iv_wasdone,'%Y-%m-%d') order by " + 
@@ -276,7 +276,7 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 	List<IssueClaimDto> getIssueClaims(@Param("cmpid") String ivId);
 	
 	
-	@Query(nativeQuery = true, value = ""+
+	String IVF_DATA_QUERY =""+
 			" select r.claim_id claimId,rd.rule_id ruleId,rs.name ruleName,r.patient_name patientName,patient_id patientId,r.ivf_form_id ivId,rd.iv_date ivDate,rd.date_of_service"+
 			" dos,rd.error_message message,rd.message_type mType,"+
 			" rd.surface surface,rd.tooth tooth,rd.codes codes,off.name officeName,rd.insurance_type insuranceType from reports_claim r "+
@@ -290,9 +290,15 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 			" on r.id=rd.report_id and rd.group_run=r1.group_run inner join office off on off.uuid=r.office_id "
 			+ " inner join rules rs on rs.id=rd.rule_id "
 			+ ""+
-			"  where r.claim_id=:claim_id and r.office_id=:office_id and r.patient_id=:patientid and off.company_id=:cmp_id ")
+			"  where r.claim_id=:claim_id and r.office_id=:office_id and r.patient_id=:patientid and off.company_id=:cmp_id ";
+	@Query(nativeQuery = true, value = IVF_DATA_QUERY)
 	List<RuleEngineClaimDto> getRuleEngineClaimReport(@Param("office_id") String officeId,@Param("cmp_id") String companyId,
 			@Param("patientid") String patientId,@Param("claim_id") String claimId);
+	
+	@Query(nativeQuery = true, value = IVF_DATA_QUERY +" limit 1 ")
+	RuleEngineClaimDto getRuleEngineClaimReportOnlyIV(@Param("office_id") String officeId,@Param("cmp_id") String companyId,
+			@Param("patientid") String patientId,@Param("claim_id") String claimId);
+	
 	
 	
 	/*@Query(nativeQuery = true, value = ""+

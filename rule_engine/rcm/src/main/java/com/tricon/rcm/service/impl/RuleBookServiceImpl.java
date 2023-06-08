@@ -159,7 +159,7 @@ public class RuleBookServiceImpl {
 				errorMessage.add("IV Not Found");
 				pass= false;
 			} else {
-				if (!rcmClaim.getPatientName().trim().equalsIgnoreCase(ivf.getBasicInfo2())) {
+				if (!rcmClaim.getPatientName().trim().equalsIgnoreCase(ivf.getBasicInfo2().trim())) {
 					if (errorMessage==null) errorMessage= new ArrayList<>();
 					errorMessage.add("Claim Patient name: "+rcmClaim.getPatientName() +"; IV Patient name: "+ivf.getBasicInfo2());
 					pass= false;
@@ -172,14 +172,14 @@ public class RuleBookServiceImpl {
 					//Fail
 				}
 				if (primary) {
-					if (!rcmClaim.getPrimePolicyHolder().trim().equalsIgnoreCase(ivf.getBasicInfo5())) {
+					if (!rcmClaim.getPrimePolicyHolder().trim().equalsIgnoreCase(ivf.getBasicInfo5().trim())) {
 						if (errorMessage==null) errorMessage= new ArrayList<>();
 						errorMessage.add("Claim PolicyHolder: "+rcmClaim.getPrimePolicyHolder() +"; IV PolicyHolder: "+ivf.getBasicInfo5());
 						pass= false;
 						//Fail
 					}
 				}else {
-					if (!rcmClaim.getSecPolicyHolder().trim().equalsIgnoreCase(ivf.getBasicInfo5())) {
+					if (!rcmClaim.getSecPolicyHolder().trim().equalsIgnoreCase(ivf.getBasicInfo5().trim())) {
 						if (errorMessage==null) errorMessage= new ArrayList<>();
 						errorMessage.add("Claim PolicyHolder: "+rcmClaim.getSecPolicyHolder() +"; IV PolicyHolder: "+ivf.getBasicInfo5());
 						pass= false;
@@ -199,7 +199,7 @@ public class RuleBookServiceImpl {
 				
 			}
 			
-			if (!pass) {
+			if (!pass && dList.size()==0) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule303.error.message1", new Object[] {}, locale), Constants.FAIL, "",
 						"", ""));

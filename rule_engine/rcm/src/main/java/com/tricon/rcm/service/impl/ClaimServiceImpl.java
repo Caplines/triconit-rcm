@@ -1212,7 +1212,29 @@ public class ClaimServiceImpl {
 					claim.setIvfId(ivfId);
 					claim.setIvfIdSystem(ivfId);
 					claim.setIvDos(ivDos);
-					
+					if (!implDto.isPrimary()) {
+						if (claim.getSecPolicyHolderDob()==null) {
+						try {
+						//Since we don't have any way to pull the Subscriber's DOB from ES using Query, let's pull that from IV	
+						java.sql.Date sqlPackageDate
+			            = new java.sql.Date(Constants.SDF_MYSL_DATE.parse(ivfDto.getPdob()).getTime());
+						claim.setSecPolicyHolderDob(sqlPackageDate);
+						}catch(Exception g) {
+							
+						}
+						}
+					}else {
+						if (claim.getPrimePolicyHolderDob()==null)  {
+						try {
+							//Since we don't have any way to pull the Subscriber's DOB from ES using Query, let's pull that from IV	
+							java.sql.Date sqlPackageDate
+				            = new java.sql.Date(Constants.SDF_MYSL_DATE.parse(ivfDto.getPdob()).getTime());
+							claim.setPrimePolicyHolderDob(sqlPackageDate);
+							}catch(Exception g) {
+								
+							}
+						}
+					}
 						
 				 }
 				

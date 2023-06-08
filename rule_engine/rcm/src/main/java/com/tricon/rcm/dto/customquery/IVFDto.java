@@ -7,4 +7,6 @@ public interface IVFDto {
 	String getOfficeId();
 	
 	String getDos();
+	
+	String getPdob();
 }
