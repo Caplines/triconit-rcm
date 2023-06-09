@@ -2451,6 +2451,18 @@ public class ClaimServiceImpl {
 				claim.setUpdatedDate(new Date());
 
 				rcmClaimRepository.save(claim);
+				//Check if Primary	then Find any Corresponding Secondary Claim and Mark Primar_status =2
+				String[] clT = claim.getClaimId().split("_");
+
+				if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
+					//Primary True
+				RcmClaims secondary= rcmClaimRepository.findByClaimIdAndOffice(clT[0]+ClaimTypeEnum.S.getSuffix(), claim.getOffice());
+				if (secondary!=null) {
+					secondary.setPrimaryStaus(2);
+					rcmClaimRepository.save(secondary);
+				}
+				}
+				
 				message="Submitted";
 			}else if(dto.isAssignToOtherTeam()){
 				

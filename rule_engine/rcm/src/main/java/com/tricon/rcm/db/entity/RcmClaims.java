@@ -217,5 +217,10 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "primary_eob")
 	private String primaryEob;
 	
+	//0 --> it self primary 
+	//1--> primary not submitted for secondary 
+	//2-> primary submitted for secondary 
+	@Column(name = "primary_status",columnDefinition = "integer default 0")
+	private int primaryStaus;//
 
 }
