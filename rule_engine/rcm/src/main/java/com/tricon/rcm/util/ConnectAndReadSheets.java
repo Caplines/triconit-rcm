@@ -860,7 +860,7 @@ public class ConnectAndReadSheets {
 						obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 						obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
 						obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
-						obj.get(++x));
+						obj.get(++x),obj.get(++x));
 				        list.add(dto);
 			} catch (Exception ex) {
 				continue;

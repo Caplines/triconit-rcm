@@ -330,7 +330,7 @@ public class RuleBookServiceImpl {
 
 			
 				if (filterCodeList != null && filterCodeList.size() > 0) {
-					applicationStatus = filterCodeList.get(0).getCredentialingStatus().toLowerCase();
+					applicationStatus = filterCodeList.get(0).getApplicationStatus().toLowerCase();
 					effectiveDate =filterCodeList.get(0).getEffectiveDate().trim();
 					logger.info("applicationStatus --"+applicationStatus);
 					logger.info("Effective Date --"+filterCodeList.get(0).getEffectiveDate());

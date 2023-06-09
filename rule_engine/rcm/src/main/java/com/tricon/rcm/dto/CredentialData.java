@@ -53,7 +53,7 @@ public class CredentialData {
 	private String sourceAudit;//AT
 	private String wellcomeLetter;//AU
 	private String auditorsRemarks;//AV 
-	
+	private String endofString;//AW
 	
 	public CredentialData(String officeName, String location, String providers, String providerCode, String speciality,
 			String status, String insurance, String insuranceCode, String planType, String requestReceivedDate,
@@ -67,7 +67,7 @@ public class CredentialData {
 			String applicationSubmittedTo, String tpaFS, String terminationDate, String notSure,
 			String nextFollowupDate, String documentReceivedOn, String auditorName, String auditDate,
 			String credentialingStatus, String reCredentialing, String category, String sourceAudit,
-			String wellcomeLetter, String auditorsRemarks) {
+			String wellcomeLetter, String auditorsRemarks,String endofString) {
 		super();
 		this.officeName = officeName;
 		Location = location;
@@ -117,6 +117,7 @@ public class CredentialData {
 		this.sourceAudit = sourceAudit;
 		this.wellcomeLetter = wellcomeLetter;
 		this.auditorsRemarks = auditorsRemarks;
+		this.endofString= endofString;
 	}
 	
 	
