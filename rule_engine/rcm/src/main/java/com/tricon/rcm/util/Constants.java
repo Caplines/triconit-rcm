@@ -97,6 +97,8 @@ public class Constants {
 	public static final String REPORTING = "REPORTING";
 	public static final String UI_RULEENIGNE_SECTION = "RuleEngine";
 	public static final String UI_CLAIM_VALIDATION_SECTION = "ClaimLevelValidation";
-	
+	public static final int Primary_Status_Primary=0;
+	public static final int Primary_Status_Secondary=1;
+	public static final int Primary_Status_Primary_submit=2;
 
 }

@@ -56,6 +56,7 @@ public class ClaimUtil {
 		claims.setPatientName(re.getPatientName());
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {
 			claims.setPrimInsuranceCompanyId(prim);
+			claims.setPrimaryStaus(Constants.Primary_Status_Primary);
 			claims.setPrimeSecSubmittedTotal(re.getPrimSecSubmittedTotal());
 			claims.setPrimStatus(re.getPrimSecStatus());
 			claims.setPrimePolicyHolder(re.getPrimeSecPolicyHolder());
@@ -67,6 +68,7 @@ public class ClaimUtil {
 		}
          if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
         	 claims.setSecInsuranceCompanyId(sec);
+        	 claims.setPrimaryStaus(Constants.Primary_Status_Secondary);
         	 claims.setSecSubmittedTotal(re.getPrimSecSubmittedTotal());
      		 claims.setSecStatus(re.getPrimSecStatus());
      		 claims.setSecPolicyHolder(re.getPrimeSecPolicyHolder());
@@ -132,6 +134,7 @@ public class ClaimUtil {
 		claims.setPatientName(re.getPatientName());
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {
 			claims.setPrimInsuranceCompanyId(prim);
+			 claims.setPrimaryStaus(Constants.Primary_Status_Primary);
 			 claims.setProviderId(re.getProviderIdProviderName());
 			 claims.setSecMemberId(re.getPrimaryMemberId());
 			 claims.setGroupNumber(re.getPrimaryGroupNumber());
@@ -163,6 +166,7 @@ public class ClaimUtil {
 		}
          if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
         	 claims.setSecInsuranceCompanyId(sec);
+        	 claims.setPrimaryStaus(Constants.Primary_Status_Secondary);
         	 claims.setProviderId(re.getProviderIdReport());
         	 claims.setSecMemberId(re.getSecondaryMemberId());
         	 claims.setGroupNumber(re.getSecondaryGroupNumber());

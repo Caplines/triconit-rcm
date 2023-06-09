@@ -2458,7 +2458,7 @@ public class ClaimServiceImpl {
 					//Primary True
 				RcmClaims secondary= rcmClaimRepository.findByClaimIdAndOffice(clT[0]+ClaimTypeEnum.S.getSuffix(), claim.getOffice());
 				if (secondary!=null) {
-					secondary.setPrimaryStaus(2);
+					secondary.setPrimaryStaus(Constants.Primary_Status_Primary_submit);
 					rcmClaimRepository.save(secondary);
 				}
 				}
