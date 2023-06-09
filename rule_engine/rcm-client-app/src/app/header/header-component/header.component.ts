@@ -135,8 +135,10 @@ export class HeaderComponent implements OnInit {
     this.loginUserType = localStorage.getItem('loginAs');
     this.modelElement.modal.style.display = "none";
     this.showPopup = false;
-    (<HTMLInputElement>document.getElementById('admin')).checked = false;
-    (<HTMLInputElement>document.getElementById('normal')).checked = false;
+    let adminRadioBox =  (<HTMLInputElement>document.getElementById('admin'));
+    adminRadioBox ? adminRadioBox.checked = false : '';
+    let normalRadioBox =  (<HTMLInputElement>document.getElementById('normal'));
+    normalRadioBox ? normalRadioBox.checked = false : '';
   }
 
   switchAccount() {
