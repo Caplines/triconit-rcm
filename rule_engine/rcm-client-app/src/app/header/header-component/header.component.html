@@ -1,4 +1,4 @@
-<div class=" navbar-dark sticky-top bg-dark" (click)="myFunction()">
+<div class=" navbar-dark sticky-top bg-dark">
     <div class="topbar">
         <h1>Capline RCM</h1>
 
@@ -19,8 +19,8 @@
                 <a class="nav-link" href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign out</a>
             </li> -->
             </ul>
-            <div class="dropdown" (onclick)="myFunction()">
-                <a [title]="staticUtil.currentUserEmail()" class="dropbtn"><img src="../../assets/img/user-blue.png" />
+            <div class="dropdown" >
+                <a [title]="staticUtil.currentUserEmail()" (click)="myFunction()" class="dropbtn"><img src="../../assets/img/user-blue.png" />
                     Welcome, {{loggedInUserName}} <span class="caretDown"></span></a>
                 <div id="myDropdown" class="dropdown-content">
                     <li><span> <strong>Client:</strong> {{userInfo.currentClientName}}</span></li>
