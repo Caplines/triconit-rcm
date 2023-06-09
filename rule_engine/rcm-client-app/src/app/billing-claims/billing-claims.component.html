@@ -280,7 +280,8 @@
                                 </div>
                             </div>
                             <ng-container *ngIf="smilePoint">
-                                <a (click)="reval()" *ngIf="claimRcm.allowEdit && claimRcm.pending"> Re Validate
+                                <a (click)="reval()" *ngIf="claimRcm.allowEdit && claimRcm.pending"
+                                    style="cursor: pointer;"> Re Validate
                                     Automated
                                     Claims</a>
                                 <a data-toggle="collapse" (click)="showHide(4)" class="bold-b-text "
@@ -576,6 +577,16 @@
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Not Available
                                                                 </label>
+                                                                <ng-container *ngIf="rule.ruleId==317">
+                                                                    <label class="btn btn-light"
+                                                                        [ngClass]="{active:rule.messageType==3}">
+                                                                        <input type="radio" name="mant{{rule.ruleId}}"
+                                                                            value="3"
+                                                                            (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                            [(ngModel)]='rule.messageType'
+                                                                            [disabled]="makeReadOnly()"> Not Needed
+                                                                    </label>
+                                                                </ng-container>
                                                             </div>
 
                                                         </td>
