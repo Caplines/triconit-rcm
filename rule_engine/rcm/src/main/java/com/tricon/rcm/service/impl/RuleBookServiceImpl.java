@@ -325,7 +325,8 @@ public class RuleBookServiceImpl {
 					.filter(e -> e.getLocation().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getPlanType().trim().equalsIgnoreCase(rcmClaim.getRcmInsuranceType().getName())
 							&& e.getProviderCode().trim().equalsIgnoreCase(testVal)
-							&& insNameFinal.equalsIgnoreCase(e.getInsurance()))
+							//&& insNameFinal.equalsIgnoreCase(e.getInsurance())
+							)
 					.collect(Collectors.toList());
 
 			

@@ -33,7 +33,7 @@
                         <div class="detail-box-form">
                             <!-- This section is for all Clients -->
                             <a data-toggle="collapse" (click)="showHide(0)" class="bold-b-text"
-                                aria-expanded="true">Claim Details: <span
+                                aria-expanded="true">Claim Details <span
                                     style="color:#ff00a8">{{infoMessage}}</span></a>
                             <div *ngIf="loader.claimDetail" class="loader-data"></div>
                             <div *ngIf="!loader.claimDetail" class="form-row collapse show" id="claimDetails">
@@ -133,8 +133,9 @@
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
                                         <label for="" class="">Regenerated Claim? :</label>
-                                        <div [ngClass]="{'yes':claimRcm.regenerated,'no':!claimRcm.regenerated}">
-                                            {{claimRcm.regenerated===true?"Yes":"No"}}</div>
+                                        <!--<div [ngClass]="{'yes':claimRcm.regenerated,'no':!claimRcm.regenerated}">
+                                            {{claimRcm.regenerated===true?"Yes":"No"}}</div>-->
+                                        <div>N/A</div>
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Linked Claim IDs :</label>
@@ -170,7 +171,7 @@
                             <!-- This section is for SmilePoints Only -->
                             <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(1)" class="bold-b-text "
-                                    aria-expanded="false">Links to Related Documents:<span class="passedNum"
+                                    aria-expanded="false">Links to Related Documents<span class="passedNum"
                                         *ngIf="claimRcm.allowEdit && claimRcm.pending" style="cursor: pointer;"
                                         (click)="openUpdateIvPopup($event)">Update IV ID
                                         ?</span></a>
@@ -225,7 +226,7 @@
                                 </div>
                             </ng-container>
                             <a data-toggle="collapse" (click)="showHide(2)" class="bold-b-text "
-                                aria-expanded="false">Remarks by Other RCM Teams:</a>
+                                aria-expanded="false">Remarks by Other RCM Teams</a>
                             <div *ngIf="loader.remarksByOther" class="loader-data"></div>
                             <div *ngIf="!loader.remarksByOther" class="form-row  collapse show" id="teamRemarks">
                                 <div class="table-responsive">
@@ -285,7 +286,7 @@
                                     Automated
                                     Claims</a>
                                 <a data-toggle="collapse" (click)="showHide(4)" class="bold-b-text "
-                                    aria-expanded="false">Claim Level Validations (Automated): <span
+                                    aria-expanded="false">Claim Level Validations (Automated) <span
                                         class="passedNum">Pass:{{countA.pass}}</span> <span
                                         class="passedNum fail">Fail:{{countA.fail}}</span></a>
                                 <!-- <button type="button" class="btn btn-success" style=" pointer-events: none;
@@ -360,7 +361,7 @@
                             </ng-container>
                             <ng-container>
                                 <a data-toggle="collapse" (click)="showHide(5)" class="bold-b-text "
-                                    aria-expanded="false">Claim Level Validations (Manual):</a>
+                                    aria-expanded="false">Claim Level Validations (Manual)</a>
                                 <div *ngIf="loader.manualValidation" class="loader-data"></div>
                                 <div *ngIf="!loader.manualValidation" class="form-row  collapse show"
                                     id="claimValidationsManual">
@@ -496,7 +497,7 @@
                                                                     [ngClass]="{active:rule.messageType==3}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="3"
-                                                                        (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                        (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(false);"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Not Available
                                                                 </label>
@@ -504,7 +505,7 @@
                                                                     [ngClass]="{active:rule.messageType==2}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="2"
-                                                                        (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                        (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true)"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Complete
                                                                 </label>
@@ -512,7 +513,7 @@
                                                                     [ngClass]="{active:rule.messageType==1}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="1"
-                                                                        (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                        (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true)"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Incorrect
                                                                 </label>
@@ -538,10 +539,10 @@
                                                                 [disabled]="makeReadOnly()"></textarea></td>
                                                     </tr>
                                                 </ng-container>
-                                                <tr class="no-wrap-text "
+                                                <tr class="no-wrap-text relatedTo_300"
                                                     *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                     <ng-container
-                                                        *ngIf="((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
+                                                        *ngIf="relatedTo_300 && ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
                                                    ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )
                                                     && (rule.ruleId==311 || rule.ruleId==312 ||rule.ruleId==313 ||rule.ruleId==314 ||rule.ruleId==315 ||rule.ruleId==316 ||rule.ruleId==317)">
                                                         <td *ngIf="rule.ruleId==311">a</td>
@@ -603,9 +604,9 @@
                                             </tbody>
                                         </table>
                                         <table style="width: 100%;">
-                                            <tr style="background: #f9f9f9;"
+                                            <tr style="background: #f9f9f9;" class="relatedTo_300"
                                                 *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
-                                                <ng-container *ngIf="((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
+                                                <ng-container *ngIf="relatedTo_300 && ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
                                                                                                ||  (!claimRcm.primary && (claimRcm.secondaryInsType=='CMC' || claimRcm.secondaryInsType=='AMC' || claimRcm.secondaryInsType=='MCR' || claimRcm.secondaryInsType=='CHIP')) )
                                                                                                 && (rule.ruleId==317)">
                                                     <table class="table sub-content-td" style="margin-top: 0px;">
@@ -655,7 +656,7 @@
                             <ng-container>
                                 <a data-toggle="collapse" (click)="showHide(6)" class="bold-b-text "
                                     aria-expanded="false" id="serviceCodeValidationsM">Service Code Level
-                                    Validations (Manual):</a>
+                                    Validations (Manual)</a>
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                 <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
                                     <div class="table-responsive">
@@ -730,7 +731,7 @@
                             <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(7)" class="bold-b-text "
                                     aria-expanded="false" id="serviceCodeValidationsA">Service Code Level
-                                    Validations (Automated):</a>
+                                    Validations (Automated)</a>
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                 <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
                                     <div class="table-responsive">
@@ -784,7 +785,7 @@
                             </ng-container>
                             <ng-container *ngIf="smilePoint">
                                 <a data-toggle="collapse" (click)="showHide(8)" class="bold-b-text "
-                                    aria-expanded="false">Rule Engine Validations:</a>
+                                    aria-expanded="false">Rule Engine Validations</a>
                                 <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
                                 <div *ngIf="!loader.ruleEngValid" class="form-row  collapse show"
                                     id="claimValidationsRE">
@@ -842,7 +843,7 @@
                                 </div>
                             </ng-container>
                             <a *ngIf="!isInternalAuditLogin" data-toggle="collapse" (click)="showHide(9)"
-                                class="bold-b-text " aria-expanded="false">Enter Claim Submission Details:</a>
+                                class="bold-b-text " aria-expanded="false">Enter Claim Submission Details</a>
                             <div *ngIf="!isInternalAuditLogin" class="form-row  collapse show"
                                 id="claimSubmissionDetails">
                                 <div class="table-responsive">
@@ -1017,7 +1018,7 @@
                         <div id="assigment-modal" class="modal">
                             <div class="modal-content">
                                 <div _ngcontent-qaa-c48="" class="modal-header">
-                                    <h5 class="modal-title">Assign</h5>
+                                    <h5 class="modal-title">Assign To</h5>
                                     <button type="button" (click)="closeModal()" class="close"><span>×</span></button>
                                 </div>
                                 <div class="modal-body">
@@ -1050,9 +1051,12 @@
 
                                             <select class="form-control" id="selectTeam" name="w"
                                                 [(ngModel)]='claimEditModel.assignToTeam'>
-                                                <option selected="true" value="-1">Select Team</option>
+                                                <ng-container *ngIf="!isInternalAudit">
+                                                    <option selected="true" value="-1">Select Team</option>
+                                                </ng-container>
                                                 <ng-container *ngFor="let tl of teamsMs">
-                                                    <option value="{{tl.teamId}}">{{tl.teamName}}</option>
+                                                    <option [selected]="isInternalAudit== true" [value]="tl.teamId">
+                                                        {{tl.teamName}}</option>
                                                 </ng-container>
                                             </select>
                                             <div class="remark-box"><label>Remark:</label><input name="assignToComment"
@@ -1104,10 +1108,15 @@
                                                           (claimRcm.primary && claimRcm.pending) 
                                                        ) && isBilling " type="button" class="btn btn-success"
                                 [disabled]="inSave" (click)="saveClaim('submit')">Mark as Submitted</button>
-                            <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
+                            <button *ngIf="claimRcm.allowEdit && !isInternalAudit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
                                                        )" type="button" class="btn btn-success" [disabled]="inSave"
                                 (click)="saveClaim('assign')">Assign to Other Team</button>
+                            <button *ngIf="claimRcm.allowEdit && isInternalAudit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
+                                                                                         (claimRcm.primary && claimRcm.pending) 
+                                                                                       )" type="button"
+                                class="btn btn-success" [disabled]="inSave"
+                                (click)="saveClaim('assign')">Reviewed</button>
                         </div>
                         <div>
 

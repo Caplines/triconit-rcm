@@ -1052,15 +1052,22 @@ public class ClaimServiceImpl {
 
 	public List<FreshClaimDataDto> fetchFreshClaimDetails(int teamId, int billingORRebill, String sub,
 			PartialHeader partialHeader) {
-
+        ///Add more logic
+		List<FreshClaimDataDto> list=null;
 		if (sub.equals("Fresh")) {
-			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) return rcmClaimRepository.fetchFreshClaimDetailsInd(partialHeader.getCompany().getUuid(), teamId, partialHeader.getJwtUser().getUuid());
-			else return rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) list = rcmClaimRepository.fetchFreshClaimDetailsInd(partialHeader.getCompany().getUuid(), teamId, partialHeader.getJwtUser().getUuid());
+			else list = rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
+			 if (teamId == RcmTeamEnum.BILLING.getId()){
+			     if (list==null) list= new ArrayList<>();
+			     // add Claims Send From Internal Audit Team
+			     
+			 }
+			
 		}
 		else {
-			return rcmClaimRepository.fetchClaimDetailsWorkedByTeam(partialHeader.getCompany().getUuid(), teamId);
+			list = rcmClaimRepository.fetchClaimDetailsWorkedByTeam(partialHeader.getCompany().getUuid(), teamId);
 		}
-
+          return list;
 	}
 	
 	public List<FreshClaimDataDto> fetchFreshClaimDetailsLead(int teamId, int billingORRebill, String sub,
@@ -1382,7 +1389,7 @@ public class ClaimServiceImpl {
    				treatingProviderFromClaim = pCodeList.get(0).getProviderCode();
 			 	
    			 List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
-   			 List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equals(pCodeList.get(0).getProviderCode()))
+   			 List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equalsIgnoreCase(pCodeList.get(0).getProviderCode()))
 			.collect(Collectors.toList());
    			 if (proEsF!=null && proEsF.size()>0) {
    				providerOnClaim =proEsF.get(0).getProviderNames();
@@ -1392,7 +1399,7 @@ public class ClaimServiceImpl {
    			}
    			
    			List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
-   			List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equals(treatingProviderF))
+   			List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equalsIgnoreCase(treatingProviderF))
    					.collect(Collectors.toList());
    			if (proEsF!=null && proEsF.size()>0) {
    				providerOnClaimFromSheet =proEsF.get(0).getProviderNames();
@@ -2419,7 +2426,7 @@ public class ClaimServiceImpl {
 					if (dto.getClaimNoteDtoList() != null)	notesSaved = saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, partialHeader);
 					
 					if (dto.getRuleRemarkDto() != null) {
-						List<RuleRemarkDto> fList= dto.getRuleRemarkDto().stream().filter(re -> !re.getSectionName().equals(Constants.UI_RULEENIGNE_SECTION))
+						List<RuleRemarkDto> fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals(Constants.UI_RULEENIGNE_SECTION))
 							      .collect(Collectors.toList());
 						saveClaimRuleRemark(fList, user, claim, partialHeader);
 						fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals(Constants.UI_CLAIM_VALIDATION_SECTION))
@@ -2708,15 +2715,20 @@ public class ClaimServiceImpl {
 					claim.setRcmInsuranceType(rcmInsuranceTypeRepo.findById(claim.getRcmInsuranceType().getId()));
 					
 					String insName="";
-					String[] clT = claim.getClaimId().split("_");
+					/*String[] clT = claim.getClaimId().split("_");
 					if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
 				      Optional<RcmInsurance> nn= insuranceRepo.findById(claim.getPrimInsuranceCompanyId().getId());
-				      if (nn.isPresent()) insName=nn.get().getName();
+				      if (nn.isPresent()) {
+				    	 
+				    	  insName=	  rcmInsuranceTypeRepo.findById(nn.get().getInsuranceType().getId()).getName();
+				      }
 					} else {
 						 Optional<RcmInsurance> nn= insuranceRepo.findById(claim.getSecInsuranceCompanyId().getId());
-					      if (nn.isPresent()) insName=nn.get().getName();
+					      if (nn.isPresent()) {
+					    	  insName=	  rcmInsuranceTypeRepo.findById(nn.get().getInsuranceType().getId()).getName();
+					      }
 					}
-					
+					*/
 					allLIst.addAll(
 							ruleBookService.rule305(rule, creList, claim, officeName, providerSheetData,insName));
 					

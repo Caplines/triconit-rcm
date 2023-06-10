@@ -56,7 +56,8 @@ export class BillingClaimsComponent {
   loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false }
   //ivfData:any=[];
   updatedIvfId: any;
-  countM300: number = 1
+  countM300: number = 1;
+  relatedTo_300 = true;
 
   modelElement: any = { 'modal': '', 'span': '' }
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -197,6 +198,10 @@ export class BillingClaimsComponent {
       //debugger;
       ths.assignModel.toOtherTeam = true;
       let valid = ths.validateData();
+      if (ths.isInternalAudit) {
+        ths.claimEditModel.assignToTeam = ths.teamsMs[0].teamId;
+      }
+
       if (valid) {
         ths.openAssignModal('other');
 
@@ -544,9 +549,12 @@ export class BillingClaimsComponent {
         ths.loader.automatedValidation = ths.loader.manualValidation = false;
         ths.claimRules = res.data;
         ths.generateManualIdOfRule();
-        this.countA.pass = this.countA.fail = this.countA.alert = 0;
+        ths.countA.pass = ths.countA.fail = ths.countA.alert = 0;
         //debugger;
         ths.claimRules.forEach((e: any) => {
+          if (e.ruleId == 300 && (e.messageType != null && e.messageType == 3)) {
+            ths.relatedTo_300 = false;
+          }
           if (e.messageType == 1 && e.manualAuto === "AUTO" && (e.ruleType === 'C' || e.ruleType === 'R,C')) {
             this.countA.fail = this.countA.fail + 1;
           }
@@ -780,6 +788,7 @@ export class BillingClaimsComponent {
     ths.appService.fetchOtherTeams((res: any) => {
       if (res.status === 200) {
         ths.teamsMs = res.data;
+
       }
     })
   }
@@ -951,5 +960,18 @@ export class BillingClaimsComponent {
 
   replaceValue(v: string, w: string): string {
     return v.replace(/,/g, w);
+  }
+
+  enableDisable300Sub(cond: boolean) {
+    let subsection: any = document.querySelectorAll(".relatedTo_300");
+    if (subsection.length > 0) {
+      if (!cond) {
+        this.relatedTo_300 = false;
+        for (let el of subsection) el.style.display = 'none';
+      } else {
+        for (let el of subsection) el.style.display = '';
+        this.relatedTo_300 = true;
+      }
+    }
   }
 }
