@@ -286,7 +286,7 @@ a.flex-center:hover {
     margin-bottom: 20px;
 }
 
-.detail-box a.bold-b-text {
+.detail-box .bold-b-text {
     font-size: 16px;
     margin-top: 0px;
     margin-bottom: 0px;
@@ -296,7 +296,8 @@ a.flex-center:hover {
     font-family: 'Open Sans', sans-serif;
     font-weight: 600;
     border-top: 0px solid #e7eaea;
-    background: #ffffff url(./assets/img/down_icon.png) no-repeat right center;
+    // background: #ffffff url(./assets/img/down_icon.png) no-repeat right center;
+    background: #ffffff ;
     border-radius: 10px 10px 0px 0px;
     box-shadow: 0px -1px 2px #dfdfdf;
 }
@@ -318,7 +319,7 @@ a.flex-center:hover {
     font-weight: 500;
 }
 
-.detail-box a.bold-b-text:hover {
+.detail-box .bold-b-text:hover {
     text-decoration: none;
     color: #000;
     border-left-color: #000;
@@ -586,7 +587,7 @@ a.flex-center:hover {
 }
 
 
-.detail-box-form a.collapsed {
+.detail-box-form .collapsed {
     margin-bottom: 5px;
     border-radius: 10px;
     border-bottom: 1px solid #d9d9d9;

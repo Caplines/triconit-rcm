@@ -84,3 +84,22 @@ white-space: nowrap;
 .sub-content-td {margin-left: 122px; width: calc(100% - 122px); }
 .sub-content-td td {border-top:0px!important}
 .sub-content-td td strong { margin-right: 5px;}
+
+.detail-box .bold-b-text{
+    display: flex !important;
+    justify-content: space-between;
+
+    a{
+        color: #000;
+    }
+
+    .down-icon a.close {
+        cursor: pointer;
+        background: url('../../assets/img/right_icon.png') no-repeat right center !important;
+    }
+    .down-icon a {
+        cursor: pointer;
+        padding: 13px;
+        background: url('../../assets/img/down_icon.png') no-repeat right center !important;
+    }
+}

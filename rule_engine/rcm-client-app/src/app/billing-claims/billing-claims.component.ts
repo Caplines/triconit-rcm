@@ -458,6 +458,7 @@ export class BillingClaimsComponent {
     let el: any = document.querySelectorAll(".bold-b-text");
     for (let i = 0; i < el.length; i++) {
       if (i == index) {
+        el[i].children[1].children[0].classList.toggle("close");
         el[i].classList.toggle("collapsed");
         el[i].nextElementSibling.classList.toggle("show");
       }
