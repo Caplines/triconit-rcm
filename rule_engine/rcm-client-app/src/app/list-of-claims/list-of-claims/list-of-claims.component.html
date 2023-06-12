@@ -17,8 +17,12 @@
                                                 Claims
                                             </label>
                                             <label class="btn btn-light" [ngClass]="{'active':selectedSubtype=='sendBack'}">
-                                                <input class="form-check-input" type="radio" name="options" id="option1"
+                                                <input class="form-check-input" type="radio" name="options" id="option2"
                                                     (click)="fetchClaims('sendBack')">Claims Sent back by Other Teams
+                                            </label>
+                                            <label class="btn btn-light" *ngIf="isRoleLead">
+                                                <input class="form-check-input" type="radio" name="options" id="option3"
+                                                (change)="fetchClaimsLead('Fresh')">My Claims
                                             </label>
                                         </div>
                                         <!-- <div class="form-check-inline" *ngIf="isRoleLead">
@@ -550,7 +554,7 @@
                                                             {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
                                                         <!-- Insurance Type START-->
-                                                        <td *ngIf="selectedSubtype!='Fresh'">{{det.billedAmount}}</td>
+                                                        <td *ngIf="selectedSubtype!='Fresh'">{{det.billedAmount | currency:'USD':true:'.0-0'}}</td>
                                                         <td *ngIf="isLastTeam" class="NA">
                                                             {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
                                                     </tr>

@@ -23,7 +23,7 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="findUser">Find User : </label>
+                                        <label for="findUser">Find User  </label>
                                         <div class="input-group">
                                             <input type="text" (keyup)="searchUserByName(user.email)" [(ngModel)]="user.email" class="form-control" placeholder="User By Email" aria-label="User By Email" aria-describedby="basic-addon2" required="true">
                                             <div class="input-group-append">
@@ -65,7 +65,7 @@
                             <div class="row" *ngIf="user.showChangePassword">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="changepass">Change Password :</label>
+                                        <label for="changepass">Change Password </label>
                                         <input   #x type="password" class="form-control" [(ngModel)]="user['changedPassword']" [ngClass]="{'is-invalid': user.changedPassword && (user.changedPassword=='' || user.changedPassword.length<6)}" required="true">
                                         <div style="padding-top: 15px;">
                                         <input type="checkbox" name="myCheckbox" (click)="x.type=x.type=='password'?'text':'password'"><span for="myCheckbox" style="margin-left: 8px;">Show Password</span></div>
@@ -79,7 +79,7 @@
                             <div class="row" *ngIf="user.showStatus">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="status">Enable Disable Status :</label>
+                                        <label for="status">Enable Disable Status </label>
                                         <div>
                                             <div class="form-check-inline">
                                                 <input type="radio" class="form-check-input" id="enable" [checked]="user.active == 1" name="status" (change)="updateSingleUserStatus(1)">

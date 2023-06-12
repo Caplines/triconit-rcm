@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 
 import {IssueClaimRoutingModule } from './issue-claims-routing.module';
 import { IssueClaimComponent } from '../issue-claims.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
   declarations: [IssueClaimComponent],
   imports: [
     CommonModule,
-    IssueClaimRoutingModule
+    IssueClaimRoutingModule,
+    FormsModule
   ],
   exports:[IssueClaimComponent]
 })
