@@ -39,6 +39,7 @@ export class ListOfClaimsComponent implements OnInit {
   isFilterValueExist: boolean = false;
   isLastTeam: boolean = false;
   fliterName: string = '';
+  tabSwitch: any = { 'Fresh': true, 'sendBack': false ,'MyClaims':false};
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -716,5 +717,32 @@ export class ListOfClaimsComponent implements OnInit {
       // }
 
     });
+  }
+  switchTab(tab: any) {
+    if (!this.claimDetail) return;
+    if(tab == 'Fresh'){
+      this.tabSwitch.Fresh = true;
+      this.tabSwitch.sendBack=false;
+      this.tabSwitch.MyClaims = false;
+      this.fetchClaims('Fresh');
+    }
+    else if(tab == 'sendBack'){
+      this.tabSwitch.Fresh =false;
+      this.tabSwitch.sendBack=true;
+      this.tabSwitch.MyClaims = false;
+      this.fetchClaims('sendBack');
+    }
+    else if(tab == 'MyClaims'){
+      this.tabSwitch.Fresh = false;
+      this.tabSwitch.sendBack=false;
+      this.tabSwitch.MyClaims = true;
+      this.fetchClaimsLead('Fresh');
+    }
+
+    // tab.withDos = !tab.withDos;
+    // tab.withDateOfPending = !tab.withDateOfPending;
+    // this.filteredItems = this.pendencyData;
+    // let event = { target: { checked: true } };  //added so that when tab is swtiched then by default all data should show.
+    // this.selectAll(event, 'officeName');
   }
 }
