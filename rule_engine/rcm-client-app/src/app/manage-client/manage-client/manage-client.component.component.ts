@@ -100,7 +100,7 @@ export class ManageClientComponent implements OnInit {
   addNewClient(){
     this.clientData.unshift({'clientName':'','companyUuid':'',
     'header': [ {
-      "name":"Timely Filling Sheet",
+      "name":"Timely Filling Sheet",
       "google_sheet_id":"",
       "google_sheet_sub_id":"",
       "google_sheet_sub_name":""
