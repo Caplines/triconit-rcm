@@ -171,7 +171,7 @@ export class IssueClaimComponent {
         e['checked'] = true;
       })
     });
-   // this.sortFiltereData(this.filteredOfficeName);
+    this.sortFiltereData(this.filteredOfficeName);
   }
   saveToPdf(divName: any) {
     this.loader.exportPDFLoader = true;
@@ -237,5 +237,20 @@ export class IssueClaimComponent {
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
     return monthNames[month];
+  }
+  sortFiltereData(filterValue: any) {
+    filterValue.sort((a: any, b: any) => {
+      const nameA = Object.keys(filterValue[0])[4] == 'officeName' ? a.officeName.toUpperCase() : '';// ignore upper and lowercase
+      const nameB = Object.keys(filterValue[0])[4] == 'officeName' ? b.officeName.toUpperCase() : '';// ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      // names must be equal
+      return 0;
+    });
+
   }
 }
