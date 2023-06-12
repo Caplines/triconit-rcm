@@ -58,6 +58,7 @@ export class BillingClaimsComponent {
   updatedIvfId: any;
   countM300: number = 1;
   relatedTo_300 = true;
+  actionButtons = false;
 
   modelElement: any = { 'modal': '', 'span': '' }
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -574,7 +575,7 @@ export class BillingClaimsComponent {
             }
           }
         });
-
+        ths.actionButtons = true;
         ths.getRuleRemarks();
         // if (ths.submissionDto==null) ths.submissionDto={};
       }
@@ -613,9 +614,18 @@ export class BillingClaimsComponent {
   runAutoRules(reReun: boolean) {
 
     let ths = this;
+    ths.actionButtons = false;
     ths.claimService.runAutoRules(ths.claimRcm.uuid, reReun, (res: any) => {
       if (res.status === 200) {
+        if (res.data.message === "success") {
+          ths.claimRcm.providerOnClaim = res.data.providerOnClaim;
+          ths.claimRcm.claimType = res.data.claimType;
+
+        }
         ths.getRulesClaimdata();
+        setTimeout(() => {
+          ths.actionButtons = true;
+        }, 2000);
       }
     })
   }
