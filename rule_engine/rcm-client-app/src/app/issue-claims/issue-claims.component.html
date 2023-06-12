@@ -20,11 +20,66 @@
                                         <table class="table table-wrapper-scroll-y table-inner-scrollbar" #modalElement (scroll)="onModalScroll()"   id="issuetable"  *ngIf="issueCl?.length>0">
                                             <thead>
                                                 <tr class="totalRow">
-                                                    <th colspan="6">Office Name</th>
-                                                    <th colspan="6" >Claim ID</th>
-                                                    <th colspan="6">Upload Date</th>
-                                                    <th colspan="6" style="min-width: 170px;">Issue due to which Claim could not be Uploaded</th>
-                                                    <th colspan="6">Source</th>
+                                                    <th colspan="6">
+                                                        <div class="dFlex">
+                                                            Office Name <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
+                                                        </span>                                                         
+                                                        </div>
+                                                    </th>
+                                                    <th colspan="6" >
+                                                        <div class="dFlex">
+                                                        Claim ID <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['claimId']}"
+                                                                (click)="sortData(filteredItems,'claimId','asc','number'); isSorted['claimId'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['claimId']}"
+                                                                (click)="sortData(filteredItems,'claimId','desc','number');isSorted['claimId'] = true"></a>
+                                                        </span>
+                                                        </div>
+                                                    </th>
+                                                    <th colspan="6">
+                                                        <div class="dFlex">  
+                                                            Upload Date <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['createdDate']}"
+                                                                (click)="sortData(filteredItems,'date','asc','date'); isSorted['createdDate'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['createdDate']}"
+                                                                (click)="sortData(filteredItems,'date','desc','date');isSorted['createdDate'] = true"></a>
+                                                            </span>
+                                                        </div>
+                                                    </th>
+                                                    <th colspan="6" style="min-width: 170px;">
+                                                        <div class="dFlex">  
+                                                        Issue due to which Claim could not be Uploaded <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['issue']}"
+                                                                (click)="sortData(filteredItems,'issue','asc','string'); isSorted['issue'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['issue']}"
+                                                                (click)="sortData(filteredItems,'issue','desc','string');isSorted['issue'] = true"></a>
+                                                            </span>
+                                                        </div>
+                                                    </th>
+                                                    <th colspan="6">
+                                                        <div class="dFlex">  
+                                                        Source <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['source']}"
+                                                                (click)="sortData(filteredItems,'source','asc','string'); isSorted['source'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['source']}"
+                                                                (click)="sortData(filteredItems,'source','desc','string');isSorted['source'] = true"></a>
+                                                            </span>
+                                                        </div>
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>

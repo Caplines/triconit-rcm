@@ -18,6 +18,8 @@ export class IssueClaimComponent {
   issueClaimPageNum:any=0;
   totalPages:number;
   clientUuid:string="-1";
+  filteredItems: any = [];
+  isSorted: any = {};
 
   @ViewChild('modalElement')modalElementRef!:ElementRef;
   
@@ -60,6 +62,7 @@ export class IssueClaimComponent {
            this.issueCl.push.apply(this.issueCl, res.data[0].data);
          }
           //this.modal();
+          this.filteredItems = this.issueCl;
         }
       });
     }
@@ -85,5 +88,9 @@ export class IssueClaimComponent {
   goToClaimDetailPage() {
     window.location.href = "/tool-update";
     window.close();
+  }
+
+  sortData(data: any, sortProp: string, order: any, sortType: string) {
+    this.appSer.sortData(data, sortProp, order, sortType);
   }
 }
