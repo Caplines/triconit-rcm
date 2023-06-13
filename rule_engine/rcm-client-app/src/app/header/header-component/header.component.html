@@ -126,7 +126,7 @@
                         <div class="col-sm">
                             <ng-container *ngIf="selectedRole == 'SUPER_ADMIN'" style="align-items: flex-start;">
                                 <div class="form-group d-flex login-radio-box">
-                                    <label class="font-weight-bolder">Login As:</label>
+                                    <label class="font-weight-bolder">Login As</label>
                                     <div class="form-check-inline-radio ">
                                         <span>
                                             <input class="form-check-input" type="radio"
@@ -148,7 +148,7 @@
                     <div class="row">
                         <div class="col-sm">
                             <div class="form-group d-flex justify-content-around">
-                                <label class="font-weight-bolder">Client Names:</label>
+                                <label class="font-weight-bolder">Client Names</label>
                                 <select class="form-control" id="selectClientAC" name="selectClientAC"
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedClient"
                                     [disabled]="cwModel?.companies?.length == 1 ? true : false">
@@ -163,7 +163,7 @@
                     <div class="row" [hidden]="cwModel?.roles?.length == 1 ? true : false">
                         <div class="col-sm">
                             <div class="form-group d-flex justify-content-around">
-                                <label class="font-weight-bolder">Select Roles:</label>
+                                <label class="font-weight-bolder">Select Roles</label>
                                 <select class="form-control" id="selectRolesAC" name="selectRolesAC"
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedRole"
                                     [disabled]="cwModel?.roles?.length == 1 ? true : false">
@@ -178,7 +178,7 @@
                     <div class="row">
                         <div class="col-sm">
                             <div class="form-group d-flex justify-content-around">
-                                <label class="font-weight-bolder">Team Name:</label>
+                                <label class="font-weight-bolder">Team Name</label>
                                 <select class="form-control" id="selectTeamAC" name="selectTeamAC"
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedTeam"
                                     [disabled]="(cwModel?.teams?.length==0 || cwModel?.teams?.length == 1) || loginUserType=='Admin'">

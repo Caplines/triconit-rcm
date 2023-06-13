@@ -47,13 +47,15 @@ export class IssueClaimComponent {
   ngOnInit() {
     this.userInfo.currentClientName = localStorage.getItem("selected_clientName");
     this.issueClaim();
-    this.fetchIssueClaims();
   }
 
   issueClaim(){
     this.appSer.fetchIssueClaimCounts((res:any)=>{
       if(res.status==200){
          this.issueClaimsCount = res.data;
+        if( this.issueClaimsCount!=0){
+          this.fetchIssueClaims();
+        }
       }
       else{
         //ERROR

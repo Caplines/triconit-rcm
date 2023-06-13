@@ -299,7 +299,7 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 	@Query(nativeQuery = true, value = ""+
 			" select claim_id claimId,issue,source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "+
 			" left join office off on  off.uuid=cl.office_id "+
-			" where off.company_id=:cmpid and cl.resolved is false order by cl.id")
+			" where off.company_id=:cmpid and cl.resolved is false order by cl.created_date desc")
 	List<IssueClaimDto> getIssueClaims(@Param("cmpid") String ivId);
 	
 	
