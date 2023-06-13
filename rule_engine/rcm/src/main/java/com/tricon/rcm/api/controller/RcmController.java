@@ -486,27 +486,27 @@ public class RcmController extends BaseHeaderController{
 			return new Object[] { jwtUser, false };
 		}
 	}*/
-	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
-	@GetMapping("/api/issueClaims/{uuid}/{pageNumber}")
-	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','REPORTING','TL','ASSO')")
-	public ResponseEntity<Object> getIssueClaimss(@PathVariable("uuid") String companyId,
-			@PathVariable("pageNumber") int pageNumber, Model model) {
-		List<RcmIssuClaimPaginationDto> response = null;
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if (partialHeader == null)
-			return null;
-		if(pageNumber==-1) {
-			return ResponseEntity.ok().body(new GenericResponse(HttpStatus.BAD_REQUEST,"", null));
-		}
-		try {
-			response = claimServiceImpl.getIssueClaimsByPagination(pageNumber, companyId);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
+//	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
+//	@GetMapping("/api/issueClaims/{uuid}/{pageNumber}")
+//	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','REPORTING','TL','ASSO')")
+//	public ResponseEntity<Object> getIssueClaimss(@PathVariable("uuid") String companyId,
+//			@PathVariable("pageNumber") int pageNumber, Model model) {
+//		List<RcmIssuClaimPaginationDto> response = null;
+//		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+//		if (partialHeader == null)
+//			return null;
+//		if(pageNumber==-1) {
+//			return ResponseEntity.ok().body(new GenericResponse(HttpStatus.BAD_REQUEST,"", null));
+//		}
+//		try {
+//			response = claimServiceImpl.getIssueClaimsByPagination(pageNumber, companyId);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+//	}
 	
 	@PostMapping("/api/updateivfid")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN','REPORTING','TL','ASSO')")

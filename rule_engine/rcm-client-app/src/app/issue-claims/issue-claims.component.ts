@@ -61,7 +61,33 @@ export class IssueClaimComponent {
     });
   }
 
-  fetchIssueClaims(){
+  // fetchIssueClaims(){
+  //   let cName = JSON.parse(localStorage.getItem('clients'));
+  //   cName.find((ele:any)=>{
+  //     if(ele.name == this.userInfo.currentClientName){
+  //       this.clientUuid = ele.id;
+  //     }
+  //   });
+  //   if(this.clientUuid){
+  //     this.appSer.fetchIssueClaims(this.clientUuid+`/${this.issueClaimPageNum}`, (res: any) => {
+  //      if (res.status === 200 && res.data) {
+  //         this.totalPages = res.data[0].totalPages;
+  //        if (this.issueClaimPageNum == 0) {
+  //          this.issueCl = res.data[0].data;
+  //          this.filterOfficeName();
+  //        }
+  //        if (this.issueClaimPageNum != 0 && res.data[0].totalPages != this.issueClaimPageNum) {
+  //          this.issueCl.push.apply(this.issueCl, res.data[0].data);
+  //          this.filterOfficeName();
+  //        }
+  //         //this.modal();
+  //         this.filteredItems = this.issueCl;
+  //       }
+  //     });
+  //   }
+  // }
+
+    fetchIssueClaims(){
     let cName = JSON.parse(localStorage.getItem('clients'));
     cName.find((ele:any)=>{
       if(ele.name == this.userInfo.currentClientName){
@@ -69,22 +95,16 @@ export class IssueClaimComponent {
       }
     });
     if(this.clientUuid){
-      this.appSer.fetchIssueClaims(this.clientUuid+`/${this.issueClaimPageNum}`, (res: any) => {
+      this.appSer.fetchIssueClaims(this.clientUuid, (res: any) => {
        if (res.status === 200 && res.data) {
-        this.fetchOfficeByUuid();
-          this.totalPages = res.data[0].totalPages;
-         if (this.issueClaimPageNum == 0) {
-           this.issueCl = res.data[0].data;
-           this.filterOfficeName();
-         }
-         if (this.issueClaimPageNum != 0 && res.data[0].totalPages != this.issueClaimPageNum) {
-           this.issueCl.push.apply(this.issueCl, res.data[0].data);
+          this.fetchOfficeByUuid();
+           this.issueCl = res.data;
            this.filterOfficeName();
          }
           //this.modal();
           this.filteredItems = this.issueCl;
         }
-      });
+      );
     }
   }
 

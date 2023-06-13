@@ -15,7 +15,7 @@
                         <div class="detail-box">
                             <div class="detail-box-form">
                                 <div class="form-row collapse show" style="border-radius: 10px 10px 0px 0px;">
-                                    <h6 style="color: black;">Upload Errors : <span class="number-of-claims" style="pointer-events:none;">Number of Claims Not Uploaded: {{issueClaimsCount}}</span></h6> 
+                                    <h6 style="color: black;">Upload Errors  <span class="number-of-claims" style="pointer-events:none;">Number of Claims Not Uploaded: {{issueClaimsCount}}</span></h6> 
                                     <div>
                                         <button type="button" class="icon-btn" (click)="saveToPdf('issuetable')" [disabled]="filteredItems.length==0">
                                             <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
