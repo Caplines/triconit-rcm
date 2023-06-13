@@ -13,30 +13,36 @@
                                     <div>
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                             <label class="btn btn-light" [ngClass]="{'active':tabSwitch.Fresh}">
-                                                <input class="form-check-input" type="radio" name="options" id="option1" (change)="switchTab('Fresh')">Fresh
+                                                <input class="form-check-input" type="radio" name="options" id="option1"
+                                                    (change)="switchTab('Fresh')">Fresh
                                                 Claims
                                             </label>
                                             <label class="btn btn-light" [ngClass]="{'active':tabSwitch.sendBack}">
                                                 <input class="form-check-input" type="radio" name="options" id="option2"
                                                     (change)="switchTab('sendBack')">Claims Sent back by Other Teams
                                             </label>
-                                            <label class="btn btn-light" [ngClass]="{'active':tabSwitch.MyClaims}" *ngIf="isRoleLead">
+                                            <label class="btn btn-light" [ngClass]="{'active':tabSwitch.MyClaims}"
+                                                *ngIf="isRoleLead">
                                                 <input class="form-check-input" type="radio" name="options" id="option3"
-                                                (change)="switchTab('MyClaims')">My Claims
+                                                    (change)="switchTab('MyClaims')">My Claims
                                             </label>
                                         </div>
                                         <!-- <div class="form-check-inline" *ngIf="isRoleLead">
                                             <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"
                                                 (change)="fetchClaimsLead('Fresh')">
                                             <label class="form-check-label" for="flexRadioDefault1">My Claims</label>
-                                        </div> --> 
+                                        </div> -->
                                     </div>
                                     <div>
-                                        <button type="button" class="icon-btn" (click)="saveToPdf('table')" [disabled]="filteredItems.length==0">
-                                            <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
+                                        <button type="button" class="icon-btn" (click)="saveToPdf('table')"
+                                            [disabled]="filteredItems.length==0">
+                                            <img src="../../assets/img/pdf.png" /></button><span
+                                            *ngIf="loader.exportPDFLoader"
                                             class="spinner-border text-danger mx-1"></span>
-                                        <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="filteredItems.length==0">
-                                            <img src="../../assets/img/xls.png" /></button><span *ngIf="loader.exportCSVLoader"
+                                        <button type="button" class="icon-btn" (click)="exportToCsv()"
+                                            [disabled]="filteredItems.length==0">
+                                            <img src="../../assets/img/xls.png" /></button><span
+                                            *ngIf="loader.exportCSVLoader"
                                             class="spinner-border text-success mx-1"></span>
                                     </div>
                                 </div>
@@ -435,7 +441,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <ng-container *ngIf="tabSwitch.sendBack || tabSwitch.MyClaims ">
+                                                <ng-container *ngIf="tabSwitch.sendBack">
                                                     <th>
                                                         <div class="dFlex">
                                                             Billing Amount<span class="sorting">
@@ -554,7 +560,8 @@
                                                             {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
                                                         <!-- Insurance Type START-->
-                                                        <td *ngIf="tabSwitch.sendBack || tabSwitch.MyClaims ">{{det.billedAmount | currency:'USD':true:'.0-0'}}</td>
+                                                        <td *ngIf="tabSwitch.sendBack">{{det.billedAmount |
+                                                            currency:'USD':true:'.0-0'}}</td>
                                                         <td *ngIf="isLastTeam" class="NA">
                                                             {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
                                                     </tr>

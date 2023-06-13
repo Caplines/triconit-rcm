@@ -621,6 +621,7 @@ export class BillingClaimsComponent {
         if (res.data.message === "success") {
           ths.claimRcm.providerOnClaim = res.data.providerOnClaim;
           ths.claimRcm.claimType = res.data.claimType;
+          ths.claimServiceLevelModel = res.data.serviceValidationDataDto;
 
         }
         ths.getRulesClaimdata();
