@@ -39,7 +39,7 @@ export class ListOfClaimsComponent implements OnInit {
   isFilterValueExist: boolean = false;
   isLastTeam: boolean = false;
   fliterName: string = '';
-  tabSwitch: any = { 'Fresh': true, 'sendBack': false ,'MyClaims':false};
+  tabSwitch: any = { 'Fresh': true, 'sendBack': false, 'MyClaims': false };
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -89,18 +89,18 @@ export class ListOfClaimsComponent implements OnInit {
     ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, (res: any) => {
       if (res.status === 200) {
         ths.claimDetail = this.removePrefix(res.data);
-        let data:any = ths.claimDetail.map((e:any)=>{
-          if(e.claimId.endsWith("_P")){
-              e['EstAmount']=e.primTotal;
-          } else{
-            e['EstAmount']=e.secTotal;
+        let data: any = ths.claimDetail.map((e: any) => {
+          if (e.claimId.endsWith("_P")) {
+            e['EstAmount'] = e.primeSecSubmittedTotal;
+          } else {
+            e['EstAmount'] = e.secTotal;
           }
           return e;
         })
         ths.claimDetail = data;
         console.log(ths.claimDetail);
 
-        
+
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
@@ -291,11 +291,11 @@ export class ListOfClaimsComponent implements OnInit {
           return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
         });
       });
-     this.addOrRemoveFilterOffice();
+      this.addOrRemoveFilterOffice();
     }
   }
 
-  addOrRemoveFilterOffice(){
+  addOrRemoveFilterOffice() {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredInsuranceName.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
@@ -313,19 +313,19 @@ export class ListOfClaimsComponent implements OnInit {
         return checkbox.checked && checkbox['statusType'] == item['statusType'];
       });
     });
-     this.filteredItems = this.filteredItems.filter((item: any) => {
-        return this.filteredClaimType.some((checkbox: any) => {
-          return checkbox.checked && checkbox['claimType'] === item['claimType'];
-        });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredClaimType.some((checkbox: any) => {
+        return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
+    });
   }
 
-  addOrRemoveFilterInsName(){
-  this.filteredItems = this.filteredItems.filter((item: any) => {
-        return this.filteredOfficeName.some((checkbox: any) => {
-          return checkbox.checked && checkbox['officeName'] === item['officeName'];
-        });
+  addOrRemoveFilterInsName() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return checkbox.checked && checkbox['officeName'] === item['officeName'];
       });
+    });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredInsuranceType.some((checkbox: any) => {
@@ -338,92 +338,92 @@ export class ListOfClaimsComponent implements OnInit {
         return checkbox.checked && checkbox['statusType'] == item['statusType'];
       });
     });
-     this.filteredItems = this.filteredItems.filter((item: any) => {
-        return this.filteredClaimType.some((checkbox: any) => {
-          return checkbox.checked && checkbox['claimType'] === item['claimType'];
-        });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredClaimType.some((checkbox: any) => {
+        return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
+    });
   }
 
-  addOrRemoveFilterInsType(){
+  addOrRemoveFilterInsType() {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredOfficeName.some((checkbox: any) => {
         return checkbox.checked && checkbox['officeName'] === item['officeName'];
       });
     });
 
-  this.filteredItems = this.filteredItems.filter((item: any) => {
-        return this.filteredInsuranceName.some((checkbox: any) => {
-          return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
-        });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
       });
-
-  this.filteredItems = this.filteredItems.filter((item: any) => {
-    return this.filteredActionRequired.some((checkbox: any) => {
-      return checkbox.checked && checkbox['statusType'] == item['statusType'];
     });
-  });
 
-   this.filteredItems = this.filteredItems.filter((item: any) => {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredActionRequired.some((checkbox: any) => {
+        return checkbox.checked && checkbox['statusType'] == item['statusType'];
+      });
+    });
+
+    this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredClaimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
     });
   }
 
-  addOrRemoveFilterStatus(){
- this.filteredItems = this.filteredItems.filter((item: any) => {
+  addOrRemoveFilterStatus() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredOfficeName.some((checkbox: any) => {
         return checkbox.checked && checkbox['officeName'] === item['officeName'];
       });
     });
-    
-  this.filteredItems = this.filteredItems.filter((item: any) => {
-        return this.filteredInsuranceName.some((checkbox: any) => {
-          return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
-        });
-      });
 
- this.filteredItems = this.filteredItems.filter((item: any) => {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
+      });
+    });
+
+    this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredInsuranceType.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
       });
     });
 
-   this.filteredItems = this.filteredItems.filter((item: any) => {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredClaimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
     });
   }
 
-  addOrRemoveFilterClaimType(){
- this.filteredItems = this.filteredItems.filter((item: any) => {
+  addOrRemoveFilterClaimType() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredOfficeName.some((checkbox: any) => {
         return (checkbox.checked && checkbox['officeName']) === item['officeName'];
       });
     });
-    
-  this.filteredItems = this.filteredItems.filter((item: any) => {
-        return this.filteredInsuranceName.some((checkbox: any) => {
-          return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
-        });
-      });
 
- this.filteredItems = this.filteredItems.filter((item: any) => {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
+      });
+    });
+
+    this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredInsuranceType.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-    return this.filteredActionRequired.some((checkbox: any) => {
-      return checkbox.checked && checkbox['statusType'] == item['statusType'];
+      return this.filteredActionRequired.some((checkbox: any) => {
+        return checkbox.checked && checkbox['statusType'] == item['statusType'];
+      });
     });
-  });
-  
+
   }
-    
+
 
   filterClaimType(filterProperty: any) {
     let isAllSelected: boolean = true;
@@ -536,7 +536,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Patient ID", "Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack? "BillingAmount":'', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
+      headers: ["Office", "Patient ID", "Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -565,47 +565,47 @@ export class ListOfClaimsComponent implements OnInit {
     })      //method add value as "-" or "0", if its empty or null.
 
 
-    if(this.tabSwitch.Fresh ||this.tabSwitch.MyClaims){
+    if (this.tabSwitch.Fresh || this.tabSwitch.MyClaims) {
       excelData = excelData.map(
-        ({ claimId, opdos, opdt, secTotal, uuid, statusType,billedAmount,EstAmount, ...newClaimData }: any) => newClaimData);  
+        ({ claimId, opdos, opdt, secTotal, uuid, statusType, billedAmount, EstAmount, ...newClaimData }: any) => newClaimData);
 
-        excelData = excelData.map((e: any) => {
-          return {
-            "Office Name": e.officeName,
-            "Patient ID": e.patientId,
-            "Patient Name": e.patientName,
-            'DOS': e.dos,
-            "Claim Age": e.claimAge,
-            "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
-            "Claim Type": e.claimType,
-            "Action Required": e.actionRequired,
-            "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
-            "Insurance Type": e.prName ? e.prName : e.secName,
-            "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$' + e.primTotal.toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
-            "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
-          }
-        })
-    }else{
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Patient ID": e.patientId,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "Claim Age": e.claimAge,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          "Claim Type": e.claimType,
+          "Action Required": e.actionRequired,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$' + e.primTotal.toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
+        }
+      })
+    } else {
       excelData = excelData.map(
-        ({ claimId, opdos, opdt, secTotal, uuid, statusType,EstAmount, ...newClaimData }: any) => newClaimData);    //methods removes unwanted properties that are not going to display in CSV.
-        excelData = excelData.map((e: any) => {
-          return {
-            "Office Name": e.officeName,
-            "Patient ID": e.patientId,
-            "Patient Name": e.patientName,
-            'DOS': e.dos,
-            "Claim Age": e.claimAge,
-            "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
-            "Claim Type": e.claimType,
-            "Action Required": e.actionRequired,
-            "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
-            "Insurance Type": e.prName ? e.prName : e.secName,
-            "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$' + e.primTotal.toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
-            "Billing Amount": e.billedAmount ? '$' +formatNumber(e.billedAmount, this.locale, '.0-0').toString():"$0",
-            "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
-          }
-        })  //method aligns the header to the value in CSV.
-      }
+        ({ claimId, opdos, opdt, secTotal, uuid, statusType, EstAmount, ...newClaimData }: any) => newClaimData);    //methods removes unwanted properties that are not going to display in CSV.
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Patient ID": e.patientId,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "Claim Age": e.claimAge,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          "Claim Type": e.claimType,
+          "Action Required": e.actionRequired,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$' + e.primTotal.toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Billing Amount": e.billedAmount ? '$' + formatNumber(e.billedAmount, this.locale, '.0-0').toString() : "$0",
+          "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
+        }
+      })  //method aligns the header to the value in CSV.
+    }
 
     this.date = new Date();
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
@@ -754,21 +754,21 @@ export class ListOfClaimsComponent implements OnInit {
   }
   switchTab(tab: any) {
     if (!this.claimDetail) return;
-    if(tab == 'Fresh'){
+    if (tab == 'Fresh') {
       this.tabSwitch.Fresh = true;
-      this.tabSwitch.sendBack=false;
+      this.tabSwitch.sendBack = false;
       this.tabSwitch.MyClaims = false;
       this.fetchClaims('Fresh');
     }
-    else if(tab == 'sendBack'){
-      this.tabSwitch.Fresh =false;
-      this.tabSwitch.sendBack=true;
+    else if (tab == 'sendBack') {
+      this.tabSwitch.Fresh = false;
+      this.tabSwitch.sendBack = true;
       this.tabSwitch.MyClaims = false;
       this.fetchClaims('sendBack');
     }
-    else if(tab == 'MyClaims'){
+    else if (tab == 'MyClaims') {
       this.tabSwitch.Fresh = false;
-      this.tabSwitch.sendBack=false;
+      this.tabSwitch.sendBack = false;
       this.tabSwitch.MyClaims = true;
       this.fetchClaimsLead('Fresh');
     }

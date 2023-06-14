@@ -553,7 +553,7 @@
                                                         <!-- Insurance Type START-->
                                                         <!-- Insurance Type START-->
                                                         <td class="alignRight" *ngIf="det.claimId | claimTypeFilter">
-                                                            {{det.primTotal | currency:'USD':true:'.0-0'}}
+                                                            {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
                                                         <td class="alignRight"
                                                             *ngIf="! (det.claimId | claimTypeFilter)">
