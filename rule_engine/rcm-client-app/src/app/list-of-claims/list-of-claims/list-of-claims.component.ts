@@ -566,8 +566,7 @@ export class ListOfClaimsComponent implements OnInit {
 
 
     if (this.tabSwitch.Fresh || this.tabSwitch.MyClaims) {
-      excelData = excelData.map(
-        ({ claimId, opdos, opdt, secTotal, uuid, statusType, billedAmount, EstAmount, ...newClaimData }: any) => newClaimData);
+     
 
       excelData = excelData.map((e: any) => {
         return {
@@ -581,13 +580,14 @@ export class ListOfClaimsComponent implements OnInit {
           "Action Required": e.actionRequired,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
-          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$' + e.primTotal.toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + e.primeSecSubmittedTotal.toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
           "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
         }
       })
-    } else {
       excelData = excelData.map(
-        ({ claimId, opdos, opdt, secTotal, uuid, statusType, EstAmount, ...newClaimData }: any) => newClaimData);    //methods removes unwanted properties that are not going to display in CSV.
+        ({ claimId, opdos, opdt, secTotal, uuid, statusType, billedAmount, EstAmount, ...newClaimData }: any) => newClaimData);
+        
+    } else {
       excelData = excelData.map((e: any) => {
         return {
           "Office Name": e.officeName,
@@ -600,11 +600,13 @@ export class ListOfClaimsComponent implements OnInit {
           "Action Required": e.actionRequired,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
-          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primTotal ? '$' + e.primTotal.toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + e.primeSecSubmittedTotal.toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
           "Billing Amount": e.billedAmount ? '$' + formatNumber(e.billedAmount, this.locale, '.0-0').toString() : "$0",
           "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
         }
       })  //method aligns the header to the value in CSV.
+      excelData = excelData.map(
+        ({ claimId, opdos, opdt, secTotal, uuid, statusType, EstAmount, ...newClaimData }: any) => newClaimData);    //methods removes unwanted properties that are not going to display in CSV.
     }
 
     this.date = new Date();
