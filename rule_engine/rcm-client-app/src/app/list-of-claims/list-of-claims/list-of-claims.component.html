@@ -433,11 +433,11 @@
                                                     <div class="dFlex">
                                                         Est. Amount<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted['primTotal']}"
-                                                                (click)="sortData(filteredItems,'primeSecSubmittedTotal','asc','number'); isSorted['primTotal'] = false"></a>
+                                                                [ngClass]="{'selected': !isSorted['EstAmount']}"
+                                                                (click)="sortData(filteredItems,'EstAmount','asc','number'); isSorted['EstAmount'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted['primTotal']}"
-                                                                (click)="sortData(filteredItems,'primeSecSubmittedTotal','desc','number');isSorted['primTotal'] = true"></a>
+                                                                [ngClass]="{'selected': isSorted['EstAmount']}"
+                                                                (click)="sortData(filteredItems,'EstAmount','desc','number');isSorted['EstAmount'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -553,11 +553,11 @@
                                                         <!-- Insurance Type START-->
                                                         <!-- Insurance Type START-->
                                                         <td class="alignRight" *ngIf="det.claimId | claimTypeFilter">
-                                                            {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
+                                                            {{det.primTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
                                                         <td class="alignRight"
                                                             *ngIf="! (det.claimId | claimTypeFilter)">
-                                                            {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
+                                                            {{det.secTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
                                                         <!-- Insurance Type START-->
                                                         <td *ngIf="tabSwitch.sendBack">{{det.billedAmount |
