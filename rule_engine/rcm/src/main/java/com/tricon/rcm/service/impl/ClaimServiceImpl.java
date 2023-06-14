@@ -53,6 +53,7 @@ import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.AllPendencyReportDto;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
+import com.tricon.rcm.dto.AutoRunClaimReponseDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
 import com.tricon.rcm.dto.ClaimDataDetails;
@@ -1065,7 +1066,12 @@ public class ClaimServiceImpl {
 			
 		}
 		else {
-			list = rcmClaimRepository.fetchClaimDetailsWorkedByTeam(partialHeader.getCompany().getUuid(), teamId);
+			if (teamId == RcmTeamEnum.BILLING.getId()) {
+			list = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBilling(partialHeader.getCompany().getUuid(), teamId);
+			}else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) { 
+				list = rcmClaimRepository.fetchClaimDetailsWorkedByTeamInternalAudit(partialHeader.getCompany().getUuid(), teamId);
+			
+		    }
 		}
           return list;
 	}
@@ -1218,7 +1224,7 @@ public class ClaimServiceImpl {
 					implDto.setIvDos(ivDos);
 					claim.setIvfId(ivfId);
 					claim.setIvfIdSystem(ivfId);
-					claim.setIvDos(ivDos);
+					claim.setIvDos(ivDos);	
 					if (!implDto.isPrimary()) {
 						if (claim.getSecPolicyHolderDob()==null) {
 						try {
@@ -1491,33 +1497,35 @@ public class ClaimServiceImpl {
 		claim.setIvfId(dto.getIvfId());
 		det.setIvfId(dto.getIvfId());
 		IVFDto ivfDto = rcmClaimRepository.getIVDosByIvId(dto.getIvfId(), claim.getOffice().getUuid(), claim.getPatientId());
-		//Fetch Tpid based on New ivId
+		
 		if (ivfDto!=null) {
 			det.setIvDos(ivfDto.getDos());
 			claim.setIvDos(ivfDto.getDos());
 		}
-		Object tp  = rcmClaimRepository.getLatestTPIdForPatientByIVId(claim.getOffice().getUuid(),
-				claim.getPatientId(), dto.getIvfId());
+		//Fetch Tpid Date based on New Tpid
+		Object tp  = rcmClaimRepository.getTPIdByTpid(claim.getOffice().getUuid(),
+				claim.getPatientId(), dto.getTpId());
 		det.setSuccess(true);
-		String tpId = "";
+		//String tpId = "";
 		String tpDos = "";
-		claim.setTpId(tpId);
+		claim.setTpId(dto.getTpId());
+		det.setTpId(dto.getTpId());
 		claim.setTpDos(tpDos);
 		if (tp != null) {
 			Object[] tpDet = (Object[]) tp;
 			if (tpDet != null && tpDet.length == 2) {
-				tpId = (String) tpDet[0];
+				//tpId = (String) tpDet[0];
 				tpDos = (String) tpDet[1];
-				claim.setTpId(tpId);
+				claim.setTpId(dto.getTpId());
 				claim.setTpDos(tpDos);
 				det.setTpDos(tpDos);
-				det.setTpId(tpId);
+				//det.setTpId(dto.getTpId());
 				
 			}
 		}
 		
-		if (!tpId.equals("")) {
-			pullAndSaveTpDataFromRE(claim, dto.getClaimUuid(), tpId, claim.getOffice().getUuid(), partialHeader);
+		if (!dto.getTpId().equals("")) {
+			pullAndSaveTpDataFromRE(claim, dto.getClaimUuid(), dto.getTpId(), claim.getOffice().getUuid(), partialHeader);
 		}
 		
 		rcmClaimRepository.save(claim);
@@ -1528,13 +1536,13 @@ public class ClaimServiceImpl {
 	
 	
 	@Transactional(rollbackFor = Exception.class)
-	public ServiceValidationDataDto readServiceValidationFromGSheet(String claimUuid,PartialHeader partialHeader) {
+	public ServiceValidationDataDto readServiceValidationFromGSheet(RcmClaims claim,String claimUuid,PartialHeader partialHeader,boolean deleteOld) {
 
 		//Rule Engine up and running is needed
 		ServiceValidationDataDto dto = new ServiceValidationDataDto();
 		List<RcmClaimsServiceRuleValidationDto> list = new ArrayList<>();
 		RcmClaimsServiceRuleValidationDto one = null;
-		RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUuid);
+		if (claim == null) claim = rcmClaimRepository.findByClaimUuid(claimUuid);
 		RcmOffice off = claim.getOffice();
 		List<RcmClaimDetail> cddList= new ArrayList<>();
 		RcmInsuranceType insurancetype=rcmInsuranceTypeRepo.findById(claim.getRcmInsuranceType().getId());
@@ -1624,10 +1632,13 @@ public class ClaimServiceImpl {
 			
 			boolean pullSuccess = false;
             Set<String> claimCodes=new HashSet<>();
+            if (deleteOld) {
+            	rcmClaimsServiceRuleValidationRepo.markOldClaimDataForDeletion(claim.getClaimUuid());
+            }
 			List<RcmClaimsServiceRuleValidation> serviceData = rcmClaimsServiceRuleValidationRepo
 					.findByClaimClaimUuid(claimUuid);
 			// RcmTeamEnum.BILLING.getId()
-			if (serviceData != null && serviceData.size() == 0) {
+			if (deleteOld || (serviceData != null && serviceData.size() == 0)) {
 
 				HashMap<String, List<ClaimServiceValidationGSheetData>> sheetServiceData = readServiceValidationFromGSheet();
 				if (sheetServiceData != null) {
@@ -1690,7 +1701,26 @@ public class ClaimServiceImpl {
 								}else {
 									one.setRuleId(-1);
 								}
-								String uu = rcmClaimsServiceRuleValidationRepo.save(v).getRemarkUuid();
+								
+								RcmClaimsServiceRuleValidation oldVal =null;
+								String uu =null;
+								if (deleteOld) {
+								    oldVal = rcmClaimsServiceRuleValidationRepo.
+								    findByClaimClaimUuidAndNameAndServiceCode(claimUuid, qq.getNameOfService(), entry.getKey());
+								  if (oldVal==null) {
+									 oldVal = rcmClaimsServiceRuleValidationRepo.save(v);
+									uu =  oldVal.getRemarkUuid();
+								  }else {
+									 uu =  oldVal.getRemarkUuid();
+									 oldVal.setMarkDeleted(false);
+									 rcmClaimsServiceRuleValidationRepo.save(oldVal);
+								  }
+								} else {
+									oldVal = rcmClaimsServiceRuleValidationRepo.save(v);
+									uu =  oldVal.getRemarkUuid();
+								}
+								
+								//String uu = rcmClaimsServiceRuleValidationRepo.save(v).getRemarkUuid();
 								
 								one.setDescription(qq.getDescription());
 								one.setRemarkUuid(uu);
@@ -1703,6 +1733,9 @@ public class ClaimServiceImpl {
 								one.setInsuranceTypes(qq.getInsuranceTypes());
 								
 								one.setName(qq.getNameOfService());
+								one.setRemark(oldVal.getRemark());
+								one.setAnswer(oldVal.getAnswer());
+								
 								list.add(one);
 								//Run The Rule
 								
@@ -1736,12 +1769,17 @@ public class ClaimServiceImpl {
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_310);
 					allLIst.addAll(ruleBookService.rule310(rule,claimCodes, claim.getTreatingProviderFromClaim(),sheetData));
 					
+					//if (deleteOld) {
+					//	rcmClaimRuleValidationRepo.deleteByClaimId(claim.getClaimUuid());
+				   //}
 					saveAutoRuleReport(allLIst, user, claim, rules,partialHeader);
 					if (pullSuccess) {
 						claim.setPulledClaimsServiceDataFromEs(pullSuccess);
 						rcmClaimRepository.save(claim);
 					}
 				}
+				
+				rcmClaimsServiceRuleValidationRepo.deleteByClaimIdMarkeForDeletion(claim.getClaimUuid());
 			} else {
 				for (RcmClaimsServiceRuleValidation s : serviceData) {
 					one = new RcmClaimsServiceRuleValidationDto();
@@ -2649,23 +2687,26 @@ public class ClaimServiceImpl {
 		return "success";
 	}*/
 
-	public String runAutomatedRules(RcmClaims claim,PartialHeader partialHeader, String claimuuid,boolean reRrun,boolean firstRun) {
+	public AutoRunClaimReponseDto runAutomatedRules(RcmClaims claim,PartialHeader partialHeader, String claimuuid,boolean reRrun,boolean firstRun) {
 
 		if (claim==null)claim  = rcmClaimRepository.findByClaimUuid(claimuuid);
-		
+		AutoRunClaimReponseDto dto = new AutoRunClaimReponseDto();
 		
 		if (claim.isAutoRuleRun() && !reRrun) {
-			return "Already Run";
+			dto.setMessage("Already Run");
+			return dto;
 		}
 		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		System.out.println(calendar.get(Calendar.YEAR));
-		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
+		RcmOffice off =officeRepo.findByUuid(claim.getOffice().getUuid());
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(off.getCompany().getUuid(), partialHeader.getCompany());
 		if (rcmCompany!=null) {
 
 			if (!claim.isPending()) {
-				return "Already Submitted";
+				dto.setMessage("Already Submitted");
+				return dto;
 				
 			}
 			
@@ -2675,7 +2716,88 @@ public class ClaimServiceImpl {
 			if (firstRun || (assign1 != null && partialHeader.getJwtUser().getUuid().equals(assign1.getAssignedTo().getUuid()))) {
 				try {
 
+					dto.setProviderOnClaim(claim.getProviderOnClaim());
+	   				dto.setClaimType(claim.getClaimType());
+	   				
+					if (claim.getProviderOnClaim()==null){
+						claim.setProviderOnClaim("");
+					}
 					
+					if (claim.getProviderOnClaim().equals("")) {
+						
+						//Provider Sheet
+						String treatingProvider="";
+						String treatingProviderFromClaim="";
+						String providerOnClaim="";
+						String providerOnClaimFromSheet="";
+						String specialty="";
+						
+						try {
+					    Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
+							"1g9VtQVT5T0-Fp_beLSYhRIbUn-KBqP4TGmYuteMbsd4", "Provider", CLIENT_SECRET_DIR,
+							CREDENTIALS_FOLDER);
+					   /*HashMap<String, String> doc1NameMap = ConnectAndReadSheets.readProviderScheduleGSheet(
+							"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA",
+							calendar.get(Calendar.YEAR) + " Provider Schedule", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+					  */	
+					   List<ProivderHelpingSheetDto> helpingList= ConnectAndReadSheets.readProviderScheduleHelpingGSheet(
+					    		"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA", "Helping", CLIENT_SECRET_DIR,
+							CREDENTIALS_FOLDER);
+		               String officeName=off.getName();// officeRepo.findById(claim.getOffice().getUuid()).get().getName();
+		               //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
+		               String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE_HELPING.format(claim.getDos());
+		               //String doc1FromProvider = doc1NameMap.get(officeName + "->" + sheetDate);
+		               treatingProvider = getDocsFromHelpingData(helpingList,sheetDate,officeName);
+		               final String  treatingProviderF=treatingProvider;
+		               List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
+		   			   
+		               final String proIdFinal=claim.getProviderId();
+		               List<ProviderCodeWithOffice> pCodeList = pro.stream()
+		   					.filter(e -> e.getOffice().trim().equalsIgnoreCase(officeName)
+		   							&& e.getEsCode().trim().equalsIgnoreCase(proIdFinal))
+		   					.collect(Collectors.toList());
+		               
+		   			if (pCodeList != null && pCodeList.size() > 0) {
+		   				treatingProviderFromClaim = pCodeList.get(0).getProviderCode();
+					 	
+		   			 List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
+		   			 List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equalsIgnoreCase(pCodeList.get(0).getProviderCode()))
+					.collect(Collectors.toList());
+		   			 if (proEsF!=null && proEsF.size()>0) {
+		   				providerOnClaim =proEsF.get(0).getProviderNames();
+		   				specialty = proEsF.get(0).getSpecialty();
+		   			 }
+		   				
+		   			}
+		   			
+		   			List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
+		   			List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equalsIgnoreCase(treatingProviderF))
+		   					.collect(Collectors.toList());
+		   			if (proEsF!=null && proEsF.size()>0) {
+		   				providerOnClaimFromSheet =proEsF.get(0).getProviderNames();
+		   			}
+		   			//if (!sheetProvider.equals("") ||  !claimProvider.equals("")) {
+		   				
+		   				
+		   				claim.setTreatingProvider(treatingProvider);
+		   				claim.setTreatingProviderFromClaim(treatingProviderFromClaim);
+		   				claim.setClaimType(specialty);
+		   				claim.setProviderOnClaim(providerOnClaim);
+		   				claim.setProviderOnClaimFromSheet(providerOnClaimFromSheet);
+		   				
+		   				dto.setProviderOnClaim(providerOnClaim);
+		   				dto.setClaimType(specialty);
+		   				rcmClaimRepository.save(claim);
+		   			///}
+						}catch(Exception c) {
+							
+						}
+						
+						
+						
+						
+						
+					}
 					DataPatientRuleDto ivData=null;
 					if (claim.getIvfId()!=null) {
 						ivData =	rcmClaimRepository.getDataForRuleCheckFromIV(claim.getIvfId());
@@ -2737,6 +2859,10 @@ public class ClaimServiceImpl {
 							ruleBookService.rule306(rule, ivData, claim));
 
 					// Save Data here RcmClaimRuleValidation
+					//if (deleteOld) {
+					//	rcmClaimRuleValidationRepo.deleteByClaimId(claim.getClaimUuid());
+					//}
+					
 					saveAutoRuleReport(allLIst, user, claim, rules,partialHeader);
 					claim.setAutoRuleRun(true);
 					rcmClaimRepository.save(claim);
@@ -2751,8 +2877,9 @@ public class ClaimServiceImpl {
 			logger.error("Wrong Client Name");
 			return null;
 		}
-
-		return "success";
+		dto.setServiceValidationDataDto(readServiceValidationFromGSheet(claim,claim.getClaimUuid(), partialHeader,true));
+		dto.setMessage("success");
+		return dto;
 	}
 
 	public AllPendencyReportDto getAllPendencyReport(RcmCompany company,int teamId) {

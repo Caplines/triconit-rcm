@@ -235,7 +235,7 @@ public class RcmController extends BaseHeaderController{
 		if (partialHeader ==null) return null;
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.readServiceValidationFromGSheet(claimUuid, partialHeader)));
+				claimServiceImpl.readServiceValidationFromGSheet(null,claimUuid, partialHeader,false)));
 	}
 	
    

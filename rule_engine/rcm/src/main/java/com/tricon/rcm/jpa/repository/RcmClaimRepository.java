@@ -135,6 +135,32 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<FreshClaimDataDto> fetchFreshClaimDetailsInd(@Param("companyId") String companyId, @Param("teamid") int teamid,@Param("userid") String userId);
 	
 	
+	/**
+	 * The claims on which first Internal Audit Team has worked and are now in bucket of Billing Team, they 
+	 * should  be shown under "Fresh Claims" and not "Claims Sent back by Other Teams" because it is fresh for
+	 *  the Billing Team. This section "Claims Sent back by Other Teams" is applicable when the claim is sent
+	 *   to Billing Team by other teams apart from Internal Audit Team
+	 * @param companyId
+	 * @param teamid
+	 * @return
+	 */
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,"
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and claims.last_work_team_id!=3 and off.company_id=:companyId " + " and pending=true ")
+	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBilling(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,"
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
@@ -150,7 +176,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + " and pending=true ")
-	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeam(@Param("companyId") String companyId, @Param("teamid") int teamid);
+	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamInternalAudit(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
 
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName, "
@@ -295,6 +322,16 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 			)
 	Object getLatestTPIdForPatientByIVId(@Param("officeId") String officeId,
 			@Param("patientId") String patientId,@Param("ivid") String ivid);
+	
+	@Query(nativeQuery = true, value = ""
+			+" SELECT treatement_plan_id,tx_plan_date FROM reports r inner join report_detail rd on rd.report_id=r.id "
+			+" where office_id=:officeId and patient_id=:patientId "
+			+" and treatement_plan_id =:tpId "
+			//+" and STR_TO_DATE(iv_date, '%m/%d/%Y')<=STR_TO_DATE(:dos,'%m/%d/%Y') "
+			+" order by STR_TO_DATE(iv_date, '%m/%d/%Y') desc limit 1"
+			)
+	Object getTPIdByTpid(@Param("officeId") String officeId,
+			@Param("patientId") String patientId,@Param("tpId") String ivid);
 	
 	@Query(nativeQuery = true, value = ""+
 			" select claim_id claimId,issue,source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "+

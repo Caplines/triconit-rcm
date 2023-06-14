@@ -56,6 +56,7 @@ export class BillingClaimsComponent {
   loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false }
   //ivfData:any=[];
   updatedIvfId: any;
+  updatedTpId: any;
   countM300: number = 1;
   relatedTo_300 = true;
   actionButtons = false;
@@ -914,10 +915,11 @@ export class BillingClaimsComponent {
     this.updatedIvfId = '';
   }
 
-  updateIV(claimUuid: any, ivId: any) {
+  updateIV(claimUuid: any, ivId: any, tpid: any) {
     let params: any = {
       'claimUuid': claimUuid,
-      'ivfId': ivId
+      'ivfId': ivId,
+      'tpId': tpid
     };
     this.appService.updateIvId(params, (res: any) => {
       if (res.status) {

@@ -11,4 +11,5 @@ public class RcmIVfDto {
 
     private String claimUuid;
     private String ivfId;
+    private String tpId;
 }

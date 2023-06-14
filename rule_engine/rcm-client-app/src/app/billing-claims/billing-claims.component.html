@@ -33,13 +33,12 @@
                         <div class="detail-box-form">
                             <!-- This section is for all Clients -->
                             <div class="bold-b-text">
-                                <a data-toggle="collapse" 
-                                    aria-expanded="true">Claim Details <span
+                                <a data-toggle="collapse" aria-expanded="true">Claim Details <span
                                         style="color:#ff00a8">{{infoMessage}}</span>
                                 </a>
-                            <div class="down-icon" (click)="showHide(0)">
-                                <a href="javascript:void(0)"></a>
-                            </div>
+                                <div class="down-icon" (click)="showHide(0)">
+                                    <a href="javascript:void(0)"></a>
+                                </div>
                             </div>
                             <div *ngIf="loader.claimDetail" class="loader-data"></div>
                             <div *ngIf="!loader.claimDetail" class="form-row collapse show" id="claimDetails">
@@ -177,16 +176,16 @@
                             <!-- This section is for SmilePoints Only -->
                             <ng-container *ngIf="smilePoint">
                                 <div class="bold-b-text">
-                                    <a data-toggle="collapse"
-                                    aria-expanded="false">Links to Related Documents<span class="passedNum"
-                                        *ngIf="claimRcm.allowEdit && claimRcm.pending" style="cursor: pointer;"
-                                        (click)="openUpdateIvPopup($event)">Update IV ID
-                                        ?</span></a>
-                                <div class="down-icon" (click)="showHide(1)">
-                                   <a href="javascript:void(0)"></a>
+                                    <a data-toggle="collapse" aria-expanded="false">Links to Related Documents<span
+                                            class="passedNum"
+                                            *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
+                                            style="cursor: pointer;" (click)="openUpdateIvPopup($event)">Update IV ID
+                                            ?</span></a>
+                                    <div class="down-icon" (click)="showHide(1)">
+                                        <a href="javascript:void(0)"></a>
+                                    </div>
                                 </div>
-                                </div>
-                              
+
                                 <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                 <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show"
                                     id="linksToDocuments">
@@ -273,8 +272,8 @@
                                 </div>
                             </div>
                             <div class="bold-b-text">
-                                <a data-toggle="collapse" 
-                                aria-expanded="false">Additional Requirements for Rebilled Claims:</a>
+                                <a data-toggle="collapse" aria-expanded="false">Additional Requirements for Rebilled
+                                    Claims</a>
                                 <div class="down-icon" (click)="showHide(3)">
                                     <a href="javascript:void(0)"></a>
                                 </div>
@@ -308,15 +307,14 @@
                                         Claims</a>
                                 </ng-container>
                                 <div class="bold-b-text">
-                                    <a data-toggle="collapse"
-                                    aria-expanded="false">Claim Level Validations (Automated) <span
-                                        class="passedNum">Pass:{{countA.pass}}</span> <span
-                                        class="passedNum fail">Fail:{{countA.fail}}</span></a>
+                                    <a data-toggle="collapse" aria-expanded="false">Claim Level Validations (Automated)
+                                        <span class="passedNum">Pass:{{countA.pass}}</span> <span
+                                            class="passedNum fail">Fail:{{countA.fail}}</span></a>
                                     <div class="down-icon" (click)="showHide(4)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
-                              
+
                                 <!-- <button type="button" class="btn btn-success" style=" pointer-events: none;
                                     cursor: not-allowed;" (click)="switchType('pass')">Pass:
                                     {{count.pass}}</button>
@@ -389,13 +387,12 @@
                             </ng-container>
                             <ng-container>
                                 <div class="bold-b-text">
-                                    <a data-toggle="collapse"
-                                    aria-expanded="false">Claim Level Validations (Manual)</a>
+                                    <a data-toggle="collapse" aria-expanded="false">Claim Level Validations (Manual)</a>
                                     <div class="down-icon" (click)="showHide(5)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
-                               
+
                                 <div *ngIf="loader.manualValidation" class="loader-data"></div>
                                 <div *ngIf="!loader.manualValidation" class="form-row  collapse show"
                                     id="claimValidationsManual">
@@ -689,14 +686,14 @@
                             </ng-container>
                             <ng-container>
                                 <div class="bold-b-text">
-                                    <a data-toggle="collapse" 
-                                    aria-expanded="false" id="serviceCodeValidationsM">Service Code Level
-                                    Validations (Manual)</a>
+                                    <a data-toggle="collapse" aria-expanded="false" id="serviceCodeValidationsM">Service
+                                        Code Level
+                                        Validations (Manual)</a>
                                     <div class="down-icon" (click)="showHide(6)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
-                             
+
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                 <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
                                     <div class="table-responsive">
@@ -770,14 +767,14 @@
                             </ng-container>
                             <ng-container *ngIf="smilePoint">
                                 <div class="bold-b-text">
-                                    <a data-toggle="collapse" 
-                                    aria-expanded="false" id="serviceCodeValidationsA">Service Code Level
-                                    Validations (Automated)</a>
+                                    <a data-toggle="collapse" aria-expanded="false" id="serviceCodeValidationsA">Service
+                                        Code Level
+                                        Validations (Automated)</a>
                                     <div class="down-icon" (click)="showHide(7)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
-                             
+
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                 <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
                                     <div class="table-responsive">
@@ -831,13 +828,12 @@
                             </ng-container>
                             <ng-container *ngIf="smilePoint">
                                 <div class="bold-b-text">
-                                    <a data-toggle="collapse"
-                                    aria-expanded="false">Rule Engine Validations</a>
+                                    <a data-toggle="collapse" aria-expanded="false">Rule Engine Validations</a>
                                     <div class="down-icon" (click)="showHide(8)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
-                            
+
                                 <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
                                 <div *ngIf="!loader.ruleEngValid" class="form-row  collapse show"
                                     id="claimValidationsRE">
@@ -895,12 +891,13 @@
                                 </div>
                             </ng-container>
                             <div class="bold-b-text">
-                                <a *ngIf="!isInternalAuditLogin" data-toggle="collapse" aria-expanded="false">Enter Claim Submission Details</a>
+                                <a *ngIf="!isInternalAuditLogin" data-toggle="collapse" aria-expanded="false">Enter
+                                    Claim Submission Details</a>
                                 <div class="down-icon" (click)="showHide(9)">
                                     <a href="javascript:void(0)"></a>
                                 </div>
                             </div>
-                          
+
                             <div *ngIf="!isInternalAuditLogin" class="form-row  collapse show"
                                 id="claimSubmissionDetails">
                                 <div class="table-responsive">
@@ -1205,16 +1202,25 @@
         <div id="ivUpdate" class="modal ivUpdate">
             <div class="modal-content">
                 <div _ngcontent-qaa-c48="" class="modal-header">
-                    <h5 class="modal-title">Update IV ID</h5>
+                    <h5 class="modal-title">Update IV ID and Signed Tx Plan ID</h5>
                     <button type="button" (click)="closeIvPopup()" class="close"><span>×</span></button>
                 </div>
                 <div class="modal-body">
                     <ng-container>
-                        <div class="table-responsive d-flex justify-content-around align-items-center">
-                            <label for="ivId">Enter IV ID : </label>
-                            <input type="text" class="form-control" [(ngModel)]="updatedIvfId">
-                            <button class="btn btn-success" [disabled]="!updatedIvfId"
-                                (click)="updateIV(claimUUid,updatedIvfId)">Update IV</button>
+                        <div>
+                            <div class="plan-id-box">
+                                <label for="ivId">Enter IV ID </label>
+                                <input type="text" class="form-control" [(ngModel)]="updatedIvfId">
+                            </div>
+                            <div class="plan-id-box">
+                                <label for="ivId">Enter Signed Tx Plan ID </label>
+                                <input type="text" class="form-control" [(ngModel)]="updatedTpId">
+                            </div>
+                            <div class="plan-id-box">
+                                <label>&nbsp;</label>
+                                <button class="btn btn-success" [disabled]="!updatedIvfId  || !updatedTpId "
+                                    (click)="updateIV(claimUUid,updatedIvfId,updatedTpId)">Update Values</button>
+                            </div>
                         </div>
                         <div class="alert fade show text-center" *ngIf="alert.showAlertPopup"
                             [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"

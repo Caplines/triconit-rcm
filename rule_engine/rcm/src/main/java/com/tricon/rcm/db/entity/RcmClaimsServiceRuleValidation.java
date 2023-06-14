@@ -78,4 +78,8 @@ public class RcmClaimsServiceRuleValidation  extends BaseAuditEntity implements 
 	@Column(name = "answer",  length = 100, nullable = true)
 	private String answer;
 	
+	
+	@Column(name = "mark_deleted", columnDefinition = "BIT default 0")
+	private boolean markDeleted;
+	
 }

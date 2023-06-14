@@ -7,8 +7,10 @@
     border-radius: 20px;
     cursor: pointer;
 }
+
 .passed,
-.failed, .notRun {
+.failed,
+.notRun {
     display: inline-flex;
     align-items: center;
     background: #00915f;
@@ -19,12 +21,15 @@
 .failed {
     background: #ff0000;
 }
-.notRun {background: #ffebb2;
-    border: 2px solid #ffebb2;}
+
+.notRun {
+    background: #ffebb2;
+    border: 2px solid #ffebb2;
+}
+
 .passed span,
-.failed span ,
-.notRun span
-{
+.failed span,
+.notRun span {
     border: 2px solid #008f5a;
     height: 22px;
     display: inline-flex;
@@ -38,6 +43,7 @@
     text-transform: uppercase;
     background: #fff;
 }
+
 .notRun span {
     width: 64px;
     border: 2px solid #ffffff;
@@ -55,7 +61,11 @@
     filter: brightness(0) invert(1);
     margin: 0 3px;
 }
-.notRun img {margin: 0 3px;}
+
+.notRun img {
+    margin: 0 3px;
+}
+
 .passedNum {
     color: #ffffff;
     font-weight: 700;
@@ -67,29 +77,56 @@
     margin-left: 2px;
     margin-right: 2px;
 }
+
 .passedNum.fail {
     background: #dc3545;
 }
 
-.ivUpdate .modal-content{
+.ivUpdate .modal-content {
     width: 50% !important;
 }
-.no-wrap-text label{
-white-space: nowrap;
+
+.no-wrap-text label {
+    white-space: nowrap;
 }
+
 .sub-content-row {
     background: #f9f9f9;
 }
-.sub-content-row td:first-child{ padding-left: 50px!important;}
-.sub-content-td {margin-left: 122px; width: calc(100% - 122px); }
-.sub-content-td td {border-top:0px!important}
-.sub-content-td td strong { margin-right: 5px;}
 
-.detail-box .bold-b-text{
+.sub-content-row td:first-child {
+    padding-left: 50px !important;
+}
+
+.sub-content-td {
+    margin-left: 122px;
+    width: calc(100% - 122px);
+}
+
+.sub-content-td td {
+    border-top: 0px !important
+}
+
+.sub-content-td td strong {
+    margin-right: 5px;
+}
+
+.plan-id-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+
+    label {
+        min-width: 152px;
+    }
+
+}
+
+.detail-box .bold-b-text {
     display: flex !important;
     justify-content: space-between;
 
-    a{
+    a {
         color: #000;
     }
 
@@ -97,6 +134,7 @@ white-space: nowrap;
         cursor: pointer;
         background: url('../../assets/img/right_icon.png') no-repeat right center !important;
     }
+
     .down-icon a {
         cursor: pointer;
         padding: 13px;

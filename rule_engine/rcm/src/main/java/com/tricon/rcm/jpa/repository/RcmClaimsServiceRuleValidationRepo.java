@@ -28,4 +28,15 @@ public interface RcmClaimsServiceRuleValidationRepo extends JpaRepository<RcmCla
    @Modifying
    @Query(nativeQuery = true,value="delete from rcm_claims_service_rule_val where claim_id = :claimId")
    Integer deleteByClaimId(@Param("claimId")String claimId);
+   
+   @Transactional
+   @Modifying
+   @Query(value="update rcm_claims_service_rule_val set mark_deleted = true where claim_id =:claimUuid",nativeQuery = true)
+   void markOldClaimDataForDeletion(@Param("claimUuid") String claimUuid);
+   
+   
+   @Transactional
+   @Modifying
+   @Query(nativeQuery = true,value="delete from rcm_claims_service_rule_val where claim_id = :claimId and mark_deleted=true ")
+   Integer deleteByClaimIdMarkeForDeletion(@Param("claimId")String claimId);
 }
