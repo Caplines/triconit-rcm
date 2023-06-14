@@ -14,8 +14,10 @@
     display: inline-flex;
     align-items: center;
     background: #00915f;
-    border-radius: 30px;
-    padding: 0 10px;
+    border-radius: 50%;
+    min-width: 30px;
+    min-height: 30px;
+    justify-content: center;
 }
 
 .failed {
@@ -27,43 +29,10 @@
     border: 2px solid #ffebb2;
 }
 
-.passed span,
-.failed span,
-.notRun span {
-    border: 2px solid #008f5a;
-    height: 22px;
-    display: inline-flex;
-    width: 40px;
-    justify-content: center;
-    align-items: center;
-    font-weight: 700;
-    color: #008f5a;
-    line-height: 21px;
-    font-size: 12px;
-    text-transform: uppercase;
-    background: #fff;
-}
-
-.notRun span {
-    width: 64px;
-    border: 2px solid #ffffff;
-    color: #ffb000;
-}
-
-
-.failed span {
-    border: 2px solid #ff0000;
-    color: #ff0000;
-}
-
 .passed img,
 .failed img {
     filter: brightness(0) invert(1);
-    margin: 0 3px;
-}
 
-.notRun img {
-    margin: 0 3px;
 }
 
 .passedNum {
