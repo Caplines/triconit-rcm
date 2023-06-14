@@ -175,9 +175,9 @@
                 <td>Tax ID</td>
                 <td><xsl:value-of select="basicInfo4"/></td>
                 <td>Patient DOB</td>
-                <td class="white"><xsl:if test="string-length(basicInfo6) &gt; 9"><xsl:value-of select="concat(substring(basicInfo6,9,2),'/',substring(basicInfo6,6,2),'/',substring(basicInfo6,1,4))" /></xsl:if></td>
+                <td class="white"><xsl:if test="string-length(basicInfo6) &gt; 9"><xsl:value-of select="concat(substring(basicInfo6,6,2),'/',substring(basicInfo6,9,2),'/',substring(basicInfo6,1,4))" /></xsl:if></td>
                 <td>Policy Holder DOB</td>
-                <td><xsl:if test="string-length(basicInfo9) &gt; 9"><xsl:value-of select="concat(substring(basicInfo9,9,2),'/',substring(basicInfo9,6,2),'/',substring(basicInfo9,1,4))" /></xsl:if></td>
+                <td><xsl:if test="string-length(basicInfo9) &gt; 9"><xsl:value-of select="concat(substring(basicInfo9,6,2),'/',substring(basicInfo9,9,2),'/',substring(basicInfo9,1,4))" /></xsl:if></td>
                
             </tr>
             <tr>
@@ -200,7 +200,7 @@
             </tr>
             <tr>
                 <td>Appointment Date</td>
-                <td class=""><xsl:if test="string-length(basicInfo17) &gt; 9"><xsl:value-of select="concat(substring(basicInfo17,9,2),'/',substring(basicInfo17,6,2),'/',substring(basicInfo17,1,4))" /></xsl:if></td>
+                <td class=""><xsl:if test="string-length(basicInfo17) &gt; 9"><xsl:value-of select="concat(substring(basicInfo17,6,2),'/',substring(basicInfo17,9,2),'/',substring(basicInfo17,1,4))" /></xsl:if></td>
                 <td>Appointment Type</td>
                 <td class=""><xsl:value-of select="apptype"/></td>
                 <td class="">Payor ID</td>
@@ -227,9 +227,9 @@
                 <td class="width-15">Plan Type</td>
                 <td class="width-7"><xsl:value-of select="policy1"/></td>
                 <td class="width-10">Effective Date</td>
-                <td class="width-7"><xsl:if test="string-length(policy5) &gt; 9"><xsl:value-of select="concat(substring(policy5,9,2),'/',substring(policy5,6,2),'/',substring(policy5,1,4))" /></xsl:if></td>
+                <td class="width-7"><xsl:if test="string-length(policy5) &gt; 9"><xsl:value-of select="concat(substring(policy5,6,2),'/',substring(policy5,9,2),'/',substring(policy5,1,4))" /></xsl:if></td>
                 <td class="width-13">Term Date</td>
-                <td class="width-7"><xsl:if test="string-length(policy2) &gt; 9"><xsl:value-of select="concat(substring(policy2,9,2),'/',substring(policy2,6,2),'/',substring(policy2,1,4))" /></xsl:if></td>
+                <td class="width-7"><xsl:if test="string-length(policy2) &gt; 9"><xsl:value-of select="concat(substring(policy2,6,2),'/',substring(policy2,9,2),'/',substring(policy2,1,4))" /></xsl:if></td>
             </tr>
             <tr class="lightGray">
                 <td>Group/Employer Name</td>
@@ -362,7 +362,7 @@
                 <td class="dullGreen width-15">Benefits Verified by</td>
                 <td colspan="2" class="width-17"><xsl:value-of select="benefits"/></td>
                 <td class="dullGreen width-7">Submission Date</td>
-                <td class="width-13"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,9,2),'/',substring(date,6,2),'/',substring(date,1,4))" /></xsl:if></td>
+                <td class="width-13"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,6,2),'/',substring(date,9,2),'/',substring(date,1,4))" /></xsl:if></td>
                 <td class="width-21 borderNone" colspan="3"></td>
             </tr>
         </table>

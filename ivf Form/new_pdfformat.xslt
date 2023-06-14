@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
    version="1.0" >
-	<xsl:output method="xml" indent="yes" encoding="UTF-8"  version="1.0"  />
+	<xsl:output method="html" indent="yes" encoding="UTF-8"  version="1.0"  />
 <xsl:template match="/caplineIVFFormDto">
+
 <html>
 <head>
     <meta charset="utf-8" />
@@ -180,7 +181,7 @@
                 <td class="width-15">Office Name</td>
                 <td class="width-7"><xsl:value-of select="basicInfo1"/></td>
                 <td class="width-10">Patient Name </td>
-                <td class="width-7"><xsl:value-of select="basicInfo21"/></td>
+                <td class="width-7"><xsl:value-of select="basicInfo2"/></td>
                 <td class="width-13">Insurance Name</td>
                 <td class="width-7"><xsl:value-of select="basicInfo3"/></td>
                 <td class="width-7">Provider Name</td>
@@ -193,7 +194,7 @@
                 <td>Tax ID</td>
                 <td><xsl:value-of select="basicInfo4"/></td>
                 <td>Patient DOB</td>
-                <td class="white"><xsl:if test="string-length(basicInfo6) &gt; 9"><xsl:value-of select="concat(substring(basicInfo6,9,2),'/',substring(basicInfo6,6,2),'/',substring(basicInfo6,1,4))" /></xsl:if></td>
+                <td class="white"><xsl:if test="string-length(basicInfo6) &gt; 9"><xsl:value-of select="concat(substring(basicInfo6,6,2),'/',substring(basicInfo6,9,2),'/',substring(basicInfo6,1,4))" /></xsl:if></td>
                 <td>Insurance Contact</td>
                 <td><xsl:value-of select="basicInfo7"/></td>
                 <td>Provider Network</td>
@@ -219,9 +220,9 @@
                 <td>Member ID/SSN</td>
                 <td><xsl:value-of select="basicInfo16"/></td>
                 <td>Policy Holder DOB</td>
-                <td class="white"><xsl:if test="string-length(basicInfo9) &gt; 9"><xsl:value-of select="concat(substring(basicInfo9,9,2),'/',substring(basicInfo9,6,2),'/',substring(basicInfo9,1,4))" /></xsl:if></td>
+                <td class="white"><xsl:if test="string-length(basicInfo9) &gt; 9"><xsl:value-of select="concat(substring(basicInfo9,6,2),'/',substring(basicInfo9,9,2),'/',substring(basicInfo9,1,4))" /></xsl:if></td>
                 <td>Appointment Date</td>
-                <td class="white"><xsl:if test="string-length(basicInfo17) &gt; 9"><xsl:value-of select="concat(substring(basicInfo17,9,2),'/',substring(basicInfo17,6,2),'/',substring(basicInfo17,1,4))" /></xsl:if></td>
+                <td class="white"><xsl:if test="string-length(basicInfo17) &gt; 9"><xsl:value-of select="concat(substring(basicInfo17,6,2),'/',substring(basicInfo17,9,2),'/',substring(basicInfo17,1,4))" /></xsl:if></td>
                 <td>Source</td>
                 <td><xsl:value-of select="basicInfo8"/></td>
                 <td>Ref #</td>
@@ -242,14 +243,14 @@
             <tr>
                 <td class="width-15">Plan Type</td>
                 <td class="width-7"><xsl:value-of select="policy1"/></td>
-                <td class="width-10">Group/Employer Name</td>
+                <td class="width-10">Group/<br/>Employer<br />Name</td>
                 <td class="width-7"><xsl:value-of select="basicInfo10"/></td>
                 <td class="width-13">Group No</td>
                 <td class="width-7"><xsl:value-of select="basicInfo14"/></td>
                 <td class="width-7">Effective Date</td>
-                <td class="width-7"><xsl:if test="string-length(policy5) &gt; 9"><xsl:value-of select="concat(substring(policy5,9,2),'/',substring(policy5,6,2),'/',substring(policy5,1,4))" /></xsl:if></td>
+                <td class="width-7"><xsl:if test="string-length(policy5) &gt; 9"><xsl:value-of select="concat(substring(policy5,6,2),'/',substring(policy5,9,2),'/',substring(policy5,1,4))" /></xsl:if></td>
                 <td class="width-15">Term Date</td>
-                <td class="width-7"><xsl:if test="string-length(policy2) &gt; 9"><xsl:value-of select="concat(substring(policy2,9,2),'/',substring(policy2,6,2),'/',substring(policy2,1,4))" /></xsl:if></td>
+                <td class="width-7"><xsl:if test="string-length(policy2) &gt; 9"><xsl:value-of select="concat(substring(policy2,6,2),'/',substring(policy2,9,2),'/',substring(policy2,1,4))" /></xsl:if></td>
                 <td class="width-5 borderNone"></td>
             </tr>
             <tr class="lightGray">
@@ -310,19 +311,20 @@
 				</xsl:choose>
 				
                 
-                <td></td>
-                <td></td>
+               
                 <td>Claims Filing Limit</td>
                 <td><xsl:value-of select="percentages12"/></td>
                 <td class="lightBrown">CRA Required</td>
 				<xsl:choose>
 					      <xsl:when test="policy17 = 'Refer to CRA Info for Medicaid Plans(RD2405)'">
-						  <td class="red blackClr"><a href="https://docs.google.com/spreadsheets/d/1kjq3Q2r3eRoC0Ygi9ODXczFfJPExBmo6mbeQYQLlooo/edit#gid=0" style="text-decoration:none" traget="_blank" >CRA Information for Medicaid Plans(RD2405)</a></td>
+						  <td class="red blackClr" colspan="2"><a href="https://docs.google.com/spreadsheets/d/1kjq3Q2r3eRoC0Ygi9ODXczFfJPExBmo6mbeQYQLlooo/edit#gid=0" style="text-decoration:none" traget="_blank" >CRA Information for Medicaid Plans(RD2405)</a></td>
 						  </xsl:when>
 				          <xsl:otherwise>
-						   <td class="">No</td>
+						   <td class="" colspan="2">No</td>
 				          </xsl:otherwise>
-				</xsl:choose>		  
+				</xsl:choose>	
+                
+                <td></td>				
                 <td class="borderNone"></td>
             </tr>
 
@@ -1013,7 +1015,7 @@
 						 <tr>
                             <td class="dullBlue"><xsl:value-of select="historyCode"/></td>
                             <td class="dullBlue"><xsl:value-of select="historyTooth"/></td>
-                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,9,2),'/',substring(historyDos,6,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
                         </tr>
 						</xsl:for-each>
                        
@@ -1030,7 +1032,7 @@
 						 <tr>
                             <td class="dullBlue"><xsl:value-of select="historyCode"/></td>
                             <td class="dullBlue"><xsl:value-of select="historyTooth"/></td>
-                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,9,2),'/',substring(historyDos,6,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
                         </tr>
 						</xsl:for-each>
                     </table>
@@ -1044,7 +1046,7 @@
 						 <tr>
                             <td class="dullBlue"><xsl:value-of select="historyCode"/></td>
                             <td class="dullBlue"><xsl:value-of select="historyTooth"/></td>
-                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,9,2),'/',substring(historyDos,6,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
                         </tr>
 						</xsl:for-each>
                     </table>
@@ -1057,7 +1059,7 @@
                 <td class="dullGreen width-15">Benefits Verified by</td>
                 <td class="lightGray width-15"><xsl:value-of select="benefits"/></td>
                 <td class="dullGreen width-15">Submission Date</td>
-                <td class="lightGray width-15"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,9,2),'/',substring(date,6,2),'/',substring(date,1,4))" /></xsl:if></td>
+                <td class="lightGray width-15"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,6,2),'/',substring(date,9,2),'/',substring(date,1,4))" /></xsl:if></td>
                 <td class="borderNone" colspan="7"></td>
             </tr>
         </table>
@@ -1066,5 +1068,23 @@
 
 </body>
 </html>
+</xsl:template>
+<xsl:template match="text()">
+   <xsl:param name="text" select="."/>
+
+   <xsl:variable name="startText" select="substring-before(concat($text,'&#10;'),'&#10;')" />
+   <xsl:variable name="nextText" select="substring-after($text,'&#10;')"/>
+   <xsl:if test="normalize-space($startText)">
+       <xsl:value-of select="$startText"/>
+      <xsl:if test="normalize-space($nextText)">
+         <br />
+      </xsl:if>
+   </xsl:if>
+
+   <xsl:if test="contains($text,'&#10;')">
+      <xsl:apply-templates select=".">
+         <xsl:with-param name="text" select="$nextText"/>
+      </xsl:apply-templates>
+   </xsl:if>
 </xsl:template>
 </xsl:stylesheet>
