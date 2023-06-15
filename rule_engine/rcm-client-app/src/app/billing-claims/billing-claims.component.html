@@ -44,32 +44,32 @@
                             <div *ngIf="!loader.claimDetail" class="form-row collapse show" id="claimDetails">
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
-                                        <label for="" class="">Office :</label>
+                                        <label for="" class="">Office </label>
                                         <div>{{claimRcm.officeName}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Billing Status :</label>
+                                        <label for="" class="">Billing Status </label>
                                         <div>{{claimRcm.claimStatus==appConstants.BILLING_ID?"Fresh":"Re-Billing"}}
                                         </div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Client Name :</label>
+                                        <label for="" class="">Client Name </label>
                                         <div>{{claimRcm.clientName}}</div>
                                     </div>
                                     <div class="custom-row flexAlign">
-                                        <label for="" class="">Claim ID :</label>
+                                        <label for="" class="">Claim ID </label>
                                         <div>{{claimRcm.claimId | claimIdPipe}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">DOS :</label>
+                                        <label for="" class="">DOS </label>
                                         <div>{{claimRcm.dos | date: 'MMM dd, YYYY'}}</div>
                                     </div>
                                     <div class="custom-row flexAlign">
-                                        <label for="" class="">Billed Amount :</label>
+                                        <label for="" class="">Billed Amount </label>
                                         <div>{{claimRcm.submittedTotal | currency:'USD':true}}</div>
                                     </div>
                                     <div class="custom-row flexAlign">
-                                        <label for="" class="">Estimated Amount :</label>
+                                        <label for="" class="">Estimated Amount </label>
                                         <div *ngIf="claimRcm.primary">{{claimRcm.primeSecSubmittedTotal |
                                             currency:'USD':true}}</div>
                                         <div *ngIf="!claimRcm.primary">{{claimRcm.secSubmittedTotal |
@@ -78,33 +78,33 @@
                                 </div>
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
-                                        <label for="" class="">Insurance Type :</label>
+                                        <label for="" class="">Insurance Type </label>
                                         <div *ngIf="claimRcm.primary">{{claimRcm.primaryInsType}}</div>
                                         <div *ngIf="!claimRcm.primary">{{claimRcm.secondaryInsType}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Insurance Member ID :</label>
+                                        <label for="" class="">Insurance Member ID </label>
                                         <div> {{claimRcm.secMemberId}}</div>
                                     </div>
                                     <div class="custom-row flexAlign">
-                                        <label for="" class="">Patient ID :</label>
+                                        <label for="" class="">Patient ID </label>
                                         <div>{{claimRcm.patientId}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Patient Name :</label>
+                                        <label for="" class="">Patient Name </label>
                                         <div>{{claimRcm.patientName}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Patient DOB :</label>
+                                        <label for="" class="">Patient DOB </label>
                                         <div>{{claimRcm.patientDob | date: 'MMM dd, YYYY'}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Subscriber Name :</label>
+                                        <label for="" class="">Subscriber Name </label>
                                         <div *ngIf="claimRcm.primary">{{claimRcm.primePolicyHolder}}</div>
                                         <div *ngIf="!claimRcm.primary">{{claimRcm.secPolicyHolder}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Subscriber DOB :</label>
+                                        <label for="" class="">Subscriber DOB </label>
                                         <div *ngIf="claimRcm.primary">{{claimRcm.primePolicyHolderDob | date:
                                             'MMM dd, YYYY'}}</div>
                                         <div *ngIf="!claimRcm.primary">{{claimRcm.secPolicyHolderDob | date:
@@ -113,23 +113,23 @@
                                 </div>
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
-                                        <label for="" class="">Primary Insurance :</label>
+                                        <label for="" class="">Primary Insurance </label>
                                         <div class="NA">{{claimRcm.primInsurance}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Primary EOB :</label>
+                                        <label for="" class="">Primary EOB </label>
                                         <div>{{claimRcm.primaryEob}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Secondary Insurance :</label>
+                                        <label for="" class="">Secondary Insurance </label>
                                         <div>{{claimRcm.secInsurance}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Treating Provider :</label>
+                                        <label for="" class="">Treating Provider </label>
                                         <div>{{claimRcm.providerOnClaimFromSheet}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Provider on Claim :</label>
+                                        <label for="" class="">Provider on Claim </label>
                                         <div>{{claimRcm.providerOnClaim}}</div>
                                     </div>
 
@@ -137,36 +137,36 @@
                                 </div>
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
-                                        <label for="" class="">Regenerated Claim? :</label>
+                                        <label for="" class="">Regenerated Claim? </label>
                                         <!--<div [ngClass]="{'yes':claimRcm.regenerated,'no':!claimRcm.regenerated}">
                                             {{claimRcm.regenerated===true?"Yes":"No"}}</div>-->
                                         <div>N/A</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Linked Claim IDs :</label>
+                                        <label for="" class="">Linked Claim IDs </label>
                                         <div>{{claimRcm.linkedClaims.toString()}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Claim Type :</label>
+                                        <label for="" class="">Claim Type </label>
                                         <div>{{claimRcm.claimType}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Claim Assigned To :</label>
+                                        <label for="" class="">Claim Assigned To </label>
                                         <div>{{claimRcm.assignedToName}}</div>
                                     </div>
 
                                     <div class="custom-row">
-                                        <label for="" class="">Team Assigned:</label>
+                                        <label for="" class="">Team Assigned </label>
                                         <div [innerHTML]="claimRcm.currentTeam"></div>
                                         <!--[innerHTML]="getTeamName(claimRcm.currentTeam+'')">-->
                                     </div>
 
                                     <div class="custom-row">
-                                        <label for="" class="">Claim Staus:</label>
+                                        <label for="" class="">Claim Staus </label>
                                         <div [innerHTML]="claimRcm.pending?'Pending':'Submited'"></div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Assigned Team Role:</label>
+                                        <label for="" class="">Assigned Team Role </label>
                                         <div [innerHTML]="claimRcm.assignedToRoleName"></div>
                                     </div>
 
@@ -191,14 +191,14 @@
                                     id="linksToDocuments">
                                     <div class="col-md-3 mb-2">
                                         <div class="custom-row text-number">
-                                            <label for="" class="">IV ID :</label>
+                                            <label for="" class="">IV ID </label>
                                             <div *ngIf="claimRcm.ivfId!=null && claimRcm.ivfId!=''">{{claimRcm.ivfId}}
                                             </div>
                                             <div *ngIf="!(claimRcm.ivfId!=null && claimRcm.ivfId!='')">IV Not Found
                                             </div>
                                         </div>
                                         <div class="custom-row text-number">
-                                            <label for="" class="">Signed Tx Plan ID :</label>
+                                            <label for="" class="">Signed Tx Plan ID </label>
                                             <div *ngIf="claimRcm.tpId!=null && claimRcm.tpId!=''">{{claimRcm.tpId}}
                                             </div>
                                             <div *ngIf="!(claimRcm.tpId!=null && claimRcm.tpId!='')">Tx Plan Not Found
@@ -207,7 +207,7 @@
                                     </div>
                                     <div class="col-md-3 mb-2">
                                         <div class="custom-row">
-                                            <label for="" class="">Date of IV :</label>
+                                            <label for="" class="">Date of IV </label>
                                             <div *ngIf="claimRcm.ivDos!=null && claimRcm.ivDos!=''">{{claimRcm.ivDos |
                                                 date: 'MMM dd, YYYY'}}
                                             </div>
@@ -216,7 +216,7 @@
 
                                         </div>
                                         <div class="custom-row">
-                                            <label for="" class="">Date of Tx. Plan :</label>
+                                            <label for="" class="">Date of Tx. Plan </label>
                                             <div *ngIf="claimRcm.tpDos!=null && claimRcm.tpDos!=''">
                                                 {{claimRcm.tpDos |
                                                 date: 'MMM dd, YYYY'}}
@@ -889,8 +889,8 @@
                                     </ng-container>
                                 </div>
                             </ng-container>
-                            <div class="bold-b-text">
-                                <a *ngIf="!isInternalAuditLogin" data-toggle="collapse" aria-expanded="false">Enter
+                            <div class="bold-b-text" *ngIf="!isInternalAuditLogin">
+                                <a data-toggle="collapse" aria-expanded="false">Enter
                                     Claim Submission Details</a>
                                 <div class="down-icon" (click)="showHide(9)">
                                     <a href="javascript:void(0)"></a>
@@ -1091,7 +1091,7 @@
                                                     </option>
                                                 </ng-container>
                                             </select>
-                                            <div class="remark-box"><label>Remark:</label><input name="tlRemark"
+                                            <div class="remark-box"><label>Remark </label><input name="tlRemark"
                                                     id="tlRemark" class="form-control" /></div>
                                             <div [innerHTML]="tlErrormsg" class="success-msg"></div>
                                         </div>
@@ -1112,7 +1112,7 @@
                                                         {{tl.teamName}}</option>
                                                 </ng-container>
                                             </select>
-                                            <div class="remark-box"><label>Remark:</label><input name="assignToComment"
+                                            <div class="remark-box"><label>Remark </label><input name="assignToComment"
                                                     id="assignToComment" class="form-control"
                                                     [(ngModel)]='claimEditModel.assignToComment' /></div>
                                             <div [innerHTML]="otherErrormsg" class="success-msg"></div>
