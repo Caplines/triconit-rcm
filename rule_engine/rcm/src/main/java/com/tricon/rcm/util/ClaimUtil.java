@@ -291,7 +291,14 @@ public class ClaimUtil {
 	public static  boolean isBillingClaimByInsuranceName(String insuranceName) {
 
          boolean billing=false;
-         if (insuranceName.equalsIgnoreCase("HMO") || insuranceName.equalsIgnoreCase("PPO") )billing =true;
+         if (insuranceName.equalsIgnoreCase("HMO") || insuranceName.equalsIgnoreCase("PPO")
+        		 || insuranceName.equalsIgnoreCase("OON PPO")
+        		 || insuranceName.equalsIgnoreCase("HMO MCR")
+        		 || insuranceName.equalsIgnoreCase("PPO(Without OON)")
+        		 || insuranceName.equalsIgnoreCase("HMO Medicare")
+        		 
+        		 
+        		 )billing =true;
          
          return billing;
  

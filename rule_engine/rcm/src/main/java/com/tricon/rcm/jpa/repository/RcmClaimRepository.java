@@ -379,7 +379,13 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 			+ " left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id "
 			+ " where "
 			+ " cl.office_id=:officeId and cl.claim_id=:claimid ")
-	Object getClaimsUuidClaimId(@Param("claimid") String claimid,@Param("officeId") String officeId);
+	Object getClaimsUuidClaimIdSec(@Param("claimid") String claimid,@Param("officeId") String officeId);
+	
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.pending,sins.name primInsurance from rcm_claims cl "
+			+ " left join rcm_insurance sins on sins.id = cl.prim_insurance_company_id "
+			+ " where "
+			+ " cl.office_id=:officeId and cl.claim_id=:claimid ")
+	Object getClaimsUuidClaimIdPrim(@Param("claimid") String claimid,@Param("officeId") String officeId);
 	
 	
 	@Query(nativeQuery = true, value = ""

@@ -427,20 +427,31 @@ export class BillingClaimsComponent {
 
 
   claimNoEnable(): boolean {
+    document.getElementById("SUB_DET_CLA").style.display = "";
+    document.getElementById("SUB_DET_CLA_SUB").style.display = "";
+
     if (this.submissionDto?.channel == 'Portal') {
+
       return false;
-    } return true;
+    }
+    document.getElementById("SUB_DET_CLA").style.display = "none";
+    document.getElementById("SUB_DET_CLA_SUB").style.display = "none";
+    return true;
   }
 
   preAuthEnable(): boolean {
+    document.getElementById("SUB_DET_PRENO").style.display = "none";
     if (this.submissionDto?.preauth == true) {
+      document.getElementById("SUB_DET_PRENO").style.display = "";
       return false;
     } return true;
   }
 
   /*Refferal Letter Changed to Provider Change Reference Number Needed*/
   providerRefNoEnable(): boolean {
+    document.getElementById("SUB_DET_PORVIDER_RENO").style.display = "none";
     if (this.submissionDto?.refferalLetter == true) {
+      document.getElementById("SUB_DET_PORVIDER_RENO").style.display = "";
       return false;
     } return true;
   }

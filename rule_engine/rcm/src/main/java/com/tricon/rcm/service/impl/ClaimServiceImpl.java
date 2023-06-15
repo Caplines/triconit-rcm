@@ -1388,17 +1388,18 @@ public class ClaimServiceImpl {
 			
 			
 			if (implDto != null && implDto.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())) {
-				Object sec = rcmClaimRepository.getClaimsUuidClaimId(
+				Object sec = rcmClaimRepository.getClaimsUuidClaimIdPrim(
 						implDto.getClaimId().split(ClaimTypeEnum.S.getSuffix())[0] + ClaimTypeEnum.P.getSuffix(),
 						implDto.getOfficeUuid());
 				if (sec != null) {
 					Object s[] = (Object[]) sec;
 					implDto.setAssoicatedClaimUuid(s[0].toString());
 					implDto.setAssoicatedClaimStatus((boolean) s[1]);
+					implDto.setPrimInsurance(s[2]==null?"":s[2].toString());
 				}
 
 			} else {
-				Object sec = rcmClaimRepository.getClaimsUuidClaimId(
+				Object sec = rcmClaimRepository.getClaimsUuidClaimIdSec(
 						implDto.getClaimId().split(ClaimTypeEnum.P.getSuffix())[0] + ClaimTypeEnum.S.getSuffix(),
 						implDto.getOfficeUuid());
 				if (sec != null) {
