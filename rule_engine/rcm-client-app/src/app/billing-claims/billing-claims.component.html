@@ -558,7 +558,7 @@
                                                     </ng-container>
                                                 </tr>
                                                 <ng-container *ngIf="claimRcm.claimNotes">
-                                                    <tr>
+                                                    <tr clas="relatedTo_300" *ngIf="relatedTo_300">
                                                         <td colspan="2" class="text-right">
                                                             {{claimRcm.claimNotes[0]?.key}}
                                                         </td>
@@ -768,7 +768,9 @@
                                 <div class="bold-b-text">
                                     <a data-toggle="collapse" aria-expanded="false" id="serviceCodeValidationsA">Service
                                         Code Level
-                                        Validations (Automated)</a>
+                                        Validations (Automated)
+                                        <span class="passedNum">Pass:{{countAS.pass}}</span> <span
+                                            class="passedNum fail">Fail:{{countAS.fail}}</span></a>
                                     <div class="down-icon" (click)="showHide(7)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
@@ -806,17 +808,18 @@
                                                         <td [innerHTML]="d.message"></td>
                                                         <td>
                                                             <div *ngIf="d.messageType == 2" class="passed"><img
-                                                                    src="../../assets/img/correct_mark.png" /><span>Pass</span>
+                                                                    src="../../assets/img/correct_mark.png" /><span></span>
                                                             </div>
 
 
                                                             <div *ngIf="d.messageType == 1" class="failed"><img
-                                                                    src="../../assets/img/cross_incorrec.png" /><span>Fail</span>
+                                                                    src="../../assets/img/cross_incorrec.png" /><span></span>
                                                             </div>
 
                                                         </td>
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='d.remark' id="SERV_C_V_A{{d.remarkUuid}}"
+                                                                (click)="removeErrorDisplayKeyById('SERV_C_V_A',d.remarkUuid);"
                                                                 [disabled]="isSectionReadOnly()"></textarea></td>
                                                     </tr>
                                                 </ng-container>
@@ -825,7 +828,7 @@
                                     </div>
                                 </div>
                             </ng-container>
-                            <ng-container *ngIf="smilePoint">
+                            <ng-container *ngIf="smilePoint && !isInternalAudit">
                                 <div class="bold-b-text">
                                     <a data-toggle="collapse" aria-expanded="false">Rule Engine Validations</a>
                                     <div class="down-icon" (click)="showHide(8)">
@@ -1170,6 +1173,11 @@
                                                                                        )" type="button"
                                 class="btn btn-success" [disabled]="inSave"
                                 (click)="saveClaim('assign')">Reviewed</button>
+                            <button *ngIf="claimRcm.pending  && selectedTeam == claimRcm.currentTeamId && isSuperAdmin"
+                                type="button" class="btn btn-success" [disabled]="inSave"
+                                (click)="saveClaim('assign')">Assign to
+                                Other Team</button>
+
                         </div>
                         <div *ngIf="!actionButtons" class="loader-data"></div>
                         <div>

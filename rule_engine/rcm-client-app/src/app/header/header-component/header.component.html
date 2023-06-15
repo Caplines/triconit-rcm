@@ -19,9 +19,10 @@
                 <a class="nav-link" href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign out</a>
             </li> -->
             </ul>
-            <div class="dropdown" >
-                <a [title]="staticUtil.currentUserEmail()" (click)="myFunction()" class="dropbtn"><img src="../../assets/img/user-blue.png" />
-                    Welcome, {{loggedInUserName}} <span class="caretDown"></span></a>
+            <div class="dropdown">
+                <a [title]="staticUtil.currentUserEmail()" (click)="myFunction()" class="dropbtn"><img
+                        src="../../assets/img/user-blue.png" />
+                    Welcome {{loggedInUserName}} <span class="caretDown"></span></a>
                 <div id="myDropdown" class="dropdown-content">
                     <li><span> <strong>Client:</strong> {{userInfo.currentClientName}}</span></li>
                     <!-- <li><span><strong>Role:</strong> {{userInfo.currentRoleName?.roleName}}</span></li> -->
@@ -34,9 +35,8 @@
                                 <path
                                     d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
                             </svg> Switch Profile</a> </li>
-                    <li><a  routerlinkactive="active"
-                            routerLink="/update-pass"><img
-                                 src="../../assets/img/updatePassword-active.png" width="16">Update
+                    <li><a routerlinkactive="active" routerLink="/update-pass"><img
+                                src="../../assets/img/updatePassword-active.png" width="16">Update
                             Password</a></li>
                     <li><a href="javascript:void(0);" (click)="logout();"><img src="../../assets/img/logout.png" /> Sign
                             out</a></li>
@@ -78,7 +78,8 @@
                 <a href="javascript:void(0);" [routerLink]="['/tool-update']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Upload
-                    Claims</a></li>
+                    Claims</a>
+            </li>
             <li
                 *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || (currentTeamId == 3 && userInfo.currentRoleName != 'ASSO' ))) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3 && userInfo.currentRoleName != 'ASSO'))">
                 <a href="javascript:void(0);" [routerLink]="['/claim-assignment']" routerLinkActive="active"
@@ -90,14 +91,16 @@
                 <a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency
-                    - Other Teams</a></li>
+                    - Other Teams</a>
+            </li>
             <!-- <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7) || (staticUtil.isRoleLead() && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/dashboard-active.png':'../../assets/img/dashboard.png'" />Billing Pendency Dashboard</a></li> -->
             <li
                 *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7 || currentTeamId == 3) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && currentTeamId == 7)">
                 <a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />List Of
-                    Claims</a></li>
+                    Claims</a>
+            </li>
             <li
                 *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || currentTeamId == 3)) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3))">
                 <a href="javascript:void(0);" [routerLink]="['/production']" routerLinkActive="active"
@@ -116,8 +119,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">{{modelTitle}}</h5>
-                    <button (click)="closeModal()" *ngIf="modelTitle == 'Switch Profile'" type="button" class="close" style="outline: none;"
-                        data-dismiss="modal" aria-label="Close">
+                    <button (click)="closeModal()" *ngIf="modelTitle == 'Switch Profile'" type="button" class="close"
+                        style="outline: none;" data-dismiss="modal" aria-label="Close">
                         <span>&times;</span>
                     </button>
                 </div>

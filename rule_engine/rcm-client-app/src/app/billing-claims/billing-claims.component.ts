@@ -50,6 +50,7 @@ export class BillingClaimsComponent {
   ruleData: any = [];
   count: any = { 'pass': 0, 'fail': 0, 'alert': 0 };
   countA: any = { 'pass': 0, 'fail': 0, 'alert': 0 };
+  countAS: any = { 'pass': 0, 'fail': 0, 'alert': 0 };
   mtype: string = '1';//Fail By Default.
   tlErrormsg = "";
   otherErrormsg = "";
@@ -199,7 +200,8 @@ export class BillingClaimsComponent {
       ths.claimEditModel.assignToTeam = -1;
       //debugger;
       ths.assignModel.toOtherTeam = true;
-      let valid = ths.validateData();
+      let valid = true;
+      if (!this.isSuperAdmin) valid = ths.validateData();
       if (ths.isInternalAudit) {
         ths.claimEditModel.assignToTeam = ths.teamsMs[0].teamId;
       }
@@ -395,7 +397,7 @@ export class BillingClaimsComponent {
         ths.addErrorDisplay(document.getElementById("serviceCodeValidationsM"));
       }
     }
-    if (this.smilePoint) {
+    if (this.smilePoint && !this.isInternalAudit) {
 
       ths.ruleEngineReport.forEach(x => {
 
@@ -553,6 +555,7 @@ export class BillingClaimsComponent {
         ths.claimRules = res.data;
         ths.generateManualIdOfRule();
         ths.countA.pass = ths.countA.fail = ths.countA.alert = 0;
+        ths.countAS.pass = ths.countAS.fail = ths.countAS.alert = 0;
         //debugger;
         ths.claimRules.forEach((e: any) => {
           if (e.ruleId == 300 && (e.messageType != null && e.messageType == 3)) {
@@ -570,8 +573,12 @@ export class BillingClaimsComponent {
             if (this.claimServiceLevelModel != undefined && this.claimServiceLevelModel.dto != undefined) {
               let v: ServiceLevelCodeDataModel = this.claimServiceLevelModel.dto.find(x => x.ruleId == e.ruleId);
               if (v != null) {
+
                 v.message = e.message;
                 v.messageType = e.messageType;
+                if (e.messageType == 1) this.countAS.fail = this.countAS.fail + 1;
+                if (e.messageType == 2) this.countAS.pass = this.countAS.pass + 1;
+
               }
 
             }
@@ -969,6 +976,10 @@ export class BillingClaimsComponent {
 
   goToListofClaimsPage() {
     window.location.href = "/list-of-claims";
+  }
+
+  get isSuperAdmin() {
+    return Utils.checkRoleSuperAdmin();
   }
 
 
