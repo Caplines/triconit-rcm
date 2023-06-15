@@ -1196,6 +1196,7 @@ public class ClaimServiceImpl {
 				claimSubTy = Constants.insuranceTypePrimary;
 				implDto.setPrimary(true);
 				implDto.setSecMemberId(dto.getSecMemberId());
+				
 			} else {
 				implDto.setPrimary(false);
 			}
@@ -1213,7 +1214,6 @@ public class ClaimServiceImpl {
 					insTypes.add("");
 					insTypes.add("No Information");
 				}
-				
 				ivfDto = rcmClaimRepository.getIVIdOfClaimByDos(Constants.SDF_MYSL_DATE.format(implDto.getDos()), implDto.getOfficeUuid(), implDto.getPatientId(),insTypes);
 				//Object ivDet[] = null;
 				if (ivfDto != null) {
@@ -1232,6 +1232,9 @@ public class ClaimServiceImpl {
 						java.sql.Date sqlPackageDate
 			            = new java.sql.Date(Constants.SDF_MYSL_DATE.parse(ivfDto.getPdob()).getTime());
 						claim.setSecPolicyHolderDob(sqlPackageDate);
+						implDto.setSecPolicyHolderDob(sqlPackageDate);
+						claim.setSecPolicyHolder(ivfDto.getPdName());
+						implDto.setSecPolicyHolder(ivfDto.getPdName());
 						}catch(Exception g) {
 							
 						}
@@ -1243,6 +1246,9 @@ public class ClaimServiceImpl {
 							java.sql.Date sqlPackageDate
 				            = new java.sql.Date(Constants.SDF_MYSL_DATE.parse(ivfDto.getPdob()).getTime());
 							claim.setPrimePolicyHolderDob(sqlPackageDate);
+							implDto.setPrimePolicyHolderDob(sqlPackageDate);
+							claim.setPrimePolicyHolder(ivfDto.getPdName());
+							implDto.setPrimePolicyHolder(ivfDto.getPdName());
 							}catch(Exception g) {
 								
 							}
@@ -1288,7 +1294,57 @@ public class ClaimServiceImpl {
 			}
 			
 			
+			//if 
 			
+		 //Check for PolicyHolderDob once more :Go to IV and pull Data
+				if (!implDto.isPrimary()) {
+					if (implDto.getSecPolicyHolderDob()==null) {
+						if (claim==null) claim = rcmClaimRepository.findByClaimUuid(claimUuid);
+					try {
+						Set<String> insTypes = new HashSet<>();
+						insTypes.add(claimSubTy);
+						if (claimSubTy.equalsIgnoreCase(Constants.insuranceTypePrimary)) {
+							insTypes.add("");
+							insTypes.add("No Information");
+						}
+					ivfDto = rcmClaimRepository.getIVIdOfClaimByDos(Constants.SDF_MYSL_DATE.format(implDto.getDos()), implDto.getOfficeUuid(), implDto.getPatientId(),insTypes);
+						//Since we don't have any way to pull the Subscriber's DOB from ES using Query, let's pull that from IV	
+					java.sql.Date sqlPackageDate
+		            = new java.sql.Date(Constants.SDF_MYSL_DATE.parse(ivfDto.getPdob()).getTime());
+					claim.setSecPolicyHolderDob(sqlPackageDate);
+					implDto.setSecPolicyHolderDob(sqlPackageDate);
+					claim.setSecPolicyHolder(ivfDto.getPdName());
+					implDto.setSecPolicyHolder(ivfDto.getPdName());
+					
+					}catch(Exception g) {
+						
+					}
+					}
+				}else {
+					if (implDto.getPrimePolicyHolderDob()==null)  {
+						if (claim==null) claim = rcmClaimRepository.findByClaimUuid(claimUuid);
+						Set<String> insTypes = new HashSet<>();
+						insTypes.add(claimSubTy);
+						if (claimSubTy.equalsIgnoreCase(Constants.insuranceTypePrimary)) {
+							insTypes.add("");
+							insTypes.add("No Information");
+						}
+					try {
+						ivfDto = rcmClaimRepository.getIVIdOfClaimByDos(Constants.SDF_MYSL_DATE.format(implDto.getDos()), implDto.getOfficeUuid(), implDto.getPatientId(),insTypes);
+						//Since we don't have any way to pull the Subscriber's DOB from ES using Query, let's pull that from IV	
+						java.sql.Date sqlPackageDate
+			            = new java.sql.Date(Constants.SDF_MYSL_DATE.parse(ivfDto.getPdob()).getTime());
+						claim.setPrimePolicyHolderDob(sqlPackageDate);
+						implDto.setPrimePolicyHolderDob(sqlPackageDate);
+						claim.setPrimePolicyHolder(ivfDto.getPdName());
+						implDto.setPrimePolicyHolder(ivfDto.getPdName());
+						}catch(Exception g) {
+							
+						}
+					}
+				}
+				
+				
 			
 			
 			
@@ -1330,8 +1386,6 @@ public class ClaimServiceImpl {
 				implDto.setClaimRemarks(comment.getComments());
 			}
 			
-			//
-			// If Secondary
 			
 			if (implDto != null && implDto.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())) {
 				Object sec = rcmClaimRepository.getClaimsUuidClaimId(
@@ -1352,6 +1406,8 @@ public class ClaimServiceImpl {
 					implDto.setAssoicatedClaimUuid(s[0].toString());
 					implDto.setAssoicatedClaimStatus((boolean) s[1]);
 					implDto.setSecInsurance(s[2].toString());//For Primary see if we have Primary
+				}else {
+					implDto.setSecInsurance("N/A");
 				}
 			}
 			

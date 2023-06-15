@@ -9,4 +9,6 @@ public interface IVFDto {
 	String getDos();
 	
 	String getPdob();
+	
+	String getPdName();
 }

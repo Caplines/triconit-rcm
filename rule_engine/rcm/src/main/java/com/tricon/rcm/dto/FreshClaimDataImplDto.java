@@ -107,7 +107,7 @@ public class FreshClaimDataImplDto {
 	String providerOnClaimFromSheet;//Provider Name from ES using TreatingProvider
 	String treatingProviderFromClaim;//using ProviderId(ES Code) and Sheet
 	
-	String primePolicyHolderDob;
+	Date primePolicyHolderDob;
 	String claimType;
 	String firstTeam;
 	int firstTeamId;
