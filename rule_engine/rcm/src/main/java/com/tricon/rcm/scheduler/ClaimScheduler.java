@@ -72,7 +72,7 @@ public class ClaimScheduler {
 			ruleEngineService.pullAndSaveClaimFromRE(dto,user,li,ClaimTypeEnum.S,comp,log);
 			//ruleEngineService.pullAndSaveRemoteLiteData(dto,user,logId);
 			ruleEngineService.pullClaimDetailsFromES(comp,null);
-			break;
+			//break;
 		}
 		
 		//Assign unassinedClaims

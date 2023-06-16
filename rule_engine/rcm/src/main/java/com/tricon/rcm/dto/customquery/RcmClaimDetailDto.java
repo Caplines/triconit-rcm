@@ -33,7 +33,7 @@ public interface RcmClaimDetailDto {
 	String getGroupNumber();
 	String getPrimePolicyHolder();
 	Float getPrimeSecSubmittedTotal();
-	Date getSecPolicyHolderDob();
+	String getSecPolicyHolderDob();
 	Date getCreatedDate();
 	String getAssignedTo();
 	String getEmail();

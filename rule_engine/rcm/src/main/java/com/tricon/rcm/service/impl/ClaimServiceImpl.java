@@ -1207,6 +1207,21 @@ public class ClaimServiceImpl {
 			RcmClaims claim = null;
 			IVFDto ivfDto =null;
 			try {
+				
+				if (!implDto.isPrimary()) {
+					
+					if (dto.getSecPolicyHolderDob()!=null) {
+						java.sql.Date sqlPackageDate
+						= new java.sql.Date(Constants.SDF_MYSL_DATE.parse(dto.getSecPolicyHolderDob()).getTime());
+						implDto.setSecPolicyHolderDob(sqlPackageDate);
+					}
+				}else {
+					if (dto.getPrimePolicyHolderDob()!=null) {
+						java.sql.Date sqlPackageDate
+						= new java.sql.Date(Constants.SDF_MYSL_DATE.parse(dto.getPrimePolicyHolderDob()).getTime());
+						implDto.setPrimePolicyHolderDob(sqlPackageDate);
+					}
+				}
 				if (implDto.getIvfId()==null || implDto.getIvfId().equals("")) {
 					
 				Set<String> insTypes = new HashSet<>();
@@ -1227,7 +1242,9 @@ public class ClaimServiceImpl {
 					claim.setIvfIdSystem(ivfId);
 					claim.setIvDos(ivDos);	
 					if (!implDto.isPrimary()) {
-						if (claim.getSecPolicyHolderDob()==null) {
+						
+						
+						if (claim.getSecPolicyHolderDob()==null && Constants.COMPANY_NAME.equals(partialHeader.getCompany().getName())) {
 						try {
 						//Since we don't have any way to pull the Subscriber's DOB from ES using Query, let's pull that from IV	
 						java.sql.Date sqlPackageDate
@@ -1241,7 +1258,10 @@ public class ClaimServiceImpl {
 						}
 						}
 					}else {
-						if (claim.getPrimePolicyHolderDob()==null)  {
+						
+						
+						
+						if (claim.getPrimePolicyHolderDob()==null && Constants.COMPANY_NAME.equals(partialHeader.getCompany().getName()))  {
 						try {
 							//Since we don't have any way to pull the Subscriber's DOB from ES using Query, let's pull that from IV	
 							java.sql.Date sqlPackageDate
@@ -1298,6 +1318,9 @@ public class ClaimServiceImpl {
 			//if 
 			
 		 //Check for PolicyHolderDob once more :Go to IV and pull Data
+			if (Constants.COMPANY_NAME.equals(partialHeader.getCompany().getName())) {
+				
+			
 				if (!implDto.isPrimary()) {
 					if (implDto.getSecPolicyHolderDob()==null) {
 						if (claim==null) claim = rcmClaimRepository.findByClaimUuid(claimUuid);
@@ -1345,7 +1368,7 @@ public class ClaimServiceImpl {
 					}
 				}
 				
-				
+		}
 			
 			
 			
