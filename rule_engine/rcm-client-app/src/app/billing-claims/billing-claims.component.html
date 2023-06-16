@@ -333,7 +333,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>S.No.</th>
-                                                   <th>Validation Name</th>
+                                                    <th>Validation Name</th>
                                                     <!-- <th>Scope</th>
                                                     <th>Description</th> -->
                                                     <th>Passed/Failed</th>
@@ -914,7 +914,7 @@
                                         <tbody>
                                             <tr>
                                                 <td>01</td>
-                                                <td>Date of Claim Processing in Eaglesoft</td>
+                                                <td>Date of Claim Processing in PMS</td>
                                                 <td>
                                                     <div class="multi-input-row">
                                                         <input class="form-control" id="" rows="1" id="SUB_DET_DT"
@@ -942,7 +942,8 @@
                                                             [ngClass]="{active:submissionDto.channel=='RemoteLite'}">
                                                             <input type="radio" name="channel" value="RemoteLite"
                                                                 (click)="submissionDto.channel='RemoteLite';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
-                                                                [disabled]="isSectionReadOnly()">Clearing House (Remotelite)
+                                                                [disabled]="isSectionReadOnly()">Clearing House
+                                                            (Remotelite)
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Fax'}">
