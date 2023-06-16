@@ -53,7 +53,7 @@
                                         </div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Client Name </label>
+                                        <label for="" class="">Client</label>
                                         <div>{{claimRcm.clientName}}</div>
                                     </div>
                                     <div class="custom-row flexAlign">
@@ -147,7 +147,7 @@
                                         <div>{{claimRcm.linkedClaims.toString()}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Claim Type </label>
+                                        <label for="" class="">Provider Type</label>
                                         <div>{{claimRcm.claimType}}</div>
                                     </div>
                                     <div class="custom-row">
@@ -249,7 +249,7 @@
                                         <thead>
                                             <tr>
                                                 <th>S.No.</th>
-                                                <th>Team Name</th>
+                                                <th>Validation Name</th>
                                                 <th>Date of Remarks</th>
                                                 <th class="remark">Remarks</th>
                                             </tr>
@@ -332,12 +332,12 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th>Number</th>
-                                                    <th>Name</th>
+                                                    <th>S.No.</th>
++                                                    <th>Validation Name</th>
                                                     <!-- <th>Scope</th>
                                                     <th>Description</th> -->
                                                     <th>Passed/Failed</th>
-                                                    <th>Fail Message</th>
+                                                    <th>Details</th>
                                                     <th>Remarks</th>
                                                 </tr>
                                             </thead>
@@ -399,8 +399,8 @@
                                         <table class="table" style="margin-bottom: 0px;">
                                             <thead>
                                                 <tr>
-                                                    <th>Number</th>
-                                                    <th>Name</th>
+                                                    <th>S.No.</th>
+                                                    <th>Validation Name</th>
                                                     <th>Status</th>
                                                     <th>Remarks</th>
                                                 </tr>
@@ -699,8 +699,8 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th>Number</th>
-                                                    <th>Name</th>
+                                                    <th>S.No.</th>
+                                                    <th>Validation Name</th>
                                                     <th>Service Codes</th>
                                                     <th style="width:40%">Description</th>
                                                     <th>Status</th>
@@ -782,8 +782,8 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th>Number</th>
-                                                    <th>Name</th>
+                                                    <th>S.No.</th>
+                                                    <th>Validation Name</th>
                                                     <th>Service Codes</th>
                                                     <th style="width:40%">Description</th>
                                                     <th>Messages</th>
@@ -906,9 +906,9 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>Number</th>
+                                                <th>S.No.</th>
                                                 <th>Description</th>
-                                                <th>Options</th>
+                                                <th>Details</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -942,7 +942,7 @@
                                                             [ngClass]="{active:submissionDto.channel=='RemoteLite'}">
                                                             <input type="radio" name="channel" value="RemoteLite"
                                                                 (click)="submissionDto.channel='RemoteLite';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
-                                                                [disabled]="isSectionReadOnly()"> RemoteLite
+                                                                [disabled]="isSectionReadOnly()">Clearing House (Remotelite)
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Fax'}">
@@ -980,7 +980,7 @@
                                             </tr>
                                             <tr>
                                                 <td>03</td>
-                                                <td>Attachment sent with claim </td>
+                                                <td>Attachments sent with the claim?</td>
                                                 <td>
                                                     <div data-toggle="buttons" class="btn-group btn-group-toggle"
                                                         id="SUB_DET_ATT">
@@ -1002,7 +1002,7 @@
                                             </tr>
                                             <tr>
                                                 <td>04</td>
-                                                <td>Preauth </td>
+                                                <td>Pre-Auth submitted with the claim?</td>
                                                 <td>
                                                     <div data-toggle="buttons" class="btn-group btn-group-toggle"
                                                         id="SUB_DET_PRE">
@@ -1066,7 +1066,7 @@
                                         </tbody>
                                     </table>
 
-                                    <strong>Remarks if needed</strong>
+                                    <strong>Remarks</strong>
                                     <div><textarea class="form-control" id="" rows="3"
                                             [(ngModel)]='claimRcm.claimRemarks'></textarea>
                                     </div>
