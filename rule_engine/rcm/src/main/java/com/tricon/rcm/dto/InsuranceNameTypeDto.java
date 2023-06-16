@@ -7,6 +7,7 @@ public class InsuranceNameTypeDto {
 
 	String  insuranceName;
 	String  insuranceType;
+	String  insuranceCode;
 	
 	public InsuranceNameTypeDto(String insuranceName, String insuranceType) {
 		super();

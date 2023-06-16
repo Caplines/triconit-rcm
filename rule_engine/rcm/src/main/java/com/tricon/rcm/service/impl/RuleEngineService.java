@@ -277,10 +277,12 @@ public class RuleEngineService {
 											ins = new RcmInsurance();
 											ins.setActive(true);
 											ins.setAddress(re.getInsuranceCompanyFullAddress());
+											ins.setInsuranceCode(re.getInsuranceCompanyFullAddress());
 											ins.setInsuranceId(re.getPrimSecInsuranceCompanyId());
-											String insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto,
-													re.getInsuranceCompanyName());
-
+											InsuranceNameTypeDto insuranceNameTypeDto= getInsuranceTypeFromSheetList(insuranceTypeDto, re.getInsuranceCompanyName());
+											//String insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto,
+											//		re.getInsuranceCompanyName());
+											String insuranceType =insuranceNameTypeDto==null?null: insuranceNameTypeDto.getInsuranceType();
 											ins.setInsuranceType(rcmInsuranceTypeRepo.findByName(insuranceType));
 											ins.setName(re.getInsuranceCompanyName());
 											ins.setOffice(off);
@@ -614,8 +616,8 @@ public class RuleEngineService {
 						insurance.setInsuranceId(re.getInsuranceCompanyId());
 						insurance.setName(re.getName());
 						insurance.setOffice(officeRepo.findByUuid(OfficeUuid));
-
-						String insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto, re.getName());
+						InsuranceNameTypeDto insuranceNameTypeDto= getInsuranceTypeFromSheetList(insuranceTypeDto, re.getName());
+						String insuranceType =insuranceNameTypeDto==null?null: insuranceNameTypeDto.getInsuranceType();
 						if (insuranceType != null) {
 							insurance.setInsuranceType(rcmInsuranceTypeRepo.findByName(insuranceType));
 						}
@@ -625,7 +627,9 @@ public class RuleEngineService {
 						if (insuranceOld == null)
 							insuranceRepo.save(insurance);
 						else {
-							insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto, insurance.getName());
+							insuranceNameTypeDto= getInsuranceTypeFromSheetList(insuranceTypeDto, insurance.getName());
+							//insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto, insurance.getName());
+							insuranceType =insuranceNameTypeDto==null?null: insuranceNameTypeDto.getInsuranceType();
 							if (insuranceType != null) {
 								insuranceOld.setInsuranceType(rcmInsuranceTypeRepo.findByName(insuranceType));
 							}
@@ -882,8 +886,9 @@ public class RuleEngineService {
 	 * @param name
 	 * @return
 	 */
-	public String getInsuranceTypeFromSheetList(List<InsuranceNameTypeDto> sheetData, String name) {
-		String insuranceType = null;
+	public InsuranceNameTypeDto getInsuranceTypeFromSheetList(List<InsuranceNameTypeDto> sheetData, String name) {
+		//String insuranceType = null;
+		InsuranceNameTypeDto dto= null;
 		if (sheetData == null) {
 			logger.error("Data From Mapping sheet not found");
 			return null;
@@ -891,14 +896,14 @@ public class RuleEngineService {
 		Collection<InsuranceNameTypeDto> ruleGen = Collections2.filter(sheetData,
 				sh -> sh.getInsuranceName().equalsIgnoreCase(name));
 		for (InsuranceNameTypeDto gs : ruleGen) {
-			insuranceType = gs.getInsuranceType();
+			dto  = gs;
 			break;
 		}
-		if (insuranceType == null) {
+		if (dto == null) {
 			logger.error(name + " Not found in  Google sheet");
 
 		}
-		return insuranceType;
+		return dto;
 	}
 	
 	@Transactional(rollbackFor = Exception.class)

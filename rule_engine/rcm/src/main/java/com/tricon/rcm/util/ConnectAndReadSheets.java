@@ -169,17 +169,23 @@ public class ConnectAndReadSheets {
 		while (li.hasNext()) {
 			ArrayList<String> obj = (ArrayList<String>) li.next();
 			ctr++;
+			int x = -1;
 			if (ctr < 2)
 				continue;
 			try {
-				int x = -1;
+				
 				dto = new InsuranceNameTypeDto(obj.get(++x), obj.get(++x));
-				list.add(dto);
+				
 
 			} catch (Exception ex) {
 				continue;
 			}
-
+			try {
+				
+				dto.setInsuranceCode(obj.get(++x));
+			} catch (Exception m) {
+			}
+			list.add(dto);
 		}
 		logger.info("readInsuranceMappingSheetFull");
 		if (list != null) {

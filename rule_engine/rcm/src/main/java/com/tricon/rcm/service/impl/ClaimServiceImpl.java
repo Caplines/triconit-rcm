@@ -89,6 +89,7 @@ import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
+import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.IVFDto;
 import com.tricon.rcm.dto.customquery.IssueClaimDto;
@@ -2894,22 +2895,37 @@ public class ClaimServiceImpl {
 					claim.setRcmInsuranceType(rcmInsuranceTypeRepo.findById(claim.getRcmInsuranceType().getId()));
 					
 					String insName="";
-					/*String[] clT = claim.getClaimId().split("_");
+					String insCode="";
+					//RcmInsuranceType temp=null;
+					String[] clT = claim.getClaimId().split("_");
 					if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
 				      Optional<RcmInsurance> nn= insuranceRepo.findById(claim.getPrimInsuranceCompanyId().getId());
 				      if (nn.isPresent()) {
-				    	 
-				    	  insName=	  rcmInsuranceTypeRepo.findById(nn.get().getInsuranceType().getId()).getName();
+				    	  //temp= rcmInsuranceTypeRepo.findById(nn.get().getInsuranceType().getId());
+				    	  insName=	nn.get().getName();
+				    	  insCode= nn.get().getInsuranceCode();
 				      }
 					} else {
 						 Optional<RcmInsurance> nn= insuranceRepo.findById(claim.getSecInsuranceCompanyId().getId());
 					      if (nn.isPresent()) {
-					    	  insName=	  rcmInsuranceTypeRepo.findById(nn.get().getInsuranceType().getId()).getName();
+					    	 // temp= rcmInsuranceTypeRepo.findById(nn.get().getInsuranceType().getId());
+					    	  insName=	nn.get().getName();
+					    	  insCode= nn.get().getInsuranceCode();
 					      }
 					}
-					*/
+					if (insCode==null) insCode ="";
+					if (insCode.equals("")) {
+						//Reading Sheet Again
+						List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(
+								partialHeader.getCompany());
+						InsuranceNameTypeDto insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetList(insuranceTypeDto, insName);
+						insCode =(insuranceNameTypeDto==null)?"": insuranceNameTypeDto.getInsuranceCode();
+						//TO Do Update the Data in InsuranceNameType
+						
+					}
+					
 					allLIst.addAll(
-							ruleBookService.rule305(rule, creList, claim, officeName, providerSheetData,insName));
+							ruleBookService.rule305(rule, creList, claim, officeName, insCode,insName));
 					
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_306);
 					allLIst.addAll(

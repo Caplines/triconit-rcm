@@ -69,4 +69,8 @@ public interface RcmClaimDetailDto {
 	String getFirstTeam();
 	int getFirstTeamId();
 	String getPrimaryEob();
+	
+	String getPrimaryInsCodeSheet();
+	String getSecondaryInsCodeSheet();
+	
 }

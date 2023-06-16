@@ -288,14 +288,14 @@ public class RuleBookServiceImpl {
 	 * @return
 	 */
 	public List<TPValidationResponseDto> rule305(RcmRules rule, List<CredentialData> creList, RcmClaims rcmClaim,
-			String claimofficeName, Object[] providerSheetData,String insName) {
+			String claimofficeName,String insuranceCodeFromSheet,String insName) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 		logger.info("-->"+creList.size());
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
 
-			List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
+			//List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
 
 			String claimProvider = rcmClaim.getProviderId();
 			
@@ -306,9 +306,10 @@ public class RuleBookServiceImpl {
 						"", ""));
 				return dList;
 			}
-			String sheetProviderCode = "";
+			//String sheetProviderCode = "";
 			String applicationStatus = "";
 			String effectiveDate= "";
+			/*
 			List<ProviderCodeWithOffice> pCodeList = pro.stream()
 					.filter(e -> e.getOffice().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getEsCode().trim().equalsIgnoreCase(claimProvider))
@@ -316,15 +317,15 @@ public class RuleBookServiceImpl {
 			if (pCodeList != null && pCodeList.size() > 0) {
 				sheetProviderCode = pCodeList.get(0).getProviderCode();
 			}
-
+            */
 			
-			final String testVal = sheetProviderCode;
-			final String insNameFinal = insName;
+			final String testVal = insuranceCodeFromSheet;
+			//final String insNameFinal = insName;
 			//CredentialData ddd =creList.get(953);
 			List<CredentialData> filterCodeList = creList.stream()
 					.filter(e -> e.getLocation().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getPlanType().trim().equalsIgnoreCase(rcmClaim.getRcmInsuranceType().getName())
-							&& e.getProviderCode().trim().equalsIgnoreCase(testVal)
+							&& e.getInsuranceCode().trim().equalsIgnoreCase(testVal)
 							//&& insNameFinal.equalsIgnoreCase(e.getInsurance())
 							)
 					.collect(Collectors.toList());

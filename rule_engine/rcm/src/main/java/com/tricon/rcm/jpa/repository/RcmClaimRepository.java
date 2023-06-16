@@ -276,7 +276,8 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 			" cl.treating_provider treatingProvider , provider_on_claim providerOnClaim," +
 			" cl.provider_on_claim_from_sheet providerOnClaimFromSheet,cl.treating_provider_from_claim treatingProviderFromClaim, " +
 			" cl.prime_policy_holder_dob primePolicyHolderDob, cl.ivf_id ivId,iv_dos ivDos,tp_id tpId,tp_dos tpDos,primary_eob primaryEob, "+
-			" cl.claim_type claimType,Fteam.name firstTeam,Fteam.id firstTeamId "+
+			" cl.claim_type claimType,Fteam.name firstTeam,Fteam.id firstTeamId, "+
+			" pins.insurance_code primaryInsCodeSheet,sins.insurance_code secondaryInsCodeSheet"+
 			"  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+

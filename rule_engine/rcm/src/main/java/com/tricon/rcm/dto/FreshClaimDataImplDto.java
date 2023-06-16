@@ -114,6 +114,8 @@ public class FreshClaimDataImplDto {
 	String primaryEob;
 	
 	
+	String primaryInsCodeSheet;
+	String secondaryInsCodeSheet;
 
 
 }

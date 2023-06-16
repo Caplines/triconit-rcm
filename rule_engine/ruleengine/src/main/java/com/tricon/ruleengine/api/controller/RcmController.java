@@ -34,6 +34,7 @@ import com.tricon.ruleengine.dto.RcmEnv;
 import com.tricon.ruleengine.dto.ScrappingFullDataDetailDto;
 import com.tricon.ruleengine.dto.ScrappingFullDataDto;
 import com.tricon.ruleengine.dto.TreatmentClaimDto;
+import com.tricon.ruleengine.dto.TreatmentPlanDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.Office;
@@ -433,6 +434,33 @@ public class RcmController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "TP DATA Fetched Successfully", data));
 	}
 	
+	@RequestMapping(value = "/tp-ids-form-es", method = RequestMethod.GET)
+	public ResponseEntity<?> TPIdsFromES(@RequestHeader("x-api-key") String apiKey,
+			@RequestParam(value = "office", required = true) String officeUuid,
+			@RequestParam(value = "cmpId", required = true) String cmpId,
+			@RequestParam(value = "patientId", required = true) String patientId)
+			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+
+		RuleEngineLogger.generateLogs(clazz, "ENTER TPIdsFromES For RCM" + new Date(), " INFO", null);
+
+		if (!checkForKey(apiKey)) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created", "Key Error"));
+		}
+
+		TreatmentPlanDto dto=  new TreatmentPlanDto();
+		Office office = od.getOfficeByUuid(officeUuid, cmpId);
+		dto.setOfficeId(office.getUuid());
+		dto.setPatientId(patientId);
+		
+		Object data=null;
+		try {
+			data =tPService.getTreatments(dto);
+			
+		} catch (Exception n) {
+
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "TP IDs DATA Fetched Successfully", data));
+	}
 	
 	private boolean checkForKey(String apiKey) {
 
