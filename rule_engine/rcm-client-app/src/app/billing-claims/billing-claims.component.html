@@ -493,8 +493,9 @@
                                                                         value="2"
                                                                         (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                         [(ngModel)]='rule.messageType'
-                                                                        [disabled]="makeReadOnly()"> No
+                                                                        [disabled]="makeReadOnly()"> No &nbsp; &nbsp;
                                                                 </label>
+                                                                <label></label>
 
                                                             </div>
 
@@ -559,10 +560,12 @@
                                                 </tr>
                                                 <ng-container *ngIf="claimRcm.claimNotes">
                                                     <tr clas="relatedTo_300" *ngIf="relatedTo_300">
-                                                        <td colspan="2" class="text-right">
+                                                        <td></td>
+                                                        <td>
                                                             {{claimRcm.claimNotes[0]?.key}}
                                                         </td>
-                                                        <td colspan="4"><textarea class="form-control mandatory"
+                                                        <td></td>
+                                                        <td colspan="1"><textarea class="form-control mandatory"
                                                                 id="CL_N_{{claimRcm.claimNotes[0].id}}" rows="1"
                                                                 [(ngModel)]='claimRcm.claimNotes[0].value'
                                                                 (keydown)="removeErrorDisplayKey($event)"
@@ -1173,7 +1176,7 @@
                                                                                          (claimRcm.primary && claimRcm.pending) 
                                                                                        )" type="button"
                                 class="btn btn-success" [disabled]="inSave"
-                                (click)="saveClaim('assign')">Reviewed</button>
+                                (click)="saveClaim('reviewed')">Reviewed</button>
                             <button *ngIf="claimRcm.pending  && selectedTeam == claimRcm.currentTeamId && isSuperAdmin"
                                 type="button" class="btn btn-success" [disabled]="inSave"
                                 (click)="saveClaim('assign')">Assign to

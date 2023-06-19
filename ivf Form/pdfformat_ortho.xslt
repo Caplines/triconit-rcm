@@ -104,6 +104,9 @@
         .width-32 {
             width: 32%;
         }
+		.width-41 {
+            width: 41%;
+        }
         .width-20 {
             width: 20%;
         }
@@ -163,11 +166,11 @@
                 <td colspan="6" class="tableHeading">Subscriber and Insurance Details</td>
             </tr>
             <tr>
-                <td class="width-15">Office Name</td>
+                <td class="width-7">Office Name</td>
                 <td class="width-7"><xsl:value-of select="basicInfo1"/></td>
-                <td class="width-10">Patient Name </td>
+                <td class="width-8">Patient Name </td>
                 <td class="width-7"><xsl:value-of select="basicInfo2"/></td>
-                <td class="width-13">Policy Holder Name</td>
+                <td class="width-8">Policy Holder Name</td>
                 <td class="width-7"><xsl:value-of select="basicInfo5"/></td>
                 
             </tr>
@@ -213,6 +216,12 @@
                 <td class=""><xsl:value-of select="basicInfo12"/></td>
                 <td class="">Insurance Address</td>
                 <td colspan="1" class=""><xsl:value-of select="basicInfo20"/></td>
+            </tr>
+			<tr>
+                <td>Fee Schedule</td>
+                <td colspan="2"><xsl:value-of select="policy4"/></td>
+                <td colspan="3"></td>
+                
             </tr>
         </table>
         <br />
@@ -362,8 +371,19 @@
                 <td class="dullGreen width-15">Benefits Verified by</td>
                 <td colspan="2" class="width-17"><xsl:value-of select="benefits"/></td>
                 <td class="dullGreen width-7">Submission Date</td>
-                <td class="width-13"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,6,2),'/',substring(date,9,2),'/',substring(date,1,4))" /></xsl:if></td>
+                <td class="width-4"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,6,2),'/',substring(date,9,2),'/',substring(date,1,4))" /></xsl:if></td>
                 <td class="width-21 borderNone" colspan="3"></td>
+            </tr>
+        </table>
+		<br />
+		<table class="table" vertical-align="top">
+            <tr>
+               <td class="dullGreen width-15">Comments</td>
+               <td colspan="3"  style="width: 63%"><xsl:value-of select="comments"/></td>
+			   <td class="width-21 borderNone" colspan="3"></td>
+               
+               
+               
             </tr>
         </table>
     </form>

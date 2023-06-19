@@ -201,6 +201,29 @@ export class BillingClaimsComponent {
       //debugger;
       ths.assignModel.toOtherTeam = true;
       let valid = true;
+      //if (!this.isSuperAdmin) valid = ths.validateData(); //no need to check for validation
+      if (ths.isInternalAudit) {
+        ths.claimEditModel.assignToTeam = ths.teamsMs[0].teamId;
+      }
+
+      if (valid) {
+        ths.openAssignModal('other');
+
+        //Open Modal
+        /*
+        ths.claimEditModel.submission=false;
+        ths.claimService.saveClaimData(ths.claimEditModel,(callback: any)=>{
+          ths.inSave=false;
+          this.showAlertPopup(callback);
+        });
+       */
+      }
+    } else if (type === 'reviewed') {
+      ths.claimEditModel.assignTouuid = "";
+      ths.claimEditModel.assignToTeam = -1;
+      //debugger;
+      ths.assignModel.toOtherTeam = true;
+      let valid = true;
       if (!this.isSuperAdmin) valid = ths.validateData();
       if (ths.isInternalAudit) {
         ths.claimEditModel.assignToTeam = ths.teamsMs[0].teamId;
@@ -218,7 +241,8 @@ export class BillingClaimsComponent {
         });
        */
       }
-    } else if (type === 'assigntl') {
+    }
+    else if (type === 'assigntl') {
       ths.claimEditModel.assignTouuid = "";
 
       ths.openAssignModal('tl');
@@ -813,6 +837,7 @@ export class BillingClaimsComponent {
       }
     })
   }
+
 
   fetchOtherTeams() {
     let ths = this;
