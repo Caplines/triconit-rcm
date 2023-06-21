@@ -36,6 +36,7 @@ import com.tricon.rcm.dto.ClaimRuleValidationsDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
+import com.tricon.rcm.dto.ClaimSubmittedDto;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.GenericResponse;
@@ -528,5 +529,26 @@ public class RcmController extends BaseHeaderController{
         }
         return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
     }
+	
+	@PostMapping("/api/search-claims")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','REPORTING','TL','ASSO')")
+	public ResponseEntity<Object> submittedClaims(@RequestBody ClaimSubmittedDto dto, Model model) {
+		ClaimSubDet response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return null;
+		if (dto.getOfficeUuid() == null || dto.getOfficeUuid().trim().equals("")) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		try {
+			// response = claimServiceImpl.getSubmittedClaims(dto,partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 	
 }
