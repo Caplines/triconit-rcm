@@ -10,6 +10,7 @@ import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { Router } from '@angular/router';
 import Utils from '../../util/utils';
+import { DownLoadService } from 'src/app/service/download.service';
 
 @Component({
   selector: 'claim-office-assignment',
@@ -38,7 +39,7 @@ export class OfficeAssignmentComponent implements OnInit {
   totalClaimData: any = { 'oldestOpdt': '', 'oldestOpdos': '', 'totalCount': 0, 'totalRemLiteReject': 0, 'totalcountAndRemLiteReject': 0 }
   clientName: string = '';
   date: any;
-  constructor(private appService: ApplicationServiceService, private title: Title, private router: Router) {
+  constructor(private appService: ApplicationServiceService, private title: Title, private router: Router,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
     this.claimData = [];//{} as FreshClaimPLogs;
     console.log(this.router.url)
@@ -279,5 +280,15 @@ export class OfficeAssignmentComponent implements OnInit {
       totalRow.style.top = thead.clientHeight+"px";
      }
    } 
+   downloadPdf(){
+    let data = {"fileName":"Pendancy","data": this.claimData,"totalCount":this.totalClaimData.totalCount,"totalRemLiteReject": this.totalClaimData.totalRemLiteReject,"totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject,"clientName":this.clientName};
+    this.appService.pendancyPdfDownload(data,"pdf",(res: any) => {
+      if (res.status === 200){
+        this.downloadService.saveBolbData(res.body, "Pendancy.pdf");
+      }else{
+        console.log("something went wrong");
+      }
+    })
+  }
 
 }

@@ -5,6 +5,7 @@ import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { Title } from '@angular/platform-browser';
+import { DownLoadService } from 'src/app/service/download.service';
 
 
 @Component({
@@ -24,8 +25,7 @@ export class ProductionComponent implements OnInit {
   isDataAvailable:boolean=false;
   clientName:string='';
   fetchbtnDisable=true;
-  
-  constructor(private appService: ApplicationServiceService,private title:Title) { 
+  constructor(private appService: ApplicationServiceService,private title:Title,private downloadService:DownLoadService) { 
      title.setTitle(Utils.defaultTitle + "Production")
     }
 
@@ -139,6 +139,20 @@ exportToCsv() {
   new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Production_${this.date}`, options);
   this.loader.exportCSVLoader=false;
 
+}
+
+downloadPdf(){
+  if(this.productionData.length!=0){
+  let data = {"fileName":"Production","data": this.productionData,"clientName": this.clientName};
+  this. appService.productionPdfDownload(data,"pdf",(res: any) => {
+    if (res.status === 200){
+      console.log(res.body);
+      this.downloadService.saveBolbData(res.body, "Production.pdf");
+    }else{
+      console.log("something went wrong");
+    }
+  })
+}
 }
 }
 

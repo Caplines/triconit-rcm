@@ -6,6 +6,7 @@ import Utils from '../util/utils';
 import { ngxCsv } from 'ngx-csv';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { DownLoadService } from '../service/download.service';
 
 @Component({
   selector: 'app-issue-claims',
@@ -40,7 +41,7 @@ export class IssueClaimComponent {
     }
   }
   
-  constructor(private appSer: ApplicationServiceService,private router:Router,private title:Title) {
+  constructor(private appSer: ApplicationServiceService,private router:Router,private title:Title,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Issue Claims")
   }
 
@@ -275,4 +276,18 @@ export class IssueClaimComponent {
     });
 
   }
+
+  downloadPdf(){
+    if(this.filteredItems.length!=0){
+    let data = {"fileName":"Issue_claims","data": this.filteredItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.issueClaimsCount};
+    this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
+      if (res.status === 200){
+        console.log(res.body);
+        this.downloadService.saveBolbData(res.body, "Issue_claims.pdf");
+      }else{
+        console.log("something went wrong");
+      }
+    })
+  }
+}
 }

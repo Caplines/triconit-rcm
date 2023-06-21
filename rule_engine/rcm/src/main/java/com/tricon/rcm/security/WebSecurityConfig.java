@@ -142,6 +142,7 @@ public class WebSecurityConfig {
 			                "/**/*.png",
 			                "/**/*.js",
 			                "/**/*.woff2",
+			                "/**/*.pdf",
 			                "/swagger-resources/configuration/ui",
 			                "/swagger-resources/configuration/security",
 			                "/swagger-resources",

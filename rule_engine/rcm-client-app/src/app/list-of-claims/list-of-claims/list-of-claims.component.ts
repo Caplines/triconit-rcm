@@ -8,6 +8,7 @@ import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
 import { Title } from '@angular/platform-browser';
 import { DecimalPipe, formatNumber } from '@angular/common';
+import { DownLoadService } from 'src/app/service/download.service';
 
 @Component({
   selector: 'app-list-of-claims',
@@ -40,6 +41,7 @@ export class ListOfClaimsComponent implements OnInit {
   isLastTeam: boolean = false;
   fliterName: string = '';
   tabSwitch: any = { 'Fresh': true, 'sendBack': false, 'MyClaims': false };
+  tabValue:any;
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -49,7 +51,7 @@ export class ListOfClaimsComponent implements OnInit {
     }
   }
 
-  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title) {
+  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title,private downloadService:DownLoadService) {
     this.selectedBtype = this.appConstants.BILLING_ID;
     title.setTitle(Utils.defaultTitle + "List Of Claims");
   }
@@ -757,18 +759,21 @@ export class ListOfClaimsComponent implements OnInit {
   switchTab(tab: any) {
     if (!this.claimDetail) return;
     if (tab == 'Fresh') {
+      this.tabValue='Fresh';
       this.tabSwitch.Fresh = true;
       this.tabSwitch.sendBack = false;
       this.tabSwitch.MyClaims = false;
       this.fetchClaims('Fresh');
     }
     else if (tab == 'sendBack') {
+      this.tabValue='sendBack';
       this.tabSwitch.Fresh = false;
       this.tabSwitch.sendBack = true;
       this.tabSwitch.MyClaims = false;
       this.fetchClaims('sendBack');
     }
     else if (tab == 'MyClaims') {
+      this.tabValue='MyClaims';
       this.tabSwitch.Fresh = false;
       this.tabSwitch.sendBack = false;
       this.tabSwitch.MyClaims = true;
@@ -780,5 +785,19 @@ export class ListOfClaimsComponent implements OnInit {
     // this.filteredItems = this.pendencyData;
     // let event = { target: { checked: true } };  //added so that when tab is swtiched then by default all data should show.
     // this.selectAll(event, 'officeName');
+  }
+
+  downloadPdf(){
+    if(this.filteredItems.length!=0){
+    let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue};
+    this. appService.lisOfClaimsPdfDownload(data,"pdf",(res: any) => {
+      if (res.status === 200){
+        console.log(res.body);
+        this.downloadService.saveBolbData(res.body, "List_Of_Claims.pdf");
+      }else{
+        console.log("something went wrong");
+      }
+    })
+  }
   }
 }

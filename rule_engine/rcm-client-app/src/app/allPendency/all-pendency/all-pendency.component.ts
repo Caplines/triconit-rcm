@@ -6,6 +6,7 @@ import { ngxCsv } from 'ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import Utils from '../../util/utils';
 import { DatePipe } from '@angular/common';
+import { DownLoadService } from 'src/app/service/download.service';
 @Component({
   selector: 'all-pendency',
   templateUrl: './all-pendency.component.html',
@@ -29,8 +30,10 @@ export class AllPendencyComponent {
   totalCount: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Aging", "count": 0, "teamId": 4 }, { "teamName": "Posting", "count": 0, "teamId": 5 }, { "teamName": "Quality", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
   datePipeString:any;
   fliterName:string= '';
+  tabValue:any;
+  currentTeamName:string='';
 
-  constructor(private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe) {
+  constructor(private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
   }
   ngOnInit(): void {
@@ -258,16 +261,19 @@ export class AllPendencyComponent {
   switchTab(tab: any) {
     if (!this.pendencyData) return;
     if(tab == 'withoutDos'){
+      this.tabValue='withoutDos';
       this.tabSwitch.withoutDos = true;
       this.tabSwitch.withDos=false;
       this.tabSwitch.withDateOfPending = false;
     }
     else if(tab == 'withDOS'){
+      this.tabValue='withDOS';
       this.tabSwitch.withDos = true;
       this.tabSwitch.withoutDos = false;
       this.tabSwitch.withDateOfPending = false;
     }
     else if(tab == 'withDOP'){
+      this.tabValue='withDOP';
       this.tabSwitch.withDateOfPending = true;
       this.tabSwitch.withoutDos = false;
       this.tabSwitch.withDos=false;
@@ -320,4 +326,21 @@ export class AllPendencyComponent {
      }
    } 
 
+   downloadPdf(){
+    if(this.filteredItems.length!=0){
+      const matchedTeam = this.teamData.find((item:any) => item.teamId === parseInt(this.currentTeamId));
+    this.currentTeamName = matchedTeam ? matchedTeam.teamName.toUpperCase() : null;
+    console.log(this.currentTeamName);    
+    let data = {"fileName":"AllPendancy","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamName":this.currentTeamName,"totalCount":this.totalCount,"currentTeamId":this.currentTeamId};
+    this. _service.allPendancyPdfDownload(data,"pdf",(res: any) => {
+      if (res.status === 200){
+        console.log(res.body);
+        this.downloadService.saveBolbData(res.body, "Pendancy- Other Teams.pdf");
+      }else{
+        console.log("something went wrong");
+      }
+    })
+  }
+
+}
 }

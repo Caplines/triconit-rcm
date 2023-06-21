@@ -392,4 +392,23 @@ export class ApplicationServiceService extends BaseService {
   updateIvId(params: any, callback: any) {
     this.postData(params, this.httpUrl['updateIv'], callback)
   }
+
+  issueClaimPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['issueClaimsPdf'] + "/" + pdfcsv, callback);
+  }
+  pendancyPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['pendancyPdf'] + "/" + pdfcsv, callback);
+  }
+  claimDetailsPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['claimDetailsPdf'] + "/" + pdfcsv, callback);
+  }
+  productionPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['productionPdf'] + "/" + pdfcsv, callback);
+  }
+  lisOfClaimsPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['listOfClaim'] + "/" + pdfcsv, callback);
+  }
+  allPendancyPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['allPendancy'] + "/" + pdfcsv, callback);
+  }
 }

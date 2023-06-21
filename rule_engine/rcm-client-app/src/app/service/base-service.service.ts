@@ -72,6 +72,11 @@ export class BaseService {
 
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',
+    'issueClaimsPdf':'/api/issue-claim/d',
+    'pendancyPdf':'/api/pendancy/d',
+    'claimDetailsPdf':'/api/claim-details/d',
+    'productionPdf':'/api/production/d',
+    'allPendancy':'/api/allPendancy/d',
     //
   }
 

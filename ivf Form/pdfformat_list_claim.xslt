@@ -1,174 +1,203 @@
-﻿<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-   version="1.0" >
-	<xsl:output method="xml" indent="yes" encoding="UTF-8"  version="1.0"  />
-	<xsl:template match="/claimListDownloadDto">
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title></title>
-    <style>
-        body {
-            font-family: helvetica;
-            font-size: 12px;
-        }
-
-        .tableHeading {
-            font-size: 14px;
-            background-color: #3d85c6;
-            color: #fff;
-            text-align: center;
-            font-family: sans-serif;
-            font-weight: bold;
-        }
-
-
-        .sub-heading {
-            font-size: 12px;
-            color: #000;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .rowHeading {
-            background-color: #666666;
-            color: #fff;
-            font-size: 14px;
-        }
-
-        .table {
-            border-collapse: collapse;
-            width: 100%
-        }
-
-            .table td {
-                border: 1px solid #000;
+version="1.0" >
+<xsl:output method="xml" indent="yes" encoding="UTF-8"  version="1.0"  />
+    	<xsl:template match="/listOfClaimDownloadDto">
+    <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <style>
+            body,html {
+                font-family: helvetica;
+                font-size: 12px;
+                padding: 0px;
+                margin:0px;
+            }
+            .table {
                 border-collapse: collapse;
-                padding: 2px 4px;
-                vertical-align: top;
+                width: 100%
             }
 
-        .lightGray {
-            background-color: #f3f3f3;
-        }
+                .table td {
+                    border-collapse: collapse;
+                    vertical-align: top;
+                    background: #f8f8f9;
+                    padding: 0px;
+                    word-wrap: break-word;
+                    max-width: 100px;
+                }
+            .maineHeading {
+                font-size: 14px;
+                margin:0px;
+                margin-bottom:5px;
+            }
+            .bgWhite {
+                background-color:#ffffff;
+            }
+            .inner-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom:2px;
+            }
+                .inner-table td {
+                    padding: 2px 5px;
+                    border: 1px solid #a5a5a5;
+                }
+            .width-25 {
+                width:25%
+            }
+            .whiteBg td{
+                background: #ffffff;
+            }
+            .textBold {
+                font-weight:bold;
+                border-right:0px!important;
+            }
+            td:nth-child(even) {
+                border-left: 0px;
+            }
+            .inner-table td.maineHeadingBox {
+                border: 0px;
+                padding: 10px 0px 0px 0px;
+            }
+            .na {
+                color: #d88627;
+                font-weight: bold;
+            }
+            .yes {
+                color: #0da076;
+                font-weight: bold;
+            }
+            .pageLink {
+                font-weight: bold;
+                color: #007bff;
+                text-decoration:none;
+            }
+            .tableView td:nth-child(even) {
+                border-left: 1px solid #a5a5a5;
+            }
+            .tableView td {
+                font-weight:bold;
+            }
+            .remark-text {
+                border:1px solid #eee;
+                min-height:40px;
+                min-width:150px;
+                max-width:400px;
+            }
+            .tableHeading {
+                font-size: 14px;
+                color:black;
+                text-align: center;
+                font-family: sans-serif;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <form>
+     <table class="table" vertical-align="top">
+         <tr>
+             <td class="bgWhite">
+                 <table class="inner-table">
+                 <xsl:variable name="tabSwitchValue" select="tabSwitch" />   
+                     <tr class="bgWhite">
+                          <td colspan="13" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
+                     </tr>
+                     <tr class="tableView">
+                         <td>Office</td>
+                         <td>Patient ID</td>
+                         <td>Patient Name</td>
+                         <td>DOS</td>
+                         <td>Claim Age</td>
+                         <td>TFL</td>
+                         <td>Claim Type</td>
+                         <td>Action Required</td>
+                         <td>Insurance Name</td>
+                         <td>Insurance Type</td>
+                         <td>Est.Amount</td>
+                         <xsl:if test="tabSwitch= 'sendBack' ">
+                         <td>Billing Amount</td>
+                         <td>Last Team that Worked on this claim</td>
+                         </xsl:if>
 
-        .yellow {
-            background-color: #ff0;
-        }
+                     </tr>    
+                      <xsl:for-each select="data/data">   
 
-        .red {
-            background-color: #f00;
-            color: #fff;
-        }
+                     <tr class="whiteBg">   
 
-        .white {
-            background-color: #fff;
-        }
-
-        .dullBlue {
-            background-color: #a2c4c9;
-            color: #000;
-        }
-
-        .dullGreen {
-            background-color: #b6d7a8;
-        }
-
-        .text-white {
-            color: #fff;
-        }
-
-
-        .width-7 {
-            width: 7%;
-        }
-
-        .width-8 {
-            width: 8%;
-        }
-
-        .width-10 {
-            width: 10%;
-        }
-
-        .width-13 {
-            width: 13%;
-        }
-
-        .width-15 {
-            width: 15%;
-        }
-        .width-17 {
-            width: 17%;
-        }
-        .width-32 {
-            width: 32%;
-        }
-        .width-20 {
-            width: 20%;
-        }
-        .width-21 {
-            width: 21%;
-        }
-        .white-22 {
-            width: 22%;
-        }
-        .text-left {
-            text-align: left;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .table td.borderNone {
-            border: 0px;
-            background:#fff;
-        }
-        .blackClr {
-            color:#000;
-        }
-        .align-right {
-            text-align:right;
-        }
-        .notCover {
-            display: inline-block;
-            background: #ffcdc7;
-            border-radius: 5px;
-            padding: 3px 5px;
-            color: #d80000;
-        }
-        .quaterly {
-            display: inline-block;
-            background: #e7eaed;
-            border-radius: 5px;
-            padding: 3px 5px;
-            color: #000;
-        }
-        
-    </style>
-</head>
-<body>
-    <form>
-        <table class="table" vertical-align="top">
-            <tr>
-                <td colspan="8" class="tableHeading">
-                    <xsl:value-of select="fileName"/>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="8"></td>
-            </tr>
-            
-            </table>
-
-    
-   
-       
-    </form>
-
-</body>
-
-</html>
-</xsl:template>
-</xsl:stylesheet>
+                         <td><xsl:value-of select="officeName"/></td>
+                         <td><xsl:value-of select="patientId"/></td>
+                         <td><xsl:value-of select="patientName"/></td>
+                         <td><xsl:variable name="month" select="substring(dos, 6, 2)" />
+                       <xsl:variable name="day" select="substring(dos, 9, 2)" />
+                       <xsl:variable name="year" select="substring(dos, 1, 4)" />
+                       <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>
+                       <td><xsl:value-of select="claimAge"/></td>
+                       <td><xsl:value-of select="timelyFilingLimitData"/></td>
+                       <td>
+                           <xsl:choose>
+                           <xsl:when test="substring(claimId, string-length(claimId) - 1) = '_P'">
+                           <xsl:text>Primary</xsl:text>
+                           </xsl:when>
+                           <xsl:otherwise>
+                           <xsl:text>Secondary</xsl:text>
+                           </xsl:otherwise>
+                           </xsl:choose>
+                       </td>
+                       <td> <xsl:choose>
+                           <xsl:when test="statusType='1' ">
+                           <xsl:text>Billing</xsl:text>
+                           </xsl:when>
+                           <xsl:otherwise>
+                           <xsl:text>Re-Billing</xsl:text>
+                           </xsl:otherwise>
+                           </xsl:choose>
+                       </td>
+                       <td> <xsl:choose>
+                           <xsl:when test="substring(claimId, string-length(claimId) - 1) = '_P'">
+                             <xsl:value-of select="primaryInsurance"/>
+                           </xsl:when>
+                           <xsl:otherwise>
+                           <xsl:value-of select="secondaryInsurance"/>
+                           </xsl:otherwise>
+                           </xsl:choose>
+                       </td>
+                       <td> <xsl:choose>
+                             <xsl:when test="substring(claimId, string-length(claimId) - 1) = '_P'">
+                             <xsl:value-of select="prName"/>
+                           </xsl:when>
+                           <xsl:otherwise>
+                           <xsl:value-of select="secName"/>
+                           </xsl:otherwise>
+                           </xsl:choose>
+                       </td>
+                       <td><xsl:choose>
+                            <xsl:when test="substring(claimId, string-length(claimId) - 1) = '_P'">
+                             <xsl:value-of select="concat('$', format-number(primeSecSubmittedTotal, '0'))"/>
+                           </xsl:when>
+                           <xsl:otherwise>
+                           <xsl:value-of select="concat('$', format-number(secTotal,'0'))"/>
+                           </xsl:otherwise>
+                           </xsl:choose>
+                       </td>    
+                       <xsl:if test="$tabSwitchValue= 'sendBack' ">           
+                       <td>
+                           <xsl:value-of select="concat('$', format-number(billedAmount, '0'))"/>
+                       </td>
+                       <td>         
+                            <xsl:value-of select="lastTeam"/>        
+                       </td>  
+                        </xsl:if>               
+                       </tr>            
+                    </xsl:for-each> 
+                 </table>
+             </td>
+         </tr>
+     </table>
+        </form>
+    </body>
+    </html>
+    </xsl:template>
+    </xsl:stylesheet>

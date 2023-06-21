@@ -18,27 +18,20 @@ import javax.xml.transform.stream.StreamSource;
 
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
-import com.tricon.rcm.dto.download.ClaimListDownloadDto;
+import com.tricon.rcm.dto.download.AllPendancyDownloadDto;
+import com.tricon.rcm.dto.download.ClaimDetailsDownloadDto;
+import com.tricon.rcm.dto.download.IssueClaimDownloadDto;
+import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
+import com.tricon.rcm.dto.download.PendancyDownloadDto;
+import com.tricon.rcm.dto.download.ProductionDownloadDto;
 
 
 
 public class DtoToXmlConverted {
 	
-	public  String convertToXML(ClaimListDownloadDto dto, String dir ) throws Exception{
+	public  String convertToXMLForListOfClaims(ListOfClaimDownloadDto dto, String dir ) throws Exception{
 		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
-		JAXBContext contextObj = JAXBContext.newInstance(ClaimListDownloadDto.class);
-
-		Marshaller marshallerObj = contextObj.createMarshaller();
-		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		marshallerObj.marshal(dto, new FileOutputStream(filePath));
-		return 	filePath;
-
-	}
-	
-	public  String convertClaimToXML(ClaimListDownloadDto dto, String dir ) throws Exception{
-		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
-		JAXBContext contextObj = JAXBContext.newInstance(ClaimListDownloadDto.class);
-
+		JAXBContext contextObj = JAXBContext.newInstance(ListOfClaimDownloadDto.class);
 		Marshaller marshallerObj = contextObj.createMarshaller();
 		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		marshallerObj.marshal(dto, new FileOutputStream(filePath));
@@ -87,6 +80,50 @@ public class DtoToXmlConverted {
 	    	if (bh!=null) bh.close();
 	    }
 	    return st;
+	}
+	
+	public  String convertToXMLForIssueClaim(IssueClaimDownloadDto dto, String dir ) throws Exception{
+		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
+		JAXBContext contextObj = JAXBContext.newInstance(IssueClaimDownloadDto.class);
+		Marshaller marshallerObj = contextObj.createMarshaller();
+		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		return 	filePath;
+
+	}
+
+	public String convertToXMLForclaimDetails(ClaimDetailsDownloadDto dto, String dir) throws Exception{
+		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
+		JAXBContext contextObj = JAXBContext.newInstance(ClaimDetailsDownloadDto.class);
+		Marshaller marshallerObj = contextObj.createMarshaller();
+		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		return 	filePath;
+	}
+
+	public String convertToXMLForProduction(ProductionDownloadDto dto, String dir)throws Exception {
+		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
+		JAXBContext contextObj = JAXBContext.newInstance(ProductionDownloadDto.class);
+		Marshaller marshallerObj = contextObj.createMarshaller();
+		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		return 	filePath;
+	}
+	public String convertToXMLForPendancy(PendancyDownloadDto dto, String dir) throws Exception {
+		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
+		JAXBContext contextObj = JAXBContext.newInstance(PendancyDownloadDto.class);
+		Marshaller marshallerObj = contextObj.createMarshaller();
+		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		return 	filePath;
+	}
+	public String convertToXMLForAllPendancy(AllPendancyDownloadDto dto, String dir)throws Exception {
+		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
+		JAXBContext contextObj = JAXBContext.newInstance(AllPendancyDownloadDto.class);
+		Marshaller marshallerObj = contextObj.createMarshaller();
+		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		return 	filePath;
 	}
 
 }

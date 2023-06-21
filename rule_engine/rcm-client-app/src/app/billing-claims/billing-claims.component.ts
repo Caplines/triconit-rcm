@@ -16,6 +16,7 @@ import { ClaimService } from '../service/claim.service';
 import { ClaimAssignToTeamModel } from '../models/claim_assign_to_team';
 import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
 import Utils from '../util/utils';
+import { DownLoadService } from '../service/download.service';
 
 @Component({
   selector: 'app-billing-claims',
@@ -61,11 +62,12 @@ export class BillingClaimsComponent {
   countM300: number = 1;
   relatedTo_300 = true;
   actionButtons = false;
+  clientName: string = '';
 
   modelElement: any = { 'modal': '', 'span': '' }
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
-    private route: ActivatedRoute, private title: Title, private location: Location, private router: Router) {
+    private route: ActivatedRoute, private title: Title, private location: Location, private router: Router,private downloadService:DownLoadService) {
     this.claimRcm = { claimId: "" };
     title.setTitle(Utils.defaultTitle + "Claim Detail");
   }
@@ -73,7 +75,7 @@ export class BillingClaimsComponent {
   ngOnInit(): void {
     this.smilePoint = Utils.isSmilePoint();
     this.selectedTeam = Utils.selectedTeam();
-
+    this.clientName = localStorage.getItem("selected_clientName");
     this.route.paramMap.subscribe(params => {
       this.claimUUid = params.get('uuid') || '';
       this.fetchClaimsByUuid(this.claimUUid);
@@ -1034,5 +1036,16 @@ export class BillingClaimsComponent {
         this.relatedTo_300 = true;
       }
     }
+  }
+  downloadPdf() {
+    let data = { "fileName": "Claim_Details", "data": [this.claimRcm], "teamId": this.selectedTeam, "clientName": this.clientName, "otherTeamsRemark": this.otherTeamRemarks, "claimRules": this.claimRules, "serviceLevelCodeManual": this.claimServiceLevelModel, "ruleEngineReport": this.ruleEngineReport, "claimSubmissionDto": this.submissionDto, "relatedTo_300": this.relatedTo_300, "countA": this.countA, "countAS": this.countAS, "count": this.count };
+    this.appService.claimDetailsPdfDownload(data, "pdf", (res: any) => {
+      if (res.status === 200) {
+        console.log(res.body);
+        this.downloadService.saveBolbData(res.body, "Claim_Details.pdf");
+      } else {
+        console.log("something went wrong");
+      }
+    })
   }
 }
