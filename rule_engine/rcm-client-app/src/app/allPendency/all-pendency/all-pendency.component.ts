@@ -27,17 +27,18 @@ export class AllPendencyComponent {
   tabSwitch: any = { 'withoutDos': true, 'withDos': false ,'withDateOfPending':false};
   isSorted: any = {};
 
-  totalCount: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Aging", "count": 0, "teamId": 4 }, { "teamName": "Posting", "count": 0, "teamId": 5 }, { "teamName": "Quality", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
+  totalCount: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Lc3", "count": 0, "teamId": 4 }, { "teamName": "Office", "count": 0, "teamId": 5 }, { "teamName": "Patient_Calling", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
   datePipeString:any;
   fliterName:string= '';
-  tabValue:any;
+  tabValue:any="withoutDos";
   currentTeamName:string='';
+  totalCountAfterFilter: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Lc3", "count": 0, "teamId": 4 }, { "teamName": "Office", "count": 0, "teamId": 5 }, { "teamName": "Patient_Calling", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
 
   constructor(private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
   }
   ngOnInit(): void {
-    this.teamData = [{ "teamName": "Internal_Audit", "teamId": 3 }, { "teamName": "Aging", "teamId": 4 }, { "teamName": "Posting", "teamId": 5 }, { "teamName": "Quality", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
+    this.teamData = [{ "teamName": "Internal_Audit", "teamId": 3 }, { "teamName": "Lc3", "teamId": 4 }, { "teamName": "Office", "teamId": 5 }, { "teamName": "Patient_Calling", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
     this.getAllPendencyDetails();
     this.currentTeamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
@@ -111,7 +112,10 @@ export class AllPendencyComponent {
     headers.push("Office");
     this.teamData.forEach((e: any) => {
       if (e.teamId != this.currentTeamId) {
-        e.teamName === 'Internal_Audit' ?  headers.push("Internal Audit") : headers.push(e.teamName);
+        e.teamName === 'Internal_Audit' ? headers.push("Internal Audit") :
+        e.teamName === 'Patient_Calling' ? headers.push("Patient Calling") :
+        headers.push(e.teamName);
+    
         }
       })
 
@@ -128,9 +132,9 @@ export class AllPendencyComponent {
         return {
           'Office': e.officeName,
           'InternalAudit': e.counts1['INTERNAL_AUDIT'],
-          'Aging': e.counts1['AGING'],
-          'Posting': e.counts1['POSTING'],
-          'Quality': e.counts1['QUALITY'],
+          'PatientCalling': e.counts1['PATIENT_CALLING'],
+          'Lc3': e.counts1['LC3'],
+          'office': e.counts1['OFFICE'],
           'Billing': e.counts1['BILLING'],
         }
       })
@@ -149,9 +153,9 @@ export class AllPendencyComponent {
         return {
           'Office': e.officeName,
           'InternalAudit': e.dates1['INTERNAL_AUDIT'] ? this.datePipe.transform(new Date(e.dates1['INTERNAL_AUDIT']),'MMM dd, YYYY') : "-",
-          'Aging': e.dates1['AGING'] ? this.datePipe.transform(new Date(e.dates1['AGING']),'MMM dd, YYYY') : "-",
-          'Posting': e.dates1['POSTING'] ? this.datePipe.transform(new Date(e.dates1['POSTING']),'MMM dd, YYYY') : "-",
-          'Quality': e.dates1['QUALITY'] ? this.datePipe.transform(new Date(e.dates1['QUALITY']),'MMM dd, YYYY') : "-",
+          'PatientCalling': e.dates1['PATIENT_CALLING'] ? this.datePipe.transform(new Date(e.dates1['PATIENT_CALLING']),'MMM dd, YYYY') : "-",
+          'Lc3': e.dates1['LC3'] ? this.datePipe.transform(new Date(e.dates1['LC3']),'MMM dd, YYYY') : "-",
+          'office': e.dates1['OFFICE'] ? this.datePipe.transform(new Date(e.dates1['OFFICE']),'MMM dd, YYYY') : "-",
           'Billing': e.dates1['BILLING'] ? this.datePipe.transform(new Date(e.dates1['BILLING']),'MMM dd, YYYY') : "-",
         }
       })
@@ -161,9 +165,9 @@ export class AllPendencyComponent {
         return {
           'Office': e.officeName,
           'InternalAudit': e.datesPending['INTERNAL_AUDIT'] ? this.datePipe.transform(new Date(e.datesPending['INTERNAL_AUDIT']),'MMM dd, YYYY') : "-",
-          'Aging': e.datesPending['AGING'] ? this.datePipe.transform(new Date(e.datesPending['AGING']),'MMM dd, YYYY') : "-",
-          'Posting': e.datesPending['POSTING'] ? this.datePipe.transform(new Date(e.datesPending['POSTING']),'MMM dd, YYYY') : "-",
-          'Quality': e.datesPending['QUALITY'] ? this.datePipe.transform(new Date(e.datesPending['QUALITY']),'MMM dd, YYYY') : "-",
+          'PatientCalling': e.datesPending['PATIENT_CALLING'] ? this.datePipe.transform(new Date(e.datesPending['PATIENT_CALLING']),'MMM dd, YYYY') : "-",
+          'Lc3': e.datesPending['LC3'] ? this.datePipe.transform(new Date(e.datesPending['LC3']),'MMM dd, YYYY') : "-",
+          'office': e.datesPending['OFFICE'] ? this.datePipe.transform(new Date(e.datesPending['OFFICE']),'MMM dd, YYYY') : "-",
           'Billing': e.datesPending['BILLING'] ? this.datePipe.transform(new Date(e.datesPending['BILLING']),'MMM dd, YYYY') : "-",
         }
       })

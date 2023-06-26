@@ -58,7 +58,7 @@ export class HeaderComponent implements OnInit {
 
     this.cwModel = {};
 
-    this.appConstants.teamData = [{ "teamName": "Internal Audit", "teamId": 3 }, { "teamName": "Aging", "teamId": 4 }, { "teamName": "Posting", "teamId": 5 }, { "teamName": "Quality", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
+    this.appConstants.teamData = [{ "teamName": "Internal_Audit", "teamId": 3 }, { "teamName": "Lc3", "teamId": 4 }, { "teamName": "Office", "teamId": 5 }, { "teamName": "Patient_Calling", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
   }
 
   ngOnInit(): void {

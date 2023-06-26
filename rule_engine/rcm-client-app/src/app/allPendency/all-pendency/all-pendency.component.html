@@ -140,7 +140,9 @@
                                                         <th *ngIf="currentTeamId != data.teamId">
                                                             <div class="dFlex">
                                                                 {{data.teamName == 'Internal_Audit' ? 'Internal Audit' :
-                                                                data.teamName}} <span class="sorting">
+                                                                data.teamName == 'Patient_Calling' ? 'Patient Calling' :
+                                                                   data.teamName}}
+                                                                <span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
                                                                         [ngClass]="{'selected': !isSorted[data.teamName]}"
                                                                         (click)="sortData(filteredItems,'count','asc','nestedCount',data.teamName); isSorted[data.teamName] = false"></a>
@@ -276,7 +278,8 @@
                                                         <th *ngIf="currentTeamId != data.teamId">
                                                             <div class="dFlex">
                                                                 {{data.teamName == 'Internal_Audit' ? 'Internal Audit' :
-                                                                data.teamName}} <span class="sorting">
+                                                                data.teamName == 'Patient_Calling' ? 'Patient Calling' :
+                                                                   data.teamName}} <span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
                                                                         [ngClass]="{'selected': !isSorted[data.teamName]}"
                                                                         (click)="sortData(filteredItems,'count','asc','nestedDate',data.teamName); isSorted[data.teamName] = false"></a>
@@ -405,7 +408,8 @@
                                                         <th *ngIf="currentTeamId != data.teamId">
                                                             <div class="dFlex">
                                                                 {{data.teamName == 'Internal_Audit' ? 'Internal Audit' :
-                                                                data.teamName}} <span class="sorting">
+                                                                data.teamName == 'Patient_Calling' ? 'Patient Calling' :
+                                                                   data.teamName}}<span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
                                                                         [ngClass]="{'selected': !isSorted[data.teamName]}"
                                                                         (click)="sortData(filteredItems,'count','asc','nestedDate',data.teamName); isSorted[data.teamName] = false"></a>
