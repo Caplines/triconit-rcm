@@ -996,7 +996,7 @@ public class ClaimServiceImpl {
 				for (Map.Entry<String, RcmClaimLog> entry : logMap.entrySet()) {
 
 					RcmClaimLog l= entry.getValue();
-					claimLogDto = new ClaimLogDto(source, l.getOffice().getUuid(), 1, claimLogDto.getNewClaimsCount(),
+					claimLogDto = new ClaimLogDto(source, l.getOffice().getUuid(), 1, newClaimCt,
 							new Date(), entry.getValue().getOffice().getName());
 					System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 					commonClaimServiceImpl.saveClaimLog(entry.getValue(), user, entry.getValue().getOffice(),
@@ -1031,6 +1031,7 @@ public class ClaimServiceImpl {
 
 			}
 		} catch (Exception n) {
+			n.printStackTrace();
 			logger.error("Error in Fetching Claims From Sheet.. ");
 			logger.error(n.getMessage());
 			success = n.getMessage();
