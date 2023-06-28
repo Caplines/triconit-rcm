@@ -1005,12 +1005,21 @@ public class ClaimServiceImpl {
 					mapcountNew.put(entry.getKey(), claimLogDto);
 
 				}
-				
+				RcmClaimLog l=null;
 				 for(RcmOffice fName: rcmOffices) {
 					 if (logMap.get(fName.getName())==null) {
 						 claimLogDto = new ClaimLogDto(source, fName.getUuid(), 1, 0,
 									new Date(), fName.getName());
 						 mapcountNew.put(fName.getName(), claimLogDto); 
+						 
+						    l = new RcmClaimLog();
+							l.setOffice(fName);
+							l.setNewClaimsCount(0);
+							l.setNewClaimsPrimaryCount(0);
+							l.setNewClaimsSecodaryCount(0);
+						 commonClaimServiceImpl.saveClaimLog(l, user, fName,
+									ClaimSourceEnum.GOOGLESHEET.toString(), 1,0,0,0,
+									success);
 					 }
 	               }
 

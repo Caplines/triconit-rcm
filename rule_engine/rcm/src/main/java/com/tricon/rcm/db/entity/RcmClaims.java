@@ -43,7 +43,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	//@Column(name = "claim_status")
 	//private String claimStatus;// For Rule Engine..
 
-	@Column(name = "patient_id", length = 8)
+	@Column(name = "patient_id", length = 255)
 	private String patientId;// c2
 
 	@Column(name = "patient_name", length = 255)
