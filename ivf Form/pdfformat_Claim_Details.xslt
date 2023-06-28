@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-       version="1.0" >
-    	<xsl:output method="xml" indent="yes" encoding="UTF-8"  version="1.0"  />
-    	<xsl:template match="/claimDetailsDownloadDto">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+version="1.0" >
+<xsl:output method="xml" indent="yes" encoding="UTF-8"  version="1.0"  />
+<xsl:template match="/claimDetailsDownloadDto">
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
@@ -820,7 +820,7 @@
                             <xsl:text>Mail</xsl:text>
                         </xsl:if>
                         <xsl:if test="claimSubmissionDto/channel='Portal'">
-                            <xsl:text>Portal, ClaimId:<xsl:value-of select="claimSubmissionDto/claimNumber"/></xsl:text>
+                            <xsl:text>Portal, <b>ClaimId:</b><xsl:value-of select="claimSubmissionDto/claimNumber"/></xsl:text>
                         </xsl:if>
                      </td>
                  </tr>
@@ -842,7 +842,7 @@
                      <td colspan="3">Pre-Auth submitted with the claim?</td>
                      <td colspan="4">
                         <xsl:if test="claimSubmissionDto/preauth='true'">
-                            <xsl:text>Yes,Remark:<xsl:value-of select="claimSubmissionDto/preauthNo"/></xsl:text>
+                            <xsl:text>Yes, <b>Remarks:</b><xsl:value-of select="claimSubmissionDto/preauthNo"/></xsl:text>
 
                         </xsl:if>
                         <xsl:if test="claimSubmissionDto/preauth='false'">
@@ -855,7 +855,7 @@
                      <td colspan="3">Provider Change Reference Number Needed?</td>
                      <td colspan="4">
                         <xsl:if test="claimSubmissionDto/refferalLetter='true'">
-                            <xsl:text>Yes, Remark:<xsl:value-of select="claimSubmissionDto/providerRefNo"/></xsl:text>
+                            <xsl:text>Yes, <b>Remarks:</b><xsl:value-of select="claimSubmissionDto/providerRefNo"/></xsl:text>
                         </xsl:if>
                         <xsl:if test="claimSubmissionDto/refferalLetter='false'">
                             <xsl:text>No</xsl:text>

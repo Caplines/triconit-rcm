@@ -19,8 +19,8 @@ public class IssueClaimDownloadDto {
 	
 	@XmlElementWrapper
 	@XmlElement(name="data") 
-	List<IssueClaimPdfDto> data;
-	String fileName;
-	String clientName;
-	int issueClaimCounts;
+	private List<IssueClaimPdfDto> data;
+	private String fileName;
+	private String clientName;
+	private int issueClaimCounts;
 }

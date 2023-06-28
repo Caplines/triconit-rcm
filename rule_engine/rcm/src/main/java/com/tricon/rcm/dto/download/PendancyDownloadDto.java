@@ -19,11 +19,11 @@ public class PendancyDownloadDto {
 	
 		@XmlElementWrapper
 		@XmlElement(name="data") 
-		List<PendancyPdfDto> data;
-		String fileName;
-		String clientName;
-		int totalCount;
-		int totalRemLiteReject;
-		int totalcountAndRemLiteReject;
+		private List<PendancyPdfDto> data;
+		private String fileName;
+		private String clientName;
+		private int totalCount;
+		private int totalRemLiteReject;
+		private int totalcountAndRemLiteReject;
 	
 }

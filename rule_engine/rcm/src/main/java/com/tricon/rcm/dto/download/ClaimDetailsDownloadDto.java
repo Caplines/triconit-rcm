@@ -27,17 +27,17 @@ public class ClaimDetailsDownloadDto {
 	
 	@XmlElementWrapper
 	@XmlElement(name = "data")
-	List<FreshClaimDataImplDto> data;
-	List<OtherTeamsRemarks>otherTeamsRemark;
-	List<ClaimRules>claimRules;
-	ServiceLevelCodeDataModel serviceLevelCodeManual;
-	List<RuleEngineReport>ruleEngineReport;
-	SubmissionDto claimSubmissionDto;
-	CountA countA;
-	CountAS countAS;
-	Count count;
-	String fileName;
-	String clientName;
-	int teamId;
-	boolean relatedTo_300;
+	private List<FreshClaimDataImplDto> data;
+	private List<OtherTeamsRemarks>otherTeamsRemark;
+	private List<ClaimRules>claimRules;
+	private ServiceLevelCodeDataModel serviceLevelCodeManual;
+	private List<RuleEngineReport>ruleEngineReport;
+	private SubmissionDto claimSubmissionDto;
+	private CountA countA;
+	private CountAS countAS;
+	private Count count;
+	private String fileName;
+	private String clientName;
+	private int teamId;
+	private boolean relatedTo_300;
 }

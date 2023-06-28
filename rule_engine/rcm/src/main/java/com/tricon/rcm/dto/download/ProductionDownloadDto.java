@@ -16,7 +16,7 @@ public class ProductionDownloadDto {
 	
 	@XmlElementWrapper
 	@XmlElement(name = "data")
-	List<ProductionPdfDto> data;
-	String fileName;
-	String clientName;
+	private List<ProductionPdfDto> data;
+	private String fileName;
+	private String clientName;
 }

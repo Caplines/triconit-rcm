@@ -19,8 +19,8 @@ public class ListOfClaimDownloadDto {
 	
 	@XmlElementWrapper
 	@XmlElement(name = "data")
-	List<ListOfClaimPdfDto> data;
-	String fileName;
-	String clientName;
-	String tabSwitch;
+	private List<ListOfClaimPdfDto> data;
+	private String fileName;
+	private String clientName;
+	private String tabSwitch;
 }

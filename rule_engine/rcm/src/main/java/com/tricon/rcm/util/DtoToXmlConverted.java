@@ -19,6 +19,7 @@ import javax.xml.transform.stream.StreamSource;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.tricon.rcm.dto.download.AllPendancyDownloadDto;
+import com.tricon.rcm.dto.download.AllPendancySortedDownloadDto;
 import com.tricon.rcm.dto.download.ClaimDetailsDownloadDto;
 import com.tricon.rcm.dto.download.IssueClaimDownloadDto;
 import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
@@ -117,9 +118,9 @@ public class DtoToXmlConverted {
 		marshallerObj.marshal(dto, new FileOutputStream(filePath));
 		return 	filePath;
 	}
-	public String convertToXMLForAllPendancy(AllPendancyDownloadDto dto, String dir)throws Exception {
+	public String convertToXMLForAllPendancy(AllPendancySortedDownloadDto dto, String dir)throws Exception {
 		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
-		JAXBContext contextObj = JAXBContext.newInstance(AllPendancyDownloadDto.class);
+		JAXBContext contextObj = JAXBContext.newInstance(AllPendancySortedDownloadDto.class);
 		Marshaller marshallerObj = contextObj.createMarshaller();
 		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		marshallerObj.marshal(dto, new FileOutputStream(filePath));

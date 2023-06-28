@@ -32,7 +32,7 @@ export class AllPendencyComponent {
   fliterName:string= '';
   tabValue:any="withoutDos";
   currentTeamName:string='';
-  totalCountAfterFilter: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Lc3", "count": 0, "teamId": 4 }, { "teamName": "Office", "count": 0, "teamId": 5 }, { "teamName": "Patient_Calling", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
+  teamName: any = ["INTERNAL_AUDIT", "LC3", "OFFICE", "PATIENT_CALLING", "BILLING"];
 
   constructor(private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
@@ -335,7 +335,9 @@ export class AllPendencyComponent {
       const matchedTeam = this.teamData.find((item:any) => item.teamId === parseInt(this.currentTeamId));
     this.currentTeamName = matchedTeam ? matchedTeam.teamName.toUpperCase() : null;
     console.log(this.currentTeamName);    
-    let data = {"fileName":"AllPendancy","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamName":this.currentTeamName,"totalCount":this.totalCount,"currentTeamId":this.currentTeamId};
+    const teamsData: string[] = this.teamName.filter((team:any) => team !== this.currentTeamName);
+    teamsData.sort((a, b) => a.localeCompare(b));
+    let data = {"fileName":"AllPendancy","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamName":this.currentTeamName,"totalCount":this.totalCount,"currentTeamId":this.currentTeamId,"teamsData":teamsData};
     this. _service.allPendancyPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
         console.log(res.body);
