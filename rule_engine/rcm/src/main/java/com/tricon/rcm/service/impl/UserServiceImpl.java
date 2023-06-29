@@ -118,19 +118,21 @@ public class UserServiceImpl {
 	 * @return
 	 */
 	
-	public List<RcmTeamDto> getTeamNameByOtherUserTeamId(PartialHeader partialHeader,boolean handleInterAudit) {
+	public List<RcmTeamDto> getTeamNameByOtherUserTeamId(PartialHeader partialHeader) {
 		int teamId = RcmTeamEnum.validateTeamId(partialHeader.getTeamId());
 		if (teamId != 0) {
-			List<RcmTeamDto> teamName =null;
+			List<RcmTeamDto> teams =null;
            //in case if internal audit only pass Billing Team
-           if (partialHeader.getTeamId()==RcmTeamEnum.INTERNAL_AUDIT.getId() && handleInterAudit) {
-				teamName= masterService.getTeamById(RcmTeamEnum.BILLING.getId());
+           /*if (partialHeader.getTeamId()==RcmTeamEnum.INTERNAL_AUDIT.getId() && handleInterAudit) {
+        	   teams= masterService.getTeamById(RcmTeamEnum.BILLING.getId());
 				
 			}else {
-				teamName = masterService.getTeams();
-				teamName.removeIf(x -> x.getTeamId() == partialHeader.getTeamId());
-			}
-			return teamName;
+				teams = masterService.getTeams();
+				teams.removeIf(x -> x.getTeamId() == partialHeader.getTeamId());
+			}*/
+       	teams = masterService.getTeams();
+		teams.removeIf(x -> x.getTeamId() == partialHeader.getTeamId());
+			return teams;
 		}
 		
 		return null;
