@@ -278,8 +278,16 @@ public class RuleBookServiceImpl {
 
 	}
 
+	public static void main(String a[]) {
+		
+		String ss="d";
+		if (ss.equalsIgnoreCase(null)) {
+			System.out.println("d");
+		}else  System.out.println("d1");
+	}
 	/**
 	 * Rule For :Provider on Claim Credentialed with the insurance
+	 * Credentialing Status
 	 * 
 	 * @param rule
 	 * @param creList
@@ -326,7 +334,7 @@ public class RuleBookServiceImpl {
 					.filter(e -> e.getLocation().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getPlanType().trim().equalsIgnoreCase(rcmClaim.getRcmInsuranceType().getName())
 							&& e.getInsuranceCode().trim().equalsIgnoreCase(testVal)
-							//&& insNameFinal.equalsIgnoreCase(e.getInsurance())
+							&& e.getProviderCode().equalsIgnoreCase(rcmClaim.getTreatingProvider())
 							)
 					.collect(Collectors.toList());
 

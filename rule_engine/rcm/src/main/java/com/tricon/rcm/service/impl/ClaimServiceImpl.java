@@ -2105,6 +2105,7 @@ public class ClaimServiceImpl {
 
 			
 			RcmRules rule = rcmRuleRepo.findById(s.getRuleId());
+			//if (s.getRemark()==null)  return ;
 			if (!rule.getManualAuto().equals(Constants.RULE_TYPE_MANUAL)) return ;
 			RcmClaimRuleValidation val = rcmClaimRuleValidationRepo.findByRuleAndClaim(rule, claim);
 
@@ -2560,7 +2561,11 @@ public class ClaimServiceImpl {
 						saveClaimRuleRemark(fList, user, claim, partialHeader);
 						fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals(Constants.UI_CLAIM_VALIDATION_SECTION))
 					      .collect(Collectors.toList());
-				        if (fList!=null)saveClaimRuleManualAutoMessageType(fList, user, claim, partialHeader);
+				        if (fList!=null) {
+				        	saveClaimRuleManualAutoMessageType(fList, user, claim, partialHeader);
+				        	saveClaimRuleRemark(fList, user, claim, partialHeader);
+				        }
+				        
 
 					}
 					if (dto.getSerCVDto() != null)
