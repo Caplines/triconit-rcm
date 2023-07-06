@@ -77,6 +77,8 @@ export class BaseService {
     'claimDetailsPdf':'/api/claim-details/d',
     'productionPdf':'/api/production/d',
     'allPendancy':'/api/allPendancy/d',
+    'tPlan':'/api/tp-link/d',
+    'Ivf':'/api/ivf/d',
     //
   }
 

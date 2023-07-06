@@ -2,12 +2,17 @@ package com.tricon.rcm.api.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +26,11 @@ import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.download.AllPendancyDownloadDto;
 import com.tricon.rcm.dto.download.ClaimDetailsDownloadDto;
 import com.tricon.rcm.dto.download.IssueClaimDownloadDto;
+import com.tricon.rcm.dto.download.IvfDownloadDto;
 import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
 import com.tricon.rcm.dto.download.PendancyDownloadDto;
 import com.tricon.rcm.dto.download.ProductionDownloadDto;
+import com.tricon.rcm.dto.download.TreatmentPlanDownloadDto;
 import com.tricon.rcm.service.impl.DownLoadService;
 
 
@@ -163,6 +170,44 @@ public class DownloadController extends BaseHeaderController{
 			throws IOException {
 		Object[] obj = null;
 		obj = service.generatePDFForAllPendancy(dto);
+		if (obj != null && obj[1] != null) {
+			ByteArrayOutputStream o = (ByteArrayOutputStream) obj[1];
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition",
+					String.format("attachment; filename=" + dto.getFileName().toString().replaceAll(",", "") + ".pdf"));
+			InputStream in = new ByteArrayInputStream(o.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			o.close();
+		}
+
+	}
+	
+	@PostMapping
+	@RequestMapping(value = "/api/tp-link/d/pdf")
+	public void generatePDFForTreatmentPlan(@RequestBody TreatmentPlanDownloadDto dto, HttpServletResponse response)
+			throws IOException {
+		Object[] obj = null;
+		obj = service.generatePDFForTpPlan(dto);
+		if (obj != null && obj[1] != null) {
+			ByteArrayOutputStream o = (ByteArrayOutputStream) obj[1];
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition",
+					String.format("attachment; filename=" + dto.getFileName().toString().replaceAll(",", "") + ".pdf"));
+			InputStream in = new ByteArrayInputStream(o.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			o.close();
+		}
+
+	}
+	
+	@PostMapping
+	@RequestMapping(value = "/api/ivf/d/pdf")
+	public void generatePDFForIvf(@RequestBody IvfDownloadDto dto, HttpServletResponse response)
+			throws IOException {
+		Object[] obj = null;
+		obj = service.generatePDFForIvf(dto);
 		if (obj != null && obj[1] != null) {
 			ByteArrayOutputStream o = (ByteArrayOutputStream) obj[1];
 			response.setContentType("application/octet-stream");

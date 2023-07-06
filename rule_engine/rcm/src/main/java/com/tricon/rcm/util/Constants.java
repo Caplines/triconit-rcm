@@ -100,5 +100,8 @@ public class Constants {
 	public static final int Primary_Status_Primary=0;
 	public static final int Primary_Status_Secondary=1;
 	public static final int Primary_Status_Primary_submit=2;
+	public static final String DEV_URL="http://localhost:4200/";
+	public static final String PROD_URL="http://18.221.170.13/";
+	
 
 }

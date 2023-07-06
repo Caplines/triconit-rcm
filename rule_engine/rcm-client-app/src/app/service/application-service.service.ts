@@ -411,4 +411,12 @@ export class ApplicationServiceService extends BaseService {
   allPendancyPdfDownload(params: any, pdfcsv: string, callback: any) {
     this.postDataPdf(params, this.httpUrl['allPendancy'] + "/" + pdfcsv, callback);
   }
+
+  TplanPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['tPlan'] + "/" + pdfcsv, callback);
+  }
+
+  IvfPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['Ivf'] + "/" + pdfcsv, callback);
+  }
 }

@@ -2,6 +2,7 @@ package com.tricon.rcm.service.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,11 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.hibernate.mapping.Array;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
@@ -23,11 +25,14 @@ import com.tricon.rcm.dto.download.AllPendancyDownloadDto;
 import com.tricon.rcm.dto.download.AllPendancySortedDownloadDto;
 import com.tricon.rcm.dto.download.ClaimDetailsDownloadDto;
 import com.tricon.rcm.dto.download.IssueClaimDownloadDto;
+import com.tricon.rcm.dto.download.IvfDownloadDto;
 import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
 import com.tricon.rcm.dto.download.PendancyDownloadDto;
 import com.tricon.rcm.dto.download.ProductionDownloadDto;
+import com.tricon.rcm.dto.download.TreatmentPlanDownloadDto;
 import com.tricon.rcm.pdfDto.AllPendancyPdfDto;
 import com.tricon.rcm.pdfDto.TotalCount;
+import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.DtoToXmlConverted;
 
 
@@ -55,8 +60,21 @@ public class DownLoadService {
 	@Value("${All_Pendancy.xslt.file}")
 	private String ALL_PENDANCY_XSLT_FILE;
 	
+	@Value("${Tp_Plan_Link.xslt.file}")
+	private String TP_PLAN_XSLT_FILE;
+	
+	
+	@Value("${Ivf_Link.xslt.file}")
+	private String IVF_XSLT_FILE;
+	
 	@Autowired
 	ClaimServiceImpl claimServiceImpl;
+	
+	@Autowired
+	ResourceLoader resourceLoader;
+	
+	@Autowired
+    private Environment environment;
 	
 	
 	public Object[] generatePdfForListOfClaims(ListOfClaimDownloadDto data) {
@@ -138,8 +156,52 @@ public class DownLoadService {
 		ByteArrayOutputStream o = null;
 		Object[] obj = new Object[2];
 		DtoToXmlConverted xml = new DtoToXmlConverted();
-		try {
-			String filePath = xml.convertToXMLForclaimDetails(dto, XSLT_PATH);
+		String claimUuid=dto.getData().stream().map(x->x.getUuid()).findFirst().orElse(null);
+//		if(!dto.getTpId().trim().equals("") && !dto.getTpId().isEmpty() ){	
+//			try {
+//				ExecutorService emailExecutor = Executors.newCachedThreadPool();
+//				emailExecutor.execute(new Runnable() {
+//					@Override
+//					public void run() {
+//						TreatmentPlanDownloadDto tpdto=new TreatmentPlanDownloadDto();
+//						tpdto.setData(dto.getTpData());
+//						tpdto.setFee(dto.getFee());
+//						tpdto.setIns(dto.getIns());
+//						tpdto.setPat(dto.getPat());
+//						tpdto.setClaimUuid(claimUuid);
+//						tpdto.setFileName("TPlan_Link");
+//						generatePDFForTpPlan(tpdto);
+//					}
+//				});
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			
+//		}
+//		if(!dto.getIvId().trim().equals("") && !dto.getIvId().isEmpty() ){	
+//			try {
+//				ExecutorService emailExecutor = Executors.newCachedThreadPool();
+//				emailExecutor.execute(new Runnable() {
+//					@Override
+//					public void run() {
+//						IvfDownloadDto ivdto=new IvfDownloadDto();
+//						ivdto.setData(dto.getReportData());
+//						ivdto.setClaimUuid(claimUuid);
+//						ivdto.setFileName("Ivf");
+//						generatePDFForIvf(ivdto);
+//					}
+//				});
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			
+//		}
+			try {
+	
+//			String destinationFolder =this.setDestinationPath();
+//			dto.setTpLinkPath(destinationFolder);
+			dto.setPath(this.isDevProfileActive());
+			String filePath = xml.convertToXMLForclaimDetails(dto, XSLT_PATH);		
 			File file = new File(filePath);
 			String xslt = CLAIM_DETAILS_XSLT_FILE;
 			o = xml.createPdfStream(
@@ -270,5 +332,98 @@ public class DownLoadService {
 		}
 		return obj;
 	}
+	
+	public Object[] generatePDFForTpPlan(TreatmentPlanDownloadDto dto) {
+		ByteArrayOutputStream o = null;
+		//String destinationFolder =null;
+		Object[] obj = new Object[2];
+		DtoToXmlConverted xml = new DtoToXmlConverted();
+		try {
+			String filePath = xml.convertToXMLForTpPlan(dto, XSLT_PATH);
+			File file = new File(filePath);
+			String xslt = TP_PLAN_XSLT_FILE;
+			o = xml.createPdfStream(xml.createHtml(filePath, xslt), "");
+			if (file != null)
+				file.delete();
 
+			obj[1] = o;
+//			destinationFolder = this.setDestinationPath();
+//			Path destinationFile = Paths.get(destinationFolder+dto.getClaimUuid().concat("_tp")+ ".pdf");
+//			Files.write(destinationFile, o.toByteArray());
+		} catch (Exception c) {
+             c.printStackTrace();
+		}
+//		finally {
+//			if(o!=null) {
+//				try {
+//					o.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+		return obj;
+	}
+	
+//	private String setDestinationPath() {
+//		Resource resource = resourceLoader.getResource("classpath:");
+//		String fullPath=null;
+//		String filePath = null;
+//		try {
+//			fullPath=resource.getFile().getAbsolutePath();
+//			int endIndex = fullPath.indexOf("rule_engine");
+//			String extractedString = fullPath.substring(0, endIndex-1);
+//			filePath = extractedString.concat(File.separator).concat("ivf Form").concat(File.separator);			
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return filePath;
+//	}
+
+
+	public Object[] generatePDFForIvf(IvfDownloadDto data) {
+		ByteArrayOutputStream o = null;
+		//String destinationFolder =null;
+		Object[] obj = new Object[2];
+		DtoToXmlConverted xml = new DtoToXmlConverted();
+		try {
+			String filePath = xml.convertToXMLForIvf(data, XSLT_PATH);
+			File file = new File(filePath);
+			String xslt = IVF_XSLT_FILE;
+			o = xml.createPdfStream(
+					xml.createHtml(filePath, xslt), "");
+			if (file != null)
+				file.delete();
+
+			obj[1] = o;
+//			destinationFolder = this.setDestinationPath();
+//			Path destinationFile = Paths.get(destinationFolder+data.getClaimUuid().concat("_iv")+ ".pdf");
+//			Files.write(destinationFile, o.toByteArray());
+		} catch (Exception c) {
+                    c.printStackTrace();
+		}
+//		finally {
+//			if(o!=null) {
+//				try {
+//					o.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+		return obj;
+	}
+	
+
+	public String isDevProfileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			if (profile.equals("dev")) {
+				return Constants.DEV_URL;
+			} else {
+				return Constants.PROD_URL;
+			}
+		}
+		return null;
+	}
 }

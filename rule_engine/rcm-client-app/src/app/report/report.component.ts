@@ -4,6 +4,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClaimService  } from '../service/claim.service';
 import { ApplicationServiceService  } from '../service/application-service.service';
+import { DownLoadService } from '../service/download.service';
 @Component({
 	selector: 'app-report',
 	templateUrl: './report.component.html',
@@ -17,7 +18,7 @@ export class ReportComponent implements OnInit {
 	claimUuid:any;
 
 	constructor(public appService: ApplicationServiceService,private route: ActivatedRoute,private title : Title,
-		private claimService: ClaimService,private router:Router) {
+		private claimService: ClaimService,private router:Router,private downloadService:DownLoadService) {
 		title.setTitle("RCM tool - IV Details");
 	}
 
@@ -49,6 +50,17 @@ export class ReportComponent implements OnInit {
 	goToClaimDetailPage() {
 		window.location.href = "/billing-claims/"+ this.claimUuid+"";
 		window.close();
+	  }
+
+	  downloadPdf() {
+		let data = { "fileName": "Ivf", "data": this.reportDataInd,"claimUuid":this.claimUuid};
+		this.appService.IvfPdfDownload(data, "pdf", (res: any) => {
+		  if (res.status === 200) {
+			this.downloadService.saveBolbData(res.body, "Ivf.pdf");
+		  } else {
+			console.log("something went wrong");
+		  }
+		})
 	  }
 
 }

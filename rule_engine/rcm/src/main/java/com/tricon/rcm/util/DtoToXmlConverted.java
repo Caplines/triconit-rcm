@@ -22,9 +22,11 @@ import com.tricon.rcm.dto.download.AllPendancyDownloadDto;
 import com.tricon.rcm.dto.download.AllPendancySortedDownloadDto;
 import com.tricon.rcm.dto.download.ClaimDetailsDownloadDto;
 import com.tricon.rcm.dto.download.IssueClaimDownloadDto;
+import com.tricon.rcm.dto.download.IvfDownloadDto;
 import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
 import com.tricon.rcm.dto.download.PendancyDownloadDto;
 import com.tricon.rcm.dto.download.ProductionDownloadDto;
+import com.tricon.rcm.dto.download.TreatmentPlanDownloadDto;
 
 
 
@@ -125,6 +127,23 @@ public class DtoToXmlConverted {
 		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		marshallerObj.marshal(dto, new FileOutputStream(filePath));
 		return 	filePath;
+	}
+	public String convertToXMLForTpPlan(TreatmentPlanDownloadDto dto, String dir) throws Exception {
+		String filePath=dir+dto.getFileName().replaceAll("/", "_")+".xml";
+		JAXBContext contextObj = JAXBContext.newInstance(TreatmentPlanDownloadDto.class);
+		Marshaller marshallerObj = contextObj.createMarshaller();
+		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		return 	filePath;
+	}
+
+	public String convertToXMLForIvf(IvfDownloadDto dto, String dir) throws Exception {
+		String filePath = dir + dto.getFileName().replaceAll("/", "_") + ".xml";
+		JAXBContext contextObj = JAXBContext.newInstance(IvfDownloadDto.class);
+		Marshaller marshallerObj = contextObj.createMarshaller();
+		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		return filePath;
 	}
 
 }

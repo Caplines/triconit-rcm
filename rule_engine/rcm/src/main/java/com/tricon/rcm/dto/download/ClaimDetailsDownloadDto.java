@@ -40,4 +40,6 @@ public class ClaimDetailsDownloadDto {
 	private String clientName;
 	private int teamId;
 	private boolean relatedTo_300;
+	private String path;
+	
 }

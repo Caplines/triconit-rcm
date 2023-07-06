@@ -129,7 +129,7 @@ version="1.0" >
     width:100%;
     border:0px;
 }
-    </style>
+</style>
 </head>
 <body>
     <form>
@@ -140,7 +140,9 @@ version="1.0" >
             <xsl:variable name="primaryInsCode" select="data/data/primaryInsCode" />
             <xsl:variable name="secondaryInsCode" select="data/data/secondaryInsCode" /> 
             <xsl:variable name="primry" select="data/data/primary" /> 
-            <xsl:variable name="relatedTo300" select="relatedTo_300" />  
+            <xsl:variable name="dynamicPath" select="path"/>
+            <xsl:variable name="uuid" select="data/data/uuid"/>
+            <xsl:variable name="relatedTo300" select="relatedTo_300" />   
            
          <td class="bgWhite">
              <table class="inner-table">
@@ -316,8 +318,21 @@ version="1.0" >
                    </xsl:otherwise>
                   </xsl:choose>
                   </td>
-
-                     <td><a href="#" class="pageLink">IV Link &#10148;</a></td>
+                  <!-- <xsl:choose>
+                  <xsl:when test="string-length(ivfId) &gt; 0">
+                      <td>
+                         <a href="{$dynamicPath}billing-claims/{$uuid}/ivf" id="ivLink" class="pageLink">IV Link &#10148;</a>
+                    </td>
+                </xsl:when>
+                <xsl:otherwise>
+                     <td>
+                         <a href="#" id="ivLink" class="pageLink">IV Link &#10148;</a>
+                    </td>
+                </xsl:otherwise>
+                </xsl:choose> -->
+                <td>
+                    <a href="#" id="ivLink" class="pageLink">IV Link &#10148;</a>
+                </td>
                  </tr>
                  <tr class="whiteBg">
                      <td colspan="2" class="textBold">Signed Tx Plan ID:</td>
@@ -345,7 +360,21 @@ version="1.0" >
                    </xsl:otherwise>
                   </xsl:choose>
                   </td>
-                     <td><a href="#" class="pageLink">Treatment Plan Link &#10148;</a></td>
+<!--                   <xsl:choose>
+                  <xsl:when test="string-length(tpId) &gt; 0">
+                     <td>
+                        <a href="{$dynamicPath}billing-claims/{$uuid}/tp" class="pageLink">Treatment Plan Link &#10148;</a>
+                    </td>
+                </xsl:when>
+                <xsl:otherwise>
+                    <td>
+                        <a href="#" id="ivLink" class="pageLink">Treatment Plan Link &#10148;</a>
+                    </td>
+                </xsl:otherwise>
+            </xsl:choose> -->
+            <td>
+                <a href="#" id="ivLink" class="pageLink">Treatment Plan Link &#10148;</a>
+            </td>
                  </tr>
              </xsl:if>
                  </xsl:for-each> 
