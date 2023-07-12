@@ -503,7 +503,7 @@ public class AdminServiceImpl {
 				office.setActive(true);
 				office=officeRepo.save(office);
 				officeResponse.setOfficeUuid(office.getUuid());
-				officeResponse.setId(maxId);
+				officeResponse.setId(maxId+1);
 				return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,officeResponse );
 			} 
 //			else {
