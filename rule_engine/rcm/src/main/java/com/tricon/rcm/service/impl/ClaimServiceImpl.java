@@ -1849,13 +1849,27 @@ public class ClaimServiceImpl {
                     //Read Sheet
 					List<CredentialDataAnesthesia> sheetData= readCredentialTrackerAnesthesiaGSheet();
 					RcmRules rule = getRulesFromList(rules, RuleConstants.RULE_ID_307);
-					allLIst.addAll(ruleBookService.rule307(rule, claimCodes));
+					Object insCodesObj= rcmClaimRepository.fetchInsuranceCodeOfClaim(claim.getClaimUuid());
+					Object[] insCodes = (Object[]) insCodesObj;
+					String[] clT = claim.getClaimId().split("_");
+					String insCode="";
+					try {
+					if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
+						insCode =insCodes[0].toString();
+					}else {
+						insCode = insCodes[1].toString();
+					}
+					}catch(Exception xx) {
+						xx.printStackTrace();
+					}
+					
+					allLIst.addAll(ruleBookService.rule307(rule, cddList));
 					
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_308);
-					allLIst.addAll(ruleBookService.rule308(rule,claimCodes, claim.getTreatingProviderFromClaim(),sheetData,claimDos));
+					allLIst.addAll(ruleBookService.rule308(rule,cddList , claim.getTreatingProviderFromClaim(),sheetData,claimDos,insCode));
 					
 				    rule = getRulesFromList(rules, RuleConstants.RULE_ID_309);
-					allLIst.addAll(ruleBookService.rule309(rule,claimCodes, claim.getTreatingProviderFromClaim(),sheetData));
+					allLIst.addAll(ruleBookService.rule309(rule,cddList, claim.getTreatingProviderFromClaim(),sheetData));
 					
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_310);
 					allLIst.addAll(ruleBookService.rule310(rule,claimCodes, claim.getTreatingProviderFromClaim(),sheetData));

@@ -269,7 +269,7 @@ public class ClaimUtil {
 			return null;
 		}
 		Collection<TimelyFilingLimitDto> ruleGen = Collections2.filter(sheetData,
-				sh -> sh.getInsuranceName().equalsIgnoreCase(name));
+				sh -> sh.getInsuranceName().trim().equalsIgnoreCase(name));
 		for (TimelyFilingLimitDto gs : ruleGen) {
 			insuranceType = gs.getTimelyFilingLimit();
 			break;

@@ -231,9 +231,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 						+" 	 as fName,us.last_name as lName from rcm_user us "
 						+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
 						+"     inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
-						+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId "
-						+" 	left join rcm_claims cl on cl.claim_uuid=assign.claim_id "
-						+"     and rut.team_id=:teamId and taken_back is false and  cl.pending is false and cl.first_worked_team_id=:teamId  "
+						//+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId "
+						+" 	left join rcm_claims cl on cl.updated_by=us.uuid "
+						+"     and rut.team_id=:teamId  and  cl.pending is false and cl.first_worked_team_id=:teamId  "
 						+" 	and  CAST(cl.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
 						+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
 						+" 	left join office off on off.uuid=cl.office_id  "
@@ -293,6 +293,15 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 			"  where claim_uuid=:claimUuid and cmp.uuid=:companyId")
 	RcmClaimDetailDto fetchIndividualClaim(@Param("companyId")  String companyId,@Param("claimUuid")  String claimUuid) ;
 	
+	@Query(nativeQuery = true, value = " select pinst.code primaryInsCode,sinst.code secondaryInsCode " +
+			"  from  rcm_claims cl "+
+			"  left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id"+
+			"  left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id"+
+			"  left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id"+
+			"  left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id"+
+			"  where claim_uuid=:claimUuid ")
+	Object fetchInsuranceCodeOfClaim(@Param("claimUuid")  String claimUuid) ;
+
 	//9 May 2023 and IV Date is 5th May 2023 -
 	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos,policy_holder_dob pdob,policy_holder pdName " + 
 			" from  patient p , patient_detail pd where pd.patient_id=p.id and p.patient_id=:patientId " + 

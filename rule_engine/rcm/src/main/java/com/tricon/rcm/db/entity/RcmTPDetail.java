@@ -51,13 +51,13 @@ public class RcmTPDetail implements Serializable {
 	@Column(name = "id_es", length = 15)
 	private String idEs;
 
-	@Column(name = "line_item", length = 15)
+	@Column(name = "line_item", length = 20)
 	private String lineItem;
 
-	@Column(name = "patient_portion", length = 15)
+	@Column(name = "patient_portion", length = 20)
 	private String patientPortion;
 
-	@Column(name = "patient_portion_sec", length = 15)
+	@Column(name = "patient_portion_sec", length = 20)
 	private String patientPortionSec;
 
 	// @Column(name = "pd", length = 15)

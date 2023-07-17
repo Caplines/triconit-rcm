@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.google.api.client.util.Strings;
+import com.tricon.rcm.db.entity.RcmClaimDetail;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmRules;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
@@ -103,7 +104,7 @@ public class RuleBookServiceImpl {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule302.error.message1", new Object[] {}, locale), Constants.FAIL, "",
 						"", ""));
-			} else if (ivf.getBasicInfo14().trim().equalsIgnoreCase(groupNo == null ? "" : groupNo)) {
+			} else if (ivf.getBasicInfo14().trim().equalsIgnoreCase(groupNo == null ? "" : groupNo.trim())) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule302.pass.message", new Object[] {}, locale), Constants.PASS, "",
 						"", ""));
@@ -278,12 +279,21 @@ public class RuleBookServiceImpl {
 
 	}
 
-	public static void main(String a[]) {
+	public static void main(String a[]) throws Exception{
 		
 		String ss="d";
 		if (ss.equalsIgnoreCase(null)) {
 			System.out.println("d");
 		}else  System.out.println("d1");
+		
+		
+		Date eff=  Constants.SDF_CredentialSheetAnes.parse("4/19/2022");
+		Date claimDos=  Constants.SDF_CredentialSheetAnes.parse("06/27/2023");//2023-06-27
+		if (eff.compareTo(claimDos)<0) {
+			System.out.println("TRUE");
+		}else {
+			System.out.println("FALSE");
+		}
 	}
 	/**
 	 * Rule For :Provider on Claim Credentialed with the insurance
@@ -330,6 +340,12 @@ public class RuleBookServiceImpl {
 			final String testVal = insuranceCodeFromSheet;
 			//final String insNameFinal = insName;
 			//CredentialData ddd =creList.get(953);
+			CredentialData ddd1 =creList.get(3032);
+			CredentialData dd22=creList.get(3031);
+			CredentialData dd221=creList.get(3030);
+			
+			
+			
 			List<CredentialData> filterCodeList = creList.stream()
 					.filter(e -> e.getLocation().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getPlanType().trim().equalsIgnoreCase(rcmClaim.getRcmInsuranceType().getName())
@@ -416,23 +432,26 @@ public class RuleBookServiceImpl {
 
 	}
 	
-	public List<TPValidationResponseDto> rule307(RcmRules rule,Set<String> claimCodes) {
+	//CRA Code
+	public List<TPValidationResponseDto> rule307(RcmRules rule,List<RcmClaimDetail>  cdList) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 		List<String> list= new ArrayList<>();
-		String array[]  = { "D0603", "D0602", "D0603" };
+		String array[]  = { "D0601", "D0602", "D0603" };
 		 Collections.addAll(list, array);
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		boolean pass=false;
 		try {
 
-			   for(String code:claimCodes ) {
-				   if (list.contains(code)){
+			 	 
+			 
+			   for(RcmClaimDetail cd:cdList ) {
+				   if (list.contains(cd.getServiceCode())){
 					   pass=true;
 					   break;
 				   }
 			   }
-
+		     
 				if (pass) {
 					// pass
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -456,8 +475,9 @@ public class RuleBookServiceImpl {
 
 	}
 	
-	public List<TPValidationResponseDto> rule308(RcmRules rule,Set<String> claimCodes,
-			String providerCode,List<CredentialDataAnesthesia> sheetData,Date claimDos) {
+	//FDH Certification
+	public List<TPValidationResponseDto> rule308(RcmRules rule,List<RcmClaimDetail>  cdList,
+			String providerCode,List<CredentialDataAnesthesia> sheetData,Date claimDos,String insCode) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 		
@@ -466,9 +486,11 @@ public class RuleBookServiceImpl {
 		boolean found=false;
 		boolean pass=false;
 		try {
+			 
+			
 
-			   for(String code:claimCodes ) {
-				   if (code.equalsIgnoreCase(cd)){
+			   for(RcmClaimDetail code:cdList ) {
+				   if (code.getServiceCode().equalsIgnoreCase(cd)){
 					   found=true;
 					   break;
 				   }
@@ -490,7 +512,7 @@ public class RuleBookServiceImpl {
 					 }else {
 						 pass = false;//no is fail
 					 }
-					 pass = false;//not listed then Fail.
+					 //pass = false;//not listed then Fail.
 					}
 					// pass
 					
@@ -500,7 +522,7 @@ public class RuleBookServiceImpl {
 					pass = true;
 					
 				}
-				
+		       
 				if (pass) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule308.pass.message", new Object[] {  }, locale),
@@ -522,7 +544,8 @@ public class RuleBookServiceImpl {
 
 	}
 	
-	public List<TPValidationResponseDto> rule309(RcmRules rule,Set<String> claimCodes,
+	//Nitrous Certification (D9230)
+	public List<TPValidationResponseDto> rule309(RcmRules rule,List<RcmClaimDetail>  cdList,
 			String providerCode,List<CredentialDataAnesthesia> sheetData) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
@@ -533,8 +556,8 @@ public class RuleBookServiceImpl {
 		boolean pass=false;
 		try {
 
-			   for(String code:claimCodes ) {
-				   if (code.equalsIgnoreCase(cd)){
+			   for(RcmClaimDetail cdL:cdList ) {
+				   if (cdL.getServiceCode().equalsIgnoreCase(cd)){
 					   found=true;
 					   break;
 				   }
@@ -551,7 +574,7 @@ public class RuleBookServiceImpl {
 					 }else {
 						 pass = false;//no is fail
 					 }
-					 pass = false;//not listed then Fail.
+					 //pass = false;//not listed then Fail.
 					}
 					// pass
 					
@@ -583,6 +606,7 @@ public class RuleBookServiceImpl {
 
 	}
 	
+	//Sedation Certification
 	public List<TPValidationResponseDto> rule310(RcmRules rule,Set<String> claimCodes,
 			String providerCode,List<CredentialDataAnesthesia> sheetData) {
 
