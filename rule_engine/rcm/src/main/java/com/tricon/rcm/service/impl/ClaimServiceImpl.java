@@ -1446,7 +1446,9 @@ public class ClaimServiceImpl {
 				}
 			}
 			
-			if (implDto.getTreatingProvider()==null && !pdf) {
+			if (implDto.getClaimType()==null)  implDto.setClaimType("");
+			
+			if ((implDto.getTreatingProvider()==null || implDto.getClaimType().equals(""))  && !pdf) {
 				
 			//Provider Sheet
 				String treatingProvider="";
@@ -1946,7 +1948,7 @@ public class ClaimServiceImpl {
 
 	public List<ProductionDto> claimsProductionReportByTeam(ClaimProductionLogDto dto,PartialHeader partialHeader) {
 
-		
+
 		if (partialHeader.getTeamId() == RcmTeamEnum.BILLING.getId() ) {
 			return rcmClaimRepository.claimProductionByForBilling(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
 					dto.getEndDate());

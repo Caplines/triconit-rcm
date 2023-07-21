@@ -198,9 +198,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("teamid") int teamid);
 
 	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
-			+ " count(Case When claim_status_type_id in :status and pending is true and cl.first_worked_team_id=:teamId and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
-			+ " min(Case When claim_status_type_id in :status and pending=true and cl.first_worked_team_id=:teamId  and cl.rcm_insurance_type in :inst Then  DATEDIFF(NOW(), cl.created_date) End)   as 'opdt',"
-			+ " min(Case When claim_status_type_id in :status and pending=true and cl.first_worked_team_id=:teamId  and cl.rcm_insurance_type in :inst Then  DATEDIFF(NOW(), cl.dos) End) as 'opdos',0 as remoteLiteRejections, "
+			+ " count(Case When claim_status_type_id in :status and pending is true and cl.current_team_id=:teamId and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
+			+ " min(Case When claim_status_type_id in :status and pending=true and cl.current_team_id=:teamId  and cl.rcm_insurance_type in :inst Then  DATEDIFF(NOW(), cl.created_date) End)   as 'opdt',"
+			+ " min(Case When claim_status_type_id in :status and pending=true and cl.current_team_id=:teamId  and cl.rcm_insurance_type in :inst Then  DATEDIFF(NOW(), cl.dos) End) as 'opdos',0 as remoteLiteRejections, "
 			+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName,assig.team_id as assignTeamId " + " FROM "
 			+ "  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
@@ -251,7 +251,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId and rut.team_id=:teamId "
 			+" 	and  CAST(assign.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
 			+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
-			+" 	left join rcm_claims cl on cl.claim_uuid=assign.claim_id "
+			+" 	left join rcm_claims cl on cl.claim_uuid=assign.claim_id and assign.created_by=us.uuid "
 			+"     and   taken_back is false and cl.first_worked_team_id=:teamId and cl.current_team_id<>:teamId "
 			+" 	left join office off on off.uuid=cl.office_id  "
 			+" 	where   cmp.company_id=:companyId and rut.team_id=:teamId group by us.uuid")

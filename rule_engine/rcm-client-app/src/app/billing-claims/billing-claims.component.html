@@ -26,10 +26,6 @@
                                         Secondary
                                     </label>
                                 </ng-container>
-                                <!-- <div class="text-right" style="margin-top: 0px;">
-                                    <button type="button" class="icon-btn" (click)="downloadPdf()">
-                                        <img src="../../assets/img/pdf.png" /></button>
-                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -413,7 +409,7 @@
                                                 <tr
                                                     *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';">
                                                     <ng-container *ngIf="(rule.ruleId==318 || rule.ruleId==319 ||  rule.ruleId==321
-                                                   || rule.ruleId==322) &&
+                                                   ) &&
                                                     ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
                                                    ||  (!claimRcm.primary && (claimRcm.secondaryInsCode=='CMC' || claimRcm.secondaryInsCode=='AMC' || claimRcm.secondaryInsCode=='MCR' || claimRcm.secondaryInsCode=='CHIP')) )
                                                     ">
@@ -422,7 +418,7 @@
                                                         <td *ngIf="rule.ruleId==318">1</td>
                                                         <td *ngIf="rule.ruleId==319">2</td>
                                                         <td *ngIf="rule.ruleId==321">3</td>
-                                                        <td *ngIf="rule.ruleId==322">4</td>
+                                                        <!--<td *ngIf="rule.ruleId==322">4</td>-->
 
                                                         <td>{{rule.ruleName}}</td>
                                                         <!-- <td>Full Claim</td>
@@ -1115,11 +1111,19 @@
 
                                             <select class="form-control" id="selectTeam" name="w"
                                                 [(ngModel)]='claimEditModel.assignToTeam'>
-                                                <ng-container *ngIf="!isInternalAudit">
+                                                <ng-container *ngIf="assignType == 'assign'">
                                                     <option selected="true" value="-1">Select Team</option>
                                                 </ng-container>
                                                 <ng-container *ngFor="let tl of teamsMs">
-                                                    <option [selected]="isInternalAudit== true" [value]="tl.teamId">
+                                                    <option *ngIf="assignType == 'reviewed' && tl.teamId==7"
+                                                        [selected]="assignType== 'reviewed'" [value]="tl.teamId">
+                                                        {{tl.teamName}}</option>
+                                                    <option
+                                                        *ngIf="assignType == 'assign' && isInternalAudit && tl.teamId!=7"
+                                                        [value]="tl.teamId">
+                                                        {{tl.teamName}}</option>
+                                                    <option *ngIf="assignType == 'assign' && !isInternalAudit"
+                                                        [value]="tl.teamId">
                                                         {{tl.teamName}}</option>
                                                 </ng-container>
                                             </select>
@@ -1143,9 +1147,9 @@
                                             Team Lead</button>
                                     </ng-container>
                                     <ng-container *ngIf="assignModel.toOtherTeam">
-                                        <button *ngIf="isInternalAuditLogin" type="button" class="btn btn-success"
+                                        <button *ngIf="assignType == 'reviewed'" type="button" class="btn btn-success"
                                             (click)="assignToOtherTeam()">Ready to be Submitted</button>
-                                        <button *ngIf="!isInternalAuditLogin" type="button" class="btn btn-success"
+                                        <button *ngIf="assignType == 'assign'" type="button" class="btn btn-success"
                                             (click)="assignToOtherTeam()">Assign to Other
                                             Team</button>
                                     </ng-container>
@@ -1172,7 +1176,7 @@
                                                           (claimRcm.primary && claimRcm.pending) 
                                                        ) && isBilling " type="button" class="btn btn-success"
                                 [disabled]="inSave" (click)="saveClaim('submit')">Mark as Submitted</button>
-                            <button *ngIf="claimRcm.allowEdit && !isInternalAudit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
+                            <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
                                                        )" type="button" class="btn btn-success" [disabled]="inSave"
                                 (click)="saveClaim('assign')">Assign to Other Team</button>

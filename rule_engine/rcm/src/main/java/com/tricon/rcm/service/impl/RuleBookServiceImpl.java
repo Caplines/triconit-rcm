@@ -340,9 +340,9 @@ public class RuleBookServiceImpl {
 			final String testVal = insuranceCodeFromSheet;
 			//final String insNameFinal = insName;
 			//CredentialData ddd =creList.get(953);
-			CredentialData ddd1 =creList.get(3032);
-			CredentialData dd22=creList.get(3031);
-			CredentialData dd221=creList.get(3030);
+			//CredentialData ddd1 =creList.get(3032);
+			//CredentialData dd22=creList.get(3031);
+			//CredentialData dd221=creList.get(3030);
 			
 			
 			
@@ -350,7 +350,7 @@ public class RuleBookServiceImpl {
 					.filter(e -> e.getLocation().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getPlanType().trim().equalsIgnoreCase(rcmClaim.getRcmInsuranceType().getName())
 							&& e.getInsuranceCode().trim().equalsIgnoreCase(testVal)
-							&& e.getProviderCode().equalsIgnoreCase(rcmClaim.getTreatingProvider())
+							&& e.getProviderCode().equalsIgnoreCase(rcmClaim.getTreatingProviderFromClaim())
 							)
 					.collect(Collectors.toList());
 

@@ -63,11 +63,11 @@ export class BillingClaimsComponent {
   relatedTo_300 = true;
   actionButtons = false;
   clientName: string = '';
-
+  assignType: string = '';
   modelElement: any = { 'modal': '', 'span': '' }
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
-    private route: ActivatedRoute, private title: Title, private location: Location, private router: Router,private downloadService:DownLoadService) {
+    private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService) {
     this.claimRcm = { claimId: "" };
     title.setTitle(Utils.defaultTitle + "Claim Detail");
   }
@@ -158,6 +158,7 @@ export class BillingClaimsComponent {
 
   saveClaim(type: string) {
     let ths = this;
+    ths.assignType = type;
     ths.claimEditModel = {};
     ths.claimEditModel.claimUuid = ths.claimRcm.uuid;
     ths.claimEditModel.claimNoteDtoList = ths.claimRcm.claimNotes;
@@ -204,8 +205,8 @@ export class BillingClaimsComponent {
       ths.assignModel.toOtherTeam = true;
       let valid = true;
       //if (!this.isSuperAdmin) valid = ths.validateData(); //no need to check for validation
-      if (ths.isInternalAudit) {
-        ths.claimEditModel.assignToTeam = ths.teamsMs[0].teamId;
+      if (ths.isInternalAudit && ths.assignType == 'reviewed') {
+        //ths.claimEditModel.assignToTeam = ths.teamsMs[0].teamId;
       }
 
       if (valid) {
@@ -228,7 +229,8 @@ export class BillingClaimsComponent {
       let valid = true;
       if (!this.isSuperAdmin) valid = ths.validateData();
       if (ths.isInternalAudit) {
-        ths.claimEditModel.assignToTeam = ths.teamsMs[0].teamId;
+
+        ths.claimEditModel.assignToTeam = 7;//ths.teamsMs[0].teamId;
       }
 
       if (valid) {
@@ -435,13 +437,14 @@ export class BillingClaimsComponent {
 
       if (ths.ruleEngineReport.length == 0) {
         if (!this.isInternalAudit) {
-          ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
+          //For now Disable if length==0
+          //ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
 
-          valid = false;//Deepak
+          //valid = false;//Deepak
         }
 
       } else {
-        ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
+        //ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
       }
     }
     //valid = false;

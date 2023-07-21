@@ -39,7 +39,7 @@ export class OfficeAssignmentComponent implements OnInit {
   totalClaimData: any = { 'oldestOpdt': '', 'oldestOpdos': '', 'totalCount': 0, 'totalRemLiteReject': 0, 'totalcountAndRemLiteReject': 0 }
   clientName: string = '';
   date: any;
-  constructor(private appService: ApplicationServiceService, private title: Title, private router: Router,private downloadService:DownLoadService) {
+  constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
     this.claimData = [];//{} as FreshClaimPLogs;
     console.log(this.router.url)
@@ -70,10 +70,12 @@ export class OfficeAssignmentComponent implements OnInit {
       ths.claimAssigmentPullModel.claimType.push(Number(ths.bType));
     }
     if (ths.insType == 'All') {
+      ths.claimAssigmentPullModel.insuranceType = null;
+      /*
       ths.bl.insTypes.forEach(e => {
         if (e.key != 'All')
           ths.claimAssigmentPullModel.insuranceType.push(String(e.key))
-      });
+      });*/
     } else {
       ths.claimAssigmentPullModel.insuranceType.push(ths.insType);
     }
@@ -208,19 +210,19 @@ export class OfficeAssignmentComponent implements OnInit {
     let excelData: any = JSON.parse(JSON.stringify(this.claimData));
     excelData = excelData.map((e: any) => {
       e['officeAssignedTo'] = e.fname ? e.fname + " " + e.lname : "-";
-    // if(e.opdosd){
-    //   let date:Date = new Date(e.opdosd);
-    //   e.opdosd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
-    //   //e.opdosd =  "Jan 14', 2023";
-    // }else{
-    //   e.opdosd = 'N/A';
-    // }
-    // if(e.opdtd){
-    //   let date:Date = new Date(e.opdtd);
-    //   e.opdtd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
-    // }else{
-    //     e.opdtd = 'N/A';
-    // }
+      // if(e.opdosd){
+      //   let date:Date = new Date(e.opdosd);
+      //   e.opdosd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
+      //   //e.opdosd =  "Jan 14', 2023";
+      // }else{
+      //   e.opdosd = 'N/A';
+      // }
+      // if(e.opdtd){
+      //   let date:Date = new Date(e.opdtd);
+      //   e.opdtd =  `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
+      // }else{
+      //     e.opdtd = 'N/A';
+      // }
       e['totalBillingRejection'] = e.remoteLiteRejections + e.count;
       return e;
     })
@@ -273,19 +275,19 @@ export class OfficeAssignmentComponent implements OnInit {
     return monthNames[month];
   }
 
-  setTopOnTotalRow(){
-    let thead:any =  document.querySelector("thead tr th")
-    let totalRow:any = document.querySelector(".totalRow");
-    if(totalRow){
-      totalRow.style.top = thead.clientHeight+"px";
-     }
-   } 
-   downloadPdf(){
-    let data = {"fileName":"Pendancy","data": this.claimData,"totalCount":this.totalClaimData.totalCount,"totalRemLiteReject": this.totalClaimData.totalRemLiteReject,"totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject,"clientName":this.clientName};
-    this.appService.pendancyPdfDownload(data,"pdf",(res: any) => {
-      if (res.status === 200){
+  setTopOnTotalRow() {
+    let thead: any = document.querySelector("thead tr th")
+    let totalRow: any = document.querySelector(".totalRow");
+    if (totalRow) {
+      totalRow.style.top = thead.clientHeight + "px";
+    }
+  }
+  downloadPdf() {
+    let data = { "fileName": "Pendancy", "data": this.claimData, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName };
+    this.appService.pendancyPdfDownload(data, "pdf", (res: any) => {
+      if (res.status === 200) {
         this.downloadService.saveBolbData(res.body, "Pendancy.pdf");
-      }else{
+      } else {
         console.log("something went wrong");
       }
     })
