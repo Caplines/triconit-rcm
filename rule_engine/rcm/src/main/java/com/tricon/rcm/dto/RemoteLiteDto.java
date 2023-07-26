@@ -17,6 +17,7 @@ public class RemoteLiteDto {
 	String serviceDate;
 	String treatingSignature;
 	String hiddenClaims;
+	String lastupdated;
 	String office;
 	
 	
@@ -29,7 +30,7 @@ public class RemoteLiteDto {
 
 	public RemoteLiteDto(String processedDate, String transMitDate, String patientName, String subscriberName,
 			String carrrier, String status, String statusDescription, String serviceDate, String treatingSignature,
-			String hiddenClaims, String office) {
+			String hiddenClaims,String lastupdated, String office) {
 		super();
 		this.processedDate = processedDate;
 		this.transMitDate = transMitDate;
@@ -41,6 +42,7 @@ public class RemoteLiteDto {
 		this.serviceDate = serviceDate;
 		this.treatingSignature = treatingSignature;
 		this.hiddenClaims = hiddenClaims;
+		this.lastupdated = lastupdated;
 		this.office = office;
 	}
 

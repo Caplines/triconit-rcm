@@ -131,6 +131,9 @@ public class Constants {
 	public static final String RULE_ID_87="Provider Certification";
 	public static final String RULE_ID_88="D0140 with Treatment";
 	public static final String RULE_ID_89="D0140 with D0220";
+	public static final String RULE_ID_90="Schedule Charges";
+	public static final String RULE_ID_91="Immediate Dentures with Extraction";
+	public static final String RULE_ID_92="Complete Denture with Extraction";
 	
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	

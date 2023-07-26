@@ -897,7 +897,7 @@ public class RuleEngineService {
 			return null;
 		}
 		Collection<InsuranceNameTypeDto> ruleGen = Collections2.filter(sheetData,
-				sh -> sh.getInsuranceName().trim().equalsIgnoreCase(name));
+				sh -> sh.getInsuranceName().trim().equalsIgnoreCase(name.trim()));
 		for (InsuranceNameTypeDto gs : ruleGen) {
 			dto  = gs;
 			break;

@@ -114,7 +114,7 @@ public class ConnectAndReadSheets {
 			try {
 				int x = -1;
 				dto = new RemoteLiteDto(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),
-						obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
+						obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
 
 				String officeName = dto.getOffice();
 

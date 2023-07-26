@@ -568,31 +568,31 @@ public class ClaimServiceImpl {
 								if (rcmInsuranceType == null) {
 									rcmInsuranceType = rcmInsuranceTypeRepo.findByName(re.getInsuranceName());
 									if (rcmInsuranceType == null) {
-										rcmInsuranceType = new RcmInsuranceType();
-										rcmInsuranceType.setName(re.getInsuranceName());
-										rcmInsuranceType.setId(rcmInsuranceTypeRepo.save(rcmInsuranceType).getId());
-										rcmInsuranceTypes.put(re.getInsuranceName(), rcmInsuranceType);
+										//rcmInsuranceType = new RcmInsuranceType();
+										//rcmInsuranceType.setName(re.getInsuranceName());
+										//rcmInsuranceType.setId(rcmInsuranceTypeRepo.save(rcmInsuranceType).getId());
+										//rcmInsuranceTypes.put(re.getInsuranceName(), rcmInsuranceType);
 									} else {
 										rcmInsuranceTypes.put(re.getInsuranceName(), rcmInsuranceType);
 									}
 
 								}
-								ins.setInsuranceType(rcmInsuranceTypes.get(re.getInsuranceName()));
+								
 								ins.setName(re.getPrimaryInsuranceCompany());
 								ins.setOffice(off);
-								ins.setId(insuranceRepo.save(ins).getId());
-								// if (insuranceType==null) {
-								// error.add( "Insurance Type Missing For for
-								// Name:"+re.getPrimaryInsuranceCompany() +" in G-Sheet");
-								// }else {
-								// ins.setId(insuranceRepo.save(ins).getId());
-								// }
+								//ins.setId(insuranceRepo.save(ins).getId());
+								 if (rcmInsuranceType==null) {
+								 error.add( "Insurance Type Missing For Name:"+re.getInsuranceName() +" in G-Sheet");
+								 }else {
+							     ins.setInsuranceType(rcmInsuranceTypes.get(re.getInsuranceName()));
+								 ins.setId(insuranceRepo.save(ins).getId());
+								 }
 							}
 
 							String timely = ClaimUtil.getTimelyLimitFromSheetList(timelyFilingLimits,
 									re.getPrimaryInsuranceCompany());
 							if (timely == null) {
-								// error.add("Timely Limit Type Missing for Primary Ins. :"+ins.getName());
+								 error.add("Timely Limit Type Missing for Primary Ins. :"+re.getPrimaryInsuranceCompany());
 
 							}
 
@@ -822,31 +822,30 @@ public class ClaimServiceImpl {
 								if (rcmInsuranceType == null) {
 									rcmInsuranceType = rcmInsuranceTypeRepo.findByName(re.getSecondaryInsuranceName());
 									if (rcmInsuranceType == null) {
-										rcmInsuranceType = new RcmInsuranceType();
-										rcmInsuranceType.setName(re.getSecondaryInsuranceName());
-										rcmInsuranceType.setId(rcmInsuranceTypeRepo.save(rcmInsuranceType).getId());
-										rcmInsuranceTypes.put(re.getSecondaryInsuranceName(), rcmInsuranceType);
+										//rcmInsuranceType = new RcmInsuranceType();
+										//rcmInsuranceType.setName(re.getSecondaryInsuranceName());
+										//rcmInsuranceType.setId(rcmInsuranceTypeRepo.save(rcmInsuranceType).getId());
+										//rcmInsuranceTypes.put(re.getSecondaryInsuranceName(), rcmInsuranceType);
 									} else {
 										rcmInsuranceTypes.put(re.getSecondaryInsuranceName(), rcmInsuranceType);
 									}
 								}
 
-								ins.setInsuranceType(rcmInsuranceTypes.get(re.getSecondaryInsuranceName()));
 								ins.setName(re.getSecondaryInsuranceCompany());
 								ins.setOffice(off);
-								ins.setId(insuranceRepo.save(ins).getId());
-								// if (insuranceType==null) {
-								// error.add( "Insurance Type Missing For for
-								// Name:"+re.getSecondaryInsuranceCompany() +" in G-Sheet");
-								// }else {
-								// ins.setId(insuranceRepo.save(ins).getId());
-								// }
+								//ins.setId(insuranceRepo.save(ins).getId());
+								 if (rcmInsuranceType==null) {
+								 error.add( "Insurance Type Missing For for Name:"+re.getSecondaryInsuranceName() +" in G-Sheet");
+								 }else {
+								    ins.setInsuranceType(rcmInsuranceTypes.get(re.getSecondaryInsuranceName()));
+									ins.setId(insuranceRepo.save(ins).getId());
+								 }
 							}
 
 							String timely = ClaimUtil.getTimelyLimitFromSheetList(timelyFilingLimits,
 									re.getSecondaryInsuranceCompany());
 							if (timely == null) {
-								// error.add("Timely Limit Type Missing for Primary Ins. :"+ins.getName());
+								 error.add("Timely Limit Type Missing for Secondary Ins. :"+re.getSecondaryInsuranceCompany());
 
 							}
 
