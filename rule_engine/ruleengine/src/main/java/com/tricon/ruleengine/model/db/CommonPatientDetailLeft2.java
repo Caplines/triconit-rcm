@@ -596,6 +596,12 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "d8692_fr", length = 15)
 	private String d8692fr;
 	
+	@Column(name = "implantsC_percentage", length = 15)
+	private String implantsCPercentage;
+	
+	@Column(name = "does_exam_share_freq", length = 15)
+	private String doesExamShareFreq;
+	
 
 	public String getNpi() {
 		return npi;
@@ -2125,6 +2131,22 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setD8692fr(String d8692fr) {
 		this.d8692fr = d8692fr;
+	}
+
+	public String getImplantsCPercentage() {
+		return implantsCPercentage;
+	}
+
+	public void setImplantsCPercentage(String implantsCPercentage) {
+		this.implantsCPercentage = implantsCPercentage;
+	}
+
+	public String getDoesExamShareFreq() {
+		return doesExamShareFreq;
+	}
+
+	public void setDoesExamShareFreq(String doesExamShareFreq) {
+		this.doesExamShareFreq = doesExamShareFreq;
 	}
     
 	

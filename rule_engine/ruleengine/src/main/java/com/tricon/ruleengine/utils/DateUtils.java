@@ -520,8 +520,11 @@ public class DateUtils {
 			  
 		  }else {
 			 //calendarIV.set(calendarIV.get(Calendar.YEAR) , calendarIV.get(Calendar.MONTH), 1);
-			if (monthIV== monthCT) {
-				pass=true;
+			if (monthIV== monthCT) {//Patient 2257 Mathis has issue
+				if (calendarCT.get(Calendar.YEAR)==calendarIV.get(Calendar.YEAR)) {
+					pass=true;
+				}else
+				pass=false;
 			}
 			  
 		  }

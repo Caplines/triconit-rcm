@@ -280,11 +280,12 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 					break;
 				}
 			}
-			// Select Location only for Beaumont or Jasper
+			// Select Location only for Beaumont or Jasper`
 			//Here we pass Provider as Location From UI..
 			String ori = "/html/body/div[3]/div/div[2]/div/div/div[2]/div/div/div/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div/select/option";
 			if (officeName.equalsIgnoreCase("Beaumont") || officeName.equalsIgnoreCase("Jasper") ||  officeName.equalsIgnoreCase("Azle") 
-				||	officeName.equalsIgnoreCase("Rio Bravo") ||	officeName.equalsIgnoreCase("Aransas")) {
+				||	officeName.equalsIgnoreCase("Rio Bravo") ||	officeName.equalsIgnoreCase("Aransas")
+				 ||	officeName.equalsIgnoreCase("Lucas")) {
 				Thread.sleep(3000);
 				
 				try {

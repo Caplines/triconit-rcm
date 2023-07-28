@@ -459,7 +459,8 @@ public class IVFFormConversionUtil {
 		pd2.setD8020fr(d.getD8020fr());
 		pd2.setD8692(d.getD8692());
 		pd2.setD8692fr(d.getD8692fr());
-		
+		pd2.setImplantsCPercentage(d.getImplantsCPercentage());
+		pd2.setDoesExamShareFreq(d.getDoesExamShareFreq());
 		
 		pd.setPatientDetails2(pd2);
 		
@@ -904,6 +905,8 @@ public class IVFFormConversionUtil {
 				pd.setD8020fr(d.getD8020fr());
 				pd.setD8692(d.getD8692());
 				pd.setD8692fr(d.getD8692fr());
+				pd.setImplantsCPercentage(d.getImplantsCPercentage());
+				pd.setDoesExamShareFreq(d.getDoesExamShareFreq());
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -1436,6 +1439,8 @@ public class IVFFormConversionUtil {
 		pd2.setD8020fr(d.getD8020fr());
 		pd2.setD8692(d.getD8692());
 		pd2.setD8692fr(d.getD8692fr());
+		pd2.setImplantsCPercentage(d.getImplantsCPercentage());
+		pd2.setDoesExamShareFreq(d.getDoesExamShareFreq());
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();

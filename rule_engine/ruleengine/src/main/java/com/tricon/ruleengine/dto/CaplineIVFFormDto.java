@@ -3,6 +3,7 @@ package com.tricon.ruleengine.dto;
 import java.math.BigInteger;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -760,6 +761,8 @@ public class CaplineIVFFormDto {
 	private String d8020fr;
 	private String d8692;
 	private String d8692fr;
+    private String implantsCPercentage;
+	private String doesExamShareFreq;
 	
     //END
     
@@ -3915,6 +3918,22 @@ public class CaplineIVFFormDto {
 
 	public void setD8692fr(String d8692fr) {
 		this.d8692fr = d8692fr;
+	}
+
+	public String getImplantsCPercentage() {
+		return implantsCPercentage;
+	}
+
+	public void setImplantsCPercentage(String implantsCPercentage) {
+		this.implantsCPercentage = implantsCPercentage;
+	}
+
+	public String getDoesExamShareFreq() {
+		return doesExamShareFreq;
+	}
+
+	public void setDoesExamShareFreq(String doesExamShareFreq) {
+		this.doesExamShareFreq = doesExamShareFreq;
 	}
 	
 	

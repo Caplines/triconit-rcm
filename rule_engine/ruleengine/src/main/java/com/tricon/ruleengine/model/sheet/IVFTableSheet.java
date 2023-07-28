@@ -423,6 +423,8 @@ public class IVFTableSheet {
 	private String d8020fr;
 	private String d8692;
 	private String d8692fr;
+	private String implantsCPercentage;
+	private String doesExamShareFreq;
 
     public String getsRemarks() {
 		return sRemarks;
@@ -2899,6 +2901,18 @@ public class IVFTableSheet {
 	}
 	public void setD8692fr(String d8692fr) {
 		this.d8692fr = d8692fr;
+	}
+	public String getImplantsCPercentage() {
+		return implantsCPercentage;
+	}
+	public void setImplantsCPercentage(String implantsCPercentage) {
+		this.implantsCPercentage = implantsCPercentage;
+	}
+	public String getDoesExamShareFreq() {
+		return doesExamShareFreq;
+	}
+	public void setDoesExamShareFreq(String doesExamShareFreq) {
+		this.doesExamShareFreq = doesExamShareFreq;
 	}
 	
 		

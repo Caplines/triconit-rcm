@@ -2270,8 +2270,57 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								Constants.rule_log_debug, bw);
 					
 		 //END  D0140 with D0220
+		 //Schedule Charges
 				
-
+							rule = getRulesFromList(rules, Constants.RULE_ID_90);
+							dtoRL = rb.Rule90(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+									}
+							}
+									
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_90,
+											Constants.rule_log_debug, bw);
+								
+		//END  Schedule Charges	
+		//Immediate Dentures with Extraction
+							
+							rule = getRulesFromList(rules, Constants.RULE_ID_91);
+							dtoRL = rb.Rule91(tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+									}
+							}
+									
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_91,
+											Constants.rule_log_debug, bw);
+								
+		//END Immediate Dentures with Extraction	
+        //Complete Denture with Extraction
+							
+							rule = getRulesFromList(rules, Constants.RULE_ID_92);
+							dtoRL = rb.Rule92(tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+									}
+							}
+									
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_92,
+											Constants.rule_log_debug, bw);
+								
+		//END Complete Denture with Extraction
 		// RULE_ID_79 "Insurance and Address"
 		/*
 		rule = getRulesFromList(rules, Constants.RULE_ID_79);
@@ -2447,7 +2496,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				}
 				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_75,
 						Constants.rule_log_debug, bw);
-				
+			// END "Bridge Clause"
 			// Provider Certification
 			
 			rule = getRulesFromList(rules, Constants.RULE_ID_87);
@@ -2502,9 +2551,59 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							Constants.rule_log_debug, bw);
 				
 	   //END  D0140 with D0220			
+	  //Schedule Charges
+			
+			rule = getRulesFromList(rules, Constants.RULE_ID_90);
+			dtoRL = rb.Rule90(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+			}
 					
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_90,
+							Constants.rule_log_debug, bw);
+				
+           //END  Schedule Charges	
+           //Immediate Dentures with Extraction
+			
+			rule = getRulesFromList(rules, Constants.RULE_ID_91);
+			dtoRL = rb.Rule91(tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+			}
+					
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_91,
+							Constants.rule_log_debug, bw);
+				
+           //END Immediate Dentures with Extraction	
+           //Immediate Dentures with Extraction
+			
+			rule = getRulesFromList(rules, Constants.RULE_ID_92);
+			dtoRL = rb.Rule92(tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+			}
+					
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_92,
+							Constants.rule_log_debug, bw);
+				
+          //END Immediate Dentures with Extraction				
 		        
-		// END "Bridge Clause"
+		
 
 		// RULE_ID_79 "Insurance and Address"
 				  /*
