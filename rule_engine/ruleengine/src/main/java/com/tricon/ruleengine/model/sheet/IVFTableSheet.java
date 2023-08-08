@@ -425,6 +425,9 @@ public class IVFTableSheet {
 	private String d8692fr;
 	private String implantsCPercentage;
 	private String doesExamShareFreq;
+	private String d511020Percentage;
+	private String d513040Percentage;
+	private String d5810CPercentage;
 
     public String getsRemarks() {
 		return sRemarks;
@@ -2914,6 +2917,25 @@ public class IVFTableSheet {
 	public void setDoesExamShareFreq(String doesExamShareFreq) {
 		this.doesExamShareFreq = doesExamShareFreq;
 	}
+	public String getD511020Percentage() {
+		return d511020Percentage;
+	}
+	public void setD511020Percentage(String d511020Percentage) {
+		this.d511020Percentage = d511020Percentage;
+	}
+	public String getD513040Percentage() {
+		return d513040Percentage;
+	}
+	public void setD513040Percentage(String d513040Percentage) {
+		this.d513040Percentage = d513040Percentage;
+	}
+	public String getD5810CPercentage() {
+		return d5810CPercentage;
+	}
+	public void setD5810CPercentage(String d5810cPercentage) {
+		d5810CPercentage = d5810cPercentage;
+	}
+	
 	
 		
 	

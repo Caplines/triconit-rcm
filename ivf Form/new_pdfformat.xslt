@@ -175,7 +175,7 @@
         <table class="table" vertical-align="top">
             <tr>
                 <td colspan="10" class="tableHeading">Subscriber and Insurance Details</td>
-                <td class="width-5 borderNone"></td>
+                <!-- <td class="width-5 borderNone"></td> -->
             </tr>
             <tr>
                 <td class="width-15">Office Name</td>
@@ -188,7 +188,7 @@
                 <td class="width-7"><xsl:value-of select="basicInfo19"/></td>
                 <td class="width-15">Sec Provider Name</td>
                 <td class="width-7"><xsl:value-of select="secProviderName"/></td>
-                <td class="width-5 borderNone"></td>
+                <!-- <td class="width-5 borderNone"></td> -->
             </tr>
             <tr class="lightGray">
                 <td>Tax ID</td>
@@ -201,7 +201,7 @@
                 <td class="yellow"><xsl:value-of select="policy3"/></td>
                 <td>Sec Provider Network</td>
                 <td><xsl:value-of select="secProvNetwork"/></td>
-                <td class="borderNone"></td>
+                <!-- <td class="borderNone"></td> -->
             </tr>
             <tr>
                 <td>ES/Patient ID</td>
@@ -214,7 +214,7 @@
                 <td class="yellow"><xsl:value-of select="oonbenfits"/></td>
                 <td>Pt Assigned To Office</td>
                 <td class="red blackClr"><xsl:value-of select="yesNoAssignToffice"/></td>
-                <td class="borderNone"></td>
+                <!-- <td class="borderNone"></td> -->
             </tr>
             <tr class="lightGray">
                 <td>Member ID/SSN</td>
@@ -227,7 +227,7 @@
                 <td><xsl:value-of select="basicInfo8"/></td>
                 <td>Ref #</td>
                 <td><xsl:value-of select="basicInfo12"/></td>
-                <td class="borderNone"></td>
+                <!-- <td class="borderNone"></td> -->
             </tr>
 
         </table>
@@ -237,7 +237,7 @@
         <table class="table" vertical-align="top">
             <tr>
                 <td colspan="10" class="tableHeading">Policy Information </td>
-                <td class="width-5 borderNone"></td>               
+                <!-- <td class="width-5 borderNone"></td>                -->
             </tr>
 
             <tr>
@@ -251,7 +251,7 @@
                 <td class="width-7"><xsl:if test="string-length(policy5) &gt; 9"><xsl:value-of select="concat(substring(policy5,6,2),'/',substring(policy5,9,2),'/',substring(policy5,1,4))" /></xsl:if></td>
                 <td class="width-15">Termination Date</td>
                 <td class="width-7"><xsl:if test="string-length(policy2) &gt; 9"><xsl:value-of select="concat(substring(policy2,6,2),'/',substring(policy2,9,2),'/',substring(policy2,1,4))" /></xsl:if></td>
-                <td class="width-5 borderNone"></td>
+                <!-- <td class="width-5 borderNone"></td> -->
             </tr>
             <tr class="lightGray">
                 <td>Annual Max</td>
@@ -264,7 +264,7 @@
                 <td><xsl:value-of select="policy18"/></td>
                 <td>Benefit Period Year</td>
                 <td class="white"><xsl:value-of select="policy6"/></td>
-                <td class="borderNone"></td>
+                <!-- <td class="borderNone"></td> -->
             </tr>
             <tr>
 
@@ -278,7 +278,7 @@
                 <td><xsl:value-of select="policy19"/></td>
                 <td>COB Status</td>
                 <td><xsl:value-of select="basicInfo15"/></td>
-                <td class="borderNone"></td>
+                <!-- <td class="borderNone"></td> -->
             </tr>
             <tr class="lightGray">
                 <td>AOB Accepted</td>
@@ -508,9 +508,9 @@
                 
             </tr>
             <tr>
-                <td class="dullBlue">Does Exams Share Freq? </td>
-                <td class="dullBlue" colspan="2"><xsl:value-of select="doesExamShareFreq"/></td>
-               
+                <td class="dullBlue">D0120 (POE)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0120"/></td>
+                <td class="dullBlue"><xsl:value-of select="exams1"/></td> 
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4341 (SRP)</td>
                 <td class="dullYellow align-right"><xsl:value-of select="perio1"/></td>
@@ -536,9 +536,9 @@
                 
             </tr>
             <tr>
-                <td class="dullBlue">D0120 (POE)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0120"/></td>
-                <td class="dullBlue"><xsl:value-of select="exams1"/></td>
+                <td class="dullBlue">D0140 (LOE)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0140"/></td>
+                <td class="dullBlue"><xsl:value-of select="exams2"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">Quads Allowed / SRP </td>
                 <td class="dullYellow align-right" colspan="2"><xsl:value-of select="perio3"/></td>
@@ -562,9 +562,9 @@
                 <td class="dullRed"><xsl:value-of select="posterior11"/></td>
             </tr>
             <tr>
-                <td class="dullBlue">D0140 (LOE)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0140"/></td>
-                <td class="dullBlue"><xsl:value-of select="exams2"/></td>
+                
+                <td class="dullBlue">Does Exams Share Freq? </td>
+                <td class="dullBlue" colspan="2"><xsl:value-of select="doesExamShareFreq"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4346(Gingivitis)</td>
                 <td class="dullYellow align-right"><xsl:value-of select="perioMnt6"/></td>
@@ -716,8 +716,8 @@
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Dentures</td>
-                <td class="rowHeading align-right"><xsl:value-of select="den5225"/></td>
-                <td class="rowHeading"><xsl:value-of select="denf5225"/></td>
+                <td class="rowHeading">Pct.</td>
+                <td class="rowHeading">Freq</td>
             </tr>
             <tr>
                
@@ -729,7 +729,8 @@
                 <td class="dullYellow"><xsl:value-of select="posterior2"/></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D5110/20 (Complete)</td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="d5110_20"/></td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="d511020Percentage"/></td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="d5110_20"/></td>
                 
             </tr>
             <tr>
@@ -741,6 +742,7 @@
                 <td class="dullYellow"  colspan="2"><xsl:value-of select="posterior3"/></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D5130/40<br/> (Immediate)</td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="d513040Percentage"/></td>
                 <td class="dullRed"  colspan="2"><xsl:value-of select="d5130_40"/></td>
             </tr>
             <tr>
@@ -751,7 +753,8 @@
                 <td class="dullYellow">No. of Fillings / Year </td>
                 <td class="dullYellow"  colspan="2"><xsl:value-of select="fill1"/></td>
                 <td class="borderNone"></td>
-                 <td class="dullRed"><strong>D5820/21 (Interim)</strong></td>
+                <td class="dullRed"><strong>D5820/21 (Interim)</strong></td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="d5810CPercentage"/></td>
                 <td class="dullRed"  colspan="2"><xsl:value-of select="d5810_c"/></td>
             </tr>
             <tr>
@@ -779,7 +782,7 @@
                 <td class="dullYellow"><xsl:value-of select="extractions1fr"/></td>
                 <td class="borderNone"></td>
                  <td class="dullRed">D6010</td>
-                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implantsC_percentage"/></td>
+                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implantsCPercentage"/></td>
                 <td class="dullRed align-right" colspan="1"><xsl:value-of select="implantsC"/></td>
             </tr>
             <tr>

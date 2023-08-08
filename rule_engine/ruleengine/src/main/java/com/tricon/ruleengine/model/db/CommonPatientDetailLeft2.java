@@ -602,6 +602,16 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "does_exam_share_freq", length = 15)
 	private String doesExamShareFreq;
 	
+	@Column(name = "d5110_20_percentage", length = 15)
+	private String d511020Percentage;
+	
+	@Column(name = "d5130_40_percentage", length = 15)
+	private String d513040Percentage;
+	
+	@Column(name = "d5810_c_percentage", length = 15)
+	private String d5810CPercentage;
+	
+	
 
 	public String getNpi() {
 		return npi;
@@ -2149,6 +2159,31 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 		this.doesExamShareFreq = doesExamShareFreq;
 	}
     
+
+	public String getD511020Percentage() {
+		return d511020Percentage;
+	}
+
+	public void setD511020Percentage(String d511020Percentage) {
+		this.d511020Percentage = d511020Percentage;
+	}
+
+	public String getD513040Percentage() {
+		return d513040Percentage;
+	}
+
+	public void setD513040Percentage(String d513040Percentage) {
+		this.d513040Percentage = d513040Percentage;
+	}
+
+	public String getD5810CPercentage() {
+		return d5810CPercentage;
+	}
+
+	public void setD5810CPercentage(String d5810cPercentage) {
+		d5810CPercentage = d5810cPercentage;
+	}
+
 	
 }
 
