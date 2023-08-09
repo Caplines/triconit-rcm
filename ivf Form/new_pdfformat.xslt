@@ -843,7 +843,7 @@
                 <td class="borderNone"></td>
                 <td class="dullYellow">D3310 (Ant Teeth)</td>
                 <td class="dullYellow"><xsl:value-of select="d3310"/></td>
-                <td class="dullYellow"><xsl:value-of select="d3310Freq"/></td>
+                <td class="dullYellow"><xsl:value-of select="d3310fr"/></td>
                 <td class="borderNone"></td>
                <td class="dullRed" colspan="2">Bone Graft Covered with</td>
                 <td class="dullRed"><xsl:value-of select="dentures5"/></td>
@@ -854,7 +854,7 @@
                 <td class="borderNone"></td>
                 <td class="dullYellow">D3320 (Pre-molar Tooth)</td>
                 <td class="dullYellow"><xsl:value-of select="d3320"/></td>
-                <td class="dullYellow"><xsl:value-of select="d3320Freq"/></td>
+                <td class="dullYellow"><xsl:value-of select="d3320fr"/></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading text-center" colspan="3">Ortho Criteria</td>
                  
