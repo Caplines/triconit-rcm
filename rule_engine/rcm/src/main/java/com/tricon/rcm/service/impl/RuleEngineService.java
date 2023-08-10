@@ -239,7 +239,7 @@ public class RuleEngineService {
 							for (ClaimsFromRuleEngine re : datas.getData()) {
 								try {
 									System.out.println(re.getClaimId() + "--<ID");
-									if (re.getClaimId().equals("32928") || re.getClaimId().equals("32929") || re.getClaimId().equals("32950")) {
+									if (re.getClaimId().equals("5622") || re.getClaimId().equals("3018") || re.getClaimId().equals("32950")) {
 										System.out.println("k");
 									}
 									List<String> allCl = Arrays.asList(re.getClaimId() + claimTypeEnum.getSuffix());

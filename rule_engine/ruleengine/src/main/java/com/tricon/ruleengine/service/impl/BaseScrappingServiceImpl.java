@@ -107,7 +107,7 @@ public class BaseScrappingServiceImpl {
 			// ChromeOptions options = new ChromeOptions();
 			// System.out.println("555");
 			options.addArguments("-disable-infobars");
-			options.addArguments("--headless");
+			options.addArguments("--headless");//Comment for local testing..
 			options.addArguments("--no-sandbox");
 			options.addArguments("--disable-dev-shm-usage");
 			options.setExperimentalOption("useAutomationExtension", false);

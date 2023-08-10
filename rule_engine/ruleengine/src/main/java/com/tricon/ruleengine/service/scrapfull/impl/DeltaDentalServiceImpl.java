@@ -329,13 +329,18 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 						System.out.println("-" + tds.get(20).getText().trim() + "-");
 
 						try {
-							Date d1 = Constants.SIMPLE_DATE_FORMAT.parse(tds.get(18).getText().trim());
+							Date d1 = Constants.SIMPLE_DATE_FORMAT.parse(tds.get(20).getText().trim());
+							
 							if (tds.get(20).getText().trim().equals("")) {
+								System.out.println(">>"+ tr.getText().toLowerCase());
 								all.add(new Object[] { tr.getText().toLowerCase().contains("ppo"), tds.get(3), d1,
 										newDate });
 
 							} else {
+								
 								if (newDate.compareTo(d1) <= 0) {
+									System.out.println(">>::>>"+ tr.getText().toLowerCase());
+									System.out.println(">>::>>"+ tds.get(3).getText());
 									all.add(new Object[] { tr.getText().toLowerCase().contains("ppo"), tds.get(3), d1,
 											Constants.SIMPLE_DATE_FORMAT.parse(tds.get(20).getText().trim()) });
 								}
@@ -376,13 +381,13 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 					// System.out.println("ppo");
 					// System.out.println(((WebElement)ppo[0]).getText());
 					// System.out.println(((Date)ppo[1]));
-					((WebElement) ppo[0]).click();
+					((WebElement) ppo[0]).findElement(By.tagName("a")).click();
 
 				} else if (others != null) {
 					// System.out.println("OO");
 					// System.out.println(((WebElement)others[0]).getText());
 					// System.out.println(((Date)others[1]));
-					((WebElement) others[0]).click();
+					((WebElement) others[0]).findElement(By.tagName("a")).click();
 
 				}
 				/*
@@ -4015,16 +4020,16 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Elgin%2019");
-		dto.setUserName("Elgin5478");
+		dto.setPassword("Smilepoint@00");
+		dto.setUserName("Aran2021");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("09/17/1955");// 03/20/1992 12/26/1988
-		psc.setFirstName("Larry");// Heather Griffith - Dean Dornak Ellen Keck
-		psc.setLastName("Jardot");// Patient ID -8909
-		psc.setMemberId("114684802902");// 1125727908.. 632307605
-		psc.setSsnNumber("114684802902");
+		psc.setDob("09/04/1967");// 03/20/1992 12/26/1988
+		psc.setFirstName("Christopher");// Heather Griffith - Dean Dornak Ellen Keck
+		psc.setLastName("Cava");// Patient ID -8909
+		psc.setMemberId("121285356501");// 1125727908.. 632307605
+		psc.setSsnNumber("121285356501");
 		psc.setSubscribersFirstName("");
 		psc.setSubscribersLastName("");
 		psc.setSubscribersDob("");

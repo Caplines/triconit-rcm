@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.service.scrapfull.impl;
 
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.stream.IntStream;
 import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -149,6 +152,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 							//System.out.println("Thread Running");
 							String s="0";
 							WebDriver driver = getBrowserDriver();// new HtmlUnitDriver(true);// getBrowserDriver();
+							
 							try {
 								System.out.println("MEM 2-"
 										+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
@@ -157,6 +161,10 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 
 								boolean issueNo = navigatetoMainSite(driver, navigate,scrappingSiteDetails.getScrapSubType());
 								//System.out.println("888888888888- STARTED...");
+								
+								
+									
+								Thread.sleep(2000);
 								parsePage(driver, siteName, issueNo, office,scrappingSiteDetails.getScrapSubType());
 								//System.out.println("888888888888 -END " + d.getPatientId());
 								
@@ -431,7 +439,9 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 			
 		//}
 		//driver.findElement(By.xpath("//*[@id=\"layout-body--side-bar\"]/div[3]/div/div[2]/div/div/div[2]/div/div[23]/div[2]/button")).click();//Apply
-		Thread.sleep(2000);
+		//Thread.sleep(2000);
+		
+		
 		//TABLE
 		//select to records to display
 		if (scrapSubType.equals(SCRAP_TYPE_1)) {
@@ -442,9 +452,19 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 		fetchTableData(driver,1,dList,SCRAP_TYPE_1);
 		}
 		if (scrapSubType.equals(SCRAP_TYPE_2)) {
-			driver.findElement(By.className("ant-btn-primary")).click();
+			
+			executor.executeScript("document.getElementsByClassName('ant-btn-primary')[0].click();");
+			//driver.findElement(By.className("ant-btn-primary")).click();//apply
+			
 			Thread.sleep(5000);
-			driver.findElement(By.className("ant-pagination-options-size-changer")).click();
+			executor.executeScript("document.getElementsByTagName('input')[2].focus()");//Focus on input
+			driver.findElement(By.tagName("html")).sendKeys(Keys.chord(Keys.TAB));
+			driver.findElement(By.xpath("//input[@placeholder='Search']")).click();
+			
+			executor.executeScript("document.getElementsByClassName('anticon-insert-row-right')[0].focus()");
+			Thread.sleep(2000);
+			executor.executeScript("document.getElementsByClassName('ant-pagination-options-size-changer')[0].click();");
+			//driver.findElement(By.className("ant-pagination-options-size-changer")).click();
 		List<WebElement> vs=driver.findElements(By.className("ant-select-item-option-content"));
 			for (WebElement v:vs) {
 				System.out.println(v.getText());
@@ -457,6 +477,7 @@ public class RemoteLiteImpl extends BaseScrappingServiceImpl implements Callable
 			Thread.sleep(5000);	
 			fetchTableData(driver,1,dList,SCRAP_TYPE_2);
 		}
+		
 		System.out.println("***********REMOTE LITE********************");
 		System.out.println("*******************************");
 		System.out.println(dList.size());
