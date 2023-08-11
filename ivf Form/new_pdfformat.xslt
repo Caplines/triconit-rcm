@@ -823,8 +823,8 @@
                 <td class="dullYellow">
                    Max.# of Ext./Year
                 </td>
-                <td class="dullYellow"></td>
-                <td class="dullYellow"><xsl:value-of select="extr1"/></td>
+                <!-- <td class="dullYellow"></td> -->
+                <td class="dullYellow" colspan="2"><xsl:value-of select="extr1"/></td>
                 <td class="borderNone"></td>
                  <td class="dullRed">D7311 (1-3 Tooth/Qaud)</td>
                 <td class="dullRed align-right"><xsl:value-of select="d7311"/></td>
