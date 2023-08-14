@@ -21,7 +21,17 @@ public enum RcmTeamEnum {
 	PATIENT_CALLING(6, "PATIENT_CALLING","Patient Calling", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),
 	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true),	
 	SUPER_ADMIN(8, "SUPER_ADMIN","Super Admin", new RcmRoleEnum[] {RcmRoleEnum.SUPER_ADMIN},false),
-	REPORTING(9,"REPORTING","Reporting",new RcmRoleEnum[] {RcmRoleEnum.REPORTING},false);
+	REPORTING(9,"REPORTING","Reporting",new RcmRoleEnum[] {RcmRoleEnum.REPORTING},false),
+	ORTHO(10,"ORTHO","Ortho",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
+	CDP(11,"CDP","CDP",new RcmRoleEnum[] {RcmRoleEnum.TL ,RcmRoleEnum.ASSO},true),
+	PAYMENT_POSTING(12,"PAYMENT_POSTING","Payment Posting",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
+	PPO_IV(13,"PPO_IV","PPO IV",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
+	MEDICAID_IV(14,"MEDICAID_IV","Medicaid IV",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
+	NEED_TO_HOLD(15,"NEED_TO_HOLD","Need to hold",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
+	QUALITY(16,"QUALITY","Quality",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
+	AR(17,"AR","AR",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
+	PATIENT_STATEMENT(18,"PATIENT_STATEMENT","Patient Statement",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
+	CREDENTIALING(19,"CREDENTIALING","Credentialing",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true);
 	
 	final private int id;
 	final private String name;

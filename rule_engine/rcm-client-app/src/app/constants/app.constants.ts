@@ -31,6 +31,42 @@ export class AppConstants {
         [7, {
             "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass"], "defaultpath": "/claim-assignment"
         }],
+        // [8, {
+        //     "name": "Super Admin", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/other-teams-work"], "defaultpath": "/claim-assignment"
+        // }],
+        // [9, {
+        //     "name": "Reporting", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/other-teams-work"], "defaultpath": "/claim-assignment"
+        // }],
+        // [10, {
+        //     "name": "Ortho", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
+        // [11, {
+        //     "name": "CDP", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
+        // [12, {
+        //     "name": "Payment Posting", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
+        // [13, {
+        //     "name": "PPO IV", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
+        // [14, {
+        //     "name": "Medicaid IV", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
+        // [15, {
+        //     "name": "Need to hold", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
+        // [16, {
+        //     "name": "Quality", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
+        // [17, {
+        //     "name": "AR", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
+        // [18, {
+        //     "name": "Patient Statement", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
+        // [19, {
+        //     "name": "Credentialing", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
+        // }],
 
         // [9,{
         //     "name":"Reporting","paths":["/update-pass"],"defaultpath":"/update-pass"
