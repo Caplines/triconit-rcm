@@ -71,17 +71,17 @@
         }
 
         .dullBlue {
-            background-color: #a2c4c9;
+            background-color: #EDE3FF ;
             color: #000;
         }
 
         .dullYellow {
-            background-color: #ffe599;
+            background-color: #E6E6E3;
             color: #000;
         }
 
         .dullRed {
-            background-color: #dd7e6b;
+            background-color: #DBEBFF;
             color: #000;
         }
 
@@ -167,6 +167,11 @@
             }
             .innerTable tr:last-child td {
                 border-bottom: 0px;
+            }
+            .historyBackground{
+
+                 background-color:  #FFFFFF
+
             }
     </style>
 </head>
@@ -349,36 +354,36 @@
                 <td colspan="3" class="sub-heading dullRed">Major Services</td>
             </tr>
             <tr>
-                <td class="width-15">Preventive Services % </td>
-                <td colspan="2" class="width-17"><xsl:value-of select="percentages9"/></td>
+                <td class="width-15 dullBlue">Preventive Services % </td>
+                <td colspan="2" class="width-17 dullBlue"><xsl:value-of select="percentages9"/></td>
 
                  <td class="width-4 borderNone"></td>
 
-                <td class="width-15">Basic Services % </td>
-                <td colspan="2" class="width-17"><xsl:value-of select="percentages1"/></td>
+                <td class="width-15 dullYellow">Basic Services % </td>
+                <td colspan="2" class="width-17 dullYellow"><xsl:value-of select="percentages1"/></td>
 
                 <td class="width-4 borderNone"></td>
 
-                <td class="width-15">Major Services %</td>
-                <td colspan="2" class="width-17"><xsl:value-of select="percentages3"/></td>
+                <td class="width-15 dullRed">Major Services %</td>
+                <td colspan="2" class="width-17 dullRed"><xsl:value-of select="percentages3"/></td>
             </tr>
             <tr>
 			 
 			    <xsl:choose>
 				     <xsl:when test="waitingPeriod4 = 'No' ">
-					 <td class="width-15">Waiting Period</td>
+					 <td class="width-15 dullBlue">Waiting Period</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					 <td class="red width-15">Waiting Period</td>
+					 <td class="red width-15 dullBlue">Waiting Period</td>
 					 </xsl:otherwise>
 				</xsl:choose>	
                 
                 <xsl:choose>
 				     <xsl:when test="waitingPeriod4 = 'No' ">
-					  <td colspan="2" class="width-17"><xsl:value-of select="waitingPeriod4"/>		</td>
+					  <td colspan="2" class="width-17 dullBlue"><xsl:value-of select="waitingPeriod4"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-17"><xsl:value-of select="waitingPeriod4"/>		</td>
+					  <td colspan="2" class="red width-17 dullBlue"><xsl:value-of select="waitingPeriod4"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
 				
@@ -386,19 +391,19 @@
                 
 				<xsl:choose>
 				     <xsl:when test="waitingPeriod1 = 'No' ">
-					 <td class="width-13">Waiting Period</td>
+					 <td class="width-13 dullYellow">Waiting Period</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					 <td class="red width-13">Waiting Period</td>
+					 <td class="red width-13 dullYellow">Waiting Period</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
 				<xsl:choose>
 				     <xsl:when test="waitingPeriod1 = 'No' ">
-					  <td colspan="2" class="width-14"><xsl:value-of select="waitingPeriod1"/>		</td>
+					  <td colspan="2" class="width-14 dullYellow "><xsl:value-of select="waitingPeriod1"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-14"><xsl:value-of select="waitingPeriod1"/>		</td>
+					  <td colspan="2" class="red width-14 dullYellow"><xsl:value-of select="waitingPeriod1"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -406,19 +411,19 @@
                  
 				<xsl:choose>
 				     <xsl:when test="waitingPeriod2 = 'No' ">
-					 <td class="width-15">Waiting Period</td>
+					 <td class="width-15 dullRed">Waiting Period</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					 <td class="red width-15">Waiting Period</td>
+					 <td class="red width-15 dullRed">Waiting Period</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
 				<xsl:choose>
 				     <xsl:when test="waitingPeriod2 = 'No' ">
-					  <td colspan="2" class="width-12"><xsl:value-of select="waitingPeriod2"/>		</td>
+					  <td colspan="2" class="width-12 dullRed"><xsl:value-of select="waitingPeriod2"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-12"><xsl:value-of select="waitingPeriod2"/>		</td>
+					  <td colspan="2" class="red width-12 dullRed"><xsl:value-of select="waitingPeriod2"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -426,55 +431,55 @@
             <tr>
 			   <xsl:choose>
 				     <xsl:when test="percentages13 = 'No' ">
-					 <td class="">Subject to Ded</td>
+					 <td class="dullBlue">Subject to Ded</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					 <td class="red">Subject to Ded</td>
+					 <td class="red dullBlue">Subject to Ded</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
 				<xsl:choose>
 				     <xsl:when test="percentages13 = 'No' ">
-					  <td colspan="2" class="width-16"><xsl:value-of select="percentages13"/>		</td>
+					  <td colspan="2" class="width-16 dullBlue"><xsl:value-of select="percentages13"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-16"><xsl:value-of select="percentages13"/>		</td>
+					  <td colspan="2" class="red width-16 dullBlue"><xsl:value-of select="percentages13"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>	 
 			   
                 <td class="borderNone"></td>
                 <xsl:choose>
 				     <xsl:when test="percentages2 = 'No' ">
-					 <td class="">Subject to Ded</td>
+					 <td class="dullYellow">Subject to Ded</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					 <td class="red">Subject to Ded</td>
+					 <td class="red dullYellow">Subject to Ded</td>
 					 </xsl:otherwise>
 				</xsl:choose>
 				<xsl:choose>
 				     <xsl:when test="percentages2 = 'No' ">
-					  <td colspan="2" class="width-16"><xsl:value-of select="percentages2"/>		</td>
+					  <td colspan="2" class="width-16 dullYellow"><xsl:value-of select="percentages2"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-16"><xsl:value-of select="percentages2"/>		</td>
+					  <td colspan="2" class="red width-16 dullYellow"><xsl:value-of select="percentages2"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
                 <td class="borderNone"></td>
                 <xsl:choose>
 				     <xsl:when test="percentages4 = 'No' ">
-					 <td class="">Subject to Ded</td>
+					 <td class="dullRed">Subject to Ded</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					 <td class="red">Subject to Ded</td>
+					 <td class="red dullRed">Subject to Ded</td>
 					 </xsl:otherwise>
 				</xsl:choose>
 				<xsl:choose>
 				     <xsl:when test="percentages4 = 'No' ">
-					  <td colspan="2" class="width-16"><xsl:value-of select="percentages4"/>		</td>
+					  <td colspan="2" class="width-16 dullRed"><xsl:value-of select="percentages4"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-16"><xsl:value-of select="percentages4"/>		</td>
+					  <td colspan="2" class="red width-16 dullRed"><xsl:value-of select="percentages4"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -490,19 +495,19 @@
                 <td class="borderNone"></td>
 				<xsl:choose>
 				     <xsl:when test="prosthetics1 = 'No' ">
-					 <td class="">Missing tooth clause</td>
+					 <td class="dullRed">Missing tooth clause</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					 <td class="red">Missing tooth clause</td>
+					 <td class="red dullRed">Missing tooth clause</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
 				<xsl:choose>
 				     <xsl:when test="prosthetics1 = 'No' ">
-					  <td colspan="2"><xsl:value-of select="prosthetics1"/>		</td>
+					  <td colspan="2" class="dullRed"><xsl:value-of select="prosthetics1"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red"><xsl:value-of select="prosthetics1"/>		</td>
+					  <td colspan="2" class="red dullRed"><xsl:value-of select="prosthetics1"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -518,19 +523,19 @@
                 <td class="borderNone"></td>
 				<xsl:choose>
 				     <xsl:when test="prosthetics2 = 'No' ">
-					 <td class="">Replacement Clause</td>
+					 <td class="dullRed">Replacement Clause</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					 <td class="red">Replacement Clause</td>
+					 <td class="red dullRed">Replacement Clause</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                
 				<xsl:choose>
 				     <xsl:when test="prosthetics2 = 'No' ">
-					  <td colspan="2"><xsl:value-of select="prosthetics2"/>		</td>
+					  <td colspan="2" class="dullRed"><xsl:value-of select="prosthetics2"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red"><xsl:value-of select="prosthetics2"/>		</td>
+					  <td colspan="2" class="red dullRed"><xsl:value-of select="prosthetics2"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -818,8 +823,8 @@
                 <td class="dullYellow">
                    Max.# of Ext./Year
                 </td>
-                <td class="dullYellow"></td>
-                <td class="dullYellow"><xsl:value-of select="extr1"/></td>
+                <!-- <td class="dullYellow"></td> -->
+                <td class="dullYellow" colspan="2"><xsl:value-of select="extr1"/></td>
                 <td class="borderNone"></td>
                  <td class="dullRed">D7311 (1-3 Tooth/Qaud)</td>
                 <td class="dullRed align-right"><xsl:value-of select="d7311"/></td>
@@ -906,9 +911,9 @@
                         </tr>
 						<xsl:for-each select="hdto1/hisall1">
 						 <tr>
-                            <td class="dullBlue"><xsl:value-of select="historyCode"/></td>
-                            <td class="dullBlue"><xsl:value-of select="historyTooth"/></td>
-                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                            <td class="historyBackground"><xsl:value-of select="historyCode"/></td>
+                            <td class="historyBackground"><xsl:value-of select="historyTooth"/></td>
+                            <td class="historyBackground align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
                         </tr>
 						</xsl:for-each>
                        
@@ -923,9 +928,9 @@
                        
                        <xsl:for-each select="hdto2/hisall2">
 						 <tr>
-                            <td class="dullBlue"><xsl:value-of select="historyCode"/></td>
-                            <td class="dullBlue"><xsl:value-of select="historyTooth"/></td>
-                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                            <td class="historyBackground"><xsl:value-of select="historyCode"/></td>
+                            <td class="historyBackground"><xsl:value-of select="historyTooth"/></td>
+                            <td class="historyBackground align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
                         </tr>
 						</xsl:for-each>
                     </table>
@@ -937,9 +942,9 @@
                         </tr>
                         <xsl:for-each select="hdto3/hisall3">
 						 <tr>
-                            <td class="dullBlue"><xsl:value-of select="historyCode"/></td>
-                            <td class="dullBlue"><xsl:value-of select="historyTooth"/></td>
-                            <td class="dullBlue align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                            <td class="historyBackground"><xsl:value-of select="historyCode"/></td>
+                            <td class="historyBackground"><xsl:value-of select="historyTooth"/></td>
+                            <td class="historyBackground align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
                         </tr>
 						</xsl:for-each>
                     </table>
@@ -949,9 +954,9 @@
                 <td class="borderNone" colspan="11"></td>
             </tr>
             <tr>
-                <td class="dullGreen width-15">Benefits Verified by</td>
+                <td class="historyBackground width-15">Benefits Verified by</td>
                 <td class="lightGray width-15"><xsl:value-of select="benefits"/></td>
-                <td class="dullGreen width-15">Verfied on Date</td>
+                <td class="historyBackground width-15">Verfied on Date</td>
                 <td class="lightGray width-15"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,6,2),'/',substring(date,9,2),'/',substring(date,1,4))" /></xsl:if></td>
                 <td class="borderNone" colspan="7"></td>
             </tr>
