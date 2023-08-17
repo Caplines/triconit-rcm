@@ -94,6 +94,11 @@ const  routes: Routes = [
     path:'tool-update/issue-claims',
     loadChildren:()=>import("./issue-claims/issue-claims/issue-claims.module").then(m=>m.IssueClaimCModule)
   },
+  {
+    path:'other-teams-work',
+    loadChildren:()=>import("./other-teams-work/other-teams-work.module").then(m=>m.OtherTeamsWorkModule)
+  },
+  
 
   { path: '**', redirectTo: '/login' }
 ];

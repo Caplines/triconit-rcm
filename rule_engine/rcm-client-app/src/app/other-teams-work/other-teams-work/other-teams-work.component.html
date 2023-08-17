@@ -1,0 +1,351 @@
+<div class="right-container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 pt-3">
+                <div class="main-container">
+                    <div class="detail-box">
+                        <div class="detail-box-form">
+                            <div class="form-row  collapse" [ngClass]="{'show':expandCollapse}" id="ruleEngine">
+                                <div class="table-responsive" style="min-height:300px;">
+                                    <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar"
+                                        style="min-width:2500px;" id="table" *ngIf="claimDetail">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Client
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Office <div class="dropdown">
+                                                            <img (click)="showHideFilteredDropdown('officeName')"
+                                                                src="../../assets/img/filterIcon.png"
+                                                                style="cursor: pointer; margin-left: 6px;" />
+                                                            <div class="dropdown-menu filter-dropdown-menu"
+                                                                (mouseleave)="onMouseLeave($event)"
+                                                                *ngIf="showFilteredDropdown.officeName">
+                                                                <div class="clearClose">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox"
+                                                                            [checked]="isFilterAllSelected.officeName"
+                                                                            value="selectAll"
+                                                                            (change)="selectAll($event,'officeName')">
+                                                                        {{isFilterAllSelected.officeName ? 'Clear
+                                                                        All':'Select All'}}</label>
+                                                                    <button
+                                                                        (click)="showFilteredDropdown.officeName=false;"
+                                                                        type="button" class="close" data-dismiss="modal"
+                                                                        aria-label="Close"><span>&times;</span></button>
+                                                                </div>
+                                                                <ng-container *ngFor="let data of filteredOfficeName">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" checked="true"
+                                                                            [(ngModel)]="data.checked"
+                                                                            value="{{data.name}}"
+                                                                            (change)="filterOfficeName($event,'officeName')">
+                                                                        {{data.name}}
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div> <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['officeName']}"
+                                                                (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
+                                                        </span>
+
+                                                    </div>
+                                                </th>
+                                                <th class="width-90">
+                                                    <div class="dFlex">
+                                                        Patient ID<span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['patientId']}"
+                                                                (click)="sortData(filteredItems,'patientId','asc','number'); isSorted['patientId'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['patientId']}"
+                                                                (click)="sortData(filteredItems,'patientId','desc','number');isSorted['patientId'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th class="width-115">
+                                                    <div class="dFlex">
+                                                        Patient Name<span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['patientName']}"
+                                                                (click)="sortData(filteredItems,'patientName','asc','string'); isSorted['patientName'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['patientName']}"
+                                                                (click)="sortData(filteredItems,'patientName','desc','string');isSorted['patientName'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+
+                                                <th>
+                                                    <div class="dFlex">
+                                                        DOS<span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['dos']}"
+                                                                (click)="sortData(filteredItems,'dos','asc','dateOnly'); isSorted['dos'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['dos']}"
+                                                                (click)="sortData(filteredItems,'dos','desc','dateOnly');isSorted['dos'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th class="insuranceName">
+                                                    <div class="dFlex">
+                                                        Insurance Name
+                                                        <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['primaryInsurance']}"
+                                                                (click)="sortData(filteredItems,'primaryInsurance','asc','string'); isSorted['primaryInsurance'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['primaryInsurance']}"
+                                                                (click)="sortData(filteredItems,'primaryInsurance','desc','string');isSorted['primaryInsurance'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th class="insuranceType">
+                                                    <div class="dFlex">
+                                                        Insurance Type
+                                                        <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['prName']}"
+                                                                (click)="sortData(filteredItems,'prName','asc','string'); isSorted['prName'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['prName']}"
+                                                                (click)="sortData(filteredItems,'prName','desc','string');isSorted['prName'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Claim Type
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Est. Amount<span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['EstAmount']}"
+                                                                (click)="sortData(filteredItems,'EstAmount','asc','number'); isSorted['EstAmount'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['EstAmount']}"
+                                                                (click)="sortData(filteredItems,'EstAmount','desc','number');isSorted['EstAmount'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Last Team that Worked on this claim
+                                                        <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted}"
+                                                                (click)="sortData(filteredItems,'lastTeam','asc','string'); isSorted = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted}"
+                                                                (click)="sortData(filteredItems,'lastTeam','desc','string');isSorted = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Last Team's Remarks
+                                                    </div>
+                                                </th>
+
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Pending since
+                                                    </div>
+                                                </th>
+
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Current Team
+                                                    </div>
+                                                </th>
+                                                <th style="background-color:#124f18;color: white;">
+                                                    <div class="dFlex">
+                                                        Enter Your Remarks
+                                                    </div>
+                                                </th>
+                                                <th style="background-color:#124f18;color: white;">
+                                                    <div class="dFlex">
+                                                        Attach File
+                                                    </div>
+                                                </th>
+                                                <th style="background-color:#124f18;color: white;">
+                                                    <div class="dFlex">
+                                                        Submit to the Team that assigned the Claim
+                                                    </div>
+                                                </th>
+                                                <th style="background-color:#124f18;color: white;">
+                                                    <div class="dFlex">
+                                                        Assign to other team
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
+                                                <td colspan="13" style="min-height:200px;">
+                                                    <div class="text-center mt-2">
+                                                        <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <ng-container *ngIf="!loader.listClaimLoader">
+                                                <ng-container *ngFor="let det of filteredItems">
+                                                    <tr *ngIf="loader.listClaimLoader">
+                                                        <td colspan="7" class="text-center"><span
+                                                                class="loader-data "></span> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{{det.officeName}}</td>
+                                                        <td>{{det.officeName}}</td>
+                                                        <td class="alignRight"><a
+                                                                [routerLink]="['/billing-claims/', det.uuid]"
+                                                                target="_blank">{{det.patientId}}</a></td>
+                                                        <td><a [routerLink]="['/billing-claims/', det.uuid]"
+                                                                target="_blank">{{det.patientName}}</a></td>
+                                                        <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
+                                                        <td *ngIf="det.claimId | claimTypeFilter">
+                                                            {{det.primaryInsurance}}
+                                                        </td>
+                                                        <td *ngIf="! (det.claimId | claimTypeFilter)">
+                                                            {{det.secondaryInsurance}}</td>
+                                                        <td *ngIf="det.claimId | claimTypeFilter">{{det.prName}}</td>
+                                                        <td *ngIf="! (det.claimId | claimTypeFilter)">{{det.secName}}
+                                                        </td>
+                                                        <td *ngIf="det.claimId | claimTypeFilter">Primary</td>
+                                                        <td *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
+                                                        <td class="alignRight" *ngIf="det.claimId | claimTypeFilter">
+                                                            {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
+                                                        </td>
+                                                        <td class="alignRight"
+                                                            *ngIf="! (det.claimId | claimTypeFilter)">
+                                                            {{det.secTotal | currency:'USD':true:'.0-0'}}
+                                                        </td>
+                                                        <td>{{det.lastTeam==null?'N/A':det.lastTeam}}</td>
+                                                        <td class="alignRight">{{det.claimAge}}</td>
+                                                        <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
+                                                        <td class="alignRight">{{det.claimAge}}</td>
+                                                        <td><textarea class="form-control" rows="1"
+                                                                style="width: 200px;"></textarea>
+                                                        </td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-primary attached"
+                                                                (click)="openModal()" id="attach">Attach</button>
+                                                            <div class="modal attachModal" *ngIf="showModal">
+                                                                <div class="modal-content rounded-0"
+                                                                    [ngClass]="{'opacityLow':loader}">
+                                                                    <span class="close"
+                                                                        (click)="closeModal()">&times;</span>
+                                                                    <h5>Upload Attachment</h5>
+                                                                    <div class="form">
+                                                                        <div class="wrapper">
+                                                                            <div class="container">
+
+                                                                                <div class="upload-container">
+                                                                                    <div class="border-container">
+                                                                                        <div class="dragDrop">
+                                                                                            Drag and drop files here, or
+                                                                                            <button type="button"
+                                                                                                class="btn btn-success file-button"
+                                                                                                (click)="fileInput.click()">Select
+                                                                                                Files</button>
+                                                                                            <input type="file"
+                                                                                                id="fileInput"
+                                                                                                #fileInput multiple
+                                                                                                (change)="onFileChange($event)"
+                                                                                                class="file-input" />
+                                                                                        </div>
+                                                                                        <ol class="file-list"
+                                                                                            *ngIf="selectedFiles.length > 0">
+                                                                                            <li
+                                                                                                *ngFor="let file of selectedFiles">
+                                                                                                <span style="display: inline-flex; align-items: center; justify-content: space-between;">
+                                                                                               <span class="fileEllipsis"  title="{{ file.name }}">{{ file.name }} </span>
+                                                                                                    <select class="form-control" style="width: 240px; margin-left: 15px;" name="type">
+                                                                                                        <option>Consent Form </option>
+                                                                                                        <option>Consent Form for Major Service</option>
+                                                                                                        <option>Consult Form</option>
+                                                                                                        <option>CRA Form</option>
+                                                                                                        <option>EOB</option>
+                                                                                                        <option>FDH Certification</option>
+                                                                                                        <option>Insurance ID Card</option>
+                                                                                                        <option>Intraoral Photos</option>
+                                                                                                        <option>IV</option>
+                                                                                                        <option>Lab Slip</option>
+                                                                                                        <option>Narratives</option>
+                                                                                                        <option>NCS Form</option>
+                                                                                                        <option>Nitrous Certification (D9230)</option>
+                                                                                                        <option>Nitrous Pre operative Checklist</option>
+                                                                                                        <option>Others</option>
+                                                                                                        <option>Perio Chart</option>
+                                                                                                        <option>Pre-Auth</option>
+                                                                                                        <option>Sedation Certification (D9248)</option>
+                                                                                                        <option>Sedation Record</option>
+                                                                                                        <option>X-ray: Bitewings</option>
+                                                                                                        <option>X-ray: Cephlo</option>
+                                                                                                        <option>X-ray: FMX</option>
+                                                                                                        <option>X-ray: Pano</option>
+                                                                                                        <option>X-ray: Periapical</option>
+                                                                                                        <option>X-ray: Post-Op</option>
+                                                                                                        <option>X-ray: Pre-Op</option>
+                                                                                                    </select>
+                                                                                            </span>
+                                                                                            <span  class="close" (click)="removeItem(file)">&times;</span>
+                                                                                            </li>
+                                                                                        </ol>
+                                                                                    </div>
+                                                                                    <button type="button" class="btn btn btn-primary file-button" [disabled]="selectedFiles.length==0" (click)="uploadItem()">Upload</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td><button type="button" class="btn btn-primary">
+                                                                Submit</button></td>
+                                                        <td>
+                                                            <div class="otherTeam">
+                                                                <div class="billingDropdown ">
+                                                                    <select class="form-control">
+                                                                        <option>LC3</option>
+                                                                        <option>Otho</option>
+                                                                        <option>Quality</option>
+                                                                    </select>
+
+                                                                </div><button type="button" class="btn btn-primary"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#exampleModal">
+                                                                    Submit</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </ng-container>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                    <ng-container *ngIf="loader.listClaimLoader">
+                                        <div class="text-center"><span class="loader-data"></span> </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- </div> -->

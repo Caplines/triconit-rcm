@@ -1,7 +1,5 @@
 package com.tricon.rcm.db.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,15 +10,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import com.tricon.rcm.db.BaseAuditEntity;
 
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "rcm_claim_attachment")
-public class RcmClaimAttachment implements java.io.Serializable{
+public class RcmClaimAttachment extends BaseAuditEntity implements java.io.Serializable{
 
 	
 	private static final long serialVersionUID = -5020598614852444802L;
@@ -30,30 +27,30 @@ public class RcmClaimAttachment implements java.io.Serializable{
 	@Column(name = "id", nullable = false)
     private Integer id;
 	
-	@Column(name = "claim_id", nullable = false,length = 45)
-	private String claimId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "claim_id",referencedColumnName="claim_uuid")
+	private RcmClaims uuid;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "team_id",referencedColumnName="id",nullable = false)
-	private RcmTeam team;
+	@JoinColumn(name = "created_by_team",referencedColumnName="id",nullable = false)
+	private RcmTeam createdByteam;
 	
-	@CreationTimestamp
-	@Column(name = "created_date", nullable = false, updatable = false)
-	private Date createdDate;
 	
-	@UpdateTimestamp
-	@Column(name = "updated_date")
-	private Date updatedDate;
-	
-	@Column(name = "fileName", nullable = false,length = 50)
+	@Column(name = "file_name", nullable = false,length = 50)
 	private String fileName;
 	
-	@Column(name = "fileLocation", nullable = false)
+	@Column(name = "file_location", nullable = false)
 	private String fileLocation;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "attachment_type_id",referencedColumnName="id",nullable = false)
 	private RcmAttachmentType atchType;
+	
+	@Column(name = "status")
+	private boolean status=true;
+	
+	@Column(name = "is_deleted")
+	private boolean deleted;
 	
 	
 }

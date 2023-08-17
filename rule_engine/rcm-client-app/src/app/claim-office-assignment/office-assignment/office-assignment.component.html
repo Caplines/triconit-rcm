@@ -157,8 +157,7 @@
 
                                                 <tr *ngFor="let lg of claimData">
                                                     <td>{{lg.officeName}}</td>
-                                                    <td>
-                                                        <a href="javascript:void(0);">
+                                                    <td >
                                                             <select class="form-control select-editable" name="" id=""
                                                                 (change)="selectNewAssignedUser($event,lg.officeUuid);">
                                                                 <option value="{{lg.assignedUser}}">{{lg.fname}}
@@ -169,7 +168,7 @@
                                                                         value="{{user.uuid}}">{{user.fullName}}</option>
                                                                 </ng-container>
                                                             </select>
-                                                        </a>
+                                                        
                                                     </td>
                                                     <td>{{lg.opdtd}}</td>
                                                     <td>{{lg.opdosd}}</td>
