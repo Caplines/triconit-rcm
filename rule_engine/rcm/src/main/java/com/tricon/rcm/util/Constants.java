@@ -27,6 +27,7 @@ public class Constants {
 	public static final SimpleDateFormat SDF_UI = new SimpleDateFormat("MM-dd-YYYY"); 
 	public static final SimpleDateFormat SDF_CredentialSheetAnes = new SimpleDateFormat("MM/dd/YYYY");
 	public static final SimpleDateFormat SDF_SHEET_PROVIDER_DATE_HELPING = new SimpleDateFormat("M/d/YYYY");
+	public static final SimpleDateFormat SDF_SHEET_PROVIDER_DATE_HELPING_YEAR = new SimpleDateFormat("YYYY");
 	
    //FROM MYSQL DB	
 	public static final SimpleDateFormat SDF_MYSL_DATE = new SimpleDateFormat("yyyy-MM-dd");
@@ -104,5 +105,12 @@ public class Constants {
 	public static final String PROD_URL="http://18.221.170.13/";
 	public static final String CMC="CMC";
 	
+	//Sheets
+	public static final String Provider_Schedule_SHEET="1r1unO-L2wAB6zAEaKYzMEIUi1nG_F6wTzduzaXqiKAg";
+	///public static final String Provider_Schedule_SHEET_HELP="Helping";
+	public static final String Mapping_Tables="1g9VtQVT5T0-Fp_beLSYhRIbUn-KBqP4TGmYuteMbsd4";
+	public static final String Mapping_Tables_Provider="Provider";
+	
+	//End Sheet
 
 }

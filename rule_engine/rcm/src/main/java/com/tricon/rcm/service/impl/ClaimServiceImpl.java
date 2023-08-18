@@ -1459,15 +1459,13 @@ public class ClaimServiceImpl {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(new Date());
 				try {
+					String sheetYear = Constants.SDF_SHEET_PROVIDER_DATE_HELPING_YEAR.format(claim.getDos());
 			    Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
-					"1g9VtQVT5T0-Fp_beLSYhRIbUn-KBqP4TGmYuteMbsd4", "Provider", CLIENT_SECRET_DIR,
+					Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
 					CREDENTIALS_FOLDER);
-			   /*HashMap<String, String> doc1NameMap = ConnectAndReadSheets.readProviderScheduleGSheet(
-					"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA",
-					calendar.get(Calendar.YEAR) + " Provider Schedule", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
-			  */	
+			  	
 			   List<ProivderHelpingSheetDto> helpingList= ConnectAndReadSheets.readProviderScheduleHelpingGSheet(
-			    		"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA", "Helping", CLIENT_SECRET_DIR,
+					   Constants.Provider_Schedule_SHEET, sheetYear, CLIENT_SECRET_DIR,
 					CREDENTIALS_FOLDER);
                String officeName=implDto.getOfficeName();// officeRepo.findById(claim.getOffice().getUuid()).get().getName();
                //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
@@ -2844,15 +2842,13 @@ public class ClaimServiceImpl {
 						String specialty="";
 						
 						try {
+							String sheetYear = Constants.SDF_SHEET_PROVIDER_DATE_HELPING_YEAR.format(claim.getDos());
 					    Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
-							"1g9VtQVT5T0-Fp_beLSYhRIbUn-KBqP4TGmYuteMbsd4", "Provider", CLIENT_SECRET_DIR,
+					    		Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
 							CREDENTIALS_FOLDER);
-					   /*HashMap<String, String> doc1NameMap = ConnectAndReadSheets.readProviderScheduleGSheet(
-							"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA",
-							calendar.get(Calendar.YEAR) + " Provider Schedule", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
-					  */	
+					   	
 					   List<ProivderHelpingSheetDto> helpingList= ConnectAndReadSheets.readProviderScheduleHelpingGSheet(
-					    		"1GK8lWBc3rXgtnm6hzxcFS_ueS0QGb5tBGaKdskSFzuA", "Helping", CLIENT_SECRET_DIR,
+					    		Constants.Provider_Schedule_SHEET, sheetYear , CLIENT_SECRET_DIR,
 							CREDENTIALS_FOLDER);
 		               String officeName=off.getName();// officeRepo.findById(claim.getOffice().getUuid()).get().getName();
 		               //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
@@ -2934,10 +2930,10 @@ public class ClaimServiceImpl {
 					allLIst.addAll(ruleBookService.rule303(rule, ivData, claim));
 
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_304);
-					Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
-							"1g9VtQVT5T0-Fp_beLSYhRIbUn-KBqP4TGmYuteMbsd4", "Provider", CLIENT_SECRET_DIR,
+					/*Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
+							Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
 							CREDENTIALS_FOLDER);
-					
+					*/
 					String officeName=officeRepo.findById(claim.getOffice().getUuid()).get().getName();
 					allLIst.addAll(ruleBookService.rule304(rule, claim));
 
