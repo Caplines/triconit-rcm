@@ -1519,7 +1519,11 @@ public class ClaimServiceImpl {
 				}
 			}
 			if (claim!=null  && !pdf) {
-				if (!dto.getAutoRuleRun())runAutomatedRules(claim, partialHeader, claimUuid,false,true);
+				if (!dto.getAutoRuleRun()) {
+					AutoRunClaimReponseDto autoResponse = runAutomatedRules(claim, partialHeader, claimUuid,false,true);
+					implDto.setAssignmentOfBenefits(autoResponse.getAssignmentOfBenefits());
+					claim.setAssignmentOfBenefits(autoResponse.getAssignmentOfBenefits());
+				}
 				rcmClaimRepository.save(claim);
 			}
 			
@@ -2996,15 +3000,17 @@ public class ClaimServiceImpl {
 					allLIst.addAll(
 							ruleBookService.rule305(rule, creList, claim, officeName, insCode,insName));
 					
-					rule = getRulesFromList(rules, RuleConstants.RULE_ID_306);
+					
+					/*rule = getRulesFromList(rules, RuleConstants.RULE_ID_306);
 					allLIst.addAll(
 							ruleBookService.rule306(rule, ivData, claim));
-
+                    */
 					// Save Data here RcmClaimRuleValidation
 					//if (deleteOld) {
 					//	rcmClaimRuleValidationRepo.deleteByClaimId(claim.getClaimUuid());
 					//}
-					
+					claim.setAssignmentOfBenefits(ivData.getPlanAssignmentofBenefits());
+					dto.setAssignmentOfBenefits(ivData.getPlanAssignmentofBenefits());
 					saveAutoRuleReport(allLIst, user, claim, rules,partialHeader);
 					claim.setAutoRuleRun(true);
 					rcmClaimRepository.save(claim);

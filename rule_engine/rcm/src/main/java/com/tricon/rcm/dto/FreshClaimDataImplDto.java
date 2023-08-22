@@ -117,6 +117,7 @@ public class FreshClaimDataImplDto {
 	String primaryInsCodeSheet;
 	String secondaryInsCodeSheet;
 	String ssn;
+	String assignmentOfBenefits;
 
 
 }

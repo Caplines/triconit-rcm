@@ -220,6 +220,10 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "ssn")
 	private String ssn;
 	
+	@Column(name = "assignment_of_benefits")
+	private String assignmentOfBenefits;
+	
+	
 	//0 --> it self primary 
 	//1--> primary not submitted for secondary 
 	//2-> primary submitted for secondary 

@@ -11,7 +11,7 @@ public class RuleConstants {
 	public static final String RULE_ID_303="ES vs. IV Comparison - Patient/Subscriber Details";
 	public static final String RULE_ID_304="Treating Provider vs. Provider on Claim";//
 	public static final String RULE_ID_305="Credentialing Status";
-	public static final String RULE_ID_306="Assignment of Benefits";
+	public static final String RULE_ID_306="Assignment of Benefits";//This was removed in Phase 2
 	public static final String RULE_ID_307="CRA Code";//CRA Code Availability
 	public static final String RULE_ID_308="FDH Certification";
 	public static final String RULE_ID_309="Nitrous Certification (D9230)";
