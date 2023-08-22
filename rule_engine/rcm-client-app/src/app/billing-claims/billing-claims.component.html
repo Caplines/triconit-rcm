@@ -132,6 +132,10 @@
                                         <label for="" class="">Provider on Claim </label>
                                         <div>{{claimRcm.providerOnClaim}}</div>
                                     </div>
+                                    <div class="custom-row">
+                                        <label for="" class="">SSN </label>
+                                        <div>{{claimRcm.ssn==null ? "N/A":"claimRcm.ssn"}}</div>
+                                    </div>
 
 
                                 </div>
@@ -179,7 +183,8 @@
                                     <a data-toggle="collapse" aria-expanded="false">Links to Related Documents<span
                                             class="passedNum"
                                             *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
-                                            style="cursor: pointer;" (click)="openUpdateIvPopup($event)">Update IV ID
+                                            style="cursor: pointer;" (click)="openUpdateIvPopup($event)">Update IV ID /
+                                            TX Plan ID
                                             ?</span></a>
                                     <div class="down-icon" (click)="showHide(1)">
                                         <a href="javascript:void(0)"></a>
@@ -1221,7 +1226,7 @@
         <div id="ivUpdate" class="modal ivUpdate">
             <div class="modal-content">
                 <div _ngcontent-qaa-c48="" class="modal-header">
-                    <h5 class="modal-title">Update IV ID and Signed Tx Plan ID</h5>
+                    <h5 class="modal-title">Update IV ID and/or Signed Tx Plan ID</h5>
                     <button type="button" (click)="closeIvPopup()" class="close"><span>×</span></button>
                 </div>
                 <div class="modal-body">
@@ -1237,7 +1242,7 @@
                             </div>
                             <div class="plan-id-box">
                                 <label>&nbsp;</label>
-                                <button class="btn btn-success" [disabled]="!updatedIvfId  || !updatedTpId "
+                                <button class="btn btn-success" [disabled]="!updatedIvfId  && !updatedTpId "
                                     (click)="updateIV(claimUUid,updatedIvfId,updatedTpId)">Update Values</button>
                             </div>
                         </div>

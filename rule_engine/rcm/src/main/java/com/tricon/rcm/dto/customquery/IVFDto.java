@@ -11,4 +11,6 @@ public interface IVFDto {
 	String getPdob();
 	
 	String getPdName();
+	
+	String getSsn();
 }

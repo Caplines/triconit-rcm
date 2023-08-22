@@ -72,5 +72,6 @@ public interface RcmClaimDetailDto {
 	
 	String getPrimaryInsCodeSheet();
 	String getSecondaryInsCodeSheet();
+	String getSsn();
 	
 }

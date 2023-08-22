@@ -11,4 +11,5 @@ public class ClaimSubDet {
 	
 	String tpId;
 	String tpDos;
+	String ssn;
 }

@@ -1575,24 +1575,39 @@ public class ClaimServiceImpl {
 	
 	
 	@Transactional(rollbackFor = Exception.class)
-	public ClaimSubDet updateAutoIvId(RcmIVfDto dto,PartialHeader partialHeader) {
+	public ClaimSubDet updateAutoIvIdAndTpId(RcmIVfDto dto,PartialHeader partialHeader) {
 
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+		
 		ClaimSubDet det = new ClaimSubDet();
 		det.setSuccess(false);
 		if (!claim.isPending()){
 			//Already Submitted
 			return det;
 		}
-		claim.setIvfId(dto.getIvfId());
-		det.setIvfId(dto.getIvfId());
-		IVFDto ivfDto = rcmClaimRepository.getIVDosByIvId(dto.getIvfId(), claim.getOffice().getUuid(), claim.getPatientId());
+		if (dto.getIvfId() !=null && !dto.getIvfId().equals("")) {
+			det.setSuccess(true);
+		   claim.setIvfId(dto.getIvfId());
+		   det.setIvfId(dto.getIvfId());
 		
-		if (ivfDto!=null) {
-			det.setIvDos(ivfDto.getDos());
-			claim.setIvDos(ivfDto.getDos());
+			IVFDto ivfDto = rcmClaimRepository.getIVDosByIvId(dto.getIvfId(), claim.getOffice().getUuid(), claim.getPatientId());
+			
+			if (ivfDto!=null) {
+				det.setIvDos(ivfDto.getDos());
+				claim.setIvDos(ivfDto.getDos());
+				claim.setSsn(ivfDto.getSsn());
+				det.setSsn(ivfDto.getSsn());
+			}
+		}else {
+			det.setIvDos(claim.getIvDos());
+			det.setSsn(claim.getSsn()); 
+			det.setIvfId(claim.getIvfId());
+			det.setSuccess(true);
 		}
 		//Fetch Tpid Date based on New Tpid
+		if (dto.getTpId() !=null && !dto.getTpId().equals("")) {
+			
+		
 		Object tp  = rcmClaimRepository.getTPIdByTpid(claim.getOffice().getUuid(),
 				claim.getPatientId(), dto.getTpId());
 		det.setSuccess(true);
@@ -1613,8 +1628,13 @@ public class ClaimServiceImpl {
 				
 			}
 		}
-		
-		if (!dto.getTpId().equals("")) {
+	   }else {
+		   det.setSuccess(true); 
+		   det.setTpDos(claim.getTpDos());
+		   det.setTpId(claim.getTpId());
+		   
+	   }
+		if (dto.getTpId()!=null && !dto.getTpId().equals("")) {
 			pullAndSaveTpDataFromRE(claim, dto.getClaimUuid(), dto.getTpId(), claim.getOffice().getUuid(), partialHeader);
 		}
 		

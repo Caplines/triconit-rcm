@@ -516,12 +516,11 @@ public class RcmController extends BaseHeaderController{
         PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
         if (partialHeader == null)
             return null;
-        if (dto.getClaimUuid() == null || dto.getClaimUuid().trim().equals("") || dto.getIvfId() == null
-                || dto.getIvfId().trim().equals("")) {
+        if (dto.getClaimUuid() == null || dto.getClaimUuid().trim().equals("") ) {
             return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE,null));
         }
         try {
-        	response = claimServiceImpl.updateAutoIvId(dto,partialHeader);
+        	response = claimServiceImpl.updateAutoIvIdAndTpId(dto,partialHeader);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());

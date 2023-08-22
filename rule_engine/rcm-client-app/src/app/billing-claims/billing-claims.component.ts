@@ -972,11 +972,11 @@ export class BillingClaimsComponent {
     this.appService.updateIvId(params, (res: any) => {
       if (res.status) {
         if (res.data.success) {
-
-          this.claimRcm.ivfId = res.data.ivfId;
-          this.claimRcm.ivDos = res.data.ivDos;
-          this.claimRcm.tpId = res.data.tpId;
-          this.claimRcm.tpDos = res.data.tpDos;
+          if (res.data.ivfId != null) this.claimRcm.ivfId = res.data.ivfId;
+          if (res.data.ivDos != null) this.claimRcm.ivDos = res.data.ivDos;
+          if (res.data.tpId != null) this.claimRcm.tpId = res.data.tpId;
+          if (res.data.tpDos != null) this.claimRcm.tpDos = res.data.tpDos;
+          if (res.data.ssn != null) this.claimRcm.ssn = res.data.ssn;
           this.reval();
         }
       }
