@@ -7,6 +7,7 @@ public class AutoRunClaimReponseDto {
 
 	String message;
 	String providerOnClaim;
+	String providerOnClaimFromSheet;
 	String claimType;
 	String assignmentOfBenefits;
 	ServiceValidationDataDto serviceValidationDataDto;
