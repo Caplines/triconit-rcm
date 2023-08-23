@@ -371,7 +371,12 @@ public class RuleBookServiceImpl {
 				}catch(Exception dIssue) {
 					
 				}
-				if (applicationStatus.contains("completed") && dtCheck) {
+				//Point 28
+				if ((applicationStatus.contains("completed")|| applicationStatus.contains("termination in-process") 
+					|| applicationStatus.contains("termination in process")	|| applicationStatus.contains("enrolled as non par")
+					|| applicationStatus.contains("enrolled as non-par")
+					)
+					&& dtCheck) {
 					
 					// pass
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
