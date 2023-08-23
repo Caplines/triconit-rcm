@@ -104,7 +104,7 @@ public class Constants {
 	public static final String DEV_URL="http://localhost:4200/";
 	public static final String PROD_URL="http://18.221.170.13/";
 	public static final String CMC="CMC";
-	
+	public static final String ProviderJoinCons="<<<>>>";
 	//Sheets
 	public static final String Provider_Schedule_SHEET="1r1unO-L2wAB6zAEaKYzMEIUi1nG_F6wTzduzaXqiKAg";
 	///public static final String Provider_Schedule_SHEET_HELP="Helping";
