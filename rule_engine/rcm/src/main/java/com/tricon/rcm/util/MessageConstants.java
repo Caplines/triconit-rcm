@@ -81,5 +81,23 @@ public class MessageConstants {
 	public static final String UNAUTHORIZED_USER = "User is not authorized";
 
 	public static final String PASSWORD_NOT_MATCH = "Password doesn't match with old Password";
+	
+	public static final String UPDATION_ERROR ="Record could not be updated";
+	
+	public static final String CLIENT_NOT_UPDATE ="Client can't be update because claim is assign to this client";
+	
+	public static final String TEAM_NOT_UPDATE ="Team can't be update because claim is assign to this team";
+	
+	public static final String FILE_UPLOAD_SUCCESS="File has been uploaded Successfully";
+	
+	public static final String FILE_NOT_EXIST="File not exist";
+	
+	public static final String CLAIM_NOT_EXIST="Claim not exist";
+	
+	public static final String ATTACHMENT_TYPE_NOT_EXIST="AttachmentType is not Exist";
+	
+	public static final String ATTACHMENT_NOT_EXIST="Attachment is not Exist";
+	
+	public static final String RECORD_NOT_EXIST="Record not exist!";
 
 }

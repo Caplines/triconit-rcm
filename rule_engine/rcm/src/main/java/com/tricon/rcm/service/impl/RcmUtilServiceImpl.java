@@ -1,5 +1,9 @@
 package com.tricon.rcm.service.impl;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -114,5 +118,18 @@ public class RcmUtilServiceImpl {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	
+	public String getFileAbsolutePath(String path) {
+		Path fullPath = null;
+		try {
+			fullPath = Files.createDirectories(Paths.get(path));
+			return fullPath.toAbsolutePath().toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+
 	}
 }

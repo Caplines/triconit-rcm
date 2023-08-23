@@ -112,5 +112,6 @@ public class Constants {
 	public static final String Mapping_Tables_Provider="Provider";
 	
 	//End Sheet
+	public static final String REMOVE_ATTACHMENT_PREFIX="del_";
 
 }

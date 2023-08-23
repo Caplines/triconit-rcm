@@ -32,18 +32,18 @@ public class RcmClaimAttachment extends BaseAuditEntity implements java.io.Seria
 	private RcmClaims uuid;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "created_by_team",referencedColumnName="id",nullable = false)
+	@JoinColumn(name = "created_by_team",referencedColumnName="id")
 	private RcmTeam createdByteam;
 	
 	
-	@Column(name = "file_name", nullable = false,length = 50)
+	@Column(name = "file_name")
 	private String fileName;
 	
-	@Column(name = "file_location", nullable = false)
+	@Column(name = "file_location",length = 40)
 	private String fileLocation;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "attachment_type_id",referencedColumnName="id",nullable = false)
+	@JoinColumn(name = "attachment_type_id",referencedColumnName="id")
 	private RcmAttachmentType atchType;
 	
 	@Column(name = "status")
