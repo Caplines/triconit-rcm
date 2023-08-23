@@ -1052,4 +1052,15 @@ export class BillingClaimsComponent {
       }
     })
   }
+
+  manageProviderOnClaimFromSheet() {
+    //Now Multiple values can come
+    let ar = this.claimRcm.providerOnClaimFromSheet.split("<<<>>>");
+    let temp = "";
+    ar.forEach(element => {
+      temp = temp + element + "<br/>";
+    });
+
+    return temp;
+  }
 }
