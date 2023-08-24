@@ -279,7 +279,7 @@
                 <span class="close"
                     (click)="closeModal()">&times;</span>
                     <div class="alert alert-info" role="alert">
-                        <img src="../../assets/img/info-icon-border.png">Are You Sure You Want To Submit ?
+                        <img src="../../assets/img/info-icon-border.png">Do you want to Proceed ?
                     </div>  
                   <div><span class="text-danger" *ngIf="errorMessage">*{{errorMessage}}</span></div>  
                     <div class="row">
@@ -301,7 +301,7 @@
                                     </li>
                                 </ol>
                             <div class="confirm-btn d-flex justify-content-center mt-3">
-                                <button class="btn btn-primary mx-2" (click)="submitFiles();">Yes</button>
+                                <button class="btn btn-primary mx-2" (click)="submitConfirmation();">Yes</button>
                                 <button class="btn btn-danger" (click)="showModal=false;">Cancel</button>
                             </div>
                         </div>

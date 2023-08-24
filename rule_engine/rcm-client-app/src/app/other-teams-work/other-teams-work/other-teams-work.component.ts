@@ -1,4 +1,4 @@
-import { Component, OnInit, LOCALE_ID, Inject, HostListener } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject, HostListener, Input } from '@angular/core';
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
@@ -33,6 +33,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   errorMessage:any;
   otherTeams:any=[];
   submitBtnConfig:any={'remarks':[],'otherTeamId':[]};
+  currentClaimUuid:any;
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -234,34 +235,43 @@ export class OtherTeamsWorkComponent implements OnInit {
   }
   
   openSubmitConfirmationModal(claimUuid: any) {
+    this.currentClaimUuid = claimUuid;
     this.selectedFiles = this.getSelectedFileForComponent(claimUuid);
-    if(this.selectedFiles?.length>0){
       this.submitBtnConfig['submitType'] = 'ath';
       this.showModal = true;
       this.submitBtnConfig['remarks'][claimUuid] ? this.errorMessage = '' : '';
-    } else{
-      alert("No Files Attached");
-    }
+      if(!this.selectedFiles){
+        this.selectedFiles= [];
+        this.errorMessage = "No Files Are Attached !";
+      }
   }
   
   getSelectedFileForComponent(claimUuid: any) {
     return this.selectedFilesMap.get(claimUuid);
   }
 
-  submitFiles(){
-  this.loopThroughData(this.selectedFiles, 0);
+  submitConfirmation(){
+    if(this.submitBtnConfig['submitType'] == 'oth'){
+      this.finalAttachmentSubmit(this.submitBtnConfig['claimUuid']);
+    }else{
+      if(this.submitBtnConfig['remarks'][this.currentClaimUuid]){
+        this.loopThroughData(this.selectedFiles, 0);
+      } else{
+        this.errorMessage = "Remarks Are Mandatory !"
+      }
+    }
   }
 
   loopThroughData(dataArray: any[], currentIndex: number) {
-    if (currentIndex >= dataArray.length) {
-      this.finalAttachmentSubmit(dataArray[0].claimUuid);
+    if (currentIndex > dataArray.length) {
+      this.finalAttachmentSubmit(dataArray[0]?.claimUuid ? dataArray[0]?.claimUuid : this.currentClaimUuid);
       return;
     }
     const currentData = dataArray[currentIndex];
     let formData: any = new FormData();
-    formData.append("claimUuid", currentData.claimUuid);
-    formData.append("attachmentTypeId", currentData.attachmentTypeId);
-    formData.append("file", currentData.file);
+    formData.append("claimUuid", currentData?.claimUuid ? currentData.claimUuid : this.currentClaimUuid );
+    formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
+    formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
     this.appService.submitFilesToAssignedClaims(formData,(res:any)=>{
       if(res.data.fileResponseStatus){
         this.loopThroughData(dataArray, currentIndex + 1);
@@ -290,11 +300,7 @@ export class OtherTeamsWorkComponent implements OnInit {
         }
       })
     } else{
-        if(this.submitBtnConfig['submitType'] === 'oth'){
-          alert("Remarks are mandatory !");
-          return;
-        }
-       this.errorMessage = "Remarks Are Mandatory";
+      this.errorMessage = "Remarks Are Mandatory";
     }
   }
 
@@ -309,7 +315,8 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   submitOtherTeams(claimUuid:any){
     this.submitBtnConfig['submitType'] = 'oth';
-    this.finalAttachmentSubmit(claimUuid);
-
+    this.submitBtnConfig['claimUuid'] = claimUuid;
+    this.submitBtnConfig['remarks'][claimUuid] ? this.errorMessage = '' : '';
+    this.showModal=true;
   }
 }
