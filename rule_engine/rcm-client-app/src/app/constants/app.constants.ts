@@ -93,4 +93,33 @@ export class AppConstants {
 
     public teamData: any = [{ "teamName": "Internal Audit", "teamId": 3 }, { "teamName": "Lc3", "teamId": 4 }, { "teamName": "Office", "teamId": 5 }, { "teamName": "Patient Calling", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
 
+    public attachmentType =
+        [{"id":1,"value":"Consent Form"},
+        {"id":2,"value":"Consent Form for Major Service"},
+        {"id":3,"value":"Consult Form"},
+        {"id":4,"value":"CRA Form"},
+        {"id":5,"value":"EOB"},
+        {"id":6,"value":"FDH Certification"},
+        {"id":7,"value":"Insurance ID Card"},
+        {"id":8,"value":"Intraoral Photos"},
+        {"id":9,"value":"IV"},
+        {"id":10,"value":"Lab Slip"},
+        {"id":11,"value":"Narratives"},
+        {"id":12,"value":"NCS Form"},
+        {"id":13,"value":"Nitrous Certification (D9230)"},
+        {"id":14,"value":"Nitrous Pre operative Checklist"},
+        {"id":15,"value":"Others"},
+        {"id":16,"value":"Perio Chart"},
+        {"id":17,"value":"Pre-Auth"},
+        {"id":18,"value":"Sedation Certification (D9248)"},
+        {"id":19,"value":"Sedation Record"},
+        {"id":20,"value":"X-ray: Bitewings"},
+        {"id":21,"value":"X-ray: Cephlo"},
+        {"id":22,"value":"X-ray: FMX"},
+        {"id":23,"value":"X-ray: Pano"},
+        {"id":24,"value":"X-ray: Periapical"},
+        {"id":25,"value":"X-ray: Post-Op"},
+        {"id":26,"value":"X-ray: Pre-Op"}]
+
+
 }

@@ -2,12 +2,8 @@ import { Component, OnInit, LOCALE_ID, Inject, HostListener } from '@angular/cor
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
-import html2canvas from 'html2canvas';
-import jsPDF from "jspdf";
-import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
 import { Title } from '@angular/platform-browser';
-import { DecimalPipe, formatNumber } from '@angular/common';
 import { DownLoadService } from 'src/app/service/download.service';
 
 @Component({
@@ -30,9 +26,13 @@ export class OtherTeamsWorkComponent implements OnInit {
   clientName: string = '';
   isFilterValueExist: boolean = false;
   fliterName: string = '';
-  showModal: boolean = false;
-  selectedFiles: File[] = [];
-  totalFile: number = 0;
+  selectedFilesMap: any= new Map();
+  selectedFiles:any=[];
+  showModal:boolean=false;
+  isFilesSubmitted:boolean=false;
+  errorMessage:any;
+  otherTeams:any=[];
+  submitBtnConfig:any={'remarks':[],'otherTeamId':[]};
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -42,7 +42,7 @@ export class OtherTeamsWorkComponent implements OnInit {
     }
   }
 
-  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title, private downloadService: DownLoadService) {
+  constructor(@Inject(LOCALE_ID) private locale: string ,private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title, private downloadService: DownLoadService) {
     this.selectedBtype = this.appConstants.BILLING_ID;
     title.setTitle(Utils.defaultTitle + "List Of Claims");
   }
@@ -51,6 +51,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   ngOnInit(): void {
     this.clientName = localStorage.getItem("selected_clientName");
     this.fetchClaims();
+    this.fetchOtherTeams();
   }
 
   fetchOfficeByUuid() {
@@ -67,7 +68,14 @@ export class OtherTeamsWorkComponent implements OnInit {
     })
   }
 
+  fetchOtherTeams() {
+    this.appService.fetchOtherTeams((res: any) => {
+      if (res.status === 200) {
+        this.otherTeams = res.data;
 
+      }
+    })
+  }
 
   fetchClaims() {
     this.loader.listClaimLoader = true;
@@ -210,42 +218,98 @@ export class OtherTeamsWorkComponent implements OnInit {
     return Utils.isRoleLead();
   }
 
-  openModal() {
-    this.showModal = true;
+  closeModal(){
+    this.showModal=false;
   }
 
-  closeModal() {
-    this.showModal = false;
-    if (this.selectedFiles.length == 0)
-      document.getElementById("attach").innerHTML = 'Attach';
-  }
 
-  onFileChange(event: any) {
-    for (let i = 0; i < event.target.files.length; i++) {
-      this.selectedFiles.unshift(event.target.files[i]);
+  receiveChildEvent(event:any){
+    if(event['action'] === 'fileSelected'){
+      this.setSelectedFileForComponent(event.claimUuid, event.value);
     }
-
   }
 
-  uploadFiles() {
-    if (this.selectedFiles.length > 0) {
-      const formData = new FormData();
-      for (const file of this.selectedFiles) {
-        formData.append('files[]', file, file.name);
+  setSelectedFileForComponent(claimUuid: any, file: File) {
+    this.selectedFilesMap.set(claimUuid, file);
+  }
+  
+  openSubmitConfirmationModal(claimUuid: any) {
+    this.selectedFiles = this.getSelectedFileForComponent(claimUuid);
+    if(this.selectedFiles?.length>0){
+      this.submitBtnConfig['submitType'] = 'ath';
+      this.showModal = true;
+      this.submitBtnConfig['remarks'][claimUuid] ? this.errorMessage = '' : '';
+    } else{
+      alert("No Files Attached");
+    }
+  }
+  
+  getSelectedFileForComponent(claimUuid: any) {
+    return this.selectedFilesMap.get(claimUuid);
+  }
+
+  submitFiles(){
+  this.loopThroughData(this.selectedFiles, 0);
+  }
+
+  loopThroughData(dataArray: any[], currentIndex: number) {
+    if (currentIndex >= dataArray.length) {
+      this.finalAttachmentSubmit(dataArray[0].claimUuid);
+      return;
+    }
+    const currentData = dataArray[currentIndex];
+    let formData: any = new FormData();
+    formData.append("claimUuid", currentData.claimUuid);
+    formData.append("attachmentTypeId", currentData.attachmentTypeId);
+    formData.append("file", currentData.file);
+    this.appService.submitFilesToAssignedClaims(formData,(res:any)=>{
+      if(res.data.fileResponseStatus){
+        this.loopThroughData(dataArray, currentIndex + 1);
+      }else{
+        this.errorMessage = res.data.msg;
       }
+    })
+     
+  }
+
+  finalAttachmentSubmit(claimUuid:any){
+    let hasRemarks =   this.submitBtnConfig['remarks'][claimUuid];
+    if(hasRemarks){
+      let params:any= {
+        "remarks":this.submitBtnConfig['remarks'][claimUuid],
+        "submitButton":this.submitBtnConfig['submitType'],
+        "assignToOtherTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : 0    //converting string into number using unary operator +
+      }
+      console.log(params);
+    this.appService.finalAttachmentSubmit(params,(res:any)=>{
+        if(res.status == 200){
+            console.log(res);
+            this.showModal=false;
+            this.errorMessage='';
+            this.removeSubmittedClaimRow(claimUuid);
+        }
+      })
+    } else{
+        if(this.submitBtnConfig['submitType'] === 'oth'){
+          alert("Remarks are mandatory !");
+          return;
+        }
+       this.errorMessage = "Remarks Are Mandatory";
     }
   }
 
-  removeItem(file: File) {
-    const index = this.selectedFiles.indexOf(file);
-    if (index !== -1) {
-      this.selectedFiles.splice(index, 1);
-    }
+  selectOtherTeam(event:any,claimUuid:any){
+      this.submitBtnConfig['otherTeamId'][claimUuid] = event.target.value;
   }
 
-  uploadItem() {
-    this.totalFile = this.selectedFiles.length;
-    document.getElementById("attach").innerHTML = this.totalFile + ' Files Attached';
-    this.closeModal();
+  removeSubmittedClaimRow(claimUuid:any){
+    let index  = this.filteredItems.findIndex((item:any)=>item.uuid == claimUuid);
+    this.filteredItems.splice(index,1);
+  }
+
+  submitOtherTeams(claimUuid:any){
+    this.submitBtnConfig['submitType'] = 'oth';
+    this.finalAttachmentSubmit(claimUuid);
+
   }
 }

@@ -42,6 +42,7 @@ export class ListOfClaimsComponent implements OnInit {
   fliterName: string = '';
   tabSwitch: any = { 'Fresh': true, 'sendBack': false, 'MyClaims': false };
   tabValue:any;
+  accessToListOfClaims:boolean=true;
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -58,8 +59,16 @@ export class ListOfClaimsComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.isAccessToListOfClaims();
     this.fetchClaims(this.selectedSubtype);
     this.clientName = localStorage.getItem("selected_clientName");
+  }
+
+  isAccessToListOfClaims(){
+    if(Utils.selectedTeam() == 7 || Utils.selectedTeam() == 3){
+      this.accessToListOfClaims = false;
+    }
+    
   }
 
   fetchOfficeByUuid() {

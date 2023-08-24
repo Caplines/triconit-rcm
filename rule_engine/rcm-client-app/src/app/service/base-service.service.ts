@@ -69,6 +69,8 @@ export class BaseService {
     'fetchIssueClaimCounts': '/issue-claim-counts',
     'googleSheetLink': '/gsheet-link',
     'updateIv': '/api/updateivfid',
+    'claimAttachment': '/api/claim-attachment',
+    'final-attachments-data': '/api/final-attachments-data',
 
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',

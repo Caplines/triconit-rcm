@@ -8,6 +8,7 @@ import { ListOfClaimsRoutingModule } from './list-of-claims-routing.module';
 import { FormsModule } from '@angular/forms';
 import { ApplicationServiceService } from '../service/application-service.service';
 import { DownLoadService } from '../service/download.service';
+import { OtherTeamsWorkModule } from '../other-teams-work/other-teams-work.module';
 @NgModule({
   declarations: [
     ListOfClaimsComponent,
@@ -19,8 +20,10 @@ import { DownLoadService } from '../service/download.service';
     ListOfClaimsRoutingModule,
     PipesModule,
     HeaderComponent,
-    FormsModule
-  ]
+    FormsModule,
+    OtherTeamsWorkModule
+  ],
+  exports:[ListOfClaimsComponent]
 })
 export class ListOfClaimsModule {
   constructor() {

@@ -1,3 +1,5 @@
+<ng-container *ngIf="accessToListOfClaims">
+
 <div class="right-container">
     <div class="container-fluid">
         <div class="row">
@@ -65,8 +67,7 @@
                                                                             [checked]="isFilterAllSelected.officeName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'officeName')">
-                                                                        {{isFilterAllSelected.officeName ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.officeName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -163,8 +164,7 @@
                                                                             [checked]="isFilterAllSelected.claimType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'claimType')">
-                                                                        {{isFilterAllSelected.claimType ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.claimType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -200,8 +200,7 @@
                                                                             [checked]="isFilterAllSelected.actionRequired"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'actionRequired')">
-                                                                        {{isFilterAllSelected.actionRequired ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.actionRequired ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.actionRequired=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -239,8 +238,7 @@
                                                                             [checked]="isFilterAllSelected.insuranceName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceName')">
-                                                                        {{isFilterAllSelected.insuranceName? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceName? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -281,8 +279,7 @@
                                                                             [checked]="isFilterAllSelected.insuranceType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceType')">
-                                                                        {{isFilterAllSelected.insuranceType ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -350,8 +347,7 @@
                                                                             [checked]="isFilterAllSelected.lastTeamWorked"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'lastTeam')">
-                                                                        {{isFilterAllSelected.lastTeamWorked ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.lastTeamWorked ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.lastTeamWorked=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -463,4 +459,11 @@
 
             </div>
         </div>
+        </div>
+        </div>
+    </ng-container>
+
+            <ng-container *ngIf="!accessToListOfClaims">
+                <app-other-teams-work></app-other-teams-work>
+        </ng-container>
         <!-- </div> -->

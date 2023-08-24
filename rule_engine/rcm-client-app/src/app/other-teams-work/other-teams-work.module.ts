@@ -8,6 +8,7 @@ import { OtherTeamsWorkComponentRoutingModule} from './other-teams-work-routing.
 import { FormsModule } from '@angular/forms';
 import { ApplicationServiceService } from '../service/application-service.service';
 import { DownLoadService } from '../service/download.service';
+import { AttachFileModule } from '../shared/attach-file/attach-file.module';
 @NgModule({
   declarations: [
     OtherTeamsWorkComponent,
@@ -19,8 +20,10 @@ import { DownLoadService } from '../service/download.service';
     OtherTeamsWorkComponentRoutingModule,
     PipesModule,
     HeaderComponent,
-    FormsModule
-  ]
+    FormsModule,
+    AttachFileModule
+  ],
+  exports:[OtherTeamsWorkComponent]
 })
 export class OtherTeamsWorkModule {
   constructor() {

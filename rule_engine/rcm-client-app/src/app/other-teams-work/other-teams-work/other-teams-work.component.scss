@@ -372,44 +372,7 @@ h1 {
                     font-size: 16px;
                 }
 
-                .file-list {
-                    text-align: left;
-                    padding: 0px;
-                    margin: 20px 0 0 0;
-                    overflow-y: auto;
-                    max-height: 300px;
-
-                    li {
-                        border: 1px solid #ccc;
-                        padding: 5px 10px;
-                        list-style-position: inside;
-                        border-bottom: 0px;
-                        background: #fff;
-
-                        &:first-child {
-                            border-radius: 5px 5px 0 0;
-                        }
-
-                        &:last-child {
-                            border-radius: 0 0 5px 5px;
-                            border-bottom: 1px solid #ccc;
-                        }
-
-                        .close {
-                            font-size: 24px;
-                            margin-top: 6px;
-                            color: red;
-                        }
-
-                        .fileEllipsis {
-                            display: inline-block;
-                            width: 200px;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
-                    }
-                }
+               
             }
         }
 
@@ -425,4 +388,43 @@ h1 {
     width: 126px;
     justify-content: center;
 
+}
+
+.file-list {
+    text-align: left;
+    padding: 0px;
+    margin: 20px 0 0 0;
+    overflow-y: auto;
+    max-height: 300px;
+
+    li {
+        border: 1px solid #ccc;
+        padding: 5px 10px;
+        list-style-position: inside;
+        border-bottom: 0px;
+        background: #fff;
+
+        &:first-child {
+            border-radius: 5px 5px 0 0;
+        }
+
+        &:last-child {
+            border-radius: 0 0 5px 5px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .close {
+            font-size: 24px;
+            margin-top: 6px;
+            color: red;
+        }
+
+        .fileEllipsis {
+            display: inline-block;
+            width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
 }

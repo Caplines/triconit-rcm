@@ -10,6 +10,6 @@ import lombok.ToString;
 public class FinalSubmittionClaimAttachmentDto {
 
 	   private String remarks;
-	   private int assignToOtherTeamId=0;
+	   private int assignToOtherTeamId;
 	   private String submitButton;
 }

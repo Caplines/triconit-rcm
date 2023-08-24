@@ -31,8 +31,7 @@
                                                                             [checked]="isFilterAllSelected.officeName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'officeName')">
-                                                                        {{isFilterAllSelected.officeName ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.officeName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -200,7 +199,7 @@
                                                 </td>
                                             </tr>
                                             <ng-container *ngIf="!loader.listClaimLoader">
-                                                <ng-container *ngFor="let det of filteredItems">
+                                                <ng-container *ngFor="let det of filteredItems;let idx=index;">
                                                     <tr *ngIf="loader.listClaimLoader">
                                                         <td colspan="7" class="text-center"><span
                                                                 class="loader-data "></span> </td>
@@ -235,99 +234,21 @@
                                                         <td class="alignRight">{{det.claimAge}}</td>
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
                                                         <td class="alignRight">{{det.claimAge}}</td>
-                                                        <td><textarea class="form-control" rows="1"
+                                                        <td><textarea name="{{det.uuid}}" class="form-control" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
                                                                 style="width: 200px;"></textarea>
                                                         </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary attached"
-                                                                (click)="openModal()" id="attach">Attach</button>
-                                                            <div class="modal attachModal" *ngIf="showModal">
-                                                                <div class="modal-content rounded-0"
-                                                                    [ngClass]="{'opacityLow':loader}">
-                                                                    <span class="close"
-                                                                        (click)="closeModal()">&times;</span>
-                                                                    <h5>Upload Attachment</h5>
-                                                                    <div class="form">
-                                                                        <div class="wrapper">
-                                                                            <div class="container">
-
-                                                                                <div class="upload-container">
-                                                                                    <div class="border-container">
-                                                                                        <div class="dragDrop">
-                                                                                            Drag and drop files here, or
-                                                                                            <button type="button"
-                                                                                                class="btn btn-success file-button"
-                                                                                                (click)="fileInput.click()">Select
-                                                                                                Files</button>
-                                                                                            <input type="file"
-                                                                                                id="fileInput"
-                                                                                                #fileInput multiple
-                                                                                                (change)="onFileChange($event)"
-                                                                                                class="file-input" />
-                                                                                        </div>
-                                                                                        <ol class="file-list"
-                                                                                            *ngIf="selectedFiles.length > 0">
-                                                                                            <li
-                                                                                                *ngFor="let file of selectedFiles">
-                                                                                                <span style="display: inline-flex; align-items: center; justify-content: space-between;">
-                                                                                               <span class="fileEllipsis"  title="{{ file.name }}">{{ file.name }} </span>
-                                                                                                    <select class="form-control" style="width: 240px; margin-left: 15px;" name="type">
-                                                                                                        <option>Consent Form </option>
-                                                                                                        <option>Consent Form for Major Service</option>
-                                                                                                        <option>Consult Form</option>
-                                                                                                        <option>CRA Form</option>
-                                                                                                        <option>EOB</option>
-                                                                                                        <option>FDH Certification</option>
-                                                                                                        <option>Insurance ID Card</option>
-                                                                                                        <option>Intraoral Photos</option>
-                                                                                                        <option>IV</option>
-                                                                                                        <option>Lab Slip</option>
-                                                                                                        <option>Narratives</option>
-                                                                                                        <option>NCS Form</option>
-                                                                                                        <option>Nitrous Certification (D9230)</option>
-                                                                                                        <option>Nitrous Pre operative Checklist</option>
-                                                                                                        <option>Others</option>
-                                                                                                        <option>Perio Chart</option>
-                                                                                                        <option>Pre-Auth</option>
-                                                                                                        <option>Sedation Certification (D9248)</option>
-                                                                                                        <option>Sedation Record</option>
-                                                                                                        <option>X-ray: Bitewings</option>
-                                                                                                        <option>X-ray: Cephlo</option>
-                                                                                                        <option>X-ray: FMX</option>
-                                                                                                        <option>X-ray: Pano</option>
-                                                                                                        <option>X-ray: Periapical</option>
-                                                                                                        <option>X-ray: Post-Op</option>
-                                                                                                        <option>X-ray: Pre-Op</option>
-                                                                                                    </select>
-                                                                                            </span>
-                                                                                            <span  class="close" (click)="removeItem(file)">&times;</span>
-                                                                                            </li>
-                                                                                        </ol>
-                                                                                    </div>
-                                                                                    <button type="button" class="btn btn btn-primary file-button" [disabled]="selectedFiles.length==0" (click)="uploadItem()">Upload</button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td><button type="button" class="btn btn-primary">
+                                                        <td> <app-attach-file [inputConfig]="{'claimUuid':det.uuid}" (emitToParent)="receiveChildEvent($event)" ></app-attach-file></td>
+                                                        <td><button type="button" class="btn btn-primary" (click)="openSubmitConfirmationModal(det.uuid)"> 
                                                                 Submit</button></td>
                                                         <td>
                                                             <div class="otherTeam">
                                                                 <div class="billingDropdown ">
-                                                                    <select class="form-control">
-                                                                        <option>LC3</option>
-                                                                        <option>Otho</option>
-                                                                        <option>Quality</option>
+                                                                    <select class="form-control" (change)="selectOtherTeam($event,det.uuid)">
+                                                                        <option value="0" [selected]="true" [hidden]="true">Select Team</option>
+                                                                        <option *ngFor="let data of otherTeams" [value]="data.teamId">{{data.teamName}}</option>
                                                                     </select>
 
-                                                                </div><button type="button" class="btn btn-primary"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#exampleModal">
-                                                                    Submit</button>
+                                                                </div><button type="button" class="btn btn-primary" [disabled]="!this.submitBtnConfig['otherTeamId'][det.uuid]" (click)="submitOtherTeams(det.uuid)">Submit</button>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -348,4 +269,44 @@
 
             </div>
         </div>
+        </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div class="modal attachModal" *ngIf="showModal">
+            <div class="modal-content rounded-0"
+                [ngClass]="{'opacityLow':loader}">
+                <span class="close"
+                    (click)="closeModal()">&times;</span>
+                    <div class="alert alert-info" role="alert">
+                        <img src="../../assets/img/info-icon-border.png">Are You Sure You Want To Submit ?
+                    </div>  
+                  <div><span class="text-danger" *ngIf="errorMessage">*{{errorMessage}}</span></div>  
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <ol class="file-list"
+                                    *ngIf="selectedFiles?.length > 0">
+                                    <li
+                                        *ngFor="let data of selectedFiles">
+                                        <span style="display: inline-flex; align-items: center; justify-content: space-between;">
+                                       <span class="fileEllipsis"  title="{{ data.file.name }}">{{ data.file.name }} </span>
+                                            <select [disabled]="true" class="form-control"  style="width: 240px; margin-left: 15px;" name="type">
+                                                <ng-container *ngFor="let item of appConstants.attachmentType">
+                                                    <ng-container *ngIf="item.id == data.attachmentTypeId">
+                                                        <option [value]="item.id">{{item.value}}</option>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </select>
+                                        </span>
+                                    </li>
+                                </ol>
+                            <div class="confirm-btn d-flex justify-content-center mt-3">
+                                <button class="btn btn-primary mx-2" (click)="submitFiles();">Yes</button>
+                                <button class="btn btn-danger" (click)="showModal=false;">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+            </div>
+    </div>
         <!-- </div> -->

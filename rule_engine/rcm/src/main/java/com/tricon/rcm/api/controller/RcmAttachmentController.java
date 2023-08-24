@@ -117,7 +117,7 @@ public class RcmAttachmentController extends BaseHeaderController {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		if ((dto.getRemarks() == null || dto.getRemarks().isEmpty()) || (dto.getSubmitButton() == null
-				|| dto.getSubmitButton().isEmpty() || dto.getAssignToOtherTeamId() != 0)) {
+				|| dto.getSubmitButton().isEmpty())) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}

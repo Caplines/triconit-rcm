@@ -104,6 +104,10 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['assignOffice'], callback)
   }
 
+  finalAttachmentSubmit(params: any, callback: any) {
+    this.postData(params, this.httpUrl['final-attachments-data'], callback)
+  }
+
   registerUser(params: any, callback: any) {
     this.postData(params, this.httpUrl['registerUser'], callback)
   }
@@ -142,6 +146,10 @@ export class ApplicationServiceService extends BaseService {
 
   editClient(params: any, callback: any) {
     this.postData(params, this.httpUrl['editClient'], callback)
+  }
+
+  submitFilesToAssignedClaims(params: any, callback: any) {
+    this.postData(params, this.httpUrl['claimAttachment'], callback)
   }
 
   sortData(data: any, sortBy: any, order: any, sortType: string, teamName?: any) {
