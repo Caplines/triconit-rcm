@@ -119,9 +119,10 @@ public class AttachmentServiceImpl {
 
 						Files.copy(in, Paths.get(claimAttachmentFolder.concat(File.separator).concat(fileName)),
 								StandardCopyOption.REPLACE_EXISTING);	
-					}	
-					response = FileResponseDto.builder().msg(MessageConstants.DATA_SAVED).fileResponseStatus(true)
-							.build();
+					}
+						response = FileResponseDto.builder().msg(MessageConstants.DATA_SAVED).fileResponseStatus(true)
+								.build();
+					
 				} else
 					response = FileResponseDto.builder().msg(MessageConstants.ATTACHMENT_TYPE_NOT_EXIST)
 							.fileResponseStatus(false).build();
@@ -158,6 +159,7 @@ public class AttachmentServiceImpl {
 		File renameFile = null;
 		String renameFileName = null;
 		RcmUser loginUser = null;
+		int status = 0;
 		List<RcmClaimAttachmentDto> data = attachmentRepo.findByAttachmentsById(dto.getClaimAttachmentId(),
 				dto.getClaimUuid());
 		if (!data.isEmpty()) {
@@ -169,33 +171,57 @@ public class AttachmentServiceImpl {
 					renameFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
 							.concat(File.separator).concat(renameFileName));
 					loginUser = userRepo.findByEmail(jwtUser.getUsername());
-					int status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId());
-					if (status > 0) {
-						if (existingFile.renameTo(renameFile)) {
+					// find existing rename(remove) file from db
+
+					RcmClaimAttachmentDto renameFileData = attachmentRepo.findRenameFile(d.getFileName(),
+							d.getClaimUuid());
+					if (renameFileData == null) {
+						status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), renameFileName);
+						if (status > 0) {
+							existingFile.renameTo(renameFile);
 							response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
 									.fileResponseStatus(true).build();
-						} else {
-							if (renameFile.exists()) {
-
-								if (renameFile.delete()) {
-									existingFile.renameTo(renameFile);
-									response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
-											.fileResponseStatus(true).build();
-								}
-							}
 						}
-					} else
+					} else {
+
+						String reName = Constants.REMOVE_ATTACHMENT_PREFIX.concat(renameFileData.getRenameFile());
+						status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), reName);
+						if (status > 0) {
+							File replaceFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
+									.concat(File.separator).concat(reName));
+							existingFile.renameTo(replaceFile);
+							response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
+									.fileResponseStatus(true).build();
+						}
+					}
+
+					if (status <= 0) {
 						response = FileResponseDto.builder().msg(MessageConstants.UPDATION_FAIL)
 								.fileResponseStatus(false).build();
+					}
 				} else
 					response = FileResponseDto.builder().msg(MessageConstants.FILE_NOT_EXIST).fileResponseStatus(false)
 							.build();
-
-			}
-		} else
-			response = FileResponseDto.builder().msg(MessageConstants.RECORD_NOT_EXIST).fileResponseStatus(false)
+			   }
+		     } else
+			       response = FileResponseDto.builder().msg(MessageConstants.RECORD_NOT_EXIST).fileResponseStatus(false)
 					.build();
 
 		return response;
 	}
+
+	public Object[] getAttachmentFile(String id) throws Exception {
+		RcmClaimAttachmentDto data = attachmentRepo.findAttachmentFile(id);
+		String fullPath = null;
+		Object obj[] = new Object[2];
+		if (data != null) {
+			fullPath = data.getFileLocation().concat(File.separator).concat(data.getClaimUuid()).concat(File.separator)
+					.concat(data.getFileName());
+			obj[0] = fullPath;
+			obj[1] = data.getFileName();
+			return obj;
+		}
+		return obj;
+	}
+
 }

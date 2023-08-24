@@ -3,6 +3,7 @@ package com.tricon.rcm.api.controller;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -13,7 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.download.AllPendancyDownloadDto;
 import com.tricon.rcm.dto.download.ClaimDetailsDownloadDto;
@@ -31,7 +37,9 @@ import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
 import com.tricon.rcm.dto.download.PendancyDownloadDto;
 import com.tricon.rcm.dto.download.ProductionDownloadDto;
 import com.tricon.rcm.dto.download.TreatmentPlanDownloadDto;
+import com.tricon.rcm.service.impl.AttachmentServiceImpl;
 import com.tricon.rcm.service.impl.DownLoadService;
+import com.tricon.rcm.util.MessageConstants;
 
 
 @RestController
@@ -40,6 +48,9 @@ public class DownloadController extends BaseHeaderController{
 
 	@Autowired
 	DownLoadService service;
+	
+	@Autowired
+	private AttachmentServiceImpl attachmentServiceImpl;
 	
 	
 	
@@ -219,5 +230,32 @@ public class DownloadController extends BaseHeaderController{
 			o.close();
 		}
 
+	}
+	
+	@GetMapping(value = "/api/attachment-file/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<?> attachmentFile(@PathVariable("id") String id, HttpServletResponse response) {
+		Object[] data = null;
+		FileInputStream input = null;
+		String fileName = null;
+		String fullPath = null;
+		String msg = null;
+		try {
+			data = attachmentServiceImpl.getAttachmentFile(id);
+			fullPath = (String) data[0];
+			fileName = (String) data[1];
+			if (fullPath != null && fileName != null) {
+				input = new FileInputStream(fullPath);
+				response.setContentType("application/octet-stream");
+				response.setHeader("Content-Disposition", String.format("attachment; filename=" + fileName + " "));
+				StreamUtils.copy(input, response.getOutputStream());
+				response.flushBuffer();
+				input.close();
+			} else
+				msg = MessageConstants.SOMETHING_WENT_WRONG;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", msg));
 	}
 }

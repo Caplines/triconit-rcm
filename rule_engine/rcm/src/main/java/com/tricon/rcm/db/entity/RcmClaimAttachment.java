@@ -52,5 +52,8 @@ public class RcmClaimAttachment extends BaseAuditEntity implements java.io.Seria
 	@Column(name = "is_deleted")
 	private boolean deleted;
 	
+	@Column(name = "rename_file",columnDefinition = "text")
+	private String renameFile;
+	
 	
 }

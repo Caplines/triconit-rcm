@@ -23,12 +23,12 @@ public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment
 	List<RcmClaimAttachmentDto> findByAttachmentId(@Param("claimuUuid") String claimuUuid);
 	
 	@Modifying
-	@Query(value = "update rcm_claim_attachment set status = false,is_deleted = true,updated_by=:updatedBy,updated_date=now() where id =:attachmentId", nativeQuery = true)
+	@Query(value = "update rcm_claim_attachment set rename_file =:renameFile,status = false,is_deleted = true,updated_by=:updatedBy,updated_date=now() where id =:attachmentId", nativeQuery = true)
 	int updateAttachmentStatusById(@Param("updatedBy") RcmUser updatedBy,
-			@Param("attachmentId") int attachmentId);
+			@Param("attachmentId") int attachmentId,@Param("renameFile") String renameFile);
 	
 	
-	@Query(value = "select a.id as Id,a.file_name as FileName,a.is_deleted as IsDeleted,a.status as Status "
+	@Query(value = "select a.id as Id,a.file_name as FileName,a.is_deleted as IsDeleted,a.status as Status,a.claim_id as ClaimUuid "
 			+ "from rcm_claim_attachment a "
 			+ "inner join rcm_attachment_type atype on atype.id=a.attachment_type_id "
 			+ "inner join rcm_claims c on c.claim_uuid=a.claim_id "
@@ -40,5 +40,19 @@ public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment
 	@Query(value = "select count(a.file_name) as FileName from rcm_claim_attachment a "
 			+ "where a.file_name=:fileName and a.claim_id=:claimuUuid and a.is_deleted is false", nativeQuery = true)
 	int fileCount(@Param("fileName") String fileName, @Param("claimuUuid") String claimuUuid);
+	
+	@Query(value = "select a.file_name as FileName,a.file_location as FileLocation,a.claim_id as ClaimUuid "
+			+ "from rcm_claim_attachment a "
+			+ "where a.id=:attachmentId and a.is_deleted is false "
+			+ "and a.file_name is not null and a.attachment_type_id is not null", nativeQuery = true)
+	RcmClaimAttachmentDto findAttachmentFile(@Param("attachmentId") String attachmentId);
+	
+	@Query(value = "SELECT a.rename_file as RenameFile "
+			+ "FROM rcm_claim_attachment a "
+			+ "inner join rcm_claims c on c.claim_uuid=a.claim_id "
+			+ "WHERE a.claim_id =:claimUuid and a.file_name=:fileName and a.is_deleted is true and a.status is false "
+			+ "ORDER BY a.rename_file DESC "
+			+ "LIMIT 1", nativeQuery = true)
+	RcmClaimAttachmentDto findRenameFile(@Param("fileName") String fileName,@Param("claimUuid") String claimUuid);
 	
 }

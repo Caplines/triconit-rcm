@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tricon.rcm.dto.ClaimAttachmentsResponseDto;
 import com.tricon.rcm.dto.FileResponseDto;
+import com.tricon.rcm.dto.FinalSubmittionClaimAttachmentDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmClaimDeAttachmentDto;
@@ -107,5 +108,20 @@ public class RcmAttachmentController extends BaseHeaderController {
 	}
 	
 	
+	@PostMapping("/api/final-attachments-data")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<?> finalSubmittionClaimAttachments(@RequestBody FinalSubmittionClaimAttachmentDto dto,
+			Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		if ((dto.getRemarks() == null || dto.getRemarks().isEmpty()) || (dto.getSubmitButton() == null
+				|| dto.getSubmitButton().isEmpty() || dto.getAssignToOtherTeamId() != 0)) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", true));
+	}
 
 }

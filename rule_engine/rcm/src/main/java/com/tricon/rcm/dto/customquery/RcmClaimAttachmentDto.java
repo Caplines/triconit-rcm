@@ -9,5 +9,6 @@ public interface RcmClaimAttachmentDto {
 	int getAttachmentId();
 	String getClaimUuid();
 	String getFileLocation();
+	String getRenameFile();
 	
 }
