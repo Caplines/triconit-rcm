@@ -449,7 +449,7 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 			@Param("days") int days,@Param("offuuid") String offuuid);
 	
 	@Query(nativeQuery = true, value = ""
-			+" select plan_assignment_of_benefits  as planAssignmentofBenefits ,memberId as basicInfo16,group_p as basicInfo14," 
+			+" select apt_date appointmentDate, plan_assignment_of_benefits  as planAssignmentofBenefits ,memberId as basicInfo16,group_p as basicInfo14," 
 			+" concat(coalesce(p.first_name,''),' ',coalesce(p.last_name,'')) as basicInfo2, p.dob as basicInfo6," 
 		    +" policy_holder as basicInfo5 from patient p inner join patient_detail pd  on p.id=pd.patient_id "
 			+ " where pd.id=:ivId ")

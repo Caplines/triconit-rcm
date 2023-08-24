@@ -3,7 +3,7 @@ package com.tricon.rcm.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -13,15 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.google.api.client.util.Strings;
 import com.tricon.rcm.db.entity.RcmClaimDetail;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmRules;
-import com.tricon.rcm.dto.CaplineIVFFormDto;
-import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
-import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.TPValidationResponseDto;
 import com.tricon.rcm.dto.customquery.DataPatientRuleDto;
 import com.tricon.rcm.enums.ClaimTypeEnum;
@@ -56,7 +52,7 @@ public class RuleBookServiceImpl {
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
-//System.out.println(ivf.getBasicInfo16());
+			// System.out.println(ivf.getBasicInfo16());
 			if (ivf == null) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule301.error.message1", new Object[] {}, locale), Constants.FAIL, "",
@@ -140,67 +136,78 @@ public class RuleBookServiceImpl {
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-		boolean pass= true;
+		boolean pass = true;
 		String[] clT = rcmClaim.getClaimId().split("_");
-		//String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
-		boolean primary=true;
+		// String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
+		boolean primary = true;
 		if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
-			primary=true;
-			
+			primary = true;
+
 		} else {
-			 primary=false;
-			
+			primary = false;
+
 		}
-		List<String> errorMessage=null;
+		List<String> errorMessage = null;
 		try {
 
 			if (ivf == null) {
-			
-				if (errorMessage==null) errorMessage= new ArrayList<>();
+
+				if (errorMessage == null)
+					errorMessage = new ArrayList<>();
 				errorMessage.add("IV Not Found");
-				pass= false;
+				pass = false;
 			} else {
 				if (!rcmClaim.getPatientName().trim().equalsIgnoreCase(ivf.getBasicInfo2().trim())) {
-					if (errorMessage==null) errorMessage= new ArrayList<>();
-					errorMessage.add("Claim Patient name: "+rcmClaim.getPatientName() +"; IV Patient name: "+ivf.getBasicInfo2());
-					pass= false;
-					//Fail
+					if (errorMessage == null)
+						errorMessage = new ArrayList<>();
+					errorMessage.add("Claim Patient name: " + rcmClaim.getPatientName() + "; IV Patient name: "
+							+ ivf.getBasicInfo2());
+					pass = false;
+					// Fail
 				}
 				if (!Constants.SDF_SHEET_DATE.format(rcmClaim.getPatientBirthDate()).equals(ivf.getBasicInfo6())) {
-					if (errorMessage==null) errorMessage= new ArrayList<>();
-					errorMessage.add("Claim Patient DOB: "+Constants.SDF_SHEET_DATE.format(rcmClaim.getPatientBirthDate()) +"; Claim Patient DOB: "+ivf.getBasicInfo6());
-					pass= false;
-					//Fail
+					if (errorMessage == null)
+						errorMessage = new ArrayList<>();
+					errorMessage
+							.add("Claim Patient DOB: " + Constants.SDF_SHEET_DATE.format(rcmClaim.getPatientBirthDate())
+									+ "; Claim Patient DOB: " + ivf.getBasicInfo6());
+					pass = false;
+					// Fail
 				}
 				if (primary) {
 					if (!rcmClaim.getPrimePolicyHolder().trim().equalsIgnoreCase(ivf.getBasicInfo5().trim())) {
-						if (errorMessage==null) errorMessage= new ArrayList<>();
-						errorMessage.add("Claim PolicyHolder: "+rcmClaim.getPrimePolicyHolder() +"; IV PolicyHolder: "+ivf.getBasicInfo5());
-						pass= false;
-						//Fail
+						if (errorMessage == null)
+							errorMessage = new ArrayList<>();
+						errorMessage.add("Claim PolicyHolder: " + rcmClaim.getPrimePolicyHolder()
+								+ "; IV PolicyHolder: " + ivf.getBasicInfo5());
+						pass = false;
+						// Fail
 					}
-				}else {
+				} else {
 					if (!rcmClaim.getSecPolicyHolder().trim().equalsIgnoreCase(ivf.getBasicInfo5().trim())) {
-						if (errorMessage==null) errorMessage= new ArrayList<>();
-						errorMessage.add("Claim PolicyHolder: "+rcmClaim.getSecPolicyHolder() +"; IV PolicyHolder: "+ivf.getBasicInfo5());
-						pass= false;
-						//Fail
+						if (errorMessage == null)
+							errorMessage = new ArrayList<>();
+						errorMessage.add("Claim PolicyHolder: " + rcmClaim.getSecPolicyHolder() + "; IV PolicyHolder: "
+								+ ivf.getBasicInfo5());
+						pass = false;
+						// Fail
 					}
 				}
-			
+
 				if (pass) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule303.pass.message", new Object[] {}, locale), Constants.PASS, "",
-							"", ""));
-				}else {
+							messageSource.getMessage("rule303.pass.message", new Object[] {}, locale), Constants.PASS,
+							"", "", ""));
+				} else {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule303.error.message", new Object[] {String.join(",", errorMessage)}, locale), Constants.FAIL, "",
-							"", ""));
+							messageSource.getMessage("rule303.error.message",
+									new Object[] { String.join(",", errorMessage) }, locale),
+							Constants.FAIL, "", "", ""));
 				}
-				
+
 			}
-			
-			if (!pass && dList.size()==0) {
+
+			if (!pass && dList.size() == 0) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule303.error.message1", new Object[] {}, locale), Constants.FAIL, "",
 						"", ""));
@@ -225,7 +232,7 @@ public class RuleBookServiceImpl {
 	 * @param rcmClaim
 	 * @return
 	 */
-	public List<TPValidationResponseDto> rule304(RcmRules rule,  RcmClaims rcmClaim	 ) {
+	public List<TPValidationResponseDto> rule304(RcmRules rule, RcmClaims rcmClaim) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -233,39 +240,67 @@ public class RuleBookServiceImpl {
 		try {
 
 			String providerOnClaim = rcmClaim.getProviderOnClaim();
-			String providerOnClaimFromSheet = rcmClaim.getProviderOnClaimFromSheet();//sheet
-			String treatingProvider =rcmClaim.getTreatingProvider();//sheet
-			String treatingProviderFromClaim=rcmClaim.getTreatingProviderFromClaim();
-			
-			if (providerOnClaim ==null)  providerOnClaim="";
-			if (providerOnClaimFromSheet ==null)  providerOnClaimFromSheet="";
-			if (treatingProvider ==null)  treatingProvider="";
-			if (treatingProviderFromClaim ==null)  treatingProviderFromClaim="";
-			
-			if (!providerOnClaim.equals("") && !providerOnClaimFromSheet.equals("")) {
+			String providersOnClaimFromSheet = rcmClaim.getProviderOnClaimFromSheet();// sheet
+			String treatingProvider = rcmClaim.getTreatingProvider();// sheet
+			String treatingProviderFromClaim = rcmClaim.getTreatingProviderFromClaim();
 
-				if (!providerOnClaim.equalsIgnoreCase(providerOnClaimFromSheet)) {
-					
+			if (providerOnClaim == null)
+				providerOnClaim = "";
+			if (providersOnClaimFromSheet == null)
+				providersOnClaimFromSheet = "";
+			if (treatingProvider == null)
+				treatingProvider = "";
+			if (treatingProviderFromClaim == null)
+				treatingProviderFromClaim = "";
+
+			if (!providerOnClaim.equals("") && !providersOnClaimFromSheet.equals("")) {
+
+				String[] providerOnClaimFromSheet = providersOnClaimFromSheet.split(Constants.ProviderJoinCons);
+				boolean match = false;
+				for (String pr : providerOnClaimFromSheet) {
+
+					if (providerOnClaim.equalsIgnoreCase(pr)) {
+						match = true;
+					}
+				}
+				if (match) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule304.pass.message", new Object[] {}, locale), Constants.PASS,
+							"", "", ""));
+				} else {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule304.error.message",
-									new Object[] { treatingProvider, treatingProviderFromClaim }, locale),
+									new Object[] { treatingProvider.replace(Constants.ProviderJoinCons, ","),
+											treatingProviderFromClaim },
+									locale),
 							Constants.FAIL, "", "", ""));
-				}else {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule304.pass.message",
-									new Object[] { }, locale),
-							Constants.PASS, "", "", ""));
 				}
-				
-				
-			}else if(!treatingProviderFromClaim.equals("")){
+				/*
+				 * if (!providerOnClaim.equalsIgnoreCase(providerOnClaimFromSheet)) {
+				 * 
+				 * dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+				 * messageSource.getMessage("rule304.error.message", new Object[] {
+				 * treatingProvider.replace(Constants.ProviderJoinCons,","),
+				 * treatingProviderFromClaim }, locale), Constants.FAIL, "", "", "")); }else {
+				 * dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+				 * messageSource.getMessage("rule304.pass.message", new Object[] { }, locale),
+				 * Constants.PASS, "", "", "")); }
+				 */
+
+			} else if (!treatingProviderFromClaim.equals("")) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule304.error.message1", new Object[] {" Missing Data for Treating Proivder in sheet For provider Id -"+rcmClaim.getProviderId()}, locale), Constants.FAIL, "",
-						"", ""));
-			}else {
+						messageSource.getMessage("rule304.error.message1",
+								new Object[] { " Missing Data for Treating Proivder in sheet For provider Id -"
+										+ rcmClaim.getProviderId() },
+								locale),
+						Constants.FAIL, "", "", ""));
+			} else {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule304.error.message1", new Object[] {" Missing Data for Treating Proivder in sheet For DOS -("+Constants.SDF_SHEET_PROVIDER_DATE_HELPING.format(rcmClaim.getDos())+") "}, locale), Constants.FAIL, "",
-						"", ""));
+						messageSource.getMessage("rule304.error.message1",
+								new Object[] { " Missing Data for Treating Proivder in sheet For DOS -("
+										+ Constants.SDF_SHEET_PROVIDER_DATE_HELPING.format(rcmClaim.getDos()) + ") " },
+								locale),
+						Constants.FAIL, "", "", ""));
 			}
 
 		} catch (Exception n) {
@@ -279,25 +314,17 @@ public class RuleBookServiceImpl {
 
 	}
 
-	public static void main(String a[]) throws Exception{
-		
-		String ss="d";
-		if (ss.equalsIgnoreCase(null)) {
-			System.out.println("d");
-		}else  System.out.println("d1");
-		
-		
-		Date eff=  Constants.SDF_CredentialSheetAnes.parse("4/19/2022");
-		Date claimDos=  Constants.SDF_CredentialSheetAnes.parse("06/27/2023");//2023-06-27
-		if (eff.compareTo(claimDos)<0) {
-			System.out.println("TRUE");
-		}else {
-			System.out.println("FALSE");
-		}
+	public static void main(String a[]) throws Exception {
+
+		String ddd = "asddasdaDeepak" + Constants.ProviderJoinCons;
+		System.out.println(ddd.replace(Constants.ProviderJoinCons, ""));
+		System.out.println(ddd.split(Constants.ProviderJoinCons)[0]);
+		System.out.println("qeqeq2e".split(Constants.ProviderJoinCons)[0]);
 	}
+
 	/**
-	 * Rule For :Provider on Claim Credentialed with the insurance
-	 * Credentialing Status
+	 * Rule For :Provider on Claim Credentialed with the insurance Credentialing
+	 * Status
 	 * 
 	 * @param rule
 	 * @param creList
@@ -306,17 +333,18 @@ public class RuleBookServiceImpl {
 	 * @return
 	 */
 	public List<TPValidationResponseDto> rule305(RcmRules rule, List<CredentialData> creList, RcmClaims rcmClaim,
-			String claimofficeName,String insuranceCodeFromSheet,String insName) {
+			String claimofficeName, String insuranceCodeFromSheet, String insName) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
-		logger.info("-->"+creList.size());
+		logger.info("-->" + creList.size());
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
 
-			//List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
+			// List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>)
+			// providerSheetData[1];
 
 			String claimProvider = rcmClaim.getProviderId();
-			
+
 			if (claimProvider == null) {
 
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -324,108 +352,65 @@ public class RuleBookServiceImpl {
 						"", ""));
 				return dList;
 			}
-			//String sheetProviderCode = "";
+			// String sheetProviderCode = "";
 			String applicationStatus = "";
-			String effectiveDate= "";
+			String effectiveDate = "";
 			/*
-			List<ProviderCodeWithOffice> pCodeList = pro.stream()
-					.filter(e -> e.getOffice().trim().equalsIgnoreCase(claimofficeName)
-							&& e.getEsCode().trim().equalsIgnoreCase(claimProvider))
-					.collect(Collectors.toList());
-			if (pCodeList != null && pCodeList.size() > 0) {
-				sheetProviderCode = pCodeList.get(0).getProviderCode();
-			}
-            */
-			
+			 * List<ProviderCodeWithOffice> pCodeList = pro.stream() .filter(e ->
+			 * e.getOffice().trim().equalsIgnoreCase(claimofficeName) &&
+			 * e.getEsCode().trim().equalsIgnoreCase(claimProvider))
+			 * .collect(Collectors.toList()); if (pCodeList != null && pCodeList.size() > 0)
+			 * { sheetProviderCode = pCodeList.get(0).getProviderCode(); }
+			 */
+
 			final String testVal = insuranceCodeFromSheet;
-			//final String insNameFinal = insName;
-			//CredentialData ddd =creList.get(953);
-			//CredentialData ddd1 =creList.get(3032);
-			//CredentialData dd22=creList.get(3031);
-			//CredentialData dd221=creList.get(3030);
-			
-			
-			
+			// final String insNameFinal = insName;
+			// CredentialData ddd =creList.get(953);
+			// CredentialData ddd1 =creList.get(3032);
+			// CredentialData dd22=creList.get(3031);
+			// CredentialData dd221=creList.get(3030);
+
 			List<CredentialData> filterCodeList = creList.stream()
 					.filter(e -> e.getLocation().trim().equalsIgnoreCase(claimofficeName)
 							&& e.getPlanType().trim().equalsIgnoreCase(rcmClaim.getRcmInsuranceType().getName())
 							&& e.getInsuranceCode().trim().equalsIgnoreCase(testVal)
-							&& e.getProviderCode().equalsIgnoreCase(rcmClaim.getTreatingProviderFromClaim())
-							)
+							&& e.getProviderCode().equalsIgnoreCase(rcmClaim.getTreatingProviderFromClaim()))
 					.collect(Collectors.toList());
 
-			
-				if (filterCodeList != null && filterCodeList.size() > 0) {
-					applicationStatus = filterCodeList.get(0).getApplicationStatus().toLowerCase();
-					effectiveDate =filterCodeList.get(0).getEffectiveDate().trim();
-					logger.info("applicationStatus --"+applicationStatus);
-					logger.info("Effective Date --"+filterCodeList.get(0).getEffectiveDate());
-				}
-                //Effective Date Check
-				boolean dtCheck= false;
-				try {
-				 Date effectDate = Constants.SDF_CredentialSheetAnes.parse(effectiveDate);
-				 int comp = effectDate.compareTo(rcmClaim.getDos());
-				 if (comp<=0) dtCheck=true;
-					
-				}catch(Exception dIssue) {
-					
-				}
-				//Point 28
-				if ((applicationStatus.contains("completed")|| applicationStatus.contains("termination in-process") 
-					|| applicationStatus.contains("termination in process")	|| applicationStatus.contains("enrolled as non par")
-					|| applicationStatus.contains("enrolled as non-par")
-					)
-					&& dtCheck) {
-					
-					// pass
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule305.pass.message", new Object[] {}, locale), Constants.PASS,
-							"", "", ""));
+			if (filterCodeList != null && filterCodeList.size() > 0) {
+				applicationStatus = filterCodeList.get(0).getApplicationStatus().toLowerCase();
+				effectiveDate = filterCodeList.get(0).getEffectiveDate().trim();
+				logger.info("applicationStatus --" + applicationStatus);
+				logger.info("Effective Date --" + filterCodeList.get(0).getEffectiveDate());
+			}
+			// Effective Date Check
+			boolean dtCheck = false;
+			try {
+				Date effectDate = Constants.SDF_CredentialSheetAnes.parse(effectiveDate);
+				int comp = effectDate.compareTo(rcmClaim.getDos());
+				if (comp <= 0)
+					dtCheck = true;
 
-				} else {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule305.error.message", new Object[] { claimProvider }, locale),
-							Constants.FAIL, "", "", ""));
-				}
-			
-		} catch (Exception n) {
-			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
-					Constants.FAIL, "", "", ""));
-		}
+			} catch (Exception dIssue) {
 
-		logger.info(RuleConstants.rule_log_exit + rule.getName());
-		return dList;
+			}
+			// Point 28
+			if ((applicationStatus.contains("completed") || applicationStatus.contains("termination in-process")
+					|| applicationStatus.contains("termination in process")
+					|| applicationStatus.contains("enrolled as non par")
+					|| applicationStatus.contains("enrolled as non-par")) && dtCheck) {
 
-	}
-	
-	
-	public List<TPValidationResponseDto> rule306(RcmRules rule, DataPatientRuleDto dto, RcmClaims rcmClaim) {
-
-		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
-
-		List<TPValidationResponseDto> dList = new ArrayList<>();
-		
-		try {
-
-			
-					// pass
-			if (dto!=null && dto.getPlanAssignmentofBenefits()!=null && dto.getPlanAssignmentofBenefits().equalsIgnoreCase("yes")) {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule306.pass.message", new Object[] {}, locale), Constants.PASS,
-							"", "", ""));
-
-			} else if (dto!=null) {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule306.error.message", new Object[] { dto.getPlanAssignmentofBenefits() }, locale),
-							Constants.FAIL, "", "", ""));
-			}else {
+				// pass
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule306.error.message1", new Object[] { "IV not found." }, locale),
+						messageSource.getMessage("rule305.pass.message", new Object[] {}, locale), Constants.PASS, "",
+						"", ""));
+
+			} else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule305.error.message", new Object[] { claimProvider }, locale),
 						Constants.FAIL, "", "", ""));
 			}
-			
+
 		} catch (Exception n) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
@@ -436,39 +421,107 @@ public class RuleBookServiceImpl {
 		return dList;
 
 	}
-	
-	//CRA Code
-	public List<TPValidationResponseDto> rule307(RcmRules rule,List<RcmClaimDetail>  cdList) {
+
+	/*
+	 * public List<TPValidationResponseDto> rule306(RcmRules rule,
+	 * DataPatientRuleDto dto, RcmClaims rcmClaim) {
+	 * 
+	 * logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+	 * 
+	 * List<TPValidationResponseDto> dList = new ArrayList<>();
+	 * 
+	 * try {
+	 * 
+	 * 
+	 * // pass if (dto!=null && dto.getPlanAssignmentofBenefits()!=null &&
+	 * dto.getPlanAssignmentofBenefits().equalsIgnoreCase("yes")) { dList.add(new
+	 * TPValidationResponseDto(rule.getId(), rule.getName(),
+	 * messageSource.getMessage("rule306.pass.message", new Object[] {}, locale),
+	 * Constants.PASS, "", "", ""));
+	 * 
+	 * } else if (dto!=null) { dList.add(new TPValidationResponseDto(rule.getId(),
+	 * rule.getName(), messageSource.getMessage("rule306.error.message", new
+	 * Object[] { dto.getPlanAssignmentofBenefits() }, locale), Constants.FAIL, "",
+	 * "", "")); }else { dList.add(new TPValidationResponseDto(rule.getId(),
+	 * rule.getName(), messageSource.getMessage("rule306.error.message1", new
+	 * Object[] { "IV not found." }, locale), Constants.FAIL, "", "", "")); }
+	 * 
+	 * } catch (Exception n) { dList.add(new TPValidationResponseDto(rule.getId(),
+	 * rule.getName(), messageSource.getMessage("rule.error.exception", new Object[]
+	 * { n.getMessage() }, locale), Constants.FAIL, "", "", "")); }
+	 * 
+	 * logger.info(RuleConstants.rule_log_exit + rule.getName()); return dList;
+	 * 
+	 * }
+	 */
+
+	// DOS vs Appointment Date
+	public List<TPValidationResponseDto> rule323(RcmRules rule, DataPatientRuleDto dto, RcmClaims rcmClaim) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
-		List<String> list= new ArrayList<>();
-		String array[]  = { "D0601", "D0602", "D0603" };
-		 Collections.addAll(list, array);
+
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-		boolean pass=false;
+
 		try {
 
-			 	 
-			 
-			   for(RcmClaimDetail cd:cdList ) {
-				   if (list.contains(cd.getServiceCode())){
-					   pass=true;
-					   break;
-				   }
-			   }
-		     
-				if (pass) {
-					// pass
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule307.pass.message", new Object[] {}, locale), Constants.PASS,
-							"", "", ""));
+			// pass
+			if (dto != null && dto.getAppointmentDate() != null && dto.getAppointmentDate().equals("")) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule323.pass.message", new Object[] {}, locale), Constants.PASS, "",
+						"", ""));
 
-				} else {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule307.error.message", new Object[] {  }, locale),
-							Constants.FAIL, "", "", ""));
+			} else if (dto != null) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule323.error.message",
+								new Object[] { dto.getPlanAssignmentofBenefits() }, locale),
+						Constants.FAIL, "", "", ""));
+			} else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule323.error.message1", new Object[] { "IV not found." }, locale),
+						Constants.FAIL, "", "", ""));
+			}
+
+		} catch (Exception n) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL, "", "", ""));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+
+	}
+
+	// CRA Code
+	public List<TPValidationResponseDto> rule307(RcmRules rule, List<RcmClaimDetail> cdList) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+		List<String> list = new ArrayList<>();
+		String array[] = { "D0601", "D0602", "D0603" };
+		Collections.addAll(list, array);
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		boolean pass = false;
+		try {
+
+			for (RcmClaimDetail cd : cdList) {
+				if (list.contains(cd.getServiceCode())) {
+					pass = true;
+					break;
 				}
-			
+			}
+
+			if (pass) {
+				// pass
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule307.pass.message", new Object[] {}, locale), Constants.PASS, "",
+						"", ""));
+
+			} else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule307.error.message", new Object[] {}, locale), Constants.FAIL, "",
+						"", ""));
+			}
+
 		} catch (Exception n) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
@@ -479,65 +532,62 @@ public class RuleBookServiceImpl {
 		return dList;
 
 	}
-	
-	//FDH Certification
-	public List<TPValidationResponseDto> rule308(RcmRules rule,List<RcmClaimDetail>  cdList,
-			String providerCode,List<CredentialDataAnesthesia> sheetData,Date claimDos,String insCode) {
+
+	// FDH Certification
+	public List<TPValidationResponseDto> rule308(RcmRules rule, List<RcmClaimDetail> cdList, String providerCode,
+			List<CredentialDataAnesthesia> sheetData, Date claimDos, String insCode) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
-		
-		String cd  = "D0145";
+
+		String cd = "D0145";
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-		boolean found=false;
-		boolean pass=false;
+		boolean found = false;
+		boolean pass = false;
 		try {
-			 
-			
 
-			   for(RcmClaimDetail code:cdList ) {
-				   if (code.getServiceCode().equalsIgnoreCase(cd)){
-					   found=true;
-					   break;
-				   }
-			   }
+			for (RcmClaimDetail code : cdList) {
+				if (code.getServiceCode().equalsIgnoreCase(cd)) {
+					found = true;
+					break;
+				}
+			}
 
-				if (found) {
-					List<CredentialDataAnesthesia> filterList = sheetData.stream().filter(c -> c.getProviderCodes().equals(providerCode))
-					.collect(Collectors.toList());
-					if (filterList.size()>0) {
-					 String effDate = filterList.get(0).getFDHEffectiveDate();
-					 String firstHome = filterList.get(0).getFirstHomeD0145();
-					 if (firstHome.trim().equalsIgnoreCase("yes")) {
-						 if (!effDate.equals("")) {
-							Date eff=  Constants.SDF_CredentialSheetAnes.parse(effDate);
-							if (eff.compareTo(claimDos)<0) {
+			if (found) {
+				List<CredentialDataAnesthesia> filterList = sheetData.stream()
+						.filter(c -> c.getProviderCodes().equals(providerCode)).collect(Collectors.toList());
+				if (filterList.size() > 0) {
+					String effDate = filterList.get(0).getFDHEffectiveDate();
+					String firstHome = filterList.get(0).getFirstHomeD0145();
+					if (firstHome.trim().equalsIgnoreCase("yes")) {
+						if (!effDate.equals("")) {
+							Date eff = Constants.SDF_CredentialSheetAnes.parse(effDate);
+							if (eff.compareTo(claimDos) < 0) {
 								pass = true;
 							}
-						 }
-					 }else {
-						 pass = false;//no is fail
-					 }
-					 //pass = false;//not listed then Fail.
+						}
+					} else {
+						pass = false;// no is fail
 					}
-					// pass
-					
+					// pass = false;//not listed then Fail.
+				}
+				// pass
 
-				} else {
-					// N/A
-					pass = true;
-					
-				}
-		       
-				if (pass) {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule308.pass.message", new Object[] {  }, locale),
-							Constants.PASS, "", "", ""));
-				}else {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule308.error.message", new Object[] {}, locale), Constants.FAIL,
-							"", "", ""));
-				}
-			
+			} else {
+				// N/A
+				pass = true;
+
+			}
+
+			if (pass) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule308.pass.message", new Object[] {}, locale), Constants.PASS, "",
+						"", ""));
+			} else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule308.error.message", new Object[] {}, locale), Constants.FAIL, "",
+						"", ""));
+			}
+
 		} catch (Exception n) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
@@ -548,58 +598,57 @@ public class RuleBookServiceImpl {
 		return dList;
 
 	}
-	
-	//Nitrous Certification (D9230)
-	public List<TPValidationResponseDto> rule309(RcmRules rule,List<RcmClaimDetail>  cdList,
-			String providerCode,List<CredentialDataAnesthesia> sheetData) {
+
+	// Nitrous Certification (D9230)
+	public List<TPValidationResponseDto> rule309(RcmRules rule, List<RcmClaimDetail> cdList, String providerCode,
+			List<CredentialDataAnesthesia> sheetData) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
-		
-		String cd  = "D9230";
+
+		String cd = "D9230";
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-		boolean found=false;
-		boolean pass=false;
+		boolean found = false;
+		boolean pass = false;
 		try {
 
-			   for(RcmClaimDetail cdL:cdList ) {
-				   if (cdL.getServiceCode().equalsIgnoreCase(cd)){
-					   found=true;
-					   break;
-				   }
-			   }
+			for (RcmClaimDetail cdL : cdList) {
+				if (cdL.getServiceCode().equalsIgnoreCase(cd)) {
+					found = true;
+					break;
+				}
+			}
 
-				if (found) {
-					List<CredentialDataAnesthesia> filterList = sheetData.stream().filter(c -> c.getProviderCodes().equals(providerCode))
-					.collect(Collectors.toList());
-					if (filterList.size()>0) {
-					
-					 String firstHome = filterList.get(0).getD9230Nirtrous();
-					 if (firstHome.trim().equalsIgnoreCase("yes")) {
-						 pass = true;
-					 }else {
-						 pass = false;//no is fail
-					 }
-					 //pass = false;//not listed then Fail.
+			if (found) {
+				List<CredentialDataAnesthesia> filterList = sheetData.stream()
+						.filter(c -> c.getProviderCodes().equals(providerCode)).collect(Collectors.toList());
+				if (filterList.size() > 0) {
+
+					String firstHome = filterList.get(0).getD9230Nirtrous();
+					if (firstHome.trim().equalsIgnoreCase("yes")) {
+						pass = true;
+					} else {
+						pass = false;// no is fail
 					}
-					// pass
-					
+					// pass = false;//not listed then Fail.
+				}
+				// pass
 
-				} else {
-					// N/A
-					pass = true;
-					
-				}
-				
-				if (pass) {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule309.pass.message", new Object[] {  }, locale),
-							Constants.PASS, "", "", ""));
-				}else {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule309.error.message", new Object[] {}, locale), Constants.FAIL,
-							"", "", ""));
-				}
-			
+			} else {
+				// N/A
+				pass = true;
+
+			}
+
+			if (pass) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule309.pass.message", new Object[] {}, locale), Constants.PASS, "",
+						"", ""));
+			} else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule309.error.message", new Object[] {}, locale), Constants.FAIL, "",
+						"", ""));
+			}
+
 		} catch (Exception n) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
@@ -610,60 +659,59 @@ public class RuleBookServiceImpl {
 		return dList;
 
 	}
-	
-	//Sedation Certification
-	public List<TPValidationResponseDto> rule310(RcmRules rule,Set<String> claimCodes,
-			String providerCode,List<CredentialDataAnesthesia> sheetData) {
+
+	// Sedation Certification
+	public List<TPValidationResponseDto> rule310(RcmRules rule, Set<String> claimCodes, String providerCode,
+			List<CredentialDataAnesthesia> sheetData) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
-		
-		String cd  = "D9248";
+
+		String cd = "D9248";
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-		boolean found=false;
-		boolean pass=false;
+		boolean found = false;
+		boolean pass = false;
 		try {
 
-			   for(String code:claimCodes ) {
-				   if (code.equalsIgnoreCase(cd)){
-					   found=true;
-					   break;
-				   }
-			   }
+			for (String code : claimCodes) {
+				if (code.equalsIgnoreCase(cd)) {
+					found = true;
+					break;
+				}
+			}
 
-				if (found) {
-					List<CredentialDataAnesthesia> filterList = sheetData.stream().filter(c -> c.getProviderCodes().equals(providerCode))
-					.collect(Collectors.toList());
-					if (filterList.size()>0) {
-					
-					 String firstHome = filterList.get(0).getD9248Anesthesia();
-					 if (firstHome.trim().equalsIgnoreCase("yes")) {
-						 pass = true;
-					 }else {
-						 pass = false;//no is fail
-					 }
-					
-					}else {
-						 pass = false;//not listed then Fail.
+			if (found) {
+				List<CredentialDataAnesthesia> filterList = sheetData.stream()
+						.filter(c -> c.getProviderCodes().equals(providerCode)).collect(Collectors.toList());
+				if (filterList.size() > 0) {
+
+					String firstHome = filterList.get(0).getD9248Anesthesia();
+					if (firstHome.trim().equalsIgnoreCase("yes")) {
+						pass = true;
+					} else {
+						pass = false;// no is fail
 					}
-					// pass
-					
 
 				} else {
-					// N/A
-					pass = true;
-					
+					pass = false;// not listed then Fail.
 				}
-				
-				if (pass) {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule310.pass.message", new Object[] {  }, locale),
-							Constants.PASS, "", "", ""));
-				}else {
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule310.error.message", new Object[] {}, locale), Constants.FAIL,
-							"", "", ""));
-				}
-			
+				// pass
+
+			} else {
+				// N/A
+				pass = true;
+
+			}
+
+			if (pass) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule310.pass.message", new Object[] {}, locale), Constants.PASS, "",
+						"", ""));
+			} else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule310.error.message", new Object[] {}, locale), Constants.FAIL, "",
+						"", ""));
+			}
+
 		} catch (Exception n) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
@@ -674,5 +722,5 @@ public class RuleBookServiceImpl {
 		return dList;
 
 	}
-	
+
 }

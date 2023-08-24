@@ -8,4 +8,5 @@ public interface DataPatientRuleDto {
 	String getBasicInfo2();
 	String getBasicInfo5();
 	String getBasicInfo6();
+	String getAppointmentDate();
 }
