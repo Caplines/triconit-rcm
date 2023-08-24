@@ -73,7 +73,7 @@ public class ManageOfficeController extends BaseHeaderController {
 	}
 	
 	@RequestMapping(value = "/users/team", method = RequestMethod.GET)
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> getUsersByTeamId(Model model) {
 	    List<RcmUserToDto> response = null;
 	    PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

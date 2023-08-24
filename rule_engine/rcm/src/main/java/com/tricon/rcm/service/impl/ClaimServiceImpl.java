@@ -1128,7 +1128,14 @@ public class ClaimServiceImpl {
 		}
 		List<AssignFreshClaimLogsDto> l = null;
 		try {
-			l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam(partialHeader.getCompany().getUuid(), ct, instDB,partialHeader.getTeamId());
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUser(partialHeader.getCompany().getUuid(), ct, 
+						instDB,partialHeader.getTeamId(),partialHeader.getJwtUser().getUuid());
+				
+			}else {
+				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam(partialHeader.getCompany().getUuid(), ct, instDB,partialHeader.getTeamId());
+					
+			}
 			HashMap<String, RemoteLietStatusCount> remoteLiteMap = ruleEngineService.pullAndSaveRemoteLiteData();
 			RemoteLietStatusCount counts = null;
 

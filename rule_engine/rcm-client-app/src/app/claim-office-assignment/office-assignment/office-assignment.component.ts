@@ -293,4 +293,8 @@ export class OfficeAssignmentComponent implements OnInit {
     })
   }
 
+  get isRoleAsso() {
+    return Utils.isRoleAsso();
+  }
+
 }

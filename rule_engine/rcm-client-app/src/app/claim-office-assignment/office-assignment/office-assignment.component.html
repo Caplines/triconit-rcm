@@ -17,18 +17,22 @@
                     <div class="row">
                         <div class="col-md-12 mb-1 listClaimBox">
                             <div class="billingDropdown ">
-                                <select class="form-control" id="" name="bType" [(ngModel)]="bType" (change)="fetchClaimAssignments()">
+                                <select class="form-control" id="" name="bType" [(ngModel)]="bType"
+                                    (change)="fetchClaimAssignments()">
                                     <option *ngFor="let sta of bl.bills" [value]="sta.key">{{sta.value}}</option>
                                 </select>
-                                <select (change)="fetchClaimAssignments()" class="form-control" id="" name="insType" [(ngModel)]="insType">
+                                <select (change)="fetchClaimAssignments()" class="form-control" id="" name="insType"
+                                    [(ngModel)]="insType">
                                     <option *ngFor="let sta of bl.insTypes" [value]="sta.key">{{sta.value}}</option>
                                 </select>
                             </div>
                             <div>
-                                <button type="button" class="icon-btn" (click)="saveToPdf('table')" [disabled]="claimData.length==0">
+                                <button type="button" class="icon-btn" (click)="saveToPdf('table')"
+                                    [disabled]="claimData.length==0">
                                     <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                                     class="spinner-border text-danger mx-1"></span>
-                                <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="claimData.length==0">
+                                <button type="button" class="icon-btn" (click)="exportToCsv()"
+                                    [disabled]="claimData.length==0">
                                     <img src="../../assets/img/xls.png" /> </button><span *ngIf="loader.exportCSVLoader"
                                     class="spinner-border text-success mx-1"></span>
                             </div>
@@ -147,7 +151,8 @@
                                                 <td></td>
                                                 <td class="alignRight">{{totalClaimData.totalCount}}</td>
                                                 <td class="alignRight">{{totalClaimData.totalRemLiteReject}}</td>
-                                                <td class="alignRight">{{totalClaimData.totalcountAndRemLiteReject}}</td>
+                                                <td class="alignRight">{{totalClaimData.totalcountAndRemLiteReject}}
+                                                </td>
                                             </tr>
                                             <tr *ngIf="loader.showLoader">
                                                 <td colspan="7" class="text-center"><span class="loader-data "></span>
@@ -157,18 +162,18 @@
 
                                                 <tr *ngFor="let lg of claimData">
                                                     <td>{{lg.officeName}}</td>
-                                                    <td >
-                                                            <select class="form-control select-editable" name="" id=""
-                                                                (change)="selectNewAssignedUser($event,lg.officeUuid);">
-                                                                <option value="{{lg.assignedUser}}">{{lg.fname}}
-                                                                    {{lg.lname}}</option>
-                                                                <ng-container *ngFor="let user of userByTeam;">
-                                                                    <!-- <option *ngIf="lg.assignedUser !== user.uuid" value="{{user.fullName}},{{user.uuid}},{{lg.officeUuid}}">{{user.fullName}}</option> -->
-                                                                    <option *ngIf="lg.assignedUser !== user.uuid"
-                                                                        value="{{user.uuid}}">{{user.fullName}}</option>
-                                                                </ng-container>
-                                                            </select>
-                                                        
+                                                    <td>
+                                                        <select class="form-control select-editable" name="" id=""
+                                                            (change)="selectNewAssignedUser($event,lg.officeUuid);">
+                                                            <option value="{{lg.assignedUser}}">{{lg.fname}}
+                                                                {{lg.lname}}</option>
+                                                            <ng-container *ngFor="let user of userByTeam;">
+                                                                <!-- <option *ngIf="lg.assignedUser !== user.uuid" value="{{user.fullName}},{{user.uuid}},{{lg.officeUuid}}">{{user.fullName}}</option> -->
+                                                                <option *ngIf="lg.assignedUser !== user.uuid"
+                                                                    value="{{user.uuid}}">{{user.fullName}}</option>
+                                                            </ng-container>
+                                                        </select>
+
                                                     </td>
                                                     <td>{{lg.opdtd}}</td>
                                                     <td>{{lg.opdosd}}</td>
@@ -189,11 +194,12 @@
 
                         </div>
 
-                        <div class="action-buttons" *ngIf="!loader.showLoader">
+                        <div class="action-buttons" *ngIf="!loader.showLoader && !isRoleAsso">
                             <button type="button" class="btn btn-success"
                                 [ngClass]="{'disabled':assignOfficeDetails.assignOfficeDetails.length==0}"
                                 (click)="saveAssignments()">
-                                <span *ngIf="loader.assignLoader" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Save Assignment</button>
+                                <span *ngIf="loader.assignLoader" class="spinner-grow spinner-grow-sm" role="status"
+                                    aria-hidden="true"></span> Save Assignment</button>
                         </div>
                     </div>
 
