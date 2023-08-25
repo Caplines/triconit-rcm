@@ -438,12 +438,30 @@ List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String c
 	List<AllPendencyDto> allPendencyCount(@Param("companyId") String companyId);
 	
 	@Query(nativeQuery = true, value = ""
+			+ "select count(concat(rt.name,off.name)) as count,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
+			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
+			" inner join company cmp on cmp.uuid=off.company_id" + 
+			" inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "+
+			" where rc.pending is true  and cmp.uuid=:companyId " + 
+			" group by rc.office_id,rt.name ")
+	List<AllPendencyDto> allPendencyCountForUser(@Param("companyId") String companyId,@Param("teamId") int teamId,@Param("userId") String userId);
+	
+	@Query(nativeQuery = true, value = ""
 			+ "select min(rc.dos) minDate,min(cast(rc.created_date as Date)) dt,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
 			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
 			" inner join company cmp on cmp.uuid=off.company_id" + 
 			" where rc.pending is true  and cmp.uuid=:companyId " + 
 			" group by rc.office_id,rt.name ")
 	List<AllPendencyDateDto> allPendencyDateCount(@Param("companyId") String companyId);
+	
+	@Query(nativeQuery = true, value = ""
+			+ "select min(rc.dos) minDate,min(cast(rc.created_date as Date)) dt,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
+			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
+			" inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "+
+			" inner join company cmp on cmp.uuid=off.company_id" + 
+			" where rc.pending is true  and cmp.uuid=:companyId " + 
+			" group by rc.office_id,rt.name ")
+	List<AllPendencyDateDto> allPendencyDateCountForUser(@Param("companyId") String companyId,@Param("teamId") int teamId, @Param("userId") String userId);
 	
 	@Query(nativeQuery = true, value = ""
 			+ " select distinct rc.claim_id as claimId,rc.office_id as officeId,rc.claim_uuid as claimUUid  from rcm_claims rc inner join office off on off.uuid=rc.office_id "
