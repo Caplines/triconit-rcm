@@ -84,7 +84,7 @@ const routes: Routes = [
   {
     path: 'list-of-claims',
     loadChildren: () => import("./list-of-claims/list-of-claims.module").then(m => m.ListOfClaimsModule),
-    canActivate: [ToolUserPermission]
+    canActivate: [ClaimAssingnmentActivate]
   },
   {
     path: 'all-pendency',

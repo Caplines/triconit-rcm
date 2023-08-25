@@ -95,7 +95,7 @@
             </li>
             <!-- <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7) || (staticUtil.isRoleLead() && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/dashboard-active.png':'../../assets/img/dashboard.png'" />Billing Pendency Dashboard</a></li> -->
             <li
-                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7 || currentTeamId == 3) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && currentTeamId == 7)">
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' ) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && currentTeamId == 7)">
                 <a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />List Of
@@ -192,12 +192,10 @@
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedTeam"
                                     [disabled]="(cwModel?.teams?.length==0 || cwModel?.teams?.length == 1) || loginUserType=='Admin'">
                                     <option selected="true" hidden="true" value="">Select Team</option>
-                                    <!-- <ng-container *ngFor="let tl of cwModel?.teams">
+                                    <ng-container *ngFor="let tl of cwModel?.teams">
                                         <option value="{{tl.id ? tl.id : tl.teamId}}">{{tl.name ? tl.name :
                                             tl.teamName}}</option>
-                                    </ng-container> -->
-                                    <option value="3">Internal Audit</option>
-                                    <option value="7">Billing</option>
+                                    </ng-container>
                                 </select>
                             </div>
                         </div>

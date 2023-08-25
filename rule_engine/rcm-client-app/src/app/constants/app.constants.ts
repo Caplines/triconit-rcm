@@ -20,53 +20,53 @@ export class AppConstants {
             "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update","/production"], "defaultpath": "/claim-assignment"
         }],
         [4, {
-            "name": "Lc3", "paths": ["/update-pass"], "defaultpath": "/update-pass"
+            "name": "Lc3", "paths": ["/update-pass","/list-of-claims"], "defaultpath": "/update-pass"
         }],
         [5, {
-            "name": "Office", "paths": ["/update-pass"], "defaultpath": "/update-pass"
+            "name": "Office", "paths": ["/update-pass","/list-of-claims"], "defaultpath": "/update-pass"
         }],
         [6, {
-            "name": "Patient Calling", "paths": ["/update-pass"], "defaultpath": "/update-pass"
+            "name": "Patient Calling", "paths": ["/update-pass","/list-of-claims"], "defaultpath": "/list-of-claims"
         }],
         [7, {
             "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass"], "defaultpath": "/claim-assignment"
         }],
-        // [8, {
-        //     "name": "Super Admin", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/other-teams-work"], "defaultpath": "/claim-assignment"
-        // }],
+        [8, {
+            "name": "Super Admin", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/list-of-claims"], "defaultpath": "/claim-assignment"
+        }],
         // [9, {
-        //     "name": "Reporting", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/other-teams-work"], "defaultpath": "/claim-assignment"
+        //     "name": "Reporting", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/list-of-claims"], "defaultpath": "/claim-assignment"
         // }],
-        // [10, {
-        //     "name": "Ortho", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
-        // [11, {
-        //     "name": "CDP", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
-        // [12, {
-        //     "name": "Payment Posting", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
-        // [13, {
-        //     "name": "PPO IV", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
-        // [14, {
-        //     "name": "Medicaid IV", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
-        // [15, {
-        //     "name": "Need to hold", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
-        // [16, {
-        //     "name": "Quality", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
-        // [17, {
-        //     "name": "AR", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
-        // [18, {
-        //     "name": "Patient Statement", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
-        // [19, {
-        //     "name": "Credentialing", "paths": ["/other-teams-work"], "defaultpath": "/update-pass"
-        // }],
+        [10, {
+            "name": "Ortho", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
+        [11, {
+            "name": "CDP", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
+        [12, {
+            "name": "Payment Posting", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
+        [13, {
+            "name": "PPO IV", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
+        [14, {
+            "name": "Medicaid IV", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
+        [15, {
+            "name": "Need to hold", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
+        [16, {
+            "name": "Quality", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
+        [17, {
+            "name": "AR", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
+        [18, {
+            "name": "Patient Statement", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
+        [19, {
+            "name": "Credentialing", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+        }],
 
         // [9,{
         //     "name":"Reporting","paths":["/update-pass"],"defaultpath":"/update-pass"
@@ -91,7 +91,23 @@ export class AppConstants {
 
     ]);
 
-    public teamData: any = [{ "teamName": "Internal Audit", "teamId": 3 }, { "teamName": "Lc3", "teamId": 4 }, { "teamName": "Office", "teamId": 5 }, { "teamName": "Patient Calling", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
+    public teamData: any = [
+        { "teamName": "Internal Audit", "teamId": 3 },
+        { "teamName": "Lc3", "teamId": 4 },
+        { "teamName": "Office", "teamId": 5 },
+        { "teamName": "Patient Calling", "teamId": 6 },
+        { "teamName": "Billing", "teamId": 7 },
+        { "teamName": "Ortho", "teamId": 10 },
+        { "teamName": "CDP", "teamId": 11 },
+        { "teamName": "Payment Posting", "teamId": 12 },
+        { "teamName": "PPO IV", "teamId": 13 },
+        { "teamName": "Medicaid IV", "teamId": 14 },
+        { "teamName": "Need to hold", "teamId": 15},
+        { "teamName": "Quality", "teamId": 16},
+        { "teamName": "AR", "teamId": 17 },
+        { "teamName": "Patient Statement", "teamId": 18 },
+        { "teamName": "Credentialing", "teamId": 19 },
+        ];
 
     public attachmentType =
         [{"id":1,"value":"Consent Form"},
