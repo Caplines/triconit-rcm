@@ -461,7 +461,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Fetching pendency Report Data (All Billing Pendency Dashboard)", response = AllPendencyReportDto.class, responseContainer = "List")
 	@GetMapping("/api/allpendency")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ASSO')")
 	public ResponseEntity<Object> fetchAllPencyData(Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader==null) {
@@ -469,7 +469,7 @@ public class RcmController extends BaseHeaderController{
 		}
 				
 		return ResponseEntity
-				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.getAllPendencyReport(partialHeader.getCompany(),partialHeader.getTeamId())));
+				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.getAllPendencyReport(partialHeader.getCompany(),partialHeader.getTeamId(),partialHeader)));
 	}
 	
 

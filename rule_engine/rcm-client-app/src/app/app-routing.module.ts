@@ -89,7 +89,7 @@ const routes: Routes = [
   {
     path: 'all-pendency',
     loadChildren: () => import("./allPendency/all-pendency/all-pendency.module").then(m => m.AllPendencyModule),
-    canActivate: [ToolUserPermission]
+    canActivate: [ClaimAssingnmentActivate]
   },
   {
     path: 'tool-update/issue-claims',

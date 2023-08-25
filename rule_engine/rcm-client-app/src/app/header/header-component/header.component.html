@@ -87,7 +87,7 @@
                         [src]="rla.isActive? '../../assets/img/pendency-green-icon.png':'../../assets/img/pendency-gray-icon.png'" />Pendency</a>
             </li>
             <li
-                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (staticUtil.isRoleLead() && (currentTeamId == 7 || currentTeamId == 3))">
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (( staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && (currentTeamId == 7 || currentTeamId == 3))">
                 <a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency

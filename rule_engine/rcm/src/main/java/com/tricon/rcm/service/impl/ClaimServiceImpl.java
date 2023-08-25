@@ -3053,16 +3053,38 @@ public class ClaimServiceImpl {
 		return dto;
 	}
 
-	public AllPendencyReportDto getAllPendencyReport(RcmCompany company,int teamId) {
+	public AllPendencyReportDto getAllPendencyReport(RcmCompany company,int teamId,
+			PartialHeader partialHeader) {
 		
 		AllPendencyReportDto dto= new AllPendencyReportDto();
-		List<AllPendencyDto> count= rcmClaimRepository.allPendencyCount(company.getUuid());
-		List<AllPendencyDateDto> date = rcmClaimRepository.allPendencyDateCount(company.getUuid());
+		List<AllPendencyDto> count= null;
+		List<AllPendencyDateDto> date = null;
+		
+		if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+            count =rcmClaimRepository.allPendencyCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid());
+			date =rcmClaimRepository.allPendencyDateCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid());
+		}else {
+			count =rcmClaimRepository.allPendencyCount(company.getUuid());
+			date =rcmClaimRepository.allPendencyDateCount(company.getUuid());
+		}
 		//dto.setCount(count);
 		//dto.setDateCount(date);
 		dto.setOffices(officeRepo.findByCompanyAndActiveTrueOrderByNameAsc(company));
 		List<RcmOfficeDto> offices=officeRepo.findByCompanyAndActiveTrueOrderByNameAsc(company);
 		
+		//Remove Office in case of associate 
+		if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+			List<RcmOfficeDto> fil =new ArrayList<>();
+			List<UserAssignOffice> assignoffices=userAssignOfficeRepo.findByUserUuid(partialHeader.getJwtUser().getUuid());
+			for (UserAssignOffice assignoffice:assignoffices) {
+				fil.addAll(offices.stream().filter(re -> re.getUuid().equals(assignoffice.getOffice().getUuid()) )
+			      .collect(Collectors.toList()));
+			}
+			dto.setOffices(fil);
+			offices= fil;
+			
+			
+		}
 		List<PendencyDataCountDto> header=  new ArrayList<>();
 		//List<PendencyKeyValDto> keyData =new ArrayList<>();
 		List<RcmTeamEnum> teams= Arrays.asList(RcmTeamEnum.values());   
