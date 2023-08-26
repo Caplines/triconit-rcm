@@ -81,13 +81,13 @@
                     Claims</a>
             </li>
             <li
-                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || (currentTeamId == 3  ))) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && (currentTeamId == 7 || currentTeamId == 3 ))">
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || (currentTeamId == 3 || true ))) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && (currentTeamId == 7 || currentTeamId == 3 || true))">
                 <a href="javascript:void(0);" [routerLink]="['/claim-assignment']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/pendency-green-icon.png':'../../assets/img/pendency-gray-icon.png'" />Pendency</a>
             </li>
             <li
-                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3)) || (( staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && (currentTeamId == 7 || currentTeamId == 3))">
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3 || true)) || (( staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && (currentTeamId == 7 || currentTeamId == 3 ||  true))">
                 <a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency
@@ -95,7 +95,7 @@
             </li>
             <!-- <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7) || (staticUtil.isRoleLead() && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/dashboard-active.png':'../../assets/img/dashboard.png'" />Billing Pendency Dashboard</a></li> -->
             <li
-                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' ) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && currentTeamId == 7)">
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' ) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) )">
                 <a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />List Of
@@ -108,7 +108,7 @@
                     [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Other Team Work</a>
         </li> -->
             <li
-                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || currentTeamId == 3)) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso() )&& (currentTeamId == 7 || currentTeamId == 3))">
+                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || currentTeamId == 3 || true)) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso() )&& (currentTeamId == 7 || currentTeamId == 3 || true))">
                 <a href="javascript:void(0);" [routerLink]="['/production']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a>

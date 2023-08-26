@@ -184,7 +184,7 @@
                             </div>
                             <!-- This section is for SmilePoints Only -->
                             <ng-container *ngIf="smilePoint">
-                                <div class="bold-b-text">
+                                <div class="bold-b-text" *ngIf="isBilling || isInternalAudit">
                                     <a data-toggle="collapse" aria-expanded="false">Links to Related Documents<span
                                             class="passedNum"
                                             *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
@@ -310,7 +310,7 @@
                                 </div>
                             </div>
                             <ng-container *ngIf="smilePoint">
-                                <ng-container *ngIf="actionButtons">
+                                <ng-container *ngIf="actionButtons && (isBilling || isInternalAudit)">
                                     <a (click)="reval()" *ngIf="claimRcm.allowEdit && claimRcm.pending"
                                         style="cursor: pointer;"> Re Validate
                                         Automated
@@ -1174,7 +1174,7 @@
                             </div>
                         </div>
                         <!-- Modal End -->
-                        <div class="action-buttons" *ngIf="actionButtons">
+                        <div class="action-buttons" *ngIf="actionButtons && (isBilling || isInternalAudit)">
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
                                                          (claimRcm.primary && claimRcm.pending) 
                                                        )  " type="button" class="btn btn-success" [disabled]="inSave"

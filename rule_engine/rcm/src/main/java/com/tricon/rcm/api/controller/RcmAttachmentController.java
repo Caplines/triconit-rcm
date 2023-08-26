@@ -38,7 +38,7 @@ public class RcmAttachmentController extends BaseHeaderController {
 	
 	
 	@PostMapping("/api/claim-attachment")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> uploadClaimAttachment(@RequestParam String claimUuid, @RequestParam int attachmentTypeId,
 			@RequestParam MultipartFile file, Model model) {
 		FileResponseDto response = null;
