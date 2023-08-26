@@ -254,6 +254,24 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<ProductionDto> claimProductionByForBilling(@Param("companyId") String companyId,
 			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
 	
+	@Query(nativeQuery = true, value = 
+		       " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+						+" us.uuid as uuid,us.first_name "
+						+" 	 as fName,us.last_name as lName from rcm_user us "
+						+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+						+"     inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
+						//+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId "
+						+" 	left join rcm_claims cl on cl.updated_by=us.uuid "
+						+"     and rut.team_id=:teamId  and  cl.pending is false and cl.first_worked_team_id=:teamId  "
+						+" 	and  CAST(cl.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
+						+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
+						+" 	left join office off on off.uuid=cl.office_id  "
+						+ " inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
+						+" 	where   cmp.company_id=:companyId and rut.team_id=:teamId group by us.uuid")
+	List<ProductionDto> claimProductionByForBillingAssoicate(@Param("companyId") String companyId,
+			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate,@Param("userId") String userId);
+	
+	
 	//Production means Total Claims Assigned by Internal Audit to other team and No days between 2 dates 
 	@Query(nativeQuery = true, value = 
             " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
@@ -268,8 +286,25 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+"     and   taken_back is false and cl.first_worked_team_id=:teamId and cl.current_team_id<>:teamId "
 			+" 	left join office off on off.uuid=cl.office_id  "
 			+" 	where   cmp.company_id=:companyId and rut.team_id=:teamId group by us.uuid")
-List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String companyId,
+     List<ProductionDto> claimProductionForInternalAudit(@Param("companyId") String companyId,
 		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
+	
+	@Query(nativeQuery = true, value = 
+            " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+			+" us.uuid as uuid,us.first_name "
+			+" 	 as fName,us.last_name as lName from rcm_user us "
+			+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+			+"     inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
+			+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId and rut.team_id=:teamId "
+			+" 	and  CAST(assign.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
+			+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
+			+" 	left join rcm_claims cl on cl.claim_uuid=assign.claim_id and assign.created_by=us.uuid "
+			+"     and   taken_back is false and cl.first_worked_team_id=:teamId and cl.current_team_id<>:teamId "
+			+" 	left join office off on off.uuid=cl.office_id  "
+			+ " inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
+			+" 	where   cmp.company_id=:companyId and rut.team_id=:teamId group by us.uuid")
+     List<ProductionDto> claimProductionForInternalAuditAssoicate(@Param("companyId") String companyId,
+		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate,@Param("userId") String userId);
 
 
 	@Query(nativeQuery = true, value = " select claim_uuid uuid,cl.claim_id claimId,dos,patient_birth_date  patientDob,"+

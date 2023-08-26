@@ -1985,11 +1985,21 @@ public class ClaimServiceImpl {
 
 
 		if (partialHeader.getTeamId() == RcmTeamEnum.BILLING.getId() ) {
-			return rcmClaimRepository.claimProductionByForBilling(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
-					dto.getEndDate());
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				return rcmClaimRepository.claimProductionByForBillingAssoicate(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+						dto.getEndDate(),partialHeader.getJwtUser().getUuid());	
+				}else {
+				return rcmClaimRepository.claimProductionByForBilling(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+						dto.getEndDate());
+				}
 		}else if (partialHeader.getTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId() ) {
-			return rcmClaimRepository.claimProductionForInternalAudit(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				return rcmClaimRepository.claimProductionForInternalAuditAssoicate(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+						dto.getEndDate(),partialHeader.getJwtUser().getUuid());
+			}else {
+					return rcmClaimRepository.claimProductionForInternalAudit(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
 					dto.getEndDate());
+			}
 		}
 		return null;
 

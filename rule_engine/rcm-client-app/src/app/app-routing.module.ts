@@ -79,7 +79,7 @@ const routes: Routes = [
   {
     path: 'production',
     loadChildren: () => import("./production/production.module").then(m => m.ProductionModule),
-    canActivate: [ToolUserPermission]
+    canActivate: [ClaimAssingnmentActivate]
   },
   {
     path: 'list-of-claims',

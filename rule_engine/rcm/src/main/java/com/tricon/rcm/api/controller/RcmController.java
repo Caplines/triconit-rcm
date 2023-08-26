@@ -203,7 +203,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Billing TL Prodution Report", response = ProductionDto.class, responseContainer = "List")
 	@PostMapping("/api/bill/claim-production")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ASSO')")
 	public ResponseEntity<Object> claimsProduction(@RequestBody ClaimProductionLogDto dto, Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
