@@ -56,6 +56,7 @@ import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.AutoRunClaimReponseDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
+import com.tricon.rcm.dto.ClaimAssignWithRemarkAndTeam;
 import com.tricon.rcm.dto.ClaimDataDetails;
 import com.tricon.rcm.dto.ClaimDetailDto;
 import com.tricon.rcm.dto.ClaimEditDetailDto;
@@ -1067,7 +1068,7 @@ public class ClaimServiceImpl {
 		List<FreshClaimDataDto> list=null;
 		if (sub.equals("Fresh")) {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) list = rcmClaimRepository.fetchFreshClaimDetailsInd(partialHeader.getCompany().getUuid(), teamId, partialHeader.getJwtUser().getUuid());
-			else list = rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
+ 			else list = rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
 			 if (teamId == RcmTeamEnum.BILLING.getId()){
 			     if (list==null) list= new ArrayList<>();
 			     // add Claims Send From Internal Audit Team
@@ -2662,86 +2663,13 @@ public class ClaimServiceImpl {
 				if (secondary!=null) {
 					secondary.setPrimaryStaus(Constants.Primary_Status_Primary_submit);
 					rcmClaimRepository.save(secondary);
-				}
+				 }
 				}
 				
 				message="Submitted";
 			}else if(dto.isAssignToOtherTeam()){
-				
-			  RcmTeam assignTeam = rcmTeamRepo.findById(dto.getAssignToTeam());
-			  RcmTeam oldTeam = assign.getCurrentTeamId();
-			  RcmUser oldRcmUser = assign.getAssignedTo();
-			  
-			  claim.setUpdatedBy(user);
-			  claim.setCurrentTeamId(assignTeam);
-			  //Edit Assignment Data
-			  assign.setActive(false);
-			  //assign.setCommentAssignedBy(Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+ ":"+assignTeam.getName());
-			  assign.setUpdatedBy(user);
-			  assign.setUpdatedDate(new Date());
-			  
-			  rcmClaimAssignmentRepo.save(assign);
-			  //Assignment Table
-			  UserAssignOffice assignedUser = userAssignOfficeRepo
-						.findByOfficeUuidAndTeamId(office.getUuid(), assignTeam.getId());
-			  if (assignedUser!=null) {
-				  RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
-				  //make New Entry
-				  RcmTeam assignedTeam  = rcmTeamRepo.findById(assignTeam.getId());
-				  RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
-							.findByStatus(ClaimStatusEnum.Billing.getType());
-				  
-					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-							assignedUser.getUser(), dto.getClaimUuid(), claim,
-							dto.getAssignToComment(), systemStatusBilling,assignedTeam,
-							Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+dto.getAssignToTeam() +")");
-					rcmAssigment.setCurrentTeamId(oldTeam); 
-					rcmAssigment.setAssignedTo(oldRcmUser);
-					rcmAssigment.setActive(false);
-					
-					rcmClaimAssignmentRepo.save(rcmAssigment);
-					
-					rcmAssigment= new RcmClaimAssignment();
-					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-							assignedUser.getUser(), dto.getClaimUuid(), claim,
-							"", systemStatusBilling,assignedTeam,
-							Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+dto.getAssignToTeam() +")");
-
-					rcmClaimAssignmentRepo.save(rcmAssigment);
-					
-					
-			  }else {
-				  RcmTeam assignedTeam  = rcmTeamRepo.findById(assignTeam.getId());
-				  RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
-							.findByStatus(ClaimStatusEnum.Billing.getType());
-				  RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
-				  //make New Entry
-				  rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-							null, dto.getClaimUuid(), claim,
-							dto.getAssignToComment(), systemStatusBilling,assignedTeam,
-							Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+dto.getAssignToTeam() +")");
-				  rcmAssigment.setCurrentTeamId(oldTeam);
-				  rcmAssigment.setAssignedTo(oldRcmUser);
-				  rcmAssigment.setActive(false);
-				  rcmClaimAssignmentRepo.save(rcmAssigment);
-					
-				rcmAssigment= new RcmClaimAssignment();
-				  
-				  
-				  
-					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-							null, dto.getClaimUuid(), claim,
-							"", systemStatusBilling,assignedTeam,
-							Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+dto.getAssignToTeam() +")");
-					rcmClaimAssignmentRepo.save(rcmAssigment);
-					
-					
-			  }
-
-			  //claim.set
-				claim.setUpdatedDate(new Date());
-				rcmClaimRepository.save(claim);
-				message="OtherTeam";
+				message= assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
+						dto.getAssignToTeam(),dto.getAssignToComment(),claim,assign,user,office);
 			}/*else if(dto.isAssignToTL()){//Separate API
 				//RcmUser assignuser = userRepo.findByUuid(jwtUser.getUuid());
 				claim.setUpdatedBy(user);
@@ -2765,6 +2693,155 @@ public class ClaimServiceImpl {
 		}
 		claimEditDetailDto.setMessage(message);
 		return claimEditDetailDto;
+	}
+	
+	public String assignClaimToOtherTeamWithRemark(PartialHeader partialHeader,ClaimAssignWithRemarkAndTeam dto) {
+		String message="";
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+		Integer assignToTeamId=dto.getAssignToTeamId();
+		int currentTeam=claim.getCurrentTeamId().getId();
+		if (assignToTeamId == null) {
+			//Find the Team Who Assigned the Claim
+			assignToTeamId = claim.getLastWorkTeamId().getId();
+			
+		}
+		/*if (assignToTeamId == null) {
+			return "no Assigned team";
+		}*/;
+		RcmTeam team = rcmTeamRepo.findById(assignToTeamId);
+		if (team == null) {
+			return "Wrong Team";
+		}
+		if (dto.getRemark() == null) {
+			return "no remarks";
+		}
+		if (assignToTeamId == currentTeam) {
+			return "Teams Cannot be same";
+		}
+		
+		dto.setRemark(dto.getRemark().trim());
+		RcmClaimAssignment assign = rcmClaimAssignmentRepo
+				.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
+		// claim.getC
+		if (assign == null) {
+			message= "Not assigned to user:" + partialHeader.getJwtUser().getEmail();
+			return message;
+			}
+		//boolean notesSaved=false;
+		RcmOffice office =officeRepo.findByUuid(claim.getOffice().getUuid());
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
+		if (rcmCompany!=null) {
+
+			if (!claim.isPending()) {
+				message= "Claim Already Submitted";
+				return message;
+			} else {
+				message =assignClaimToOtherTeamWithRemarkCommon(partialHeader, dto.getClaimUuid(),
+						assignToTeamId, dto.getRemark(), claim,
+						 assign, user, office);
+				if (message!=null && message.equals("OtherTeam")) message="done";
+				return message;
+			
+		      }
+			}
+		return null;
+		
+	}
+	/**
+	 * Assign Claim To Other Team
+	 * @param partialHeader
+	 * @param dto
+	 * @param claim
+	 * @param assign
+	 * @param user
+	 * @param office
+	 * @return
+	 */
+	private String assignClaimToOtherTeamWithRemarkCommon(PartialHeader partialHeader,String claimUuid,
+			int assignToTeam,String assignToComment,RcmClaims claim,
+			RcmClaimAssignment assign,RcmUser user,RcmOffice office) {
+          
+		if (!claim.isPending()) {
+			
+			return "Already Submited";
+		}
+		
+		  RcmTeam assignTeam = rcmTeamRepo.findById(assignToTeam);
+		  RcmTeam oldTeam = assign.getCurrentTeamId();
+		  RcmUser oldRcmUser = assign.getAssignedTo();
+		  
+		  claim.setUpdatedBy(user);
+		  claim.setCurrentTeamId(assignTeam);
+		  //Edit Assignment Data
+		  assign.setActive(false);
+		  //assign.setCommentAssignedBy(Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+ ":"+assignTeam.getName());
+		  assign.setUpdatedBy(user);
+		  assign.setUpdatedDate(new Date());
+		  
+		  rcmClaimAssignmentRepo.save(assign);
+		  //Assignment Table
+		  UserAssignOffice assignedUser = userAssignOfficeRepo
+					.findByOfficeUuidAndTeamId(office.getUuid(), assignTeam.getId());
+		  if (assignedUser!=null) {
+			  RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
+			  //make New Entry
+			  RcmTeam assignedTeam  = rcmTeamRepo.findById(assignTeam.getId());
+			  RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
+						.findByStatus(ClaimStatusEnum.Billing.getType());
+			  
+				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+						assignedUser.getUser(), claimUuid, claim,
+						assignToComment, systemStatusBilling,assignedTeam,
+						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
+				rcmAssigment.setCurrentTeamId(oldTeam); 
+				rcmAssigment.setAssignedTo(oldRcmUser);
+				rcmAssigment.setActive(false);
+				
+				rcmClaimAssignmentRepo.save(rcmAssigment);
+				
+				rcmAssigment= new RcmClaimAssignment();
+				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+						assignedUser.getUser(), claimUuid, claim,
+						"", systemStatusBilling,assignedTeam,
+						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
+
+				rcmClaimAssignmentRepo.save(rcmAssigment);
+				
+				
+		  }else {
+			  RcmTeam assignedTeam  = rcmTeamRepo.findById(assignTeam.getId());
+			  RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
+						.findByStatus(ClaimStatusEnum.Billing.getType());
+			  RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
+			  //make New Entry
+			  rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+						null, claimUuid, claim,
+						assignToComment, systemStatusBilling,assignedTeam,
+						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
+			  rcmAssigment.setCurrentTeamId(oldTeam);
+			  rcmAssigment.setAssignedTo(oldRcmUser);
+			  rcmAssigment.setActive(false);
+			  rcmClaimAssignmentRepo.save(rcmAssigment);
+				
+			rcmAssigment= new RcmClaimAssignment();
+			  
+			  
+			  
+				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+						null, claimUuid, claim,
+						"", systemStatusBilling,assignedTeam,
+						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
+				rcmClaimAssignmentRepo.save(rcmAssigment);
+				
+				
+		  }
+
+		  //claim.set
+			claim.setUpdatedDate(new Date());
+			rcmClaimRepository.save(claim);
+			return "OtherTeam";
+		
 	}
 
 	/*

@@ -21,6 +21,7 @@ import com.tricon.rcm.dto.AllPendencyReportDto;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
+import com.tricon.rcm.dto.ClaimAssignWithRemarkAndTeam;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.PartialHeader;
@@ -175,6 +176,25 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.fetchFreshClaimDetailsLead(partialHeader.getTeamId(), type, subType,partialHeader)));
 	}
+	
+	@ApiOperation(value = "Api For Saving Remark and Asssigning Claims (Other teams)", response = String.class, responseContainer = "List")
+	@PostMapping("/api/assign-claim-with-remark")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	public ResponseEntity<Object> fetchFreshClaimsDetailsLead(@RequestBody ClaimAssignWithRemarkAndTeam dto,
+			Model model) {
+		
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		
+		
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.assignClaimToOtherTeamWithRemark(partialHeader,dto)));
+	}
+	
+	
+	
 
 	/*
 	 * @ApiOperation(value =
