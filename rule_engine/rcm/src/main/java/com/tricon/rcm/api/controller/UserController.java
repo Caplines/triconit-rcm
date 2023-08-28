@@ -220,8 +220,8 @@ public class UserController extends BaseHeaderController {
 	
 	
 	@RequestMapping(value = "/archive-claim-counts", method = RequestMethod.GET)
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
-	public ResponseEntity<?> issueClaimCounts(@PathVariable("isArchive")boolean isArchive ,Model model) {
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	public ResponseEntity<?> archiveClaimCounts(Model model) {
 		int response = 0;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
