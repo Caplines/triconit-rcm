@@ -191,7 +191,7 @@ public class UserController extends BaseHeaderController {
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
 		try {
-			response = userService.getIssueClaimsCounts(partialHeader.getCompany());
+			response = userService.getIssueClaimsCounts(partialHeader.getCompany(),false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -217,4 +217,25 @@ public class UserController extends BaseHeaderController {
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
+	
+	
+	@RequestMapping(value = "/archive-claim-counts", method = RequestMethod.GET)
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<?> issueClaimCounts(@PathVariable("isArchive")boolean isArchive ,Model model) {
+		int response = 0;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+
+		try {
+			response = userService.getIssueClaimsCounts(partialHeader.getCompany(),true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
 }
