@@ -10,7 +10,7 @@ import lombok.ToString;
 @Data
 @ToString
 @NoArgsConstructor
-public class ArchiveClaimDto {
+public class IssueClaimDto {
 
 	private String claimId;
 	private String issue;
@@ -19,7 +19,7 @@ public class ArchiveClaimDto {
 	private Date createdDate; 
 	private int id;
 	private boolean isArchive;
-	public ArchiveClaimDto(String claimId, String issue, String source, String officeName, Date createdDate, int id,
+	public IssueClaimDto(String claimId, String issue, String source, String officeName, Date createdDate, int id,
 			boolean isArchive) {
 		super();
 		this.claimId = claimId;
