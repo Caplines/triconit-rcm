@@ -238,7 +238,7 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.currentClaimUuid = data.uuid
     this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
       this.submitBtnConfig['submitType'] = 'ath';
-      this.submitBtnConfig['otherTeamId'][data.uuid]=0;
+      this.submitBtnConfig['otherTeamId'][data.uuid]=null;
       if(this.submitBtnConfig['remarks'][data.uuid]){
         this.errorMessage = '' ;
         this.showModal=true;
@@ -293,7 +293,7 @@ export class OtherTeamsWorkComponent implements OnInit {
       let params:any= {
         "remark":this.submitBtnConfig['remarks'][claimUuid],
         "claimUuid":claimUuid,
-        "assignToTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : 0    //converting string into number using unary operator +
+        "assignToTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : null    //converting string into number using unary operator +
       }
     this.appService.AssignClaimWithRemark(params,(res:any)=>{
         if(res.status == 200){
