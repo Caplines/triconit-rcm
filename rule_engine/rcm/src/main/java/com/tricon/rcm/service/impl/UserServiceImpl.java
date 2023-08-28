@@ -157,10 +157,10 @@ public class UserServiceImpl {
 		return null;
 	}
 
-	public int getIssueClaimsCounts(RcmCompany company) throws Exception {
+	public int getIssueClaimsCounts(RcmCompany company,boolean isArchive) throws Exception {
 		int counts = 0;
 		if (company != null) {
-			counts = userRepo.findCountsOfIssueClaims(company.getUuid());
+			counts = userRepo.findCountsOfIssueClaims(company.getUuid(),isArchive);
 			if (counts > 0)
 				return counts;
 			else

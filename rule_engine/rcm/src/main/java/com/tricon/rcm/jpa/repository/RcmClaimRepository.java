@@ -5,11 +5,13 @@ import java.util.Set;
 
 import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmOffice;
+import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.IVFDto;
 import com.tricon.rcm.dto.customquery.IssueClaimDto;
@@ -391,10 +393,10 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	Object getTPIdByTpid(@Param("officeId") String officeId,
 			@Param("patientId") String patientId,@Param("tpId") String ivid);
 	
-	@Query(nativeQuery = true, value = ""+
-			" select claim_id claimId,issue,source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "+
-			" left join office off on  off.uuid=cl.office_id "+
-			" where off.company_id=:cmpid and cl.resolved is false order by cl.created_date desc")
+	@Query(nativeQuery = true, value ="select cl.id as Id,claim_id claimId,issue,source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "+
+			" left join office off on off.uuid=cl.office_id "+
+			" where off.company_id=:cmpid and cl.resolved is false "
+			+ "and cl.is_archive is false order by cl.created_date desc")
 	List<IssueClaimDto> getIssueClaims(@Param("cmpid") String ivId);
 	
 	
@@ -550,4 +552,12 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		"	where  com.uuid=:companyId and pending is true")
 	List<PendingClaimToReAssignDto> fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(@Param("companyId") String companyId,@Param("teamId")  int teamId) ;
 
+	@Query(value = "select cl.id as Id,cl.is_archive as IsArchive,cl.claim_id claimId,cl.issue,cl.source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "
+			+ "left join office off on off.uuid=cl.office_id "
+			+ "where off.company_id=:companyId and cl.resolved is false and cl.is_archive is true order by cl.id limit :offset, :limit", nativeQuery = true)
+	List<IssueClaimDto> archiveClaimsByPagination(@Param("companyId") String companyId,@Param("offset")int offSet,@Param("limit")int limit); //and off.active is true
+  
+	@Modifying
+	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive =:archiveStatus,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id in (:id)")
+	int updateIssueClaimsArchiveStatus(@Param("id")List<Integer>id,@Param("archiveStatus")boolean archiveStatus,@Param("updatedBy")RcmUser updatedBy);
 }

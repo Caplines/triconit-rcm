@@ -9,5 +9,7 @@ public interface IssueClaimDto {
 	String getSource();
 	String getOfficeName();
 	Date getCreatedDate(); 
+	int getId();
+	boolean getIsArchive();
 	
 }

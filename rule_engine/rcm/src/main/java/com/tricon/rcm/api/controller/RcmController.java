@@ -25,6 +25,7 @@ import com.tricon.rcm.dto.ClaimAssignWithRemarkAndTeam;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.PartialHeader;
+import com.tricon.rcm.dto.RcmArchiveClaimsDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
@@ -562,6 +563,55 @@ public class RcmController extends BaseHeaderController{
 		}
 		try {
 			// response = claimServiceImpl.getSubmittedClaims(dto,partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@PostMapping("api/save-archive-claims")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<?> archiveClaims(@RequestBody RcmArchiveClaimsDto dto, Model model) {
+		String response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+
+		if (dto.getArchiveClaims() == null || dto.getArchiveClaims().stream().anyMatch(x -> x.getId() == null)) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		try {
+			response = claimServiceImpl.saveArchiveClaims(dto, partialHeader.getJwtUser());
+			if (response == null) {
+				return ResponseEntity
+						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.UPDATION_FAIL, null));
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@GetMapping("api/archiveClaims/{uuid}/{pageNumber}")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<Object> getArchiveClaims(@PathVariable("uuid") String companyId,
+			@PathVariable("pageNumber") int pageNumber, Model model) {
+		List<RcmIssuClaimPaginationDto> response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return null;
+		if(pageNumber==-1) {
+			return ResponseEntity.ok().body(new GenericResponse(HttpStatus.BAD_REQUEST,"", null));
+		}
+		try {
+			response = claimServiceImpl.getArchiveClaimsByPagination(pageNumber, companyId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

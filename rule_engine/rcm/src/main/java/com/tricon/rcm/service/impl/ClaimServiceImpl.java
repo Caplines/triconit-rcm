@@ -52,6 +52,8 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.AllPendencyReportDto;
+import com.tricon.rcm.dto.ArchiveClaimDto;
+import com.tricon.rcm.dto.ArchiveClaimsPayloadDto;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.AutoRunClaimReponseDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
@@ -69,6 +71,7 @@ import com.tricon.rcm.dto.PendencyWithOfficeOnlyDto;
 import com.tricon.rcm.dto.ProivderHelpingSheetDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
+import com.tricon.rcm.dto.RcmArchiveClaimsDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
@@ -145,9 +148,11 @@ import com.tricon.rcm.jpa.repository.RcmRuleRepo;
 import com.tricon.rcm.jpa.repository.RcmTPDetailRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
+import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.ConnectAndReadSheets;
 import com.tricon.rcm.util.Constants;
+import com.tricon.rcm.util.MessageConstants;
 import com.tricon.rcm.util.RuleConstants;
 import com.tricon.rcm.util.MessageUtil;
 
@@ -248,7 +253,7 @@ public class ClaimServiceImpl {
 	@Autowired
 	RcmTPDetailRepo rcmTPDetailRepo;
 	
-	@Value("${data.totalRecordperPage}")
+	@Value("${data.archiveClaims.totalRecordperPage}")
 	private int totalRecordsperPage;
 	
 
@@ -3381,12 +3386,16 @@ public class ClaimServiceImpl {
 	}
 		return providers;
 	}
-	public List<RcmIssuClaimPaginationDto> getIssueClaimsByPagination(int pageNumber, String companyId) throws Exception {
+	
+	public List<RcmIssuClaimPaginationDto> getArchiveClaimsByPagination(int pageNumber, String companyId)
+			throws Exception {
 		List<RcmIssuClaimPaginationDto> paginationData = null;
+		boolean isArchive = true;
 		RcmIssuClaimPaginationDto paginationDto = null;
+		List<ArchiveClaimDto> archiveData = null;
 		int totalElements = 0;
 		int offset = pageNumber * totalRecordsperPage;
-		totalElements = userRepo.findCountsOfIssueClaims(companyId);
+		totalElements = userRepo.findCountsOfIssueClaims(companyId, isArchive);
 		if (totalElements == 0) {
 			paginationData = new ArrayList<>();
 			paginationDto = new RcmIssuClaimPaginationDto();
@@ -3394,12 +3403,17 @@ public class ClaimServiceImpl {
 			paginationData.add(paginationDto);
 			return paginationData;
 		}
-		List<IssueClaimDto> pageableList = rcmClaimRepository.getIssueClaimsByPagination(companyId, offset,
+		List<IssueClaimDto> pageableList = rcmClaimRepository.archiveClaimsByPagination(companyId, offset,
 				totalRecordsperPage);
 		if (pageableList != null && !pageableList.isEmpty()) {
 			paginationData = new ArrayList<>();
+			archiveData = new ArrayList<>();
 			paginationDto = new RcmIssuClaimPaginationDto();
-			paginationDto.setData(pageableList);
+			pageableList
+					.stream().map(x -> new ArchiveClaimDto(x.getClaimId(), x.getIssue(), x.getSource(),
+							x.getOfficeName(), x.getCreatedDate(), x.getId(), x.getIsArchive()))
+					.forEach(archiveData::add);
+			paginationDto.setData(archiveData);
 			paginationDto.setPageNumber(pageNumber);
 			paginationDto.setTotalElements((long) totalElements);
 			paginationDto.setPageSize(totalRecordsperPage);
@@ -3410,4 +3424,27 @@ public class ClaimServiceImpl {
 		return null;
 	}
 
+	@Transactional(rollbackFor = Exception.class)
+	public String saveArchiveClaims(RcmArchiveClaimsDto dto, JwtUser jwtUser) throws Exception {
+		String msg = null;
+		RcmUser updatedBy = null;
+		List<Integer> archiveIdTrue = dto.getArchiveClaims().stream().filter(x -> x.isArchiveStatus() == true)
+				.map(ArchiveClaimsPayloadDto::getId).collect(Collectors.toList());
+		List<Integer> archiveIdFalse = dto.getArchiveClaims().stream().filter(x -> x.isArchiveStatus() == false)
+				.map(ArchiveClaimsPayloadDto::getId).collect(Collectors.toList());
+
+		if (!archiveIdTrue.isEmpty()) {
+			updatedBy = userRepo.findByEmail(jwtUser.getUsername());
+			int status = rcmClaimRepository.updateIssueClaimsArchiveStatus(archiveIdTrue, true, updatedBy);
+			msg = (status > 0) ? MessageConstants.RECORDS_UPDATE : null;
+		}
+
+		if (!archiveIdFalse.isEmpty()) {
+			updatedBy = userRepo.findByEmail(jwtUser.getUsername());
+			int status = rcmClaimRepository.updateIssueClaimsArchiveStatus(archiveIdFalse, false, updatedBy);
+			msg = (status > 0) ? MessageConstants.RECORDS_UPDATE : null;
+		}
+
+		return msg;
+	}
 }

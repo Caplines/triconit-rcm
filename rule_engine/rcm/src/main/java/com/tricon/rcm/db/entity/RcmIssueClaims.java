@@ -50,4 +50,7 @@ public class RcmIssueClaims extends BaseAuditEntity implements Serializable{
 	@Column(name = "source", nullable = false)
 	private String  source;
 	
+	@Column(name = "is_archive", nullable = false)
+	private boolean  isArchive;
+	
 }

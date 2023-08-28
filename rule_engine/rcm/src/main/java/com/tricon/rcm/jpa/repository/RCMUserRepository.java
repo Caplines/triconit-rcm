@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UserSearchDto;
+import com.tricon.rcm.dto.customquery.IssueClaimDto;
 import com.tricon.rcm.dto.customquery.RcmUserDetails;
 import com.tricon.rcm.dto.customquery.TreatmentPlanLinkDto;
 
@@ -122,6 +123,6 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	List<TreatmentPlanLinkDto> findTreatmentPlanLinkData(@Param("claimUuid") String claimUuid);
 	
 	@Query(value = "select count(cl.issue) from rcm_issue_claims cl "
-			+ "left join office off on  off.uuid=cl.office_id  where off.company_id=:clientUuid and cl.resolved is false", nativeQuery = true)
-	int findCountsOfIssueClaims(@Param("clientUuid") String clientUuid);
+			+ "left join office off on  off.uuid=cl.office_id  where off.company_id=:clientUuid and cl.resolved is false and is_archive =:archiveStatus ", nativeQuery = true)
+	int findCountsOfIssueClaims(@Param("clientUuid") String clientUuid,@Param("archiveStatus")boolean archiveStatus);
 }

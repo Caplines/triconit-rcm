@@ -108,20 +108,21 @@ public class RcmAttachmentController extends BaseHeaderController {
 	}
 	
 	
-	@PostMapping("/api/final-attachments-data")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
-	public ResponseEntity<?> finalSubmittionClaimAttachments(@RequestBody FinalSubmittionClaimAttachmentDto dto,
-			Model model) {
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if (partialHeader == null)
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		if ((dto.getRemarks() == null || dto.getRemarks().isEmpty()) || (dto.getSubmitButton() == null
-				|| dto.getSubmitButton().isEmpty())) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", true));
-	}
+//	@PostMapping("/api/final-attachments-data")
+//	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+//	public ResponseEntity<?> finalSubmittionClaimAttachments(@RequestBody FinalSubmittionClaimAttachmentDto dto,
+//			Model model) {
+//		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+//		if (partialHeader == null)
+//			return ResponseEntity
+//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+//
+//		if (dto.getAssignToOtherTeamId() == null || (dto.getRemarks() == null || dto.getRemarks().isEmpty())
+//				|| (dto.getSubmitButton() == null || dto.getSubmitButton().isEmpty())) {
+//			return ResponseEntity
+//					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", true));
+//	}
 
 }
