@@ -104,8 +104,8 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['assignOffice'], callback)
   }
 
-  finalAttachmentSubmit(params: any, callback: any) {
-    this.postData(params, this.httpUrl['final-attachments-data'], callback)
+  AssignClaimWithRemark(params: any, callback: any) {
+    this.postData(params, this.httpUrl['assign-claim-with-remark'], callback)
   }
 
   registerUser(params: any, callback: any) {

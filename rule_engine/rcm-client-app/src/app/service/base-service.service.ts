@@ -71,6 +71,7 @@ export class BaseService {
     'updateIv': '/api/updateivfid',
     'claimAttachment': '/api/claim-attachment',
     'final-attachments-data': '/api/final-attachments-data',
+    'assign-claim-with-remark': '/api/assign-claim-with-remark',
 
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',

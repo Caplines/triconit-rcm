@@ -234,11 +234,11 @@
                                                         <td class="alignRight">{{det.claimAge}}</td>
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
                                                         <td class="alignRight">{{det.claimAge}}</td>
-                                                        <td><textarea name="{{det.uuid}}" class="form-control" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
+                                                        <td><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
                                                                 style="width: 200px;"></textarea>
                                                         </td>
                                                         <td> <app-attach-file [inputConfig]="{'claimUuid':det.uuid}" (emitToParent)="receiveChildEvent($event)" ></app-attach-file></td>
-                                                        <td><button type="button" class="btn btn-primary" (click)="openSubmitConfirmationModal(det.uuid)"> 
+                                                        <td><button type="button" class="btn btn-primary" (click)="openSubmitConfirmationModal(det)"> 
                                                                 Submit</button></td>
                                                         <td>
                                                             <div class="otherTeam">
@@ -248,7 +248,7 @@
                                                                         <option *ngFor="let data of otherTeams" [value]="data.teamId">{{data.teamName}}</option>
                                                                     </select>
 
-                                                                </div><button type="button" class="btn btn-primary" [disabled]="!this.submitBtnConfig['otherTeamId'][det.uuid]" (click)="submitOtherTeams(det.uuid)">Submit</button>
+                                                                </div><button type="button" class="btn btn-primary" [disabled]="!this.submitBtnConfig['otherTeamId'][det.uuid]" (click)="submitOtherTeams(det)">Submit</button>
                                                             </div>
                                                         </td>
                                                     </tr>

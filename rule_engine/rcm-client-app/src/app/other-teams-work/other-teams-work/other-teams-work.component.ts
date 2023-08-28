@@ -234,12 +234,17 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.selectedFilesMap.set(claimUuid, file);
   }
   
-  openSubmitConfirmationModal(claimUuid: any) {
-    this.currentClaimUuid = claimUuid;
-    this.selectedFiles = this.getSelectedFileForComponent(claimUuid);
+  openSubmitConfirmationModal(data: any) {
+    this.currentClaimUuid = data.uuid
+    this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
       this.submitBtnConfig['submitType'] = 'ath';
-      this.showModal = true;
-      this.submitBtnConfig['remarks'][claimUuid] ? this.errorMessage = '' : '';
+      this.submitBtnConfig['otherTeamId'][data.uuid]=0;
+      if(this.submitBtnConfig['remarks'][data.uuid]){
+        this.errorMessage = '' ;
+        this.showModal=true;
+     } else{
+       data['isInvalid']=true;
+     }
       if(!this.selectedFiles){
         this.selectedFiles= [];
         this.errorMessage = "No Files Are Attached !";
@@ -252,7 +257,7 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   submitConfirmation(){
     if(this.submitBtnConfig['submitType'] == 'oth'){
-      this.finalAttachmentSubmit(this.submitBtnConfig['claimUuid']);
+      this.AssignClaimWithRemark(this.submitBtnConfig['claimUuid']);
     }else{
       if(this.submitBtnConfig['remarks'][this.currentClaimUuid]){
         this.loopThroughData(this.selectedFiles, 0);
@@ -263,8 +268,8 @@ export class OtherTeamsWorkComponent implements OnInit {
   }
 
   loopThroughData(dataArray: any[], currentIndex: number) {
-    if (currentIndex > dataArray.length) {
-      this.finalAttachmentSubmit(dataArray[0]?.claimUuid ? dataArray[0]?.claimUuid : this.currentClaimUuid);
+    if (currentIndex >= dataArray.length) {
+      this.AssignClaimWithRemark(dataArray[0]?.claimUuid ? dataArray[0]?.claimUuid : this.currentClaimUuid);
       return;
     }
     const currentData = dataArray[currentIndex];
@@ -282,16 +287,15 @@ export class OtherTeamsWorkComponent implements OnInit {
      
   }
 
-  finalAttachmentSubmit(claimUuid:any){
+  AssignClaimWithRemark(claimUuid:any){
     let hasRemarks =   this.submitBtnConfig['remarks'][claimUuid];
     if(hasRemarks){
       let params:any= {
-        "remarks":this.submitBtnConfig['remarks'][claimUuid],
-        "submitButton":this.submitBtnConfig['submitType'],
-        "assignToOtherTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : 0    //converting string into number using unary operator +
+        "remark":this.submitBtnConfig['remarks'][claimUuid],
+        "claimUuid":claimUuid,
+        "assignToTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : 0    //converting string into number using unary operator +
       }
-      console.log(params);
-    this.appService.finalAttachmentSubmit(params,(res:any)=>{
+    this.appService.AssignClaimWithRemark(params,(res:any)=>{
         if(res.status == 200){
             console.log(res);
             this.showModal=false;
@@ -313,10 +317,14 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filteredItems.splice(index,1);
   }
 
-  submitOtherTeams(claimUuid:any){
+  submitOtherTeams(data:any){
     this.submitBtnConfig['submitType'] = 'oth';
-    this.submitBtnConfig['claimUuid'] = claimUuid;
-    this.submitBtnConfig['remarks'][claimUuid] ? this.errorMessage = '' : '';
-    this.showModal=true;
+    this.submitBtnConfig['claimUuid'] = data.uuid;
+   if(this.submitBtnConfig['remarks'][data.uuid]){
+     this.errorMessage = '' ;
+     this.showModal=true;
+  } else{
+    data['isInvalid']=true;
+  }
   }
 }
