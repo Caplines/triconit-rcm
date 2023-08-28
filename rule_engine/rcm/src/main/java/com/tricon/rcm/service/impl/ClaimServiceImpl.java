@@ -52,7 +52,6 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.AllPendencyReportDto;
-import com.tricon.rcm.dto.ArchiveClaimDto;
 import com.tricon.rcm.dto.ArchiveClaimsPayloadDto;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.AutoRunClaimReponseDto;
@@ -2017,9 +2016,16 @@ public class ClaimServiceImpl {
 	 * @param companyId
 	 * @return
 	 */
-	public List<IssueClaimDto> getIssueClaims(String companyId) {
+	public List<com.tricon.rcm.dto.IssueClaimDto> getIssueClaims(String companyId) {
+		List<com.tricon.rcm.dto.IssueClaimDto> issueDto = null;
+		List<IssueClaimDto> data = rcmClaimRepository.getIssueClaims(companyId);
+		if (!data.isEmpty()) {
+			issueDto = new ArrayList<>();
+			data.stream().map(x -> new com.tricon.rcm.dto.IssueClaimDto(x.getClaimId(), x.getIssue(), x.getSource(),
+					x.getOfficeName(), x.getCreatedDate(), x.getId(), x.getIsArchive())).forEach(issueDto::add);
+		}
+		return issueDto;
 
-		return rcmClaimRepository.getIssueClaims(companyId);
 	}
 
 	public CaplineIVFFormDto getIvfDataFromRE(String companyId, String claimuuid) {
@@ -3392,7 +3398,7 @@ public class ClaimServiceImpl {
 		List<RcmIssuClaimPaginationDto> paginationData = null;
 		boolean isArchive = true;
 		RcmIssuClaimPaginationDto paginationDto = null;
-		List<ArchiveClaimDto> archiveData = null;
+		List<com.tricon.rcm.dto.IssueClaimDto> archiveData = null;
 		int totalElements = 0;
 		int offset = pageNumber * totalRecordsperPage;
 		totalElements = userRepo.findCountsOfIssueClaims(companyId, isArchive);
@@ -3410,7 +3416,7 @@ public class ClaimServiceImpl {
 			archiveData = new ArrayList<>();
 			paginationDto = new RcmIssuClaimPaginationDto();
 			pageableList
-					.stream().map(x -> new ArchiveClaimDto(x.getClaimId(), x.getIssue(), x.getSource(),
+					.stream().map(x -> new com.tricon.rcm.dto.IssueClaimDto(x.getClaimId(), x.getIssue(), x.getSource(),
 							x.getOfficeName(), x.getCreatedDate(), x.getId(), x.getIsArchive()))
 					.forEach(archiveData::add);
 			paginationDto.setData(archiveData);

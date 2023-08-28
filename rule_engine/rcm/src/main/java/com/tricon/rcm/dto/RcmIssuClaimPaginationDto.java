@@ -13,7 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class RcmIssuClaimPaginationDto {
 	
-	private List<ArchiveClaimDto> data;
+	private List<com.tricon.rcm.dto.IssueClaimDto> data;
 	private int totalPages;
 	private int pageSize;
 	private int pageNumber;

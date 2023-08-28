@@ -393,7 +393,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	Object getTPIdByTpid(@Param("officeId") String officeId,
 			@Param("patientId") String patientId,@Param("tpId") String ivid);
 	
-	@Query(nativeQuery = true, value ="select cl.id as Id,claim_id claimId,issue,source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "+
+	@Query(nativeQuery = true, value ="select cl.id as Id,claim_id claimId,issue,source,off.name officeName,cl.created_date createdDate,cl.is_archive as IsArchive from rcm_issue_claims cl "+
 			" left join office off on off.uuid=cl.office_id "+
 			" where off.company_id=:cmpid and cl.resolved is false "
 			+ "and cl.is_archive is false order by cl.created_date desc")
