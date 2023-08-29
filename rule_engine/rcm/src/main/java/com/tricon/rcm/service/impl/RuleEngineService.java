@@ -929,11 +929,16 @@ public class RuleEngineService {
 			UserAssignOffice assignedUser = userAssignOfficeRepo
 					.findByOfficeUuidAndTeamId(claim.getOffice().getUuid(), teamId);
 			 
-			if (assignedUser!=null) { 
-				    rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy,
-					assignedUser.getUser(), claimUUid, claim,
-					"", systemStatusBilling,assignedTeam,Constants.SYSTEM_INITIAL_COMMENT);
-				    rcmClaimAssignmentRepo.save(rcmAssigment);
+			if (assignedUser != null) {
+				List<Integer> assignmentId = rcmClaimAssignmentRepo.findIssueAssingments(claimUUid);
+				if (assignmentId.size() < 1) {
+					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
+							claimUUid, claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT);
+					rcmClaimAssignmentRepo.save(rcmAssigment);
+				} else {
+					logger.error("Unassigned claims(" + claimUUid + ") is already assigned to a user whose team id is: "
+							+ teamId + " ");
+				}
 			}
 			}
 			
