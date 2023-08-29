@@ -1177,8 +1177,20 @@ public class ClaimServiceImpl {
 		return finalList;
 	}
 
+	@Transactional
 	public FreshClaimDataImplDto fetchIndividualClaim(String claimUuid, PartialHeader partialHeader,boolean pdf) {
 		FreshClaimDataImplDto implDto = null;
+		
+		//Check for Duplicate Active Assignment
+		List<Integer> assignedClaims =null;
+		try {
+			assignedClaims= rcmClaimAssignmentRepo.findIssueAssingments(claimUuid);
+		 if (assignedClaims.size()>1) {
+			 rcmClaimAssignmentRepo.updateClaimIssueAssignment(assignedClaims.get(0),claimUuid);
+		 }
+		}catch(Exception dup) {
+			dup.printStackTrace();
+		}
 		RcmClaimDetailDto dto = rcmClaimRepository.fetchIndividualClaim(partialHeader.getCompany().getUuid(), claimUuid);
 		// RcmUser user = userRepo.findByUuid(jwtUser.getUuid());
 		if (dto != null) {

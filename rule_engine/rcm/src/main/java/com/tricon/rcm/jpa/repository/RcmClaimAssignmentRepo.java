@@ -21,10 +21,17 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	@Query(value = "update  rcm_claim_assignment set comment_assigned_by=:comment,updated_by=:updatedBy,updated_date=now(),active=:status where assigned_to=:userUuid AND claim_id=:claimUuid ", nativeQuery = true)
 	void updateClaimUserStatusAndComment(@Param("comment")String comment,@Param("updatedBy")RcmUser updatedBy,@Param("status")boolean status,@Param("userUuid")String userUuid,@Param("claimUuid")String claimUuid);
 
+	@Modifying
+	@Query(value = "update rcm_claim_assignment set active =false where id=:id AND claim_id=:claimUuid ", nativeQuery = true)
+	void updateClaimIssueAssignment(@Param("id")int id,@Param("claimUuid")String claimUuid);
+
 	
 	RcmClaimAssignment findByAssignedToUuidAndClaimsClaimUuidAndActive(String assignTo,String claimUUid,boolean active);
 	
 	RcmClaimAssignment findByClaimsClaimUuidAndActive(String claimUUid,boolean active);
+	
+	@Query(value = "select id from rcm_claim_assignment where active =true and claim_id=:claimUuid order by created_date asc", nativeQuery = true)
+	List<Integer> findIssueAssingments(@Param("claimUuid") String claimUUid);
 	
 	RcmClaimAssignment findByClaimsClaimUuidAndActiveAndCurrentTeamIdId(String claimUUid,boolean active,int teamId);
 	
