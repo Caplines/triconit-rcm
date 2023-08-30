@@ -148,7 +148,7 @@
                                                     <td colspan="6">{{lg.createdDate | date:'MMM dd, YYYY HH:mm:ss'}}</td>
                                                     <td colspan="6">{{lg.issue}}</td>
                                                     <td colspan="6">{{lg.source}}</td>
-                                                    <td colspan="6" *ngIf="(loginUserType == 'TL' || 'SUPER_ADMIN')">
+                                                    <td colspan="6" *ngIf="(loginUserType == 'TL' || loginUserType == 'SUPER_ADMIN')">
                                                             <a href="javascript:void(0);"></a><input type="checkbox"
                                                             [(ngModel)]="lg.archive"
                                                             (change)="archiveClaimsSelection(lg.archive,lg.id)"/>  
@@ -172,7 +172,7 @@
     </div>
     
       <pagination *ngIf="!showIssueClaim && totalArchivePages!=1" [paginationPages]="paginationPages" (emitToParent)="receiveChildEvent($event)"></pagination> 
-    <div class="text-center" *ngIf="showIssueClaim"><button *ngIf="(loginUserType == 'TL' || 'SUPER_ADMIN')" type="button" class="btn btn-success file-button" [disabled]="archiveClaimsData.length==0" (click)="archiveClaims()"><span *ngIf="loader.showLoader" class="spinner-grow spinner-grow-sm" role="status"
+    <div class="text-center" *ngIf="showIssueClaim"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button" class="btn btn-success file-button" [disabled]="archiveClaimsData.length==0" (click)="archiveClaims()"><span *ngIf="loader.showLoader" class="spinner-grow spinner-grow-sm" role="status"
         aria-hidden="true"></span>Submit</button></div>
     </div>
     </div>
