@@ -30,6 +30,7 @@
             text-align: center;
             font-weight: bold;
         }
+        .sub-heading1 {font-family:helvetica;font-size:12px;}
 
         .rowHeading {
             background-color: #666666;
@@ -173,6 +174,21 @@
                  background-color:  #FFFFFF
 
             }
+            .main-heading-11 {font-family:helvetica;font-weight:regular;font-size:13px;margin-left:-3px;}
+            .red-clr{
+            color: #842029;
+            background-color: #f8d7da;
+            padding:5px 10px;
+            }
+            .historyCounts{
+            color: #0f5132;
+           background-color: #d1e7dd;
+           border-color: #badbcc;
+
+          display: inline-block;
+
+          padding:5px 10px;
+            }
     </style>
 </head>
 <body>
@@ -203,7 +219,14 @@
                 <td>Insurance Contact</td>
                 <td><xsl:value-of select="basicInfo7"/></td>
                 <td>Provider Network</td>
-                <td class="yellow"><xsl:value-of select="policy3"/></td>
+                <xsl:choose>
+                     <xsl:when test="policy3 = 'Out' ">
+                     <td class="red blackClr"><xsl:value-of select="policy3"/></td>
+                     </xsl:when>
+                     <xsl:otherwise>
+                     <td class="blackClr"><xsl:value-of select="policy3"/></td>
+                     </xsl:otherwise>
+                </xsl:choose>   
                 <td>Sec Provider Network</td>
                 <td><xsl:value-of select="secProvNetwork"/></td>
                 <!-- <td class="borderNone"></td> -->
@@ -216,7 +239,14 @@
                 <td>Appointment Type</td>
                 <td><xsl:value-of select="basicInfo11"/></td>
                 <td>Plan w/ OON Benefits</td>
-                <td class="yellow"><xsl:value-of select="oonbenfits"/></td>
+                <xsl:choose>
+                     <xsl:when test="oonbenfits = 'No' ">
+                     <td class="red blackClr"><xsl:value-of select="oonbenfits"/></td>
+                     </xsl:when>
+                     <xsl:otherwise>
+                     <td class="blackClr"><xsl:value-of select="oonbenfits"/></td>
+                     </xsl:otherwise>
+                </xsl:choose>   
                 <td>Pt Assigned To Office</td>
                 <td class="red blackClr"><xsl:value-of select="yesNoAssignToffice"/></td>
                 <!-- <td class="borderNone"></td> -->
@@ -248,7 +278,7 @@
             <tr>
                 <td class="width-15">Plan Type</td>
                 <td class="width-7"><xsl:value-of select="policy1"/></td>
-                <td class="width-10">Group/Emp Name</td>
+                <td class="width-12">Group/Emp Name</td>
                 <td class="width-7"><xsl:value-of select="basicInfo10"/></td>
                 <td class="width-13">Group <br/>Number <br/></td>
                 <td class="width-7"><xsl:value-of select="basicInfo14"/></td>
@@ -274,7 +304,17 @@
             <tr>
 
                 <td>Annual Max Remaining</td>
-                <td><xsl:value-of select="policy8"/></td>
+                 <xsl:choose>
+                    <xsl:when test="number(policy8) &lt; 100">
+                    <td class="red blackClr"><xsl:value-of select="policy8"/></td>
+                    </xsl:when>
+                     <xsl:when test="number(policy8) &gt;= 100 and number(policy8) &lt;=400" >
+                     <td class="yellow blackClr"><xsl:value-of select="policy8"/></td>
+                     </xsl:when>
+                     <xsl:otherwise>
+                     <td class="blackClr"><xsl:value-of select="policy8"/></td>
+                     </xsl:otherwise>
+                </xsl:choose>   
                 <td>Ind Ded Remaining</td>
                 <td><xsl:value-of select="policy10"/></td>
                 <td>Coverage Book</td>
@@ -282,7 +322,14 @@
                 <td>Fee of D2391</td>
                 <td><xsl:value-of select="policy19"/></td>
                 <td>COB Status</td>
-                <td><xsl:value-of select="basicInfo15"/></td>
+                <xsl:choose>
+                     <xsl:when test="basicInfo3 = 'GEHA' or basicInfo3='FEP' ">
+                     <td class="blackClr"><xsl:text>Secondary</xsl:text></td>
+                     </xsl:when>
+                     <xsl:otherwise>
+                     <td class="blackClr"><xsl:value-of select="basicInfo15"/></td>
+                     </xsl:otherwise>
+                </xsl:choose>   
                 <!-- <td class="borderNone"></td> -->
             </tr>
             <tr class="lightGray">
@@ -305,7 +352,7 @@
 				     <xsl:otherwise>
 					 <xsl:choose>
 					      <xsl:when test="policy12 = 'Refer Medicaid &#38; Medicare Benefits(RD0703)'">
-						  <td class="red"><a href="https://docs.google.com/spreadsheets/d/13C7ph9Hal1mDdU5nioWWX2ndof6Ls2IYbVw03uRDiVM/edit#gid=2067143248" style="text-decoration:none" traget="_blank" >Refer Medicaid &#38; Medicare Benefits(RD0703)</a></td>
+						  <td class="blackClr"><a href="https://docs.google.com/spreadsheets/d/13C7ph9Hal1mDdU5nioWWX2ndof6Ls2IYbVw03uRDiVM/edit#gid=2067143248" style="text-decoration:none;color: red;" traget="_blank" >Refer Medicaid &#38; Medicare Benefits(RD0703)</a></td>
 						  </xsl:when>
 				          <xsl:otherwise>
 						   <td class="">No</td>
@@ -322,7 +369,7 @@
                 <td class="lightBrown">CRA Required</td>
 				<xsl:choose>
 					      <xsl:when test="policy17 = 'Refer to CRA Info for Medicaid Plans(RD2405)'">
-						  <td class="red blackClr" colspan="1"><a href="https://docs.google.com/spreadsheets/d/1kjq3Q2r3eRoC0Ygi9ODXczFfJPExBmo6mbeQYQLlooo/edit#gid=0" style="text-decoration:none" traget="_blank" >CRA Information for Medicaid Plans(RD2405)</a></td>
+						  <td class="blackClr" colspan="1"><a href="https://docs.google.com/spreadsheets/d/1kjq3Q2r3eRoC0Ygi9ODXczFfJPExBmo6mbeQYQLlooo/edit#gid=0" style="text-decoration:none;color:red;" traget="_blank" >CRA Information for Medicaid Plans(RD2405)</a></td>
 						  </xsl:when>
 				          <xsl:otherwise>
 						   <td class="" colspan="1">No</td>
@@ -331,6 +378,13 @@
             </tr>
 
         </table>
+        <br />
+        <br />
+        <xsl:if test="(basicInfo3 = 'GEHA' or basicInfo3='FEP') and basicInfo15='Secondary' ">
+        <div class="red-clr">
+        <strong>Alert-</strong> Patient have BCBS Medical policy as primary &amp; we can directly bill them even if we do not have insurance details.
+        </div>
+        </xsl:if>
         <br />
         <br />
         <table class="table" vertical-align="top">
@@ -379,11 +433,11 @@
 				</xsl:choose>	
                 
                 <xsl:choose>
-				     <xsl:when test="waitingPeriod4 = 'No' ">
-					  <td colspan="2" class="width-17 dullBlue"><xsl:value-of select="waitingPeriod4"/>		</td>
+				     <xsl:when test="waitingPeriod4 != 'No' ">
+					  <td colspan="2" class="width-17 red blackClr"><xsl:value-of select="waitingPeriod4"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-17 dullBlue"><xsl:value-of select="waitingPeriod4"/>		</td>
+					  <td colspan="2" class="red width-15 dullBlue"><xsl:value-of select="waitingPeriod4"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
 				
@@ -399,11 +453,11 @@
 				</xsl:choose>
                 
 				<xsl:choose>
-				     <xsl:when test="waitingPeriod1 = 'No' ">
-					  <td colspan="2" class="width-14 dullYellow "><xsl:value-of select="waitingPeriod1"/>		</td>
+				     <xsl:when test="waitingPeriod1 != 'No' ">
+					  <td colspan="2" class="width-14 red blackClr"><xsl:value-of select="waitingPeriod1"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-14 dullYellow"><xsl:value-of select="waitingPeriod1"/>		</td>
+					  <td colspan="2" class="red width-13 dullYellow"><xsl:value-of select="waitingPeriod1"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -419,11 +473,11 @@
 				</xsl:choose>
                 
 				<xsl:choose>
-				     <xsl:when test="waitingPeriod2 = 'No' ">
-					  <td colspan="2" class="width-12 dullRed"><xsl:value-of select="waitingPeriod2"/>		</td>
+				     <xsl:when test="waitingPeriod2 != 'No' ">
+					  <td colspan="2" class="width-12 red blackClr"><xsl:value-of select="waitingPeriod2"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-12 dullRed"><xsl:value-of select="waitingPeriod2"/>		</td>
+					  <td colspan="2" class="red width-15 dullRed"><xsl:value-of select="waitingPeriod2"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -439,8 +493,8 @@
 				</xsl:choose>
                 
 				<xsl:choose>
-				     <xsl:when test="percentages13 = 'No' ">
-					  <td colspan="2" class="width-16 dullBlue"><xsl:value-of select="percentages13"/>		</td>
+				     <xsl:when test="percentages13 = 'Yes' ">
+					  <td colspan="2" class="width-16 red blackClr"><xsl:value-of select="percentages13"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
 					  <td colspan="2" class="red width-16 dullBlue"><xsl:value-of select="percentages13"/>		</td>
@@ -457,8 +511,8 @@
 					 </xsl:otherwise>
 				</xsl:choose>
 				<xsl:choose>
-				     <xsl:when test="percentages2 = 'No' ">
-					  <td colspan="2" class="width-16 dullYellow"><xsl:value-of select="percentages2"/>		</td>
+				     <xsl:when test="percentages2 = 'Yes' ">
+					  <td colspan="2" class="width-16 red blackClr"><xsl:value-of select="percentages2"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
 					  <td colspan="2" class="red width-16 dullYellow"><xsl:value-of select="percentages2"/>		</td>
@@ -475,8 +529,8 @@
 					 </xsl:otherwise>
 				</xsl:choose>
 				<xsl:choose>
-				     <xsl:when test="percentages4 = 'No' ">
-					  <td colspan="2" class="width-16 dullRed"><xsl:value-of select="percentages4"/>		</td>
+				     <xsl:when test="percentages4 = 'Yes' ">
+					  <td colspan="2" class="width-16 red blackClr"><xsl:value-of select="percentages4"/>		</td>
 					 </xsl:when>
 				     <xsl:otherwise>
 					  <td colspan="2" class="red width-16 dullRed"><xsl:value-of select="percentages4"/>		</td>
@@ -503,11 +557,11 @@
 				</xsl:choose>
                 
 				<xsl:choose>
-				     <xsl:when test="prosthetics1 = 'No' ">
-					  <td colspan="2" class="dullRed"><xsl:value-of select="prosthetics1"/>		</td>
+				     <xsl:when test="prosthetics1 = 'Yes' ">
+					  <td colspan="2" class="red blackClr"><xsl:value-of select="prosthetics1"/></td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red dullRed"><xsl:value-of select="prosthetics1"/>		</td>
+					  <td colspan="2" class="red dullRed"><xsl:value-of select="prosthetics1"/></td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -952,15 +1006,20 @@
             </tr>
             <tr>
                 <td class="borderNone" colspan="11"></td>
-            </tr>
+            </tr>  
             <tr>
                 <td class="historyBackground width-15">Benefits Verified by</td>
                 <td class="lightGray width-15"><xsl:value-of select="benefits"/></td>
                 <td class="historyBackground width-15">Verfied on Date</td>
                 <td class="lightGray width-15"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,6,2),'/',substring(date,9,2),'/',substring(date,1,4))" /></xsl:if></td>
                 <td class="borderNone" colspan="7"></td>
-            </tr>
+            </tr>  
         </table>
+        <br/>
+        <div class="historyCounts">
+                <strong>History Count:</strong><xsl:value-of select="historyCount"/>  
+                    
+        </div>
 		
     </form>
 

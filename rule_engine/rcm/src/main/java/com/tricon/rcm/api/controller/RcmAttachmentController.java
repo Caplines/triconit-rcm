@@ -124,5 +124,24 @@ public class RcmAttachmentController extends BaseHeaderController {
 //		}
 //		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", true));
 //	}
+	
+	@GetMapping("/api/get-attachments-count/{claimUuid}")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<?> attachmentCount(@PathVariable("claimUuid") String claimUuid, Model model) {
+		int count = 0;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		try {
+			count =attachmentServiceImpl.getAttachmentCount(claimUuid);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",count));
+	}
 
 }

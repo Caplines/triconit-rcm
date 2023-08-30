@@ -13,11 +13,6 @@
                                             <tr>
                                                 <th>
                                                     <div class="dFlex">
-                                                        Client
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
                                                         Office <div class="dropdown">
                                                             <img (click)="showHideFilteredDropdown('officeName')"
                                                                 src="../../assets/img/filterIcon.png"
@@ -205,7 +200,6 @@
                                                                 class="loader-data "></span> </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>{{det.officeName}}</td>
                                                         <td>{{det.officeName}}</td>
                                                         <td class="alignRight"><a
                                                                 [routerLink]="['/billing-claims/', det.uuid]"

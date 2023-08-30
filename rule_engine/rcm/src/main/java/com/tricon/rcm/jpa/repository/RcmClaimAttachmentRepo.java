@@ -55,4 +55,9 @@ public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment
 			+ "LIMIT 1", nativeQuery = true)
 	RcmClaimAttachmentDto findRenameFile(@Param("fileName") String fileName,@Param("claimUuid") String claimUuid);
 	
+	
+	@Query(value = "select attachment_count from rcm_claims "
+			+ "where claim_uuid=:claimuUuid", nativeQuery = true)
+	int attachmentCount(@Param("claimuUuid") String claimuUuid);
+	
 }

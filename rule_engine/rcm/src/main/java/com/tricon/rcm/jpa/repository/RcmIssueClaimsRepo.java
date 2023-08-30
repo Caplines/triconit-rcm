@@ -11,6 +11,7 @@ public interface RcmIssueClaimsRepo extends JpaRepository<RcmIssueClaims, Intege
 
 	RcmIssueClaims findByClaimIdAndOfficeAndSource(String claimId,RcmOffice office,String source);
 	List<RcmIssueClaims> findByOfficeAndResolved(RcmOffice office, boolean resolved);
+	List<RcmIssueClaims> findByIdIn(List<Integer> id);
 	
 
 }

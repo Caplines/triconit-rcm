@@ -110,6 +110,8 @@ public class AttachmentServiceImpl {
 					claimAttachment.setUuid(rcmClaims);
 					if(fileCounts<1){
 						attachmentRepo.save(claimAttachment);
+						rcmClaims.setAttachmentCount(rcmClaims.getAttachmentCount()+1);
+						claimRepo.save(rcmClaims);
 					}
 					if (!file.isEmpty() && fileCounts<1) {
 						// Will Make folder with the help of claimUuid to save each file separatlty
@@ -159,6 +161,7 @@ public class AttachmentServiceImpl {
 		File renameFile = null;
 		String renameFileName = null;
 		RcmUser loginUser = null;
+		RcmClaims claims=null;
 		int status = 0;
 		List<RcmClaimAttachmentDto> data = attachmentRepo.findByAttachmentsById(dto.getClaimAttachmentId(),
 				dto.getClaimUuid());
@@ -179,6 +182,10 @@ public class AttachmentServiceImpl {
 						status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), renameFileName);
 						if (status > 0) {
 							existingFile.renameTo(renameFile);
+							claims = claimRepo.findByClaimUuid(d.getClaimUuid());
+							if(claims!=null) {
+							claims.setAttachmentCount(claims.getAttachmentCount()==0?0:claims.getAttachmentCount()-1);
+							claimRepo.save(claims);}else logger.error("Claim Does't Exist");
 							response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
 									.fileResponseStatus(true).build();
 						}
@@ -190,6 +197,10 @@ public class AttachmentServiceImpl {
 							File replaceFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
 									.concat(File.separator).concat(reName));
 							existingFile.renameTo(replaceFile);
+							if(claims!=null) {
+							claims = claimRepo.findByClaimUuid(d.getClaimUuid());
+							claims.setAttachmentCount(claims.getAttachmentCount()==0?0:claims.getAttachmentCount()-1);
+							claimRepo.save(claims);}else logger.error("Claim Does't Exist");
 							response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
 									.fileResponseStatus(true).build();
 						}
@@ -222,6 +233,10 @@ public class AttachmentServiceImpl {
 			return obj;
 		}
 		return obj;
+	}
+
+	public int getAttachmentCount(String claimUuid) throws Exception {
+		return attachmentRepo.attachmentCount(claimUuid);
 	}
 
 }

@@ -113,5 +113,7 @@ public class Constants {
 	
 	//End Sheet
 	public static final String REMOVE_ATTACHMENT_PREFIX="del_";
+	
+	public static final String ARCHIVE_PREFIX="arc_";
 
 }
