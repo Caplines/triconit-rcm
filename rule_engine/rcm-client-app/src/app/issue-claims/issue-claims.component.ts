@@ -27,9 +27,19 @@ export class IssueClaimComponent {
   filteredOfficeName: any = [];
   isFilterAllSelected: any = { 'officeName': false};
   fliterName: string = '';
-  loader: any = {'exportPDFLoader': false, 'exportCSVLoader': false };
+  loader: any = {'exportPDFLoader': false, 'exportCSVLoader': false, 'showLoader': false };
   date: any;
   showFilteredDropdown: any = { 'officeName': false};
+  archiveClaimsData:any = [];
+  loginUserType:any='';
+  archiveCl:any=[];
+  showIssueClaim:boolean= true;
+  archiveClaimsCount:number=0;
+  showMessage:string='';
+  flitertedArchiveItems:any;
+  totalArchivePages:number = 0;
+  paginationPages:any= [];
+  tabSwitch: any = { 'IssueClaims': true, 'ArchiveClaims': false};
 
   @ViewChild('modalElement')modalElementRef!:ElementRef;
   
@@ -42,12 +52,14 @@ export class IssueClaimComponent {
   }
   
   constructor(private appSer: ApplicationServiceService,private router:Router,private title:Title,private downloadService:DownLoadService) {
-    title.setTitle(Utils.defaultTitle + "Issue Claims")
+    title.setTitle(Utils.defaultTitle + "Issue Claims");
+    this.loginUserType = localStorage.getItem("selected_roleName");
   }
 
   ngOnInit() {
     this.userInfo.currentClientName = localStorage.getItem("selected_clientName");
     this.issueClaim();
+    this.getArchiveClaimsCount();
   }
 
   issueClaim(){
@@ -166,7 +178,12 @@ export class IssueClaimComponent {
         }
       }
       this.isFilterAllSelected.officeName = isAllSelected;
-      this.filteredItems = this.issueCl.filter((item: any) => {
+      this.showIssueClaim ? this.filteredItems = this.issueCl.filter((item: any) => {
+        return this.filteredOfficeName.some((checkbox: any) => {
+          return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+        });
+      }) :
+      this.flitertedArchiveItems = this.archiveCl.data.filter((item: any) => {
         return this.filteredOfficeName.some((checkbox: any) => {
           return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
         });
@@ -290,4 +307,115 @@ export class IssueClaimComponent {
     })
   }
 }
+
+  archiveClaimsSelection(e:any,id:any){
+    if (this.archiveClaimsData.length == 0) {
+      this.archiveClaimsData.push({'id': id, 'archiveStatus': e});
+    } else {
+      let exist = this.archiveClaimsData.some((item: any) => item.id == id);
+      if (!exist) {
+        this.archiveClaimsData.push({'id': id, 'archiveStatus': e});
+      } else {
+        let indx = this.archiveClaimsData.findIndex((item: any) => item.id == id);
+        this.archiveClaimsData.splice(indx, 1);
+      }
+    }
+  }
+
+  archiveClaims(){
+    this.loader.showLoader=true;
+    let params:any = {
+      'archiveClaims': this.archiveClaimsData
+    };
+    this.appSer.saveArchiveClaims(params,(res:any)=>{
+      if(res.status== 200){
+        this.showMessage = res.data;
+        setTimeout(()=>{
+          const alert = document.getElementById('alert');
+          alert.classList.add('d-none')
+        },2000);
+        this.getArchiveClaimsCount();
+        this.issueClaim();
+        this.archiveClaimsData=[];
+        this.loader.showLoader=false;
+      }
+      else{
+        this.showMessage = res.message; 
+        this.loader.showLoader=false;
+        //ERROR
+      }
+    });
+  }
+  
+  receiveChildEvent(event:any){
+    if(event['action'] === 'pageNum'){
+      this.getArchiveClaims(event.value);
+    }
+  }
+
+  getArchiveClaims(pgNum:any){
+    this.loader.showLoader=true;
+    let data = this.clientUuid + "/" + pgNum;
+    this.appSer.fetchArchiveClaims(data,(res:any)=>{
+      if(res.status){
+        this.archiveCl = res?.data[0];
+        this.flitertedArchiveItems = res?.data[0].data;
+        this.totalArchivePages = res?.data[0].totalPages;
+        this.pagnationPages();
+        this.loader.showLoader=false;
+      }
+      else{
+        this.loader.showLoader=false;
+        //ERROR
+      }
+    })
+  }
+
+  getArchiveClaimsCount(){
+    this.appSer.fetchArchiveClaimsCount((res:any)=>{
+      this.archiveClaimsCount = res.data;
+    });
+  }
+
+  showArchiveClaims(){
+    this.showIssueClaim=false;
+    this.getArchiveClaims(0);
+  }
+
+  pagnationPages(){
+    this.paginationPages= [...Array(this.totalArchivePages).keys()];
+  }
+
+  selectAllArchieveClaims(isAllSelected: any){
+    if (isAllSelected) {
+      this.filteredItems.forEach((e: any) => {
+        if (!e.archive) {
+          e.archive = true;
+          this.archiveClaimsData.push({'id':e.id, 'archiveStatus': e.archive})
+        }
+      });
+    } else {
+      this.filteredItems.forEach((e: any) => {
+        if (e.archive) {
+          e.archive = false;
+          this.archiveClaimsData = [];
+        }
+      });
+    }
+  }
+
+  switchTab(tab:any){
+    if(tab=='IssueClaims'){
+      this.tabSwitch.IssueClaims=true;
+      this.tabSwitch.ArchiveClaims=false;
+      this.showIssueClaim = true;
+    }
+    else{
+      this.tabSwitch.IssueClaims=false;
+      this.tabSwitch.ArchiveClaims=true;
+      this.showIssueClaim=false;
+      this.showArchiveClaims();
+    }
+  }
+
 }

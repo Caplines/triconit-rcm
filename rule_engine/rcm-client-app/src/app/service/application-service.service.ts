@@ -100,6 +100,14 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['userByTeamId'], callback)
   }
 
+  fetchArchiveClaims(uuid:any, callback: any){
+    this.getData({}, this.httpUrl['fetchArchiveClaims'] + "/" + uuid , callback)
+  }
+  
+  fetchArchiveClaimsCount(callback: any){
+    this.getData({}, this.httpUrl['fetchArchiveClaimsCount'], callback)
+  }
+
   assignOffice(params: any, callback: any) {
     this.postData(params, this.httpUrl['assignOffice'], callback)
   }
@@ -150,6 +158,10 @@ export class ApplicationServiceService extends BaseService {
 
   submitFilesToAssignedClaims(params: any, callback: any) {
     this.postData(params, this.httpUrl['claimAttachment'], callback)
+  }
+
+  saveArchiveClaims(params:any, callback:any){
+    this.postData(params, this.httpUrl['save-archive-claims'],callback)
   }
 
   sortData(data: any, sortBy: any, order: any, sortType: string, teamName?: any) {

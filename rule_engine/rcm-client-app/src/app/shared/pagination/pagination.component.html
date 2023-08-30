@@ -1,0 +1,15 @@
+<nav> 
+    <ul class="pagination justify-content-center">
+        <li #link class="page-item" (click)="prevBtn()">
+            <span aria-hidden="true">&laquo;</span>
+            <span class="sr-only">Previous</span>
+        </li>
+    <ng-container *ngFor="let page of paginationPages; let i = index">
+      <li #link *ngIf="i < 5" class="page-link" value="page" (click)="activeLink($event)">{{page + 1}}</li>
+    </ng-container>  
+        <li  #link class="page-item" (click)="nxtBtn()">
+            <span aria-hidden="true">&raquo;</span>
+            <span class="sr-only">Next</span>
+        </li>
+    </ul>
+</nav>

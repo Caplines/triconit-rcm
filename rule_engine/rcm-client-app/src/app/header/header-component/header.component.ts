@@ -175,6 +175,7 @@ export class HeaderComponent implements OnInit {
       this.cwModel.teams = this.staticUtil.getTeamsFromLS();
       this.cwModel.roles = this.staticUtil.getRolesFromLS();
 
+      this.sortData(this.cwModel.companies,'name','asc','string')
       this.cwModel.roles = this.cwModel.roles.map((roleId: any) => {
         let foundRole = this.roleData.find((role: any) => role.roleId === roleId.substring(5));
         return foundRole ? { roleName: foundRole.roleName, roleId: foundRole.roleId } : null;
@@ -208,6 +209,7 @@ export class HeaderComponent implements OnInit {
     this.loginUserType = event.target.value;
     if (this.loginUserType == 'Normal') {
       this.cwModel.teams = this.appConstants.teamData;
+      this.sortData(this.cwModel.teams,'teamName','asc','string')
       this.btnDisabled = true;
     } else if (this.loginUserType == 'Admin') {
       this.selectedTeam = '';
@@ -355,6 +357,9 @@ export class HeaderComponent implements OnInit {
 
   // Close the dropdown if the user clicks outside of it
 
+  sortData(data: any, sortProp: string, order: any, sortType: string) {
+    this.appSer.sortData(data, sortProp, order, sortType);
+  }
 
 
 }

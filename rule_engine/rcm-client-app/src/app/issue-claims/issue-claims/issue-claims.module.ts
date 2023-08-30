@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import {IssueClaimRoutingModule } from './issue-claims-routing.module';
 import { IssueClaimComponent } from '../issue-claims.component';
 import { FormsModule } from '@angular/forms';
+import {PaginationModule} from '../../shared/pagination/pagination/pagination.module'
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     IssueClaimRoutingModule,
-    FormsModule
+    FormsModule,
+    PaginationModule
   ],
   exports:[IssueClaimComponent]
 })

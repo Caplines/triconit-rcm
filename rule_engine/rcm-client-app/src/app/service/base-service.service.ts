@@ -72,6 +72,9 @@ export class BaseService {
     'claimAttachment': '/api/claim-attachment',
     'final-attachments-data': '/api/final-attachments-data',
     'assign-claim-with-remark': '/api/assign-claim-with-remark',
+    'save-archive-claims': '/api/save-archive-claims',
+    'fetchArchiveClaims': '/api/archiveClaims',
+    'fetchArchiveClaimsCount': '/archive-claim-counts',
 
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',
