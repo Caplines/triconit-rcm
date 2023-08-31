@@ -355,6 +355,7 @@ export class IssueClaimComponent {
   }
 
   getArchiveClaims(pgNum:any){
+    if(this.archiveClaimsCount>0){
     this.loader.showLoader=true;
     let data = this.clientUuid + "/" + pgNum;
     this.appSer.fetchArchiveClaims(data,(res:any)=>{
@@ -362,9 +363,9 @@ export class IssueClaimComponent {
         this.archiveCl = res?.data[0];
         this.filtertedArchiveItems = res?.data[0].data;
         this.filtertedArchiveItems.forEach((e:any)=>{
-          if(e.claimId.includes(this.appConstant.ARCHIVE_PREFIX)){
-             e.claimId = e.claimId.replace(this.appConstant.ARCHIVE_PREFIX,'')
-          }
+          if(e.claimId.includes(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`)){
+            e.claimId = e.claimId.replace(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`,'')
+         }
         })
         this.totalArchivePages = res?.data[0].totalPages;
         this.pagnationPages();
@@ -375,6 +376,7 @@ export class IssueClaimComponent {
         //ERROR
       }
     })
+  }
   }
 
   getArchiveClaimsCount(){
