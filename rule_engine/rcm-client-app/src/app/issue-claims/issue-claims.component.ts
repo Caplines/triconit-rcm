@@ -297,16 +297,26 @@ export class IssueClaimComponent {
   }
 
   downloadPdf(){
-    if(this.showIssueClaim ? this.filteredItems.length!=0 : this.filtertedArchiveItems.length!=0){
+    if(this.tabSwitchValue=='Issue' && this.filteredItems?.length>0){
     let data = {"fileName":this.showIssueClaim ? "Issue_claims" : "Archived_claims","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimsCount: this.archiveClaimsCount,"tabSwitch":this.tabSwitchValue};
     this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
-        console.log(res.body);
         this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Issue_claims.pdf" : "Archived_claims.pdf");
       }else{
         console.log("something went wrong");
       }
     })
+  }else if(this.tabSwitchValue=='Archive' && this.filtertedArchiveItems?.length>0){
+    let data = {"fileName":this.showIssueClaim ? "Issue_claims" : "Archived_claims","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimsCount: this.archiveClaimsCount,"tabSwitch":this.tabSwitchValue};
+    this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
+      if (res.status === 200){
+        this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Issue_claims.pdf" : "Archived_claims.pdf");
+      }else{
+        console.log("something went wrong");
+      }
+    }) 
+  }else{
+    console.log("Data is Empty")
   }
 }
 
