@@ -85,7 +85,9 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 		   @Param("teamId") int teamId,@Param("statusId") int statusId,@Param("systemCom") String systemCom,
 		   @Param("claimId") String claimId);
 	
-	
+	@Query(value = "select comment_assigned_by from rcm_claim_assignment where active =false and current_team_id<>:teamId and claim_id=:claimUuid order by created_date desc limit 1", nativeQuery = true)
+	String findLatestClaimCommentByOtherTeam(@Param("claimUuid") String claimUUid,@Param("teamId") int teamId);
+
 	
 	
 }

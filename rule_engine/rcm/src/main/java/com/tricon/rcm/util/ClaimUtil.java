@@ -45,6 +45,7 @@ public class ClaimUtil {
 			RcmInsuranceType rcmInsuranceType,String timelyLmt,ClaimTypeEnum claimTypeEnum) {
 
 		claims.setOffice(off);
+		claims.setAttachmentCount(0);
 		claims.setClaimStatusType(cType);//;mStatus("NEED TO RELOOK");// see latter
 		
 		if (user!=null) claims.setCreatedBy(user);
@@ -123,6 +124,7 @@ public class ClaimUtil {
 			RcmInsuranceType rcmInsuranceType,String timelyLmt,ClaimTypeEnum claimTypeEnum) {
 
 		claims.setOffice(off);
+		claims.setAttachmentCount(0);
 		claims.setClaimStatusType(cType);//;mStatus("NEED TO RELOOK");// see latter
 		
 		if (user!=null) claims.setCreatedBy(user);

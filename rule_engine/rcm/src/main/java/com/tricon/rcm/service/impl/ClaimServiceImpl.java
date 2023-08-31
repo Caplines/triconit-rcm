@@ -1,5 +1,6 @@
 package com.tricon.rcm.service.impl;
 
+import java.beans.Beans;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -92,6 +93,7 @@ import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
+import com.tricon.rcm.dto.FreshClaimDataViewDto;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.IVFDto;
@@ -254,9 +256,6 @@ public class ClaimServiceImpl {
 	
 	@Value("${data.archiveClaims.totalRecordperPage}")
 	private int totalRecordsperPage;
-	
-	@Autowired
-	RcmIssueClaimsRepo  issueClaimRepo;
 	
 
 
@@ -1069,10 +1068,11 @@ public class ClaimServiceImpl {
 			return null;
 	}
 
-	public List<FreshClaimDataDto> fetchFreshClaimDetails(int teamId, int billingORRebill, String sub,
+	public List<FreshClaimDataViewDto> fetchFreshClaimDetails(int teamId, int billingORRebill, String sub,
 			PartialHeader partialHeader) {
         ///Add more logic
 		List<FreshClaimDataDto> list=null;
+		List<FreshClaimDataViewDto> listView=new ArrayList<>();
 		if (sub.equals("Fresh")) {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) list = rcmClaimRepository.fetchFreshClaimDetailsInd(partialHeader.getCompany().getUuid(), teamId, partialHeader.getJwtUser().getUuid());
  			else list = rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
@@ -1081,17 +1081,37 @@ public class ClaimServiceImpl {
 			     // add Claims Send From Internal Audit Team
 			     
 			 }
+			 
+			 if (teamId != RcmTeamEnum.BILLING.getId() || teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+				 //Need to get Claim remark in of non billing and internal audit
+				 list.forEach(data->{
+					final FreshClaimDataViewDto	dataView = new FreshClaimDataViewDto();
+						BeanUtils.copyProperties(data, dataView);
+						listView.add(dataView);
+				  });
+				 listView.forEach(data->{
+					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+				 });
+			 }
 			
 		}
 		else {
+			boolean otherTeam =false;
 			if (teamId == RcmTeamEnum.BILLING.getId()) {
 			list = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBilling(partialHeader.getCompany().getUuid(), teamId);
 			}else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) { 
 				list = rcmClaimRepository.fetchClaimDetailsWorkedByTeamInternalAudit(partialHeader.getCompany().getUuid(), teamId);
 			
+		    }else {
+		    	otherTeam =true;
 		    }
+			list.forEach(data->{
+				final FreshClaimDataViewDto	dataView = new FreshClaimDataViewDto();
+				BeanUtils.copyProperties(data, dataView);
+				listView.add(dataView);
+				});
 		}
-          return list;
+          return listView;
 	}
 	
 	public List<FreshClaimDataDto> fetchFreshClaimDetailsLead(int teamId, int billingORRebill, String sub,
@@ -3451,20 +3471,21 @@ public class ClaimServiceImpl {
 		RcmUser updatedBy = null;
 		List<Integer> archiveIdTrue = dto.getArchiveClaims().stream().filter(x -> x.isArchiveStatus() == true)
 				.map(ArchiveClaimsPayloadDto::getId).collect(Collectors.toList());
+		List<Integer> archiveIdFalse = dto.getArchiveClaims().stream().filter(x -> x.isArchiveStatus() == false)
+				.map(ArchiveClaimsPayloadDto::getId).collect(Collectors.toList());
+
 		if (!archiveIdTrue.isEmpty()) {
 			updatedBy = userRepo.findByEmail(jwtUser.getUsername());
 			int status = rcmClaimRepository.updateIssueClaimsArchiveStatus(archiveIdTrue, true, updatedBy);
-			if (status > 0) {
-				List<RcmIssueClaims> issueClaimData = issueClaimRepo.findByIdIn(archiveIdTrue);
-				for (RcmIssueClaims c : issueClaimData) {
-					if (!c.getClaimId().startsWith(Constants.ARCHIVE_PREFIX)) {
-						c.setClaimId(Constants.ARCHIVE_PREFIX.concat(c.getClaimId()));
-						issueClaimRepo.save(c);
-					}
-				}
-				msg = (status > 0) ? MessageConstants.RECORDS_UPDATE : null;
-			}
+			msg = (status > 0) ? MessageConstants.RECORDS_UPDATE : null;
 		}
+
+		if (!archiveIdFalse.isEmpty()) {
+			updatedBy = userRepo.findByEmail(jwtUser.getUsername());
+			int status = rcmClaimRepository.updateIssueClaimsArchiveStatus(archiveIdFalse, false, updatedBy);
+			msg = (status > 0) ? MessageConstants.RECORDS_UPDATE : null;
+		}
+
 		return msg;
 	}
 }
