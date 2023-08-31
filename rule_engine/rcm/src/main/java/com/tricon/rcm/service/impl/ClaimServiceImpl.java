@@ -258,6 +258,8 @@ public class ClaimServiceImpl {
 	private int totalRecordsperPage;
 	
 
+	@Autowired
+	RcmIssueClaimsRepo issueClaimRepo;
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -3471,19 +3473,17 @@ public class ClaimServiceImpl {
 		RcmUser updatedBy = null;
 		List<Integer> archiveIdTrue = dto.getArchiveClaims().stream().filter(x -> x.isArchiveStatus() == true)
 				.map(ArchiveClaimsPayloadDto::getId).collect(Collectors.toList());
-		List<Integer> archiveIdFalse = dto.getArchiveClaims().stream().filter(x -> x.isArchiveStatus() == false)
-				.map(ArchiveClaimsPayloadDto::getId).collect(Collectors.toList());
-
 		if (!archiveIdTrue.isEmpty()) {
 			updatedBy = userRepo.findByEmail(jwtUser.getUsername());
 			int status = rcmClaimRepository.updateIssueClaimsArchiveStatus(archiveIdTrue, true, updatedBy);
-			msg = (status > 0) ? MessageConstants.RECORDS_UPDATE : null;
-		}
-
-		if (!archiveIdFalse.isEmpty()) {
-			updatedBy = userRepo.findByEmail(jwtUser.getUsername());
-			int status = rcmClaimRepository.updateIssueClaimsArchiveStatus(archiveIdFalse, false, updatedBy);
-			msg = (status > 0) ? MessageConstants.RECORDS_UPDATE : null;
+			if (status > 0) {
+				List<RcmIssueClaims> issueClaimData = issueClaimRepo.findByIdIn(archiveIdTrue);
+				for (RcmIssueClaims c : issueClaimData) {
+					c.setClaimId(c.getId() + Constants.HYPHEN + Constants.ARCHIVE_PREFIX.concat(c.getClaimId()));
+					issueClaimRepo.save(c);
+				}
+				msg = (status > 0) ? MessageConstants.RECORDS_UPDATE : null;
+			}
 		}
 
 		return msg;

@@ -185,7 +185,7 @@ export class IssueClaimComponent {
           return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
         });
       }) :
-      this.filtertedArchiveItems = this.filtertedArchiveItems.filter((item: any) => {
+      this.filtertedArchiveItems = this.archiveCl?.data?.filter((item: any) => {
         return this.filteredOfficeName.some((checkbox: any) => {
           return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
         });
