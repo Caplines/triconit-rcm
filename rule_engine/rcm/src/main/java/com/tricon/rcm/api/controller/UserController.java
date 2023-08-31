@@ -182,7 +182,7 @@ public class UserController extends BaseHeaderController {
 	}
 	
 	@RequestMapping(value = "/issue-claim-counts", method = RequestMethod.GET)
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> issueClaimCounts(Model model) {
 		int response = 0;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
