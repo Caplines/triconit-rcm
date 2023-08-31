@@ -320,11 +320,14 @@ export class OtherTeamsWorkComponent implements OnInit {
   submitOtherTeams(data:any){
     this.submitBtnConfig['submitType'] = 'oth';
     this.submitBtnConfig['claimUuid'] = data.uuid;
-   if(this.submitBtnConfig['remarks'][data.uuid]){
-     this.errorMessage = '' ;
-     this.showModal=true;
-  } else{
-    data['isInvalid']=true;
-  }
+    if (this.submitBtnConfig['remarks'][data.uuid]) {
+      this.errorMessage = '';
+      this.showModal = true;
+    } else {
+      data['isInvalid'] = true;
+    } 
+    if (this.selectedFiles.length == 0) {
+      this.errorMessage = "No Files are atttached."
+    }
   }
 }
