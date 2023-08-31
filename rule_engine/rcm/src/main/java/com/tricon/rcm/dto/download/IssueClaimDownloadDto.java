@@ -23,4 +23,5 @@ public class IssueClaimDownloadDto {
 	private String fileName;
 	private String clientName;
 	private int issueClaimCounts;
+	private String tabSwitch;
 }

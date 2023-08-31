@@ -105,15 +105,30 @@
     </head>
     <body>
         <form>
-              <h4 style="color: black; margin-bottom:12px;">Upload Errors<span class="number-of-claims">Number of Claims Not Uploaded:<xsl:value-of select="issueClaimCounts"/></span></h4>
+            <xsl:choose>
+                <xsl:when test="tabSwitch='Issue'">
+               <h4 style="color: black; margin-bottom:12px;">Upload Errors<span class="number-of-claims">Number of Claims Not Uploaded:<xsl:value-of select="issueClaimCounts"/></span></h4>
+           </xsl:when>
+           <xsl:otherwise>
+           <h4 style="color: black; margin-bottom:12px;">Upload Errors<span class="number-of-claims">Number of Archived Claims:<xsl:value-of select="issueClaimCounts"/></span></h4>
+           </xsl:otherwise>
+          </xsl:choose>
      <table class="table" vertical-align="top">
          <tr>
              <td class="bgWhite">
                  <table class="inner-table">
-
+                      <xsl:choose>
+                      <xsl:when test="tabSwitch='Issue'">
                      <tr class="bgWhite">
                           <td colspan="7" class="tableHeading">Issue Claims (<xsl:value-of select="clientName"/>)</td>
                      </tr>
+                 </xsl:when>
+                 <xsl:otherwise>
+                    <tr class="bgWhite">
+                          <td colspan="7" class="tableHeading">Archived Claims (<xsl:value-of select="clientName"/>)</td>
+                     </tr>
+                 </xsl:otherwise>
+             </xsl:choose>
                      <tr class="tableView">
                          <td>Office Name</td>
                          <td>Claim ID</td>

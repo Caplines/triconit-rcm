@@ -77,7 +77,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 	@Query(nativeQuery = true, value = ""
 	        +" select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
-			+" claims.dos as dos ,claims.patient_name as patientName,"
+			+" claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
@@ -96,7 +96,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " union "
 			
 			+" select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
-			+" claims.dos as dos ,claims.patient_name as patientName,"
+			+" claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
@@ -117,7 +117,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<FreshClaimDataDto> fetchFreshClaimDetails(@Param("companyId") String companyId, @Param("teamid") int teamid);
 	
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
-			+ " claims.dos as dos ,claims.patient_name as patientName,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "

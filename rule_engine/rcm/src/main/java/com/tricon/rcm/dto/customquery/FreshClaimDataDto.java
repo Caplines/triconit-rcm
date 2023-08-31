@@ -22,5 +22,6 @@ public interface FreshClaimDataDto {
 	float getPrimTotal();
 	float getSecTotal();
 	Float getPrimeSecSubmittedTotal();
+	int getAttachmentCount();
 	
 }
