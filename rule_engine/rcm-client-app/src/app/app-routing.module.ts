@@ -99,6 +99,10 @@ const routes: Routes = [
     path: 'other-teams-work',
     loadChildren: () => import("./other-teams-work/other-teams-work.module").then(m => m.OtherTeamsWorkModule)
   },
+  {
+    path: 'search-claims',
+    loadChildren: () => import("./search-claims/search-claims.module").then(m => m.SearchClaimsModule)
+  },
 
 
   { path: '**', redirectTo: '/login' }
