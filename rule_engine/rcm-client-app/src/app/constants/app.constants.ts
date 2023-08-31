@@ -138,4 +138,5 @@ export class AppConstants {
         {"id":26,"value":"X-ray: Pre-Op"}]
 
 
+    public ARCHIVE_PREFIX: string ="arc_";
 }

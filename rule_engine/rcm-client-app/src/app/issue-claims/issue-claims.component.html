@@ -9,9 +9,11 @@
     <div class="row">
         <div class="col-lg-12 pt-5">
             <h6 class="page-heading">Issue Claims</h6>
-            <div *ngIf="showMessage" id="alert" class="alert alert-success" >
-                {{showMessage}}
+            <ng-container *ngIf="showMessage.msg">
+            <div id="alert" class="alert" [ngClass]="{'alert-success' : showMessage.status == '200', 'alert-danger' : showMessage.status == '400'}">
+                {{showMessage.msg}}
             </div>
+            </ng-container>
             <div class="main-container">
                 <div class="row">
                     <div class="col-md-12 mb-2">
@@ -26,7 +28,7 @@
                                         </label>
                                         <label class="btn btn-light" [ngClass]="{'active':tabSwitch.ArchiveClaims}">
                                             <input class="form-check-input" type="radio" name="options" id="option2"
-                                            (click)="switchTab('Archieve Claim')">Archieved Claims
+                                            (click)="switchTab('Archive Claim')">Archived Claims
                                         </label>
                                     </div>
                                     <h6 style="color: black;">Upload Errors  
@@ -35,10 +37,10 @@
                                          
                                     </h6>
                                     <div>
-                                        <button type="button" class="icon-btn" (click)="saveToPdf('issuetable')" [disabled]="filteredItems.length==0">
+                                        <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="(showIssueClaim ? filteredItems.length==0 : filtertedArchiveItems.length==0)">
                                             <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                                             class="spinner-border text-danger mx-1"></span>
-                                        <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="filteredItems.length==0">
+                                        <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="(showIssueClaim ? filteredItems.length==0 : filtertedArchiveItems.length==0)">
                                             <img src="../../assets/img/xls.png" /></button><span *ngIf="loader.exportCSVLoader"
                                             class="spinner-border text-success mx-1"></span>
                                     </div>
@@ -79,10 +81,10 @@
                                                             </div><span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['officeName']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : flitertedArchiveItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
+                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['officeName']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : flitertedArchiveItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
+                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                         </span>                                                         
                                                         </div>
                                                     </th>
@@ -95,10 +97,10 @@
                                                             Upload Date <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['createdDate']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : flitertedArchiveItems,'createdDate','asc','dateOnly'); isSorted['createdDate'] = false"></a>
+                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'createdDate','asc','dateOnly'); isSorted['createdDate'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['createdDate']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : flitertedArchiveItems,'createdDate','desc','dateOnly');isSorted['createdDate'] = true"></a>
+                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'createdDate','desc','dateOnly');isSorted['createdDate'] = true"></a>
                                                             </span>
                                                         </div>
                                                     </th>
@@ -107,10 +109,10 @@
                                                         Issue due to which Claim could not be Uploaded <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['issue']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : flitertedArchiveItems,'issue','asc','string'); isSorted['issue'] = false"></a>
+                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'issue','asc','string'); isSorted['issue'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['issue']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : flitertedArchiveItems,'issue','desc','string');isSorted['issue'] = true"></a>
+                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'issue','desc','string');isSorted['issue'] = true"></a>
                                                             </span>
                                                         </div>
                                                     </th>
@@ -119,10 +121,10 @@
                                                         Source <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['source']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : flitertedArchiveItems,'source','asc','string'); isSorted['source'] = false"></a>
+                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'source','asc','string'); isSorted['source'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['source']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : flitertedArchiveItems,'source','desc','string');isSorted['source'] = true"></a>
+                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'source','desc','string');isSorted['source'] = true"></a>
                                                             </span>
                                                         </div>
                                                     </th>
@@ -156,7 +158,7 @@
                                                </ng-container>
                                                </tr>
                                                <ng-container *ngIf="!showIssueClaim">
-                                                   <tr *ngFor="let aCl of flitertedArchiveItems;" >
+                                                   <tr *ngFor="let aCl of filtertedArchiveItems;" >
                                                        <td colspan="6">{{aCl.officeName}}</td>
                                                        <td colspan="6">{{aCl.claimId}}</td>
                                                        <td colspan="6">{{aCl.createdDate | date:'MMM dd, YYYY HH:mm:ss'}}</td>
@@ -171,7 +173,7 @@
     </div>
     </div>
     
-      <pagination *ngIf="!showIssueClaim && totalArchivePages!=1" [paginationPages]="paginationPages" (emitToParent)="receiveChildEvent($event)"></pagination> 
+      <pagination *ngIf="!showIssueClaim && totalArchivePages > 1" [paginationPages]="paginationPages" (emitToParent)="receiveChildEvent($event)"></pagination> 
     <div class="text-center" *ngIf="showIssueClaim"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button" class="btn btn-success file-button" [disabled]="archiveClaimsData.length==0" (click)="archiveClaims()"><span *ngIf="loader.showLoader" class="spinner-grow spinner-grow-sm" role="status"
         aria-hidden="true"></span>Submit</button></div>
     </div>
