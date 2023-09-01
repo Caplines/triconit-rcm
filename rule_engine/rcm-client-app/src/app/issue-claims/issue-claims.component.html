@@ -37,10 +37,10 @@
                                          
                                     </h6>
                                     <div>
-                                        <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="(showIssueClaim ? filteredItems.length==0 : filtertedArchiveItems?.length==0)">
+                                        <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="(showIssueClaim ? filteredItems.length==0 : archiveClaimsCount==0)">
                                             <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                                             class="spinner-border text-danger mx-1"></span>
-                                        <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="(showIssueClaim ? filteredItems.length==0 : filtertedArchiveItems?.length==0)">
+                                        <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="(showIssueClaim ? filteredItems.length==0 : archiveClaimsCount==0)">
                                             <img src="../../assets/img/xls.png" /></button><span *ngIf="loader.exportCSVLoader"
                                             class="spinner-border text-success mx-1"></span>
                                     </div>
