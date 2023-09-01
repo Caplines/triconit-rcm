@@ -205,8 +205,8 @@ public class AttachmentServiceImpl {
 							File replaceFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
 									.concat(File.separator).concat(reName));
 							existingFile.renameTo(replaceFile);
-							if(claims!=null) {
 							claims = claimRepo.findByClaimUuid(d.getClaimUuid());
+							if(claims!=null) {
 							claims.setAttachmentCount(claims.getAttachmentCount()==0?0:claims.getAttachmentCount()-1);
 							claimRepo.save(claims);}else logger.error("Claim Does't Exist");
 							response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
