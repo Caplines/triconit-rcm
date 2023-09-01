@@ -31,7 +31,7 @@
                                        <span class="fileEllipsis"  title="{{ file.file.name }}">{{ file.file.name }} </span>
                                             <select class="form-control" style="width: 240px; margin-left: 15px;" name="type" disabled>
                                                 <ng-container *ngFor="let item of constant.attachmentType">
-                                                    <option *ngIf="item.id == file.attachmentId" [value]="file.attachmentId">{{item.value}}</option>
+                                                    <option *ngIf="item.id == file.attachmentId" [value]="file.id">{{item.value}}</option>
                                                 </ng-container>
                                             </select>
                                     </span>

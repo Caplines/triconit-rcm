@@ -108,7 +108,7 @@ export class AttachFileComponent {
   if (index !== -1) {
     this.attachedFiles.splice(index, 1);
     this.inputConfig.attachmentCount = this.attachedFiles.length;
-    this.removeClaimAttachmentId.push(file.attachmentId);
+    this.removeClaimAttachmentId.push(file.id);
     let params:any= {
       "claimAttachmentId":this.removeClaimAttachmentId,
       "claimUuid":this.inputConfig.claimUuid
