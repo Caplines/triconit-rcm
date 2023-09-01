@@ -26,14 +26,20 @@ export class OtherTeamsWorkComponent implements OnInit {
   clientName: string = '';
   isFilterValueExist: boolean = false;
   fliterName: string = '';
+
   selectedFilesMap: any= new Map();
   selectedFiles:any=[];
+
   showModal:boolean=false;
   isFilesSubmitted:boolean=false;
   errorMessage:any;
   otherTeams:any=[];
   submitBtnConfig:any={'remarks':[],'otherTeamId':[]};
   currentClaimUuid:any;
+
+  removedFilesMap:any=new Map();
+  removedFiles:any=[];
+  hasAttachmentFilesRemoved:boolean=false;
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -227,16 +233,26 @@ export class OtherTeamsWorkComponent implements OnInit {
   receiveChildEvent(event:any){
     if(event['action'] === 'fileSelected'){
       this.setSelectedFileForComponent(event.claimUuid, event.value);
+    } else if(event['action']==='filesSelectedToRemove'){
+        this.setSelectedFileToRemove(event.claimUuid,event.value)
     }
   }
 
   setSelectedFileForComponent(claimUuid: any, file: File) {
     this.selectedFilesMap.set(claimUuid, file);
   }
+
+  setSelectedFileToRemove(claimUuid: any, fileParam:any){
+    this.removedFilesMap.set(claimUuid,fileParam);
+  }
+
   
   openSubmitConfirmationModal(data: any) {
     this.currentClaimUuid = data.uuid
     this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
+    this.removedFiles = this.getSelectedFilesToRemove(data.uuid);
+    console.log(this.removedFiles);
+    
       this.submitBtnConfig['submitType'] = 'ath';
       this.submitBtnConfig['otherTeamId'][data.uuid]=null;
       if(this.submitBtnConfig['remarks'][data.uuid]){
@@ -245,7 +261,7 @@ export class OtherTeamsWorkComponent implements OnInit {
      } else{
        data['isInvalid']=true;
      }
-      if(!this.selectedFiles){
+      if(!this.selectedFiles || this.selectedFiles?.length==0){
         this.selectedFiles= [];
         this.errorMessage = "No Files Are Attached !";
       }
@@ -254,37 +270,58 @@ export class OtherTeamsWorkComponent implements OnInit {
   getSelectedFileForComponent(claimUuid: any) {
     return this.selectedFilesMap.get(claimUuid);
   }
+  
+  getSelectedFilesToRemove(claimUuid: any) {
+    return this.removedFilesMap.get(claimUuid);
+  }
 
   submitConfirmation(){
-    if(this.submitBtnConfig['submitType'] == 'oth'){
+    if (this.submitBtnConfig['submitType'] == 'oth') {
       this.AssignClaimWithRemark(this.submitBtnConfig['claimUuid']);
-    }else{
-      if(this.submitBtnConfig['remarks'][this.currentClaimUuid]){
-        this.loopThroughData(this.selectedFiles, 0);
-      } else{
+    } else {
+      if (this.submitBtnConfig['remarks'][this.currentClaimUuid]) {
+        if (this.removedFiles?.length>0 || this.removedFiles?.claimAttachmentId) {
+          this.removeAttachmentFile();
+        }
+        if (this.removedFiles?.length==0 || this.hasAttachmentFilesRemoved) {
+          this.loopThroughData(this.selectedFiles, 0);
+        }
+      } else {
         this.errorMessage = "Remarks Are Mandatory !"
       }
     }
   }
 
   loopThroughData(dataArray: any[], currentIndex: number) {
-    if (currentIndex >= dataArray.length) {
-      this.AssignClaimWithRemark(dataArray[0]?.claimUuid ? dataArray[0]?.claimUuid : this.currentClaimUuid);
-      return;
-    }
-    const currentData = dataArray[currentIndex];
-    let formData: any = new FormData();
-    formData.append("claimUuid", currentData?.claimUuid ? currentData.claimUuid : this.currentClaimUuid );
-    formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
-    formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
-    this.appService.submitFilesToAssignedClaims(formData,(res:any)=>{
-      if(res.data.fileResponseStatus){
-        this.loopThroughData(dataArray, currentIndex + 1);
-      }else{
-        this.errorMessage = res.data.msg;
+      if (currentIndex >= dataArray.length) {
+        this.AssignClaimWithRemark(dataArray[0]?.claimUuid ? dataArray[0]?.claimUuid : this.currentClaimUuid);
+        return;
+      }
+      const currentData = dataArray[currentIndex];
+      let formData: any = new FormData();
+      formData.append("claimUuid", currentData?.claimUuid ? currentData.claimUuid : this.currentClaimUuid);
+      formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
+      formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
+      this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
+        if (res.data.fileResponseStatus) {
+          this.loopThroughData(dataArray, currentIndex + 1);
+        } else {
+          this.errorMessage = res.data.msg;
+        }
+      })
+  }
+
+  removeAttachmentFile(){
+    this.appService.removeAttachmentFile(this.removedFiles,(res:any)=>{
+      if(res.status == 200){
+        this.hasAttachmentFilesRemoved = res.data.fileResponseStatus;
+        if(!res.data.fileResponseStatus){
+          this.errorMessage  = res.data.msg;
+        }
+      } else{
+        this.errorMessage  = res.data.message;
       }
     })
-     
   }
 
   AssignClaimWithRemark(claimUuid:any){

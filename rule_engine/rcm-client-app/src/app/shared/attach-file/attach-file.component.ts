@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { AppConstants } from 'src/app/constants/app.constants';
+import { ApplicationServiceService } from 'src/app/service/application-service.service';
 
 @Component({
   selector: 'app-attach-file',
@@ -16,12 +17,37 @@ export class AttachFileComponent {
   @Input() inputConfig:any={};
   @Output() emitToParent:any= new EventEmitter();
   attachmentTypeId:any;
-
+  attachedFiles:any=[];
+  hasAttachmentFileData:boolean=false;
   errorMessage:any;
-  constructor(public constant:AppConstants){}
+
+  removeAttachmentFiles:any=[];
+  removeClaimAttachmentId:any=[];
+
+  constructor(public constant:AppConstants,private appService:ApplicationServiceService){}
 
   openModal() {
     this.showModal = true;
+    if(this.inputConfig.attachmentCount>0 && !this.hasAttachmentFileData && this.removeAttachmentFiles.length==0){
+      this.getAttachmentFile();
+    }
+  }
+
+  getAttachmentFile(){
+    this.appService.getAttachmentFile(this.inputConfig.claimUuid,(res:any)=>{
+      if(res.status==200){
+          console.log(res);
+          this.attachedFiles = res.data;
+          // this.hasAttachmentFileData =  true;
+          // if(this.selectedFiles.length==0){
+          //   this.selectedFiles= res.data;
+          // } else{
+          //   res.data.forEach((ele:any) => {
+          //         this.selectedFiles.push(ele);
+          //   });
+          // }
+      }
+    })
   }
 
   closeModal() {
@@ -54,7 +80,11 @@ export class AttachFileComponent {
     let isEmptyAttachment:Boolean = this.isEmptyAttachmentType();
     if(!fileNameExist && !isEmptyAttachment){
       this.totalFile = this.selectedFiles.length;
-      this.emitToParent.emit({action:'fileSelected',value:this.selectedFiles,claimUuid:claimUuid});
+      this.emitToParent.emit({action:'fileSelected',value:this.selectedFiles,claimUuid:claimUuid,});
+
+      if(this.removeAttachmentFiles){
+        this.emitToParent.emit({action:'filesSelectedToRemove',value:this.removeAttachmentFiles,claimUuid:claimUuid});
+      }
       this.errorMessage='';
       this.closeModal();
     } else{
@@ -70,6 +100,23 @@ export class AttachFileComponent {
   isEmptyAttachmentType(){
      return this.selectedFiles.some((item:any)=>item.attachmentTypeId == '');
  }
+
+ removePreSelectedFile(file:any){
+  let deleteFile = confirm("Are You Sure You Want To Delete ?");
+  if(deleteFile){
+  const index = this.attachedFiles.findIndex((e:any)=>e.file.name == file.file.name);
+  if (index !== -1) {
+    this.attachedFiles.splice(index, 1);
+    this.inputConfig.attachmentCount = this.attachedFiles.length;
+    this.removeClaimAttachmentId.push(file.attachmentId);
+    let params:any= {
+      "claimAttachmentId":this.removeClaimAttachmentId,
+      "claimUuid":this.inputConfig.claimUuid
+    };
+    this.removeAttachmentFiles = params;
+  }
+ }
+}
 
   
 

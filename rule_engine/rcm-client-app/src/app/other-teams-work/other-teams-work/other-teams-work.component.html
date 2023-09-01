@@ -231,7 +231,7 @@
                                                         <td><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
                                                                 style="width: 200px;"></textarea>
                                                         </td>
-                                                        <td> <app-attach-file [inputConfig]="{'claimUuid':det.uuid}" (emitToParent)="receiveChildEvent($event)" ></app-attach-file></td>
+                                                        <td> <app-attach-file [inputConfig]="{'claimUuid':det.uuid,'attachmentCount':det.attachmentCount}" (emitToParent)="receiveChildEvent($event)" ></app-attach-file></td>
                                                         <td><button type="button" class="btn btn-primary" (click)="openSubmitConfirmationModal(det)"> 
                                                                 Submit</button></td>
                                                         <td>

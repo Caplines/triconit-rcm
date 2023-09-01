@@ -409,6 +409,14 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['googleSheetLink'], callback);
   }
 
+  getAttachmentFile(uuid:any,callback: any) {
+    this.getData({}, this.httpUrl['get-attachments']+"/"+uuid, callback);
+  }
+
+  removeAttachmentFile(params:any,callback: any) {
+    this.postData(params, this.httpUrl['remove-claim-attachment'], callback);
+  }
+
   updateIvId(params: any, callback: any) {
     this.postData(params, this.httpUrl['updateIv'], callback)
   }

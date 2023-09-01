@@ -75,6 +75,8 @@ export class BaseService {
     'save-archive-claims': '/api/save-archive-claims',
     'fetchArchiveClaims': '/api/archiveClaims',
     'fetchArchiveClaimsCount': '/archive-claim-counts',
+    'get-attachments': '/api/get-attachments',
+    'remove-claim-attachment': '/api/remove-claim-attachment',
 
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',
