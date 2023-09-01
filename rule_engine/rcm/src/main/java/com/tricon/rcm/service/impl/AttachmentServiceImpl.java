@@ -146,7 +146,7 @@ public class AttachmentServiceImpl {
 		if (!data.isEmpty()) {
 			for (RcmClaimAttachmentDto d : data) {
 				ClaimAttachmentsResponseDto.File inner=new ClaimAttachmentsResponseDto().new File();
-				inner.setName(d.getFileName().split(Constants.HYPHEN,2)[1]);
+				inner.setName((d.getFileName()==null ||d.getFileName().isEmpty())?"":d.getFileName().split(Constants.HYPHEN,2)[1]);
 				attachmentDto = ClaimAttachmentsResponseDto.builder().id(d.getId())
 						.file(inner).attachmentId(d.getAttachmentId())
 						.isDeleted(d.getIsDeleted()).build();
@@ -169,16 +169,22 @@ public class AttachmentServiceImpl {
 				dto.getClaimUuid());
 		if (!data.isEmpty()) {
 			for (RcmClaimAttachmentDto d : data) {
+				String checkEmptyFileName=d.getFileName();
+				if(checkEmptyFileName==null ||checkEmptyFileName.isEmpty()) {
+					response = FileResponseDto.builder().msg("Empty FileName").fileResponseStatus(false)
+							.build();
+					return response;
+				}
 				existingFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
-						.concat(File.separator).concat(d.getFileName()));
+						.concat(File.separator).concat(checkEmptyFileName));
 				if (existingFile.exists()) {
-					renameFileName = Constants.REMOVE_ATTACHMENT_PREFIX.concat(d.getFileName());
+					renameFileName = Constants.REMOVE_ATTACHMENT_PREFIX.concat(checkEmptyFileName);
 					renameFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
 							.concat(File.separator).concat(renameFileName));
 					loginUser = userRepo.findByEmail(jwtUser.getUsername());
 					// find existing rename(remove) file from db
 
-					RcmClaimAttachmentDto renameFileData = attachmentRepo.findRenameFile(d.getFileName(),
+					RcmClaimAttachmentDto renameFileData = attachmentRepo.findRenameFile(checkEmptyFileName,
 							d.getClaimUuid());
 					if (renameFileData == null) {
 						status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), renameFileName);
