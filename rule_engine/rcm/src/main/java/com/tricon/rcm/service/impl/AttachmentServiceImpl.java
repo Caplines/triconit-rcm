@@ -145,8 +145,10 @@ public class AttachmentServiceImpl {
 		List<RcmClaimAttachmentDto> data = attachmentRepo.findByAttachmentId(claimUuid);
 		if (!data.isEmpty()) {
 			for (RcmClaimAttachmentDto d : data) {
+				ClaimAttachmentsResponseDto.File inner=new ClaimAttachmentsResponseDto().new File();
+				inner.setName(d.getFileName().split(Constants.HYPHEN,2)[1]);
 				attachmentDto = ClaimAttachmentsResponseDto.builder().id(d.getId())
-						.fileName(d.getFileName().split(Constants.HYPHEN,2)[1]).attachmentId(d.getAttachmentId())
+						.file(inner).attachmentId(d.getAttachmentId())
 						.isDeleted(d.getIsDeleted()).build();
 				responseData.add(attachmentDto);
 			}
