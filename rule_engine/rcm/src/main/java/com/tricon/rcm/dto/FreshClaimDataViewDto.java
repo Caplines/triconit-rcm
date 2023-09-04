@@ -12,13 +12,13 @@ public class FreshClaimDataViewDto {
 	String OfficeName;
 	String uuid;
 	String claimId;
-	String opatientId;
+	String patientId;
 	Date dos;
 	String patientName;
 	String statusType;
 	String primaryInsurance;
 	String secondaryInsurance;
-	String pPrName;
+	String prName;
 	String secName;
 	String lastTeam;
 	int claimAge;
