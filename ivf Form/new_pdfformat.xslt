@@ -220,7 +220,7 @@
                 <td><xsl:value-of select="basicInfo7"/></td>
                 <td>Provider Network</td>
                 <xsl:choose>
-                     <xsl:when test="policy3 = 'Out' ">
+                     <xsl:when test="translate(policy3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'out'">
                      <td class="red blackClr"><xsl:value-of select="policy3"/></td>
                      </xsl:when>
                      <xsl:otherwise>
@@ -248,7 +248,14 @@
                      </xsl:otherwise>
                 </xsl:choose>   
                 <td>Pt Assigned To Office</td>
-                <td class="red blackClr"><xsl:value-of select="yesNoAssignToffice"/></td>
+                 <xsl:choose>
+                     <xsl:when test="yesNoAssignToffice = 'No' ">
+                     <td class="red blackClr"><xsl:value-of select="yesNoAssignToffice"/></td>
+                     </xsl:when>
+                     <xsl:otherwise>
+                     <td class="blackClr"><xsl:value-of select="yesNoAssignToffice"/></td>
+                     </xsl:otherwise>
+                </xsl:choose>   
                 <!-- <td class="borderNone"></td> -->
             </tr>
             <tr class="lightGray">
@@ -323,7 +330,7 @@
                 <td><xsl:value-of select="policy19"/></td>
                 <td>COB Status</td>
                 <xsl:choose>
-                     <xsl:when test="basicInfo3 = 'GEHA' or basicInfo3='FEP' ">
+                     <xsl:when test="translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'geha' or translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='fep' ">
                      <td class="blackClr"><xsl:text>Secondary</xsl:text></td>
                      </xsl:when>
                      <xsl:otherwise>
@@ -380,7 +387,7 @@
         </table>
         <br />
         <br />
-        <xsl:if test="(basicInfo3 = 'GEHA' or basicInfo3='FEP') and basicInfo15='Secondary' ">
+        <xsl:if test="(translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'geha' or translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='fep') and translate(basicInfo15, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='secondary' ">
         <div class="red-clr">
         <strong>Alert-</strong> Patient have BCBS Medical policy as primary &amp; we can directly bill them even if we do not have insurance details.
         </div>
