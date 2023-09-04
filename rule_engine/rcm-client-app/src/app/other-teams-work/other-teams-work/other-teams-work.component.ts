@@ -281,9 +281,9 @@ export class OtherTeamsWorkComponent implements OnInit {
     } else {
       if (this.submitBtnConfig['remarks'][this.currentClaimUuid]) {
         if (this.removedFiles?.length>0 || this.removedFiles?.claimAttachmentId) {
-          this.removeAttachmentFile();
+           this.removeAttachmentFile();
         }
-        if (this.removedFiles?.length==0 || this.hasAttachmentFilesRemoved) {
+        if (this.removedFiles?.length==0) {
           this.loopThroughData(this.selectedFiles, 0);
         }
       } else {
@@ -315,6 +315,7 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.appService.removeAttachmentFile(this.removedFiles,(res:any)=>{
       if(res.status == 200){
         this.hasAttachmentFilesRemoved = res.data.fileResponseStatus;
+        this.loopThroughData(this.selectedFiles, 0);
         if(!res.data.fileResponseStatus){
           this.errorMessage  = res.data.msg;
         }
@@ -355,6 +356,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   }
 
   submitOtherTeams(data:any){
+    this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
     this.submitBtnConfig['submitType'] = 'oth';
     this.submitBtnConfig['claimUuid'] = data.uuid;
     if (this.submitBtnConfig['remarks'][data.uuid]) {
@@ -363,7 +365,7 @@ export class OtherTeamsWorkComponent implements OnInit {
     } else {
       data['isInvalid'] = true;
     } 
-    if (this.selectedFiles.length == 0) {
+    if (!this.selectedFiles || this.selectedFiles?.length == 0) {
       this.errorMessage = "No Files are atttached."
     }
   }
