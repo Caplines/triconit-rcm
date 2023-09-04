@@ -283,7 +283,7 @@ export class OtherTeamsWorkComponent implements OnInit {
         if (this.removedFiles?.length>0 || this.removedFiles?.claimAttachmentId) {
            this.removeAttachmentFile();
         }
-        if (this.removedFiles?.length==0) {
+        if (this.removedFiles?.length==0 || !this.removedFiles) {
           this.loopThroughData(this.selectedFiles, 0);
         }
       } else {
