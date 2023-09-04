@@ -1075,22 +1075,39 @@ public class ClaimServiceImpl {
         ///Add more logic
 		List<FreshClaimDataDto> list=null;
 		List<FreshClaimDataViewDto> listView=new ArrayList<>();
+		
+		
 		if (sub.equals("Fresh")) {
-			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) list = rcmClaimRepository.fetchFreshClaimDetailsInd(partialHeader.getCompany().getUuid(), teamId, partialHeader.getJwtUser().getUuid());
- 			else list = rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId())  {
+					list = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamInd(partialHeader.getCompany().getUuid(), teamId,partialHeader.getJwtUser().getUuid());
+				}else {
+					list = rcmClaimRepository.fetchFreshClaimDetailsInd(partialHeader.getCompany().getUuid(), teamId, partialHeader.getJwtUser().getUuid());
+						
+				}
+			}
+ 			else {
+ 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+ 					list = rcmClaimRepository.fetchFreshClaimDetailsOtherTeam(partialHeader.getCompany().getUuid(), teamId);	
+ 				}else {
+ 					list = rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), teamId);
+ 	 					
+ 				}
+ 			}
 			 if (teamId == RcmTeamEnum.BILLING.getId()){
 			     if (list==null) list= new ArrayList<>();
 			     // add Claims Send From Internal Audit Team
 			     
 			 }
 			 
-			 if (teamId != RcmTeamEnum.BILLING.getId() || teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
-				 //Need to get Claim remark in of non billing and internal audit
-				 list.forEach(data->{
+			 list.forEach(data->{
 					final FreshClaimDataViewDto	dataView = new FreshClaimDataViewDto();
 						BeanUtils.copyProperties(data, dataView);
 						listView.add(dataView);
-				  });
+			});
+			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+				 //Need to get Claim remark in of non billing and internal audit
+				
 				 listView.forEach(data->{
 					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
 				 });
@@ -2769,13 +2786,28 @@ public class ClaimServiceImpl {
 		}
 		
 		dto.setRemark(dto.getRemark().trim());
-		RcmClaimAssignment assign = rcmClaimAssignmentRepo
-				.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
-		// claim.getC
-		if (assign == null) {
-			message= "Not assigned to user:" + partialHeader.getJwtUser().getEmail();
-			return message;
+		RcmClaimAssignment assign =null;
+		if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+			 assign = rcmClaimAssignmentRepo
+					.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
+			// claim.getC
+			if (assign == null) {
+				message= "Not assigned to user:" + partialHeader.getJwtUser().getEmail();
+				return message;
 			}
+		}
+		
+		if (partialHeader.getRole().equals(Constants.TEAMLEAD)) {
+			 assign = rcmClaimAssignmentRepo
+					.findByCurrentTeamIdAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getTeamId(), claim.getClaimUuid(), true);
+			// claim.getC
+			if (assign == null) {
+				message= "Not assigned to TEAM:" + partialHeader.getJwtUser().getTeamId();
+				return message;
+			}
+		}
+		
+		
 		//boolean notesSaved=false;
 		RcmOffice office =officeRepo.findByUuid(claim.getOffice().getUuid());
 		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());

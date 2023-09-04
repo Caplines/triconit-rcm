@@ -195,9 +195,28 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id<>:teamid and off.company_id=:companyId " + " and pending=true ")
+			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId " + " and pending=true ")
 	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeam(@Param("companyId") String companyId,
 			@Param("teamid") int teamid);
+	
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName, "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal " + " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId and rca.assigned_to=:userId and pending=true ")
+	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeamInd(@Param("companyId") String companyId,
+			@Param("teamid") int teamid,@Param("userId") String userId);
 
 	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
 			+ " count(Case When claim_status_type_id in :status and pending is true and cl.current_team_id=:teamId and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "

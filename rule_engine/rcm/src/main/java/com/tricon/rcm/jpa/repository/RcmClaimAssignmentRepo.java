@@ -28,6 +28,8 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	
 	RcmClaimAssignment findByAssignedToUuidAndClaimsClaimUuidAndActive(String assignTo,String claimUUid,boolean active);
 	
+	RcmClaimAssignment findByCurrentTeamIdAndClaimsClaimUuidAndActive(int teamId,String claimUUid,boolean active);
+	
 	RcmClaimAssignment findByClaimsClaimUuidAndActive(String claimUUid,boolean active);
 	
 	@Query(value = "select id from rcm_claim_assignment where active =true and claim_id=:claimUuid order by created_date asc", nativeQuery = true)
