@@ -50,6 +50,7 @@ import com.tricon.rcm.db.entity.RcmRules;
 import com.tricon.rcm.db.entity.RcmTPDetail;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.db.entity.RcmUserCompany;
 import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.AllPendencyReportDto;
@@ -148,6 +149,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimNoteTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmRuleRepo;
 import com.tricon.rcm.jpa.repository.RcmTPDetailRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
+import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.ClaimUtil;
@@ -168,6 +170,9 @@ public class ClaimServiceImpl {
 
 	@Autowired
 	RcmCompanyRepo rcmCompanyRepo;
+	
+	@Autowired
+	RcmUserCompanyRepo rcmUserCompanyRepo;
 
 	@Autowired
 	RCMUserRepository userRepo;
@@ -1174,13 +1179,14 @@ public class ClaimServiceImpl {
 
 		}
 		List<AssignFreshClaimLogsDto> l = null;
+		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
 		try {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUser(ct, 
+				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUser(companies,ct, 
 						instDB,partialHeader.getTeamId(),partialHeader.getJwtUser().getUuid());
 				
 			}else {
-				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam( ct, instDB,partialHeader.getTeamId());
+				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam(companies, ct, instDB,partialHeader.getTeamId());
 					
 			}
 			
@@ -3522,5 +3528,11 @@ public class ClaimServiceImpl {
 		}
 
 		return msg;
+	}
+	
+	public List<String> findAssociatedCompanyIdByUserUuid(PartialHeader partialHeader) {
+		
+		return rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(partialHeader.getJwtUser().getUuid());
+		
 	}
 }

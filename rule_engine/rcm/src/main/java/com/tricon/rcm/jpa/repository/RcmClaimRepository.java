@@ -228,9 +228,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  inner join company cmp on cmp.uuid=off.company_id  "
 			+ "  inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where  off.active is true  group by off.uuid order by off.name asc ")
+			+ "  where  off.company_id in (:companyIds) and off.active is true  group by off.uuid order by off.name asc ")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUser(
-			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst,@Param("teamId") int teamId,@Param("userId") String userId);
+			@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst,@Param("teamId") int teamId,@Param("userId") String userId);
 	
 	@Query(nativeQuery = true, value = " SELECT  cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"
 			+ " count(Case When claim_status_type_id in :status and pending is true and cl.current_team_id=:teamId and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
@@ -242,8 +242,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where  off.active is true  group by off.uuid order by off.name asc ")
-	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeam(@Param("status") List<Integer> status,
+			+ "  where off.company_id in (:companyIds) and off.active is true  group by off.uuid order by off.name asc ")
+	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeam(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 	
 	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
