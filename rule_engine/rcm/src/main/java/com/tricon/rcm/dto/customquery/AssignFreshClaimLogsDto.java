@@ -32,4 +32,6 @@ public interface AssignFreshClaimLogsDto {
 	
 	int getAssignTeamId();
 	
+	String getCompanyName();
+	
 }

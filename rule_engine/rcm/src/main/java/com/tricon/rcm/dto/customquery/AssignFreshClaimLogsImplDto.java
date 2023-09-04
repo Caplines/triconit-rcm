@@ -35,6 +35,6 @@ public class AssignFreshClaimLogsImplDto implements AssignFreshClaimLogsDto{
     int assignTeamId;
 	
 
-
+    String companyName;
 
 }

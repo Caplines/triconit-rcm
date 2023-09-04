@@ -1176,13 +1176,15 @@ public class ClaimServiceImpl {
 		List<AssignFreshClaimLogsDto> l = null;
 		try {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUser(partialHeader.getCompany().getUuid(), ct, 
+				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUser(ct, 
 						instDB,partialHeader.getTeamId(),partialHeader.getJwtUser().getUuid());
 				
 			}else {
-				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam(partialHeader.getCompany().getUuid(), ct, instDB,partialHeader.getTeamId());
+				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam( ct, instDB,partialHeader.getTeamId());
 					
 			}
+			
+			
 			HashMap<String, RemoteLietStatusCount> remoteLiteMap = ruleEngineService.pullAndSaveRemoteLiteData();
 			RemoteLietStatusCount counts = null;
 
@@ -1195,6 +1197,7 @@ public class ClaimServiceImpl {
 					dF.setCount(logD.getCount());
 					dF.setFName(logD.getFName());
 					dF.setLName(logD.getLName());
+					dF.setCompanyName(logD.getCompanyName());
 					dF.setOfficeUuid(logD.getOfficeUuid());
 //					if (logD.getOpdos()!=null) {
 //						//2022-10-12
@@ -2799,7 +2802,7 @@ public class ClaimServiceImpl {
 		
 		if (partialHeader.getRole().equals(Constants.TEAMLEAD)) {
 			 assign = rcmClaimAssignmentRepo
-					.findByCurrentTeamIdAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getTeamId(), claim.getClaimUuid(), true);
+					.findByCurrentTeamIdIdAndClaimsClaimUuidAndActive(partialHeader.getTeamId(), claim.getClaimUuid(), true);
 			// claim.getC
 			if (assign == null) {
 				message= "Not assigned to TEAM:" + partialHeader.getJwtUser().getTeamId();

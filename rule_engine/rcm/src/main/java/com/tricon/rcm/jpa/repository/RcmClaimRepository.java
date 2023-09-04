@@ -218,31 +218,33 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeamInd(@Param("companyId") String companyId,
 			@Param("teamid") int teamid,@Param("userId") String userId);
 
-	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
+	@Query(nativeQuery = true, value = " SELECT cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"
 			+ " count(Case When claim_status_type_id in :status and pending is true and cl.current_team_id=:teamId and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
 			+ " min(Case When claim_status_type_id in :status and pending=true and cl.current_team_id=:teamId  and cl.rcm_insurance_type in :inst Then  DATEDIFF(NOW(), cl.created_date) End)   as 'opdt',"
 			+ " min(Case When claim_status_type_id in :status and pending=true and cl.current_team_id=:teamId  and cl.rcm_insurance_type in :inst Then  DATEDIFF(NOW(), cl.dos) End) as 'opdos',0 as remoteLiteRejections, "
 			+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName,assig.team_id as assignTeamId " + " FROM "
 			+ "  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
+			+ "  inner join company cmp on cmp.uuid=off.company_id  "
 			+ "  inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where off.company_id=:companyId and off.active is true  group by off.uuid order by off.name asc ")
-	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUser(@Param("companyId") String companyId,
+			+ "  where  off.active is true  group by off.uuid order by off.name asc ")
+	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUser(
 			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst,@Param("teamId") int teamId,@Param("userId") String userId);
 	
-	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
+	@Query(nativeQuery = true, value = " SELECT  cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"
 			+ " count(Case When claim_status_type_id in :status and pending is true and cl.current_team_id=:teamId and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
 			+ " min(Case When claim_status_type_id in :status and pending=true and cl.current_team_id=:teamId  and cl.rcm_insurance_type in :inst Then  DATEDIFF(NOW(), cl.created_date) End)   as 'opdt',"
 			+ " min(Case When claim_status_type_id in :status and pending=true and cl.current_team_id=:teamId  and cl.rcm_insurance_type in :inst Then  DATEDIFF(NOW(), cl.dos) End) as 'opdos',0 as remoteLiteRejections, "
 			+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName,assig.team_id as assignTeamId " + " FROM "
 			+ "  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
+			+ "  inner join company cmp on cmp.uuid=off.company_id  "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where off.company_id=:companyId and off.active is true  group by off.uuid order by off.name asc ")
-	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeam(@Param("companyId") String companyId,
-			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
+			+ "  where  off.active is true  group by off.uuid order by off.name asc ")
+	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeam(@Param("status") List<Integer> status,
+			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 	
 	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
 			+ " count(Case When claim_status_type_id in :status and pending is true and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "

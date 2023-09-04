@@ -28,7 +28,7 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	
 	RcmClaimAssignment findByAssignedToUuidAndClaimsClaimUuidAndActive(String assignTo,String claimUUid,boolean active);
 	
-	RcmClaimAssignment findByCurrentTeamIdAndClaimsClaimUuidAndActive(int teamId,String claimUUid,boolean active);
+	RcmClaimAssignment findByCurrentTeamIdIdAndClaimsClaimUuidAndActive(int teamId,String claimUUid,boolean active);
 	
 	RcmClaimAssignment findByClaimsClaimUuidAndActive(String claimUUid,boolean active);
 	
