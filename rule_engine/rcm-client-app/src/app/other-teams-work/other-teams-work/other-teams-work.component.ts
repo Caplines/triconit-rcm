@@ -276,7 +276,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   }
 
   submitConfirmation(){
-    if (this.submitBtnConfig['submitType'] == 'oth') {
+    if (this.submitBtnConfig['submitType'] == 'oth' && this.selectedFiles.length==0) {
       this.AssignClaimWithRemark(this.submitBtnConfig['claimUuid']);
     } else {
       if (this.submitBtnConfig['remarks'][this.currentClaimUuid]) {
@@ -359,6 +359,7 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
     this.submitBtnConfig['submitType'] = 'oth';
     this.submitBtnConfig['claimUuid'] = data.uuid;
+    this.currentClaimUuid = data.uuid;
     if (this.submitBtnConfig['remarks'][data.uuid]) {
       this.errorMessage = '';
       this.showModal = true;
@@ -366,6 +367,7 @@ export class OtherTeamsWorkComponent implements OnInit {
       data['isInvalid'] = true;
     } 
     if (!this.selectedFiles || this.selectedFiles?.length == 0) {
+      this.selectedFiles=[];
       this.errorMessage = "No Files are atttached."
     }
   }
