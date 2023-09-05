@@ -1103,7 +1103,10 @@ export class BillingClaimsComponent {
   }
 
   submitAttachment(){
-      const removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
+      let removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
+      if(removedFiles.length==0){
+          removedFiles = '';
+      }
       const selectedFiles = this.getSelectedFileForComponent(this.claimUUid);
 
       if(removedFiles){
