@@ -117,6 +117,7 @@ import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimRuleRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimRuleValidationDto;
+import com.tricon.rcm.dto.customquery.CompanyIdAndNameDto;
 import com.tricon.rcm.dto.customquery.DataPatientRuleDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
@@ -3229,13 +3230,23 @@ public class ClaimServiceImpl {
 		return dto;
 	}
 
-	public AllPendencyReportDto getAllPendencyReport(RcmCompany company,int teamId,
+	public AllPendencyReportDto getAllPendencyReport(String companyUuid,int teamId,
 			PartialHeader partialHeader) {
 		
 		AllPendencyReportDto dto= new AllPendencyReportDto();
 		List<AllPendencyDto> count= null;
 		List<AllPendencyDateDto> date = null;
+		RcmCompany company=rcmCompanyRepo.findByUuid(companyUuid);
 		
+		if (company== null) {
+			return null;
+		}
+		
+		RcmUserCompany rcmUserCompany= rcmUserCompanyRepo.findByCompanyUuidAndUserUuid(companyUuid,partialHeader.getJwtUser().getUuid());
+		
+		if (rcmUserCompany== null) {
+			return null;
+		}
 		if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
             count =rcmClaimRepository.allPendencyCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid());
 			date =rcmClaimRepository.allPendencyDateCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid());
@@ -3535,4 +3546,12 @@ public class ClaimServiceImpl {
 		return rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(partialHeader.getJwtUser().getUuid());
 		
 	}
+	
+    public List<CompanyIdAndNameDto> findAssociatedCompanyWithNameByUserUuid(PartialHeader partialHeader) {
+		
+		return rcmUserCompanyRepo.findAssociatedCompanyIdWithNameByUserUuid(partialHeader.getJwtUser().getUuid());
+		
+	}
+	
+	
 }

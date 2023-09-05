@@ -46,6 +46,7 @@ import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimRuleRemarksDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
+import com.tricon.rcm.dto.customquery.CompanyIdAndNameDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
@@ -481,16 +482,16 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	@ApiOperation(value = "Api For Fetching pendency Report Data (All Billing Pendency Dashboard)", response = AllPendencyReportDto.class, responseContainer = "List")
-	@GetMapping("/api/allpendency")
+	@GetMapping("/api/allpendency/{companyUuid}")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ASSO')")
-	public ResponseEntity<Object> fetchAllPencyData(Model model) {
+	public ResponseEntity<Object> fetchAllPendencyData(@PathVariable("companyUuid") String companyUuid,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader==null) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
 				
 		return ResponseEntity
-				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.getAllPendencyReport(partialHeader.getCompany(),partialHeader.getTeamId(),partialHeader)));
+				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.getAllPendencyReport(companyUuid,partialHeader.getTeamId(),partialHeader)));
 	}
 	
 
@@ -623,12 +624,12 @@ public class RcmController extends BaseHeaderController{
 	@GetMapping("api/alluserclients")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
 	public ResponseEntity<Object> getAllclients(Model model) {
-		List<String> response = null;
+		List<CompanyIdAndNameDto> response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return null;
 		try {
-			response = claimServiceImpl.findAssociatedCompanyIdByUserUuid(partialHeader);
+			response = claimServiceImpl.findAssociatedCompanyWithNameByUserUuid(partialHeader);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
