@@ -122,6 +122,7 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
         this.colorChange();
+        this.showPendingSince();
       }
       // else {
       //   this.loader.listClaimLoader = false;
@@ -820,6 +821,18 @@ export class ListOfClaimsComponent implements OnInit {
        }
        else
        e.colorChange = false;
+      }
+    });
+  }
+
+  showPendingSince(){
+    this.filteredItems.forEach((e:any) => {
+      if(e.dos){
+           let dos:any = new Date(e.dos);
+           let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
+           const diffTime = Math.abs(currentDate - dos);
+           let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+           e.pendingSince = diffDays < 2 ? `${diffDays} day` :  `${diffDays} days`
       }
     });
   }

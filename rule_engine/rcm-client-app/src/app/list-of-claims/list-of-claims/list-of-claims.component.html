@@ -106,6 +106,18 @@
                                                         </span>
                                                     </div>
                                                 </th>
+                                                <th class="width-90">
+                                                    <div class="dFlex">
+                                                        Claim ID<span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['claimId']}"
+                                                                (click)="sortData(filteredItems,'claimId','asc','string'); isSorted['claimId'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['claimId']}"
+                                                                (click)="sortData(filteredItems,'claimId','desc','string');isSorted['claimId'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
                                                 <th class="width-115">
                                                     <div class="dFlex">
                                                         Patient Name<span class="sorting">
@@ -149,6 +161,18 @@
                                                           <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['officeName']}" (click)="isSorted['officeName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['officeName']}" (click)="isSorted['officeName'] = true"></a>
                                                         </span> -->
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Pending Since Date<span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['pendingSince']}"
+                                                                (click)="sortData(filteredItems,'pendingSince','asc','string'); isSorted['pendingSince'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['pendingSince']}"
+                                                                (click)="sortData(filteredItems,'pendingSince','desc','string');isSorted['pendingSince'] = true"></a>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th>
@@ -378,7 +402,7 @@
                                         </thead>
                                         <tbody>
                                             <tr *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
-                                                <td colspan="13" style="min-height:200px;">
+                                                <td colspan="15" style="min-height:200px;">
                                                     <div class="text-center mt-2">
                                                         <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
                                                     </div>
@@ -401,11 +425,13 @@
                                                         <td class="alignRight"><a
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
+                                                        <td class="noWrape">{{det.claimId}}</td>
                                                         <td><a [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
                                                         <td class="alignRight" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
+                                                        <td class="noWrape">{{det.pendingSince}}</td>
                                                         <!-- Claim Type START-->
                                                         <td *ngIf="det.claimId | claimTypeFilter">Primary</td>
                                                         <td *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>

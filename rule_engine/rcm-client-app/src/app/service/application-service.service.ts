@@ -172,7 +172,7 @@ export class ApplicationServiceService extends BaseService {
         } else if (b[sortBy] === null || b[sortBy] === "null") {
           return -1;
         } else {
-          return a[sortBy].localeCompare(b[sortBy]);
+          return a[sortBy].localeCompare(b[sortBy],undefined,{numeric: true});
         }
       }) : data.sort((a: any, b: any) => {
         if (a[sortBy] === null || a[sortBy] === "null") {
@@ -180,7 +180,7 @@ export class ApplicationServiceService extends BaseService {
         } else if (b[sortBy] === null || b[sortBy] === "null") {
           return -1;
         } else {
-          return b[sortBy].localeCompare(a[sortBy]);
+          return b[sortBy].localeCompare(a[sortBy],undefined,{numeric: true});
         }
       })
 
