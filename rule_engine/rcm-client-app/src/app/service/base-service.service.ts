@@ -78,7 +78,7 @@ export class BaseService {
     'get-attachments': '/api/get-attachments',
     'remove-claim-attachment': '/api/remove-claim-attachment',
     'get-attachments-count': '/api/get-attachments-count',
-    'download-attachment':'/api/attachment-file',
+    'download-attachment':'/api/download-attachment-file',
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',
     'issueClaimsPdf':'/api/issue-claim/d',

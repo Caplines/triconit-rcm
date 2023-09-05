@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.download.AllPendancyDownloadDto;
+import com.tricon.rcm.dto.download.AttachmentDownloadDto;
 import com.tricon.rcm.dto.download.ClaimDetailsDownloadDto;
 import com.tricon.rcm.dto.download.IssueClaimDownloadDto;
 import com.tricon.rcm.dto.download.IvfDownloadDto;
@@ -233,15 +234,19 @@ public class DownloadController extends BaseHeaderController{
 
 	}
 	
-	@GetMapping(value = "/api/attachment-file/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public ResponseEntity<?> attachmentFile(@PathVariable("id") String id, HttpServletResponse response) {
+	@PostMapping(value = "/api/download-attachment-file", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<?> attachmentFile(@RequestBody AttachmentDownloadDto dto, HttpServletResponse response) {
 		Object[] data = null;
 		FileInputStream input = null;
 		String fileName = null;
 		String fullPath = null;
 		String msg = null;
+		if(dto.getFileId()==null) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
 		try {
-			data = attachmentServiceImpl.getAttachmentFile(id);
+			data = attachmentServiceImpl.getAttachmentFile(dto.getFileId());
 			fullPath = (String) data[0];
 			fileName = (String) data[1];
 			if (fullPath != null && fileName != null) {

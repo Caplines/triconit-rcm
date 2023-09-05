@@ -229,7 +229,7 @@ public class AttachmentServiceImpl {
 		return response;
 	}
 
-	public Object[] getAttachmentFile(String id) throws Exception {
+	public Object[] getAttachmentFile(int id) throws Exception {
 		RcmClaimAttachmentDto data = attachmentRepo.findAttachmentFile(id);
 		String fullPath = null;
 		Object obj[] = new Object[2];

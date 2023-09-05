@@ -45,7 +45,7 @@ public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment
 			+ "from rcm_claim_attachment a "
 			+ "where a.id=:attachmentId and a.is_deleted is false "
 			+ "and a.file_name is not null and a.attachment_type_id is not null", nativeQuery = true)
-	RcmClaimAttachmentDto findAttachmentFile(@Param("attachmentId") String attachmentId);
+	RcmClaimAttachmentDto findAttachmentFile(@Param("attachmentId") int attachmentId);
 	
 	@Query(value = "SELECT a.rename_file as RenameFile "
 			+ "FROM rcm_claim_attachment a "
