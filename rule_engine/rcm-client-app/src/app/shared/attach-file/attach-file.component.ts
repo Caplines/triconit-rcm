@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { AppConstants } from 'src/app/constants/app.constants';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
+import { DownLoadService } from 'src/app/service/download.service';
 
 @Component({
   selector: 'app-attach-file',
@@ -24,7 +25,7 @@ export class AttachFileComponent {
   removeAttachmentFiles:any=[];
   removeClaimAttachmentId:any=[];
 
-  constructor(public constant:AppConstants,private appService:ApplicationServiceService){}
+  constructor(public constant:AppConstants,private appService:ApplicationServiceService,private downloadService:DownLoadService){}
 
   openModal() {
     this.showModal = true;
@@ -116,6 +117,15 @@ export class AttachFileComponent {
     this.removeAttachmentFiles = params;
   }
  }
+}
+
+downloadAttachment(file:any){
+      this.appService.downloadAttachments({'fileId':file.id},(res:any)=>{
+        if(res.status ==200){
+            console.log(res);
+            this.downloadService.saveBolbData(res.body,file.file.name)
+        }
+      })
 }
 
   

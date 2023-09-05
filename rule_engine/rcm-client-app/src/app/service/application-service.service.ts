@@ -408,6 +408,10 @@ export class ApplicationServiceService extends BaseService {
   fetchGSheet(callback: any) {
     this.getData({}, this.httpUrl['googleSheetLink'], callback);
   }
+  
+  fetchAttachmentCount(claimUuid:any,callback: any) {
+    this.getData({}, this.httpUrl['get-attachments-count']+"/"+claimUuid, callback)
+  }
 
   getAttachmentFile(uuid:any,callback: any) {
     this.getData({}, this.httpUrl['get-attachments']+"/"+uuid, callback);
@@ -435,6 +439,9 @@ export class ApplicationServiceService extends BaseService {
   }
   lisOfClaimsPdfDownload(params: any, pdfcsv: string, callback: any) {
     this.postDataPdf(params, this.httpUrl['listOfClaim'] + "/" + pdfcsv, callback);
+  }
+  downloadAttachments(params: any, callback: any) {
+    this.getDataFiles(params, this.httpUrl['download-attachment'], callback);
   }
   allPendancyPdfDownload(params: any, pdfcsv: string, callback: any) {
     this.postDataPdf(params, this.httpUrl['allPendancy'] + "/" + pdfcsv, callback);

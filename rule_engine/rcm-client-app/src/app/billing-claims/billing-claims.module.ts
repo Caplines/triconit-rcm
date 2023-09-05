@@ -8,6 +8,7 @@ import { ApplicationServiceService } from '../service/application-service.servic
 import { ClaimService } from '../service/claim.service';
 import { DownLoadService } from '../service/download.service';
 import { PipesModule } from '../pipe/pipe-module';
+import { AttachFileModule } from '../shared/attach-file/attach-file.module';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { PipesModule } from '../pipe/pipe-module';
     CommonModule,
     BillingClaimsRoutingModule,
     FormsModule,
-    PipesModule
+    PipesModule,
+    AttachFileModule
   ],
   providers:[ApplicationServiceService,ClaimService, DownLoadService],
   exports:[BillingClaimsComponent]

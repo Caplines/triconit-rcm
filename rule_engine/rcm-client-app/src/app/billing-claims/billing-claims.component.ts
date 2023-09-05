@@ -65,6 +65,11 @@ export class BillingClaimsComponent {
   clientName: string = '';
   assignType: string = '';
   modelElement: any = { 'modal': '', 'span': '' }
+  attachmentConfig:any={'showAttachment':false,'attachmentCount':0};
+
+  selectedFilesMap:any= new Map();
+  removedFilesMap:any= new Map();
+
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
     private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService) {
@@ -103,7 +108,7 @@ export class BillingClaimsComponent {
         //ths.runAutoRules(false);
         ths.fetchTLUsers();
         ths.fetchOtherTeams();
-
+        ths.fetchAttachmentCount();
       }
 
     });
@@ -1063,4 +1068,76 @@ export class BillingClaimsComponent {
 
     return temp;
   }
+
+  fetchAttachmentCount(){
+    this.appService.fetchAttachmentCount(this.claimUUid,(res:any)=>{
+          if(res.status == 200 && res.data){
+            this.attachmentConfig['showAttachment'] = true;
+            this.attachmentConfig['attachmentCount'] = res.data;
+          }
+    })
+  }
+
+  receiveChildEvent(event:any){
+    if(event['action'] === 'fileSelected'){
+      this.setSelectedFileForComponent(event.claimUuid, event.value);
+    } else if(event['action']==='filesSelectedToRemove'){
+        this.setSelectedFileToRemove(event.claimUuid,event.value)
+    }
+  }
+
+  setSelectedFileForComponent(claimUuid: any, file: File) {
+    this.selectedFilesMap.set(claimUuid, file);
+  }
+
+  setSelectedFileToRemove(claimUuid: any, fileParam:any){
+    this.removedFilesMap.set(claimUuid,fileParam);
+  }
+
+  getSelectedFileForComponent(claimUuid: any) {
+    return this.selectedFilesMap.get(claimUuid);
+  }
+  
+  getSelectedFilesToRemove(claimUuid: any) {
+    return this.removedFilesMap.get(claimUuid);
+  }
+
+  submitAttachment(){
+      const removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
+      const selectedFiles = this.getSelectedFileForComponent(this.claimUUid);
+
+      if(removedFiles){
+          this.appService.removeAttachmentFile(removedFiles,(res:any)=>{
+                if(res.status == 200 && res.data.fileResponseStatus){
+                    this.finalSubmitAttachment(selectedFiles);
+                } else{
+                  this.showAlertPopup(res);
+                }
+          })
+      } else {
+        this.finalSubmitAttachment(selectedFiles);
+      }
+  }
+
+  finalSubmitAttachment(selectedFile:any[]){
+      this.loopThroughData(selectedFile,0);
+  }
+
+  loopThroughData(dataArray: any[], currentIndex: number) {
+    if (currentIndex >= dataArray.length) {
+      return;
+    }
+    const currentData = dataArray[currentIndex];
+    let formData: any = new FormData();
+    formData.append("claimUuid", currentData?.claimUuid ? currentData.claimUuid : this.claimUUid);
+    formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
+    formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
+    this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
+      if (res.data.fileResponseStatus) {
+        this.loopThroughData(dataArray, currentIndex + 1);
+      } else {
+       this.showAlertPopup(res);
+      }
+    })
+}
 }

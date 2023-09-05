@@ -77,7 +77,8 @@ export class BaseService {
     'fetchArchiveClaimsCount': '/archive-claim-counts',
     'get-attachments': '/api/get-attachments',
     'remove-claim-attachment': '/api/remove-claim-attachment',
-
+    'get-attachments-count': '/api/get-attachments-count',
+    'download-attachment':'/api/attachment-file',
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',
     'issueClaimsPdf':'/api/issue-claim/d',
@@ -183,6 +184,37 @@ export class BaseService {
     },
       (error: any) => {
         console.log(error);
+        if (error.status == 401) {
+          Utils.logout();
+        }
+        if (error.status == 500) {
+          callback(error);
+        }
+      },
+      () => {
+      })
+
+      ;
+
+  }
+
+  getDataFiles(d: any, url: string, callback: any) {
+    let headers = new HttpHeaders();
+    headers = headers.append('Accept', 'application/octet-stream; charset=utf-8');
+    this.generateRefreshToken().pipe(switchMap(data => {
+      Utils.setRefreshToken(data);
+      return this.http.post(environment.API_URL + url, d, {
+        headers: headers,
+        observe: 'response',
+        responseType: 'arraybuffer'
+      });
+    },
+    )
+    ).subscribe((data) => {
+      callback((<any>data));
+    },
+      (error: any) => {
+        console.log(error)
         if (error.status == 401) {
           Utils.logout();
         }

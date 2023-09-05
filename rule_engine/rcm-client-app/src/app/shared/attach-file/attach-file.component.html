@@ -1,11 +1,14 @@
     <button type="button" class="btn btn-primary attached"
-        (click)="openModal()" id="attach{{inputConfig.claimUuid}}">{{totalFile>0 ? totalFile+" Files Attached" :  inputConfig.attachmentCount>0 ?  inputConfig.attachmentCount+" Files Attached" : 'Attach'}}</button>
+        (click)="openModal()" *ngIf="!inputConfig['isDetailPage']" id="attach{{inputConfig.claimUuid}}">{{totalFile>0 ? totalFile+" Files Attached" :  inputConfig.attachmentCount>0 ?  inputConfig.attachmentCount+" Files Attached" : 'Attach'}}</button>
+
+    <button type="button" class="btn btn-primary btn-sm px-2"
+        (click)="openModal()"  *ngIf="inputConfig['isDetailPage']" id="attach{{inputConfig.claimUuid}}">View Attachments</button>
     <div class="modal attachModal" id="{{inputConfig.claimUuid}}" *ngIf="showModal">
         <div class="modal-content rounded-0"
             [ngClass]="{'opacityLow':loader}">
             <span class="close"
                 (click)="closeModal()">&times;</span>
-            <h5>Upload Attachment <small *ngIf="errorMessage" class="text-danger">({{errorMessage}})</small></h5>
+            <h5>{{inputConfig['isDetailPage'] ? 'Upload/View':'Upload'}} Attachment <small *ngIf="errorMessage" class="text-danger">({{errorMessage}})</small></h5>
             <div class="form">
                 <div class="wrapper">
                     <div class="container">
@@ -34,6 +37,9 @@
                                                     <option *ngIf="item.id == file.attachmentId" [value]="file.id">{{item.value}}</option>
                                                 </ng-container>
                                             </select>
+                                            <ng-container *ngIf="inputConfig['isDetailPage']">
+                                                <a href="javascript:void(0);" (click)="downloadAttachment(file)">Preview Attachment</a>
+                                            </ng-container>
                                     </span>
                                     <span  class="close" (click)="removePreSelectedFile(file)">&times;</span>
                                     </li>
