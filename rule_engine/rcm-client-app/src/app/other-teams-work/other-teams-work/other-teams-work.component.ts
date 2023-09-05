@@ -104,6 +104,7 @@ export class OtherTeamsWorkComponent implements OnInit {
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
+        this.showPendingSince();
       }
     });
   }
@@ -386,6 +387,18 @@ export class OtherTeamsWorkComponent implements OnInit {
       }
     })
   }
+  }
+
+  showPendingSince(){
+    this.filteredItems.forEach((e:any) => {
+      if(e.dos){
+           let dos:any = new Date(e.dos);
+           let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
+           const diffTime = Math.abs(currentDate - dos);
+           let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+           e.pendingSince = diffDays < 2 ? `${diffDays} day` :  `${diffDays} days`
+      }
+    });
   }
   
 }
