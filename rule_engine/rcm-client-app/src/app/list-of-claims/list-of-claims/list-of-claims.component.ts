@@ -121,6 +121,7 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceName(subType);
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
+        this.colorChange();
       }
       // else {
       //   this.loader.listClaimLoader = false;
@@ -202,12 +203,12 @@ export class ListOfClaimsComponent implements OnInit {
     }
     if (subType == 'Fresh') {
       this.filteredItems.forEach((e: any) => {
-        if (e.claimId.includes("_P")) {
-          this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.prName });
-          e['insuranceType'] = e.prName;
-        } else if (e.claimId.includes("_S")) {
-          this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.secName });
-          e['insuranceType'] = e.secName;
+        if (e.claimId.includes("_P") && e.prName) {
+            this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.prName });
+            e['insuranceType'] = e.prName;
+        } else if (e.claimId.includes("_S") && e.secName) {
+            this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.secName });
+            e['insuranceType'] = e.secName;
         }
       })
       this.filteredInsuranceType = Array.from(new Set(this.filteredInsuranceType.map((a: any) => a.insuranceType)))
@@ -217,10 +218,10 @@ export class ListOfClaimsComponent implements OnInit {
     }
     if (subType == 'sendBack') {
       this.filteredItems.forEach((e: any) => {
-        if (e.claimId.includes("_P")) {
+        if (e.claimId.includes("_P") && e.prName) {
           this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.prName });
           e['insuranceType'] = e.prName;
-        } else if (e.claimId.includes("_S")) {
+        } else if (e.claimId.includes("_S") && e.secName) {
           this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.secName });
           e['insuranceType'] = e.secName;
         }
@@ -694,12 +695,12 @@ export class ListOfClaimsComponent implements OnInit {
 
   sortFiltereData(filterValue: any) {
     filterValue.sort((a: any, b: any) => {
-      const nameA = Object.keys(filterValue[0])[1] == 'insuranceType' ? a.insuranceType.toUpperCase()
-        : Object.keys(filterValue[0])[1] == 'insuranceName' ? a.insuranceName.toUpperCase()
-          : Object.keys(filterValue[0])[4] == 'officeName' ? a.officeName.toUpperCase() : '';// ignore upper and lowercase
-      const nameB = Object.keys(filterValue[0])[1] == 'insuranceType' ? b.insuranceType.toUpperCase()
-        : Object.keys(filterValue[0])[1] == 'insuranceName' ? b.insuranceName.toUpperCase()
-          : Object.keys(filterValue[0])[4] == 'officeName' ? b.officeName.toUpperCase() : '';// ignore upper and lowercase
+      const nameA = Object.keys(filterValue[0])[1] == 'insuranceType' ? a.insuranceType?.toUpperCase()
+        : Object.keys(filterValue[0])[1] == 'insuranceName' ? a.insuranceName?.toUpperCase()
+          : Object.keys(filterValue[0])[4] == 'officeName' ? a.officeName?.toUpperCase() : '';// ignore upper and lowercase
+      const nameB = Object.keys(filterValue[0])[1] == 'insuranceType' ? b.insuranceType?.toUpperCase()
+        : Object.keys(filterValue[0])[1] == 'insuranceName' ? b.insuranceName?.toUpperCase()
+          : Object.keys(filterValue[0])[4] == 'officeName' ? b.officeName?.toUpperCase() : '';// ignore upper and lowercase
       if (nameA < nameB) {
         return -1;
       }
@@ -809,5 +810,17 @@ export class ListOfClaimsComponent implements OnInit {
       }
     })
   }
+  }
+
+  colorChange(){
+    this.filteredItems.forEach((e:any)=>{
+      if(e.claimAge && e.timelyFilingLimitData){
+       if(Number(e.timelyFilingLimitData) - e.claimAge < 30){
+        e.colorChange = true;
+       }
+       else
+       e.colorChange = false;
+      }
+    });
   }
 }

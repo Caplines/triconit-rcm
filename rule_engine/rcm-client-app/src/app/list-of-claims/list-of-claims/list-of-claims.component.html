@@ -404,8 +404,8 @@
                                                         <td><a [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
-                                                        <td class="alignRight">{{det.claimAge}}</td>
-                                                        <td>{{det.timelyFilingLimitData}}</td>
+                                                        <td class="alignRight" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
                                                         <!-- Claim Type START-->
                                                         <td *ngIf="det.claimId | claimTypeFilter">Primary</td>
                                                         <td *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
