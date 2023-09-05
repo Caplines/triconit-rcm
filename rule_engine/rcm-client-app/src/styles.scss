@@ -942,3 +942,14 @@ padding-top: 5px;
     border: 0px;
     margin: 0 10px;
 }
+.download-button{
+width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px solid #00a076;
+    font-size: 0px;
+    outline: none;
+    margin-right: 0px;
+    text-overflow: ellipsis;
+}
