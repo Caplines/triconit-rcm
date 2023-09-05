@@ -17,22 +17,22 @@ export class AppConstants {
             "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client'], "defaultpath": "/register"
         }],
         [3, {
-            "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update","/production"], "defaultpath": "/claim-assignment"
+            "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production"], "defaultpath": "/claim-assignment"
         }],
         [4, {
-            "name": "Lc3", "paths": ["/update-pass","/list-of-claims"], "defaultpath": "/update-pass"
+            "name": "Lc3", "paths": ["/update-pass", "/list-of-claims"], "defaultpath": "/update-pass"
         }],
         [5, {
-            "name": "Office", "paths": ["/update-pass","/list-of-claims"], "defaultpath": "/update-pass"
+            "name": "Office", "paths": ["/update-pass", "/list-of-claims"], "defaultpath": "/update-pass"
         }],
         [6, {
-            "name": "Patient Calling", "paths": ["/update-pass","/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "Patient Calling", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass"], "defaultpath": "/list-of-claims"
         }],
         [7, {
             "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass"], "defaultpath": "/claim-assignment"
         }],
         [8, {
-            "name": "Super Admin", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/list-of-claims"], "defaultpath": "/claim-assignment"
+            "name": "Super Admin", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/list-of-claims"], "defaultpath": "/claim-assignment"
         }],
         // [9, {
         //     "name": "Reporting", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/list-of-claims"], "defaultpath": "/claim-assignment"
@@ -102,41 +102,41 @@ export class AppConstants {
         { "teamName": "Payment Posting", "teamId": 12 },
         { "teamName": "PPO IV", "teamId": 13 },
         { "teamName": "Medicaid IV", "teamId": 14 },
-        { "teamName": "Need to hold", "teamId": 15},
-        { "teamName": "Quality", "teamId": 16},
+        { "teamName": "Need to hold", "teamId": 15 },
+        { "teamName": "Quality", "teamId": 16 },
         { "teamName": "AR", "teamId": 17 },
         { "teamName": "Patient Statement", "teamId": 18 },
         { "teamName": "Credentialing", "teamId": 19 },
-        ];
+    ];
 
     public attachmentType =
-        [{"id":1,"value":"Consent Form"},
-        {"id":2,"value":"Consent Form for Major Service"},
-        {"id":3,"value":"Consult Form"},
-        {"id":4,"value":"CRA Form"},
-        {"id":5,"value":"EOB"},
-        {"id":6,"value":"FDH Certification"},
-        {"id":7,"value":"Insurance ID Card"},
-        {"id":8,"value":"Intraoral Photos"},
-        {"id":9,"value":"IV"},
-        {"id":10,"value":"Lab Slip"},
-        {"id":11,"value":"Narratives"},
-        {"id":12,"value":"NCS Form"},
-        {"id":13,"value":"Nitrous Certification (D9230)"},
-        {"id":14,"value":"Nitrous Pre operative Checklist"},
-        {"id":15,"value":"Others"},
-        {"id":16,"value":"Perio Chart"},
-        {"id":17,"value":"Pre-Auth"},
-        {"id":18,"value":"Sedation Certification (D9248)"},
-        {"id":19,"value":"Sedation Record"},
-        {"id":20,"value":"X-ray: Bitewings"},
-        {"id":21,"value":"X-ray: Cephlo"},
-        {"id":22,"value":"X-ray: FMX"},
-        {"id":23,"value":"X-ray: Pano"},
-        {"id":24,"value":"X-ray: Periapical"},
-        {"id":25,"value":"X-ray: Post-Op"},
-        {"id":26,"value":"X-ray: Pre-Op"}]
+        [{ "id": 1, "value": "Consent Form" },
+        { "id": 2, "value": "Consent Form for Major Service" },
+        { "id": 3, "value": "Consult Form" },
+        { "id": 4, "value": "CRA Form" },
+        { "id": 5, "value": "EOB" },
+        { "id": 6, "value": "FDH Certification" },
+        { "id": 7, "value": "Insurance ID Card" },
+        { "id": 8, "value": "Intraoral Photos" },
+        { "id": 9, "value": "IV" },
+        { "id": 10, "value": "Lab Slip" },
+        { "id": 11, "value": "Narratives" },
+        { "id": 12, "value": "NCS Form" },
+        { "id": 13, "value": "Nitrous Certification (D9230)" },
+        { "id": 14, "value": "Nitrous Pre operative Checklist" },
+        { "id": 15, "value": "Others" },
+        { "id": 16, "value": "Perio Chart" },
+        { "id": 17, "value": "Pre-Auth" },
+        { "id": 18, "value": "Sedation Certification (D9248)" },
+        { "id": 19, "value": "Sedation Record" },
+        { "id": 20, "value": "X-ray: Bitewings" },
+        { "id": 21, "value": "X-ray: Cephlo" },
+        { "id": 22, "value": "X-ray: FMX" },
+        { "id": 23, "value": "X-ray: Pano" },
+        { "id": 24, "value": "X-ray: Periapical" },
+        { "id": 25, "value": "X-ray: Post-Op" },
+        { "id": 26, "value": "X-ray: Pre-Op" }]
 
 
-    public ARCHIVE_PREFIX: string ="arc_";
+    public ARCHIVE_PREFIX: string = "arc_";
 }
