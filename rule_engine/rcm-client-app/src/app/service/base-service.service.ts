@@ -87,6 +87,7 @@ export class BaseService {
     'allPendancy':'/api/allPendancy/d',
     'tPlan':'/api/tp-link/d',
     'Ivf':'/api/ivf/d',
+    'othersTeam': '/api/other-teams-work/d',
     //
   }
 

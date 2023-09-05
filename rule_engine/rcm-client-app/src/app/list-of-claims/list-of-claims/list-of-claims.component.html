@@ -36,7 +36,7 @@
                                         </div> -->
                                     </div>
                                     <div>
-                                        <button type="button" class="icon-btn" (click)="saveToPdf('table')"
+                                        <button type="button" class="icon-btn" (click)="downloadPdf()"
                                             [disabled]="filteredItems.length==0">
                                             <img src="../../assets/img/pdf.png" /></button><span
                                             *ngIf="loader.exportPDFLoader"

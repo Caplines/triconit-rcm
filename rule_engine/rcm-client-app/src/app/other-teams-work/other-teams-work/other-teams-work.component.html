@@ -5,6 +5,18 @@
                 <div class="main-container">
                     <div class="detail-box">
                         <div class="detail-box-form">
+                            <div>
+                                <button type="button" class="icon-btn" (click)="downloadPdf()"
+                                    [disabled]="filteredItems.length==0">
+                                    <img src="../../assets/img/pdf.png" /></button><span
+                                    *ngIf="loader.exportPDFLoader"
+                                    class="spinner-border text-danger mx-1"></span>
+                                <button type="button" class="icon-btn"
+                                    [disabled]="filteredItems.length==0">
+                                    <img src="../../assets/img/xls.png" /></button><span
+                                    *ngIf="loader.exportCSVLoader"
+                                    class="spinner-border text-success mx-1"></span>
+                            </div>
                             <div class="form-row  collapse" [ngClass]="{'show':expandCollapse}" id="ruleEngine">
                                 <div class="table-responsive" style="min-height:300px;">
                                     <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar"
@@ -225,9 +237,9 @@
                                                             {{det.secTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
                                                         <td>{{det.lastTeam==null?'N/A':det.lastTeam}}</td>
-                                                        <td class="alignRight">{{det.claimAge}}</td>
-                                                        <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
-                                                        <td class="alignRight">{{det.claimAge}}</td>
+                                                        <td class="alignRight">{{det.lastTeamRemark}}</td>
+                                                        <td class="noWrape">{{(det.dos | date: 'MMM dd, yyyy')}}</td>
+                                                        <td class="alignRight">{{currentTeamName}}</td>
                                                         <td><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
                                                                 style="width: 200px;"></textarea>
                                                         </td>

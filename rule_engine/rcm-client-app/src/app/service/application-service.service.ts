@@ -447,4 +447,8 @@ export class ApplicationServiceService extends BaseService {
   IvfPdfDownload(params: any, pdfcsv: string, callback: any) {
     this.postDataPdf(params, this.httpUrl['Ivf'] + "/" + pdfcsv, callback);
   }
+  othersTeamPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['othersTeam'] + "/" + pdfcsv, callback);
+  }
+
 }

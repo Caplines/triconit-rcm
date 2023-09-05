@@ -40,6 +40,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   removedFilesMap:any=new Map();
   removedFiles:any=[];
   hasAttachmentFilesRemoved:boolean=false;
+  currentTeamName:string='';
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -57,6 +58,7 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   ngOnInit(): void {
     this.clientName = localStorage.getItem("selected_clientName");
+     this.currentTeamName = localStorage.getItem("name");
     this.fetchClaims();
     this.fetchOtherTeams();
   }
@@ -371,4 +373,19 @@ export class OtherTeamsWorkComponent implements OnInit {
       this.errorMessage = "No Files are atttached."
     }
   }
+
+  downloadPdf(){
+    if(this.filteredItems.length!=0){
+    let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"currentTeamName":this.currentTeamName};
+    this. appService.othersTeamPdfDownload(data,"pdf",(res: any) => {
+      if (res.status === 200){
+        console.log(res.body);
+        this.downloadService.saveBolbData(res.body, "List_Of_Claims.pdf");
+      }else{
+        console.log("something went wrong");
+      }
+    })
+  }
+  }
+  
 }

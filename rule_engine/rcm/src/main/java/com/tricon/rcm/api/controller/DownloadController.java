@@ -34,6 +34,7 @@ import com.tricon.rcm.dto.download.ClaimDetailsDownloadDto;
 import com.tricon.rcm.dto.download.IssueClaimDownloadDto;
 import com.tricon.rcm.dto.download.IvfDownloadDto;
 import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
+import com.tricon.rcm.dto.download.OthersTeamWorkDownloadDto;
 import com.tricon.rcm.dto.download.PendancyDownloadDto;
 import com.tricon.rcm.dto.download.ProductionDownloadDto;
 import com.tricon.rcm.dto.download.TreatmentPlanDownloadDto;
@@ -257,5 +258,26 @@ public class DownloadController extends BaseHeaderController{
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", msg));
+	}
+	
+	@PostMapping
+	@RequestMapping(value = "/api/other-teams-work/d/pdf")
+	public void generatePDF(@RequestBody OthersTeamWorkDownloadDto dto, HttpServletResponse response) throws IOException {
+
+		System.out.println("hi");
+		Object[] obj=null; 
+	     obj = service.generatePdfForOthersTeamWorks(dto);
+		if (obj != null && obj[1]!=null) {
+			ByteArrayOutputStream o =(ByteArrayOutputStream)  obj[1];
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition", String.format("attachment; filename="+dto.getFileName().toString().replaceAll(",", "")+ ".pdf"));
+			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
+			InputStream in = new ByteArrayInputStream(o.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			o.close();
+		}
+		
+
 	}
 }

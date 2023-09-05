@@ -27,6 +27,7 @@ import com.tricon.rcm.dto.download.ClaimDetailsDownloadDto;
 import com.tricon.rcm.dto.download.IssueClaimDownloadDto;
 import com.tricon.rcm.dto.download.IvfDownloadDto;
 import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
+import com.tricon.rcm.dto.download.OthersTeamWorkDownloadDto;
 import com.tricon.rcm.dto.download.PendancyDownloadDto;
 import com.tricon.rcm.dto.download.ProductionDownloadDto;
 import com.tricon.rcm.dto.download.TreatmentPlanDownloadDto;
@@ -66,6 +67,9 @@ public class DownLoadService {
 	
 	@Value("${Ivf_Link.xslt.file}")
 	private String IVF_XSLT_FILE;
+	
+	@Value("${others_team.xslt.file}")
+	private String OTHERS_TEAM_XSLT_FILE;
 	
 	@Autowired
 	ClaimServiceImpl claimServiceImpl;
@@ -425,5 +429,27 @@ public class DownLoadService {
 			}
 		}
 		return null;
+	}
+	
+    public Object[] generatePdfForOthersTeamWorks(OthersTeamWorkDownloadDto data) {
+		
+		ByteArrayOutputStream o = null;
+		Object[] obj=new Object[2]; 
+		DtoToXmlConverted xml = new DtoToXmlConverted();
+		try {
+		String filePath = xml.convertToXMLForOthersTeamWork(data, XSLT_PATH);
+		File file = new File(filePath);
+		String xslt=OTHERS_TEAM_XSLT_FILE;
+		o= xml.createPdfStream(
+
+				xml.createHtml(filePath, xslt), "");
+	    
+		if (file!=null) file.delete(); 
+		
+		obj[1]=o;
+		}catch(Exception c) {
+			
+		}
+		return obj;
 	}
 }
