@@ -5,6 +5,8 @@ import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-m
 import Utils from '../../util/utils';
 import { Title } from '@angular/platform-browser';
 import { DownLoadService } from 'src/app/service/download.service';
+import { ngxCsv } from 'ngx-csv/ngx-csv';
+import { formatNumber } from '@angular/common';
 
 @Component({
   selector: 'app-other-teams-work',
@@ -41,6 +43,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   removedFiles:any=[];
   hasAttachmentFilesRemoved:boolean=false;
   currentTeamName:any;
+  date: any;
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -397,6 +400,76 @@ AssignClaimWithRemark(claimUuid:any){
       }
     })
   }
+  }
+
+  getMonthName(month: any) {
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    return monthNames[month];
+  }
+
+  exportToCsv() {
+    this.loader.exportCSVLoader = true;
+    let options: any = {
+      showLabels: true,
+      headers: ["Office", "Patient ID", "Patient Name", 'DOS',"Insurance Name", "Insurance Type", "Claim Type" , "Estimated Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since", "Current Team"]
+    }
+    let excelData: any;
+    excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
+    excelData = excelData.map((e: any) => {
+      if (e.dos) {
+        let date: Date = new Date(e.dos);
+        e = { ...e, dos: `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}` };
+      }
+      else {
+        e = { ...e, dos: '' };
+      }
+      if (e.statusType == this.appConstants.BILLING_ID) {
+        e = { ...e, ['actionRequired']: "BILLING" };
+      } else {
+        e = { ...e, ['actionRequired']: "RE-BILLING" };
+      }
+      if (e.claimId.endsWith("_P")) {
+        e = { ...e, ['claimType']: "Primary" };
+      } else {
+        e = { ...e, ['claimType']: "Secondary" };
+      }
+      if (e.lastTeam == null) {
+        e = { ...e, lastTeam: '-' }
+      }
+      if (e.lastTeamRemark == null) {
+        e = { ...e, lastTeamRemark: '-' }
+      }
+      return e;
+    })      //method add value as "-" or "0", if its empty or null.
+
+
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Patient ID": e.patientId,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Claim Type": e.claimType,
+          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Last Team that Worked on this claim":  e.lastTeam,
+          "Lasr Team's Remarks" : e.lastTeamRemark,
+          "Pending Since Date":e.pendingSince,
+          "Currrent Team":  this.currentTeamName.teamName
+        }
+      })  //method aligns the header to the value in CSV.
+      // excelData = excelData.map(
+      //   ({ claimId, opdos, opdt, secTotal, uuid, statusType, EstAmount, ...newClaimData }: any) => newClaimData);    //methods removes unwanted properties that are not going to display in CSV.  // values which excluded are coming as undefined so that's why its commented out.
+
+    this.date = new Date();
+    this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+    //console.log(excelData.sort());
+    new ngxCsv(excelData, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
+    this.loader.exportCSVLoader = false;
   }
 
   showPendingSince(){

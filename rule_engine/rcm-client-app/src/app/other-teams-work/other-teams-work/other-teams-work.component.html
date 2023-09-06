@@ -5,13 +5,13 @@
                 <div class="main-container">
                     <div class="detail-box">
                         <div class="detail-box-form">
-                            <div>
+                            <div class="otherTeamBox mt-2 mb-2">
                                 <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="filteredItems.length==0">
                                     <img src="../../assets/img/pdf.png" /></button><span
                                     *ngIf="loader.exportPDFLoader"
                                     class="spinner-border text-danger mx-1"></span>
-                                <button type="button" class="icon-btn"
+                                <button type="button" class="icon-btn" (click)="exportToCsv()"
                                     [disabled]="filteredItems.length==0">
                                     <img src="../../assets/img/xls.png" /></button><span
                                     *ngIf="loader.exportCSVLoader"
