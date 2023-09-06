@@ -269,7 +269,6 @@ public class DownloadController extends BaseHeaderController{
 	@RequestMapping(value = "/api/other-teams-work/d/pdf")
 	public void generatePDF(@RequestBody OthersTeamWorkDownloadDto dto, HttpServletResponse response) throws IOException {
 
-		System.out.println("hi");
 		Object[] obj=null; 
 	     obj = service.generatePdfForOthersTeamWorks(dto);
 		if (obj != null && obj[1]!=null) {

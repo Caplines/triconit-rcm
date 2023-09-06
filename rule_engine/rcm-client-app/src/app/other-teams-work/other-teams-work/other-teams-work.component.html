@@ -166,7 +166,14 @@
 
                                                 <th>
                                                     <div class="dFlex">
-                                                        Pending since
+                                                            Pending Since<span class="sorting">
+                                                                <a href="javascript:void(0);" class="arrow-up"
+                                                                    [ngClass]="{'selected': !isSorted['pendingSince']}"
+                                                                    (click)="sortData(filteredItems,'pendingSince','asc','string'); isSorted['pendingSince'] = false"></a>
+                                                                <a href="javascript:void(0);" class="arrow-down"
+                                                                    [ngClass]="{'selected': isSorted['pendingSince']}"
+                                                                    (click)="sortData(filteredItems,'pendingSince','desc','string');isSorted['pendingSince'] = true"></a>
+                                                            </span>  
                                                     </div>
                                                 </th>
 

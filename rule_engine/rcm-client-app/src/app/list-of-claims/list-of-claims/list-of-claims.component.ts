@@ -550,7 +550,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Patient ID", "Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
+      headers: ["Office", "Patient ID","Claim Id", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date","Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -586,10 +586,12 @@ export class ListOfClaimsComponent implements OnInit {
         return {
           "Office Name": e.officeName,
           "Patient ID": e.patientId,
+          "Claim Id":e.claimId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
           "Claim Age": e.claimAge,
           "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          "Pending Since Date":e.pendingSince,
           "Claim Type": e.claimType,
           "Action Required": e.actionRequired,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
@@ -606,10 +608,12 @@ export class ListOfClaimsComponent implements OnInit {
         return {
           "Office Name": e.officeName,
           "Patient ID": e.patientId,
+          "Claim Id":e.claimId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
           "Claim Age": e.claimAge,
           "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          "Pending Since Date":e.pendingSince,
           "Claim Type": e.claimType,
           "Action Required": e.actionRequired,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
@@ -758,6 +762,8 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceName(subType);
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
+        this.colorChange();
+        this.showPendingSince();
       }
       // else {
       //   this.loader.listClaimLoader = false;

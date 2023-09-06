@@ -21,4 +21,5 @@ public class OthersTeamPdfDto {
 	private String uuid;
 	private String primeSecSubmittedTotal;
 	private String lastTeamRemark;
+	private String pendingSince;
 }
