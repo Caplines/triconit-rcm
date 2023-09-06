@@ -457,8 +457,8 @@ AssignClaimWithRemark(claimUuid:any){
           "Claim Type": e.claimType,
           "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
           "Last Team that Worked on this claim":  e.lastTeam,
-          "Lasr Team's Remarks" : e.lastTeamRemark,
-          "Pending Since Date":e.pendingSince,
+          "Last Team's Remarks" : e.lastTeamRemark,
+          "Pending Since":e.pendingSince,
           "Currrent Team":  this.currentTeamName.teamName
         }
       })  //method aligns the header to the value in CSV.
