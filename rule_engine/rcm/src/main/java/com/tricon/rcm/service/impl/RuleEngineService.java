@@ -65,6 +65,7 @@ import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
+import com.tricon.rcm.dto.RcmClaimAppointmentMainRootDto;
 import com.tricon.rcm.dto.RcmClaimDataDto;
 import com.tricon.rcm.dto.RcmClaimDetMainRootDto;
 
@@ -1056,4 +1057,19 @@ public class RuleEngineService {
 		
 	}
 
+	public String fetchAppointmentDate(RcmClaims claim ,RcmOffice off ) {
+		
+		String officeUuid= claim.getOffice().getUuid();
+		String appointmentDate="";
+		HttpEntity<String> entity = new HttpEntity<String>(headers);
+		String param = "?password=" +eagleSoftDBDetailsRepo.findByOffice(off).getPassword() + "&patientId=" + claim.getPatientId()
+		+"&startDate=";
+		param = param + "&office=" + officeUuid;
+
+		ResponseEntity<RcmClaimAppointmentMainRootDto> appointmentData = restTemplate.exchange(ev.getProperty("rcm.claimAppointmenturl") + param,
+				HttpMethod.GET, entity, RcmClaimAppointmentMainRootDto.class);
+		
+		return appointmentDate;
+		
+	}
 }

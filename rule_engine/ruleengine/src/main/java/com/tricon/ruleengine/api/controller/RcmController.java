@@ -75,6 +75,8 @@ public class RcmController {
 	RcmEnv rcmEnvPrimaryClaim = null;
 	RcmEnv rcmEnvSecondaryClaim = null;
 	RcmEnv rcmEnvInsurance = null;
+	
+	RcmEnv rcmEnvAppointment = null;
 
 	@Autowired
 	ScrappingFullDataService fullService;
@@ -104,7 +106,11 @@ public class RcmController {
 		rcmEnvInsurance = new RcmEnv(env.getProperty("claim.insurance.query"),
 				env.getProperty("claim.insurance.query.count"), env.getProperty("claim.insurance.query.selectcolumns"),
 				env.getProperty("rmc.auth.token"));
-
+		
+		rcmEnvAppointment =new RcmEnv(env.getProperty("claim.appointment.query"),
+				env.getProperty("claim.appointment.query.count"), env.getProperty("claim.appointment.query.selectcolumns"),
+				env.getProperty("rmc.auth.token"));
+	
 	}
 
 	@RequestMapping(value = "/fetch-claims", method = RequestMethod.GET)
@@ -278,6 +284,53 @@ public class RcmController {
 			}
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Insurance Data Fetched Successfully", rootDto));
+	}
+	
+	@RequestMapping(value = "/claim-appointment-date", method = RequestMethod.GET)
+	public ResponseEntity<?> fetchAppointmentDate(@RequestHeader("x-api-key") String apiKey,
+			@RequestParam(value = "office", required = true) String officeUuid,
+			@RequestParam(value = "password", required = true) String password,
+			@RequestParam(value = "patientId", required = true) String patientId,
+			@RequestParam(value = "startDate", required = true) String startDate)
+			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+
+		String ids = null;
+		// Office office = null;
+		RuleEngineLogger.generateLogs(clazz, "ENTER Appointment Date From  Rule Engine" + new Date(), " INFO", null);
+
+		if (!checkForKey(apiKey)) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report No Created Successfully", "Key Error"));
+		}
+		RcmClaimDataDto dd = null;
+		RcmClaimRootDto rootDto = new RcmClaimRootDto();
+		ArrayList<RcmClaimDataDto> datas = new ArrayList<>();
+
+		rootDto.setDatas(datas);
+		rootDto.setMessage("Patient Appointment Date Successfully");
+		if (officeUuid != null) {
+			Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+			Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+			String officeName = "";
+			if (offices.isPresent() && offices.get() != null) {
+				officeName = offices.get().stream().filter(n -> n.getUuid().equals(officeUuid)).findFirst().get()
+						.getName();
+
+			}
+			String queryReplace = rcmEnvAppointment.getQuery();
+			queryReplace=queryReplace.replaceAll("DATE1", startDate);
+			queryReplace=queryReplace.replace("PAT_ID", patientId);
+			GenericResponse data = (GenericResponse) googleReportsController
+					.fethESGoogleresponse(rcmEnvAppointment.getQuerySelectcolumns(), queryReplace, ids,
+							Integer.parseInt(rcmEnvAppointment.getQueryCount()), password, officeName, null, null)
+					.getBody();
+			dd = new RcmClaimDataDto();
+			dd.setOfficeName(officeUuid);
+			dd.setData(data.getData());
+			datas.add(dd);
+		} else {
+			
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Appointment Date Data Fetched Successfully", rootDto));
 	}
 
 	@GetMapping("/diagnostic_check_for_rcm")

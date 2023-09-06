@@ -179,6 +179,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/fetch-claims",
                 "/fetch-insurance",
                 "/remote-lite-details",
+                "/claim-appointment-date",
                 "/diagnostic_check_for_rcm",
                 "/diagnostic_check_for_rcm",
                 "/claim-data-form-es",

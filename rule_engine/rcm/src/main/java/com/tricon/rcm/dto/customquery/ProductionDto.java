@@ -7,5 +7,6 @@ public interface ProductionDto {
 	String getUuid();
 	String getFName();
 	String getLName();
+	String getCompanyName();
 	
 }

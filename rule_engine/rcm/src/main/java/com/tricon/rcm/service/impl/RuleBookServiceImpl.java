@@ -456,30 +456,26 @@ public class RuleBookServiceImpl {
 	 */
 
 	// DOS vs Appointment Date
-	public List<TPValidationResponseDto> rule323(RcmRules rule, DataPatientRuleDto dto, RcmClaims rcmClaim) {
+	public List<TPValidationResponseDto> rule323(RcmRules rule, String appointmentDate, RcmClaims rcmClaim) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
-
+        if (appointmentDate==null) appointmentDate="";
 		try {
 
 			// pass
-			if (dto != null && dto.getAppointmentDate() != null && dto.getAppointmentDate().equals("")) {
+			if (!appointmentDate.equals("")) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule323.pass.message", new Object[] {}, locale), Constants.PASS, "",
 						"", ""));
 
-			} else if (dto != null) {
+			} else  {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule323.error.message",
-								new Object[] { dto.getPlanAssignmentofBenefits() }, locale),
+								new Object[] { rcmClaim.getDos() }, locale),
 						Constants.FAIL, "", "", ""));
-			} else {
-				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule323.error.message1", new Object[] { "IV not found." }, locale),
-						Constants.FAIL, "", "", ""));
-			}
+			} 
 
 		} catch (Exception n) {
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),

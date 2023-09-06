@@ -2052,25 +2052,33 @@ public class ClaimServiceImpl {
 
 	public List<ProductionDto> claimsProductionReportByTeam(ClaimProductionLogDto dto,PartialHeader partialHeader) {
 
-
+		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
 		if (partialHeader.getTeamId() == RcmTeamEnum.BILLING.getId() ) {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				return rcmClaimRepository.claimProductionByForBillingAssoicate(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+				return rcmClaimRepository.claimProductionByForBillingAssoicate(companies, partialHeader.getTeamId(), dto.getStartDate(),
 						dto.getEndDate(),partialHeader.getJwtUser().getUuid());	
 				}else {
-				return rcmClaimRepository.claimProductionByForBilling(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+				return rcmClaimRepository.claimProductionByForBilling(companies, partialHeader.getTeamId(), dto.getStartDate(),
 						dto.getEndDate());
 				}
 		}else if (partialHeader.getTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId() ) {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				return rcmClaimRepository.claimProductionForInternalAuditAssoicate(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+				return rcmClaimRepository.claimProductionForInternalAuditAssoicate(companies, partialHeader.getTeamId(), dto.getStartDate(),
 						dto.getEndDate(),partialHeader.getJwtUser().getUuid());
 			}else {
-					return rcmClaimRepository.claimProductionForInternalAudit(partialHeader.getCompany().getUuid(), partialHeader.getTeamId(), dto.getStartDate(),
+					return rcmClaimRepository.claimProductionForInternalAudit(companies, partialHeader.getTeamId(), dto.getStartDate(),
+					dto.getEndDate());
+			}
+		}else  {
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				return rcmClaimRepository.claimProductionForOtherTeamAssoicate(companies, partialHeader.getTeamId(), dto.getStartDate(),
+						dto.getEndDate(),partialHeader.getJwtUser().getUuid());
+			}else {
+					return rcmClaimRepository.claimProductionForOtherTeam(companies, partialHeader.getTeamId(), dto.getStartDate(),
 					dto.getEndDate());
 			}
 		}
-		return null;
+		//return null;
 
 	}
 
@@ -3154,6 +3162,8 @@ public class ClaimServiceImpl {
 					allLIst.addAll(ruleBookService.rule303(rule, ivData, claim));
 
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_304);
+					
+					
 					/*Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
 							Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
 							CREDENTIALS_FOLDER);
@@ -3201,6 +3211,10 @@ public class ClaimServiceImpl {
 							ruleBookService.rule305(rule, creList, claim, officeName, insCode,insName));
 					
 					
+					rule = getRulesFromList(rules, RuleConstants.RULE_ID_323);
+					String appointmentDate=ruleEngineService.fetchAppointmentDate(claim, off);
+					allLIst.addAll(
+							ruleBookService.rule323(rule, "", claim));
 					/*rule = getRulesFromList(rules, RuleConstants.RULE_ID_306);
 					allLIst.addAll(
 							ruleBookService.rule306(rule, ivData, claim));
