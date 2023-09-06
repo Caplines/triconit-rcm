@@ -277,37 +277,17 @@ export class OtherTeamsWorkComponent implements OnInit {
       }
   }
 
-  isValidForOtherTeam(){
+
+  submitConfirmation(){
     const remarks = this.submitBtnConfig['remarks'][this.currentClaimUuid];
     if(!remarks){
       this.errorMessage = "Remarks Are Mandatory !";
     } else{
-      if(this.isRemoveFileArrayNotEmpty()){
-        this.removeAttachmentFile();
-      } else {
-        this.loopThroughData(this.selectedFiles, 0);
-      }
-    }
-  }
-
-  isValidForAssignTeam(){
-        const remarks = this.submitBtnConfig['remarks'][this.currentClaimUuid];
-        if(!remarks){
-          this.errorMessage = "Remarks Are Mandatory !";
-        } else{
-              if(this.isRemoveFileArrayNotEmpty()){
-                this.removeAttachmentFile();
-              } else {
-                this.loopThroughData(this.selectedFiles, 0);
-              }
-        }
-  }
-
-  submitConfirmation(){
-    if (this.submitBtnConfig['submitType'] == 'oth') {
-        this.isValidForOtherTeam();
-    } else {
-      this.isValidForAssignTeam();
+          if(this.isRemoveFileArrayNotEmpty()){
+            this.removeAttachmentFile();
+          } else {
+            this.loopThroughData(this.selectedFiles, 0);
+          }
     }
   }
 
