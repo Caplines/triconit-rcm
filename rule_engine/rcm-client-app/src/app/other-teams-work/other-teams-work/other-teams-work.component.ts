@@ -40,7 +40,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   removedFilesMap:any=new Map();
   removedFiles:any=[];
   hasAttachmentFilesRemoved:boolean=false;
-  currentTeamName:string='';
+  currentTeamName:any;
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -58,7 +58,7 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   ngOnInit(): void {
     this.clientName = localStorage.getItem("selected_clientName");
-     this.currentTeamName = localStorage.getItem("name");
+     this.currentTeamName = this.appConstants.teamData.find((e:any)=>e.teamId==Utils.selectedTeam());
     this.fetchClaims();
     this.fetchOtherTeams();
   }
@@ -377,7 +377,7 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   downloadPdf(){
     if(this.filteredItems.length!=0){
-    let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"currentTeamName":this.currentTeamName};
+    let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"currentTeamName":this.currentTeamName.teamName};
     this. appService.othersTeamPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
         console.log(res.body);

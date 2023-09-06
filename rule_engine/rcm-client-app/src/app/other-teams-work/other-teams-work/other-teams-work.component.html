@@ -239,7 +239,7 @@
                                                         <td>{{det.lastTeam==null?'N/A':det.lastTeam}}</td>
                                                         <td class="alignRight">{{det.lastTeamRemark}}</td>
                                                         <td class="noWrape">{{det.pendingSince}}</td>
-                                                        <td class="alignRight">{{currentTeamName}}</td>
+                                                        <td class="alignRight">{{currentTeamName?.teamName}}</td>
                                                         <td><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
                                                                 style="width: 200px;"></textarea>
                                                         </td>
