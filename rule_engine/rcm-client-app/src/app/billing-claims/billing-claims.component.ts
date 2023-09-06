@@ -878,6 +878,7 @@ export class BillingClaimsComponent {
   }
 
   assignToOtherTeam() {
+    this.submitAttachment();
     let ths = this;
     ths.otherErrormsg = "";
     ths.claimEditModel.assignToOtherTeam = true;
@@ -917,6 +918,7 @@ export class BillingClaimsComponent {
   }
 
   assignToLead() {
+    this.submitAttachment();
     let ths = this;
     ths.tlErrormsg = "";
     this.claimEditModel.assignToTL = true;
@@ -1104,7 +1106,7 @@ export class BillingClaimsComponent {
 
   submitAttachment(){
       let removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
-      if(removedFiles.length==0){
+      if(!removedFiles){
           removedFiles = '';
       }
       const selectedFiles = this.getSelectedFileForComponent(this.claimUUid);
@@ -1118,7 +1120,11 @@ export class BillingClaimsComponent {
                 }
           })
       } else {
-        this.finalSubmitAttachment(selectedFiles);
+            if(!selectedFiles){
+              return;
+            } else{
+              this.finalSubmitAttachment(selectedFiles);
+            }
       }
   }
 
