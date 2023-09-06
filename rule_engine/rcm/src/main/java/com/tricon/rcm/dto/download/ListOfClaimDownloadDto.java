@@ -23,4 +23,5 @@ public class ListOfClaimDownloadDto {
 	private String fileName;
 	private String clientName;
 	private String tabSwitch;
+	private int currentTeamId;
 }

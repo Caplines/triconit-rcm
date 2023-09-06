@@ -93,6 +93,9 @@ version="1.0" >
                 font-family: sans-serif;
                 font-weight: bold;
             }
+            @page{
+            size: landscape;
+            }
         </style>
     </head>
     <body>
@@ -103,17 +106,26 @@ version="1.0" >
                  <table class="inner-table">
                  <xsl:variable name="tabSwitchValue" select="tabSwitch" />   
                      <tr class="bgWhite">
-                          <td colspan="13" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
+                          <td colspan="15" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
                          <td>Office</td>
                          <td>Patient ID</td>
+                         <td>Claim ID</td>
                          <td>Patient Name</td>
                          <td>DOS</td>
                          <td>Claim Age</td>
                          <td>TFL</td>
+                         <td>Pending Since Date</td>
                          <td>Claim Type</td>
-                         <td>Action Required</td>
+                         <xsl:choose>
+                           <xsl:when test="currentTeamId=3">
+                           <td>Auditing</td>
+                           </xsl:when>
+                           <xsl:otherwise>
+                           <td>Action Required</td>
+                           </xsl:otherwise>
+                           </xsl:choose>
                          <td>Insurance Name</td>
                          <td>Insurance Type</td>
                          <td>Est.Amount</td>
@@ -129,13 +141,15 @@ version="1.0" >
 
                          <td><xsl:value-of select="officeName"/></td>
                          <td><xsl:value-of select="patientId"/></td>
-                         <td><xsl:value-of select="patientName"/></td>
+                         <td><xsl:value-of select="claimId"/></td>
+                         <td style="word-break: break-all;"><xsl:value-of select="patientName"/></td>
                          <td><xsl:variable name="month" select="substring(dos, 6, 2)" />
                        <xsl:variable name="day" select="substring(dos, 9, 2)" />
                        <xsl:variable name="year" select="substring(dos, 1, 4)" />
                        <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>
                        <td><xsl:value-of select="claimAge"/></td>
                        <td><xsl:value-of select="timelyFilingLimitData"/></td>
+                       <td><xsl:value-of select="pendingSince"/></td> 
                        <td>
                            <xsl:choose>
                            <xsl:when test="substring(claimId, string-length(claimId) - 1) = '_P'">

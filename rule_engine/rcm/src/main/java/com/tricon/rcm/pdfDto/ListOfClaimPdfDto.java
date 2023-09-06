@@ -22,4 +22,5 @@ public class ListOfClaimPdfDto {
 	private String timelyFilingLimitData;
 	private String uuid;
 	private String primeSecSubmittedTotal;
+	private String pendingSince;
 }
