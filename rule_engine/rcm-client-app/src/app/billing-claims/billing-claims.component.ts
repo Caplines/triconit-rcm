@@ -1107,11 +1107,10 @@ export class BillingClaimsComponent {
   submitAttachment(){
       let removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
       if(!removedFiles){
-          removedFiles = '';
+          removedFiles=[];
       }
       const selectedFiles = this.getSelectedFileForComponent(this.claimUUid);
-
-      if(removedFiles){
+      if(!Array.isArray(removedFiles)){
           this.appService.removeAttachmentFile(removedFiles,(res:any)=>{
                 if(res.status == 200 && res.data.fileResponseStatus){
                     this.finalSubmitAttachment(selectedFiles);
@@ -1127,6 +1126,7 @@ export class BillingClaimsComponent {
             }
       }
   }
+
 
   finalSubmitAttachment(selectedFile:any[]){
       this.loopThroughData(selectedFile,0);

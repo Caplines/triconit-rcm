@@ -278,6 +278,9 @@ export class OtherTeamsWorkComponent implements OnInit {
         this.selectedFiles= [];
         this.errorMessage = "No Files Are Attached !";
       }
+      if(!this.removedFiles){
+        this.removedFiles=[];
+      }
   }
 
 
