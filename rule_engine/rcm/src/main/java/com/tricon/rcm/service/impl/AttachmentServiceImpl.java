@@ -110,8 +110,7 @@ public class AttachmentServiceImpl {
 					claimAttachment.setUuid(rcmClaims);
 					if(fileCounts<1){
 						attachmentRepo.save(claimAttachment);
-						rcmClaims.setAttachmentCount(rcmClaims.getAttachmentCount()+1);
-						claimRepo.save(rcmClaims);
+						attachmentRepo.updateAttachmentCountInRcmClaim(claimUuid,rcmClaims.getAttachmentCount()+1);
 					}
 					if (!file.isEmpty() && fileCounts<1) {
 						// Will Make folder with the help of claimUuid to save each file separatlty
