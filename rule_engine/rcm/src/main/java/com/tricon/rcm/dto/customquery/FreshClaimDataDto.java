@@ -24,6 +24,7 @@ public interface FreshClaimDataDto {
 	Float getPrimeSecSubmittedTotal();
 	Integer getAttachmentCount();
 	String getLastTeamRemark();
+	Date getPendingSince();
 	
 	
 }

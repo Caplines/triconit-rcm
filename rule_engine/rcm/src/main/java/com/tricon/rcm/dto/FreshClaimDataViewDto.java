@@ -29,5 +29,6 @@ public class FreshClaimDataViewDto {
 	Float primeSecSubmittedTotal;
 	Integer attachmentCount;
 	String  lastTeamRemark;
+	Date pendingSince;
 
 }
