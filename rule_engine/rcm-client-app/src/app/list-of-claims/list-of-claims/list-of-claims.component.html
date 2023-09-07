@@ -168,10 +168,10 @@
                                                         Pending Since Date<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['pendingSince']}"
-                                                                (click)="sortData(filteredItems,'pendingSince','asc','string'); isSorted['pendingSince'] = false"></a>
+                                                                (click)="sortData(filteredItems,'pendingSince','asc','dateOnly'); isSorted['pendingSince'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['pendingSince']}"
-                                                                (click)="sortData(filteredItems,'pendingSince','desc','string');isSorted['pendingSince'] = true"></a>
+                                                                (click)="sortData(filteredItems,'pendingSince','desc','dateOnly');isSorted['pendingSince'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -431,7 +431,7 @@
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
                                                         <td class="alignRight" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
-                                                        <td class="noWrape">{{det.pendingSince}}</td>
+                                                        <td class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}</td>
                                                         <!-- Claim Type START-->
                                                         <td *ngIf="det.claimId | claimTypeFilter">Primary</td>
                                                         <td *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>

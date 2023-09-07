@@ -166,13 +166,13 @@
 
                                                 <th>
                                                     <div class="dFlex">
-                                                            Pending Since<span class="sorting">
+                                                            Pending Since Date<span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
                                                                     [ngClass]="{'selected': !isSorted['pendingSince']}"
-                                                                    (click)="sortData(filteredItems,'pendingSince','asc','string'); isSorted['pendingSince'] = false"></a>
+                                                                    (click)="sortData(filteredItems,'pendingSince','asc','dateOnly'); isSorted['pendingSince'] = false"></a>
                                                                 <a href="javascript:void(0);" class="arrow-down"
                                                                     [ngClass]="{'selected': isSorted['pendingSince']}"
-                                                                    (click)="sortData(filteredItems,'pendingSince','desc','string');isSorted['pendingSince'] = true"></a>
+                                                                    (click)="sortData(filteredItems,'pendingSince','desc','dateOnly');isSorted['pendingSince'] = true"></a>
                                                             </span>  
                                                     </div>
                                                 </th>
@@ -245,7 +245,7 @@
                                                         </td>
                                                         <td>{{det.lastTeam==null?'N/A':det.lastTeam}}</td>
                                                         <td class="alignRight">{{det.lastTeamRemark}}</td>
-                                                        <td class="noWrape">{{det.pendingSince}}</td>
+                                                        <td class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}</td>
                                                         <td class="alignRight">{{currentTeamName?.teamName}}</td>
                                                         <td><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
                                                                 style="width: 200px;"></textarea>

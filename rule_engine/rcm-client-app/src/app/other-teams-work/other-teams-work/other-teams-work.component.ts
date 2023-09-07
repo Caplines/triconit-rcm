@@ -107,7 +107,6 @@ export class OtherTeamsWorkComponent implements OnInit {
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
-        this.showPendingSince();
       }
     });
   }
@@ -417,7 +416,7 @@ AssignClaimWithRemark(claimUuid:any){
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Patient ID", "Patient Name", 'DOS',"Insurance Name", "Insurance Type", "Claim Type" , "Estimated Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since", "Current Team"]
+      headers: ["Office", "Patient ID", "Patient Name", 'DOS',"Insurance Name", "Insurance Type", "Claim Type" , "Estimated Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since Date", "Current Team"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -445,6 +444,13 @@ AssignClaimWithRemark(claimUuid:any){
       if (e.lastTeamRemark == null) {
         e = { ...e, lastTeamRemark: '-' }
       }
+      if (e.pendingSince) {
+        let date: Date = new Date(e.pendingSince);
+        e = { ...e, pendingSince: `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}` };
+      }
+      else {
+        e = { ...e, pendingSince: '' };
+      }
       return e;
     })      //method add value as "-" or "0", if its empty or null.
 
@@ -461,7 +467,7 @@ AssignClaimWithRemark(claimUuid:any){
           "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
           "Last Team that Worked on this claim":  e.lastTeam,
           "Last Team's Remarks" : e.lastTeamRemark,
-          "Pending Since":e.pendingSince,
+          "Pending Since Date":e.pendingSince,
           "Currrent Team":  this.currentTeamName.teamName
         }
       })  //method aligns the header to the value in CSV.
@@ -475,16 +481,4 @@ AssignClaimWithRemark(claimUuid:any){
     this.loader.exportCSVLoader = false;
   }
 
-  showPendingSince(){
-    this.filteredItems.forEach((e:any) => {
-      if(e.dos){
-           let dos:any = new Date(e.dos);
-           let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
-           const diffTime = Math.abs(currentDate - dos);
-           let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-           e.pendingSince = diffDays < 2 ? `${diffDays} day` :  `${diffDays} days`
-      }
-    });
-  }
-  
 }

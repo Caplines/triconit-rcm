@@ -122,7 +122,6 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
         this.colorChange();
-        this.showPendingSince();
       }
       // else {
       //   this.loader.listClaimLoader = false;
@@ -575,6 +574,13 @@ export class ListOfClaimsComponent implements OnInit {
       if (e.lastTeam == null) {
         e = { ...e, lastTeam: '-' }
       }
+      if (e.pendingSince) {
+        let date: Date = new Date(e.pendingSince);
+        e = { ...e, pendingSince: `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}` };
+      }
+      else {
+        e = { ...e, pendingSince: '' };
+      }
       return e;
     })      //method add value as "-" or "0", if its empty or null.
 
@@ -763,7 +769,6 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
         this.colorChange();
-        this.showPendingSince();
       }
       // else {
       //   this.loader.listClaimLoader = false;
@@ -831,15 +836,4 @@ export class ListOfClaimsComponent implements OnInit {
     });
   }
 
-  showPendingSince(){
-    this.filteredItems.forEach((e:any) => {
-      if(e.dos){
-           let dos:any = new Date(e.dos);
-           let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
-           const diffTime = Math.abs(currentDate - dos);
-           let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-           e.pendingSince = diffDays < 2 ? `${diffDays} day` :  `${diffDays} days`
-      }
-    });
-  }
 }
