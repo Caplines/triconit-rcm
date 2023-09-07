@@ -13,4 +13,5 @@ public class PendancyPdfDto {
 	private String lname;
 	private String assignedUser;
 	private int remoteLiteRejections;
+	private String companyName;
 }

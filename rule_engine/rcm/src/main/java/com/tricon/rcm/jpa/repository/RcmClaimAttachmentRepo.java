@@ -60,4 +60,8 @@ public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment
 			+ "where claim_uuid=:claimuUuid", nativeQuery = true)
 	int attachmentCount(@Param("claimuUuid") String claimuUuid);
 	
+	@Modifying
+	@Query(value = "update rcm_claims set attachment_count=:count where claim_uuid=:claimuUuid", nativeQuery = true)
+	int updateAttachmentCountInRcmClaim(@Param("claimuUuid") String claimuUuid, @Param("count") int count);
+	
 }

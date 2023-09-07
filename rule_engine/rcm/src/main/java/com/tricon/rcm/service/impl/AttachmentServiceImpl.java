@@ -163,16 +163,16 @@ public class AttachmentServiceImpl {
 		File renameFile = null;
 		String renameFileName = null;
 		RcmUser loginUser = null;
-		RcmClaims claims=null;
-		int status = 0;
+		RcmClaims claims = null;
+		int deleteCount = 0;
 		List<RcmClaimAttachmentDto> data = attachmentRepo.findByAttachmentsById(dto.getClaimAttachmentId(),
 				dto.getClaimUuid());
 		if (!data.isEmpty()) {
 			for (RcmClaimAttachmentDto d : data) {
-				String checkEmptyFileName=d.getFileName();
-				if(checkEmptyFileName==null ||checkEmptyFileName.isEmpty()) {
-					response = FileResponseDto.builder().msg("Empty FileName").fileResponseStatus(false)
-							.build();
+				int status = 0;
+				String checkEmptyFileName = d.getFileName();
+				if (checkEmptyFileName == null || checkEmptyFileName.isEmpty()) {
+					response = FileResponseDto.builder().msg("Empty FileName").fileResponseStatus(false).build();
 					return response;
 				}
 				existingFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
@@ -185,45 +185,62 @@ public class AttachmentServiceImpl {
 					// find existing rename(remove) file from db
 
 					RcmClaimAttachmentDto renameFileData = attachmentRepo.findRenameFile(checkEmptyFileName,
-							d.getClaimUuid());
+							dto.getClaimUuid());
 					if (renameFileData == null) {
-						status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), renameFileName);
-						if (status > 0) {
-							existingFile.renameTo(renameFile);
-							claims = claimRepo.findByClaimUuid(d.getClaimUuid());
-							if(claims!=null) {
-							claims.setAttachmentCount(claims.getAttachmentCount()==0?0:claims.getAttachmentCount()-1);
-							claimRepo.save(claims);}else logger.error("Claim Does't Exist");
-							response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
-									.fileResponseStatus(true).build();
+						boolean isTrue = existingFile.renameTo(renameFile);
+						if (isTrue) {
+							status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), renameFileName);
+							if (status > 0) {
+								System.out.println("before1:"+deleteCount);
+								++deleteCount;
+								System.out.println("after1:"+deleteCount);
+								response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
+										.fileResponseStatus(true).build();
+							}
 						}
-					} else {
 
+					} else {
 						String reName = Constants.REMOVE_ATTACHMENT_PREFIX.concat(renameFileData.getRenameFile());
-						status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), reName);
-						if (status > 0) {
-							File replaceFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
-									.concat(File.separator).concat(reName));
-							existingFile.renameTo(replaceFile);
-							claims = claimRepo.findByClaimUuid(d.getClaimUuid());
-							if(claims!=null) {
-							claims.setAttachmentCount(claims.getAttachmentCount()==0?0:claims.getAttachmentCount()-1);
-							claimRepo.save(claims);}else logger.error("Claim Does't Exist");
-							response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
-									.fileResponseStatus(true).build();
+						File replaceFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
+								.concat(File.separator).concat(reName));
+						boolean isTrue = existingFile.renameTo(replaceFile);
+						if (isTrue) {
+							status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), reName);
+							if (status > 0) {
+								System.out.println("before2:"+deleteCount);
+								++deleteCount;
+								System.out.println("after2:"+deleteCount);
+								response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
+										.fileResponseStatus(true).build();
+							}
 						}
+
 					}
 
 					if (status <= 0) {
 						response = FileResponseDto.builder().msg(MessageConstants.UPDATION_FAIL)
 								.fileResponseStatus(false).build();
+						return response;
 					}
-				} else
+				} else {
 					response = FileResponseDto.builder().msg(MessageConstants.FILE_NOT_EXIST).fileResponseStatus(false)
 							.build();
-			   }
-		     } else
-			       response = FileResponseDto.builder().msg(MessageConstants.RECORD_NOT_EXIST).fileResponseStatus(false)
+					return response;
+				}
+			}
+
+			// update attachements count in rcm claim table
+
+			if (deleteCount > 0 ) {
+				claims = claimRepo.findByClaimUuid(dto.getClaimUuid());
+				System.out.println("fetchPrevious counts:"+claims.getAttachmentCount());
+				if (claims != null)
+					attachmentRepo.updateAttachmentCountInRcmClaim(dto.getClaimUuid(),
+							claims.getAttachmentCount() == 0 ? 0 : claims.getAttachmentCount()-deleteCount);
+
+			}
+		} else
+			response = FileResponseDto.builder().msg(MessageConstants.RECORD_NOT_EXIST).fileResponseStatus(false)
 					.build();
 
 		return response;

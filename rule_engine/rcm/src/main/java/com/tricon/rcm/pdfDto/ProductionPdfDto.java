@@ -9,4 +9,5 @@ public class ProductionPdfDto {
 	private String lname;
 	private String total;
 	private String days;
+	private String companyName;
 }

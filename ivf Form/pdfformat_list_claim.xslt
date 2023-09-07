@@ -149,7 +149,10 @@ version="1.0" >
                        <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>
                        <td><xsl:value-of select="claimAge"/></td>
                        <td><xsl:value-of select="timelyFilingLimitData"/></td>
-                       <td><xsl:value-of select="pendingSince"/></td> 
+                       <td><xsl:variable name="month" select="substring(pendingSince, 6, 2)" />
+                       <xsl:variable name="day" select="substring(pendingSince, 9, 2)" />
+                       <xsl:variable name="year" select="substring(pendingSince, 1, 4)" />
+                       <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>
                        <td>
                            <xsl:choose>
                            <xsl:when test="substring(claimId, string-length(claimId) - 1) = '_P'">

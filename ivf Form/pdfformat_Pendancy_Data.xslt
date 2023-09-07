@@ -102,9 +102,10 @@ version="1.0" >
              <td class="bgWhite">
                  <table class="inner-table">
                      <tr class="bgWhite">
-                          <td colspan="7" class="tableHeading">Pendancy (<xsl:value-of select="clientName"/>)</td>
+                          <td colspan="8" class="tableHeading">Pendancy (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
+                         <td>Client</td>
                          <td>Office</td>
                          <td>User Assignment</td>
                          <td>Oldest Pending Date</td>
@@ -118,12 +119,14 @@ version="1.0" >
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
                     <td><xsl:value-of select="totalCount"/></td>
                     <td><xsl:value-of select="totalRemLiteReject"/></td>
                     <td><xsl:value-of select="totalcountAndRemLiteReject"/></td>
                      </tr> 
                       <xsl:for-each select="data/data">   
                      <tr class="whiteBg">   
+                         <td><xsl:value-of select="companyName"/></td>
                          <td><xsl:value-of select="officeName"/></td>
                          <td><xsl:value-of select="concat(fname,' ',lname)"/></td>
                          <td><xsl:value-of select="opdtd"/></td>

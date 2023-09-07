@@ -101,7 +101,7 @@ exportToCsv() {
   this.loader.exportCSVLoader=true;
   let options: any = {
     showLabels: true,
-    headers: ["Associate Name","Total Production", "Average Production (Per Day)"]
+    headers: ["Client","Associate Name","Total Production", "Average Production (Per Day)"]
   }
   let excelData: any;
   excelData = [...this.productionData];
@@ -121,6 +121,7 @@ exportToCsv() {
   excelData = excelData.map(({uuid,fname,lname,cd,...excelData }: any) => excelData) //to remove required properties in excel
   excelData = excelData.map((e:any)=>{
     return{
+      "Client":e.companyName,
       "Associate Name":e.fullName,
       "Total Production":e.total,
       "Average Production (Per Day)":e.days,
@@ -129,6 +130,7 @@ exportToCsv() {
   excelData.unshift(                                        //method is used to show Total Row in CSV.
   {
     "OfficeName":'Total',
+    "ClientNme":'-',
     "Total Production":this.total,
     "Average Production (Per Day)":this.days
   }

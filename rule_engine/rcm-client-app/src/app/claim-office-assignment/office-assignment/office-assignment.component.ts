@@ -205,7 +205,7 @@ export class OfficeAssignmentComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "User Assignment", "Oldest Pending Date", "Oldest Pending DOS", "# of Claims to be Billed", "# of RemoteLite Rejections", "Total Pendency"],
+      headers: ["Client","Office", "User Assignment", "Oldest Pending Date", "Oldest Pending DOS", "# of Claims to be Billed", "# of RemoteLite Rejections", "Total Pendency"],
     }
     let excelData: any = JSON.parse(JSON.stringify(this.claimData));
     excelData = excelData.map((e: any) => {
@@ -232,6 +232,7 @@ export class OfficeAssignmentComponent implements OnInit {
 
     excelData = excelData.map((e: any) => {
       return {
+        "Client":e.companyName,
         "Office": e.officeName,
         "User Assignment": e.officeAssignedTo,
         "Oldest Pending Date": e.opdtd,
@@ -245,6 +246,7 @@ export class OfficeAssignmentComponent implements OnInit {
     excelData.unshift(                                        //method is used to show Total Row in CSV.
       {
         "Office": 'Total',
+        "Client": '-',
         "User Assignment": '-',
         "Oldest Pending Date": '-',
         "Oldest Pending DOS": '-',

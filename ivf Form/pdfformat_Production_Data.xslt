@@ -106,17 +106,20 @@
                           <td colspan="7" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
+                         <td>Client</td>
                          <td>Associate Name</td>
                          <td>Total Production</td>
                          <td>Average Production (Per Day)</td>
                      </tr>
-                    <tr style="background-color:d#A9A9A9;">
+                    <tr style="background-color:#A9A9A9;">
                     <td >Total</td>
+                    <td></td>
                     <td><xsl:value-of select="sum(data/data/total)"/></td>
                     <td><xsl:value-of select="sum(data/data/days)"/></td>
                      </tr>
                       <xsl:for-each select="data/data">
                      <tr class="whiteBg">
+                         <td><xsl:value-of select="companyName"/></td>
                          <td><xsl:value-of select="concat(fname,' ',lname)"/></td>
                          <td><xsl:value-of select="total"/></td>
                          <td><xsl:value-of select="days"/></td>

@@ -27,7 +27,7 @@
                                 </select>
                             </div>
                             <div>
-                                <button type="button" class="icon-btn" (click)="saveToPdf('table')"
+                                <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="claimData.length==0">
                                     <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                                     class="spinner-border text-danger mx-1"></span>
@@ -47,6 +47,19 @@
                                         id="table">
                                         <thead>
                                             <tr>
+                                                <th class="width-200 min-max-180">
+                                                    <div class="dFlex">
+                                                        Client
+                                                        <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['companyName']}"
+                                                                (click)="sortData(claimData,'companyName','asc','string'); isSorted['companyName'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['companyName']}"
+                                                                (click)="sortData(claimData,'companyName','desc','string');isSorted['companyName'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
                                                 <th class="width-200 min-max-180">
                                                     <div class="dFlex">
                                                         Office
@@ -149,6 +162,7 @@
                                                 <td>10/30/2022</td> -->
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
                                                 <td class="alignRight">{{totalClaimData.totalCount}}</td>
                                                 <td class="alignRight">{{totalClaimData.totalRemLiteReject}}</td>
                                                 <td class="alignRight">{{totalClaimData.totalcountAndRemLiteReject}}
@@ -161,6 +175,7 @@
                                             <ng-container *ngIf="!loader.showLoader">
 
                                                 <tr *ngFor="let lg of claimData">
+                                                    <td>{{lg.companyName}}</td>
                                                     <td>{{lg.officeName}}</td>
                                                     <td>
                                                         <select class="form-control select-editable" name="" id=""

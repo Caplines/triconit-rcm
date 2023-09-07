@@ -10,5 +10,6 @@ export interface ClaimAssignmentDataModel {
     lname: string;
     assignedUser: string;
     remoteLiteRejections: number;
+    companyName: string;
 
 }

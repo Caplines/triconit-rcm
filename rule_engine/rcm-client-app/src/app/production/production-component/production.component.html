@@ -25,22 +25,25 @@
                                     <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar" id="table" *ngIf="productionData.length>0">
                                         <thead>
                                             <tr>
+                                                <th>Client</th>
                                                 <th>Associate Name</th>
                                                 <th>Total Production</th>
                                                 <th>Average Production (Per Day)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr *ngIf="loader.showLoader"><td colspan="7" class="text-center"><span class="loader-data"></span> </td></tr>
+                                            <tr *ngIf="loader.showLoader"><td colspan="8" class="text-center"><span class="loader-data"></span> </td></tr>
                                             <ng-container *ngIf="!loader.showLoader">
                                                 <tr class="totalRow">
                                                     <td>Total</td>
+                                                    <td></td>
                                                 <td>{{total}}</td>
                                                 <td>{{days}}</td>
                                             </tr>
                                             
                                             <ng-container *ngFor="let data of productionData;">
                                                 <tr >
+                                                    <td>{{data.companyName}}</td>
                                                     <td>{{data.fname}} {{data.lname}}</td>
                                                     <td>{{data.total}}</td>
                                                     <td>{{data.days}}</td>
