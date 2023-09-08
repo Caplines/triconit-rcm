@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -17,6 +17,7 @@ import { ClaimAssignToTeamModel } from '../models/claim_assign_to_team';
 import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
 import Utils from '../util/utils';
 import { DownLoadService } from '../service/download.service';
+import { AttachFileComponent } from '../shared/attach-file/attach-file.component';
 
 @Component({
   selector: 'app-billing-claims',
@@ -26,7 +27,7 @@ import { DownLoadService } from '../service/download.service';
 })
 
 export class BillingClaimsComponent {
-
+  @ViewChild('child') child!:AttachFileComponent;
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertAssign: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   claimRcm: ClaimRcmDataModel;
@@ -162,6 +163,8 @@ export class BillingClaimsComponent {
   // }
 
   saveClaim(type: string) {
+  this.submitAttachment((res:any)=>{
+   if(res.status){
     let ths = this;
     ths.assignType = type;
     ths.claimEditModel = {};
@@ -255,9 +258,11 @@ export class BillingClaimsComponent {
       ths.claimEditModel.assignTouuid = "";
 
       ths.openAssignModal('tl');
-
-    }
   }
+}
+})
+
+}
 
 
   addErrorDisplay(el: HTMLElement) {
@@ -877,11 +882,9 @@ export class BillingClaimsComponent {
     this.runAutoRules(true);
   }
 
-  checkForAttachmentFiles(assignTo:any){
-    this.submitAttachment(assignTo);
-  }
-
   assignToOtherTeam() {
+    this.submitAttachment((res:any)=>{
+      if(res.status){
     let ths = this;
     ths.otherErrormsg = "";
     ths.claimEditModel.assignToOtherTeam = true;
@@ -915,12 +918,14 @@ export class BillingClaimsComponent {
         ths.showAlertPopup(callback);
       });
     }
-
-
+  }
+})
 
   }
 
   assignToLead() {
+  this.submitAttachment((res:any)=>{
+  if(res.status){
     let ths = this;
     ths.tlErrormsg = "";
     this.claimEditModel.assignToTL = true;
@@ -957,8 +962,9 @@ export class BillingClaimsComponent {
 
         }
       })
-
     }
+  }
+    })
   }
 
   openUpdateIvPopup(event: any) {
@@ -1106,7 +1112,7 @@ export class BillingClaimsComponent {
     return this.removedFilesMap.get(claimUuid);
   }
 
-  submitAttachment(assignTo:any){
+  submitAttachment(callback:any){
       let removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
       if(!removedFiles){
           removedFiles=[];
@@ -1115,31 +1121,25 @@ export class BillingClaimsComponent {
       if(!Array.isArray(removedFiles)){
           this.appService.removeAttachmentFile(removedFiles,(res:any)=>{
                 if(res.status == 200 && res.data.fileResponseStatus){
-                    this.finalSubmitAttachment(selectedFiles,assignTo);
+                    this.finalSubmitAttachment(selectedFiles,0,callback);
                 } else{
                   this.showAlertPopup(res);
                 }
           })
       } else {
             if(!selectedFiles){
-              if(assignTo == 'assignToOtherTeam') this.assignToOtherTeam();
-              if(assignTo == 'assignToLead') this.assignToLead();
+              return callback({'status':true});
             } else{
-              this.finalSubmitAttachment(selectedFiles,assignTo);
+              this.finalSubmitAttachment(selectedFiles,0,callback);
             }
       }
   }
 
 
-  finalSubmitAttachment(selectedFile:any[],fromTeam:any){
-      this.loopThroughData(selectedFile,0,fromTeam);
-  }
-
-  loopThroughData(dataArray: any[], currentIndex: number,assignTo:any) {
+  finalSubmitAttachment(dataArray: any[], currentIndex: number,callback:any){
     if (currentIndex >= dataArray.length) {
-      if(assignTo == 'assignToOtherTeam') this.assignToOtherTeam();
-      if(assignTo == 'assignToLead') this.assignToLead();
-      return;
+        // this.child.clearAttachmentFiles();
+      return callback({'status':true});
     }
     const currentData = dataArray[currentIndex];
     let formData: any = new FormData();
@@ -1147,11 +1147,12 @@ export class BillingClaimsComponent {
     formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
     formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
     this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
-      if (res.data.fileResponseStatus) {
-        this.loopThroughData(dataArray, currentIndex + 1,assignTo);
+      if (res.data.status) {
+        
+        this.finalSubmitAttachment(dataArray, currentIndex + 1,callback);
       } else {
        this.showAlertPopup(res);
       }
     })
-}
+  }
 }
