@@ -5,8 +5,8 @@ public interface RcmClaimAttachmentDto {
 	String getFileName();
 	boolean getStatus();
 	boolean getIsDeleted();
-	int getId();
-	int getAttachmentId();
+	Integer getId();
+	Integer getAttachmentId();
 	String getClaimUuid();
 	String getFileLocation();
 	String getRenameFile();

@@ -66,9 +66,8 @@ public class AttachmentServiceImpl {
 	private final Logger logger = LoggerFactory.getLogger(AttachmentServiceImpl.class);
 
 	@Transactional(rollbackOn = Exception.class)
-	public FileResponseDto saveClaimAttachment(MultipartFile file, String claimUuid, JwtUser jwtUser, int createdByteam,
+	public ClaimAttachmentsResponseDto  saveClaimAttachment(MultipartFile file, String claimUuid, JwtUser jwtUser, int createdByteam,
 			int attachmentTypeId) throws Exception {
-		FileResponseDto response = null;
 		InputStream in = null;
 		String fullPathName = utilService.getFileAbsolutePath(attachmentDirPath);
 		RcmClaimAttachment claimAttachment = null;
@@ -79,11 +78,17 @@ public class AttachmentServiceImpl {
 		String fileName = null;
 		RcmTeam team = null;
 		int fileCounts=0;
+		ClaimAttachmentsResponseDto response = null;
+		ClaimAttachmentsResponseDto.File inner=null;
 		if (fullPathName != null) {
 			rcmClaims = claimRepo.findByClaimUuid(claimUuid);
-			if (rcmClaims == null)
-				return FileResponseDto.builder().msg(MessageConstants.CLAIM_NOT_EXIST).fileResponseStatus(false)
+			if (rcmClaims == null) {
+				return ClaimAttachmentsResponseDto.builder().msg(MessageConstants.CLAIM_NOT_EXIST).status(false)
 						.build();
+			}
+			if (!rcmClaims.isPending()) {
+				return ClaimAttachmentsResponseDto.builder().msg(MessageConstants.CLAIM_ALREADY_SUBMITTED).status(false).build();
+			}
 			try {
 				in = file.getInputStream();
 				attachmentType = attachmentTypeRepo.findById(attachmentTypeId);
@@ -105,10 +110,8 @@ public class AttachmentServiceImpl {
 					claimAttachment.setAtchType(attachmentType.orElse(null));
 					claimAttachment.setUuid(rcmClaims);
 					if (fileCounts<1) {
+						inner=new ClaimAttachmentsResponseDto().new File();
 						
-						//save attachments data
-						attachmentRepo.save(claimAttachment);
-
 						// Will Make folder with the help of claimUuid to save each file separatlty
 						claimAttachmentFolder = utilService
 								.getFileAbsolutePath(attachmentDirPath.concat(File.separator).concat(claimUuid));
@@ -116,22 +119,30 @@ public class AttachmentServiceImpl {
 						Files.copy(in, Paths.get(claimAttachmentFolder.concat(File.separator).concat(fileName)),
 								StandardCopyOption.REPLACE_EXISTING);
 						
+	
+						//save attachments data
+						claimAttachment=attachmentRepo.save(claimAttachment);
+						
 						//save attachments count in rcm table
 						
 						logger.info("Previous Counts:"+rcmClaims.getAttachmentCount());
 						attachmentRepo.updateAttachmentCountInRcmClaim(claimUuid, rcmClaims.getAttachmentCount()+1);
-						
+						inner.setName(fileName);				
+						response = ClaimAttachmentsResponseDto.builder().msg(MessageConstants.FILE_UPLOAD_SUCCESS)
+								.id(claimAttachment.getId())
+								.attachmentId(attachmentType.get().getId())
+								.file(inner).status(true).build();
 					}
-					response = FileResponseDto.builder().msg(MessageConstants.DATA_SAVED).fileResponseStatus(true)
-							.build();
-					
+					if (fileCounts >= 1) {
+						response = ClaimAttachmentsResponseDto.builder().msg(MessageConstants.FILE_UPLOAD_SUCCESS)
+								.id(null).attachmentId(null).file(null).status(true).build();
+					}
 				} else
-					response = FileResponseDto.builder().msg(MessageConstants.ATTACHMENT_TYPE_NOT_EXIST)
-							.fileResponseStatus(false).build();
+					response =ClaimAttachmentsResponseDto.builder().msg(MessageConstants.ATTACHMENT_TYPE_NOT_EXIST).status(false).build();
 			} catch (IOException e) {
 				e.printStackTrace();
 				logger.error(e.getMessage());
-				response = FileResponseDto.builder().msg(null).fileResponseStatus(false).build();
+				response = ClaimAttachmentsResponseDto.builder().msg(null).status(false).build();
 			} finally {
 				in.close();
 			}

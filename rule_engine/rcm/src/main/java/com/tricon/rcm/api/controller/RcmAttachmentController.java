@@ -41,7 +41,7 @@ public class RcmAttachmentController extends BaseHeaderController {
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> uploadClaimAttachment(@RequestParam String claimUuid, @RequestParam int attachmentTypeId,
 			@RequestParam MultipartFile file, Model model) {
-		FileResponseDto response = null;
+		ClaimAttachmentsResponseDto  response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity
