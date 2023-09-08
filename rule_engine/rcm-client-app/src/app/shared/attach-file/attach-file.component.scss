@@ -34,8 +34,7 @@
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    max-width: 40%;
-    width: auto;
+    width: 780px;
     // max-height: 370px;
 }
 
@@ -57,7 +56,6 @@
 
 .wrapper {
     margin: auto;
-    max-width: 640px;
     padding-top: 0px;
     text-align: center;
 }
@@ -186,9 +184,18 @@ h1 {
                         }
 
                         .close {
-                            font-size: 24px;
+                            font-size: 22px;
                             margin-top: 6px;
                             color: red;
+                            width: 24px;
+                            height: 24px;
+                            border: 2px solid #ff0000;
+                            border-radius: 50%;
+                            line-height: 0;
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+
                         }
 
                         .fileEllipsis {

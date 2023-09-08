@@ -47,7 +47,7 @@ public class RcmAttachmentController extends BaseHeaderController {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
-		if (claimUuid == null || file == null || claimUuid.isEmpty()) {
+		if (claimUuid == null || file == null || claimUuid.isEmpty() || file.isEmpty()) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}

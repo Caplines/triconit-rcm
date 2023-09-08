@@ -80,27 +80,23 @@ public class AttachmentServiceImpl {
 		RcmTeam team = null;
 		int fileCounts=0;
 		if (fullPathName != null) {
+			rcmClaims = claimRepo.findByClaimUuid(claimUuid);
+			if (rcmClaims == null)
+				return FileResponseDto.builder().msg(MessageConstants.CLAIM_NOT_EXIST).fileResponseStatus(false)
+						.build();
 			try {
-				rcmClaims = claimRepo.findByClaimUuid(claimUuid);
-				if (rcmClaims == null)
-					return FileResponseDto.builder().msg(MessageConstants.CLAIM_NOT_EXIST).fileResponseStatus(false)
-							.build();
 				in = file.getInputStream();
 				attachmentType = attachmentTypeRepo.findById(attachmentTypeId);
-				if (attachmentType.isPresent() || (file.isEmpty() && attachmentTypeId == 0)) {
-					
-					
-					loginUser = userRepo.findByEmail(jwtUser.getUsername());
+				if (attachmentType.isPresent() && !file.isEmpty()) {
 					team = new RcmTeam();
 					claimAttachment = new RcmClaimAttachment();
+					loginUser = userRepo.findByEmail(jwtUser.getUsername());
+					fileName = Integer.toString(attachmentTypeId).concat(Constants.HYPHEN)
+							.concat(file.getOriginalFilename());
+					fileCounts=attachmentRepo.fileCount(fileName ,claimUuid);
 					team.setId(createdByteam);
 					claimAttachment.setCreatedBy(loginUser);
 					claimAttachment.setCreatedByteam(team);
-					if (!file.isEmpty()) {
-						fileName = Integer.toString(attachmentTypeId).concat(Constants.HYPHEN)
-								.concat(file.getOriginalFilename());
-						fileCounts=attachmentRepo.fileCount(fileName ,claimUuid);
-					}
 					claimAttachment.setFileName(fileName);
 					claimAttachment.setFileLocation(fullPathName);
 					claimAttachment.setStatus(true);
@@ -108,21 +104,26 @@ public class AttachmentServiceImpl {
 					claimAttachment.setCreatedDate(Timestamp.from(Instant.now()));
 					claimAttachment.setAtchType(attachmentType.orElse(null));
 					claimAttachment.setUuid(rcmClaims);
-					if(fileCounts<1){
+					if (fileCounts<1) {
+						
+						//save attachments data
 						attachmentRepo.save(claimAttachment);
-						attachmentRepo.updateAttachmentCountInRcmClaim(claimUuid,rcmClaims.getAttachmentCount()+1);
-					}
-					if (!file.isEmpty() && fileCounts<1) {
-						// Will Make folder with the help of claimUuid to save each file separatlty
 
+						// Will Make folder with the help of claimUuid to save each file separatlty
 						claimAttachmentFolder = utilService
 								.getFileAbsolutePath(attachmentDirPath.concat(File.separator).concat(claimUuid));
 
 						Files.copy(in, Paths.get(claimAttachmentFolder.concat(File.separator).concat(fileName)),
-								StandardCopyOption.REPLACE_EXISTING);	
+								StandardCopyOption.REPLACE_EXISTING);
+						
+						//save attachments count in rcm table
+						
+						logger.info("Previous Counts:"+rcmClaims.getAttachmentCount());
+						attachmentRepo.updateAttachmentCountInRcmClaim(claimUuid, rcmClaims.getAttachmentCount()+1);
+						
 					}
-						response = FileResponseDto.builder().msg(MessageConstants.DATA_SAVED).fileResponseStatus(true)
-								.build();
+					response = FileResponseDto.builder().msg(MessageConstants.DATA_SAVED).fileResponseStatus(true)
+							.build();
 					
 				} else
 					response = FileResponseDto.builder().msg(MessageConstants.ATTACHMENT_TYPE_NOT_EXIST)
@@ -190,9 +191,7 @@ public class AttachmentServiceImpl {
 						if (isTrue) {
 							status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), renameFileName);
 							if (status > 0) {
-								System.out.println("before1:"+deleteCount);
 								++deleteCount;
-								System.out.println("after1:"+deleteCount);
 								response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
 										.fileResponseStatus(true).build();
 							}
@@ -206,9 +205,7 @@ public class AttachmentServiceImpl {
 						if (isTrue) {
 							status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), reName);
 							if (status > 0) {
-								System.out.println("before2:"+deleteCount);
 								++deleteCount;
-								System.out.println("after2:"+deleteCount);
 								response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
 										.fileResponseStatus(true).build();
 							}
@@ -232,11 +229,12 @@ public class AttachmentServiceImpl {
 
 			if (deleteCount > 0 ) {
 				claims = claimRepo.findByClaimUuid(dto.getClaimUuid());
-				System.out.println("fetchPrevious counts:"+claims.getAttachmentCount());
-				if (claims != null)
+				logger.info("Previous Counts:"+claims.getAttachmentCount());
+				if (claims != null) {
 					attachmentRepo.updateAttachmentCountInRcmClaim(dto.getClaimUuid(),
 							claims.getAttachmentCount() == 0 ? 0 : claims.getAttachmentCount()-deleteCount);
-
+					logger.info("Total files deleted:"+deleteCount);
+				}
 			}
 		} else
 			response = FileResponseDto.builder().msg(MessageConstants.RECORD_NOT_EXIST).fileResponseStatus(false)
