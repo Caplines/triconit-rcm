@@ -59,12 +59,14 @@ import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.AssignOfficesToBillingUserDto;
 import com.tricon.rcm.dto.AssignUserOfficeDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
+import com.tricon.rcm.dto.ClaimAppointmentDto;
 import com.tricon.rcm.dto.ClaimDataDetails;
 import com.tricon.rcm.dto.ClaimDetailDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
+import com.tricon.rcm.dto.RcmClaimAppointmentDatas;
 import com.tricon.rcm.dto.RcmClaimAppointmentMainRootDto;
 import com.tricon.rcm.dto.RcmClaimDataDto;
 import com.tricon.rcm.dto.RcmClaimDetMainRootDto;
@@ -1057,19 +1059,47 @@ public class RuleEngineService {
 		
 	}
 
-	public String fetchAppointmentDate(RcmClaims claim ,RcmOffice off ) {
-		
-		String officeUuid= claim.getOffice().getUuid();
-		String appointmentDate="";
-		HttpEntity<String> entity = new HttpEntity<String>(headers);
-		String param = "?password=" +eagleSoftDBDetailsRepo.findByOffice(off).getPassword() + "&patientId=" + claim.getPatientId()
-		+"&startDate=";
-		param = param + "&office=" + officeUuid;
+	/**
+	 * Fetch Appointment Date From Rule engine
+	 * @param claim
+	 * @param off
+	 * @return
+	 */
+	public String fetchAppointmentDate(RcmClaims claim, RcmOffice off) {
 
-		ResponseEntity<RcmClaimAppointmentMainRootDto> appointmentData = restTemplate.exchange(ev.getProperty("rcm.claimAppointmenturl") + param,
-				HttpMethod.GET, entity, RcmClaimAppointmentMainRootDto.class);
-		
+		String officeUuid = claim.getOffice().getUuid();
+		String appointmentDate = "";
+		try {
+			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			String param = "?password=" + eagleSoftDBDetailsRepo.findByOffice(off).getPassword() + "&patientId="
+					+ claim.getPatientId() + "&startDate=";
+			param = param + "&office=" + officeUuid;
+			
+			//TEST DATA
+			/*param = "?password=" + "134568" + "&patientId="
+					+ "24734" + "&startDate=8/31/2023";
+			param = param + "&office=" + "c04a2dbe-9bc5-11e8-9f0b-8c16451459cd";*/
+			
+
+			ResponseEntity<RcmClaimAppointmentMainRootDto> result = restTemplate.exchange(
+					ev.getProperty("rcm.claimAppointmenturl") + param, HttpMethod.GET, entity,
+					RcmClaimAppointmentMainRootDto.class);
+
+			RcmClaimAppointmentMainRootDto rootDto = result.getBody();
+
+			for (RcmClaimAppointmentDatas datas : rootDto.getData().getDatas()) {
+				try {
+					for (ClaimAppointmentDto re : datas.getData()) {
+						appointmentDate = re.getStartDate();
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		return appointmentDate;
-		
 	}
+		
 }

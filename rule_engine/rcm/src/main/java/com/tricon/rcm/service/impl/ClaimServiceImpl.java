@@ -3214,7 +3214,7 @@ public class ClaimServiceImpl {
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_323);
 					String appointmentDate=ruleEngineService.fetchAppointmentDate(claim, off);
 					allLIst.addAll(
-							ruleBookService.rule323(rule, "", claim));
+							ruleBookService.rule323(rule,appointmentDate, claim));
 					/*rule = getRulesFromList(rules, RuleConstants.RULE_ID_306);
 					allLIst.addAll(
 							ruleBookService.rule306(rule, ivData, claim));
@@ -3223,8 +3223,8 @@ public class ClaimServiceImpl {
 					//if (deleteOld) {
 					//	rcmClaimRuleValidationRepo.deleteByClaimId(claim.getClaimUuid());
 					//}
-					claim.setAssignmentOfBenefits(ivData.getPlanAssignmentofBenefits());
-					dto.setAssignmentOfBenefits(ivData.getPlanAssignmentofBenefits());
+					if(ivData!=null) claim.setAssignmentOfBenefits(ivData.getPlanAssignmentofBenefits());
+					if(ivData!=null) dto.setAssignmentOfBenefits(ivData.getPlanAssignmentofBenefits());
 					saveAutoRuleReport(allLIst, user, claim, rules,partialHeader);
 					claim.setAutoRuleRun(true);
 					rcmClaimRepository.save(claim);

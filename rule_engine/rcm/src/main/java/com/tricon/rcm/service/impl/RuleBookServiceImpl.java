@@ -459,7 +459,7 @@ public class RuleBookServiceImpl {
 	public List<TPValidationResponseDto> rule323(RcmRules rule, String appointmentDate, RcmClaims rcmClaim) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
-
+       //Date format when not blank --2023-08-31 09:00:00.000000
 		List<TPValidationResponseDto> dList = new ArrayList<>();
         if (appointmentDate==null) appointmentDate="";
 		try {
