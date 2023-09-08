@@ -112,6 +112,9 @@ public class AttachmentServiceImpl {
 					if (fileCounts<1) {
 						inner=new ClaimAttachmentsResponseDto().new File();
 						
+						//save attachments data
+						claimAttachment=attachmentRepo.save(claimAttachment);
+						
 						// Will Make folder with the help of claimUuid to save each file separatlty
 						claimAttachmentFolder = utilService
 								.getFileAbsolutePath(attachmentDirPath.concat(File.separator).concat(claimUuid));
@@ -120,22 +123,18 @@ public class AttachmentServiceImpl {
 								StandardCopyOption.REPLACE_EXISTING);
 						
 	
-						//save attachments data
-						claimAttachment=attachmentRepo.save(claimAttachment);
-						
 						//save attachments count in rcm table
 						
 						logger.info("Previous Counts:"+rcmClaims.getAttachmentCount());
 						attachmentRepo.updateAttachmentCountInRcmClaim(claimUuid, rcmClaims.getAttachmentCount()+1);
-						inner.setName(fileName);				
+						inner.setName(file.getOriginalFilename());				
 						response = ClaimAttachmentsResponseDto.builder().msg(MessageConstants.FILE_UPLOAD_SUCCESS)
 								.id(claimAttachment.getId())
 								.attachmentId(attachmentType.get().getId())
-								.file(inner).status(true).build();
+								.file(inner).status(true).isDeleted(claimAttachment.isDeleted()).build();
 					}
 					if (fileCounts >= 1) {
-						response = ClaimAttachmentsResponseDto.builder().msg(MessageConstants.FILE_UPLOAD_SUCCESS)
-								.id(null).attachmentId(null).file(null).status(true).build();
+						response = ClaimAttachmentsResponseDto.builder().msg(MessageConstants.FILE_UPLOAD_SUCCESS).status(true).build();
 					}
 				} else
 					response =ClaimAttachmentsResponseDto.builder().msg(MessageConstants.ATTACHMENT_TYPE_NOT_EXIST).status(false).build();
