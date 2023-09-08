@@ -111,23 +111,26 @@ public class AttachmentServiceImpl {
 					claimAttachment.setUuid(rcmClaims);
 					if (fileCounts<1) {
 						inner=new ClaimAttachmentsResponseDto().new File();
+						inner.setName(file.getOriginalFilename());
 						
 						//save attachments data
 						claimAttachment=attachmentRepo.save(claimAttachment);
+						
+						//save attachments count in rcm table
+					
+						logger.info("Previous Counts:"+rcmClaims.getAttachmentCount());
+						attachmentRepo.updateAttachmentCountInRcmClaim(claimUuid, rcmClaims.getAttachmentCount()+1);
+						
 						
 						// Will Make folder with the help of claimUuid to save each file separatlty
 						claimAttachmentFolder = utilService
 								.getFileAbsolutePath(attachmentDirPath.concat(File.separator).concat(claimUuid));
 
+						
 						Files.copy(in, Paths.get(claimAttachmentFolder.concat(File.separator).concat(fileName)),
 								StandardCopyOption.REPLACE_EXISTING);
 						
-	
-						//save attachments count in rcm table
 						
-						logger.info("Previous Counts:"+rcmClaims.getAttachmentCount());
-						attachmentRepo.updateAttachmentCountInRcmClaim(claimUuid, rcmClaims.getAttachmentCount()+1);
-						inner.setName(file.getOriginalFilename());				
 						response = ClaimAttachmentsResponseDto.builder().msg(MessageConstants.FILE_UPLOAD_SUCCESS)
 								.id(claimAttachment.getId())
 								.attachmentId(attachmentType.get().getId())
