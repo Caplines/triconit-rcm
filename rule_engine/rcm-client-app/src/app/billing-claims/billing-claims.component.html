@@ -1168,14 +1168,14 @@
                                 </div>
                                 <div class="modal-footer">
                                     <ng-container *ngIf="assignModel.toLead">
-                                        <button type="button" class="btn btn-success" (click)="assignToLead()">Assign to
+                                        <button type="button" class="btn btn-success" (click)="checkForAttachmentFiles('assignToLead')">Assign to
                                             Team Lead</button>
                                     </ng-container>
                                     <ng-container *ngIf="assignModel.toOtherTeam">
                                         <button *ngIf="assignType == 'reviewed'" type="button" class="btn btn-success"
-                                            (click)="assignToOtherTeam()">Ready to be Submitted</button>
+                                            (click)="checkForAttachmentFiles('assignToOtherTeam')">Ready to be Submitted</button>
                                         <button *ngIf="assignType == 'assign'" type="button" class="btn btn-success"
-                                            (click)="assignToOtherTeam()">Assign to Other
+                                            (click)="checkForAttachmentFiles('assignToOtherTeam');">Assign to Other
                                             Team</button>
                                     </ng-container>
                                     <ng-container *ngIf="alert.showAlertPopup">
@@ -1228,7 +1228,6 @@
                         <div>
 
                             <div>
-
                                 <div class="alert fade show text-center" *ngIf="alert.showAlertPopup"
                                     [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
                                     role="alert">

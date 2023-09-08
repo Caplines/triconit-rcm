@@ -877,8 +877,11 @@ export class BillingClaimsComponent {
     this.runAutoRules(true);
   }
 
+  checkForAttachmentFiles(assignTo:any){
+    this.submitAttachment(assignTo);
+  }
+
   assignToOtherTeam() {
-    this.submitAttachment();
     let ths = this;
     ths.otherErrormsg = "";
     ths.claimEditModel.assignToOtherTeam = true;
@@ -918,7 +921,6 @@ export class BillingClaimsComponent {
   }
 
   assignToLead() {
-    this.submitAttachment();
     let ths = this;
     ths.tlErrormsg = "";
     this.claimEditModel.assignToTL = true;
@@ -1104,7 +1106,7 @@ export class BillingClaimsComponent {
     return this.removedFilesMap.get(claimUuid);
   }
 
-  submitAttachment(){
+  submitAttachment(assignTo:any){
       let removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
       if(!removedFiles){
           removedFiles=[];
@@ -1113,27 +1115,30 @@ export class BillingClaimsComponent {
       if(!Array.isArray(removedFiles)){
           this.appService.removeAttachmentFile(removedFiles,(res:any)=>{
                 if(res.status == 200 && res.data.fileResponseStatus){
-                    this.finalSubmitAttachment(selectedFiles);
+                    this.finalSubmitAttachment(selectedFiles,assignTo);
                 } else{
                   this.showAlertPopup(res);
                 }
           })
       } else {
             if(!selectedFiles){
-              return;
+              if(assignTo == 'assignToOtherTeam') this.assignToOtherTeam();
+              if(assignTo == 'assignToLead') this.assignToLead();
             } else{
-              this.finalSubmitAttachment(selectedFiles);
+              this.finalSubmitAttachment(selectedFiles,assignTo);
             }
       }
   }
 
 
-  finalSubmitAttachment(selectedFile:any[]){
-      this.loopThroughData(selectedFile,0);
+  finalSubmitAttachment(selectedFile:any[],fromTeam:any){
+      this.loopThroughData(selectedFile,0,fromTeam);
   }
 
-  loopThroughData(dataArray: any[], currentIndex: number) {
+  loopThroughData(dataArray: any[], currentIndex: number,assignTo:any) {
     if (currentIndex >= dataArray.length) {
+      if(assignTo == 'assignToOtherTeam') this.assignToOtherTeam();
+      if(assignTo == 'assignToLead') this.assignToLead();
       return;
     }
     const currentData = dataArray[currentIndex];
@@ -1143,7 +1148,7 @@ export class BillingClaimsComponent {
     formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
     this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
       if (res.data.fileResponseStatus) {
-        this.loopThroughData(dataArray, currentIndex + 1);
+        this.loopThroughData(dataArray, currentIndex + 1,assignTo);
       } else {
        this.showAlertPopup(res);
       }
