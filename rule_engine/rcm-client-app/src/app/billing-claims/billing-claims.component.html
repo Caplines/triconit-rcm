@@ -256,7 +256,9 @@
                                 <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                 <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show"
                                     id="attachment-files">
-                                    <app-attach-file [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'isDetailPage':true}" (emitToParent)="receiveChildEvent($event)"></app-attach-file>
+                                    <app-attach-file
+                                        [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'isDetailPage':true,'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit)}"
+                                        (emitToParent)="receiveChildEvent($event)"></app-attach-file>
                                 </div>
                             </ng-container>
                             <div class="bold-b-text">
@@ -1187,10 +1189,10 @@
                             </div>
                         </div>
                         <div class="alert fade show text-center" *ngIf="alert['showAlertPopup']"
-                        [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
-                        role="alert">
-                        <strong>{{alert.alertMsg}}</strong>
-                    </div>
+                            [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
+                            role="alert">
+                            <strong>{{alert.alertMsg}}</strong>
+                        </div>
                         <!-- Modal End -->
                         <div class="action-buttons" *ngIf="actionButtons && (isBilling || isInternalAudit)">
                             <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
@@ -1272,7 +1274,7 @@
                                     (click)="updateIV(claimUUid,updatedIvfId,updatedTpId)">Update Values</button>
                             </div>
                         </div>
-                        <div class="alert fade show text-center" 
+                        <div class="alert fade show text-center"
                             [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
                             role="alert">
                             <strong>{{alert.alertMsg}}</strong>
@@ -1282,4 +1284,3 @@
                 </div>
             </div>
         </div>
-       
