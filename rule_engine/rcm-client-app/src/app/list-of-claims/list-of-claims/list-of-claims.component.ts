@@ -24,18 +24,19 @@ export class ListOfClaimsComponent implements OnInit {
   switchBox: any = { 'billing': true, 'reBilling': false };
   isSorted: any = {};
   loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
-  showFilteredDropdown: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false };
+  showFilteredDropdown: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket' : false };
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
   date: any;
 
-  isFilterAllSelected: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false };
+  isFilterAllSelected: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket' : false };
   filteredClaimType: any = [];
   filteredInsuranceName: any = [];
   filteredInsuranceType: any = [];
   filteredActionRequired: any = [];
   filteredLastTeamWorked: any = [];
+  filteredAgeBracket:any = [];
   clientName: string = '';
   isFilterValueExist: boolean = false;
   isLastTeam: boolean = false;
@@ -121,7 +122,10 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceName(subType);
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
+        this.filterOptionAgeBracket(subType);
         this.colorChange();
+        this.showAgeBracket();
+        this.showClaimIdWithDigits();
       }
       // else {
       //   this.loader.listClaimLoader = false;
@@ -142,6 +146,21 @@ export class ListOfClaimsComponent implements OnInit {
       this.isFilterValueExist = true;
     }
     this.isFilterAllSelected.claimType = true;
+  }
+
+  filterOptionAgeBracket(subType: string) {
+    if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist)) {
+      this.filteredAgeBracket = [];
+    }
+    if (subType == 'Fresh') {
+      this.filteredAgeBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
+      this.isFilterValueExist = true;
+    }
+    if (subType == 'sendBack') {
+      this.filteredAgeBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
+      this.isFilterValueExist = true;
+    }
+    this.isFilterAllSelected.ageBracket = true;
   }
 
   filterOptionActionRequired(subType: string) {
@@ -331,6 +350,11 @@ export class ListOfClaimsComponent implements OnInit {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
   }
 
   addOrRemoveFilterInsName() {
@@ -354,6 +378,11 @@ export class ListOfClaimsComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredClaimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
       });
     });
   }
@@ -382,6 +411,11 @@ export class ListOfClaimsComponent implements OnInit {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
   }
 
   addOrRemoveFilterStatus() {
@@ -406,6 +440,11 @@ export class ListOfClaimsComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredClaimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
       });
     });
   }
@@ -434,6 +473,44 @@ export class ListOfClaimsComponent implements OnInit {
         return checkbox.checked && checkbox['statusType'] == item['statusType'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+
+  }
+
+  addOrRemoveFilterAgeBracket() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
+      });
+    });
+
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
+      });
+    });
+
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredActionRequired.some((checkbox: any) => {
+        return checkbox.checked && checkbox['statusType'] == item['statusType'];
+      });
+    });
+
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredClaimType.some((checkbox: any) => {
+        return checkbox.checked && checkbox['claimType'] === item['claimType'];
+      });
+    });
 
   }
 
@@ -453,6 +530,23 @@ export class ListOfClaimsComponent implements OnInit {
       });
     });
     this.addOrRemoveFilterClaimType();
+  }
+
+  filterAgeBracket(filterProperty: any) {
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredAgeBracket.length; i++) {
+      if (this.filteredAgeBracket[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.ageBracket = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+      });
+    });
+    this.addOrRemoveFilterAgeBracket();
   }
 
   filterActionRequired(filterProperty: any) {
@@ -549,7 +643,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Patient ID","Claim Id", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date","Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
+      headers: ["Office", "Patient ID","Claim Id", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -592,12 +686,13 @@ export class ListOfClaimsComponent implements OnInit {
         return {
           "Office Name": e.officeName,
           "Patient ID": e.patientId,
-          "Claim Id":e.claimId,
+          "Claim Id":e.newClaimId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
           "Claim Age": e.claimAge,
           "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
           "Pending Since Date":e.pendingSince,
+          "Age Bracket":e.ageBracket,
           "Claim Type": e.claimType,
           "Action Required": e.actionRequired,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
@@ -614,12 +709,13 @@ export class ListOfClaimsComponent implements OnInit {
         return {
           "Office Name": e.officeName,
           "Patient ID": e.patientId,
-          "Claim Id":e.claimId,
+          "Claim Id":e.newClaimId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
           "Claim Age": e.claimAge,
           "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
           "Pending Since Date":e.pendingSince,
+          "Age Bracket":e.ageBracket,
           "Claim Type": e.claimType,
           "Action Required": e.actionRequired,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
@@ -692,6 +788,16 @@ export class ListOfClaimsComponent implements OnInit {
       });
       this.filterInsuranceType("insuranceType");
     }
+    if (filterProperty == "ageBracket") {
+      this.filteredAgeBracket.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterAgeBracket("ageBracket");
+    }
     // if(filterProperty == "lastTeam"){
     //   this.filteredLastTeamWorked.forEach((e: any) => {
     //     if (event.target.checked) {
@@ -734,6 +840,7 @@ export class ListOfClaimsComponent implements OnInit {
     filterName == 'actionRequired' ? this.showFilteredDropdown.actionRequired = true : this.showFilteredDropdown.actionRequired = false;
     filterName == 'insuranceName' ? this.showFilteredDropdown.insuranceName = true : this.showFilteredDropdown.insuranceName = false;
     filterName == 'insuranceType' ? this.showFilteredDropdown.insuranceType = true : this.showFilteredDropdown.insuranceType = false;
+    filterName == 'ageBracket' ? this.showFilteredDropdown.ageBracket = true : this.showFilteredDropdown.ageBracket = false;
     this.fliterName = filterName;
   }
   getMonthName(month: any) {
@@ -768,7 +875,10 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceName(subType);
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
+        this.filterOptionAgeBracket(subType)
         this.colorChange();
+        this.showAgeBracket();
+        this.showClaimIdWithDigits();
       }
       // else {
       //   this.loader.listClaimLoader = false;
@@ -834,6 +944,27 @@ export class ListOfClaimsComponent implements OnInit {
        e.colorChange = false;
       }
     });
+  }
+
+  showAgeBracket(){
+    this.filteredItems.forEach((e:any) => {
+      if(e.dos){
+           let dos:any = new Date(e.dos);
+           let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
+           const diffTime = Math.abs(currentDate - dos);
+           let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+           e.ageBracket = (diffDays <= 30) ? `0-30`  : (diffDays > 30 && diffDays <= 60) ?  `31-60` : (diffDays > 60 && diffDays <= 90) ? `61-90` : (diffDays > 90) ? `90+` : '';
+      }
+    });
+  }  
+
+  showClaimIdWithDigits(){
+    this.filteredItems.forEach((e:any) => {
+      if(e.claimId){
+         e.newClaimId = e.claimId.replace(/\D/g, ""); // returns only digits
+      }
+    });
+
   }
 
 }

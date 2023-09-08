@@ -77,6 +77,11 @@
                                                         </span>
                                                     </div>
                                                 </th>
+                                                <th class="width-90">
+                                                    <div class="dFlex">
+                                                        Claim ID
+                                                    </div>
+                                                </th>
                                                 <th class="width-115">
                                                     <div class="dFlex">
                                                         Patient Name<span class="sorting">
@@ -99,6 +104,43 @@
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['dos']}"
                                                                 (click)="sortData(filteredItems,'dos','desc','dateOnly');isSorted['dos'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th class="width-115">
+                                                    <div class="dFlex">
+                                                        Age Bracket
+                                                        <div class="dropdown">
+                                                            <img (click)="showHideFilteredDropdown('ageBracket')" src="../../assets/img/filterIcon.png"
+                                                                style="cursor: pointer; margin-left: 6px;" />
+                                                            <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                *ngIf="showFilteredDropdown.ageBracket">
+                                                                <div class="clearClose">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" [checked]="isFilterAllSelected.ageBracket" value="selectAll"
+                                                                            (change)="selectAll($event,'ageBracket')">
+                                                                        {{isFilterAllSelected.ageBracket ? 'Clear All':'Select All'}}</label>
+                                                                    <button (click)="showFilteredDropdown.ageBracket=false;" type="button" class="close" data-dismiss="modal"
+                                                                        aria-label="Close"><span>&times;</span></button>
+                                                                </div>
+                                                                <ng-container *ngFor="let data of filteredAgeBracket">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" checked="true"
+                                                                            [(ngModel)]="data.checked"
+                                                                            value="{{data.ageBracket}}"
+                                                                            (change)="filterAgeBracket('ageBracket')">
+                                                                        {{data.ageBracket}}
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div>
+                                                        <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['ageBracket']}"
+                                                                (click)="sortData(filteredItems,'ageBracket','asc','string'); isSorted['ageBracket'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['ageBracket']}"
+                                                                (click)="sortData(filteredItems,'ageBracket','desc','string');isSorted['ageBracket'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -223,9 +265,11 @@
                                                         <td class="alignRight"><a
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
+                                                        <td class="noWrape">{{det.newClaimId}}</td>
                                                         <td><a [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
+                                                        <td class="noWrape">{{det.ageBracket}}</td>
                                                         <td *ngIf="det.claimId | claimTypeFilter">
                                                             {{det.primaryInsurance}}
                                                         </td>

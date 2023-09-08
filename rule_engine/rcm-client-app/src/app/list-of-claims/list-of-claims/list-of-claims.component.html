@@ -3,7 +3,7 @@
 <div class="right-container">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12 pt-3">
+            <div class="col-lg-13 pt-3">
                 <!-- <h2 class="page-heading">
                    List Of Claims
                 </h2> -->
@@ -108,14 +108,15 @@
                                                 </th>
                                                 <th class="width-90">
                                                     <div class="dFlex">
-                                                        Claim ID<span class="sorting">
+                                                        Claim ID
+                                                        <!-- <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['claimId']}"
                                                                 (click)="sortData(filteredItems,'claimId','asc','string'); isSorted['claimId'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['claimId']}"
                                                                 (click)="sortData(filteredItems,'claimId','desc','string');isSorted['claimId'] = true"></a>
-                                                        </span>
+                                                        </span> -->
                                                     </div>
                                                 </th>
                                                 <th class="width-115">
@@ -163,7 +164,7 @@
                                                         </span> -->
                                                     </div>
                                                 </th>
-                                                <th>
+                                                <th class="width-115">
                                                     <div class="dFlex">
                                                         Pending Since Date<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
@@ -172,6 +173,43 @@
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['pendingSince']}"
                                                                 (click)="sortData(filteredItems,'pendingSince','desc','dateOnly');isSorted['pendingSince'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th class="width-115">
+                                                    <div class="dFlex">
+                                                        Age Bracket
+                                                        <div class="dropdown">
+                                                            <img (click)="showHideFilteredDropdown('ageBracket')" src="../../assets/img/filterIcon.png"
+                                                                style="cursor: pointer; margin-left: 6px;" />
+                                                            <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                *ngIf="showFilteredDropdown.ageBracket">
+                                                                <div class="clearClose">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" [checked]="isFilterAllSelected.ageBracket" value="selectAll"
+                                                                            (change)="selectAll($event,'ageBracket')">
+                                                                        {{isFilterAllSelected.ageBracket ? 'Clear All':'Select All'}}</label>
+                                                                    <button (click)="showFilteredDropdown.ageBracket=false;" type="button" class="close" data-dismiss="modal"
+                                                                        aria-label="Close"><span>&times;</span></button>
+                                                                </div>
+                                                                <ng-container *ngFor="let data of filteredAgeBracket">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" checked="true"
+                                                                            [(ngModel)]="data.checked"
+                                                                            value="{{data.ageBracket}}"
+                                                                            (change)="filterAgeBracket('ageBracket')">
+                                                                        {{data.ageBracket}}
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div>
+                                                        <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['ageBracket']}"
+                                                                (click)="sortData(filteredItems,'ageBracket','asc','string'); isSorted['ageBracket'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['ageBracket']}"
+                                                                (click)="sortData(filteredItems,'ageBracket','desc','string');isSorted['ageBracket'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -402,7 +440,7 @@
                                         </thead>
                                         <tbody>
                                             <tr *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
-                                                <td colspan="15" style="min-height:200px;">
+                                                <td colspan="16" style="min-height:200px;">
                                                     <div class="text-center mt-2">
                                                         <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
                                                     </div>
@@ -425,13 +463,14 @@
                                                         <td class="alignRight"><a
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
-                                                        <td class="noWrape">{{det.claimId}}</td>
+                                                        <td class="noWrape">{{det.newClaimId}}</td>
                                                         <td><a [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
                                                         <td class="alignRight" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
                                                         <td class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}</td>
+                                                        <td class="noWrape">{{det.ageBracket}}</td>
                                                         <!-- Claim Type START-->
                                                         <td *ngIf="det.claimId | claimTypeFilter">Primary</td>
                                                         <td *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>

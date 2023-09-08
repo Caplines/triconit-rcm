@@ -24,7 +24,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
-  isFilterAllSelected: any = { 'officeName': false };
+  isFilterAllSelected: any = { 'officeName': false, 'ageBracket': false };
   clientName: string = '';
   isFilterValueExist: boolean = false;
   fliterName: string = '';
@@ -44,6 +44,8 @@ export class OtherTeamsWorkComponent implements OnInit {
   hasAttachmentFilesRemoved:boolean=false;
   currentTeamName:any;
   date: any;
+  filteredAgeBracket:any = []; 
+  
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -107,6 +109,9 @@ export class OtherTeamsWorkComponent implements OnInit {
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
+        this.filterOptionAgeBracket();
+        this.showClaimIdWithDigits();
+        this.showAgeBracket();
       }
     });
   }
@@ -173,14 +178,49 @@ export class OtherTeamsWorkComponent implements OnInit {
           return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
         });
       });
+      this.addOrRemoveFilterOffice();
     }
   }
 
+  filterAgeBracket(filterProperty: any) {
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredAgeBracket.length; i++) {
+      if (this.filteredAgeBracket[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.ageBracket = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+      });
+    });
+    this.addOrRemoveFilterAgeBracket();
+  }
 
-  addOrRemoveFilterStatus() {
+  filterOptionAgeBracket() {
+    if (this.isFilterValueExist) {
+      this.filteredAgeBracket = [];
+    }
+      this.filteredAgeBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
+      this.isFilterValueExist = true;
+      this.isFilterAllSelected.ageBracket = true;
+  }
+
+
+  addOrRemoveFilterOffice() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+  }
+
+  addOrRemoveFilterAgeBracket() {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredOfficeName.some((checkbox: any) => {
-        return checkbox.checked && checkbox['officeName'] === item['officeName'];
+        return (checkbox.checked && checkbox['officeName']) === item['officeName'];
       });
     });
   }
@@ -195,6 +235,16 @@ export class OtherTeamsWorkComponent implements OnInit {
         }
       });
       this.filterOfficeName("selectAll");
+    }
+    if (filterProperty == "ageBracket") {
+      this.filteredAgeBracket.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterAgeBracket("ageBracket");
     }
   }
 
@@ -223,6 +273,7 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   showHideFilteredDropdown(filterName: any) {
     filterName == 'officeName' ? this.showFilteredDropdown.officeName = true : this.showFilteredDropdown.officeName = false;
+    filterName == 'ageBracket' ? this.showFilteredDropdown.ageBracket = true : this.showFilteredDropdown.ageBracket = false;
     this.fliterName = filterName;
   }
 
@@ -416,7 +467,7 @@ AssignClaimWithRemark(claimUuid:any){
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Patient ID", "Patient Name", 'DOS',"Insurance Name", "Insurance Type", "Claim Type" , "Estimated Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since Date", "Current Team"]
+      headers: ["Office", "Patient ID", "Claim ID",  "Patient Name", 'DOS', "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type" , "Estimated Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since Date", "Current Team"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -459,8 +510,10 @@ AssignClaimWithRemark(claimUuid:any){
         return {
           "Office Name": e.officeName,
           "Patient ID": e.patientId,
+          "Claim ID": e.newClaimId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
+          'Age Bracket': e.ageBracket,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
           "Claim Type": e.claimType,
@@ -479,6 +532,27 @@ AssignClaimWithRemark(claimUuid:any){
     //console.log(excelData.sort());
     new ngxCsv(excelData, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
     this.loader.exportCSVLoader = false;
+  }
+
+  showClaimIdWithDigits(){
+    this.filteredItems.forEach((e:any) => {
+      if(e.claimId){
+         e.newClaimId = e.claimId.replace(/\D/g, "");  // returns only digits
+      }
+    });
+
+  }
+
+  showAgeBracket(){
+    this.filteredItems.forEach((e:any) => {
+      if(e.dos){
+           let dos:any = new Date(e.dos);
+           let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
+           const diffTime = Math.abs(currentDate - dos);
+           let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+           e.ageBracket = (diffDays <= 30) ? `0-30`  : (diffDays > 30 && diffDays <= 60) ?  `31-60` : (diffDays > 60 && diffDays <= 90) ? `61-90` : (diffDays > 90) ? `90+` : '';
+      }
+    });
   }
 
 }
