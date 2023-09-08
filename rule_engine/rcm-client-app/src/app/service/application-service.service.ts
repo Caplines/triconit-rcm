@@ -412,6 +412,14 @@ export class ApplicationServiceService extends BaseService {
   fetchAttachmentCount(claimUuid:any,callback: any) {
     this.getData({}, this.httpUrl['get-attachments-count']+"/"+claimUuid, callback)
   }
+  
+  fetchAllUserClients(callback: any) {
+    this.getData({}, this.httpUrl['alluserclients'], callback)
+  }
+  
+  fetchClientNamebyUuid(uuid:any,callback: any) {
+    this.getData({}, this.httpUrl['allpendency']+"/"+uuid, callback)
+  }
 
   getAttachmentFile(uuid:any,callback: any) {
     this.getData({}, this.httpUrl['get-attachments']+"/"+uuid, callback);

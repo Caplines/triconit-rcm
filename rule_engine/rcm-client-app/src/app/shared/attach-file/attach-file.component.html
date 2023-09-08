@@ -38,7 +38,7 @@
                                         
                                     </span>
                                     <span class="close" (click)="removePreSelectedFile(file)">&times;</span>
-                                        <ng-container *ngIf="inputConfig['isDetailPage']">
+                                        <ng-container *ngIf="inputConfig['attachmentCount']>0">
                                             <button type="button" class="icon-btn download-button"
                                                 (click)="downloadAttachment(file)" title="Download">
                                                 <img src="../../assets/img/down-arrow.png" /></button>

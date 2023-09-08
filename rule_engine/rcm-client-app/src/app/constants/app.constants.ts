@@ -92,21 +92,21 @@ export class AppConstants {
     ]);
 
     public teamData: any = [
-        { "teamName": "Internal Audit", "teamId": 3 },
-        { "teamName": "Lc3", "teamId": 4 },
-        { "teamName": "Office", "teamId": 5 },
-        { "teamName": "Patient Calling", "teamId": 6 },
-        { "teamName": "Billing", "teamId": 7 },
-        { "teamName": "Ortho", "teamId": 10 },
-        { "teamName": "CDP", "teamId": 11 },
-        { "teamName": "Payment Posting", "teamId": 12 },
-        { "teamName": "PPO IV", "teamId": 13 },
-        { "teamName": "Medicaid IV", "teamId": 14 },
-        { "teamName": "Need to hold", "teamId": 15 },
-        { "teamName": "Quality", "teamId": 16 },
-        { "teamName": "AR", "teamId": 17 },
-        { "teamName": "Patient Statement", "teamId": 18 },
-        { "teamName": "Credentialing", "teamId": 19 },
+        {"unFormatedName": 'INTERNAL_AUDIT', "count":0,"teamName": "Internal Audit", "teamId": 3 },
+        {"unFormatedName": 'LC3', "count":0,"teamName": "Lc3", "teamId": 4 },
+        {"unFormatedName": 'OFFICE', "count":0,"teamName": "Office", "teamId": 5 },
+        {"unFormatedName": 'PATIENT_CALLING', "count":0,"teamName": "Patient Calling", "teamId": 6 },
+        {"unFormatedName": 'BILLING', "count":0,"teamName": "Billing", "teamId": 7 },
+        {"unFormatedName": 'ORTHO', "count":0,"teamName": "Ortho", "teamId": 10 },
+        {"unFormatedName": 'CDP', "count":0,"teamName": "CDP", "teamId": 11 },
+        {"unFormatedName": 'PAYMENT_POSTING', "count":0,"teamName": "Payment Posting", "teamId": 12 },
+        {"unFormatedName": 'PPO_IV', "count":0,"teamName": "PPO IV", "teamId": 13 },
+        {"unFormatedName": 'MEDICAID_IV', "count":0,"teamName": "Medicaid IV", "teamId": 14 },
+        {"unFormatedName": 'NEED_TO_HOLD', "count":0,"teamName": "Need to hold", "teamId": 15 },
+        {"unFormatedName": 'QUALITY', "count":0,"teamName": "Quality", "teamId": 16 },
+        {"unFormatedName": 'AR', "count":0,"teamName": "AR", "teamId": 17 },
+        {"unFormatedName": 'PATIENT_STATEMENT', "count":0,"teamName": "Patient Statement", "teamId": 18 },
+        {"unFormatedName": 'CREDENTIALING', "count":0,"teamName": "Credentialing", "teamId": 19 },
     ];
 
     public attachmentType =

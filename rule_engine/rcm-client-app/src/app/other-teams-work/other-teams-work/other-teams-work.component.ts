@@ -310,14 +310,10 @@ export class OtherTeamsWorkComponent implements OnInit {
     return this.removedFilesMap.get(claimUuid);
   }
   
-  openSubmitConfirmationModal(data: any) {
+  openModalAndValidateFields(data: any) {
     this.currentClaimUuid = data.uuid
     this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
     this.removedFiles = this.getSelectedFilesToRemove(data.uuid);
-    console.log(this.removedFiles);
-    
-      this.submitBtnConfig['submitType'] = 'ath';
-      this.submitBtnConfig['otherTeamId'][data.uuid]=null;
       if(this.submitBtnConfig['remarks'][data.uuid]){
         this.errorMessage = '' ;
         this.showModal=true;
@@ -326,7 +322,11 @@ export class OtherTeamsWorkComponent implements OnInit {
      }
       if(!this.selectedFiles || this.selectedFiles?.length==0){
         this.selectedFiles= [];
+        if(this.claimDetail.some((item:any)=>item.uuid == data.uuid ? item.attachmentCount : undefined)){
+          this.errorMessage= '';
+      } else{
         this.errorMessage = "No Files Are Attached !";
+      }
       }
       if(!this.removedFiles){
         this.removedFiles=[];
@@ -355,33 +355,11 @@ export class OtherTeamsWorkComponent implements OnInit {
       }
     }
 
-  submitOtherTeams(data:any){
-    this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
-    this.removedFiles = this.getSelectedFilesToRemove(data.uuid);
-    this.submitBtnConfig['submitType'] = 'oth';
-    this.submitBtnConfig['claimUuid'] = data.uuid;
-    this.currentClaimUuid = data.uuid;
-    if (this.submitBtnConfig['remarks'][data.uuid]) {
-      this.errorMessage = '';
-      this.showModal = true;
-    } else {
-      data['isInvalid'] = true;
-    } 
-    if (!this.selectedFiles || this.selectedFiles?.length == 0) {
-      this.selectedFiles=[];
-      this.errorMessage = "No Files are atttached."
-    }
-    if(!this.removedFiles){
-      this.removedFiles=[];
-    }
-  }
-
   removeAttachmentFile(){
     this.appService.removeAttachmentFile(this.removedFiles,(res:any)=>{
       if(res.status == 200){
-        this.hasAttachmentFilesRemoved = res.data.fileResponseStatus;
         this.loopThroughData(this.selectedFiles, 0);
-        if(!res.data.fileResponseStatus){
+        if(!this.hasAttachmentFilesRemoved){
           this.errorMessage  = res.data.msg;
         }
       } else{
@@ -405,7 +383,7 @@ export class OtherTeamsWorkComponent implements OnInit {
     formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
     formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
     this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
-      if (res.data.fileResponseStatus) {
+      if (res.data.status) {
         this.loopThroughData(dataArray, currentIndex + 1);
       } else {
         this.errorMessage = res.data.msg;

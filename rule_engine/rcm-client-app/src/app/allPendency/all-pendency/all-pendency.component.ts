@@ -7,6 +7,7 @@ import { ApplicationServiceService } from 'src/app/service/application-service.s
 import Utils from '../../util/utils';
 import { DatePipe } from '@angular/common';
 import { DownLoadService } from 'src/app/service/download.service';
+import { AppConstants } from 'src/app/constants/app.constants';
 @Component({
   selector: 'all-pendency',
   templateUrl: './all-pendency.component.html',
@@ -15,7 +16,7 @@ import { DownLoadService } from 'src/app/service/download.service';
 export class AllPendencyComponent {
 
   pendencyData: any = [];
-  teamData: any = [];
+  teamData: any = this.constants.teamData;
   currentTeamId: any;
   showLoader: any = { 'loader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
   date: any;
@@ -27,40 +28,69 @@ export class AllPendencyComponent {
   tabSwitch: any = { 'withoutDos': true, 'withDos': false ,'withDateOfPending':false};
   isSorted: any = {};
 
-  totalCount: any = [{ "teamName": "Internal_Audit", "count": 0, "teamId": 3 }, { "teamName": "Lc3", "count": 0, "teamId": 4 }, { "teamName": "Office", "count": 0, "teamId": 5 }, { "teamName": "Patient_Calling", "count": 0, "teamId": 6 }, { "teamName": "Billing", "count": 0, "teamId": 7 }];
+  totalCount: any = this.constants.teamData;
   datePipeString:any;
   fliterName:string= '';
   tabValue:any="withoutDos";
   currentTeamName:string='';
   teamName: any = ["INTERNAL_AUDIT", "LC3", "OFFICE", "PATIENT_CALLING", "BILLING"];
 
-  constructor(private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService) {
+  allUserClients:any=[];
+
+  officeData:any= [];
+
+  constructor(public constants:AppConstants,private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
   }
   ngOnInit(): void {
-    this.teamData = [{ "teamName": "Internal_Audit", "teamId": 3 }, { "teamName": "Lc3", "teamId": 4 }, { "teamName": "Office", "teamId": 5 }, { "teamName": "Patient_Calling", "teamId": 6 }, { "teamName": "Billing", "teamId": 7 }];
-    this.getAllPendencyDetails();
+    this.getAllUserClients();
     this.currentTeamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
     this.setTopOnTotalRow();
     window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
   }
-  getAllPendencyDetails() {
-    this.showLoader.loader = true;
-    this._service.fetchAllPendency((res: any) => {
-      if (res.status == 200) {
-        this.showLoader.loader = false;
-        this.pendencyData = res.data.onlyOffice;
-        this.total(this.pendencyData);
-        this.fetchOfficeByUuid();
-        this.filterOfficeName();
 
-      }
-    })
-
+  getAllUserClients(){
+    this.showLoader.loader=true;
+      this._service.fetchAllUserClients((res:any)=>{
+        if(res.status==200){
+          console.log(res);
+          this.allUserClients = res.data;
+            this.getAllPendencyDetailsByUuid(res.data);
+        }
+      })
   }
 
+  getAllPendencyDetailsByUuid(data:any){
+        this.loopThroughData(data,0);
+      }
+  
+  loopThroughData(data:any,currentidx:any){
 
+    if(data.length == currentidx){
+      this.showLoader.loader=false;
+      this.addClientNameCrossToOfficeName();
+      this.showFilterOptionOfficeName(this.pendencyData);
+      this.total(this.pendencyData);
+      this.filterOfficeName();
+      return;
+    }
+   else{
+          const uuid = data[currentidx].uuid;
+          this._service.fetchClientNamebyUuid(uuid,(res:any)=>{
+            if(res.status==200){
+                if(res.data.onlyOffice.length>0){
+                    res.data.onlyOffice.forEach((e:any)=>{
+                          e['clientUuid'] = uuid;
+                    })
+                  this.pendencyData = [...this.pendencyData,...res.data.onlyOffice];
+                }
+              this.loopThroughData(data,currentidx = currentidx+1)
+                this.officeData = res.data.header;
+            }
+          })
+  }
+}
 
   total(data: any) {
     if (data) {
@@ -69,7 +99,7 @@ export class AllPendencyComponent {
           if (team.teamId != this.currentTeamId) {
             this.totalCount.find((ele: any) => {
               if (ele.teamName == team.teamName) {
-                ele.count = ele.count + e.counts1[team.teamName.toUpperCase()];
+                ele['count'] = ele['count'] + e.counts1[team.unFormatedName.toUpperCase()];
               }
             })
           }
@@ -215,6 +245,18 @@ export class AllPendencyComponent {
       this.filterOfficeName("selectAll");
     }
   }
+
+  addClientNameCrossToOfficeName() {
+    this.pendencyData.forEach((e: any) => {
+      this.allUserClients.forEach((ele: any) => {
+        if (e.clientUuid == ele.uuid) {
+          e['clientName'] = ele.name;
+        }
+      })
+    })
+    console.log(this.filteredItems);
+  }
+
   filterOfficeName(e?: any, filterProperty?: any) {
     if (!this.pendencyData) return;
     if (!e) {
@@ -237,29 +279,22 @@ export class AllPendencyComponent {
     }
 
   }
-  fetchOfficeByUuid() {
-    this._service.fetchOfficeByUuid((res: any) => {
-      if (res.status) {
-        res.data = res.data.map((e: any) => {
-          return {
-            ...e,
-            "officeName": e.name,
-          }
-        })
-        this.showFilterOptionOfficeName(res.data);
-      }
-    })
+  
+  removeDuplicateOfficeName(data:any){
+    const unique = data.filter((obj:any, index:any) =>
+          data.findIndex((item:any) => item.officeName == obj.officeName) == index);
+
+          console.log(unique);
+          
   }
+
   showFilterOptionOfficeName(data: any) {
     if (!this.pendencyData) return;
-    this.filteredOfficeName = data;
+    this.filteredOfficeName = JSON.parse(JSON.stringify(data));
     this.filteredOfficeName.forEach((e: any) => {
-      this.pendencyData.forEach((ele: any) => {
         e['checked'] = true;
-      })
     });
-
-    this.sortFiltereData(this.filteredOfficeName);
+    // this.removeDuplicateOfficeName(this.filteredOfficeName);
   }
 
   switchTab(tab: any) {

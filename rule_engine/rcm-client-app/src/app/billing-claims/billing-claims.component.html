@@ -257,7 +257,7 @@
                                 <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show"
                                     id="attachment-files">
                                     <app-attach-file
-                                        [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'isDetailPage':true,'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit)}"
+                                        [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit)}"
                                         (emitToParent)="receiveChildEvent($event)"></app-attach-file>
                                 </div>
                             </ng-container>
