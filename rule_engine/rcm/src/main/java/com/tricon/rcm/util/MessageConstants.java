@@ -99,5 +99,6 @@ public class MessageConstants {
 	public static final String ATTACHMENT_NOT_EXIST="Attachment is not Exist";
 	
 	public static final String RECORD_NOT_EXIST="Record not exist!";
+	public static final String CLAIM_ALREADY_SUBMITTED="Claim has been submitted already";
 
 }
