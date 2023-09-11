@@ -162,8 +162,7 @@ export class BillingClaimsComponent {
   // }
 
   saveClaim(type: string) {
-  this.submitAttachment((res:any)=>{
-   if(res.status){
+  
     let ths = this;
     ths.assignType = type;
     ths.claimEditModel = {};
@@ -186,11 +185,15 @@ export class BillingClaimsComponent {
     });
 
     if (type === 'latter') {
-      ths.inSave = true;
-      ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
-        ths.inSave = false;
-        this.showAlertPopup(callback);
-      });
+      this.submitAttachment((res: any) => {
+        if (res.status) {
+          ths.inSave = true;
+          ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
+            ths.inSave = false;
+            this.showAlertPopup(callback);
+          });
+        }
+      })
     }
     else if (type === 'submit') {
       //do From Validation
@@ -258,8 +261,7 @@ export class BillingClaimsComponent {
 
       ths.openAssignModal('tl');
   }
-}
-})
+
 
 }
 
