@@ -11,10 +11,8 @@ import { Subject } from 'rxjs';
 })
 export class ApplicationServiceService extends BaseService {
   setPaddingContainer: boolean = false;
-  private isTpActive = new Subject();
-  private isIvfActive = new Subject();
-  public billingPage = new Subject();
-  message$: any = this.isTpActive.asObservable();
+  private seviceEventEmitter = new Subject<any>();
+  private seviceEventEmitterReference: any = {};
 
   constructor(router: Router, http: HttpClient, tokenStorage: TokenStorageService) {
     super(router, http, tokenStorage);
@@ -464,6 +462,16 @@ export class ApplicationServiceService extends BaseService {
   }
   othersTeamPdfDownload(params: any, pdfcsv: string, callback: any) {
     this.postDataPdf(params, this.httpUrl['othersTeam'] + "/" + pdfcsv, callback);
+  }
+
+  emitOnValueChange(data: any) {
+    this.seviceEventEmitter.next(data);
+  }
+
+  subscribeOnValueChange(name: any, callback: any) {
+    this.seviceEventEmitterReference[name] = this.seviceEventEmitter.subscribe((header) => {
+      callback(header)
+    });
   }
 
 }

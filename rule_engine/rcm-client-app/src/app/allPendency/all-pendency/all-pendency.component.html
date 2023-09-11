@@ -97,7 +97,7 @@
                                                                             type="button" class="close"
                                                                             data-dismiss="modal"
                                                                             aria-label="Close"><span>&times;</span></button>
-                                                                    </div>
+                                                                </div>
                                                                     <ng-container
                                                                         *ngFor="let data of filteredOfficeName">
                                                                         <label class="mx-1">
@@ -188,6 +188,9 @@
                                             id="dos-table">
                                             <thead>
                                                 <tr>
+                                                    <th>
+                                                        Clients
+                                                    </th>
                                                     <th style="z-index: 9;">
                                                         <div class="dFlex">
                                                             Office <span class="sorting">
@@ -208,8 +211,7 @@
                                                                                 [checked]="isFilterAllSelected.officeName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear
-                                                                            All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.officeName=false;"
                                                                             type="button" class="close"
@@ -221,9 +223,9 @@
                                                                         <label class="mx-1">
                                                                             <input type="checkbox" checked="true"
                                                                                 [(ngModel)]="data.checked"
-                                                                                value="{{data.name}}"
+                                                                                value="{{data.officeName}}"
                                                                                 (change)="filterOfficeName($event,'officeName')">
-                                                                            {{data.name}}
+                                                                            {{data.officeName}}
                                                                         </label>
                                                                     </ng-container>
                                                                 </div>
@@ -234,15 +236,13 @@
                                                     <ng-container *ngFor="let data of teamData;let last=last">
                                                         <th *ngIf="currentTeamId != data.teamId">
                                                             <div class="dFlex">
-                                                                {{data.teamName == 'Internal_Audit' ? 'Internal Audit' :
-                                                                data.teamName == 'Patient_Calling' ? 'Patient Calling' :
-                                                                   data.teamName}} <span class="sorting">
+                                                                   {{data.teamName}} <span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
-                                                                        [ngClass]="{'selected': !isSorted[data.teamName]}"
-                                                                        (click)="sortData(filteredItems,'count','asc','nestedDate',data.teamName); isSorted[data.teamName] = false"></a>
+                                                                        [ngClass]="{'selected': !isSorted[data.unFormatedName]}"
+                                                                        (click)="sortData(filteredItems,'count','asc','nestedDate',data.unFormatedName); isSorted[data.unFormatedName] = false"></a>
                                                                     <a href="javascript:void(0);" class="arrow-down"
-                                                                        [ngClass]="{'selected': isSorted[data.teamName]}"
-                                                                        (click)="sortData(filteredItems,'count','desc','nestedDate',data.teamName);isSorted[data.teamName] = true"></a>
+                                                                        [ngClass]="{'selected': isSorted[data.unFormatedName]}"
+                                                                        (click)="sortData(filteredItems,'count','desc','nestedDate',data.unFormatedName);isSorted[data.unFormatedName] = true"></a>
                                                                 </span>
                                                             </div>
                                                         </th>
@@ -259,12 +259,13 @@
                                                 <ng-container
                                                     *ngFor="let office of filteredItems;let id= index;let last;">
                                                     <tr>
+                                                        <td>{{office.clientName}}</td>
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
                                                                 <td>
-                                                                    {{office.dates1[team.teamName|uppercase] ?
-                                                                    (office.dates1[team.teamName|uppercase]| date: 'MMM dd, YYYY') : "-"}}
+                                                                    {{office.dates1[team.unFormatedName|uppercase] ?
+                                                                    (office.dates1[team.unFormatedName|uppercase]| date: 'MMM dd, YYYY') : "-"}}
                                                                 </td>
                                                             </ng-container>
                                                         </ng-container>
@@ -293,6 +294,7 @@
                                             id="dop-table">
                                             <thead>
                                                 <tr>
+                                                    <th>Clients</th>
                                                     <th style="z-index: 9;">
                                                         <div class="dFlex">
                                                             Office <span class="sorting">
@@ -313,8 +315,7 @@
                                                                                 [checked]="isFilterAllSelected.officeName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear
-                                                                            All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.officeName=false;"
                                                                             type="button" class="close"
@@ -326,9 +327,9 @@
                                                                         <label class="mx-1">
                                                                             <input type="checkbox" checked="true"
                                                                                 [(ngModel)]="data.checked"
-                                                                                value="{{data.name}}"
+                                                                                value="{{data.officeName}}"
                                                                                 (change)="filterOfficeName($event,'officeName')">
-                                                                            {{data.name}}
+                                                                            {{data.officeName}}
                                                                         </label>
                                                                     </ng-container>
                                                                 </div>
@@ -339,15 +340,13 @@
                                                     <ng-container *ngFor="let data of teamData;let last=last">
                                                         <th *ngIf="currentTeamId != data.teamId">
                                                             <div class="dFlex">
-                                                                {{data.teamName == 'Internal_Audit' ? 'Internal Audit' :
-                                                                data.teamName == 'Patient_Calling' ? 'Patient Calling' :
-                                                                   data.teamName}}<span class="sorting">
+                                                                {{data.teamName}}<span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
-                                                                        [ngClass]="{'selected': !isSorted[data.teamName]}"
-                                                                        (click)="sortData(filteredItems,'count','asc','nestedDate',data.teamName); isSorted[data.teamName] = false"></a>
+                                                                        [ngClass]="{'selected': !isSorted[data.unFormatedName]}"
+                                                                        (click)="sortData(filteredItems,'count','asc','nestedDate',data.unFormatedName); isSorted[data.unFormatedName] = false"></a>
                                                                     <a href="javascript:void(0);" class="arrow-down"
-                                                                        [ngClass]="{'selected': isSorted[data.teamName]}"
-                                                                        (click)="sortData(filteredItems,'count','desc','nestedDate',data.teamName);isSorted[data.teamName] = true"></a>
+                                                                        [ngClass]="{'selected': isSorted[data.unFormatedName]}"
+                                                                        (click)="sortData(filteredItems,'count','desc','nestedDate',data.unFormatedName);isSorted[data.unFormatedName] = true"></a>
                                                                 </span>
                                                             </div>
                                                         </th>
@@ -364,12 +363,13 @@
                                                 <ng-container
                                                     *ngFor="let office of filteredItems;let id= index;let last;">
                                                     <tr>
+                                                        <td>{{office.clientName}}</td>
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
                                                                 <td>
-                                                                    {{office.datesPending[team.teamName|uppercase] ?
-                                                                    (office.datesPending[team.teamName|uppercase]| date: 'MMM dd, YYYY') : "-"}}
+                                                                    {{office.datesPending[team.unFormatedName|uppercase] ?
+                                                                    (office.datesPending[team.unFormatedName|uppercase]| date: 'MMM dd, YYYY') : "-"}}
                                                                 </td>
                                                             </ng-container>
                                                         </ng-container>

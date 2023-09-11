@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -17,7 +17,6 @@ import { ClaimAssignToTeamModel } from '../models/claim_assign_to_team';
 import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
 import Utils from '../util/utils';
 import { DownLoadService } from '../service/download.service';
-import { AttachFileComponent } from '../shared/attach-file/attach-file.component';
 
 @Component({
   selector: 'app-billing-claims',
@@ -27,7 +26,7 @@ import { AttachFileComponent } from '../shared/attach-file/attach-file.component
 })
 
 export class BillingClaimsComponent {
-  @ViewChild('child') child!:AttachFileComponent;
+ 
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertAssign: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   claimRcm: ClaimRcmDataModel;
@@ -1138,7 +1137,7 @@ export class BillingClaimsComponent {
 
   finalSubmitAttachment(dataArray: any[], currentIndex: number,callback:any){
     if (currentIndex >= dataArray.length) {
-        // this.child.clearAttachmentFiles();
+      this.appService.emitOnValueChange({action:'clearSelectedFiles'});
       return callback({'status':true});
     }
     const currentData = dataArray[currentIndex];

@@ -25,11 +25,19 @@ export class AttachFileComponent {
   removeAttachmentFiles: any = [];
   removeClaimAttachmentId: any = [];
 
-  constructor(public constant: AppConstants, private appService: ApplicationServiceService, private downloadService: DownLoadService) { }
+  constructor(public constant: AppConstants, private appService: ApplicationServiceService, private downloadService: DownLoadService) {
+
+    this.appService.subscribeOnValueChange('AttachComponent',(event:any)=>{
+      if(event['action']=='clearSelectedFiles'){
+        this.clearAttachmentFiles();
+      }
+    })
+
+   }
 
   openModal() {
     this.showModal = true;
-    if (this.inputConfig.attachmentCount > 0 && !this.hasAttachmentFileData && this.removeAttachmentFiles.length == 0) {
+    if (this.inputConfig['isDetailPage'] || (this.inputConfig.attachmentCount > 0 && !this.hasAttachmentFileData && this.removeAttachmentFiles.length == 0)) {
       this.getAttachmentFile();
     }
   }

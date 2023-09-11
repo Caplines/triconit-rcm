@@ -257,7 +257,7 @@
                                 <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show"
                                     id="attachment-files">
                                     <app-attach-file
-                                        [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit)}"
+                                        [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit),'isDetailPage':true}"
                                         (emitToParent)="receiveChildEvent($event)"></app-attach-file>
                                 </div>
                             </ng-container>
@@ -1195,9 +1195,7 @@
                         </div>
                         <!-- Modal End -->
                         <div class="action-buttons" *ngIf="actionButtons && (isBilling || isInternalAudit)">
-                            <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
-                                                         (claimRcm.primary && claimRcm.pending) 
-                                                       )  " type="button" class="btn btn-success" [disabled]="inSave"
+                            <button  type="button" class="btn btn-success" [disabled]="inSave"
                                 (click)="saveClaim('latter')">Save For Later Processing</button>
                             <button *ngIf="claimRcm.pending  && selectedTeam== claimRcm.currentTeamId" type="button"
                                 class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assigntl')">Assign to

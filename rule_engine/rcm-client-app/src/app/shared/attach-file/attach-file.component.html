@@ -22,6 +22,7 @@
                                 <input type="file" id="fileInput{{inputConfig.claimUuid}}" #fileInput multiple
                                     (change)="onFileChange($event)" class="file-input" />
                             </div>
+                            <div *ngIf="attachedFiles.length > 0" class="text-danger text-left">(Already Attached)</div>
                             <ol class="file-list" *ngIf="attachedFiles.length > 0">
                                 <li *ngFor="let file of attachedFiles;let i=index;">
                                     <span
@@ -48,6 +49,7 @@
                                    
                                 </li>
                             </ol>
+                            <div *ngIf="selectedFiles.length > 0" class="text-left text-success mt-2"> (New Attached)</div>
                             <ol class="file-list" *ngIf="selectedFiles.length > 0">
                                 <li *ngFor="let file of selectedFiles;let i=index;">
                                     <span
