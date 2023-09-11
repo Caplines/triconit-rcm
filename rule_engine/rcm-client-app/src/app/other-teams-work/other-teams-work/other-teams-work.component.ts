@@ -360,7 +360,7 @@ export class OtherTeamsWorkComponent implements OnInit {
       if(res.status == 200){
         this.loopThroughData(this.selectedFiles, 0);
         if(!this.hasAttachmentFilesRemoved){
-          this.errorMessage  = res.data.msg;
+          this.errorMessage  = res.data.message;
         }
       } else{
         this.errorMessage  = res.data.message;
@@ -386,7 +386,7 @@ export class OtherTeamsWorkComponent implements OnInit {
       if (res.data.status) {
         this.loopThroughData(dataArray, currentIndex + 1);
       } else {
-        this.errorMessage = res.data.msg;
+        this.errorMessage = res.data.message;
       }
     })
 }
