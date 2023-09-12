@@ -281,21 +281,18 @@ export class AllPendencyComponent {
 
   }
   
-  removeDuplicateOfficeName(data:any){
-    const unique = data.filter((obj:any, index:any) =>
-          data.findIndex((item:any) => item.officeName == obj.officeName) == index);
-
-          console.log(unique);
-          
-  }
-
   showFilterOptionOfficeName(data: any) {
     if (!this.pendencyData) return;
     this.filteredOfficeName = JSON.parse(JSON.stringify(data));
     this.filteredOfficeName.forEach((e: any) => {
         e['checked'] = true;
     });
-    // this.removeDuplicateOfficeName(this.filteredOfficeName);
+    this.filteredOfficeName = Object.values(this.filteredOfficeName.reduce((acc: any, { officeName }: any) => {
+      if (!acc[officeName])
+        acc[officeName] = { checked: true, officeName: officeName };
+      return acc;
+    }, {}));
+    this.sortFiltereData(this.filteredOfficeName);
   }
 
   switchTab(tab: any) {
@@ -332,8 +329,8 @@ export class AllPendencyComponent {
 
   sortFiltereData(filterValue: any) {
     filterValue.sort((a: any, b: any) => {
-      const nameA = Object.keys(filterValue[0])[4] == 'officeName' ? a.officeName.toUpperCase() : '';// ignore upper and lowercase
-      const nameB = Object.keys(filterValue[0])[4] == 'officeName' ? b.officeName.toUpperCase() : '';// ignore upper and lowercase
+      const nameA = Object.keys(filterValue[0])[1] == 'officeName' ? a.officeName?.toUpperCase() : '';// ignore upper and lowercase
+      const nameB = Object.keys(filterValue[0])[1] == 'officeName' ? b.officeName?.toUpperCase() : '';// ignore upper and lowercase
       if (nameA < nameB) {
         return -1;
       }
