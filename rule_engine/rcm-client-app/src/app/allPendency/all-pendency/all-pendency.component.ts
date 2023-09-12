@@ -46,7 +46,6 @@ export class AllPendencyComponent {
     this.getAllUserClients();
     this.currentTeamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
-    this.setTopOnTotalRow();
     window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
   }
 
@@ -73,6 +72,8 @@ export class AllPendencyComponent {
       this.showFilterOptionOfficeName(this.pendencyData);
       this.total(this.pendencyData);
       this.filterOfficeName();
+      this.setTopOnTotalRow();
+
       return;
     }
    else{
@@ -254,7 +255,7 @@ export class AllPendencyComponent {
         }
       })
     })
-    console.log(this.filteredItems);
+    console.log(this.pendencyData);
   }
 
   filterOfficeName(e?: any, filterProperty?: any) {
