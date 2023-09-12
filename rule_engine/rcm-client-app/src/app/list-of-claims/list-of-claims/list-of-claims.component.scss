@@ -116,7 +116,7 @@
             &:nth-child(9){
                 z-index: 9999;
                 .filter-dropdown-menu {
-                    width: 460px;
+                    width: 300px;
                     left: -56px;
                 }
             }
@@ -136,6 +136,7 @@
                 
                 z-index: 9;
                 .filter-dropdown-menu {
+                    width: 350px;
                     left: -72px!important;
                 }
             }
@@ -159,7 +160,14 @@
         }    
     }
 }
+.fetchMyClaims thead th:nth-child(13) .filter-dropdown-menu {
+    right: -130px;
 
+}
+.fetchFresh thead th:nth-child(13) .filter-dropdown-menu {
+    right: -130px;
+
+}
 .filter-dropdown-menu label:first-child{
     color: #dc3545;
     font-weight: 700;
