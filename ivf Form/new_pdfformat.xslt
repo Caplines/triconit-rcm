@@ -392,6 +392,11 @@
         <strong>Alert-</strong> Patient have BCBS Medical policy as primary &amp; we can directly bill them even if we do not have insurance details.
         </div>
         </xsl:if>
+        <xsl:if test="(translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'guardian')">
+        <div class="red-clr">
+        <strong>Alert-</strong> D0140 only Covered with x rays, If performed with other treatment amounts to be collected from patient and WO to insurance at $0.
+        </div>
+        </xsl:if>
         <br />
         <br />
         <table class="table" vertical-align="top">
