@@ -106,7 +106,7 @@ version="1.0" >
                  <table class="inner-table">
                  <xsl:variable name="tabSwitchValue" select="tabSwitch" />   
                      <tr class="bgWhite">
-                          <td colspan="15" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
+                          <td colspan="16" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
                          <td>Office</td>
@@ -117,6 +117,7 @@ version="1.0" >
                          <td>Claim Age</td>
                          <td>TFL</td>
                          <td>Pending Since Date</td>
+                          <td>Age Bracket</td>
                          <td>Claim Type</td>
                          <xsl:choose>
                            <xsl:when test="currentTeamId=3">
@@ -153,6 +154,7 @@ version="1.0" >
                        <xsl:variable name="day" select="substring(pendingSince, 9, 2)" />
                        <xsl:variable name="year" select="substring(pendingSince, 1, 4)" />
                        <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>
+                       <td><xsl:value-of select="ageBracket"/></td>
                        <td>
                            <xsl:choose>
                            <xsl:when test="substring(claimId, string-length(claimId) - 1) = '_P'">

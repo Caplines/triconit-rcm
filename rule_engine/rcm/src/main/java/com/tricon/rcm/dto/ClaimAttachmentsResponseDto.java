@@ -17,7 +17,7 @@ public class ClaimAttachmentsResponseDto {
 	private boolean isDeleted;
 	private Integer id;
 	private Integer attachmentId;
-	private String msg;
+	private String message;
 	private boolean status;
 	
 	public class File{

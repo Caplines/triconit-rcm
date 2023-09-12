@@ -93,6 +93,9 @@ version="1.0" >
                 font-family: sans-serif;
                 font-weight: bold;
             }
+            @page{
+            size: landscape;
+            }
         </style>
     </head>
     <body>
@@ -103,13 +106,14 @@ version="1.0" >
                  <table class="inner-table">
                  <xsl:variable name="currentTeam" select="currentTeamName" /> 
                      <tr class="bgWhite">
-                          <td colspan="13" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
+                          <td colspan="14" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
                          <td>Office</td>
                          <td>Patient ID</td>
                          <td>Patient Name</td>
                          <td>DOS</td>
+                         <td>Age Bracket</td>
                          <td>Insurance Name</td>
                          <td>Insurance Type</td>
                          <td>Claim Type</td>
@@ -131,6 +135,7 @@ version="1.0" >
                        <xsl:variable name="day" select="substring(dos, 9, 2)" />
                        <xsl:variable name="year" select="substring(dos, 1, 4)" />
                        <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>
+                       <td><xsl:value-of select="ageBracket"/></td>
                        <td> <xsl:choose>
                            <xsl:when test="substring(claimId, string-length(claimId) - 1) = '_P'">
                              <xsl:value-of select="primaryInsurance"/>

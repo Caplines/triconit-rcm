@@ -6,7 +6,7 @@ import lombok.Data;
 @Builder
 public class FileResponseDto {
 
-	private String msg;
+	private String message;
 	private boolean fileResponseStatus;
 	
 }

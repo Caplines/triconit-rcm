@@ -148,6 +148,7 @@ export class AttachFileComponent {
 
   clearAttachmentFiles(){
     this.selectedFiles = [];
+    this.removeAttachmentFiles=[];
   }
 
 }

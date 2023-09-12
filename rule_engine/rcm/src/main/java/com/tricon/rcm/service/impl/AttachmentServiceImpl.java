@@ -83,11 +83,11 @@ public class AttachmentServiceImpl {
 		if (fullPathName != null) {
 			rcmClaims = claimRepo.findByClaimUuid(claimUuid);
 			if (rcmClaims == null) {
-				return ClaimAttachmentsResponseDto.builder().msg(MessageConstants.CLAIM_NOT_EXIST).status(false)
+				return ClaimAttachmentsResponseDto.builder().message(MessageConstants.CLAIM_NOT_EXIST).status(false)
 						.build();
 			}
 			if (!rcmClaims.isPending()) {
-				return ClaimAttachmentsResponseDto.builder().msg(MessageConstants.CLAIM_ALREADY_SUBMITTED).status(false).build();
+				return ClaimAttachmentsResponseDto.builder().message(MessageConstants.CLAIM_ALREADY_SUBMITTED).status(false).build();
 			}
 			try {
 				in = file.getInputStream();
@@ -131,20 +131,20 @@ public class AttachmentServiceImpl {
 								StandardCopyOption.REPLACE_EXISTING);
 						
 						
-						response = ClaimAttachmentsResponseDto.builder().msg(MessageConstants.FILE_UPLOAD_SUCCESS)
+						response = ClaimAttachmentsResponseDto.builder().message(MessageConstants.FILE_UPLOAD_SUCCESS)
 								.id(claimAttachment.getId())
 								.attachmentId(attachmentType.get().getId())
 								.file(inner).status(true).isDeleted(claimAttachment.isDeleted()).build();
 					}
 					if (fileCounts >= 1) {
-						response = ClaimAttachmentsResponseDto.builder().msg(MessageConstants.FILE_UPLOAD_SUCCESS).status(true).build();
+						response = ClaimAttachmentsResponseDto.builder().message(MessageConstants.FILE_UPLOAD_SUCCESS).status(true).build();
 					}
 				} else
-					response =ClaimAttachmentsResponseDto.builder().msg(MessageConstants.ATTACHMENT_TYPE_NOT_EXIST).status(false).build();
+					response =ClaimAttachmentsResponseDto.builder().message(MessageConstants.ATTACHMENT_TYPE_NOT_EXIST).status(false).build();
 			} catch (IOException e) {
 				e.printStackTrace();
 				logger.error(e.getMessage());
-				response = ClaimAttachmentsResponseDto.builder().msg(null).status(false).build();
+				response = ClaimAttachmentsResponseDto.builder().message(null).status(false).build();
 			} finally {
 				in.close();
 			}
@@ -185,7 +185,7 @@ public class AttachmentServiceImpl {
 				int status = 0;
 				String checkEmptyFileName = d.getFileName();
 				if (checkEmptyFileName == null || checkEmptyFileName.isEmpty()) {
-					response = FileResponseDto.builder().msg("Empty FileName").fileResponseStatus(false).build();
+					response = FileResponseDto.builder().message("Empty FileName").fileResponseStatus(false).build();
 					return response;
 				}
 				existingFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
@@ -205,7 +205,7 @@ public class AttachmentServiceImpl {
 							status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), renameFileName);
 							if (status > 0) {
 								++deleteCount;
-								response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
+								response = FileResponseDto.builder().message(MessageConstants.RECORDS_UPDATE)
 										.fileResponseStatus(true).build();
 							}
 						}
@@ -219,7 +219,7 @@ public class AttachmentServiceImpl {
 							status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), reName);
 							if (status > 0) {
 								++deleteCount;
-								response = FileResponseDto.builder().msg(MessageConstants.RECORDS_UPDATE)
+								response = FileResponseDto.builder().message(MessageConstants.RECORDS_UPDATE)
 										.fileResponseStatus(true).build();
 							}
 						}
@@ -227,12 +227,12 @@ public class AttachmentServiceImpl {
 					}
 
 					if (status <= 0) {
-						response = FileResponseDto.builder().msg(MessageConstants.UPDATION_FAIL)
+						response = FileResponseDto.builder().message(MessageConstants.UPDATION_FAIL)
 								.fileResponseStatus(false).build();
 						return response;
 					}
 				} else {
-					response = FileResponseDto.builder().msg(MessageConstants.FILE_NOT_EXIST).fileResponseStatus(false)
+					response = FileResponseDto.builder().message(MessageConstants.FILE_NOT_EXIST).fileResponseStatus(false)
 							.build();
 					return response;
 				}
@@ -250,7 +250,7 @@ public class AttachmentServiceImpl {
 				}
 			}
 		} else
-			response = FileResponseDto.builder().msg(MessageConstants.RECORD_NOT_EXIST).fileResponseStatus(false)
+			response = FileResponseDto.builder().message(MessageConstants.RECORD_NOT_EXIST).fileResponseStatus(false)
 					.build();
 
 		return response;

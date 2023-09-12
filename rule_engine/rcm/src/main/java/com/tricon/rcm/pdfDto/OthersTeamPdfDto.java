@@ -22,4 +22,5 @@ public class OthersTeamPdfDto {
 	private String primeSecSubmittedTotal;
 	private String lastTeamRemark;
 	private String pendingSince;
+	private String ageBracket;
 }

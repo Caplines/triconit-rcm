@@ -23,4 +23,5 @@ public class ListOfClaimPdfDto {
 	private String uuid;
 	private String primeSecSubmittedTotal;
 	private String pendingSince;
+	private String ageBracket;
 }
