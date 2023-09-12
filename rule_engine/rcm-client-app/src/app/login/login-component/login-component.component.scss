@@ -389,3 +389,17 @@ select:-webkit-autofill:focus {
     border-bottom: 2px solid #53b4e3;
     font-family: "Montserrat", sans-serif;
 }
+.note{
+    font-size: 13px;
+    color: #555555;
+    line-height: normal;
+    padding: 0 20px;
+    margin-top: 10px;
+}
+.info{
+    color: red;
+    font-size: 15px;
+    position: relative;
+    margin-left: -6px;
+
+}

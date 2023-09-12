@@ -1188,11 +1188,11 @@
 
                             </div>
                         </div>
-                        <div class="alert fade show text-center" *ngIf="alert['showAlertPopup']"
+                        <!-- <div class="alert fade show text-center" *ngIf="alert['showAlertPopup']"
                             [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
                             role="alert">
                             <strong>{{alert.alertMsg}}</strong>
-                        </div>
+                        </div> -->
                         <!-- Modal End -->
                         <div class="action-buttons" *ngIf="actionButtons && (isBilling || isInternalAudit)">
                             <button  type="button" class="btn btn-success" [disabled]="inSave"
@@ -1271,7 +1271,7 @@
                                     (click)="updateIV(claimUUid,updatedIvfId,updatedTpId)">Update Values</button>
                             </div>
                         </div>
-                        <div class="alert fade show text-center"
+                        <div class="alert fade show text-center" *ngIf="alert.showAlertPopup"
                             [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
                             role="alert">
                             <strong>{{alert.alertMsg}}</strong>
