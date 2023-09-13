@@ -44,6 +44,7 @@ export class ListOfClaimsComponent implements OnInit {
   tabSwitch: any = { 'Fresh': true, 'sendBack': false, 'MyClaims': false };
   tabValue:any;
   accessToListOfClaims:any;
+  currentTeamId:number;
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
       setTimeout(() => {
@@ -61,6 +62,7 @@ export class ListOfClaimsComponent implements OnInit {
   ngOnInit(): void {
     this.isAccessToListOfClaims();
     this.clientName = localStorage.getItem("selected_clientName");
+    this.currentTeamId = Utils.selectedTeam();
   }
 
   isAccessToListOfClaims(){
@@ -643,7 +645,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Patient ID","Claim Id", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
+      headers: ["Office", "Patient ID","Claim Id", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", this.currentTeamId==3?"Auditing":"Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -922,7 +924,7 @@ export class ListOfClaimsComponent implements OnInit {
 
   downloadPdf(){
     if(this.filteredItems.length!=0){
-    let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue};
+    let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamId":this.currentTeamId};
     this. appService.lisOfClaimsPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
         console.log(res.body);

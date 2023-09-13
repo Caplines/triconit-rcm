@@ -251,7 +251,13 @@
                                                 </th>
                                                 <th>
                                                     <div class="dFlex">
-                                                        Action Required<div class="dropdown">
+                                                        <ng-container *ngIf="currentTeamId==3;else others">
+                                                            Auditing
+                                                          </ng-container>
+                                                          <ng-template #others>
+                                                            Action Required
+                                                          </ng-template>
+                                                           <div class="dropdown">
                                                             <img  (click)="showHideFilteredDropdown('actionRequired')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
                                                             <div class="dropdown-menu filter-dropdown-menu"
                                                                 (mouseleave)="onMouseLeave($event)"
