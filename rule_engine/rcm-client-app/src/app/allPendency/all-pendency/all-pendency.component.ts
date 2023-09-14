@@ -302,6 +302,9 @@ export class AllPendencyComponent {
       this.tabSwitch.withoutDos = true;
       this.tabSwitch.withDos=false;
       this.tabSwitch.withDateOfPending = false;
+      setTimeout(()=>{
+        this.setTopOnTotalRow();
+      });
     }
     else if(tab == 'withDOS'){
       this.tabValue='withDOS';
