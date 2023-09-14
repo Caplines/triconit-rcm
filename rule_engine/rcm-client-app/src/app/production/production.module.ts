@@ -6,6 +6,7 @@ import { AuthService } from "../service/auth-service.service";
 import { FormsModule } from '@angular/forms';
 import { ProductionComponent } from './production-component/production.component';
 import { ProductionRoutingModule } from './production-routing.module';
+import { DateRangeModule } from '../shared/date-range-picker/date-range-picker.module';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { ProductionRoutingModule } from './production-routing.module';
   imports: [
     CommonModule,
     ProductionRoutingModule, FormsModule,
+    DateRangeModule
 
   ],
   providers: [AuthService],

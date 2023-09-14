@@ -113,6 +113,11 @@
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a>
             </li>
+            <li>
+                <a href="javascript:void(0);" [routerLink]="['/search-claims']" routerLinkActive="active"
+                    #rla="routerLinkActive"><img
+                        [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Search Claims</a>
+            </li>
             <!-- <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/updatePassword-active.png':'../../assets/img/updatePassword.png'" />Update Password</a></li>  -->
         </ul>
 

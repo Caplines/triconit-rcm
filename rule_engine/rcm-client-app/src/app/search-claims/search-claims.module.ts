@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { SearchClaimsRoutingModule } from './search-claims-routing.module';
 import { SearchClaimsComponent } from './search-claims.component';
 import { MultiSelectDropdownModule } from '../shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module';
+import { DateRangeModule } from '../shared/date-range-picker/date-range-picker.module';
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import { MultiSelectDropdownModule } from '../shared/multi-select-dropdown/multi
   imports: [
     CommonModule,
     SearchClaimsRoutingModule,
-    MultiSelectDropdownModule
+    MultiSelectDropdownModule,
+    DateRangeModule
   ],
   exports:[SearchClaimsComponent]
 })
