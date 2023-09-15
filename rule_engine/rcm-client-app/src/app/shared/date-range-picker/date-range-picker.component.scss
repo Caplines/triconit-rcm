@@ -1,0 +1,86 @@
+/* date-range-picker.component.css */
+
+.date-range-picker {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+/* Style the input field */
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  outline: none;
+}
+
+/* Style the date range picker container */
+.bs-datepicker {
+  width: 100%;
+}
+
+/* Style the calendar popover */
+.bs-datepicker .popover {
+  max-width: none;
+  width: auto;
+}
+
+/* Style the calendar header */
+.bs-datepicker .bs-datepicker-head {
+  background-color: #337ab7; /* Change this color to your preferred header background */
+  color: #fff; /* Change this color to your preferred header text color */
+}
+
+/* Style the calendar title */
+.bs-datepicker .bs-datepicker-head .current {
+  font-size: 18px;
+}
+
+/* Style the calendar navigation buttons */
+.bs-datepicker .bs-datepicker-head button {
+  background-color: transparent;
+  border: none;
+  color: #fff; /* Change this color to your preferred button color */
+  cursor: pointer;
+}
+
+/* Style the calendar navigation buttons on hover */
+.bs-datepicker .bs-datepicker-head button:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Change this color to your preferred hover background color */
+}
+
+/* Style the calendar weekdays */
+.bs-datepicker .bs-datepicker-body table th {
+  background-color: #f5f5f5; /* Change this color to your preferred weekday header background */
+  color: #333; /* Change this color to your preferred weekday header text color */
+  font-weight: normal;
+}
+
+/* Style the calendar days */
+.bs-datepicker .bs-datepicker-body table td {
+  cursor: pointer;
+}
+
+/* Style the selected date range */
+.bs-datepicker .bs-datepicker-body table td.selected {
+  background-color: #337ab7; /* Change this color to your preferred selected date background */
+  color: #fff; /* Change this color to your preferred selected date text color */
+}
+
+/* Style the custom date range options */
+.bs-datepicker .bs-datepicker-footer .range {
+  background-color: #337ab7; /* Change this color to your preferred range option background */
+  color: #fff; /* Change this color to your preferred range option text color */
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+/* Style the custom date range options on hover */
+.bs-datepicker .bs-datepicker-footer .range:hover {
+  background-color: rgba(51, 122, 183, 0.8); /* Change this color to your preferred hover background color */
+}
