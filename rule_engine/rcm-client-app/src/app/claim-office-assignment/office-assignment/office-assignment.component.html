@@ -16,7 +16,7 @@
                 <div class="main-container">
                     <div class="row">
                         <div class="col-md-12 mb-1 listClaimBox">
-                            <div class="billingDropdown ">
+                            <div class="billingDropdown labelText">
                                 Billing Type&nbsp;&nbsp;<select class="form-control" id="" name="bType" [(ngModel)]="bType"
                                     (change)="fetchClaimAssignments()">
                                     <option *ngFor="let sta of bl.bills" [value]="sta.key">{{sta.value}}</option>

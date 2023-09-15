@@ -23,4 +23,5 @@ public class OthersTeamPdfDto {
 	private String lastTeamRemark;
 	private String pendingSince;
 	private String ageBracket;
+	private String newClaimId;
 }

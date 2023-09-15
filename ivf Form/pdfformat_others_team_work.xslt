@@ -111,6 +111,7 @@ version="1.0" >
                      <tr class="tableView">
                          <td>Office</td>
                          <td>Patient ID</td>
+                         <td>Claim ID</td>
                          <td>Patient Name</td>
                          <td>DOS</td>
                          <td>Age Bracket</td>
@@ -130,6 +131,7 @@ version="1.0" >
 
                          <td><xsl:value-of select="officeName"/></td>
                          <td><xsl:value-of select="patientId"/></td>
+                         <td><xsl:value-of select="newClaimId"/></td>
                          <td><xsl:value-of select="patientName"/></td>
                          <td><xsl:variable name="month" select="substring(dos, 6, 2)" />
                        <xsl:variable name="day" select="substring(dos, 9, 2)" />

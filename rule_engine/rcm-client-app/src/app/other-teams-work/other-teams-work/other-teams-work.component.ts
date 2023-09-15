@@ -420,7 +420,12 @@ AssignClaimWithRemark(claimUuid:any){
   
 
   downloadPdf(){
-    if(this.filteredItems.length!=0){
+    if (this.filteredItems.length != 0) {
+      this.filteredItems.forEach((e:any)=>{
+        if(e.claimId){
+          e.newClaimId =e.claimId.replace(/\D/g, "");
+        }
+      })
     let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"currentTeamName":this.currentTeamName.teamName};
     this. appService.othersTeamPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){

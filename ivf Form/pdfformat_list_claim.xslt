@@ -142,7 +142,7 @@ version="1.0" >
 
                          <td><xsl:value-of select="officeName"/></td>
                          <td><xsl:value-of select="patientId"/></td>
-                         <td><xsl:value-of select="claimId"/></td>
+                         <td><xsl:value-of select="newClaimId"/></td>
                          <td style="word-break: break-all;"><xsl:value-of select="patientName"/></td>
                          <td><xsl:variable name="month" select="substring(dos, 6, 2)" />
                        <xsl:variable name="day" select="substring(dos, 9, 2)" />
