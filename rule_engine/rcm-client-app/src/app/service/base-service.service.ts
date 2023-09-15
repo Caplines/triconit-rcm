@@ -91,6 +91,7 @@ export class BaseService {
     'Ivf':'/api/ivf/d',
     'othersTeam': '/api/other-teams-work/d',
     //
+    'userClientsWithOffices':'/get-clients-with-offices'
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

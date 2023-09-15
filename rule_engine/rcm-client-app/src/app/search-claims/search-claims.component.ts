@@ -1,4 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { ApplicationServiceService } from '../service/application-service.service';
+import Utils from '../util/utils';
 
 @Component({
   selector: 'app-search-claims',
@@ -9,7 +12,22 @@ import { Component, ViewEncapsulation } from '@angular/core';
 export class SearchClaimsComponent {
 
   loader:any={};
+  companyData:any=[];
 
-  constructor(){}
+  constructor(public appService:ApplicationServiceService ,private title : Title){
+    title.setTitle(Utils.defaultTitle + "Search Claims");
+  }
 
+  ngOnInit(): void {
+    this.getcompanyData();
+  }
+
+
+  getcompanyData() {
+    this.appService.fetchClientsByUser((callback: any) => {
+      if (callback.status) {
+        this.companyData = callback.data;
+      }
+    })
+  }
 }

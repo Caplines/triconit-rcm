@@ -20,52 +20,52 @@ export class AppConstants {
             "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production"], "defaultpath": "/claim-assignment"
         }],
         [4, {
-            "name": "Lc3", "paths": ["/update-pass", "/list-of-claims"], "defaultpath": "/update-pass"
+            "name": "Lc3", "paths": AppConstants.constantPath, "defaultpath": "/update-pass"
         }],
         [5, {
-            "name": "Office", "paths": ["/update-pass", "/list-of-claims"], "defaultpath": "/update-pass"
+            "name": "Office", "paths":AppConstants.constantPath, "defaultpath": "/update-pass"
         }],
         [6, {
-            "name": "Patient Calling", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass"], "defaultpath": "/list-of-claims"
+            "name": "Patient Calling", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [7, {
             "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass"], "defaultpath": "/claim-assignment"
         }],
         [8, {
-            "name": "Super Admin", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/list-of-claims"], "defaultpath": "/claim-assignment"
+            "name": "Super Admin", "paths": AppConstants.constantPath, "defaultpath": "/claim-assignment"
         }],
         // [9, {
         //     "name": "Reporting", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/list-of-claims"], "defaultpath": "/claim-assignment"
         // }],
         [10, {
-            "name": "Ortho", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "Ortho", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [11, {
-            "name": "CDP", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "CDP", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [12, {
-            "name": "Payment Posting", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "Payment Posting", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [13, {
-            "name": "PPO IV", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "PPO IV", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [14, {
-            "name": "Medicaid IV", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "Medicaid IV", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [15, {
-            "name": "Need to hold", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "Need to hold", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [16, {
-            "name": "Quality", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "Quality", "paths":AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [17, {
-            "name": "AR", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "AR", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [18, {
-            "name": "Patient Statement", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "Patient Statement", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
         [19, {
-            "name": "Credentialing", "paths": ["/list-of-claims"], "defaultpath": "/list-of-claims"
+            "name": "Credentialing", "paths": AppConstants.constantPath, "defaultpath": "/list-of-claims"
         }],
 
         // [9,{
@@ -78,6 +78,7 @@ export class AppConstants {
     public RE_BILLING_ID = 2;
     public INTERNAL_AUDIT_TEAM = 3;
     public BILLING_TEAM = 7;
+    public static constantPath:any=["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass"];
 
 
     public TEAMS_ID_CONFIG = new Map<number, string>([
