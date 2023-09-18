@@ -26,7 +26,7 @@ import { DownLoadService } from '../service/download.service';
 })
 
 export class BillingClaimsComponent {
- 
+
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertAssign: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   claimRcm: ClaimRcmDataModel;
@@ -65,10 +65,10 @@ export class BillingClaimsComponent {
   clientName: string = '';
   assignType: string = '';
   modelElement: any = { 'modal': '', 'span': '' }
-  attachmentConfig:any={'showAttachment':false,'attachmentCount':0};
+  attachmentConfig: any = { 'showAttachment': false, 'attachmentCount': 0 };
 
-  selectedFilesMap:any= new Map();
-  removedFilesMap:any= new Map();
+  selectedFilesMap: any = new Map();
+  removedFilesMap: any = new Map();
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
@@ -162,7 +162,7 @@ export class BillingClaimsComponent {
   // }
 
   saveClaim(type: string) {
-  
+
     let ths = this;
     ths.assignType = type;
     ths.claimEditModel = {};
@@ -260,10 +260,10 @@ export class BillingClaimsComponent {
       ths.claimEditModel.assignTouuid = "";
 
       ths.openAssignModal('tl');
+    }
+
+
   }
-
-
-}
 
 
   addErrorDisplay(el: HTMLElement) {
@@ -884,87 +884,87 @@ export class BillingClaimsComponent {
   }
 
   assignToOtherTeam() {
-    this.submitAttachment((res:any)=>{
-      if(res.status){
-    let ths = this;
-    ths.otherErrormsg = "";
-    ths.claimEditModel.assignToOtherTeam = true;
-    ths.claimEditModel.assignToTL = false;
-    ths.claimEditModel.assignTouuid = '';
-    ths.removeErrorDisplay(document.getElementById("selectTeam"));
-    ths.removeErrorDisplay(document.getElementById("assignToComment"));
-    let valid = true;
+    this.submitAttachment((res: any) => {
+      if (res.status) {
+        let ths = this;
+        ths.otherErrormsg = "";
+        ths.claimEditModel.assignToOtherTeam = true;
+        ths.claimEditModel.assignToTL = false;
+        ths.claimEditModel.assignTouuid = '';
+        ths.removeErrorDisplay(document.getElementById("selectTeam"));
+        ths.removeErrorDisplay(document.getElementById("assignToComment"));
+        let valid = true;
 
-    let rem: any = document.getElementById("assignToComment");
-    if (rem.value.trim() === '') {
-      ths.addErrorDisplay(document.getElementById("assignToComment"));
-      valid = false;
-    }
-    //debugger;
-    if (ths.claimEditModel.assignToTeam == -1) {
-      ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
-      valid = false;
-    }
+        let rem: any = document.getElementById("assignToComment");
+        if (rem.value.trim() === '') {
+          ths.addErrorDisplay(document.getElementById("assignToComment"));
+          valid = false;
+        }
+        //debugger;
+        if (ths.claimEditModel.assignToTeam == -1) {
+          ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
+          valid = false;
+        }
 
-    if (valid) {
-      //assign
-      ths.inSave = true;
-      ths.closeModal();
-      console.log(ths.claimEditModel);
+        if (valid) {
+          //assign
+          ths.inSave = true;
+          ths.closeModal();
+          console.log(ths.claimEditModel);
 
-      ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
-        ths.inSave = false;
-        ths.showAlertPopup(callback);
-        ths.claimRcm.allowEdit = false;
-        ths.showAlertPopup(callback);
-      });
-    }
-  }
-})
+          ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
+            ths.inSave = false;
+            ths.showAlertPopup(callback);
+            ths.claimRcm.allowEdit = false;
+            ths.showAlertPopup(callback);
+          });
+        }
+      }
+    })
 
   }
 
   assignToLead() {
-  this.submitAttachment((res:any)=>{
-  if(res.status){
-    let ths = this;
-    ths.tlErrormsg = "";
-    this.claimEditModel.assignToTL = true;
-    ths.claimEditModel.assignToOtherTeam = false;
-    ths.claimEditModel.assignToTeam = 0;
-    let valid = true;
+    this.submitAttachment((res: any) => {
+      if (res.status) {
+        let ths = this;
+        ths.tlErrormsg = "";
+        this.claimEditModel.assignToTL = true;
+        ths.claimEditModel.assignToOtherTeam = false;
+        ths.claimEditModel.assignToTeam = 0;
+        let valid = true;
 
-    ths.removeErrorDisplay(document.getElementById("selectLeadName"));
-    ths.removeErrorDisplay(document.getElementById("tlRemark"));
-    let rem: any = document.getElementById("tlRemark");
-    if (rem.value.trim() === '') {
-      ths.addErrorDisplay(document.getElementById("tlRemark"));
-      valid = false;
-    }
-    if (ths.claimEditModel.assignTouuid == "") {
-      ths.addErrorDisplay(document.getElementById("selectLeadName"));
-      valid = false;
-    }
-    if (ths.claimRcm.assignedToUuid === ths.claimEditModel.assignTouuid) {
-      valid = false;
-      ths.tlErrormsg = "Claim Already Assigned to Same TL";
-
-    }
-    if (valid) {
-      //Save Data
-      ths.claimAssignToTeamModel.claimUuid = ths.claimUUid;
-      ths.claimAssignToTeamModel.otherTeamId = -1;
-      ths.claimAssignToTeamModel.remark = rem.value;
-      ths.claimAssignToTeamModel.teamLeadUuid = ths.claimEditModel.assignTouuid;
-      ths.claimAssignToTeamModel.toLead = true;
-      ths.claimService.assignClaimToTL(ths.claimAssignToTeamModel, (res: any) => {
-        if (res.status === 200) {
-          window.location.reload();
+        ths.removeErrorDisplay(document.getElementById("selectLeadName"));
+        ths.removeErrorDisplay(document.getElementById("tlRemark"));
+        let rem: any = document.getElementById("tlRemark");
+        if (rem.value.trim() === '') {
+          ths.addErrorDisplay(document.getElementById("tlRemark"));
+          valid = false;
+        }
+        if (ths.claimEditModel.assignTouuid == "") {
+          ths.addErrorDisplay(document.getElementById("selectLeadName"));
+          valid = false;
+        }
+        if (ths.claimRcm.assignedToUuid === ths.claimEditModel.assignTouuid) {
+          valid = false;
+          ths.tlErrormsg = "Claim Already Assigned to Same TL";
 
         }
-      })
-    }
-  }
+        if (valid) {
+          //Save Data
+          ths.claimAssignToTeamModel.claimUuid = ths.claimUUid;
+          ths.claimAssignToTeamModel.otherTeamId = -1;
+          ths.claimAssignToTeamModel.remark = rem.value;
+          ths.claimAssignToTeamModel.teamLeadUuid = ths.claimEditModel.assignTouuid;
+          ths.claimAssignToTeamModel.toLead = true;
+          ths.claimService.assignClaimToTL(ths.claimAssignToTeamModel, (res: any) => {
+            if (res.status === 200) {
+              window.location.reload();
+
+            }
+          })
+        }
+      }
     })
   }
 
@@ -1071,6 +1071,7 @@ export class BillingClaimsComponent {
 
   manageProviderOnClaimFromSheet() {
     //Now Multiple values can come
+    if (this.claimRcm.providerOnClaimFromSheet == null) return "";
     let ar = this.claimRcm.providerOnClaimFromSheet.split("<<<>>>");
     let temp = "";
     ar.forEach(element => {
@@ -1080,22 +1081,22 @@ export class BillingClaimsComponent {
     return temp;
   }
 
-  fetchAttachmentCount(){
-    this.appService.fetchAttachmentCount(this.claimUUid,(res:any)=>{
-          if(res.status == 200 && res.data){
-            this.attachmentConfig['showAttachment'] = true;
-            this.attachmentConfig['attachmentCount'] = res.data;
-          }
+  fetchAttachmentCount() {
+    this.appService.fetchAttachmentCount(this.claimUUid, (res: any) => {
+      if (res.status == 200 && res.data) {
+        this.attachmentConfig['showAttachment'] = true;
+        this.attachmentConfig['attachmentCount'] = res.data;
+      }
     })
   }
 
-  receiveChildEvent(event:any){
-    if(event['action'] === 'fileSelected'){
+  receiveChildEvent(event: any) {
+    if (event['action'] === 'fileSelected') {
       this.setSelectedFileForComponent(event.claimUuid, event.value);
-    } else if(event['action']==='filesSelectedToRemove'){
-        this.setSelectedFileToRemove(event.claimUuid,event.value)
-    } else if(event['action']==='clearAttachmentAndRemovedFiles'){
-        this.clearAttachment();
+    } else if (event['action'] === 'filesSelectedToRemove') {
+      this.setSelectedFileToRemove(event.claimUuid, event.value)
+    } else if (event['action'] === 'clearAttachmentAndRemovedFiles') {
+      this.clearAttachment();
     }
   }
 
@@ -1103,45 +1104,45 @@ export class BillingClaimsComponent {
     this.selectedFilesMap.set(claimUuid, file);
   }
 
-  setSelectedFileToRemove(claimUuid: any, fileParam:any){
-    this.removedFilesMap.set(claimUuid,fileParam);
+  setSelectedFileToRemove(claimUuid: any, fileParam: any) {
+    this.removedFilesMap.set(claimUuid, fileParam);
   }
 
   getSelectedFileForComponent(claimUuid: any) {
     return this.selectedFilesMap.get(claimUuid);
   }
-  
+
   getSelectedFilesToRemove(claimUuid: any) {
     return this.removedFilesMap.get(claimUuid);
   }
 
-  submitAttachment(callback:any){
-      let removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
-      if(!removedFiles){
-          removedFiles=[];
-      }
-      const selectedFiles = this.getSelectedFileForComponent(this.claimUUid);
-      if(!Array.isArray(removedFiles)){
-          this.appService.removeAttachmentFile(removedFiles,(res:any)=>{
-                if(res.status == 200 && res.data.fileResponseStatus){
-                    this.finalSubmitAttachment(selectedFiles,0,callback);
-                } else{
-                  this.showAlertPopup(res);
-                }
-          })
+  submitAttachment(callback: any) {
+    let removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
+    if (!removedFiles) {
+      removedFiles = [];
+    }
+    const selectedFiles = this.getSelectedFileForComponent(this.claimUUid);
+    if (!Array.isArray(removedFiles)) {
+      this.appService.removeAttachmentFile(removedFiles, (res: any) => {
+        if (res.status == 200 && res.data.fileResponseStatus) {
+          this.finalSubmitAttachment(selectedFiles, 0, callback);
+        } else {
+          this.showAlertPopup(res);
+        }
+      })
+    } else {
+      if (!selectedFiles) {
+        return callback({ 'status': true });
       } else {
-            if(!selectedFiles){
-              return callback({'status':true});
-            } else{
-              this.finalSubmitAttachment(selectedFiles,0,callback);
-            }
+        this.finalSubmitAttachment(selectedFiles, 0, callback);
       }
+    }
   }
 
 
-  finalSubmitAttachment(dataArray: any[], currentIndex: number,callback:any){
+  finalSubmitAttachment(dataArray: any[], currentIndex: number, callback: any) {
     if (currentIndex >= dataArray.length) {
-      return callback({'status':true});
+      return callback({ 'status': true });
     }
     const currentData = dataArray[currentIndex];
     let formData: any = new FormData();
@@ -1150,15 +1151,15 @@ export class BillingClaimsComponent {
     formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
     this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
       if (res.data.status) {
-        this.finalSubmitAttachment(dataArray, currentIndex + 1,callback);
+        this.finalSubmitAttachment(dataArray, currentIndex + 1, callback);
       } else {
-       this.showAlertPopup(res);
+        this.showAlertPopup(res);
       }
     })
   }
 
-  clearAttachment(){
-    this.selectedFilesMap= new Map();
-    this.removedFilesMap= new Map();
+  clearAttachment() {
+    this.selectedFilesMap = new Map();
+    this.removedFilesMap = new Map();
   }
 }
