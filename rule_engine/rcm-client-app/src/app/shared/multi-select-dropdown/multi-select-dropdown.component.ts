@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { AppConstants } from 'src/app/constants/app.constants';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 
 @Component({
@@ -16,17 +17,24 @@ export class MultiSelectDropdownComponent {
   @Input() isFromUserSetting:boolean=false;
   @Input() userClientData:any=[];
   @Input() userTeamData:any=[];
+  @Input() inputConfig:any;
+  @Input() emitToParent:any = new EventEmitter();
   
   clientCheckedList : any[];
   teamCheckedList : any[];
   clients:any=[]
   selectAllChecked:boolean=false;
-  teamData:any=[];
+  teamData:any=this.constants.teamData;
+  searchClaimsConfig:any={'clients':[],'offices':[],"teams":[]};
 
-constructor(private _service:ApplicationServiceService) {
+constructor(private _service:ApplicationServiceService,private constants:AppConstants) {
   this.clientCheckedList=this.teamCheckedList=[];
   this.clients= JSON.parse(localStorage.getItem("clients"));
-  this.getTeamsData();
+  this._service.subscribeOnValueChange('MultiSelect',(event:any)=>{
+    if(event.action==='selectedClientsOffices'){
+      this.inputConfig.officeData=event.value;
+    }
+  })
  }
 
  ngOnInit(){
@@ -120,18 +128,24 @@ getSelectedValue(status: Boolean, value: any, type: String) {
     }
     this.shareCheckedlist('team');
   }
+  else if (type === 'searchClaimClient'){
+    if (status) {
+      this.searchClaimsConfig.clients.push(value);
+    } else {
+      this.searchClaimsConfig.clients.forEach((e: any, idx: any) => {
+        if (e.clientUuid == value.clientUuid) {
+          this.searchClaimsConfig.clients.splice(idx, 1);
+        }
+      });
+    }
+    console.log(this.searchClaimsConfig.clients);
+    
+  }
 }
   shareCheckedlist(action: any) {
     this.shareCheckedList.emit({ 'action': action, value: action == 'team' ? this.teamCheckedList : this.clientCheckedList });
   }
 
-  getTeamsData(){
-    this._service.fetchTeamsNameData((res:any)=>{
-      if(res.status){
-        this.teamData = res.data
-      }
-    })
-  }
   selectAll(event:any,from:any){
     this.selectAllChecked=!this.selectAllChecked;
     let isChecked:boolean=event.target.checked;
@@ -172,5 +186,19 @@ getSelectedValue(status: Boolean, value: any, type: String) {
         
       }
     }
+    }
+
+    getOfficesCrossClients(){
+      let offices:any=[];
+      this.searchClaimsConfig.clients.forEach((ele:any)=>{
+        if(ele.offices.length>0){
+          ele.offices.forEach((item:any)=>{
+                  offices.push(item);
+          })
+        }
+      })
+      console.log(offices);
+      this._service.emitOnValueChange({action:'selectedClientsOffices',value:offices}) 
+   
     }
 }

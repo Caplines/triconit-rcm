@@ -1094,6 +1094,8 @@ export class BillingClaimsComponent {
       this.setSelectedFileForComponent(event.claimUuid, event.value);
     } else if(event['action']==='filesSelectedToRemove'){
         this.setSelectedFileToRemove(event.claimUuid,event.value)
+    } else if(event['action']==='clearAttachmentAndRemovedFiles'){
+        this.clearAttachment();
     }
   }
 
@@ -1139,7 +1141,6 @@ export class BillingClaimsComponent {
 
   finalSubmitAttachment(dataArray: any[], currentIndex: number,callback:any){
     if (currentIndex >= dataArray.length) {
-      this.appService.emitOnValueChange({action:'clearSelectedFiles'});
       return callback({'status':true});
     }
     const currentData = dataArray[currentIndex];
@@ -1149,11 +1150,15 @@ export class BillingClaimsComponent {
     formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
     this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
       if (res.data.status) {
-        
         this.finalSubmitAttachment(dataArray, currentIndex + 1,callback);
       } else {
        this.showAlertPopup(res);
       }
     })
+  }
+
+  clearAttachment(){
+    this.selectedFilesMap= new Map();
+    this.removedFilesMap= new Map();
   }
 }

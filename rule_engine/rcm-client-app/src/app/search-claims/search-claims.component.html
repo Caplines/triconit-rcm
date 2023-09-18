@@ -85,8 +85,8 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td> <multi-select-dropdown></multi-select-dropdown> </td>
-                                                <td> <multi-select-dropdown></multi-select-dropdown> </td>
+                                                <td> <multi-select-dropdown [inputConfig]="{'clientData':clients,'isSearchClaims':true}"></multi-select-dropdown> </td>
+                                                <td> <multi-select-dropdown [inputConfig]="{'officeData':offices,'isSearchClaims':true}"></multi-select-dropdown> </td>
                                                 <td> <input type="text" class="no-css-input-box claim-width" style="width:120px;"> </td>
                                                 <td> <input type="text" class="no-css-input-box"> </td>
                                                 <td> <app-date-range></app-date-range> </td>
@@ -95,7 +95,7 @@
                                                 <td> <multi-select-dropdown></multi-select-dropdown> </td>
                                                 <td> <multi-select-dropdown></multi-select-dropdown> </td>
                                                 <td> <multi-select-dropdown></multi-select-dropdown> </td>
-                                                <td> <multi-select-dropdown></multi-select-dropdown> </td>
+                                                <td> <multi-select-dropdown [inputConfig]="{'teamData':teamData,'isSearchClaims':true}"></multi-select-dropdown> </td>
                                                 <td>
                                                     <div class="custom-control custom-switch custom-switch-lg">
                                                         <input type="checkbox" class="custom-control-input" id="customSwitch1">

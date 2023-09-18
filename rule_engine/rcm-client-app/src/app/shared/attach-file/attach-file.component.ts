@@ -26,13 +26,6 @@ export class AttachFileComponent {
   removeClaimAttachmentId: any = [];
 
   constructor(public constant: AppConstants, private appService: ApplicationServiceService, private downloadService: DownLoadService) {
-
-    this.appService.subscribeOnValueChange('AttachComponent',(event:any)=>{
-      if(event['action']=='clearSelectedFiles'){
-        this.clearAttachmentFiles();
-      }
-    })
-
    }
 
   openModal() {
@@ -43,10 +36,14 @@ export class AttachFileComponent {
   }
 
   getAttachmentFile() {
+    this.removeAttachmentFiles = [];
+    this.selectedFiles =[]; 
+    this.removeClaimAttachmentId= [];
     this.appService.getAttachmentFile(this.inputConfig.claimUuid, (res: any) => {
       if (res.status == 200) {
         console.log(res);
         this.attachedFiles = res.data;
+        this.emitToParent.emit({action:'clearAttachmentAndRemovedFiles'});
         // this.hasAttachmentFileData =  true;
         // if(this.selectedFiles.length==0){
         //   this.selectedFiles= res.data;
@@ -116,7 +113,7 @@ export class AttachFileComponent {
       const index = this.attachedFiles.findIndex((e: any) => e.file.name == file.file.name);
       if (index !== -1) {
         this.attachedFiles.splice(index, 1);
-        this.inputConfig.attachmentCount = this.attachedFiles.length;
+        // this.inputConfig.attachmentCount = this.attachedFiles.length;
         this.removeClaimAttachmentId.push(file.id);
         let params: any = {
           "claimAttachmentId": this.removeClaimAttachmentId,
@@ -138,17 +135,12 @@ export class AttachFileComponent {
 
   get allowUpload(): boolean {
     //False = u can upload
-    console.log(this.inputConfig.allowUpload);
+    // console.log(this.inputConfig.allowUpload);
     if (this.inputConfig.allowUpload != undefined && this.inputConfig.allowUpload) {
       return this.inputConfig.allowUpload;
     } else {
       return false;
     }
-  }
-
-  clearAttachmentFiles(){
-    this.selectedFiles = [];
-    this.removeAttachmentFiles=[];
   }
 
 }
