@@ -1,5 +1,7 @@
 package com.tricon.rcm.dto.customquery;
 
+import java.util.Date;
+
 public interface RuleEngineClaimDto {
 	String getClaimId();
 	String getPatientName();
@@ -16,6 +18,7 @@ public interface RuleEngineClaimDto {
 	String getInsuranceType();
 	String getRuleId();
 	String getRuleName();
+	Date getRunDate();
 	
 
 	

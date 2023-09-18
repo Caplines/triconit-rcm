@@ -17,6 +17,7 @@ import { ClaimAssignToTeamModel } from '../models/claim_assign_to_team';
 import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
 import Utils from '../util/utils';
 import { DownLoadService } from '../service/download.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-billing-claims',
@@ -72,7 +73,8 @@ export class BillingClaimsComponent {
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
-    private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService) {
+    private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService,
+    public datepipe: DatePipe) {
     this.claimRcm = { claimId: "" };
     title.setTitle(Utils.defaultTitle + "Claim Detail");
   }
@@ -735,7 +737,8 @@ export class BillingClaimsComponent {
       '<span> | Pt.Name: <span>' + rule.patientName + '</span></span>' +
       '<span> | DOS: <span>' + rule.dos + '</span></span>' +
       '<span> | Tx plan Date: <span>' + rule.dos + '</span></span>' +
-      '<span> | Ins.Type : <span>' + rule.insuranceType + '</span></span>';
+      '<span> | Ins.Type : <span>' + rule.insuranceType + '</span></span>' +
+      '<span> | Run Date : <span>' + this.datepipe.transform(rule.runDate, 'MMM dd, YYYY'); + '</span></span>';
 
   }
 

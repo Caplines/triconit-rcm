@@ -208,6 +208,7 @@ export interface RuleEngineValModel {
 	dos?: string;
 	patientName?: string;
 	remark?: string;//Used For Saving Remark
+	runDate?: Date
 }
 
 export interface TLUser {

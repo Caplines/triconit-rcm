@@ -9,6 +9,7 @@ import { ClaimService } from '../service/claim.service';
 import { DownLoadService } from '../service/download.service';
 import { PipesModule } from '../pipe/pipe-module';
 import { AttachFileModule } from '../shared/attach-file/attach-file.module';
+import { DatePipe } from '@angular/common';
 
 
 @NgModule({
@@ -20,7 +21,7 @@ import { AttachFileModule } from '../shared/attach-file/attach-file.module';
     PipesModule,
     AttachFileModule
   ],
-  providers:[ApplicationServiceService,ClaimService, DownLoadService],
-  exports:[BillingClaimsComponent]
+  providers: [ApplicationServiceService, ClaimService, DownLoadService, DatePipe],
+  exports: [BillingClaimsComponent]
 })
 export class BillingClaimsModule { }

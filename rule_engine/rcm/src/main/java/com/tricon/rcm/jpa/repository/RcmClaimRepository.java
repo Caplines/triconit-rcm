@@ -472,7 +472,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	String IVF_DATA_QUERY =""+
 			" select r.claim_id claimId,rd.rule_id ruleId,rs.name ruleName,r.patient_name patientName,patient_id patientId,r.ivf_form_id ivId,rd.iv_date ivDate,rd.date_of_service"+
 			" dos,rd.error_message message,rd.message_type mType,"+
-			" rd.surface surface,rd.tooth tooth,rd.codes codes,off.name officeName,rd.insurance_type insuranceType from reports_claim r "+
+			" rd.surface surface,rd.tooth tooth,rd.codes codes,off.name officeName,rd.insurance_type insuranceType,rd.created_date runDate from reports_claim r "+
 			" inner join ("+
 			" SELECT rd.group_run,rd.report_id,iv_date FROM reports_claim r inner join report_claim_detail rd"+
 			" on rd.report_id=r.id "+
