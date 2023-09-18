@@ -1195,7 +1195,8 @@
                         </div> -->
                         <!-- Modal End -->
                         <div class="action-buttons" *ngIf="actionButtons && (isBilling || isInternalAudit)">
-                            <button  type="button" class="btn btn-success" [disabled]="inSave"
+                            <button  *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
+                            (claimRcm.primary && claimRcm.pending) )" type="button" class="btn btn-success" [disabled]="inSave"
                                 (click)="saveClaim('latter')">Save For Later Processing</button>
                             <button *ngIf="claimRcm.pending  && selectedTeam== claimRcm.currentTeamId" type="button"
                                 class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assigntl')">Assign to
