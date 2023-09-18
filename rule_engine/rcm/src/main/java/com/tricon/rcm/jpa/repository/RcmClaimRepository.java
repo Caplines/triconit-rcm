@@ -275,11 +275,12 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 						//+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId "
 						+" 	left join rcm_claims cl on cl.updated_by=us.uuid "
 						+"     and rut.team_id=:teamId  and  cl.pending is false and cl.first_worked_team_id=:teamId  "
-						+" 	and  CAST(cl.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
+					    + " inner join rcm_claims_submission_details cl_sub_det on cl_sub_det.claim_id=cl.claim_uuid  "
+                    	+" 	and  CAST(cl_sub_det.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
 						+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
 						+" 	left join office off on off.uuid=cl.office_id  "
 						+ " inner join company comp on comp.uuid=off.company_id  "
-						+" 	where   cmp.company_id in (:companyIds) and rut.team_id=:teamId group by us.uuid,comp.name")
+						+" 	where   cmp.company_id in (:companyIds) and rut.team_id=:teamId group by comp.name,us.uuid")
 	List<ProductionDto> claimProductionByForBilling(@Param("companyIds") List<String> companyIds,
 			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
 	
