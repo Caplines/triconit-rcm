@@ -127,7 +127,7 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	@Column(name = "plan_dependents_covered_to_age", length = 50)
 	private String planDependentsCoveredtoAge;// AE
 
-	@Column(name = "plan_pre_d_mandatory", length = 50)
+	@Column(name = "plan_pre_d_mandatory", length = 255)
 	private String planPreDMandatory;// AF
 
 	@Column(name = "plan_non_duplicate_clause", length = 50)
