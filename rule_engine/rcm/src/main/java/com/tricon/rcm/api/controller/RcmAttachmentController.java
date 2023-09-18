@@ -83,7 +83,7 @@ public class RcmAttachmentController extends BaseHeaderController {
 	}
 	
 	@PostMapping("/api/remove-claim-attachment")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> removeClaimAttachment(@RequestBody RcmClaimDeAttachmentDto dto, Model model) {
 		FileResponseDto response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
