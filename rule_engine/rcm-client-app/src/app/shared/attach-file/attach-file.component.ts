@@ -108,23 +108,6 @@ export class AttachFileComponent {
   }
 
   removePreSelectedFile(file: any) {
-    if(this.inputConfig['isDeleteAllowed']){  
-      this.deleteAllowedDetailPage(file);
-    }  else if(this.inputConfig['isOtherTeam']){
-      this.deleteAllowedOtherTeamPage(file);
-    }
-    return;
-  }
-
-  deleteAllowedOtherTeamPage(file:any){
-  this.deletePreSelectedFile(file);
-  }
-
-  deleteAllowedDetailPage(file:any){
-    this.deletePreSelectedFile(file);
-  }
-
-  deletePreSelectedFile(file:any){
     let deleteFile = confirm("Are You Sure You Want To Delete ?");
     if (deleteFile) {
       const index = this.attachedFiles.findIndex((e: any) => e.file.name == file.file.name);

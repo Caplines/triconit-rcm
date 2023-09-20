@@ -38,7 +38,7 @@
                                         </select>
                                         
                                     </span>
-                                    <span class="close" (click)="removePreSelectedFile(file)">&times;</span>
+                                    <span class="close" *ngIf="this.inputConfig['isDeleteAllowed'] || this.inputConfig['isOtherTeam']" (click)="removePreSelectedFile(file)">&times;</span>
                                         <ng-container *ngIf="inputConfig['attachmentCount']>0">
                                             <button type="button" class="icon-btn download-button"
                                                 (click)="downloadAttachment(file)" title="Download">
