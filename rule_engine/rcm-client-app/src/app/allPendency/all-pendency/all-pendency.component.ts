@@ -140,6 +140,7 @@ export class AllPendencyComponent {
     let totalRow: any = {};
     this.showLoader.exportCSVLoader = true;
     let headers: any = [];
+    headers.push("Client");
     headers.push("Office");
     this.teamData.forEach((e: any) => {
       if (e.teamId != this.currentTeamId) {
@@ -160,14 +161,7 @@ export class AllPendencyComponent {
     if (fromTable == 'table') {
       let data: any = {};
       excelData = excelData.map((e: any) => {
-        return {
-          'Office': e.officeName,
-          'InternalAudit': e.counts1['INTERNAL_AUDIT'],
-          'PatientCalling': e.counts1['PATIENT_CALLING'],
-          'Lc3': e.counts1['LC3'],
-          'office': e.counts1['OFFICE'],
-          'Billing': e.counts1['BILLING'],
-        }
+        return this.returnData(e,'counts1');
       })
 
       this.totalCount.forEach((e: any) => {
@@ -181,26 +175,12 @@ export class AllPendencyComponent {
 
     else if (fromTable == 'dos-table') {
       excelData = excelData.map((e: any) => {
-        return {
-          'Office': e.officeName,
-          'InternalAudit': e.dates1['INTERNAL_AUDIT'] ? this.datePipe.transform(new Date(e.dates1['INTERNAL_AUDIT']),'MMM dd, YYYY') : "-",
-          'PatientCalling': e.dates1['PATIENT_CALLING'] ? this.datePipe.transform(new Date(e.dates1['PATIENT_CALLING']),'MMM dd, YYYY') : "-",
-          'Lc3': e.dates1['LC3'] ? this.datePipe.transform(new Date(e.dates1['LC3']),'MMM dd, YYYY') : "-",
-          'office': e.dates1['OFFICE'] ? this.datePipe.transform(new Date(e.dates1['OFFICE']),'MMM dd, YYYY') : "-",
-          'Billing': e.dates1['BILLING'] ? this.datePipe.transform(new Date(e.dates1['BILLING']),'MMM dd, YYYY') : "-",
-        }
+        return this.returnData(e,'dates1');
       })
     }
     else if (fromTable == 'dop-table') {
       excelData = excelData.map((e: any) => {
-        return {
-          'Office': e.officeName,
-          'InternalAudit': e.datesPending['INTERNAL_AUDIT'] ? this.datePipe.transform(new Date(e.datesPending['INTERNAL_AUDIT']),'MMM dd, YYYY') : "-",
-          'PatientCalling': e.datesPending['PATIENT_CALLING'] ? this.datePipe.transform(new Date(e.datesPending['PATIENT_CALLING']),'MMM dd, YYYY') : "-",
-          'Lc3': e.datesPending['LC3'] ? this.datePipe.transform(new Date(e.datesPending['LC3']),'MMM dd, YYYY') : "-",
-          'office': e.datesPending['OFFICE'] ? this.datePipe.transform(new Date(e.datesPending['OFFICE']),'MMM dd, YYYY') : "-",
-          'Billing': e.datesPending['BILLING'] ? this.datePipe.transform(new Date(e.datesPending['BILLING']),'MMM dd, YYYY') : "-",
-        }
+        return this.returnData(e,'datesPending');
       })
     }
 
@@ -210,6 +190,25 @@ export class AllPendencyComponent {
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     new ngxCsv(excelData, `${localStorage.getItem("selected_clientName")}_Pendency - Other Teams_${this.date}`, options);
     this.showLoader.exportCSVLoader = false;
+  }
+  
+  returnData(e:any,property:any){
+    let obj:any={};
+    if(property == 'counts1'){
+      for(const i of this.constants.teamData){
+        obj['client'] = e.clientName;
+        obj['office'] = e.officeName;
+        obj[i.teamName] =  e[property][i.unFormatedName];
+      }
+      return obj;
+    } else{
+         for(const i of this.constants.teamData){
+        obj['client'] = e.clientName;
+        obj['office'] = e.officeName;
+        obj[i.teamName] =  e[property][i.unFormatedName] ?  this.datePipe.transform(new Date(e[property][i.unFormatedName]),'MMM dd, YYYY') : "-";
+      }
+      return obj;
+    }
   }
 
   removeCurrentTeamNameFromExcel(excelData: any) {
