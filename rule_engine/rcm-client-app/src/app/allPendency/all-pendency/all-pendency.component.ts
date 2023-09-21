@@ -167,6 +167,7 @@ export class AllPendencyComponent {
       this.totalCount.forEach((e: any) => {
         if (e.teamId != this.currentTeamId) {
           totalRow['name'] = 'Total';
+          totalRow['empty'] = '';
           totalRow[`${e.teamName}`] = e.count;
         }
       })
@@ -191,7 +192,7 @@ export class AllPendencyComponent {
     new ngxCsv(excelData, `${localStorage.getItem("selected_clientName")}_Pendency - Other Teams_${this.date}`, options);
     this.showLoader.exportCSVLoader = false;
   }
-  
+
   returnData(e:any,property:any){
     let obj:any={};
     if(property == 'counts1'){
