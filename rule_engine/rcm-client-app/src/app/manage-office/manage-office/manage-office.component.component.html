@@ -29,7 +29,7 @@
                                             </tr>
                                             <tr class="totalRow" *ngIf="selectedCompany?.name!='Smilepoint'">
                                                 <td colspan="4">
-                                                    <button type="button" class="btn btn-success" (click)="addNewOffice()">
+                                                    <button type="button" class="btn btn-success" (click)="addNewOffice()" [disabled]="!isAnyTLExist">
                                                         <img src="../assets/img/plus-white.png" alt="plus" />
                                                         Add New Office
                                                     </button>

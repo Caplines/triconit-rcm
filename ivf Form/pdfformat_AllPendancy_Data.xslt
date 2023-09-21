@@ -93,6 +93,9 @@ version="1.0" >
                     font-family: sans-serif;
                     font-weight: bold;
                 }
+                @page{
+            size: landscape;
+            }
             </style>
         </head>
         <body>
@@ -104,21 +107,23 @@ version="1.0" >
                      <xsl:variable name="currentTeam" select="currentTeamName" />
                       <xsl:variable name="cTeamId" select="currentTeamId" />
                          <tr class="bgWhite">
-                              <td colspan="13" class="tableHeading">Pendancy- Other Teams (<xsl:value-of select="clientName"/>)</td>
+                              <td colspan="16" class="tableHeading">Pendancy- Other Teams (<xsl:value-of select="clientName"/>)</td>
                          </tr>
                       <xsl:if test="tabSwitch='withoutDos'"> 
                              <tr class="tableView">
+                                <th style="border:1px solid black;">Client</th>
                                  <th style="border:1px solid black;">Office</th>
                                  <xsl:for-each select="teamsData">
-                                 <th style="border:1px solid black;">
+                                 <th style="border:1px solid black;word-wrap:break-word;">
                                      <xsl:value-of select="."/>
                                  </th>
                                 </xsl:for-each>
                              </tr>
                     <tr style="background-color:d#A9A9A9;">
                         <td >Total</td>
+                        <td></td>
                             <xsl:for-each select="sortedTotalCount">
-                    <xsl:if test="$currentTeam!= teamName">
+                    <xsl:if test="$currentTeam!= unFormatedName">
                         <td>           
                           <xsl:value-of select="count"/>
                         </td>
@@ -128,6 +133,9 @@ version="1.0" >
                          </tr> 
                 <xsl:for-each select="data/data">
                        <tr class="whiteBg">
+                          <td>
+                           <xsl:value-of select="clientName"/>
+                           </td>
                            <td>
                            <xsl:value-of select="officeName"/>
                            </td>
@@ -145,6 +153,7 @@ version="1.0" >
 
                     <xsl:if test="tabSwitch='withDOS'"> 
                         <tr class="tableView">
+                                 <th style="border:1px solid black;">Client</th>
                                  <th style="border:1px solid black;">Office</th>
                                  <xsl:for-each select="teamsData">
                                  <th style="border:1px solid black;">
@@ -154,6 +163,9 @@ version="1.0" >
                              </tr>
                              <xsl:for-each select="data/data">    
                         <tr class="whiteBg">
+                            <td>
+                           <xsl:value-of select="clientName"/>
+                           </td>
                            <td>
                            <xsl:value-of select="officeName"/>
                            </td>
@@ -179,6 +191,7 @@ version="1.0" >
                     </xsl:if>
                      <xsl:if test="tabSwitch='withDOP'"> 
                             <tr class="tableView">
+                                <th style="border:1px solid black;">Client</th>
                                  <th style="border:1px solid black;">Office</th>
                                  <xsl:for-each select="teamsData">
                                  <th style="border:1px solid black;">
@@ -188,6 +201,9 @@ version="1.0" >
                             </tr>
                              <xsl:for-each select="data/data">    
                         <tr class="whiteBg">
+                            <td>
+                           <xsl:value-of select="clientName"/>
+                           </td>
                            <td>
                            <xsl:value-of select="officeName"/>
                            </td>

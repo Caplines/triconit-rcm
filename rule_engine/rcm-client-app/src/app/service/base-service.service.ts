@@ -91,6 +91,11 @@ export class BaseService {
     'Ivf':'/api/ivf/d',
     'othersTeam': '/api/other-teams-work/d',
     //
+    'editUserInfo':'/edit-user-info',
+    'editUserRole':'/edit-user-role',
+    'editUserClient':'/edit-user-client',
+    'editUserTeam':'/edit-user-team',
+    'existingTLInfo':'/find-tl-by-client',
     'userClientsWithOffices':'/get-clients-with-offices'
   }
 

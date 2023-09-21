@@ -27,7 +27,7 @@
                             <!-- <div class="pendancy-label">Pendency From Other Teams</div> -->
 
                             <div *ngIf="tabSwitch.withoutDos">
-                                <button type="button" class="icon-btn" (click)="saveToPdf('table')"
+                                <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="pendencyData?.length==0">
                                     <img src="../../assets/img/pdf.png" /></button><span *ngIf="showLoader.exportPDFLoader"
                                     class="spinner-border text-danger mx-1"></span>
@@ -38,7 +38,7 @@
                             </div>
 
                             <div *ngIf="tabSwitch.withDos">
-                                <button type="button" class="icon-btn" (click)="saveToPdf('dos-table')"
+                                <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="pendencyData?.length==0">
                                     <img src="../../assets/img/pdf.png" /> </button><span *ngIf="showLoader.exportPDFLoader"
                                     class="spinner-border text-danger mx-1"></span>
@@ -48,7 +48,7 @@
                                     class="spinner-border text-success mx-1"></span>
                             </div>
                             <div *ngIf="tabSwitch.withDateOfPending">
-                                <button type="button" class="icon-btn" (click)="saveToPdf('dop-table')"
+                                <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="pendencyData?.length==0">
                                     <img src="../../assets/img/pdf.png" /></button><span *ngIf="showLoader.exportPDFLoader"
                                     class="spinner-border text-danger mx-1"></span>

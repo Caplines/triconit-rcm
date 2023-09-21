@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class TotalCount {
 
-	private String teamName;
+	private String unFormatedName;
 	private int teamId;
 	private int count;
 }

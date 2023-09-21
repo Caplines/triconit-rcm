@@ -29,6 +29,7 @@ export class UserSettingComponent implements OnInit {
   clientId: any = [];
   filteredUsers: any = [];
   selectedFromDropDown: boolean = false;
+  editRoless:string='';
 
   constructor(public appService: ApplicationServiceService, private title: Title, private fb: FormBuilder) {
     title.setTitle(Utils.defaultTitle + "User Setting");
@@ -160,9 +161,9 @@ export class UserSettingComponent implements OnInit {
   editRole() {
     this.editedUserDetails.value = Object.assign(this.editedUserDetails.value, { 'uuid': this.user.uuid });
     // console.log(this.editedUserDetails.value)
-    this.appService.isClaimStatusActive(this.user.uuid, (res: any) => {
-      if (res.status == 200 && res.data.status == 1) {
-        console.log(res);
+    // this.appService.isClaimStatusActive(this.user.uuid, (res: any) => {
+    //   if (res.status == 200 && res.data.status == 1) {
+    //     console.log(res);
         this.appService.editUser(this.editedUserDetails.value, (res: any) => {
           if (res.status == 200) {
             console.log(res);
@@ -173,11 +174,6 @@ export class UserSettingComponent implements OnInit {
             this.showAlertPopup(res);
           }
         })
-      } else {
-        this.showAlertPopup(res);
-      }
-    })
-
   }
 
   showAlertPopup(res: any) {
@@ -290,4 +286,109 @@ export class UserSettingComponent implements OnInit {
     console.log("destri");
 
   }
+
+  editUserPersonalInfo() {
+    const firstName = this.editedUserDetails.controls['firstName'].value;
+    const lastName = this.editedUserDetails.controls['lastName'].value;
+    const uuid = this.user.uuid;
+    if(firstName.length!=0 && lastName.length!=0){
+    this.appService.editUserInfo({ "uuid": uuid, "firstName": firstName, "lastName": lastName }, (ress: any) => {
+      if (ress.status == 200 ||ress.status==400) {
+        this.alert.showAlertPopup = true;
+        ress.status == 400 ? this.alert.isError = true : this.alert.isError = false;
+        setTimeout(() => { this.alert.showAlertPopup = false; }, 6000);
+        this.alert.alertMsg = ress.message ? ress.message : ress.data;
+        scrollTo(0, 0);
+      }
+    })
+  }else{
+    this.alert.showAlertPopup = true;
+    setTimeout(() => { this.alert.showAlertPopup = false; }, 2000);
+    this.alert.isError = true ;
+    this.alert.alertMsg = 'Resource is empty';
+    scrollTo(0, 0);
+  }
+  }
+
+  editRoles() {
+    const role = this.editedUserDetails.controls['role'].value;
+    const uuid = this.user.uuid;
+    this.appService.editUserRole({ "uuid": uuid, "role": role }, (ress: any) => {
+      if (ress.status == 200) {
+        if(ress.data.status==true){
+          this.editRoless=ress.data.roleName;
+        }      
+        this.alert.showAlertPopup = true;
+        setTimeout(() => { this.alert.showAlertPopup = false; }, 6000);
+        ress.status == 400 ? this.alert.isError = true : this.alert.isError = false;
+        this.alert.alertMsg = ress.message ? ress.message: ress.data.message;
+        scrollTo(0, 0);
+      }
+      if(ress.status==400){
+        this.alert.showAlertPopup = true;
+        setTimeout(() => { this.alert.showAlertPopup = false; }, 2000);
+        this.alert.isError = true;
+        this.alert.alertMsg = ress.message ? ress.message: ress.data;
+        scrollTo(0, 0);
+      }
+    })
+  }
+
+  editClient() {
+    const clientUuid = this.editedUserDetails.controls['companyUuid'].value;
+    if(clientUuid.length!=0){
+    const uuid = this.user.uuid;
+    let role="";
+    if(this.editRoless=="" ||this.editRoless==null){
+       role=this.user.roles.roleId;
+    }else{
+      role= this.editRoless;
+    }
+   // 
+    this.appService.editUserClient({ "uuid": uuid,"role": role,"companyUuid":clientUuid }, (ress: any) => {
+      if (ress.status == 200 || ress.status==400) {
+        this.alert.showAlertPopup = true;
+        setTimeout(() => { this.alert.showAlertPopup = false; }, 6000);
+        ress.status == 400 ? this.alert.isError = true : this.alert.isError = false;
+        this.alert.alertMsg = ress.message ? ress.message: ress.data;
+        scrollTo(0, 0);
+      }
+    })
+  }
+  else{
+    this.alert.showAlertPopup = true;
+    setTimeout(() => { this.alert.showAlertPopup = false; }, 2000);
+    this.alert.isError = true ;
+    this.alert.alertMsg = 'Please select client';
+    scrollTo(0, 0);
+  }
+}
+
+  editTeam() {
+    const teamId = this.editedUserDetails.controls['teamId'].value;
+    if(teamId.length!=0){
+    const uuid = this.user.uuid;
+    let role="";
+    if(this.editRoless=="" || this.editRoless==null){
+       role=this.user.roles.roleId;
+    }else{
+      role= this.editRoless;
+    }
+    this.appService.editUserTeam({ "uuid": uuid,"role": role,"teamId":teamId }, (ress: any) => {
+      if (ress.status == 200 || ress.status==400) {
+        this.alert.showAlertPopup = true;
+        setTimeout(() => { this.alert.showAlertPopup = false; }, 6000);
+        ress.status == 400 ? this.alert.isError = true : this.alert.isError = false;
+        this.alert.alertMsg = ress.message ? ress.message: ress.data;
+        scrollTo(0, 0);
+      }
+    })
+  }else{
+    this.alert.showAlertPopup = true;
+    setTimeout(() => { this.alert.showAlertPopup = false; }, 2000);
+    this.alert.isError = true ;
+    this.alert.alertMsg = 'Please select team';
+    scrollTo(0, 0);
+  }
+}
 }

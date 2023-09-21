@@ -368,15 +368,17 @@ export class AllPendencyComponent {
 
    downloadPdf(){
     if(this.filteredItems.length!=0){
-      const matchedTeam = this.teamData.find((item:any) => item.teamId === parseInt(this.currentTeamId));
-    this.currentTeamName = matchedTeam ? matchedTeam.teamName.toUpperCase() : null;
-    console.log(this.currentTeamName);    
-    const teamsData: string[] = this.teamName.filter((team:any) => team !== this.currentTeamName);
-    teamsData.sort((a, b) => a.localeCompare(b));
-    let data = {"fileName":"AllPendancy","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamName":this.currentTeamName,"totalCount":this.totalCount,"currentTeamId":this.currentTeamId,"teamsData":teamsData};
+    const matchedTeam = this.constants.teamData.find((item:any) => item.teamId == this.currentTeamId);
+      let teamsData:any = [];
+      this.constants.teamData.forEach((team:any)=>{
+      if(team.teamId != this.currentTeamId){
+        teamsData.push(team.teamName)
+      }
+    });
+    teamsData = teamsData.sort((a:any, b:any) => a.localeCompare(b)); 
+    let data = {"fileName":"AllPendancy","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamName":matchedTeam.unFormatedName,"totalCount":this.totalCount,"currentTeamId":this.currentTeamId,"teamsData":teamsData};
     this. _service.allPendancyPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
-        console.log(res.body);
         this.downloadService.saveBolbData(res.body, "Pendancy- Other Teams.pdf");
       }else{
         console.log("something went wrong");

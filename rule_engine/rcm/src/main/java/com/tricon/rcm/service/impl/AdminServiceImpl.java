@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -29,16 +28,22 @@ import org.springframework.stereotype.Service;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
+import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.RcmUserCompany;
 import com.tricon.rcm.db.entity.RcmUserRole;
+import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.RcmUserTeam;
+import com.tricon.rcm.dto.AssignOfficesToBillingUserDto;
+import com.tricon.rcm.dto.AssignUserOfficeDto;
+import com.tricon.rcm.dto.EditPersonalDetailsDto;
+import com.tricon.rcm.dto.EditUserClients;
+import com.tricon.rcm.dto.EditUserRoleDto;
+import com.tricon.rcm.dto.EditUserTeams;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PasswordResetDto;
-import com.tricon.rcm.dto.RcmClaimDto;
-import com.tricon.rcm.dto.RcmClaimResponseDto;
 import com.tricon.rcm.dto.RcmClientDto;
 import com.tricon.rcm.dto.RcmClientGSheetDto;
 import com.tricon.rcm.dto.RcmClientResponseDto;
@@ -52,9 +57,11 @@ import com.tricon.rcm.dto.RcmUserDto;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RcmUserToDto;
+import com.tricon.rcm.dto.RoleResponseDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
-import com.tricon.rcm.dto.customquery.RcmClaimAssignmentDto;
+import com.tricon.rcm.dto.customquery.AssignOfficeDto;
+import com.tricon.rcm.dto.customquery.ExistingClaimDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.dto.customquery.RcmUserDetails;
 import com.tricon.rcm.email.EmailUtil;
@@ -71,6 +78,7 @@ import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
 import com.tricon.rcm.jpa.repository.RcmUserTeamRepo;
+import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 //import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
@@ -134,6 +142,12 @@ public class AdminServiceImpl {
 	
 	@Autowired
 	RcmUserTeamRepo userTeamRepo;
+	
+	@Autowired
+	UserAssignOfficeRepo officeAssignRepo;
+	
+	@Autowired
+	ManageOfficeServiceImpl manageOfficeImpl;
 	
 
 	/**
@@ -457,7 +471,7 @@ public class AdminServiceImpl {
 	 * @return Generic Response
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public GenericResponse addNewOfficeByAdmin(RcmCompanyDto dto) throws Exception {
+	public GenericResponse addNewOfficeByAdmin(RcmCompanyDto dto,JwtUser jwtUser) throws Exception {
 //		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //		Object principal = authentication.getPrincipal();
 //		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
@@ -465,8 +479,19 @@ public class AdminServiceImpl {
 		RcmOffice office = new RcmOffice();
 		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyUuid());
 		RcmOfficeResponse officeResponse=null;
+		List<AssignOfficeDto> listOfExistingAssignOfficeData=null;
+		RcmCompanyDto cDto=null;
 
 		if (company != null) {
+			
+			cDto=new RcmCompanyDto();
+			cDto.setCompanyUuid(company.getUuid());
+			cDto.setName("");
+			List<String> existingTLData=this.findExistingTLByClientUuid(cDto);
+			
+			if(!existingTLData.isEmpty()) {
+				return new GenericResponse(HttpStatus.BAD_REQUEST, "For this client: Team Lead of  "+existingTLData.stream().collect(Collectors.joining(",")).toString()+"  doesn't exist.Please make Team Lead first for missing team and then add new office.", null);
+			}
 
 			RcmOffice oldOffice = officeRepo.findByCompanyAndName(company, dto.getName());
 
@@ -504,7 +529,56 @@ public class AdminServiceImpl {
 				office=officeRepo.save(office);
 				officeResponse.setOfficeUuid(office.getUuid());
 				officeResponse.setId(maxId+1);
-				return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,officeResponse );
+				
+				listOfExistingAssignOfficeData = new ArrayList<>();
+
+				List<Integer>existingTeams=RcmTeamEnum.getAllTeamsIdIsRoleVisible();
+				
+				//If new office is adding then get TL users from userAssign Table and will assign office to each TL of each team exist in this table
+				for (int teamId : existingTeams) {
+					AssignOfficeDto existingAssignOfficeData = officeAssignRepo
+							.findByTLByClientUuidWithRoleAndTeam(company.getUuid(), teamId);
+					if (existingAssignOfficeData != null)
+						listOfExistingAssignOfficeData.add(existingAssignOfficeData);
+
+				}
+				if (!listOfExistingAssignOfficeData.isEmpty() && existingTeams.size()==listOfExistingAssignOfficeData.size()) {
+					AssignOfficesToBillingUserDto assignOfficedto = new AssignOfficesToBillingUserDto();
+					AssignUserOfficeDto userOfficeDto = new AssignUserOfficeDto();
+					for (AssignOfficeDto assignOffdto : listOfExistingAssignOfficeData) {
+						logger.info("Existing TL from UserAssign Table for each team:"+assignOffdto.getUserUuid());
+						assignOfficedto.setTeamId(assignOffdto.getTeamId());
+						userOfficeDto.setUserId(assignOffdto.getUserUuid());
+						userOfficeDto.setOfficeId(office.getUuid());
+						assignOfficedto.setAssignOfficeDetails(Arrays.asList(userOfficeDto));
+						manageOfficeImpl.assignOfficeByAdmin(assignOfficedto, company, assignOffdto.getTeamId(),
+								jwtUser);
+					}
+				}else {
+					//if any TL is missing from userAssign table then we check in rcm_user_company table
+					//After Making Fresh Client ,get TL for this Fresh Client of the existing team and assign the office.
+					for (int teamId : existingTeams) {
+						AssignOfficeDto existingTLDiffTeams = userCompanyRepo
+								.findAnyExistingTLByClientUuidAndTeamId(company.getUuid(), teamId);
+						if (existingTLDiffTeams != null)
+							listOfExistingAssignOfficeData.add(existingTLDiffTeams);
+					}
+					if (!listOfExistingAssignOfficeData.isEmpty()) {
+						AssignOfficesToBillingUserDto assignOfficedto = new AssignOfficesToBillingUserDto();
+						AssignUserOfficeDto userOfficeDto = new AssignUserOfficeDto();
+						for (AssignOfficeDto assignOffdto : listOfExistingAssignOfficeData) {
+							logger.info("Existing TL from rcmCompany Table for each team:"+assignOffdto.getUserUuid());
+							assignOfficedto.setTeamId(assignOffdto.getTeamId());
+							userOfficeDto.setUserId(assignOffdto.getUserUuid());
+							userOfficeDto.setOfficeId(office.getUuid());
+							assignOfficedto.setAssignOfficeDetails(Arrays.asList(userOfficeDto));
+							manageOfficeImpl.assignOfficeByAdmin(assignOfficedto, company, assignOffdto.getTeamId(),
+									jwtUser);
+						}
+					}
+				}
+				
+				return new GenericResponse(HttpStatus.OK, MessageConstants.NEW_OFFICE_ADDED,officeResponse);
 			} 
 //			else {
 //				// if login user(ADMIN) is other than capline then login user can add own new
@@ -778,11 +852,328 @@ public class AdminServiceImpl {
 		return null;
 	}
 
-	public RcmClaimResponseDto checkExistingUserClaimStatusActiveOrNot(String userUuid) throws Exception {
+	public int checkExistingUserClaimStatusActiveOrNot(String userUuid) throws Exception {
 		int existingUsersClaimCounts = claimAssignmentRepo.findExistingUserAssignClaimCountsAndActiveStatus(userUuid);
 		if (existingUsersClaimCounts >= 1) {
-			return new RcmClaimResponseDto(MessageConstants.ROLE_CAN_NOT_BE_CHANGE, Constants.DISABLE);
+//			return new RcmClaimResponseDto(MessageConstants.ROLE_CAN_NOT_BE_CHANGE, Constants.DISABLE);
+			return 1;
 		}
-		return new RcmClaimResponseDto("", Constants.ENABLE);
+		//return new RcmClaimResponseDto("", Constants.ENABLE);
+		return 0;
+	}
+
+    @Transactional(rollbackOn = Exception.class)
+	public String editUserPersonalDetails(EditPersonalDetailsDto dto, JwtUser jwtUser) throws Exception {
+
+		String validateMsg = null;
+		RcmUser existingUser = null;
+
+		validateMsg = this.validateLoginUser(dto.getUuid(), jwtUser);
+
+		if (validateMsg != null) {
+			return validateMsg;
+		}
+
+		// getExisting user
+		existingUser = this.getExistingUser(dto.getUuid());
+		if (existingUser != null) {
+
+			// edit user Personal details
+			existingUser.setFirstName(dto.getFirstName());
+			existingUser.setLastName(dto.getLastName());
+			existingUser = userRepo.save(existingUser);
+			if (existingUser != null) {
+				commonService.dumpUserDataToRcmUserTemp(existingUser,null,null,null);
+			return MessageConstants.RECORDS_UPDATE;
+		   }
+			else
+				return MessageConstants.UPDATION_FAIL;
+		} else
+			return MessageConstants.USER_NOT_EXIST;
+	}
+
+	private String validateLoginUser(String userUuid, JwtUser jwtUser) {
+
+		// if uuid is match from login user then return
+		if (jwtUser.getUuid().equals(userUuid)) {
+			return MessageConstants.SOMETHING_WENT_WRONG;
+		}
+		return null;
+	}
+
+	private RcmUser getExistingUser(String userUuid) {
+		RcmUser existingUser = userRepo.findByUuid(userUuid);
+		if (existingUser != null) {
+			if (existingUser.getEmail().equals(Constants.SYSTEM)) {
+				return null;
+			} else {
+				return existingUser;
+			}
+		}
+		return null;
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public RoleResponseDto editUserRole(EditUserRoleDto dto, String isAdminRole, JwtUser jwtUser) throws Exception {
+
+		String validateMsg = null;
+		RcmUser existingUser = null;
+		RcmUserRole roles = null;
+		RcmUserRolePk pk = null;
+		RcmUserCompany userCompany = null;
+		RoleResponseDto responseDto = new RoleResponseDto();
+
+		// Validate ADMIN Functionality
+		if (isAdminRole.equals(Constants.ADMIN)) {
+			if (dto.getRole().equals(Constants.SUPER_ADMIN))
+				return null;
+		}
+
+		validateMsg = this.validateLoginUser(dto.getUuid(), jwtUser);
+
+		if (validateMsg != null) {
+			responseDto.setMessage(validateMsg);
+			return responseDto;
+
+		}
+
+		// getExisting user
+		existingUser = this.getExistingUser(dto.getUuid());
+		if (existingUser != null) {
+			boolean roleStatus = false;
+			List<RcmUserRole> existingRoles = existingUser.getRoles().stream().collect(Collectors.toList());
+			
+			String existingRole = existingRoles.stream().map(x -> x.getRole()).findFirst().orElse(null);
+//			if(existingRole.equals(Constants.ROLE_PREFIX +RcmRoleEnum.TL.getName())) {
+//				if(dto.getRole().equals(RcmRoleEnum.ASSO.getName())){
+//					return "Team Lead Can't become a Associate";
+//				}
+//			}
+
+			List<ExistingClaimDto> claimData = claimAssignmentRepo
+					.findExistingUserAssignClaimsAndClientStatus(existingUser.getUuid());
+			long claimStatus = claimData.stream().count();
+			if (claimStatus >= 1) {
+				String claimId = claimData.stream().map(x -> x.getClaimId()).collect(Collectors.joining(", ", "[", "]"));
+				if (!existingRole.contentEquals(Constants.ROLE_PREFIX + dto.getRole())) {
+					roleStatus = true;
+				}
+				if (roleStatus) {
+					responseDto.setMessage("Role can't be change because Claim " + claimId + " is assign to this user");
+					return responseDto;
+				}
+			}
+			if (existingRoles != null) {
+				// remove all existingRoles
+				userRole.deleteAll(existingRoles);
+
+			}
+
+			// if new role is SUPER_ADMIN then all clients assign to super user
+
+			if (isAdminRole.equals(Constants.SUPER_ADMIN) && dto.getRole().equals(Constants.SUPER_ADMIN)) {
+				List<RcmUserCompany> existingClients = userCompanyRepo.findByUserUuid(existingUser.getUuid());
+				List<RcmUserTeam> existingTeams = userTeamRepo.findByUserUuid(existingUser.getUuid());
+				userCompanyRepo.deleteAll(existingClients);	
+				userTeamRepo.deleteAll(existingTeams);
+				List<RcmCompany> clients = rcmCompanyRepo.findAll();
+				for (RcmCompany c : clients) {
+					userCompany = new RcmUserCompany();
+					userCompany.setUser(existingUser);
+					userCompany.setCompany(c);
+					userCompanyRepo.save(userCompany);
+				}
+			}
+			
+			// if new role is ADMIN OR Reporting then remove team from prevoius role
+			
+			if (dto.getRole().equals(Constants.REPORTING) || dto.getRole().equals(Constants.ADMIN)) {
+				List<RcmUserTeam> existingTeams = userTeamRepo.findByUserUuid(existingUser.getUuid());
+				userTeamRepo.deleteAll(existingTeams);			
+			}			
+
+			// save role
+			if (dto.getRole() != null && !dto.getRole().trim().equals("")) {
+				roles = new RcmUserRole();
+				pk = new RcmUserRolePk();
+				pk.setUuid(existingUser.getUuid());
+				roles.setId(pk);
+				roles.setRole(RcmTeamEnum.generateRoleByRoleType(dto.getRole()));
+				roles = userRole.save(roles);
+				if (roles != null && !roles.getRole().isEmpty()) {
+					commonService.dumpUserDataToRcmUserTemp(existingUser, roles.getRole(), null, null);
+					responseDto.setMessage(MessageConstants.RECORDS_UPDATE);
+					responseDto.setRoleName(roles.getRole().substring(5, roles.getRole().length()));
+					responseDto.setStatus(true);
+				} else
+					responseDto.setMessage(MessageConstants.UPDATION_FAIL);
+			}
+		} else
+			responseDto.setMessage(MessageConstants.USER_NOT_EXIST);
+		return responseDto;
+	}
+
+
+	@Transactional(rollbackOn = Exception.class)
+	public String editUserClients(EditUserClients dto, String isAdminRole, JwtUser jwtUser) throws Exception {
+
+		String validateMsg = null;
+		RcmUser existingUser = null;
+		RcmCompany company = null;
+		RcmUserCompany userCompany = null;
+		List<ExistingClaimDto> notFoundClaimIds=null;
+
+		// Validate ADMIN Functionality
+		if (isAdminRole.equals(Constants.ADMIN)) {
+			if (!commonService.validateUserClients(jwtUser, dto.getCompanyUuid())) {
+				return null;
+			}
+		}
+		validateMsg = this.validateLoginUser(dto.getUuid(), jwtUser);
+
+		if (validateMsg != null) {
+			return validateMsg;
+		}
+
+		existingUser = this.getExistingUser(dto.getUuid());
+		if (existingUser != null) {		
+			List<String>clients=dto.getCompanyUuid().stream().distinct().collect(Collectors.toList());
+			List<RcmUserCompany> existingClients = userCompanyRepo.findByUserUuid(existingUser.getUuid());
+			List<ExistingClaimDto> claimData=claimAssignmentRepo.findExistingUserAssignClaimsAndClientStatus(existingUser.getUuid());
+			long claimStatus =claimData.stream().count();
+			
+			if (claimStatus>= 1) {	
+				boolean clientStatus = true;
+				List<String>clientAsigntoClaim=claimData.stream().map(x->x.getClientUuid()).distinct().collect(Collectors.toList());
+                for (String uuid : clientAsigntoClaim) {
+				    if (!dto.getCompanyUuid().contains(uuid)) {
+				    	notFoundClaimIds=claimData.stream().filter(x->x.getClientUuid().equals(uuid)).collect(Collectors.toList());
+				    	clientStatus = false;
+				        break;
+				    }
+				}
+                
+				if (!clientStatus) {
+					String claimId=notFoundClaimIds.stream().map(x->x.getClaimId()).collect(Collectors.joining(", ", "[", "]"));
+					String clientName=notFoundClaimIds.stream().map(x->x.getClientName()).findFirst().orElse("null");
+					return "Client can't be update because claim "+ claimId+" is assign to this "+clientName+ "";
+				}
+			}
+
+			if (existingClients != null) {
+				// remove all existingClients
+				userCompanyRepo.deleteAll(existingClients);	
+
+			}
+			// save clients details
+			List<RcmUserCompany> saveClients = new ArrayList<>();
+			for (String clientUuid : clients) {
+				company = rcmCompanyRepo.findByUuid(clientUuid);
+				if (company != null) {
+					userCompany = new RcmUserCompany();
+					userCompany.setCompany(company);
+					userCompany.setUser(existingUser);
+					saveClients.add(userCompany);
+				} else {
+					return MessageConstants.COMPANY_NOT_EXIST;
+				}
+			}
+			saveClients = userCompanyRepo.saveAll(saveClients);
+			if (!saveClients.isEmpty()) {
+				commonService.dumpUserDataToRcmUserTemp(existingUser,null,userCompany,null);
+				return MessageConstants.RECORDS_UPDATE;}
+			else
+				return MessageConstants.UPDATION_ERROR;
+
+		} else
+			return MessageConstants.USER_NOT_EXIST;
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public String editUserTeams(EditUserTeams dto, String role, JwtUser jwtUser) throws Exception {
+		String responseMsg = null;
+		RcmUser existingUser = null;
+		RcmTeam team = null;
+		RcmUserTeam userTeam = null;
+		List<ExistingClaimDto> notFoundClaimIds=null;
+
+		responseMsg = this.validateLoginUser(dto.getUuid(), jwtUser);
+
+		if (responseMsg != null) {
+			return responseMsg;
+		}
+
+		existingUser = this.getExistingUser(dto.getUuid());
+		if (existingUser != null) {
+			List<RcmUserTeam> existingTeams = userTeamRepo.findByUserUuid(existingUser.getUuid());
+			List<Integer> removeDuplicateIds = dto.getTeamId().stream().distinct().collect(Collectors.toList());
+			List<ExistingClaimDto> claimData=claimAssignmentRepo.findExistingUserAssignClaimsAndClientStatus(existingUser.getUuid());
+			long claimStatus =claimData.stream().count();
+			if (claimStatus>= 1) {	
+				boolean teamStatus = true;
+				List<Integer> teamAsigntoClaim = claimData.stream().map(x -> x.getTeamId()).distinct()
+						.collect(Collectors.toList());
+				for (int id : teamAsigntoClaim) {
+					if (!removeDuplicateIds.contains(id)) {
+						notFoundClaimIds=claimData.stream().filter(x->x.getTeamId()==id).collect(Collectors.toList());
+						teamStatus = false;
+						break;
+					}
+				}
+
+				if (!teamStatus) {
+					String claimId=notFoundClaimIds.stream().map(x->x.getClaimId()).collect(Collectors.joining(", ", "[", "]"));
+					String clientName=notFoundClaimIds.stream().map(x->x.getClientName()).findFirst().orElse("null");
+					int teamId=notFoundClaimIds.stream().map(x->x.getTeamId()).findFirst().orElse(0);
+					return "Team can't be update because claim  "+ claimId+" is assign to this "+RcmTeamEnum.getTeamNameByTeamId(teamId)+" Team and client is "+clientName+"";
+				}
+			}
+
+			if (existingTeams != null) {
+				// remove all existingTeams
+				userTeamRepo.deleteAll(existingTeams);
+
+			}
+
+			// save Teams details
+			List<RcmUserTeam> saveteams = new ArrayList<>();
+			for (int teamId : removeDuplicateIds) {
+				team = teamRepo.findById(teamId);
+				if (team != null) {
+					userTeam = new RcmUserTeam();
+					userTeam.setTeam(team);
+					userTeam.setUser(existingUser);
+					saveteams.add(userTeam);
+				} else {
+					return MessageConstants.TEAM_NOT_EXIT;
+				}
+			}
+			saveteams = userTeamRepo.saveAll(saveteams);
+			if (!saveteams.isEmpty()) {
+				commonService.dumpUserDataToRcmUserTemp(existingUser,null,null,userTeam);
+				return MessageConstants.RECORDS_UPDATE;}
+			else
+				return MessageConstants.UPDATION_ERROR;
+		}
+		return MessageConstants.USER_NOT_EXIST;
+	}
+
+
+	public List<String> findExistingTLByClientUuid(RcmCompanyDto dto) throws Exception {
+		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyUuid());
+		if (company == null) {
+			return null;
+		}
+
+		List<String> nonExistingTLteamIds = new ArrayList<>();
+		for (int teamId : RcmTeamEnum.getAllTeamsIdIsRoleVisible()) {
+			int exitingTLUserCounts = userCompanyRepo.findExistingTLByClientUuidAndTeam(company.getUuid(), teamId);
+			if (exitingTLUserCounts == 0) {
+				nonExistingTLteamIds.add(RcmTeamEnum.getTeamDescriptionByTeamId(teamId));
+				logger.info("Non Existing Teams of TL:" + nonExistingTLteamIds);
+			}
+
+		}
+		return nonExistingTLteamIds;
 	}
 }

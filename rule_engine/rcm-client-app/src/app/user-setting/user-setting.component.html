@@ -117,8 +117,13 @@
                                                                             <small class="text-danger" *ngIf="editedUserDetails.controls['lastName'].touched && editedUserDetails.controls['lastName']?.errors?.minlength">* Name cannot be less than 3 words.</small>
                                                                             <small class="text-danger" *ngIf="editedUserDetails.controls['lastName'].touched && editedUserDetails.controls['lastName'].errors?.pattern">* Numbers or Spaces are not allowed.</small>
                                                                         </div>
+                                                                        
+                                                                    </div>
+                                                                    <div class="col-sm" style="margin-top: 30px;">
+                                                                        <button type="button" class="btn btn-success" (click)="editUserPersonalInfo()" >Edit Name</button>
                                                                     </div>
                                                                     <div class="col-sm"></div>
+                                                                   
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-sm">
@@ -142,6 +147,9 @@
                                                                             </ng-container>
                                                                         </div>
                                                                     </div>
+                                                                    <div class="col-sm" style="margin-top: 30px;">
+                                                                        <button type="button" class="btn btn-success" (click)="editRoles()">Edit Role</button>
+                                                                       </div>
                                                                     <div class="col-sm"> </div>
                                                                     <div class="col-sm"></div>
                                                                 </div>
@@ -152,7 +160,11 @@
                                                                             <multi-select-dropdown [list]="this.activeUserClients" [userClientData]="this.user.clientName" (shareCheckedList)="shareCheckedList($event)" [isClient]="true" [isFromUserSetting]="true">
                                                                             </multi-select-dropdown>
                                                                         </div>
+                                                                        <div class="col-sm" style="margin-top: 30px;">
+                                                                        <button type="button" class="btn btn-success" (click)="editClient()">Edit Client</button>
+                                                                       </div>
                                                                     </div>
+                                                                    
                                                                     <div class="col-sm" [ngStyle]="{'visibility':(this.editedUserDetails.value.role == 'SUPER_ADMIN' || this.editedUserDetails.value.role == 'ADMIN' || this.editedUserDetails.value.role == 'REPORTING') ? 'hidden' : 'visible' }  ">
                                                                         <div class="form-group">
                                                                             <label for="teamId">Team Name</label>
@@ -160,12 +172,16 @@
                                                                             <multi-select-dropdown [list]="teamData" [userTeamData]="this.user.teamNameId" (shareCheckedList)="shareCheckedList($event)" [isTeam]="true" [isFromUserSetting]="true">
                                                                             </multi-select-dropdown>
                                                                         </div>
+                                                                        <div class="col-sm" style="margin-top: 30px;">
+                                                                            <button type="button" class="btn btn-success" (click)= "editTeam()">Edit Team</button>
+                                                                           </div>
                                                                     </div>
                                                                     <div class="col-sm"></div>
+                                                                    
                                                                 </div>
-                                                                <div class="my-3">
+                                                                <!-- <div class="my-3">
                                                                     <button type="button" class="btn btn-success" [disabled]="editedUserDetails.invalid" (click)="editRole()">Save</button>
-                                                                </div>
+                                                                </div> -->
                                                             </form>
                                                         </div>
                                                         

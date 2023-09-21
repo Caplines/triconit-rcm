@@ -164,4 +164,26 @@ public enum RcmTeamEnum {
 		}
 		return null;
 	}
+	
+	public static List<Integer> getAllTeamsIdIsRoleVisible() {
+
+		List<Integer> teamId = new ArrayList<>();
+		for (RcmTeamEnum team : RcmTeamEnum.values()) {
+			if (team.isRoleVisible) {
+				teamId.add(team.getId());
+			}
+		}
+		return teamId;
+	}
+	
+	public static String getTeamDescriptionByTeamId(int teamId)
+	{
+		String teamDescription="";
+		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() ==teamId).findFirst();
+		if(teamEnum.isPresent()) {
+			teamDescription=teamEnum.get().getDescription();
+			 return teamDescription;
+		}
+		return null;
+	}
 }

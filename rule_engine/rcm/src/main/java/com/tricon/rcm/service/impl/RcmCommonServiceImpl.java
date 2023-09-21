@@ -375,4 +375,52 @@ public class RcmCommonServiceImpl {
 		}
 		return null;
 	}
+	
+	public void dumpUserDataToRcmUserTemp(RcmUser user,String role,RcmUserCompany saveClients,RcmUserTeam userTeam) {
+		RcmUserRoleHistory tempUser = new RcmUserRoleHistory();
+		String roles=null;
+		if (user.getRcmCompanies()!=null) {
+			List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(user.getUuid());
+			if (clientName != null && !clientName.isEmpty()) {
+				tempUser.setClientName(clientName.stream().map(x -> x.getCompany().getName())
+						.collect(Collectors.joining(",", "[", "]")));
+			}
+		}
+		
+		if (saveClients!=null && saveClients.getUser().getUuid().equals(user.getUuid())) {
+			List<RcmUserCompany> clientName = userCompanyRepo.findByUserUuid(saveClients.getUser().getUuid());
+			if (clientName != null && !clientName.isEmpty()) {
+				tempUser.setClientName(clientName.stream().map(x -> x.getCompany().getName())
+						.collect(Collectors.joining(",", "[", "]")));
+			}
+		}
+		if (user.getRcmTeams()!=null) {
+			List<RcmUserTeam> teamName = userTeamRepo.findByUserUuid(user.getUuid());
+			if (teamName != null && !teamName.isEmpty()) {
+				tempUser.setTeamName(
+						teamName.stream().map(x -> x.getTeam().getName()).collect(Collectors.joining(",", "[", "]")));
+			}
+		}
+		
+		if (userTeam!=null && userTeam.getUser().getUuid().equals(user.getUuid())) {
+			List<RcmUserTeam> teamName = userTeamRepo.findByUserUuid(userTeam.getUser().getUuid());
+			if (teamName != null && !teamName.isEmpty()) {
+				tempUser.setTeamName(
+						teamName.stream().map(x -> x.getTeam().getName()).collect(Collectors.joining(",", "[", "]")));
+			}
+		}
+		
+		if(role==null) {
+			roles=user.getRoles().stream().map(x->x.getRole()).findFirst().orElse("null");
+		}else {
+			roles=role;
+		}
+		tempUser.setUser(user);
+		tempUser.setEmail(user.getEmail());
+		tempUser.setFirstName(user.getFirstName());
+		tempUser.setLastName(user.getLastName());
+		tempUser.setCreatedDate(Timestamp.from(Instant.now()));
+		tempUser.setRolesDetails(roles);
+		userTempRepo.save(tempUser);
+	}
 }

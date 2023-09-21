@@ -279,13 +279,14 @@ public class DownLoadService {
 				getcounts1 = copyDto.getCounts1();
 				sortedCounts1 = new TreeMap<>(getcounts1);
 				pdfdto.setSortedCounts1(sortedCounts1);
-				pdfdto.setOfficeName(copyDto.getOfficeName());				
+				pdfdto.setOfficeName(copyDto.getOfficeName());		
+				pdfdto.setClientName(copyDto.getClientName());				
 				newData.add(pdfdto);		
 				}
 			List<TotalCount>totalCount=dto.getTotalCount();
 			totalCount=totalCount.stream()
-			        .sorted(Comparator.comparing(TotalCount::getTeamName))
-			        .peek(totalCounts -> totalCounts.setTeamName(totalCounts.getTeamName().toUpperCase()))
+			        .sorted(Comparator.comparing(TotalCount::getUnFormatedName))
+			        .peek(totalCounts -> totalCounts.setUnFormatedName(totalCounts.getUnFormatedName().toUpperCase()))
 			        .collect(Collectors.toList());
 			newDto.setData(newData);	
 			newDto.setSortedTotalCount(totalCount);
@@ -299,7 +300,8 @@ public class DownLoadService {
 				getDos = copyDto.getDates1();
 				sortedDos = new TreeMap<>(getDos);
 				pdfdto.setSortedDates1(sortedDos);
-				pdfdto.setOfficeName(copyDto.getOfficeName());				
+				pdfdto.setOfficeName(copyDto.getOfficeName());	
+				pdfdto.setClientName(copyDto.getClientName());
 				newData.add(pdfdto);		
 				}
 			newDto.setData(newData);						
@@ -313,7 +315,8 @@ public class DownLoadService {
 				getDop = copyDto.getDatesPending();
 				sortedDop = new TreeMap<>(getDop);
 				pdfdto.setSortedPending(sortedDop);
-				pdfdto.setOfficeName(copyDto.getOfficeName());				
+				pdfdto.setOfficeName(copyDto.getOfficeName());		
+				pdfdto.setClientName(copyDto.getClientName());
 				newData.add(pdfdto);		
 				}
 			newDto.setData(newData);						

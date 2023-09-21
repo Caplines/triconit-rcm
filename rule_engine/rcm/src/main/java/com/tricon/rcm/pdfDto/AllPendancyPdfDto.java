@@ -11,4 +11,5 @@ public class AllPendancyPdfDto {
 	private Map<String, Object> sortedCounts1;
 	private Map<String, Object> sortedDates1;
 	private Map<String, Object> sortedPending;
+	private String clientName;
 }

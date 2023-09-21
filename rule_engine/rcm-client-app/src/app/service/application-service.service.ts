@@ -473,7 +473,24 @@ export class ApplicationServiceService extends BaseService {
       callback(header)
     });
   }
+	editUserInfo(params: any, callback: any) {
+    this.postData(params, this.httpUrl['editUserInfo'], callback);
+  }
+  editUserRole(params: any, callback: any) {
+    this.postData(params, this.httpUrl['editUserRole'], callback);
+  }
+ 
+  editUserClient(params: any, callback: any) {
+    this.postData(params, this.httpUrl['editUserClient'], callback);
+  }
 
+  editUserTeam(params: any, callback: any) {
+    this.postData(params, this.httpUrl['editUserTeam'], callback);
+  }
+
+  existingTLInfo(params: any, callback: any) {
+    this.postData(params, this.httpUrl['existingTLInfo'], callback);
+  }
   fetchClientsByUser(callback: any) {
     this.getData({}, this.httpUrl['userClientsWithOffices'], callback)
   }

@@ -17,6 +17,7 @@ export class ManageOfficeComponent implements OnInit {
   showLoader:boolean=false;
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
   selectedCompany:any;
+  isAnyTLExist:boolean;
 
 
   constructor(public appService:ApplicationServiceService ,private title : Title) { 
@@ -41,6 +42,7 @@ export class ManageOfficeComponent implements OnInit {
             if(callback.status){
               this.showLoader=false;
               this.officeData = callback.data.map((e:any)=>({...e,'editable':false}));
+                this.checkTLExist();
             }
     })
 }
@@ -119,5 +121,32 @@ export class ManageOfficeComponent implements OnInit {
     res.status==400 ? this.alert.isError=true : this.alert.isError=false;
     this.alert.alertMsg = res.message ? res.message : res.result.message;
   }
-}
 
+  checkTLExist(){
+    console.log(this.selectedCompany);
+    let params: any = {
+      "companyUuid": this.selectedCompany.companyUuid,
+      "name": ''
+    }
+    let nonExistingTeam='';
+    this.appService.existingTLInfo(params, (callback: any) => {
+      if (callback.status == 200 && callback.data.length>0) {
+            nonExistingTeam =callback.data.join(', ');
+            this.alert.showAlertPopup = true;
+            this.alert.isError=true;
+            this.isAnyTLExist=false;
+            this.alert.alertMsg = `For this client: Team Lead of  ${nonExistingTeam}  doesn't exist.Please make Team Lead first for missing team and then add new office.`;     
+      } 
+      else if(callback.status == 500){
+        this.alert.showAlertPopup = true;
+        this.alert.isError=true;
+        this.isAnyTLExist=true;
+        this.alert.alertMsg = "Something went wrong.";
+      }
+      else{
+        this. isAnyTLExist=true;
+        this.alert.showAlertPopup = false;
+      }
+  })
+}
+}

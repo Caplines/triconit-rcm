@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
+import com.tricon.rcm.dto.customquery.ExistingClaimDto;
 
 public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment, Integer>{
 
@@ -91,5 +92,16 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	String findLatestClaimCommentByOtherTeam(@Param("claimUuid") String claimUUid,@Param("teamId") int teamId);
 
 	
+	  @Query(value ="select rc.claim_id as ClaimId ,off.name AS OfficeUuid, "
+	          + "off.company_id as ClientUuid ,c.name as ClientName, "
+	          + "ra.current_team_id as TeamId from "
+	          + "rcm_claim_assignment ra "
+	          + "inner join rcm_claims rc "
+	          + "on rc.claim_uuid=ra.claim_id "
+	          + "inner join office off on off.uuid = rc.office_id "
+	          + "inner join company c on c.uuid = off.company_id "
+	          + "where ra.assigned_to=:assignTo "
+	          + "and ra.active is true and rc.pending=true",nativeQuery=true)
+	      List<ExistingClaimDto> findExistingUserAssignClaimsAndClientStatus(@Param("assignTo")String assignTo);
 	
 }

@@ -15,5 +15,6 @@ public class PendencyWithOfficeOnlyDto {
 	HashMap<String, Object> counts1;
 	HashMap<String, Object> dates1;
 	HashMap<String, Object> datesPending;
+	String clientName;
 	
 }
