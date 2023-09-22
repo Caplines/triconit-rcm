@@ -15,10 +15,17 @@
     rel="stylesheet">
   <!-- <link href="css/admin-navbar.min.css" rel="stylesheet"> -->
   <link href="https://getbootstrap.com/docs/4.4/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" media="all" href="assets/css/daterangepicker.css" />
 </head>
 
 <body class="login-bg">
   <app-root></app-root>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
+
+  <script type="text/javascript" src="assets/js/daterangepicker.js"></script>
 </body>
 
 </html>
