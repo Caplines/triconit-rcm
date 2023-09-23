@@ -31,7 +31,53 @@
     border-right: 0px !important;
 }
 
+.rowContainer {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    border: 1px solid #eee;
+    -ms-box-orient: horizontal;
+    display: flex;
+    background: #f8f8f9;
+    width: 100%;
 
+ 
+
+    &.wrap {
+        flex-wrap: wrap;
+    }
+
+ 
+
+    .colBox {
+        margin-bottom: 10px;
+    }
+
+ 
+
+    .colName {
+        padding: 0.3rem 15px;
+        color: #6b7280;
+        font-family: "Open Sans", sans-serif;
+        font-weight: 600;
+        vertical-align: top;
+    }
+
+ 
+
+    .colAction {
+        padding: 0rem 15px 0.3rem;
+        border: 0px;
+
+ 
+
+        &.dateRange {
+            input {
+                height: 33px;
+            }
+        }
+    }
+}
 
 .custom-switch.custom-switch-lg {
     padding-bottom: 1rem;
