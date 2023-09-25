@@ -47,6 +47,7 @@ export class AllPendencyComponent {
     this.currentTeamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
     window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
+    this.clearTotalCount();
   }
 
   getAllUserClients(){
@@ -385,6 +386,13 @@ export class AllPendencyComponent {
       }
     })
   }
-
 }
+
+clearTotalCount(){
+  this.constants.teamData((e:any)=>{
+    e.count=0;
+  })
+}
+
+
 }
