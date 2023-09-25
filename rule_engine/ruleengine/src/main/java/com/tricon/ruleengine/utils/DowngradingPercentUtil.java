@@ -28,7 +28,13 @@ public class DowngradingPercentUtil {
 			RuleEngineLogger.generateLogs(clazz, "CrownsD2750D2740Percentage  for Code -"+serviceCode+" is " + ivf.getCrownsD2750D2740Percentage(),
 					Constants.rule_log_debug, bw);
 			perc= Double.parseDouble(ivf.getCrownsD2750D2740Percentage());
-		}else {
+		}else if (serviceCode.equalsIgnoreCase("D6740") || serviceCode.equalsIgnoreCase("D6245") 
+				) {
+			RuleEngineLogger.generateLogs(clazz, "Bridges  for Code -"+serviceCode+" is " + ivf.getBridges1(),
+					Constants.rule_log_debug, bw);
+			perc= Double.parseDouble(ivf.getBridges1());
+		}
+		else {
 			RuleEngineLogger.generateLogs(clazz, "Percentage NOT FOUND for code-" + serviceCode,
 					Constants.rule_log_debug, bw);
 		}

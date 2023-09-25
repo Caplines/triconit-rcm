@@ -968,6 +968,7 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> li = new ArrayList<>();
 		try {
+			/*Plan_NonDuplicateClause  not needed  
 			RuleEngineLogger.generateLogs(clazz, "Non Dup clause- " + ivf.getPlanNonDuplicateClause(),
 					Constants.rule_log_debug, bw);
 
@@ -975,18 +976,23 @@ public class RuleBook {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule7.error.message_duplicate", null, locale), Constants.ALERT,"","",""));
 			}
+			*/
 			RuleEngineLogger.generateLogs(clazz, "PlanPreDMandatory - " + ivf.getPlanPreDMandatory(),
 					Constants.rule_log_debug, bw);
 			if (ivf.getPlanPreDMandatory().equalsIgnoreCase("yes")) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule7.error.message_preman", null, locale), Constants.ALERT,"","",""));
 			}
+			
+			/*Plan_FullTimeStudentStatus
 			RuleEngineLogger.generateLogs(clazz, "getPlanFullTimeStudentStatus -" + ivf.getPlanFullTimeStudentStatus(),
 					Constants.rule_log_debug, bw);
+			
 			if (ivf.getPlanFullTimeStudentStatus().equalsIgnoreCase("yes")) {
 				li.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule7.error.message_fulltime", null, locale), Constants.ALERT,"","",""));
 			}
+			*/
 			RuleEngineLogger.generateLogs(clazz, "getPlanAssignmentofBenefits - " + ivf.getPlanAssignmentofBenefits(),
 					Constants.rule_log_debug, bw);
 			if (ivf.getPlanAssignmentofBenefits().equalsIgnoreCase("yes")) {
@@ -3516,10 +3522,11 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 								surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 								teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 								fcodes.add(tp.getServiceCode());
+								//As per princy-> 5 sept 2023 on chat put in Fail instead of Alert
 								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule18.error.message",
 												new Object[] { tp.getServiceCode() }, locale),
-										Constants.ALERT,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
+										Constants.FAIL,String.join(",", surfaces),String.join(",", teethC),String.join(",", fcodes)));
 								pass = false;
 							}
 						}
@@ -3664,7 +3671,8 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 			boolean pass = true;
 			RuleEngineLogger.generateLogs(clazz,
 					"PosteriorCompositesD2391Downgrade-" + ivf.getPosteriorCompositesD2391Downgrade()
-							+ " CrownsD2750D2740Downgrade-" + ivf.getCrownsD2750D2740Downgrade(),
+							+ " CrownsD2750D2740Downgrade-" + ivf.getCrownsD2750D2740Downgrade()
+							+ " BridgeD6740D6245Downgrade-" + ivf.getWillDowngradeApplicable(),
 					Constants.rule_log_debug, bw);
 
 			if (ivf.getPosteriorCompositesD2391Downgrade() != null && ivf.getCrownsD2750D2740Downgrade() != null
@@ -3674,15 +3682,20 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 				// Downgrading Mapping tables...
 				List<Mappings> mappsP = null;
 				List<Mappings> mappsC = null;
+				List<Mappings> mappsB = null;
 				if (ivf.getPosteriorCompositesD2391Downgrade().trim().equalsIgnoreCase("yes"))
 					mappsP = getMappingDownGradeFromListByType(mappings, "posterior composites");
 				if (ivf.getCrownsD2750D2740Downgrade().trim().equalsIgnoreCase("yes"))
 					mappsC = getMappingDownGradeFromListByType(mappings, "crowns");
+				if (ivf.getWillDowngradeApplicable().trim().equalsIgnoreCase("yes"))
+					mappsB = getMappingDownGradeFromListByType(mappings, "bridge");
 				List<Mappings> mapps = new ArrayList<>();
 				if (mappsP != null)
 					mapps.addAll(mappsP);
 				if (mappsC != null)
 					mapps.addAll(mappsC);
+				if (mappsB != null)
+					mapps.addAll(mappsB);
                 /*For Latter
 				boolean cont=false;
 				List<String> codestoCheck=  new ArrayList<>( Arrays.asList( new String[]{"D0120", "D0220","D0230"} ) );
@@ -12380,7 +12393,8 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 		//age[0]=5;
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_68,
 				Constants.rule_log_debug, bw);
-		boolean checkfor36monthlogic=true;
+		//boolean checkfor36monthlogic=true;
+		boolean checkforLifeTimelogic=true;
 	   	for(SealantEligibilityRule ser:sealantEligibilityRules) {
 				
 		  if (iv){
@@ -12388,7 +12402,8 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 	   		    	teethCovered.add(ser.getCoveredToothNo());
 	   		    	if (ser.getInsuranceName().equalsIgnoreCase("DentaQuest - Chip") || ser.getInsuranceName().equalsIgnoreCase("MCNA - CHIP")
 	   		    		||ser.getInsuranceName().equalsIgnoreCase("United Healthcare - Chip")) {
-	   		    		checkfor36monthlogic=false;
+	   		    		//checkfor36monthlogic=false;
+	   		    		checkforLifeTimelogic=false;
 	   		    	}
 				}
 		  }else {
@@ -12551,18 +12566,31 @@ private void addCodeinSet(String v,String key,Set<String> set) {
 					for(ToothHistoryDto d:l) {
 						String code=d.getHistoryCode();
 						if (!(code.contains("D1351") || code.contains("D1352"))) continue;
-						if (!checkfor36monthlogic) {
+						/*if (!checkfor36monthlogic) {
 							  teethNotCoveredFreq.add(d.getHistoryTooth());
 								
+						}*/
+						//for life time lets assume -- 120 Years ==1440 Months ..
+						///Previously it was 36 Months
+						//int month=36;
+						//int month=1440;
+						if(!checkforLifeTimelogic) {
+							 teethNotCoveredFreq.add(d.getHistoryTooth());
+						}else {
+							pass=false;
+							teethNotCoveredFreq.add(d.getHistoryTooth());
+							  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+											messageSource.getMessage("rule68.error.message3", new Object[] {code,d.getHistoryDos(),d.getHistoryTooth() }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
 						}
-						else if (!DateUtils.checkforXmSealant(Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos()),36)) {
+					}
+						/*else if (!DateUtils.checkforXmSealant(Constants.SIMPLE_DATE_FORMAT_IVF.parse(d.getHistoryDos()),month)) {
 							 
 							  pass=false;
 							  teethNotCoveredFreq.add(d.getHistoryTooth());
 							  dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule68.error.message3", new Object[] {code,d.getHistoryDos(),d.getHistoryTooth() }, locale), Constants.FAIL,"","","",ivf.getPatientName(),ivf.getGeneralDateIVwasDone()));
 							 }
-						}
+						}*/
 				}
 			
 			 if (dList.size()==0) {

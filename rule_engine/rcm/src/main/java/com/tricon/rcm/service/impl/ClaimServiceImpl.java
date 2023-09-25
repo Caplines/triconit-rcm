@@ -407,8 +407,9 @@ public class ClaimServiceImpl {
 				dF.setRemoteLiteRejections(d.getRemoteLiteRejections());
 
 				counts = remoteLiteMap.get(d.getOfficeName());
+				//Rejected=Rejected +Printed 
 				if (counts != null)
-					dF.setRemoteLiteRejections(counts.getRejectedCount());
+					dF.setRemoteLiteRejections(counts.getRejectedCount() + counts.getPrintedCount());
 				finalList.add(dF);
 
 			}

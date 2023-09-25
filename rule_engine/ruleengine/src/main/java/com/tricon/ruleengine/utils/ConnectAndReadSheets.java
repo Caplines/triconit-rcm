@@ -203,7 +203,7 @@ public class ConnectAndReadSheets {
 
 		List<Request> requests = new ArrayList<>();
 		IVFTableSheet sh = null;
-		final int COLUMN_STATUS=204;
+		final int COLUMN_STATUS=208;
 		try {
 		if (ivfMap!=null) {
 		for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
@@ -1435,8 +1435,29 @@ public class ConnectAndReadSheets {
 					}catch (Exception e) {
 						continue;
 					}
+					//
 					try {
-						vif.setSheetSubId(obj.get(++x));//MO sheetsubid
+						vif.setMajord72101(obj.get(++x));//majord72101
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setSrpd4341(obj.get(++x));//srpd4341
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setD7953(obj.get(++x));//d7953
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setPlanPreDMandatory(obj.get(++x));//policy12 
+					}catch (Exception e) {
+						continue;
+					}
+					try {
+						vif.setSheetSubId(obj.get(++x));//GZ sheetsubid
 					}catch (Exception e) {
 						continue;
 					}
