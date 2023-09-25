@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmLogs;
 import com.tricon.rcm.jpa.repository.RcmLogRepository;
+import com.tricon.rcm.util.Constants;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,6 +29,8 @@ public class LoggingServiceImpl {
         CharSequence[] ignoreExtensions = {".jpg", ".png", ".js",".css",".jpeg"};
         Map<String,String> parameters = getParameters(request);
         String ipAddress = request.getHeader("X-FORWARDED-FOR");  
+        String requestUri = request.getRequestURI();
+        final List<String>skipUrls=Constants.SKIP_URL_FROM_RCM_LOGS;
         if (ipAddress == null) {  
             ipAddress = request.getRemoteAddr();  
         }
@@ -40,8 +43,8 @@ public class LoggingServiceImpl {
         if(!parameters.isEmpty()) {
             reqMessage.append(" parameters = [").append(parameters).append("] ");
         }
-
-        if(!Objects.isNull(body)) {
+        boolean shouldSkip=skipUrls.stream().anyMatch(x->x.equals(requestUri));
+        if(!Objects.isNull(body) && !shouldSkip) {
             reqMessage.append(" body = [").append(body).append("]");
         }
         RcmLogs logs= new RcmLogs();
