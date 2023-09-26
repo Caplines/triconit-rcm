@@ -41,13 +41,13 @@ export class AllPendencyComponent {
 
   constructor(public constants:AppConstants,private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
+    this.clearTotalCount();
   }
   ngOnInit(): void {
     this.getAllUserClients();
     this.currentTeamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
     window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
-    this.clearTotalCount();
   }
 
   getAllUserClients(){
@@ -389,7 +389,7 @@ export class AllPendencyComponent {
 }
 
 clearTotalCount(){
-  this.constants.teamData((e:any)=>{
+  this.totalCount.forEach((e:any)=>{
     e.count=0;
   })
 }
