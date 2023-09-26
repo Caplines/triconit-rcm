@@ -31,12 +31,8 @@ export class ListOfClaimsComponent implements OnInit {
   date: any;
 
   isFilterAllSelected: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket' : false };
-  filteredClaimType: any = [];
-  filteredInsuranceName: any = [];
-  filteredInsuranceType: any = [];
-  filteredActionRequired: any = [];
-  filteredLastTeamWorked: any = [];
-  filteredAgeBracket:any = [];
+
+  filteredColumnData:any={insuranceName:[],insuranceType:[],actionRequired:[],lastTeamWorked:[],ageBracket:[],claimType:[]};
   clientName: string = '';
   isFilterValueExist: boolean = false;
   isLastTeam: boolean = false;
@@ -103,7 +99,7 @@ export class ListOfClaimsComponent implements OnInit {
     }
     ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, (res: any) => {
       if (res.status === 200) {
-        ths.claimDetail = this.removePrefix(res.data);
+        ths.claimDetail = res.data;
         let data: any = ths.claimDetail.map((e: any) => {
           if (e.claimId.endsWith("_P")) {
             e['EstAmount'] = e.primeSecSubmittedTotal;
@@ -115,7 +111,6 @@ export class ListOfClaimsComponent implements OnInit {
         ths.claimDetail = data;
         //console.log(ths.claimDetail);
 
-
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
@@ -125,9 +120,7 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
         this.filterOptionAgeBracket(subType);
-        this.colorChange();
-        this.showAgeBracket();
-        this.showClaimIdWithDigits();
+        this.showAgeBracket_WithColor_AndClaimIdDigits();
       }
       // else {
       //   this.loader.listClaimLoader = false;
@@ -141,10 +134,10 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterOptionClaimType(subType: string) {
     if (subType == 'Fresh' && this.isFilterValueExist) {
-      this.filteredClaimType = [];
+      this.filteredColumnData.claimType = [];
     }
     if (subType == 'Fresh') {
-      this.filteredClaimType.push({ 'checked': true, 'claimType': 'Primary' }, { 'checked': true, 'claimType': 'Secondary' });
+      this.filteredColumnData.claimType.push({ 'checked': true, 'claimType': 'Primary' }, { 'checked': true, 'claimType': 'Secondary' });
       this.isFilterValueExist = true;
     }
     this.isFilterAllSelected.claimType = true;
@@ -152,14 +145,14 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterOptionAgeBracket(subType: string) {
     if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist)) {
-      this.filteredAgeBracket = [];
+      this.filteredColumnData.ageBracket = [];
     }
     if (subType == 'Fresh') {
-      this.filteredAgeBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
+      this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
       this.isFilterValueExist = true;
     }
     if (subType == 'sendBack') {
-      this.filteredAgeBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
+      this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
       this.isFilterValueExist = true;
     }
     this.isFilterAllSelected.ageBracket = true;
@@ -167,10 +160,10 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterOptionActionRequired(subType: string) {
     if (subType == 'Fresh' && this.isFilterValueExist) {
-      this.filteredActionRequired = [];
+      this.filteredColumnData.actionRequired = [];
     }
     if (subType == 'Fresh') {
-      this.filteredActionRequired.push({ 'checked': true, 'actionRequired': "Billing", "statusType": 1 }, { 'checked': true, 'actionRequired': "Re-Billing", "statusType": 2 });
+      this.filteredColumnData.actionRequired.push({ 'checked': true, 'actionRequired': "Billing", "statusType": 1 }, { 'checked': true, 'actionRequired': "Re-Billing", "statusType": 2 });
       this.isFilterValueExist = true;
     }
     this.isFilterAllSelected.actionRequired = true;
@@ -178,19 +171,19 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterOptionInsuranceName(subType: string) {
     if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist)) {
-      this.filteredInsuranceName = [];
+      this.filteredColumnData.insuranceName = [];
     }
     if (subType == 'Fresh') {
       this.filteredItems.forEach((e: any) => {
         if (e.claimId.includes("_P")) {
-          this.filteredInsuranceName.push({ 'checked': true, 'insuranceName': e.primaryInsurance });
+          this.filteredColumnData.insuranceName.push({ 'checked': true, 'insuranceName': e.primaryInsurance });
           e['insuranceName'] = e.primaryInsurance;
         } else if (e.claimId.includes("_S")) {
-          this.filteredInsuranceName.push({ 'checked': true, 'insuranceName': e.secondaryInsurance });
+          this.filteredColumnData.insuranceName.push({ 'checked': true, 'insuranceName': e.secondaryInsurance });
           e['insuranceName'] = e.secondaryInsurance;
         }
       });
-      this.filteredInsuranceName = Object.values(this.filteredInsuranceName.reduce((acc: any, { insuranceName }: any) => {
+      this.filteredColumnData.insuranceName = Object.values(this.filteredColumnData.insuranceName.reduce((acc: any, { insuranceName }: any) => {
         if (!acc[insuranceName])
           acc[insuranceName] = { checked: true, insuranceName: insuranceName };
         return acc;
@@ -200,65 +193,65 @@ export class ListOfClaimsComponent implements OnInit {
     if (subType == 'sendBack') {
       this.filteredItems.forEach((e: any) => {
         if (e.claimId.includes("_P")) {
-          this.filteredInsuranceName.push({ 'checked': true, 'insuranceName': e.primaryInsurance });
+          this.filteredColumnData.insuranceName.push({ 'checked': true, 'insuranceName': e.primaryInsurance });
           e['insuranceName'] = e.primaryInsurance;
         } else if (e.claimId.includes("_S")) {
-          this.filteredInsuranceName.push({ 'checked': true, 'insuranceName': e.secondaryInsurance });
+          this.filteredColumnData.insuranceName.push({ 'checked': true, 'insuranceName': e.secondaryInsurance });
           e['insuranceName'] = e.secondaryInsurance;
         }
       });
-      this.filteredInsuranceName = Object.values(this.filteredInsuranceName.reduce((acc: any, { insuranceName }: any) => {
+      this.filteredColumnData.insuranceName = Object.values(this.filteredColumnData.insuranceName.reduce((acc: any, { insuranceName }: any) => {
         if (!acc[insuranceName])
           acc[insuranceName] = { checked: true, insuranceName: insuranceName };
         return acc;
       }, {}));
       this.isFilterValueExist = true;
     }
-    this.sortFiltereData(this.filteredInsuranceName);
+    this.sortFiltereData(this.filteredColumnData.insuranceName);
     this.isFilterAllSelected.insuranceName = true;
   }
 
   filterOptionInsuranceType(subType: string) {
     if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist)) {
-      this.filteredInsuranceType = [];
+      this.filteredColumnData.insuranceType = [];
     }
     if (subType == 'Fresh') {
       this.filteredItems.forEach((e: any) => {
         if (e.claimId.includes("_P") && e.prName) {
-            this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.prName });
+            this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.prName });
             e['insuranceType'] = e.prName;
         } else if (e.claimId.includes("_S") && e.secName) {
-            this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.secName });
+            this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.secName });
             e['insuranceType'] = e.secName;
         }
       })
-      this.filteredInsuranceType = Array.from(new Set(this.filteredInsuranceType.map((a: any) => a.insuranceType)))
+      this.filteredColumnData.insuranceType = Array.from(new Set(this.filteredColumnData.insuranceType.map((a: any) => a.insuranceType)))
         .map((insuranceType: any) => {
-          return this.filteredInsuranceType.find((a: any) => a.insuranceType === insuranceType);
+          return this.filteredColumnData.insuranceType.find((a: any) => a.insuranceType === insuranceType);
         });
     }
     if (subType == 'sendBack') {
       this.filteredItems.forEach((e: any) => {
         if (e.claimId.includes("_P") && e.prName) {
-          this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.prName });
+          this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.prName });
           e['insuranceType'] = e.prName;
         } else if (e.claimId.includes("_S") && e.secName) {
-          this.filteredInsuranceType.push({ 'checked': true, 'insuranceType': e.secName });
+          this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.secName });
           e['insuranceType'] = e.secName;
         }
       })
-      this.filteredInsuranceType = Array.from(new Set(this.filteredInsuranceType.map((a: any) => a.insuranceType)))
+      this.filteredColumnData.insuranceType = Array.from(new Set(this.filteredColumnData.insuranceType.map((a: any) => a.insuranceType)))
         .map((insuranceType: any) => {
-          return this.filteredInsuranceType.find((a: any) => a.insuranceType === insuranceType);
+          return this.filteredColumnData.insuranceType.find((a: any) => a.insuranceType === insuranceType);
         });
     }
-    this.sortFiltereData(this.filteredInsuranceType);
+    this.sortFiltereData(this.filteredColumnData.insuranceType);
     this.isFilterAllSelected.insuranceType = true;
   }
 
   filterOptionLastTeamWorked() {
     this.appConstants.teamData.forEach((e: any) => {
-      this.filteredLastTeamWorked.push({ 'checked': true, 'lastTeam': e.teamName });
+      this.filteredColumnData.lastTeamWorked.push({ 'checked': true, 'lastTeam': e.teamName });
     })
     this.isFilterAllSelected.lastTeamWorked = true;
   }
@@ -331,29 +324,29 @@ export class ListOfClaimsComponent implements OnInit {
 
   addOrRemoveFilterOffice() {
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceName.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceName.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceType.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceType.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredActionRequired.some((checkbox: any) => {
+      return this.filteredColumnData.actionRequired.some((checkbox: any) => {
         return checkbox.checked && checkbox['statusType'] == item['statusType'];
       });
     });
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredClaimType.some((checkbox: any) => {
+      return this.filteredColumnData.claimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
     });
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredAgeBracket.some((checkbox: any) => {
+      return this.filteredColumnData.ageBracket.some((checkbox: any) => {
         return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
       });
     });
@@ -367,23 +360,23 @@ export class ListOfClaimsComponent implements OnInit {
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceType.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceType.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredActionRequired.some((checkbox: any) => {
+      return this.filteredColumnData.actionRequired.some((checkbox: any) => {
         return checkbox.checked && checkbox['statusType'] == item['statusType'];
       });
     });
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredClaimType.some((checkbox: any) => {
+      return this.filteredColumnData.claimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
     });
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredAgeBracket.some((checkbox: any) => {
+      return this.filteredColumnData.ageBracket.some((checkbox: any) => {
         return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
       });
     });
@@ -397,24 +390,24 @@ export class ListOfClaimsComponent implements OnInit {
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceName.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceName.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredActionRequired.some((checkbox: any) => {
+      return this.filteredColumnData.actionRequired.some((checkbox: any) => {
         return checkbox.checked && checkbox['statusType'] == item['statusType'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredClaimType.some((checkbox: any) => {
+      return this.filteredColumnData.claimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
     });
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredAgeBracket.some((checkbox: any) => {
+      return this.filteredColumnData.ageBracket.some((checkbox: any) => {
         return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
       });
     });
@@ -428,24 +421,24 @@ export class ListOfClaimsComponent implements OnInit {
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceName.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceName.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceType.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceType.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredClaimType.some((checkbox: any) => {
+      return this.filteredColumnData.claimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
     });
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredAgeBracket.some((checkbox: any) => {
+      return this.filteredColumnData.ageBracket.some((checkbox: any) => {
         return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
       });
     });
@@ -459,24 +452,24 @@ export class ListOfClaimsComponent implements OnInit {
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceName.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceName.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceType.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceType.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredActionRequired.some((checkbox: any) => {
+      return this.filteredColumnData.actionRequired.some((checkbox: any) => {
         return checkbox.checked && checkbox['statusType'] == item['statusType'];
       });
     });
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredAgeBracket.some((checkbox: any) => {
+      return this.filteredColumnData.ageBracket.some((checkbox: any) => {
         return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
       });
     });
@@ -491,25 +484,25 @@ export class ListOfClaimsComponent implements OnInit {
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceName.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceName.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredInsuranceType.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceType.some((checkbox: any) => {
         return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredActionRequired.some((checkbox: any) => {
+      return this.filteredColumnData.actionRequired.some((checkbox: any) => {
         return checkbox.checked && checkbox['statusType'] == item['statusType'];
       });
     });
 
     this.filteredItems = this.filteredItems.filter((item: any) => {
-      return this.filteredClaimType.some((checkbox: any) => {
+      return this.filteredColumnData.claimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
       });
     });
@@ -519,15 +512,15 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterClaimType(filterProperty: any) {
     let isAllSelected: boolean = true;
-    for (let i = 0; i < this.filteredClaimType.length; i++) {
-      if (this.filteredClaimType[i].checked == false) {
+    for (let i = 0; i < this.filteredColumnData.claimType.length; i++) {
+      if (this.filteredColumnData.claimType[i].checked == false) {
         isAllSelected = false;
         break;
       }
     }
     this.isFilterAllSelected.claimType = isAllSelected;
     this.filteredItems = this.claimDetail.filter((item: any) => {
-      return this.filteredClaimType.some((checkbox: any) => {
+      return this.filteredColumnData.claimType.some((checkbox: any) => {
         return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
       });
     });
@@ -536,15 +529,15 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterAgeBracket(filterProperty: any) {
     let isAllSelected: boolean = true;
-    for (let i = 0; i < this.filteredAgeBracket.length; i++) {
-      if (this.filteredAgeBracket[i].checked == false) {
+    for (let i = 0; i < this.filteredColumnData.ageBracket.length; i++) {
+      if (this.filteredColumnData.ageBracket[i].checked == false) {
         isAllSelected = false;
         break;
       }
     }
     this.isFilterAllSelected.ageBracket = isAllSelected;
     this.filteredItems = this.claimDetail.filter((item: any) => {
-      return this.filteredAgeBracket.some((checkbox: any) => {
+      return this.filteredColumnData.ageBracket.some((checkbox: any) => {
         return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
       });
     });
@@ -553,15 +546,15 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterActionRequired(filterProperty: any) {
     let isAllSelected: boolean = true;
-    for (let i = 0; i < this.filteredActionRequired.length; i++) {
-      if (this.filteredActionRequired[i].checked == false) {
+    for (let i = 0; i < this.filteredColumnData.actionRequired.length; i++) {
+      if (this.filteredColumnData.actionRequired[i].checked == false) {
         isAllSelected = false;
         break;
       }
     }
     this.isFilterAllSelected.actionRequired = isAllSelected;
     this.filteredItems = this.claimDetail.filter((item: any) => {
-      return this.filteredActionRequired.some((checkbox: any) => {
+      return this.filteredColumnData.actionRequired.some((checkbox: any) => {
         return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
       });
     });
@@ -570,15 +563,15 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterInsuranceName(filterProperty: any) {
     let isAllSelected: boolean = true;
-    for (let i = 0; i < this.filteredInsuranceName.length; i++) {
-      if (this.filteredInsuranceName[i].checked == false) {
+    for (let i = 0; i < this.filteredColumnData.insuranceName.length; i++) {
+      if (this.filteredColumnData.insuranceName[i].checked == false) {
         isAllSelected = false;
         break;
       }
     }
     this.isFilterAllSelected.insuranceName = isAllSelected;
     this.filteredItems = this.claimDetail.filter((item: any) => {
-      return this.filteredInsuranceName.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceName.some((checkbox: any) => {
         return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
       });
     });
@@ -587,15 +580,15 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterInsuranceType(filterProperty: any) {
     let isAllSelected: boolean = true;
-    for (let i = 0; i < this.filteredInsuranceType.length; i++) {
-      if (this.filteredInsuranceType[i].checked == false) {
+    for (let i = 0; i < this.filteredColumnData.insuranceType.length; i++) {
+      if (this.filteredColumnData.insuranceType[i].checked == false) {
         isAllSelected = false;
         break;
       }
     }
     this.isFilterAllSelected.insuranceType = isAllSelected;
     this.filteredItems = this.claimDetail.filter((item: any) => {
-      return this.filteredInsuranceType.some((checkbox: any) => {
+      return this.filteredColumnData.insuranceType.some((checkbox: any) => {
         return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
       });
     });
@@ -604,15 +597,15 @@ export class ListOfClaimsComponent implements OnInit {
 
   filterLastTeamWorked(filterProperty: any) {
     let isAllSelected: boolean = true;
-    for (let i = 0; i < this.filteredLastTeamWorked.length; i++) {
-      if (this.filteredLastTeamWorked[i].checked == false) {
+    for (let i = 0; i < this.filteredColumnData.lastTeamWorked.length; i++) {
+      if (this.filteredColumnData.lastTeamWorked[i].checked == false) {
         isAllSelected = false;
         break;
       }
     }
     this.isFilterAllSelected.lastTeamWorked = isAllSelected;
     this.filteredItems = this.claimDetail.filter((item: any) => {
-      return this.filteredLastTeamWorked.some((checkbox: any) => {
+      return this.filteredColumnData.lastTeamWorked.some((checkbox: any) => {
         return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
       });
     });
@@ -751,7 +744,7 @@ export class ListOfClaimsComponent implements OnInit {
       this.filterOfficeName("selectAll");
     }
     if (filterProperty == "claimType") {
-      this.filteredClaimType.forEach((e: any) => {
+      this.filteredColumnData.claimType.forEach((e: any) => {
         if (event.target.checked) {
           e.checked = true;
         } else {
@@ -761,7 +754,7 @@ export class ListOfClaimsComponent implements OnInit {
       this.filterClaimType("claimType");
     }
     if (filterProperty == "actionRequired") {
-      this.filteredActionRequired.forEach((e: any) => {
+      this.filteredColumnData.actionRequired.forEach((e: any) => {
         if (event.target.checked) {
           e.checked = true;
         } else {
@@ -771,7 +764,7 @@ export class ListOfClaimsComponent implements OnInit {
       this.filterActionRequired("statusType");
     }
     if (filterProperty == "insuranceName") {
-      this.filteredInsuranceName.forEach((e: any) => {
+      this.filteredColumnData.insuranceName.forEach((e: any) => {
         if (event.target.checked) {
           e.checked = true;
         } else {
@@ -781,7 +774,7 @@ export class ListOfClaimsComponent implements OnInit {
       this.filterInsuranceName("insuranceName");
     }
     if (filterProperty == "insuranceType") {
-      this.filteredInsuranceType.forEach((e: any) => {
+      this.filteredColumnData.insuranceType.forEach((e: any) => {
         if (event.target.checked) {
           e.checked = true;
         } else {
@@ -791,7 +784,7 @@ export class ListOfClaimsComponent implements OnInit {
       this.filterInsuranceType("insuranceType");
     }
     if (filterProperty == "ageBracket") {
-      this.filteredAgeBracket.forEach((e: any) => {
+      this.filteredColumnData.ageBracket.forEach((e: any) => {
         if (event.target.checked) {
           e.checked = true;
         } else {
@@ -801,7 +794,7 @@ export class ListOfClaimsComponent implements OnInit {
       this.filterAgeBracket("ageBracket");
     }
     // if(filterProperty == "lastTeam"){
-    //   this.filteredLastTeamWorked.forEach((e: any) => {
+    //   this.filteredColumnData.lastTeamWorked.forEach((e: any) => {
     //     if (event.target.checked) {
     //       e.checked = true;
     //     } else {
@@ -878,9 +871,7 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
         this.filterOptionAgeBracket(subType)
-        this.colorChange();
-        this.showAgeBracket();
-        this.showClaimIdWithDigits();
+        this.showAgeBracket_WithColor_AndClaimIdDigits();
       }
       // else {
       //   this.loader.listClaimLoader = false;
@@ -924,11 +915,6 @@ export class ListOfClaimsComponent implements OnInit {
 
   downloadPdf(){
     if(this.filteredItems.length!=0){
-      this.filteredItems.forEach((e:any)=>{
-        if(e.claimId){
-          e.newClaimId =e.claimId.replace(/\D/g, "");
-        }
-      })
     let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamId":this.currentTeamId};
     this. appService.lisOfClaimsPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
@@ -940,38 +926,28 @@ export class ListOfClaimsComponent implements OnInit {
     })
   }
   }
-
-  colorChange(){
-    this.filteredItems.forEach((e:any)=>{
-      if(e.claimAge && e.timelyFilingLimitData){
-       if(Number(e.timelyFilingLimitData) - e.claimAge < 30){
-        e.colorChange = true;
-       }
-       else
-       e.colorChange = false;
-      }
-    });
-  }
-
-  showAgeBracket(){
+  
+  showAgeBracket_WithColor_AndClaimIdDigits(){
+    let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
     this.filteredItems.forEach((e:any) => {
       if(e.dos){
            let dos:any = new Date(e.dos);
-           let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
            const diffTime = Math.abs(currentDate - dos);
            let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
            e.ageBracket = (diffDays <= 30) ? `0-30`  : (diffDays > 30 && diffDays <= 60) ?  `31-60` : (diffDays > 60 && diffDays <= 90) ? `61-90` : (diffDays > 90) ? `90+` : '';
       }
+      if(e.claimId){
+        e.newClaimId = e.claimId.replace('_P',"").replace('_S',"")
+      }
+     if(e.claimAge && e.timelyFilingLimitData){
+       if(Number(e.timelyFilingLimitData) - e.claimAge < 30){
+       e.colorChange = true;
+      }
+      else{
+        e.colorChange = false;
+      }
+     }
     });
   }  
-
-  showClaimIdWithDigits(){
-    this.filteredItems.forEach((e:any) => {
-      if(e.claimId){
-         e.newClaimId = e.claimId.replace(/\D/g, ""); // returns only digits
-      }
-    });
-
-  }
 
 }

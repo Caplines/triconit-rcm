@@ -192,7 +192,7 @@
                                                                     <button (click)="showFilteredDropdown.ageBracket=false;" type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                <ng-container *ngFor="let data of filteredAgeBracket">
+                                                                <ng-container *ngFor="let data of filteredColumnData.ageBracket">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -232,7 +232,7 @@
                                                                         type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                <ng-container *ngFor="let data of filteredClaimType">
+                                                                <ng-container *ngFor="let data of filteredColumnData.claimType">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -275,7 +275,7 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
                                                                 <ng-container
-                                                                    *ngFor="let data of filteredActionRequired">
+                                                                    *ngFor="let data of filteredColumnData.actionRequired">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -313,7 +313,7 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
                                                                 <ng-container
-                                                                    *ngFor="let data of filteredInsuranceName">
+                                                                    *ngFor="let data of filteredColumnData.insuranceName">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -354,7 +354,7 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
                                                                 <ng-container
-                                                                    *ngFor="let data of filteredInsuranceType">
+                                                                    *ngFor="let data of filteredColumnData.insuranceType">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -422,7 +422,7 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
                                                                 <ng-container
-                                                                    *ngFor="let data of filteredLastTeamWorked">
+                                                                    *ngFor="let data of filteredColumnData.lastTeamWorked">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -469,7 +469,7 @@
                                                         <td class="alignRight"><a
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
-                                                        <td class="noWrape">{{det.newClaimId}}</td>
+                                                        <td class="noWrape">{{det.newClaimId|claimIdPipe}}</td>
                                                         <td><a [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
