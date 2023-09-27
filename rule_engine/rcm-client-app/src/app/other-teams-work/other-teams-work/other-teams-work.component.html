@@ -7,7 +7,7 @@
                         <div class="detail-box-form">
                             <div class="otherTeamBox mt-2 mb-2">
                                 <button type="button" class="icon-btn" (click)="downloadPdf()"
-                                    [disabled]="filteredItems.length==0">
+                                    [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
                                     <img src="../../assets/img/pdf.png" /></button><span
                                     *ngIf="loader.exportPDFLoader"
                                     class="spinner-border text-danger mx-1"></span>

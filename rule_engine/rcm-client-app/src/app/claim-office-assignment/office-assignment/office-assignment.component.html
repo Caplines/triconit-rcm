@@ -28,7 +28,7 @@
                             </div>
                             <div>
                                 <button type="button" class="icon-btn" (click)="downloadPdf()"
-                                    [disabled]="claimData.length==0">
+                                    [disabled]="claimData.length==0  || loader.exportPDFLoader">
                                     <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                                     class="spinner-border text-danger mx-1"></span>
                                 <button type="button" class="icon-btn" (click)="exportToCsv()"

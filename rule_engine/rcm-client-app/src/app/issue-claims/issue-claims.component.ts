@@ -297,13 +297,16 @@ export class IssueClaimComponent {
   }
 
   downloadPdf(){
+    this.loader.exportPDFLoader = true;
     if(this.tabSwitchValue=='Issue' && this.filteredItems?.length>0){
     let data = {"fileName":this.showIssueClaim ? "Issue_claims" : "Archived_claims","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimsCount: this.archiveClaimsCount,"tabSwitch":this.tabSwitchValue};
     this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
         this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Issue_claims.pdf" : "Archived_claims.pdf");
+        this.loader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     })
   }else if(this.tabSwitchValue=='Archive' && this.filtertedArchiveItems?.length>0){
@@ -311,12 +314,15 @@ export class IssueClaimComponent {
     this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
         this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Issue_claims.pdf" : "Archived_claims.pdf");
+        this.loader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     }) 
   }else{
     console.log("Data is Empty")
+    this.loader.exportPDFLoader = false;
   }
 }
 
