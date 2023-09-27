@@ -285,12 +285,15 @@ export class OfficeAssignmentComponent implements OnInit {
     }
   }
   downloadPdf() {
+    this.loader.exportPDFLoader = true;
     let data = { "fileName": "Pendancy", "data": this.claimData, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName };
     this.appService.pendancyPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
         this.downloadService.saveBolbData(res.body, "Pendancy.pdf");
+        this.loader.exportPDFLoader = false;
       } else {
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     })
   }

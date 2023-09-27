@@ -914,14 +914,17 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   downloadPdf(){
+    this.loader.exportPDFLoader = true;
     if(this.filteredItems.length!=0){
     let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamId":this.currentTeamId};
     this. appService.lisOfClaimsPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
         console.log(res.body);
         this.downloadService.saveBolbData(res.body, "List_Of_Claims.pdf");
+        this.loader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     })
   }

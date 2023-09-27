@@ -420,6 +420,7 @@ AssignClaimWithRemark(claimUuid:any){
   
 
   downloadPdf(){
+    this.loader.exportPDFLoader = true;
     if (this.filteredItems.length != 0) {
       this.filteredItems.forEach((e:any)=>{
         if(e.claimId){
@@ -431,8 +432,10 @@ AssignClaimWithRemark(claimUuid:any){
       if (res.status === 200){
         console.log(res.body);
         this.downloadService.saveBolbData(res.body, "List_Of_Claims.pdf");
+        this.loader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     })
   }

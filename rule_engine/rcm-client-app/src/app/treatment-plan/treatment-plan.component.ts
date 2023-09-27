@@ -16,7 +16,7 @@ export class TreatmentPlanComponent {
   tpData:any=[];
   showLoader:boolean=false;
   count:any={'Fee':0,'Ins':0,'Pat':0};
-
+  loader:any={exportToPdf:false}
   constructor(private _service: ApplicationServiceService,private router:Router,private title:Title,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Treament Plan")
   }
@@ -67,13 +67,16 @@ export class TreatmentPlanComponent {
   }
 
   downloadPdf() {
+    this.loader.exportPDFLoader = true;
     if(this.tpData.length!=0){
     let data = { "fileName": "TPlan_Link", "data": this.tpData,"fee":this.count.Fee,"ins":this.count.Ins,"pat":this.count.Pat,"claimUuid":this.claimUuid};
     this._service.TplanPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
         this.downloadService.saveBolbData(res.body, "TPlan_Link.pdf");
+        this.loader.exportPDFLoader = false;
       } else {
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     })
   }

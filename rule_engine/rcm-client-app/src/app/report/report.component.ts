@@ -16,6 +16,7 @@ export class ReportComponent implements OnInit {
 	ivId:string="";
 	message:string="";
 	claimUuid:any;
+	loader:any={exportPDFLoader:false};
 
 	constructor(public appService: ApplicationServiceService,private route: ActivatedRoute,private title : Title,
 		private claimService: ClaimService,private router:Router,private downloadService:DownLoadService) {
@@ -53,12 +54,15 @@ export class ReportComponent implements OnInit {
 	  }
 
 	  downloadPdf() {
+		this.loader.exportPDFLoader = true;
 		let data = { "fileName": "Ivf", "data": this.reportDataInd,"claimUuid":this.claimUuid};
 		this.appService.IvfPdfDownload(data, "pdf", (res: any) => {
 		  if (res.status === 200) {
 			this.downloadService.saveBolbData(res.body, "Ivf.pdf");
+			this.loader.exportPDFLoader = false;
 		  } else {
 			console.log("something went wrong");
+			this.loader.exportPDFLoader = false;
 		  }
 		})
 	  }
