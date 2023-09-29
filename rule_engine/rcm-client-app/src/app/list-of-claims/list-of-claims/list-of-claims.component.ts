@@ -643,7 +643,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Patient ID","Claim Id", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
+      headers: ["Office", "Claim Id", "Patient ID","Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -690,8 +690,8 @@ export class ListOfClaimsComponent implements OnInit {
       excelData = excelData.map((e: any) => {
         return {
           "Office Name": e.officeName,
-          "Patient ID": e.patientId,
           "Claim Id":e.newClaimId,
+          "Patient ID": e.patientId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
           "Claim Age": e.claimAge,
@@ -713,8 +713,8 @@ export class ListOfClaimsComponent implements OnInit {
       excelData = excelData.map((e: any) => {
         return {
           "Office Name": e.officeName,
-          "Patient ID": e.patientId,
           "Claim Id":e.newClaimId,
+          "Patient ID": e.patientId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
           "Claim Age": e.claimAge,

@@ -453,7 +453,7 @@ AssignClaimWithRemark(claimUuid:any){
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Patient ID", "Claim ID",  "Patient Name", 'DOS', "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type" , "Estimated Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since Date", "Current Team"]
+      headers: ["Office",  "Claim ID", "Patient ID", "Patient Name", 'DOS', "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type" , "Estimated Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since Date", "Current Team"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -495,8 +495,8 @@ AssignClaimWithRemark(claimUuid:any){
       excelData = excelData.map((e: any) => {
         return {
           "Office Name": e.officeName,
-          "Patient ID": e.patientId,
           "Claim ID": e.newClaimId,
+          "Patient ID": e.patientId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
           'Age Bracket': e.ageBracket,
