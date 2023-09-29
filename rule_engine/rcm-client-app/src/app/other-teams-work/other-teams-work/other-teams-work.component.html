@@ -262,7 +262,9 @@
                                                     </tr>
                                                     <tr>
                                                         <td>{{det.officeName}}</td>
-                                                        <td class="noWrape">{{det.newClaimId}}</td>
+                                                        <td class="noWrape"><a
+                                                            [routerLink]="['/billing-claims/', det.uuid]"
+                                                            target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
                                                         <td class="alignRight"><a
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
