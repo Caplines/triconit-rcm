@@ -163,7 +163,12 @@ export class ListOfClaimsComponent implements OnInit {
       this.filteredColumnData.actionRequired = [];
     }
     if (subType == 'Fresh') {
-      this.filteredColumnData.actionRequired.push({ 'checked': true, 'actionRequired': "Billing", "statusType": 1 }, { 'checked': true, 'actionRequired': "Re-Billing", "statusType": 2 });
+      if(this.currentTeamId==3){
+        this.filteredColumnData.actionRequired.push({ 'checked': true, 'actionRequired': "Auditing", "statusType": 1 });
+      }else{
+        this.filteredColumnData.actionRequired.push({ 'checked': true, 'actionRequired': "Billing", "statusType": 1 }, { 'checked': true, 'actionRequired': "Re-Billing", "statusType": 2 });
+      }
+   
       this.isFilterValueExist = true;
     }
     this.isFilterAllSelected.actionRequired = true;
@@ -638,7 +643,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Patient ID","Claim Id", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", this.currentTeamId==3?"Auditing":"Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
+      headers: ["Office", "Patient ID","Claim Id", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -650,11 +655,16 @@ export class ListOfClaimsComponent implements OnInit {
       else {
         e = { ...e, dos: '' };
       }
-      if (e.statusType == this.appConstants.BILLING_ID) {
-        e = { ...e, ['actionRequired']: "BILLING" };
-      } else {
-        e = { ...e, ['actionRequired']: "RE-BILLING" };
+      if(this.currentTeamId==3){
+        e = { ...e, ['actionRequired']: "Auditing" };
       }
+       else{
+        if (e.statusType == this.appConstants.BILLING_ID) {
+          e = { ...e, ['actionRequired']: "BILLING" };
+        } else {
+          e = { ...e, ['actionRequired']: "RE-BILLING" };
+        }
+      }     
       if (e.claimId.endsWith("_P")) {
         e = { ...e, ['claimType']: "Primary" };
       } else {

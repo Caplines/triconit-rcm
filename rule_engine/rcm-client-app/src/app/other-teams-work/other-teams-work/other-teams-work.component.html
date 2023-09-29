@@ -67,6 +67,11 @@
                                                 </th>
                                                 <th class="width-90">
                                                     <div class="dFlex">
+                                                        Claim ID
+                                                    </div>
+                                                </th>
+                                                <th class="width-90">
+                                                    <div class="dFlex">
                                                         Patient ID<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['patientId']}"
@@ -75,11 +80,6 @@
                                                                 [ngClass]="{'selected': isSorted['patientId']}"
                                                                 (click)="sortData(filteredItems,'patientId','desc','number');isSorted['patientId'] = true"></a>
                                                         </span>
-                                                    </div>
-                                                </th>
-                                                <th class="width-90">
-                                                    <div class="dFlex">
-                                                        Claim ID
                                                     </div>
                                                 </th>
                                                 <th class="width-115">
@@ -262,10 +262,10 @@
                                                     </tr>
                                                     <tr>
                                                         <td>{{det.officeName}}</td>
+                                                        <td class="noWrape">{{det.newClaimId}}</td>
                                                         <td class="alignRight"><a
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
-                                                        <td class="noWrape">{{det.newClaimId}}</td>
                                                         <td><a [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
