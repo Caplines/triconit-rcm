@@ -28,11 +28,11 @@
                             </div>
                             <div>
                                 <button type="button" class="icon-btn" (click)="downloadPdf()"
-                                    [disabled]="claimData.length==0">
+                                    [disabled]="filteredItems.length==0">
                                     <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                                     class="spinner-border text-danger mx-1"></span>
                                 <button type="button" class="icon-btn" (click)="exportToCsv()"
-                                    [disabled]="claimData.length==0">
+                                    [disabled]="filteredItems.length==0">
                                     <img src="../../assets/img/xls.png" /> </button><span *ngIf="loader.exportCSVLoader"
                                     class="spinner-border text-success mx-1"></span>
                             </div>
@@ -47,16 +47,46 @@
                                         id="table">
                                         <thead>
                                             <tr>
-                                                <th class="width-200 min-max-180">
+                                                <th class="width-200 min-max-180" style="z-index: 9;">
                                                     <div class="dFlex">
-                                                        Client
-                                                        <span class="sorting">
+                                                        Clients
+                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['companyName']}"
-                                                                (click)="sortData(claimData,'companyName','asc','string'); isSorted['companyName'] = false"></a>
+                                                                (click)="sortData(filteredItems,'companyName','asc','string'); isSorted['companyName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['companyName']}"
-                                                                (click)="sortData(claimData,'companyName','desc','string');isSorted['companyName'] = true"></a>
+                                                                (click)="sortData(filteredItems,'companyName','desc','string');isSorted['companyName'] = true"></a>
+                                                        </span>
+                                                        <div class="dropdown">
+                                                            <img  (click)="showHideFilteredDropdown('companyName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                            <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                *ngIf="showFilteredDropdown.companyName">
+                                                                <div class="clearClose">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox"
+                                                                            [checked]="isFilterAllSelected.companyName"
+                                                                            value="selectAll"
+                                                                            (change)="selectAll($event,'companyName')">
+                                                                        {{isFilterAllSelected.companyName ? 'Clear All':'Select All'}}</label>
+                                                                    <button
+                                                                        (click)="showFilteredDropdown.companyName=false;"
+                                                                        type="button" class="close"
+                                                                        data-dismiss="modal"
+                                                                        aria-label="Close"><span>&times;</span></button>
+                                                            </div>
+                                                                <ng-container
+                                                                    *ngFor="let data of filteredCompanyName">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" checked="true"
+                                                                            [(ngModel)]="data.checked"
+                                                                            value="{{data.companyName}}"
+                                                                            (change)="filterCompanyName($event,'companyName')">
+                                                                        {{data.companyName}}
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div> <span class="sorting">
                                                         </span>
                                                     </div>
                                                 </th>
@@ -66,10 +96,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['officeName']}"
-                                                                (click)="sortData(claimData,'officeName','asc','string'); isSorted['officeName'] = false"></a>
+                                                                (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['officeName']}"
-                                                                (click)="sortData(claimData,'officeName','desc','string');isSorted['officeName'] = true"></a>
+                                                                (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -79,10 +109,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['fname']}"
-                                                                (click)="sortData(claimData,'fname','asc','string'); isSorted['fname'] = false"></a>
+                                                                (click)="sortData(filteredItems,'fname','asc','string'); isSorted['fname'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['fname']}"
-                                                                (click)="sortData(claimData,'fname','desc','string');isSorted['fname'] = true"></a>
+                                                                (click)="sortData(filteredItems,'fname','desc','string');isSorted['fname'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -92,10 +122,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['opdtd']}"
-                                                                (click)="sortData(claimData,'opdtd','asc','number'); isSorted['opdtd'] = false"></a>
+                                                                (click)="sortData(filteredItems,'opdtd','asc','number'); isSorted['opdtd'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['opdtd']}"
-                                                                (click)="sortData(claimData,'opdtd','desc','number');isSorted['opdtd'] = true"></a>
+                                                                (click)="sortData(filteredItems,'opdtd','desc','number');isSorted['opdtd'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -105,10 +135,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['opdosd']}"
-                                                                (click)="sortData(claimData,'opdosd','asc','number'); isSorted['opdosd'] = false"></a>
+                                                                (click)="sortData(filteredItems,'opdosd','asc','number'); isSorted['opdosd'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['opdosd']}"
-                                                                (click)="sortData(claimData,'opdosd','desc','number');isSorted['opdosd'] = true"></a>
+                                                                (click)="sortData(filteredItems,'opdosd','desc','number');isSorted['opdosd'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -118,10 +148,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['count']}"
-                                                                (click)="sortData(claimData,'count','asc','number'); isSorted['count'] = false"></a>
+                                                                (click)="sortData(filteredItems,'count','asc','number'); isSorted['count'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['count']}"
-                                                                (click)="sortData(claimData,'count','desc','number');isSorted['count'] = true"></a>
+                                                                (click)="sortData(filteredItems,'count','desc','number');isSorted['count'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -131,10 +161,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['remoteLiteRejections']}"
-                                                                (click)="sortData(claimData,'remoteLiteRejections','asc','number'); isSorted['remoteLiteRejections'] = false"></a>
+                                                                (click)="sortData(filteredItems,'remoteLiteRejections','asc','number'); isSorted['remoteLiteRejections'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['remoteLiteRejections']}"
-                                                                (click)="sortData(claimData,'remoteLiteRejections','desc','number');isSorted['remoteLiteRejections'] = true"></a>
+                                                                (click)="sortData(filteredItems,'remoteLiteRejections','desc','number');isSorted['remoteLiteRejections'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -144,10 +174,10 @@
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['totalBillingRejection']}"
-                                                                (click)="sortData(claimData,'totalBillingRejection','asc','number'); isSorted['totalBillingRejection'] = false"></a>
+                                                                (click)="sortData(filteredItems,'totalBillingRejection','asc','number'); isSorted['totalBillingRejection'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down"
                                                                 [ngClass]="{'selected': isSorted['totalBillingRejection']}"
-                                                                (click)="sortData(claimData,'totalBillingRejection','desc','number');isSorted['totalBillingRejection'] = true"></a>
+                                                                (click)="sortData(filteredItems,'totalBillingRejection','desc','number');isSorted['totalBillingRejection'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -174,7 +204,7 @@
                                             </tr>
                                             <ng-container *ngIf="!loader.showLoader">
 
-                                                <tr *ngFor="let lg of claimData">
+                                                <tr *ngFor="let lg of filteredItems">
                                                     <td>{{lg.companyName}}</td>
                                                     <td>{{lg.officeName}}</td>
                                                     <td>
@@ -194,11 +224,11 @@
                                                     <td>{{lg.opdosd}}</td>
                                                     <td class="alignRight">{{lg.count}}</td>
                                                     <td class="alignRight">{{lg.remoteLiteRejections}}</td>
-                                                    <td class="alignRight">{{lg.remoteLiteRejections+lg.count}}</td>
+                                                    <td class="alignRight">{{lg.totalBillingRejection}}</td>
                                                 </tr>
                                             </ng-container>
                                         </tbody>
-                                        <ng-container *ngIf="claimData.length==0 && !loader.showLoader">
+                                        <ng-container *ngIf="filteredItems.length==0 && !loader.showLoader">
                                             <div class="text-center mt-5">
                                                 <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
                                             </div>

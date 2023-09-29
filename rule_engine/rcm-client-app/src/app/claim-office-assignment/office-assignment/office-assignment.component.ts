@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, HostListener, OnInit, ViewEncapsulation } from '@angular/core';
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { ClaimAssignmentDataModel } from '../../models/claim-assignmen-data-model';
 import { ClaimAssignmentModel } from '../../models/claim-assignment.model';
@@ -39,6 +39,13 @@ export class OfficeAssignmentComponent implements OnInit {
   totalClaimData: any = { 'oldestOpdt': '', 'oldestOpdos': '', 'totalCount': 0, 'totalRemLiteReject': 0, 'totalcountAndRemLiteReject': 0 }
   clientName: string = '';
   date: any;
+
+  showFilteredDropdown: any = { 'officeName': false,'companyName':false };
+  isFilterAllSelected: any = { 'officeName': false,'companyName':false };
+  filteredCompanyName:any=[];
+  filteredItems: any = [];
+  filterName:any;
+
   constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
     this.claimData = [];//{} as FreshClaimPLogs;
@@ -84,9 +91,8 @@ export class OfficeAssignmentComponent implements OnInit {
 
       if (res.status === 200) {
         ths.claimData = res.data;
-        ths.calcCount(ths.claimData)
-        ths.calcRemLiteReject(ths.claimData)
-        ths.calcCountAndRemLiteReject(ths.claimData)
+        this.showFilterOptioncompanyName(ths.claimData);
+        this.filterCompanyName();
         ths.loader.showLoader = false;
       } else {
         //ERROR
@@ -298,5 +304,91 @@ export class OfficeAssignmentComponent implements OnInit {
   get isRoleAsso() {
     return Utils.isRoleAsso();
   }
+
+  filterCompanyName(e?: any, filterProperty?: any){
+    if (!this.claimData) return;
+    if (!e) {
+      this.filteredItems = JSON.parse(JSON.stringify(this.claimData));
+      this.isFilterAllSelected.companyName = true;
+      this.calcCount(this.filteredItems);
+      this.calcRemLiteReject(this.filteredItems);
+      this.calcCountAndRemLiteReject(this.filteredItems);
+      this.addTotalCountAndRemLiterejectField(this.filteredItems);
+    } else {
+      let isAllSelected: boolean = true;
+      for (let i = 0; i < this.filteredCompanyName.length; i++) {
+        if (this.filteredCompanyName[i].checked == false) {
+          isAllSelected = false;
+          break;
+        }
+      }
+      this.isFilterAllSelected.companyName = isAllSelected;
+      this.filteredItems = this.claimData.filter((item: any) => {
+        return this.filteredCompanyName.some((checkbox: any) => {
+          return checkbox.checked && item.companyName == checkbox.companyName;
+        })
+      })
+    }
+  }
+  
+  showFilterOptioncompanyName(data: any) {
+    
+    if (!this.claimData) return;
+    this.filteredCompanyName = JSON.parse(JSON.stringify(data));
+    const newArray:any = [];
+    const seencompanyNames :any= {};
+    this.filteredCompanyName.forEach((item:any) => {
+      if (!seencompanyNames.hasOwnProperty(item.companyName)) {
+        seencompanyNames[item.companyName] = true;
+        newArray.push({'checked':true,'companyName':item.companyName});
+      }
+    });
+    this.filteredCompanyName = newArray;
+    console.log(newArray);
+    
+    this.sortFilteredData(this.filteredCompanyName,'companyName');
+  }
+
+  sortFilteredData(filterValue: any,sortBy:any) {
+    filterValue.sort((a:any,b:any)=>{
+       return a[sortBy].localeCompare(b[sortBy]);
+});
+}
+
+addTotalCountAndRemLiterejectField(data:any){
+  data.forEach((e:any)=>{
+    e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
+  })
+
+}
+
+
+showHideFilteredDropdown(filterName:any){
+  filterName == 'companyName' ? this.showFilteredDropdown.companyName = true  : this.showFilteredDropdown.companyName = false;
+  this.filterName = filterName;
+}
+
+@HostListener('mouseleave') onMouseLeave(event: Event){
+  if(event?.target) {
+    setTimeout(() => {
+     this.showFilteredDropdown[this.filterName] = false;
+    }, 500);
+  }
+} 
+
+selectAll(event: any, filterProperty: any) {
+
+  if (filterProperty == "companyName") {
+    this.filteredCompanyName.forEach((e: any) => {
+      if (event.target.checked) {
+        e.checked = true;
+      } else {
+        e['checked'] = false;
+      }
+    });
+    this.filterCompanyName("selectAll");
+  }
+}
+
 
 }

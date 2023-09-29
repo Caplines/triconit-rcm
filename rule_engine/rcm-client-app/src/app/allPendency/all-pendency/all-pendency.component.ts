@@ -21,16 +21,17 @@ export class AllPendencyComponent {
   showLoader: any = { 'loader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
   date: any;
   clientName: string = '';
-  showFilteredDropdown: any = { 'officeName': false };
-  isFilterAllSelected: any = { 'officeName': false };
+  showFilteredDropdown: any = { 'officeName': false,'clientName':false };
+  isFilterAllSelected: any = { 'officeName': false,'clientName':false };
   filteredOfficeName: any = [];
+  filteredClientName:any=[];
   filteredItems: any = [];
   tabSwitch: any = { 'withoutDos': true, 'withDos': false ,'withDateOfPending':false};
   isSorted: any = {};
 
   totalCount: any = this.constants.teamData;
   datePipeString:any;
-  fliterName:string= '';
+  filterName:string= '';
   tabValue:any="withoutDos";
   currentTeamName:string='';
   teamName: any = ["INTERNAL_AUDIT", "LC3", "OFFICE", "PATIENT_CALLING", "BILLING"];
@@ -70,8 +71,10 @@ export class AllPendencyComponent {
       this.showLoader.loader=false;
       this.addClientNameCrossToOfficeName();
       this.showFilterOptionOfficeName(this.pendencyData);
+      this.showFilterOptionClientName(this.pendencyData);
       this.total(this.pendencyData);
       this.filterOfficeName();
+      this.filterClientName();
       this.setTopOnTotalRow();
 
       return;
@@ -245,6 +248,16 @@ export class AllPendencyComponent {
       });
       this.filterOfficeName("selectAll");
     }
+    if (filterProperty == "clientName") {
+      this.filteredClientName.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e['checked'] = false;
+        }
+      });
+      this.filterClientName("selectAll");
+    }
   }
 
   addClientNameCrossToOfficeName() {
@@ -284,15 +297,56 @@ export class AllPendencyComponent {
   showFilterOptionOfficeName(data: any) {
     if (!this.pendencyData) return;
     this.filteredOfficeName = JSON.parse(JSON.stringify(data));
-    this.filteredOfficeName.forEach((e: any) => {
-        e['checked'] = true;
+    
+    const newArray:any = [];
+    const seenOfficeNames :any= {};
+    this.filteredOfficeName.forEach((item:any) => {
+      if (!seenOfficeNames.hasOwnProperty(item.officeName)) {
+        seenOfficeNames[item.officeName] = true;
+        newArray.push({...item,'checked':true});
+      }
     });
-    this.filteredOfficeName = Object.values(this.filteredOfficeName.reduce((acc: any, { officeName }: any) => {
-      if (!acc[officeName])
-        acc[officeName] = { checked: true, officeName: officeName };
-      return acc;
-    }, {}));
-    this.sortFiltereData(this.filteredOfficeName);
+    this.filteredOfficeName = newArray;
+    this.sortFilteredData(this.filteredOfficeName,'officeName');
+  }
+
+  filterClientName(e?: any, filterProperty?: any){
+    if (!this.pendencyData) return;
+    if (!e) {
+      this.filteredItems = JSON.parse(JSON.stringify(this.pendencyData));
+      this.isFilterAllSelected.clientName = true;
+    } else {
+      let isAllSelected: boolean = true;
+      for (let i = 0; i < this.filteredClientName.length; i++) {
+        if (this.filteredClientName[i].checked == false) {
+          isAllSelected = false;
+          break;
+        }
+      }
+      this.isFilterAllSelected.clientName = isAllSelected;
+      this.filteredItems = this.pendencyData.filter((item: any) => {
+        return this.filteredClientName.some((checkbox: any) => {
+          return checkbox.checked && item.clientName == checkbox.clientName;
+        })
+      })
+    }
+  }
+
+  showFilterOptionClientName(data: any) {
+    if (!this.pendencyData) return;
+    this.filteredClientName = JSON.parse(JSON.stringify(data));
+    const newArray:any = [];
+    const seenClientNames :any= {};
+    this.filteredClientName.forEach((item:any) => {
+      if (!seenClientNames.hasOwnProperty(item.clientName)) {
+        seenClientNames[item.clientName] = true;
+        newArray.push({'checked':true,'clientName':item.clientName});
+      }
+    });
+    this.filteredClientName = newArray;
+    console.log(newArray);
+    
+    this.sortFilteredData(this.filteredClientName,'clientName');
   }
 
   switchTab(tab: any) {
@@ -330,30 +384,22 @@ export class AllPendencyComponent {
     this._service.sortData(data, sortProp, order, sortType, teamName);
   }
 
-  sortFiltereData(filterValue: any) {
-    filterValue.sort((a: any, b: any) => {
-      const nameA = Object.keys(filterValue[0])[1] == 'officeName' ? a.officeName?.toUpperCase() : '';// ignore upper and lowercase
-      const nameB = Object.keys(filterValue[0])[1] == 'officeName' ? b.officeName?.toUpperCase() : '';// ignore upper and lowercase
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      // names must be equal
-      return 0;
+  sortFilteredData(filterValue: any,sortBy:any) {
+        filterValue.sort((a:any,b:any)=>{
+           return a[sortBy].localeCompare(b[sortBy]);
     });
-
   }
+
   showHideFilteredDropdown(filterName:any){
     filterName == 'officeName' ? this.showFilteredDropdown.officeName = true  : this.showFilteredDropdown.officeName = false;
-   this.fliterName = filterName;
+    filterName == 'clientName' ? this.showFilteredDropdown.clientName = true  : this.showFilteredDropdown.clientName = false;
+    this.filterName = filterName;
   }
 
   @HostListener('mouseleave') onMouseLeave(event: Event){
     if(event?.target) {
       setTimeout(() => {
-       this.showFilteredDropdown[this.fliterName] = false;
+       this.showFilteredDropdown[this.filterName] = false;
       }, 500);
     }
   } 
