@@ -242,9 +242,10 @@ public class RuleEngineService {
 							for (ClaimsFromRuleEngine re : datas.getData()) {
 								try {
 									System.out.println(re.getClaimId() + "--<ID");
-									if (re.getClaimId().equals("5622") || re.getClaimId().equals("3018") || re.getClaimId().equals("32950")) {
-										System.out.println("k");
-									}
+									InsuranceNameTypeDto insuranceNameTypeDto=null;
+									//if (re.getClaimId().equals("5622") || re.getClaimId().equals("3018") || re.getClaimId().equals("32950")) {
+									//	System.out.println("k");
+									//}
 									List<String> allCl = Arrays.asList(re.getClaimId() + claimTypeEnum.getSuffix());
 									List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
 									
@@ -284,7 +285,7 @@ public class RuleEngineService {
 											ins.setAddress(re.getInsuranceCompanyFullAddress());
 											//ins.setInsuranceCode(re.getInsuranceCompanyFullAddress());
 											ins.setInsuranceId(re.getPrimSecInsuranceCompanyId());
-											InsuranceNameTypeDto insuranceNameTypeDto= getInsuranceTypeFromSheetList(insuranceTypeDto, re.getInsuranceCompanyName().trim());
+											insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getInsuranceCompanyName().trim());
 											//String insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto,
 											//		re.getInsuranceCompanyName());
 											String insuranceType =insuranceNameTypeDto==null?null: insuranceNameTypeDto.getInsuranceType();
@@ -305,9 +306,12 @@ public class RuleEngineService {
 										// error.add("Primary Insurance Type Missing for
 										// id:"+re.getPrimInsuranceCompanyId()+" and Name: "+primaryIns.getName());
 										// }
-
-										String timely = ClaimUtil.getTimelyLimitFromSheetList(timelyFilingLimits,
-												re.getInsuranceCompanyName().trim());
+										TimelyFilingLimitDto timely=null;
+                                        if (insuranceNameTypeDto!=null) {
+                                        	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
+                                        			insuranceNameTypeDto.getInsuranceCode().trim());
+                                        }
+										
 										if (timely == null) {
 											error.add("Timely Limit Type Missing for Primary Ins. :" + re.getInsuranceCompanyName().trim());
 
@@ -341,14 +345,14 @@ public class RuleEngineService {
 										claim = ClaimUtil.createClaimFromESData(claim, off, re,
 												ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()),
 												user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
-												rcmInsuranceType, timely, claimTypeEnum);
+												rcmInsuranceType, timely.getTimelyFilingLimit(),insuranceNameTypeDto.getPreferredModeOfSubmission(), claimTypeEnum);
 										missing=false;
 										}
 										if (isMedicaid || isMedicare || isChip) {
 											claim = ClaimUtil.createClaimFromESData(claim, off, re,
 													ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()),
 													user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
-													rcmInsuranceType, timely, claimTypeEnum);
+													rcmInsuranceType, timely.getTimelyFilingLimit(),insuranceNameTypeDto.getPreferredModeOfSubmission(), claimTypeEnum);
 											missing=false;
 										}
 										
@@ -357,7 +361,7 @@ public class RuleEngineService {
 											claim = ClaimUtil.createClaimFromESData(claim, off, re,
 													ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()),
 													user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
-													rcmInsuranceType, timely, claimTypeEnum);
+													rcmInsuranceType, timely.getTimelyFilingLimit(),insuranceNameTypeDto.getPreferredModeOfSubmission(), claimTypeEnum);
 											isBilling=true;
 										}
 										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
@@ -622,7 +626,7 @@ public class RuleEngineService {
 						insurance.setInsuranceId(re.getInsuranceCompanyId());
 						insurance.setName(re.getName());
 						insurance.setOffice(officeRepo.findByUuid(OfficeUuid));
-						InsuranceNameTypeDto insuranceNameTypeDto= getInsuranceTypeFromSheetList(insuranceTypeDto, re.getName().trim());
+						InsuranceNameTypeDto insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getName().trim());
 						String insuranceType =insuranceNameTypeDto==null?null: insuranceNameTypeDto.getInsuranceType();
 						if (insuranceType != null) {
 							insurance.setInsuranceType(rcmInsuranceTypeRepo.findByName(insuranceType));
@@ -633,7 +637,7 @@ public class RuleEngineService {
 						if (insuranceOld == null)
 							insuranceRepo.save(insurance);
 						else {
-							insuranceNameTypeDto= getInsuranceTypeFromSheetList(insuranceTypeDto, insurance.getName().trim());
+							insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, insurance.getName().trim());
 							//insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto, insurance.getName());
 							insuranceType =insuranceNameTypeDto==null?null: insuranceNameTypeDto.getInsuranceType();
 							if (insuranceType != null) {
@@ -892,7 +896,7 @@ public class RuleEngineService {
 	 * @param name
 	 * @return
 	 */
-	public InsuranceNameTypeDto getInsuranceTypeFromSheetList(List<InsuranceNameTypeDto> sheetData, String name) {
+	public InsuranceNameTypeDto getInsuranceTypeFromSheetListByName(List<InsuranceNameTypeDto> sheetData, String name) {
 		//String insuranceType = null;
 		InsuranceNameTypeDto dto= null;
 		if (sheetData == null) {

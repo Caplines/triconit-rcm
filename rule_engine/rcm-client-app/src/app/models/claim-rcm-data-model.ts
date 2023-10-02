@@ -77,7 +77,8 @@ export interface ClaimRcmDataModel {
 	providerOnClaimFromSheet?: string
 	ssn?: string;
 	assignmentOfBenefits?: string;
-
+	currentState?: number;
+	preferredModeOfSubmission?: string;
 }
 
 
@@ -127,6 +128,7 @@ export interface ServiceLevelCodeModel {
 
 	claimFound: boolean;
 	dto?: Array<ServiceLevelCodeDataModel>;
+	details?: Array<ClaimDetailModel>;
 	esDate?: string;
 
 }
@@ -234,4 +236,11 @@ export interface OtherTeamRem {
 	fName?: string;
 	lName?: string;
 	teamName?: string;
+}
+
+export interface ClaimDetailModel {
+
+	serviceCode?: string;
+	surface?: string;
+	tooth?: string;
 }

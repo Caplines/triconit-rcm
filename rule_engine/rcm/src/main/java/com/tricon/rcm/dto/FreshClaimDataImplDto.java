@@ -3,7 +3,6 @@ package com.tricon.rcm.dto;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
 
 import lombok.Data;
 
@@ -119,6 +118,8 @@ public class FreshClaimDataImplDto {
 	String ssn;
 	String assignmentOfBenefits;
 
-
+    int currentState;
+    
+    String preferredModeOfSubmission;
 }
 

@@ -74,5 +74,6 @@ public interface RcmClaimDetailDto {
 	String getSecondaryInsCodeSheet();
 	String getSsn();
 	String getAssignmentOfBenefits();
+	int getCurrentState();
 	
 }

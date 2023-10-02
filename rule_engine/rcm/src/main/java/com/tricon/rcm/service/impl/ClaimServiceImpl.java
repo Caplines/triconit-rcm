@@ -25,8 +25,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.google.common.collect.Collections2;
+import com.tricon.rcm.db.entity.RcmClaimArchiveHistory;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimComment;
 import com.tricon.rcm.db.entity.RcmClaimDetail;
@@ -73,6 +76,7 @@ import com.tricon.rcm.dto.ProivderHelpingSheetDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
 import com.tricon.rcm.dto.RcmArchiveClaimsDto;
+import com.tricon.rcm.dto.RcmClaimDetailViewDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
@@ -89,6 +93,7 @@ import com.tricon.rcm.dto.ClaimServiceDto;
 import com.tricon.rcm.dto.ClaimServiceValidationGSheet;
 import com.tricon.rcm.dto.ClaimServiceValidationGSheetData;
 import com.tricon.rcm.dto.ClaimSourceDto;
+import com.tricon.rcm.dto.ClaimStatusUpdate;
 import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.CredentialData;
@@ -128,6 +133,7 @@ import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
+import com.tricon.rcm.jpa.repository.RcmClaimArchiveHistoryRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimCommentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimDetailRepo;
@@ -263,6 +269,8 @@ public class ClaimServiceImpl {
 	@Value("${data.archiveClaims.totalRecordperPage}")
 	private int totalRecordsperPage;
 	
+	@Autowired
+	RcmClaimArchiveHistoryRepo rcmClaimArchiveHistoryRepo;
 
 	@Autowired
 	RcmIssueClaimsRepo issueClaimRepo;
@@ -445,6 +453,8 @@ public class ClaimServiceImpl {
 		// Map<String,int[]>mapcountNewS= new HashMap<>();
 		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyuuid());
 		List<RcmTeam> allTeams = rcmTeamRepo.findAll();
+		InsuranceNameTypeDto insuranceNameTypeDto=null;
+		List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(company);
 		List<TimelyFilingLimitDto> timelyFilingLimits = ruleEngineService.pullTimelyFilingLmtMappingFromSheet(company);
 		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
 		RcmClaimStatusType systemStatusReBilling = rcmClaimStatusTypeRepo
@@ -500,6 +510,7 @@ public class ClaimServiceImpl {
 				int logStatus = 0;
 				for (ClaimFromSheet re : primaryList) {
 					try {
+						insuranceNameTypeDto= null;
 						System.out.println(re.getClaimId() + "--<ID");
 						ClaimTypeEnum claimTypeEnum = ClaimTypeEnum.P;
 						RcmClaimStatusType claimStatusType = null;
@@ -603,10 +614,14 @@ public class ClaimServiceImpl {
 							     ins.setInsuranceType(rcmInsuranceTypes.get(re.getInsuranceName()));
 								 ins.setId(insuranceRepo.save(ins).getId());
 								 }
+								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim());
 							}
-
-							String timely = ClaimUtil.getTimelyLimitFromSheetList(timelyFilingLimits,
-									re.getPrimaryInsuranceCompany());
+							TimelyFilingLimitDto timely=null;
+							if (insuranceNameTypeDto!=null) {
+								timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
+										insuranceNameTypeDto.getInsuranceCode().trim());
+								
+							}
 							if (timely == null) {
 								 error.add("Timely Limit Type Missing for Primary Ins. :"+re.getPrimaryInsuranceCompany());
 
@@ -649,23 +664,23 @@ public class ClaimServiceImpl {
 							if (isBilling) {
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
-									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
-									claimTypeEnum);
+									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),""
+									,claimTypeEnum);
 							missing=false;
 							}
 							if (isMedicaid || isMedicare || isChip) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
-										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
-										claimTypeEnum);
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
+										"",claimTypeEnum);
 								missing=false;
 							}
 							if(missing) {//no Billing or Medicaid
 								//put in billing 
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
-										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
-										claimTypeEnum);
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
+										"",claimTypeEnum);
 								missing=false;
 								isBilling=true;
 							}
@@ -755,6 +770,7 @@ public class ClaimServiceImpl {
 				for (ClaimFromSheet re : secondaryList) {
 
 					try {
+						insuranceNameTypeDto= null;
 						System.out.println(re.getClaimId() + "--<ID");
 						ClaimTypeEnum claimTypeEnum = ClaimTypeEnum.S;
 						RcmClaimStatusType claimStatusType = null;
@@ -856,10 +872,12 @@ public class ClaimServiceImpl {
 								    ins.setInsuranceType(rcmInsuranceTypes.get(re.getSecondaryInsuranceName()));
 									ins.setId(insuranceRepo.save(ins).getId());
 								 }
+								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim());
 							}
 
-							String timely = ClaimUtil.getTimelyLimitFromSheetList(timelyFilingLimits,
-									re.getSecondaryInsuranceCompany());
+							TimelyFilingLimitDto timely = null;
+							if (insuranceNameTypeDto!=null) timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
+									insuranceNameTypeDto.getInsuranceCode());
 							if (timely == null) {
 								 error.add("Timely Limit Type Missing for Secondary Ins. :"+re.getSecondaryInsuranceCompany());
 
@@ -906,23 +924,23 @@ public class ClaimServiceImpl {
 							
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
-									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
+									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),"",
 									claimTypeEnum);
 							missing=false;
 							}
 							if (isMedicaid || isMedicare || isChip) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
-										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
-										claimTypeEnum);
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
+										"",claimTypeEnum);
 								missing=false;
 							}
 							if(missing) {//no Billing or Medicaid
 								//put in billing 
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
-										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely,
-										claimTypeEnum);
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
+										"",claimTypeEnum);
 								missing=false;
 								isBilling=true;
 							}
@@ -1607,6 +1625,8 @@ public class ClaimServiceImpl {
 					AutoRunClaimReponseDto autoResponse = runAutomatedRules(claim, partialHeader, claimUuid,false,true);
 					implDto.setAssignmentOfBenefits(autoResponse.getAssignmentOfBenefits());
 					claim.setAssignmentOfBenefits(autoResponse.getAssignmentOfBenefits());
+					claim.setPreferredModeOfSubmission(autoResponse.getPreferredModeOfSubmission());
+					implDto.setPreferredModeOfSubmission(autoResponse.getPreferredModeOfSubmission());
 				}
 				rcmClaimRepository.save(claim);
 			}
@@ -1738,6 +1758,7 @@ public class ClaimServiceImpl {
 
 		//Rule Engine up and running is needed
 		ServiceValidationDataDto dto = new ServiceValidationDataDto();
+		List<RcmClaimDetailViewDto> details=new ArrayList<>();
 		List<RcmClaimsServiceRuleValidationDto> list = new ArrayList<>();
 		RcmClaimsServiceRuleValidationDto one = null;
 		if (claim == null) claim = rcmClaimRepository.findByClaimUuid(claimUuid);
@@ -1754,6 +1775,7 @@ public class ClaimServiceImpl {
 			String[] clT = claim.getClaimId().split("_");
 			
 			long ct= rcmClaimDetailRepo.countByClaimClaimUuid(claimUuid);
+			
 			if (ct==0) {
 				//Pull && Save Data
 				//clT[0] = "2115";// For testing
@@ -1810,6 +1832,12 @@ public class ClaimServiceImpl {
 				}
 				dto.setClaimFound(true);
 				rcmClaimRepository.save(claim);
+				cddList.forEach( det ->{
+					RcmClaimDetailViewDto view = new RcmClaimDetailViewDto();
+					BeanUtils.copyProperties(det, view); 
+					details.add(view);
+				});
+				dto.setDetails(details);
 			}else {
 				dto.setClaimFound(true);
 				cddList = rcmClaimDetailRepo.findByClaimClaimUuid(claimUuid);
@@ -1817,12 +1845,27 @@ public class ClaimServiceImpl {
 				claim.setDateLastUpdatedES(cd.getDateLastUpdated());
 				claim.setDescriptionES(cd.getDescription());
 				claim.setEstSecondaryES(cd.getEstSecondary());
-				claim.setStatusES(cd.getStatus());*/
+				claim.setStatusES(cd.getStatus();*/
 				dto.setEsDate(claim.getDateLastUpdatedES());
+				cddList.forEach( det ->{
+					RcmClaimDetailViewDto view = new RcmClaimDetailViewDto();
+					BeanUtils.copyProperties(det, view); 
+					details.add(view);
+				});
+				dto.setDetails(details);
 			}
 			
 			
 			
+			}else {
+				cddList = rcmClaimDetailRepo.findByClaimClaimUuid(claimUuid);
+				dto.setEsDate(claim.getDateLastUpdatedES());
+				cddList.forEach( det ->{
+					RcmClaimDetailViewDto view = new RcmClaimDetailViewDto();
+					BeanUtils.copyProperties(det, view); 
+					details.add(view);
+				});
+				dto.setDetails(details);
 			}
 			
 
@@ -2386,6 +2429,8 @@ public class ClaimServiceImpl {
 		if (rcmCompany!=null) {
 			if (!claim.isPending())
 				return "Claim Already Submitted";
+			if (claim.getCurrentState() ==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED)
+				return "Claim is Archived";
 			//Assign Logic
 			
 			RcmUser rcmLeadUser = userRepo.findByUuid(dto.getTeamLeadUuid());
@@ -2574,6 +2619,8 @@ public class ClaimServiceImpl {
 
 			if (!claim.isPending())
 				return "Claim Already Submitted";
+			if (claim.getCurrentState() ==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED)
+				return "Claim is Archived";
 			saveClaimManualRules(dto.getData(), user, claim, partialHeader);
 
 			return "Done";
@@ -2646,7 +2693,12 @@ public class ClaimServiceImpl {
 			if (!claim.isPending()) {
 				claimEditDetailDto.setMessage( "Claim Already Submitted");
 				return claimEditDetailDto;
-			} else {
+		}
+		  else if (claim.getCurrentState() ==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED){
+			  claimEditDetailDto.setMessage( "Claim is Archived");
+			  return claimEditDetailDto;
+				
+		} else {
 
 				//if (partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId()) {//only billing can save
 				//The claims that will be parked in the Internal Audit Team's bucket first, only sections
@@ -2782,6 +2834,11 @@ public class ClaimServiceImpl {
 	public String assignClaimToOtherTeamWithRemark(PartialHeader partialHeader,ClaimAssignWithRemarkAndTeam dto) {
 		String message="";
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+		
+		if (claim.getCurrentState() ==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
+			message= "Claim is Archived";
+			return message;
+		}
 		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		Integer assignToTeamId=dto.getAssignToTeamId();
 		int currentTeam=claim.getCurrentTeamId().getId();
@@ -2864,6 +2921,10 @@ public class ClaimServiceImpl {
 		if (!claim.isPending()) {
 			
 			return "Already Submited";
+		}
+		
+		if (claim.getCurrentState() ==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
+			return "Claim is Archived";
 		}
 		
 		  RcmTeam assignTeam = rcmTeamRepo.findById(assignToTeam);
@@ -3043,6 +3104,11 @@ public class ClaimServiceImpl {
 				
 			}
 			
+			if (claim.getCurrentState() ==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
+				dto.setMessage("Claim is Archived");
+				return dto;
+			}
+			
 			RcmClaimAssignment assign1 = rcmClaimAssignmentRepo.findByClaimsClaimUuidAndActive(claimuuid, true);
 			//(assign1 != null && partialHeader.getJwtUser().getUuid().equals(assign1.getAssignedTo().getUuid()))
 			//Only Assigned User Can Run
@@ -3202,10 +3268,11 @@ public class ClaimServiceImpl {
 						//Reading Sheet Again
 						List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(
 								partialHeader.getCompany());
-						InsuranceNameTypeDto insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetList(insuranceTypeDto, insName);
-						insCode =(insuranceNameTypeDto==null)?"": insuranceNameTypeDto.getInsuranceCode();
+						InsuranceNameTypeDto insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, insName);
+						insCode =(insuranceNameTypeDto==null)?"": insuranceNameTypeDto.getInsuranceCode();//point 39
 						//TO Do Update the Data in InsuranceNameType
-						
+						claim.setPreferredModeOfSubmission(insuranceNameTypeDto.getPreferredModeOfSubmission());
+						dto.setPreferredModeOfSubmission(insuranceNameTypeDto.getPreferredModeOfSubmission());
 					}
 					
 					allLIst.addAll(
@@ -3567,6 +3634,69 @@ public class ClaimServiceImpl {
 		return rcmUserCompanyRepo.findAssociatedCompanyIdWithNameByUserUuid(partialHeader.getJwtUser().getUuid());
 		
 	}
+    
+    
+    @Transactional(rollbackFor = Exception.class)
+    public String archiveActiveClaim(@RequestBody ClaimStatusUpdate dto,PartialHeader partialHeader) {
+    	
+    	RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+    	
+    	if (!claim.isPending()) {
+    		return "Claim Already Submitted";
+	   }
+	    if (claim.getCurrentState() ==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED){
+		  return "Claim is Already Archived";
+	    }
+	    RcmOffice off = claim.getOffice();
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(off.getUuid()).getCompany().getUuid(), partialHeader.getCompany());
+		if (rcmCompany!=null) {
+			Date date = new Date();
+			RcmClaimArchiveHistory history=new RcmClaimArchiveHistory();
+			history.setReason(dto.getReason());
+			history.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED);
+			rcmClaimArchiveHistoryRepo.save(history);
+			String claimId=date.getTime()+Constants.HYPHEN+Constants.ARCHIVE_PREFIX+claim.getClaimId();
+			claim.setClaimId(claimId);
+			claim.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED);
+			rcmClaimRepository.save(claim);
+			
+		}else return "Wrong Client";
+    	return "Claim Archived";
+    }
+    
+    public String UnArchiveActiveClaim(@RequestBody ClaimStatusUpdate dto,PartialHeader partialHeader) {
+    	
+     RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+    	
+    	if (!claim.isPending()) {
+    		return "Claim Already Submitted";
+	   }
+	    if (claim.getCurrentState() == Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED){
+		  return "Claim is Already UnArchived";
+	    }
+	    RcmOffice off = claim.getOffice();
+		RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(off.getUuid()).getCompany().getUuid(), partialHeader.getCompany());
+		if (rcmCompany!=null) {
+			
+			String claimId=claim.getClaimId().split(Constants.HYPHEN+Constants.ARCHIVE_PREFIX)[1];
+			String existingClaimId= rcmClaimRepository.fetchClaimIdByClaimIdAnCompany(claimId,rcmCompany.getUuid());
+			if (existingClaimId!=null) {
+				
+				return "Already Exists with Same Claim Id. Can not be UNARCHIVED.";
+			}
+			//Date date = new Date();
+			RcmClaimArchiveHistory history=new RcmClaimArchiveHistory();
+			history.setReason(dto.getReason());
+			history.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED);
+			rcmClaimArchiveHistoryRepo.save(history);
+			claim.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED);
+			
+			claim.setClaimId(claimId);
+			rcmClaimRepository.save(claim);
+			
+		}else return "Wrong Client";
+    	return "Claim UnArchived";
+    }
 	
 	
 }

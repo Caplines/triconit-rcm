@@ -115,5 +115,7 @@ public class Constants {
 	public static final String REMOVE_ATTACHMENT_PREFIX="del_";
 	
 	public static final String ARCHIVE_PREFIX="arc_";
-
+	
+	public static final int CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED=0;
+	public static final int CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED=1;
 }

@@ -181,6 +181,12 @@
 
 
                                 </div>
+                                <div class="col-md-3 mb-2" *ngIf="isORMNotesNeeded()">
+                                    <div class="custom-row">
+                                        <label for="" class="">Note:</label>
+                                        <div>We need to refer ORM before Billing</div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- This section is for SmilePoints Only -->
                             <ng-container *ngIf="smilePoint">
@@ -537,12 +543,11 @@
                                                 <tr
                                                     *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                     <ng-container
-                                                        *ngIf="rule.ruleId==300"><!--only for provider Notes-->
+                                                        *ngIf="rule.ruleId==300 && isProviderNotesNeeded()"><!--only for provider Notes-->
                                                         <td>{{rule.srNo}}
                                                         </td>
                                                         <td>{{rule.ruleName}}</td>
-                                                        <!-- <td>Full Claim</td>
-                                                    <td>{{rule.ruleDesc}}</td> -->
+
                                                         <td class="no-wrap-text">
 
                                                             <div data-toggle="buttons"
@@ -553,7 +558,7 @@
                                                                     [ngClass]="{active:rule.messageType==3}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="3"
-                                                                        (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(false);"
+                                                                        (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(false,rule.srNo);"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Not Available
                                                                 </label>
@@ -561,7 +566,7 @@
                                                                     [ngClass]="{active:rule.messageType==2}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="2"
-                                                                        (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true)"
+                                                                        (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Complete
                                                                 </label>
@@ -569,7 +574,7 @@
                                                                     [ngClass]="{active:rule.messageType==1}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="1"
-                                                                        (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true)"
+                                                                        (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Incorrect
                                                                 </label>
@@ -583,7 +588,7 @@
 
                                                     </ng-container>
                                                 </tr>
-                                                <ng-container *ngIf="claimRcm.claimNotes">
+                                                <ng-container *ngIf="claimRcm.claimNotes &&  isProviderNotesNeeded()">
                                                     <tr clas="relatedTo_300" *ngIf="relatedTo_300">
                                                         <td></td>
                                                         <td>
@@ -603,13 +608,21 @@
                                                         *ngIf="relatedTo_300 && ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP')) 
                                                    ||  (!claimRcm.primary && (claimRcm.secondaryInsCode=='CMC' || claimRcm.secondaryInsCode=='AMC' || claimRcm.secondaryInsCode=='MCR' || claimRcm.secondaryInsCode=='CHIP')) )
                                                     && (rule.ruleId==311 || rule.ruleId==312 ||rule.ruleId==313 ||rule.ruleId==314 ||rule.ruleId==315 ||rule.ruleId==316 ||rule.ruleId==317)">
-                                                        <td *ngIf="rule.ruleId==311">a</td>
-                                                        <td *ngIf="rule.ruleId==312">b</td>
-                                                        <td *ngIf="rule.ruleId==313">c</td>
-                                                        <td *ngIf="rule.ruleId==314">d</td>
-                                                        <td *ngIf="rule.ruleId==315">e</td>
-                                                        <td *ngIf="rule.ruleId==316">f</td>
-                                                        <td *ngIf="rule.ruleId==317">g</td>
+                                                        <td *ngIf="rule.ruleId==311">{{serialNoArray.get("300")}}.1
+                                                        </td>
+                                                        <td *ngIf="rule.ruleId==312">
+                                                            {{serialNoArray.get("300")}}.2
+                                                        </td>
+                                                        <td *ngIf="rule.ruleId==313">{{serialNoArray.get("300")}}.3
+                                                        </td>
+                                                        <td *ngIf="rule.ruleId==314">{{serialNoArray.get("300")}}.4
+                                                        </td>
+                                                        <td *ngIf="rule.ruleId==315">{{serialNoArray.get("300")}}.5
+                                                        </td>
+                                                        <td *ngIf="rule.ruleId==316">{{serialNoArray.get("300")}}.6
+                                                        </td>
+                                                        <td *ngIf="rule.ruleId==317">{{serialNoArray.get("300")}}.7
+                                                        </td>
 
                                                         <td>{{rule.ruleName}}</td>
                                                         <!-- <td>Full Claim</td>
@@ -669,37 +682,45 @@
                                                                                                 && (rule.ruleId==317)">
                                                     <table class="table sub-content-td" style="margin-top: 0px;">
                                                         <tr>
-                                                            <td><strong>a)</strong> Filling (tooth# + surface) </td>
+                                                            <td><strong>{{serialNoArray.get("300")}}.7.1)</strong>
+                                                                Filling (tooth# + surface) </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>b)</strong> Extraction - which side, tooth and
+                                                            <td><strong>{{serialNoArray.get("300")}}.7.2)</strong>
+                                                                Extraction - which side, tooth and
                                                                 how
                                                                 is it done,
                                                                 instrument used </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>c)</strong> Crown - tooth# </td>
+                                                            <td><strong>{{serialNoArray.get("300")}}.7.3)</strong> Crown
+                                                                - tooth# </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>d)</strong> Denture - Impression taken </td>
+                                                            <td><strong>{{serialNoArray.get("300")}}.7.4)</strong>
+                                                                Denture - Impression taken </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>e)</strong> RCT - Steps and how it is done and
+                                                            <td><strong>{{serialNoArray.get("300")}}.7.5)</strong> RCT -
+                                                                Steps and how it is done and
                                                                 which
                                                                 file is
                                                                 used to open access to roots and canal </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>f)</strong> Brand Name And Material - Build Up
+                                                            <td><strong>{{serialNoArray.get("300")}}.7.6)</strong> Brand
+                                                                Name And Material - Build Up
                                                                 And Crown
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>g)</strong> Findings of exam - service specific
+                                                            <td><strong>{{serialNoArray.get("300")}}.7.7)</strong>
+                                                                Findings of exam - service specific
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>h)</strong>Sealant - tooth# and surface</td>
+                                                            <td><strong>{{serialNoArray.get("300")}}.7.8)</strong>Sealant
+                                                                - tooth# and surface</td>
                                                         </tr>
                                                     </table>
                                                 </ng-container>
@@ -966,26 +987,26 @@
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.channel=='RemoteLite'}">
                                                             <input type="radio" name="channel" value="RemoteLite"
-                                                                (click)="submissionDto.channel='RemoteLite';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
+                                                                (click)="submissionDto.channel='RemoteLite';overidePreferredSubmission=false;removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
                                                                 [disabled]="isSectionReadOnly()">Clearing House
                                                             (Remotelite)
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Fax'}">
                                                             <input type="radio" name="channel" value="Fax"
-                                                                (click)="submissionDto.channel='Fax';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
+                                                                (click)="submissionDto.channel='Fax';overidePreferredSubmission=false;removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
                                                                 [disabled]="isSectionReadOnly()"> Fax
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Mail'}">
                                                             <input type="radio" name="channel" value="Mail"
-                                                                (click)="submissionDto.channel='Mail';removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
+                                                                (click)="submissionDto.channel='Mail';overidePreferredSubmission=false;removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
                                                                 [disabled]="isSectionReadOnly()"> Mail
                                                         </label>
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto?.channel=='Portal'}">
                                                             <input type="radio" name="channel" value="Portal"
-                                                                (click)="submissionDto.channel='Portal';removeErrorDisplayKeyById('SUB_DET_CHA');claimNoEnable()"
+                                                                (click)="submissionDto.channel='Portal';overidePreferredSubmission=false;removeErrorDisplayKeyById('SUB_DET_CHA');claimNoEnable()"
                                                                 [disabled]="isSectionReadOnly()"> Portal
                                                         </label>
                                                         <div class="portalcla">
@@ -1194,10 +1215,12 @@
                             <strong>{{alert.alertMsg}}</strong>
                         </div> -->
                         <!-- Modal End -->
-                        <div class="action-buttons" *ngIf="actionButtons && (isBilling || isInternalAudit)">
-                            <button  *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
-                            (claimRcm.primary && claimRcm.pending) )" type="button" class="btn btn-success" [disabled]="inSave"
-                                (click)="saveClaim('latter')">Save For Later Processing</button>
+
+                        <div class="action-buttons"
+                            *ngIf="claimRcm.currentState==0 && actionButtons && (isBilling || isInternalAudit)">
+                            <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) || 
+                            (claimRcm.primary && claimRcm.pending) )" type="button" class="btn btn-success"
+                                [disabled]="inSave" (click)="saveClaim('latter')">Save For Later Processing</button>
                             <button *ngIf="claimRcm.pending  && selectedTeam== claimRcm.currentTeamId" type="button"
                                 class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assigntl')">Assign to
                                 Team Lead</button>
@@ -1218,10 +1241,15 @@
                                 type="button" class="btn btn-success" [disabled]="inSave"
                                 (click)="saveClaim('assign')">Assign to
                                 Other Team</button>
-                            <!-- <button 
-                                type="button" class="btn btn-success" 
-                                (click)="submitAttachment()">Submit Attachment</button> -->
+                            <button *ngIf="claimRcm.pending && claimRcm.currentState==0" type="button"
+                                class="btn btn-success" [disabled]="inSave"
+                                (click)="openArchivedModal()">Archive</button>
 
+
+                        </div>
+                        <div class="action-buttons" *ngIf="claimRcm.currentState==1">
+                            <button *ngIf="claimRcm.pending" type="button" class="btn btn-success"
+                                (click)="openUnArchivedModal()">UnArchive</button>
                         </div>
                         <div *ngIf="!actionButtons" class="loader-data"></div>
                         <div>
@@ -1276,6 +1304,109 @@
                             [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
                             role="alert">
                             <strong>{{alert.alertMsg}}</strong>
+                        </div>
+
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+
+        <div id="archive-modal" class="modal archive">
+            <div class="modal-content">
+                <div _ngcontent-qaa-c48="" class="modal-header">
+                    <h5 class="modal-title">Archive Claim</h5>
+                    <button type="button" (click)="closeArchPopup('archive-modal')"
+                        class="close"><span>×</span></button>
+                </div>
+                <div class="modal-body">
+                    <ng-container>
+                        <div>
+                            <div class="plan-id-box">
+                                <label for="sta">Reason </label>
+                                <input type="text" class="form-control" [(ngModel)]="reason">
+                            </div>
+
+                            <div class="plan-id-box">
+                                <label>&nbsp;</label>
+                                <button class="btn btn-success" [disabled]="reason.trim()==''"
+                                    (click)="markArchived()">Archive</button>
+                            </div>
+                        </div>
+                        <div class="alert fade show text-center" *ngIf="alertArch.showAlertPopup"
+                            [ngClass]="{'alert-success': !this.alertArch.isError,'alert-danger':this.alertArch.isError}"
+                            role="alert">
+                            <strong>{{alertArch.alertMsg}}</strong>
+                        </div>
+
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+
+        <div id="unarchive-modal" class="modal unarchive">
+            <div class="modal-content">
+                <div _ngcontent-qaa-c48="" class="modal-header">
+                    <h5 class="modal-title">Un Archive Claim</h5>
+                    <button type="button" (click)="closeArchPopup('unarchive-modal')"
+                        class="close"><span>×</span></button>
+                </div>
+                <div class="modal-body">
+                    <ng-container>
+                        <div>
+                            <div class="plan-id-box">
+                                <label for="sta">Reason </label>
+                                <input type="text" class="form-control" [(ngModel)]="reason">
+                            </div>
+
+                            <div class="plan-id-box">
+                                <label>&nbsp;</label>
+                                <button class="btn btn-success" [disabled]="reason.trim()==''"
+                                    (click)="markUnArchived()">Archive</button>
+                            </div>
+                        </div>
+                        <div class="alert fade show text-center" *ngIf="alertArch.showAlertPopup"
+                            [ngClass]="{'alert-success': !this.alertArch.isError,'alert-danger':this.alertArch.isError}"
+                            role="alert">
+                            <strong>{{alertArch.alertMsg}}</strong>
+                        </div>
+
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+
+        <div id="check-preferredModeOfSubmission-modal" class="modal preferredModeOfSubmission detail-box">
+            <div class="modal-content" style="width:35%">
+                <div _ngcontent-qaa-c48="" class="modal-header">
+                    <h5 class="modal-title">Submission Mode</h5>
+
+                    <button type="button" (click)="closeArchPopup('check-preferredModeOfSubmission-modal')"
+                        class="close"><span>×</span></button>
+                </div>
+                <div class="modal-body">
+                    <ng-container>
+                        <div>
+                            <div class="plan-id-box">
+                                <label for="sta">Default Preferred Mode of Submission is
+                                    {{claimRcm.preferredModeOfSubmission}}</label>
+                            </div>
+                            <div>
+                                <label for="sta">Selected Mode of Submission is {{submissionDto.channel}}</label>
+
+                            </div>
+                            <div class="action-buttons">
+                                <label for="sta">Do you want to continue </label>
+                                <button class="btn btn-success" (click)="markValidPreffered('yes')"
+                                    type="button">YES</button>
+                                <button class="btn btn-success" (click)="markValidPreffered('No')"
+                                    type="button">NO</button>
+                            </div>
+
+                        </div>
+                        <div class="alert fade show text-center" *ngIf="alertPreferrsub.showAlertPopup"
+                            [ngClass]="{'alert-success': !this.alertPreferrsub.isError,'alert-danger':this.alertPreferrsub.isError}"
+                            role="alert">
+                            <strong>{{alertPreferrsub.alertMsg}}</strong>
                         </div>
 
                     </ng-container>
