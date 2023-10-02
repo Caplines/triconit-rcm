@@ -33,7 +33,7 @@ public class RcmLogs extends BaseAuditEntity implements Serializable{
 	@Column(name = "ip", nullable = true)
 	private String ip;
 
-	@Column(name = "request_data", columnDefinition="text", nullable = true)
+	@Column(name = "request_data", columnDefinition="LONGTEXT", nullable = true)
 	private String requestData;
 
 	@Column(name = "request_type", nullable = true)

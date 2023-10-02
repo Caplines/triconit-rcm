@@ -104,29 +104,23 @@ version="1.0" >
          <tr>
              <td class="bgWhite">
                  <table class="inner-table">
-                 <xsl:variable name="tabSwitchValue" select="tabSwitch" />   
+                 <xsl:variable name="tabSwitchValue" select="tabSwitch" />  
+                  <xsl:variable name="cTeamId" select="currentTeamId" />   
                      <tr class="bgWhite">
                           <td colspan="16" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
                          <td>Office</td>
-                         <td>Patient ID</td>
                          <td>Claim ID</td>
+                         <td>Patient ID</td>               
                          <td>Patient Name</td>
                          <td>DOS</td>
                          <td>Claim Age</td>
                          <td>TFL</td>
                          <td>Pending Since Date</td>
-                          <td>Age Bracket</td>
+                         <td>Age Bracket</td>
                          <td>Claim Type</td>
-                         <xsl:choose>
-                           <xsl:when test="currentTeamId=3">
-                           <td>Auditing</td>
-                           </xsl:when>
-                           <xsl:otherwise>
-                           <td>Action Required</td>
-                           </xsl:otherwise>
-                           </xsl:choose>
+                         <td>Action Required</td>
                          <td>Insurance Name</td>
                          <td>Insurance Type</td>
                          <td>Est.Amount</td>
@@ -141,8 +135,8 @@ version="1.0" >
                      <tr class="whiteBg">   
 
                          <td><xsl:value-of select="officeName"/></td>
-                         <td><xsl:value-of select="patientId"/></td>
-                         <td><xsl:value-of select="newClaimId"/></td>
+                          <td><xsl:value-of select="newClaimId"/></td>
+                         <td><xsl:value-of select="patientId"/></td>                    
                          <td style="word-break: break-all;"><xsl:value-of select="patientName"/></td>
                          <td><xsl:variable name="month" select="substring(dos, 6, 2)" />
                        <xsl:variable name="day" select="substring(dos, 9, 2)" />
@@ -166,11 +160,18 @@ version="1.0" >
                            </xsl:choose>
                        </td>
                        <td> <xsl:choose>
-                           <xsl:when test="statusType='1' ">
-                           <xsl:text>Billing</xsl:text>
-                           </xsl:when>
+                                <xsl:when test="$cTeamId=3">
+                                     <xsl:text>Auditing</xsl:text>
+                                </xsl:when>
                            <xsl:otherwise>
-                           <xsl:text>Re-Billing</xsl:text>
+                           <xsl:choose>  
+                                <xsl:when test="statusType='1' ">
+                                     <xsl:text>Billing</xsl:text>
+                                </xsl:when>
+                           <xsl:otherwise>
+                                 <xsl:text>Re-Billing</xsl:text>
+                           </xsl:otherwise>
+                           </xsl:choose>
                            </xsl:otherwise>
                            </xsl:choose>
                        </td>

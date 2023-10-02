@@ -801,7 +801,7 @@
                 <td class="borderNone"></td>
                 <td class="dullRed">D5110/20 (Complete)</td>
                 <td class="dullRed" colspan="1"><xsl:value-of select="d511020Percentage"/></td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="d5110_20"/></td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="dentures1"/></td>
                 
             </tr>
             <tr>
@@ -854,7 +854,7 @@
                 <td class="borderNone"></td>
                  <td class="dullRed">D6010</td>
                 <td class="dullRed align-right" colspan="1"><xsl:value-of select="implantsCPercentage"/></td>
-                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implantsC"/></td>
+                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants5"/></td>
             </tr>
             <tr>
                 <td class="rowHeading">Sealants</td>

@@ -54,7 +54,7 @@ export class IssueClaimComponent {
   }
   
   constructor(private appSer: ApplicationServiceService,private router:Router,private title:Title,private downloadService:DownLoadService, private appConstant:AppConstants) {
-    title.setTitle(Utils.defaultTitle + "Issue Claims");
+    title.setTitle(Utils.defaultTitle + "Upload Errors");
     this.loginUserType = localStorage.getItem("selected_roleName");
   }
 
@@ -270,7 +270,7 @@ export class IssueClaimComponent {
     this.date = new Date();
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     console.log(excelData.sort());
-    new ngxCsv(excelData, this.showIssueClaim ? `${localStorage.getItem("selected_clientName")}_Issue Claims_${this.date}`: `${localStorage.getItem("selected_clientName")}_Archived Claims_${this.date}`, options);
+    new ngxCsv(excelData, this.showIssueClaim ? `${localStorage.getItem("selected_clientName")}_Upload Errors_${this.date}`: `${localStorage.getItem("selected_clientName")}_Upload Errors Claims-Archived_${this.date}`, options);
     this.loader.exportCSVLoader = false;
   }
   getMonthName(month: any) {
@@ -297,26 +297,32 @@ export class IssueClaimComponent {
   }
 
   downloadPdf(){
+    this.loader.exportPDFLoader = true;
     if(this.tabSwitchValue=='Issue' && this.filteredItems?.length>0){
-    let data = {"fileName":this.showIssueClaim ? "Issue_claims" : "Archived_claims","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimsCount: this.archiveClaimsCount,"tabSwitch":this.tabSwitchValue};
+    let data = {"fileName":this.showIssueClaim ? "Upload Errors" : "Upload Errors Claims-Archived","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimsCount: this.archiveClaimsCount,"tabSwitch":this.tabSwitchValue};
     this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
-        this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Issue_claims.pdf" : "Archived_claims.pdf");
+        this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Upload Errors.pdf" : "Upload Errors Claims-Archived.pdf");
+        this.loader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     })
   }else if(this.tabSwitchValue=='Archive' && this.filtertedArchiveItems?.length>0){
-    let data = {"fileName":this.showIssueClaim ? "Issue_claims" : "Archived_claims","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimsCount: this.archiveClaimsCount,"tabSwitch":this.tabSwitchValue};
+    let data = {"fileName":this.showIssueClaim ? "Upload Errors" : "Upload Errors Claims-Archived","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimsCount: this.archiveClaimsCount,"tabSwitch":this.tabSwitchValue};
     this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
-        this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Issue_claims.pdf" : "Archived_claims.pdf");
+        this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Upload Errors.pdf" : "Upload Errors Claims-Archived.pdf");
+        this.loader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     }) 
   }else{
     console.log("Data is Empty")
+    this.loader.exportPDFLoader = false;
   }
 }
 

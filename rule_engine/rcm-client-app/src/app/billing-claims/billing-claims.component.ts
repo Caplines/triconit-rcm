@@ -1070,13 +1070,16 @@ export class BillingClaimsComponent {
     }
   }
   downloadPdf() {
+    this.loader.exportPDFLoader = true;
     let data = { "fileName": "Claim_Details", "data": [this.claimRcm], "teamId": this.selectedTeam, "clientName": this.clientName, "otherTeamsRemark": this.otherTeamRemarks, "claimRules": this.claimRules, "serviceLevelCodeManual": this.claimServiceLevelModel, "ruleEngineReport": this.ruleEngineReport, "claimSubmissionDto": this.submissionDto, "relatedTo_300": this.relatedTo_300, "countA": this.countA, "countAS": this.countAS, "count": this.count };
     this.appService.claimDetailsPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
         console.log(res.body);
         this.downloadService.saveBolbData(res.body, "Claim_Details.pdf");
+        this.loader.exportPDFLoader = false;
       } else {
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     })
   }

@@ -42,6 +42,7 @@ export class AllPendencyComponent {
 
   constructor(public constants:AppConstants,private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
+    this.clearTotalCount();
   }
   ngOnInit(): void {
     this.getAllUserClients();
@@ -413,6 +414,7 @@ export class AllPendencyComponent {
    } 
 
    downloadPdf(){
+    this.showLoader.exportPDFLoader = true;
     if(this.filteredItems.length!=0){
     const matchedTeam = this.constants.teamData.find((item:any) => item.teamId == this.currentTeamId);
       let teamsData:any = [];
@@ -426,11 +428,20 @@ export class AllPendencyComponent {
     this. _service.allPendancyPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
         this.downloadService.saveBolbData(res.body, "Pendancy- Other Teams.pdf");
+        this.showLoader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");
+        this.showLoader.exportPDFLoader = false;
       }
     })
   }
-
 }
+
+clearTotalCount(){
+  this.totalCount.forEach((e:any)=>{
+    e.count=0;
+  })
+}
+
+
 }
