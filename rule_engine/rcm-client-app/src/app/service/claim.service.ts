@@ -72,4 +72,12 @@ export class ClaimService extends BaseService {
   assignClaimToTL(params: ClaimAssignToTeamModel, callback: any) {
     this.postData(params, this.httpUrl['assigntotl'], callback)
   }
+
+  archiveclaim(params: any, callback: any) {
+    this.postData(params, this.httpUrl['archiveclaim'], callback);
+  }
+
+  unArchiveclaim(params: any, callback: any) {
+    this.postData(params, this.httpUrl['unarchiveclaim'], callback);
+  }
 }

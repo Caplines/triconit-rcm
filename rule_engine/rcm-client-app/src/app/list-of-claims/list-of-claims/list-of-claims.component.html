@@ -37,7 +37,7 @@
                                     </div>
                                     <div>
                                         <button type="button" class="icon-btn" (click)="downloadPdf()"
-                                            [disabled]="filteredItems.length==0">
+                                            [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
                                             <img src="../../assets/img/pdf.png" /></button><span
                                             *ngIf="loader.exportPDFLoader"
                                             class="spinner-border text-danger mx-1"></span>
@@ -96,18 +96,6 @@
                                                 </th>
                                                 <th class="width-90">
                                                     <div class="dFlex">
-                                                        Patient ID<span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted['patientId']}"
-                                                                (click)="sortData(filteredItems,'patientId','asc','number'); isSorted['patientId'] = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted['patientId']}"
-                                                                (click)="sortData(filteredItems,'patientId','desc','number');isSorted['patientId'] = true"></a>
-                                                        </span>
-                                                    </div>
-                                                </th>
-                                                <th class="width-90">
-                                                    <div class="dFlex">
                                                         Claim ID
                                                         <!-- <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
@@ -117,6 +105,18 @@
                                                                 [ngClass]="{'selected': isSorted['claimId']}"
                                                                 (click)="sortData(filteredItems,'claimId','desc','string');isSorted['claimId'] = true"></a>
                                                         </span> -->
+                                                    </div>
+                                                </th>
+                                                <th class="width-90">
+                                                    <div class="dFlex">
+                                                        Patient ID<span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['patientId']}"
+                                                                (click)="sortData(filteredItems,'patientId','asc','number'); isSorted['patientId'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['patientId']}"
+                                                                (click)="sortData(filteredItems,'patientId','desc','number');isSorted['patientId'] = true"></a>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th class="width-115">
@@ -192,7 +192,7 @@
                                                                     <button (click)="showFilteredDropdown.ageBracket=false;" type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                <ng-container *ngFor="let data of filteredAgeBracket">
+                                                                <ng-container *ngFor="let data of filteredColumnData.ageBracket">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -232,7 +232,7 @@
                                                                         type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                <ng-container *ngFor="let data of filteredClaimType">
+                                                                <ng-container *ngFor="let data of filteredColumnData.claimType">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -251,12 +251,7 @@
                                                 </th>
                                                 <th>
                                                     <div class="dFlex">
-                                                        <ng-container *ngIf="currentTeamId==3;else others">
-                                                            Auditing
-                                                          </ng-container>
-                                                          <ng-template #others>
                                                             Action Required
-                                                          </ng-template>
                                                            <div class="dropdown">
                                                             <img  (click)="showHideFilteredDropdown('actionRequired')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
                                                             <div class="dropdown-menu filter-dropdown-menu"
@@ -275,7 +270,7 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
                                                                 <ng-container
-                                                                    *ngFor="let data of filteredActionRequired">
+                                                                    *ngFor="let data of filteredColumnData.actionRequired">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -313,7 +308,7 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
                                                                 <ng-container
-                                                                    *ngFor="let data of filteredInsuranceName">
+                                                                    *ngFor="let data of filteredColumnData.insuranceName">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -354,7 +349,7 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
                                                                 <ng-container
-                                                                    *ngFor="let data of filteredInsuranceType">
+                                                                    *ngFor="let data of filteredColumnData.insuranceType">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -422,7 +417,7 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
                                                                 <ng-container
-                                                                    *ngFor="let data of filteredLastTeamWorked">
+                                                                    *ngFor="let data of filteredColumnData.lastTeamWorked">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -466,10 +461,12 @@
                                                     </tr>
                                                     <tr>
                                                         <td>{{det.officeName}}</td>
+                                                        <td class="noWrape"><a
+                                                            [routerLink]="['/billing-claims/', det.uuid]"
+                                                            target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
                                                         <td class="alignRight"><a
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
-                                                                target="_blank">{{det.patientId}}</a></td>
-                                                        <td class="noWrape">{{det.newClaimId}}</td>
+                                                                target="_blank">{{det.patientId}}</a></td>                                                   
                                                         <td><a [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
@@ -482,10 +479,17 @@
                                                         <td *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
                                                         <!-- Claim Type END-->
                                                         <!-- Action Required START-->
-                                                        <td *ngIf="det.statusType == appConstants.BILLING_ID">Billing
-                                                        </td>
-                                                        <td *ngIf="det.statusType == appConstants.RE_BILLING_ID">
-                                                            Re-Billing</td>
+                                                        <ng-container *ngIf="currentTeamId==3;else others">
+                                                            <td>Auditing
+                                                            </td>
+                                                          </ng-container>
+                                                          <ng-template #others>
+                                                            <td *ngIf="det.statusType == appConstants.BILLING_ID">Billing
+                                                            </td>
+                                                            <td *ngIf="det.statusType == appConstants.RE_BILLING_ID">
+                                                                Re-Billing</td>
+                                                         </ng-template>
+                                                       
                                                         <!--Action Required END -->
                                                         <!-- Insurance Name START-->
                                                         <td *ngIf="det.claimId | claimTypeFilter">

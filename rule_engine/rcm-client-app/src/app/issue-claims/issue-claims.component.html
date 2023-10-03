@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12 pt-5">
-            <h6 class="page-heading">Issue Claims</h6>
+            <h6 class="page-heading">Upload Errors</h6>
             <ng-container *ngIf="showMessage.msg">
             <div id="alert" class="alert" [ngClass]="{'alert-success' : showMessage.status == '200', 'alert-danger' : showMessage.status == '400'}">
                 {{showMessage.msg}}
@@ -37,7 +37,7 @@
                                          
                                     </h6>
                                     <div>
-                                        <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="(showIssueClaim ? filteredItems.length==0 : archiveClaimsCount==0)">
+                                        <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="(showIssueClaim ? filteredItems.length==0 : archiveClaimsCount==0) || loader.exportPDFLoader">
                                             <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                                             class="spinner-border text-danger mx-1"></span>
                                         <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="(showIssueClaim ? filteredItems.length==0 : archiveClaimsCount==0)">
@@ -175,7 +175,7 @@
     
       <pagination *ngIf="!showIssueClaim && totalArchivePages > 1" [paginationPages]="paginationPages" (emitToParent)="receiveChildEvent($event)"></pagination> 
     <div class="text-center" *ngIf="showIssueClaim"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button" class="btn btn-success file-button" [disabled]="archiveClaimsData.length==0" (click)="archiveClaims()"><span *ngIf="loader.showLoader" class="spinner-grow spinner-grow-sm" role="status"
-        aria-hidden="true"></span>Submit</button></div>
+        aria-hidden="true"></span>Archive</button></div>
     </div>
     </div>
 </div>

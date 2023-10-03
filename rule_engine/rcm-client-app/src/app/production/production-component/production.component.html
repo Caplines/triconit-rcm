@@ -4,7 +4,7 @@
             <div class="col-lg-12 pt-3">
                 <!-- <h2 class="page-heading">Production</h2> -->
                 <div class="mt-3 text-right">
-                    <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="productionData.length==0">
+                    <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="productionData.length==0 || loader.exportPDFLoader">
                         <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                         class="spinner-border text-danger mx-1"></span>
                         <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="productionData.length==0">

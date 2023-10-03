@@ -98,11 +98,11 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['userByTeamId'], callback)
   }
 
-  fetchArchiveClaims(uuid:any, callback: any){
-    this.getData({}, this.httpUrl['fetchArchiveClaims'] + "/" + uuid , callback)
+  fetchArchiveClaims(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['fetchArchiveClaims'] + "/" + uuid, callback)
   }
-  
-  fetchArchiveClaimsCount(callback: any){
+
+  fetchArchiveClaimsCount(callback: any) {
     this.getData({}, this.httpUrl['fetchArchiveClaimsCount'], callback)
   }
 
@@ -158,8 +158,8 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['claimAttachment'], callback)
   }
 
-  saveArchiveClaims(params:any, callback:any){
-    this.postData(params, this.httpUrl['save-archive-claims'],callback)
+  saveArchiveClaims(params: any, callback: any) {
+    this.postData(params, this.httpUrl['save-archive-claims'], callback)
   }
 
   sortData(data: any, sortBy: any, order: any, sortType: string, teamName?: any) {
@@ -170,7 +170,7 @@ export class ApplicationServiceService extends BaseService {
         } else if (b[sortBy] === null || b[sortBy] === "null") {
           return -1;
         } else {
-          return a[sortBy].localeCompare(b[sortBy],undefined,{numeric: true});
+          return a[sortBy].localeCompare(b[sortBy], undefined, { numeric: true });
         }
       }) : data.sort((a: any, b: any) => {
         if (a[sortBy] === null || a[sortBy] === "null") {
@@ -178,7 +178,7 @@ export class ApplicationServiceService extends BaseService {
         } else if (b[sortBy] === null || b[sortBy] === "null") {
           return -1;
         } else {
-          return b[sortBy].localeCompare(a[sortBy],undefined,{numeric: true});
+          return b[sortBy].localeCompare(a[sortBy], undefined, { numeric: true });
         }
       })
 
@@ -406,24 +406,24 @@ export class ApplicationServiceService extends BaseService {
   fetchGSheet(callback: any) {
     this.getData({}, this.httpUrl['googleSheetLink'], callback);
   }
-  
-  fetchAttachmentCount(claimUuid:any,callback: any) {
-    this.getData({}, this.httpUrl['get-attachments-count']+"/"+claimUuid, callback)
+
+  fetchAttachmentCount(claimUuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-attachments-count'] + "/" + claimUuid, callback)
   }
-  
+
   fetchAllUserClients(callback: any) {
     this.getData({}, this.httpUrl['alluserclients'], callback)
   }
-  
-  fetchClientNamebyUuid(uuid:any,callback: any) {
-    this.getData({}, this.httpUrl['allpendency']+"/"+uuid, callback)
+
+  fetchClientNamebyUuid(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['allpendency'] + "/" + uuid, callback)
   }
 
-  getAttachmentFile(uuid:any,callback: any) {
-    this.getData({}, this.httpUrl['get-attachments']+"/"+uuid, callback);
+  getAttachmentFile(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-attachments'] + "/" + uuid, callback);
   }
 
-  removeAttachmentFile(params:any,callback: any) {
+  removeAttachmentFile(params: any, callback: any) {
     this.postData(params, this.httpUrl['remove-claim-attachment'], callback);
   }
 
@@ -473,13 +473,13 @@ export class ApplicationServiceService extends BaseService {
       callback(header)
     });
   }
-	editUserInfo(params: any, callback: any) {
+  editUserInfo(params: any, callback: any) {
     this.postData(params, this.httpUrl['editUserInfo'], callback);
   }
   editUserRole(params: any, callback: any) {
     this.postData(params, this.httpUrl['editUserRole'], callback);
   }
- 
+
   editUserClient(params: any, callback: any) {
     this.postData(params, this.httpUrl['editUserClient'], callback);
   }

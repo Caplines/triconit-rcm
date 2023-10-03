@@ -1,7 +1,6 @@
 package com.tricon.rcm.dto;
 
 import java.util.List;
-
 import lombok.Data;
 
 @Data
@@ -12,4 +11,5 @@ public class ServiceValidationDataDto {
    List<ClaimRuleVaidationValueDto> rules;
    String esDate;
    String esTime;
+   List<RcmClaimDetailViewDto> details;
 }

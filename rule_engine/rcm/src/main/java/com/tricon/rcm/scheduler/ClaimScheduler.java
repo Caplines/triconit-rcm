@@ -15,7 +15,7 @@ import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ClaimSourceDto;
-import com.tricon.rcm.dto.InsuranceNameTypeDto;
+
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;

@@ -78,25 +78,27 @@ export class BaseService {
     'get-attachments': '/api/get-attachments',
     'remove-claim-attachment': '/api/remove-claim-attachment',
     'get-attachments-count': '/api/get-attachments-count',
-    'download-attachment':'/api/download-attachment-file',
-    'alluserclients':'/api/alluserclients',
+    'download-attachment': '/api/download-attachment-file',
+    'alluserclients': '/api/alluserclients',
     //For PDF CSV
     'listOfClaim': '/api/list-of-claim/d',
-    'issueClaimsPdf':'/api/issue-claim/d',
-    'pendancyPdf':'/api/pendancy/d',
-    'claimDetailsPdf':'/api/claim-details/d',
-    'productionPdf':'/api/production/d',
-    'allPendancy':'/api/allPendancy/d',
-    'tPlan':'/api/tp-link/d',
-    'Ivf':'/api/ivf/d',
+    'issueClaimsPdf': '/api/issue-claim/d',
+    'pendancyPdf': '/api/pendancy/d',
+    'claimDetailsPdf': '/api/claim-details/d',
+    'productionPdf': '/api/production/d',
+    'allPendancy': '/api/allPendancy/d',
+    'tPlan': '/api/tp-link/d',
+    'Ivf': '/api/ivf/d',
     'othersTeam': '/api/other-teams-work/d',
     //
-    'editUserInfo':'/edit-user-info',
-    'editUserRole':'/edit-user-role',
-    'editUserClient':'/edit-user-client',
-    'editUserTeam':'/edit-user-team',
-    'existingTLInfo':'/find-tl-by-client',
-    'userClientsWithOffices':'/get-clients-with-offices'
+    'editUserInfo': '/edit-user-info',
+    'editUserRole': '/edit-user-role',
+    'editUserClient': '/edit-user-client',
+    'editUserTeam': '/edit-user-team',
+    'existingTLInfo': '/find-tl-by-client',
+    'userClientsWithOffices': '/get-clients-with-offices',
+    'archiveclaim': '/api/archiveunsub',
+    'unarchiveclaim': '/api/unarchivesub'
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

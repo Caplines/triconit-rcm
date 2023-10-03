@@ -144,14 +144,17 @@ exportToCsv() {
 }
 
 downloadPdf(){
+  this.loader.exportPDFLoader = true;
   if(this.productionData.length!=0){
   let data = {"fileName":"Production","data": this.productionData,"clientName": this.clientName};
   this. appService.productionPdfDownload(data,"pdf",(res: any) => {
     if (res.status === 200){
       console.log(res.body);
       this.downloadService.saveBolbData(res.body, "Production.pdf");
+      this.loader.exportPDFLoader = false;
     }else{
       console.log("something went wrong");
+      this.loader.exportPDFLoader = false;
     }
   })
 }

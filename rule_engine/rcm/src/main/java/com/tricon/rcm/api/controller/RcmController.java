@@ -36,6 +36,7 @@ import com.tricon.rcm.dto.ClaimRuleRemarkDto;
 import com.tricon.rcm.dto.ClaimRuleVaidationValueDto;
 import com.tricon.rcm.dto.ClaimRuleValidationsDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
+import com.tricon.rcm.dto.ClaimStatusUpdate;
 import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.ClaimSubmittedDto;
@@ -256,9 +257,9 @@ public class RcmController extends BaseHeaderController{
     	//Only for Smile point
     	PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
-		
+		Object object= claimServiceImpl.readServiceValidationFromGSheet(null,claimUuid, partialHeader,false);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.readServiceValidationFromGSheet(null,claimUuid, partialHeader,false)));
+				object));
 	}
 	
    
@@ -630,6 +631,42 @@ public class RcmController extends BaseHeaderController{
 			return null;
 		try {
 			response = claimServiceImpl.findAssociatedCompanyWithNameByUserUuid(partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@ApiOperation(value = "Api for updating status of Claim to Archive", response = String.class, responseContainer = "Map")
+	@PostMapping("api/archiveunsub")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<Object> archiveActiveClaim(@RequestBody ClaimStatusUpdate dto,Model model) {
+		String response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return null;
+		try {
+			response = claimServiceImpl.archiveActiveClaim(dto,partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@ApiOperation(value = "Api for updating status of Claim to UNArchive", response = String.class, responseContainer = "Map")
+	@PostMapping("api/unarchivesub")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<Object> unArchiveClaim(@RequestBody ClaimStatusUpdate dto,Model model) {
+		String response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return null;
+		try {
+			response = claimServiceImpl.UnArchiveActiveClaim(dto,partialHeader);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

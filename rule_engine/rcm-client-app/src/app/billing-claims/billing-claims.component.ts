@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import {
   ClaimRcmDataModel, ClaimEditModel, ServiceLevelCodeModel, SubmissionDetailModel,
   ClaimRuleModel, ClaimRuleRemarkModel, RuleEngineValModel, ServiceLevelCodeDataModel,
-  ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem
+  ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem, ClaimDetailModel
 } from '../models/claim-rcm-data-model';
 
 import { Title } from '@angular/platform-browser';
@@ -14,6 +14,7 @@ import { ApplicationServiceService } from '../service/application-service.servic
 import { AppConstants } from '../constants/app.constants';
 import { ClaimService } from '../service/claim.service';
 import { ClaimAssignToTeamModel } from '../models/claim_assign_to_team';
+import { ClaimUpdateStatusModel } from '../models/claim.status.model';
 import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
 import Utils from '../util/utils';
 import { DownLoadService } from '../service/download.service';
@@ -30,7 +31,10 @@ export class BillingClaimsComponent {
 
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertAssign: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
+  alertArch: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
+  alertPreferrsub: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   claimRcm: ClaimRcmDataModel;
+  claimStatus: ClaimUpdateStatusModel;
   claimARulesPullDataModel: ClaimRulesPullDataModel = {};
   claimEditModel: ClaimEditModel;
   claimServiceLevelModel: ServiceLevelCodeModel;
@@ -60,6 +64,7 @@ export class BillingClaimsComponent {
   //ivfData:any=[];
   updatedIvfId: any;
   updatedTpId: any;
+  reason: string = "";
   countM300: number = 1;
   relatedTo_300 = true;
   actionButtons = false;
@@ -67,10 +72,11 @@ export class BillingClaimsComponent {
   assignType: string = '';
   modelElement: any = { 'modal': '', 'span': '' }
   attachmentConfig: any = { 'showAttachment': false, 'attachmentCount': 0 };
-
+  overidePreferredSubmission: boolean = false;
   selectedFilesMap: any = new Map();
   removedFilesMap: any = new Map();
-
+  serialNoArray = new Map<string, number>();
+  readonly noProviderNoteCodes: Array<string> = ["D0120", "D0150", "D0220", "D0230", "D1110", "D1208", "D0210"];
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
     private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService,
@@ -183,7 +189,7 @@ export class BillingClaimsComponent {
     ths.ruleEngineReport.forEach(x => {
 
       let c = new ClaimRuleRemarkModelS(x.remark, null, null, null, Number(x.ruleId), "RuleEngine");
-      if (x.remark != null && x.remark.trim() != '') ths.claimEditModel.ruleRemarkDto.push(c);
+      if (x.remark != null) ths.claimEditModel.ruleRemarkDto.push(c);
     });
 
     if (type === 'latter') {
@@ -202,6 +208,13 @@ export class BillingClaimsComponent {
 
       let valid = ths.validateData();
       if (valid) {
+
+        let prefer = this.checkForValidPreferredSbmisssion();
+
+        if (!prefer && !this.overidePreferredSubmission) {
+          ths.openPrefferedModal();
+          return;
+        }
         ths.claimEditModel.submission = true;
         ths.inSave = true;
         ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
@@ -304,8 +317,7 @@ export class BillingClaimsComponent {
         ths.addErrorDisplay(document.getElementById("CL_P_F_" + x.ruleId));
         valid = false;
       }
-
-      if (x.ruleId == 300) {
+      if (x.ruleId == 300 && !ths.isProviderNotesNeeded) {
         if (x.messageType === 2) {
           ths.claimRcm.claimNotes.forEach(no => {
             if (no.value == null || no.value.trim() === '') {
@@ -438,7 +450,8 @@ export class BillingClaimsComponent {
         ths.addErrorDisplay(document.getElementById("serviceCodeValidationsM"));
       }
     }
-    if (this.smilePoint && !this.isInternalAudit) {
+    if (document.getElementById("claimValidationsRE") != null) ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
+    if (this.smilePoint && ths.isRuleEnginevalidationNeeded()) {
 
       ths.ruleEngineReport.forEach(x => {
 
@@ -448,17 +461,8 @@ export class BillingClaimsComponent {
         }
       });
 
-      if (ths.ruleEngineReport.length == 0) {
-        if (!this.isInternalAudit) {
-          //For now Disable if length==0
-          //ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
 
-          //valid = false;//Deepak
-        }
 
-      } else {
-        //ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
-      }
     }
     //valid = false;
     console.log("valid", valid);
@@ -593,6 +597,7 @@ export class BillingClaimsComponent {
       if (rule.ruleId == 300) {
         rule.srNo = ctr + 1;
         ctr = ctr + 1;
+        ths.serialNoArray.set("300", rule.srNo);
       }
     });
 
@@ -684,7 +689,8 @@ export class BillingClaimsComponent {
           ths.claimRcm.assignmentOfBenefits = res.data.assignmentOfBenefits;
           ths.claimRcm.claimType = res.data.claimType;
           ths.claimServiceLevelModel = res.data.serviceValidationDataDto;
-
+          ths.claimRcm.preferredModeOfSubmission = res.data.preferredModeOfSubmission;
+          ths.overidePreferredSubmission = false;
         }
         ths.getRulesClaimdata();
         setTimeout(() => {
@@ -809,6 +815,9 @@ export class BillingClaimsComponent {
         this.alert.alertMsg = "Claim Assigned To Other Team Successfully!!";
         this.claimRcm.allowEdit = false;
         window.location.reload();
+      } else if (this.alert.alertMsg === 'TL') {
+        this.alert.alertMsg = "Claim Assigned To TL For Preview!!";
+        this.claimRcm.allowEdit = false;
       } else if (this.alert.alertMsg === 'TL') {
         this.alert.alertMsg = "Claim Assigned To TL For Preview!!";
         this.claimRcm.allowEdit = false;
@@ -1048,7 +1057,7 @@ export class BillingClaimsComponent {
     return v.replace(/,/g, w);
   }
 
-  enableDisable300Sub(cond: boolean) {
+  enableDisable300Sub(cond: boolean, srNo: number) {
     let subsection: any = document.querySelectorAll(".relatedTo_300");
     if (subsection.length > 0) {
       if (!cond) {
@@ -1061,13 +1070,16 @@ export class BillingClaimsComponent {
     }
   }
   downloadPdf() {
+    this.loader.exportPDFLoader = true;
     let data = { "fileName": "Claim_Details", "data": [this.claimRcm], "teamId": this.selectedTeam, "clientName": this.clientName, "otherTeamsRemark": this.otherTeamRemarks, "claimRules": this.claimRules, "serviceLevelCodeManual": this.claimServiceLevelModel, "ruleEngineReport": this.ruleEngineReport, "claimSubmissionDto": this.submissionDto, "relatedTo_300": this.relatedTo_300, "countA": this.countA, "countAS": this.countAS, "count": this.count };
     this.appService.claimDetailsPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
         console.log(res.body);
         this.downloadService.saveBolbData(res.body, "Claim_Details.pdf");
+        this.loader.exportPDFLoader = false;
       } else {
         console.log("something went wrong");
+        this.loader.exportPDFLoader = false;
       }
     })
   }
@@ -1165,4 +1177,166 @@ export class BillingClaimsComponent {
     this.selectedFilesMap = new Map();
     this.removedFilesMap = new Map();
   }
-}
+
+  openArchivedModal() {
+    this.reason = "";
+    this.modelElement.modal = document.getElementById("archive-modal");
+    this.modelElement.span = document.getElementsByClassName("close")[0];
+    this.modelElement.modal.style.display = "block";
+  }
+
+  openUnArchivedModal() {
+    this.reason = "";
+    this.modelElement.modal = document.getElementById("unarchive-modal");
+    this.modelElement.span = document.getElementsByClassName("close")[0];
+    this.modelElement.modal.style.display = "block";
+  }
+
+  closeArchPopup(type: string) {
+    let popup: any = document.getElementById(type);
+    popup.style.display = 'none';
+
+  }
+
+  markArchived() {
+    let ths = this;
+    ths.actionButtons = false;
+    ths.claimStatus = new ClaimUpdateStatusModel();
+    ths.claimStatus.reason = ths.reason;
+    ths.claimStatus.claimUuid = ths.claimUUid;
+    ths.claimService.archiveclaim(ths.claimStatus, (res: any) => {
+      ths.actionButtons = true;
+      this.alertArch.showAlertPopup = true;
+      if (res.status == 200) {
+
+        this.alertArch.isError = false;
+        if (res.data === 'Claim Archived') {
+          this.alertArch.alertMsg = "Claim Archived!!";
+          setTimeout(() => {
+            this.alertArch.showAlertPopup = false;
+            window.location.reload();
+          }, 5000);
+
+        } else {
+          this.alertArch.alertMsg = res.data;
+          this.alertArch.isError = true;
+        }
+
+      } else {
+        this.alertArch.isError = true;
+      }
+    });
+  }
+
+  markUnArchived() {
+    let ths = this;
+    ths.actionButtons = false;
+    ths.claimStatus = new ClaimUpdateStatusModel();
+    ths.claimStatus.reason = ths.reason;
+    ths.claimStatus.claimUuid = ths.claimUUid;
+    ths.claimService.unArchiveclaim(ths.claimStatus, (res: any) => {
+      ths.actionButtons = true;
+      this.alertArch.showAlertPopup = true;
+      if (res.status == 200) {
+
+        this.alertArch.isError = false;
+        if (res.data === 'Claim UnArchived') {
+          this.alertArch.alertMsg = "Claim UnArchived!!";
+          setTimeout(() => {
+            this.alertArch.showAlertPopup = false;
+            window.location.reload();
+          }, 5000);
+
+        } else {
+          this.alertArch.alertMsg = res.data;
+          this.alertArch.isError = true;
+        }
+
+      } else {
+        this.alertArch.isError = true;
+      }
+    });
+  }
+
+  checkForValidPreferredSbmisssion(): boolean {
+    let ths = this;
+    if (this.overidePreferredSubmission) return true;
+    //ths.claimRcm.preferredModeOfSubmission = "RemoteLite";//For testing only
+    let preferredModeOfSubmission = ths.claimRcm.preferredModeOfSubmission;
+
+    if (preferredModeOfSubmission === null) preferredModeOfSubmission = "";
+    if (preferredModeOfSubmission === '') {
+      return true;
+    }
+    if (preferredModeOfSubmission.toLowerCase() != ths.submissionDto.channel.toLowerCase())
+      return false;
+    return true
+  }
+
+  markValidPreffered(choice: string) {
+    this.overidePreferredSubmission = false;
+    if (choice === 'yes') {
+      this.overidePreferredSubmission = true;
+      this.saveClaim('submit');
+    }
+    this.closeArchPopup('check-preferredModeOfSubmission-modal');
+  }
+
+  openPrefferedModal() {
+    this.modelElement.modal = document.getElementById("check-preferredModeOfSubmission-modal");
+    this.modelElement.span = document.getElementsByClassName("close")[0];
+    this.modelElement.modal.style.display = "block";
+  }
+
+  isProviderNotesNeeded(): boolean {
+    //
+    //debugger;
+    let codedFound = false;
+    if (this.claimServiceLevelModel == undefined) {
+      return !codedFound;
+    }
+    let claimCodes: Array<ClaimDetailModel> = this.claimServiceLevelModel.details;
+    claimCodes.forEach((c: ClaimDetailModel) => {
+      //console.log(c.serviceCode);
+      const cd = this.noProviderNoteCodes.find(elem => elem === c.serviceCode);
+      if (cd != undefined) codedFound = true;
+
+    });
+    return !codedFound;
+  }
+
+  isRuleEnginevalidationNeeded() {
+    let req = true;
+    let insType = "";
+    let ths = this;
+    //if (ths.ruleEngineReport.length == 0){
+    //  req=false;
+    //} else
+    if (this.isInternalAudit) {
+      //For now Disable if length==0
+      req = false;
+    } else {
+      if (ths.claimRcm.primary) {
+        insType = ths.claimRcm.primaryInsType;
+      } else {
+        insType = ths.claimRcm.secondaryInsType;
+      }
+      if (insType === 'HMO') req = false;
+
+    }
+    return req;
+
+  }
+
+
+  isORMNotesNeeded(): boolean {
+    let ths = this;
+    let name: string = "";
+    if (ths.claimRcm.primary) {
+      name = ths.claimRcm.primInsurance;
+    } else {
+      name = ths.claimRcm.secInsurance;
+    }
+    return name.toLowerCase().includes("medicaid");
+  }
+}    

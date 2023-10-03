@@ -232,5 +232,14 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "attachment_count",columnDefinition = "integer default 0")
 	private int attachmentCount;
+	
+	//0- Valid 1 = Archive
+	@Column(name = "current_state",columnDefinition = "integer default 0")
+	private int currentState;
+	
+	@Column(name = "preferred_mode_of_submission")
+	private String preferredModeOfSubmission;
+	//@Column(name = "insurance_code")
+	//private String insuranceCode;
 
 }

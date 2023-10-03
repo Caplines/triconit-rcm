@@ -185,6 +185,17 @@ public class ConnectAndReadSheets {
 				dto.setInsuranceCode(obj.get(++x));
 			} catch (Exception m) {
 			}
+			 if (dto.getInsuranceCode()==null){
+            	 dto.setInsuranceCode("");
+             }
+             try {
+				
+				dto.setPreferredModeOfSubmission(obj.get(++x));
+			} catch (Exception m) {
+			}
+             if (dto.getPreferredModeOfSubmission()==null){
+            	 dto.setPreferredModeOfSubmission("");
+             }
 			list.add(dto);
 		}
 		logger.info("readInsuranceMappingSheetFull");

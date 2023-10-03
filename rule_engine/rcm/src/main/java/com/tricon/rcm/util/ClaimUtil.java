@@ -42,7 +42,7 @@ public class ClaimUtil {
     */
 	public static RcmClaims createClaimFromESData(RcmClaims claims, RcmOffice off, ClaimsFromRuleEngine re,
 			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,String claimSuffix,
-			RcmInsuranceType rcmInsuranceType,String timelyLmt,ClaimTypeEnum claimTypeEnum) {
+			RcmInsuranceType rcmInsuranceType,String timelyLmt,String preferredModeOfSubmission,ClaimTypeEnum claimTypeEnum) {
 
 		claims.setOffice(off);
 		claims.setAttachmentCount(0);
@@ -121,7 +121,7 @@ public class ClaimUtil {
 	
 	public static RcmClaims createClaimFromSheetData(RcmClaims claims, RcmOffice off, ClaimFromSheet re,
 			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,String claimSuffix,
-			RcmInsuranceType rcmInsuranceType,String timelyLmt,ClaimTypeEnum claimTypeEnum) {
+			RcmInsuranceType rcmInsuranceType,String timelyLmt,String preferredModeOfSubmission,ClaimTypeEnum claimTypeEnum) {
 
 		claims.setOffice(off);
 		claims.setAttachmentCount(0);
@@ -130,7 +130,7 @@ public class ClaimUtil {
 		if (user!=null) claims.setCreatedBy(user);
 		claims.setCurrentTeamId(team);
 		claims.setFirstWorkedTeamId(team);
-		
+		claims.setPreferredModeOfSubmission(preferredModeOfSubmission);
 		
 		claims.setPatientId(re.getAccountId());
 		claims.setPatientName(re.getPatientName());
@@ -264,8 +264,9 @@ public class ClaimUtil {
 		return assignment;
 	}
 	
-	public static String getTimelyLimitFromSheetList(List<TimelyFilingLimitDto> sheetData, String name) {
-		String insuranceType = null;
+	/*
+	public static TimelyFilingLimitDto getTimelyLimitFromSheetListByName(List<TimelyFilingLimitDto> sheetData, String name) {
+		TimelyFilingLimitDto timelyFilingLimitDto = null;
 		if (sheetData == null) {
 			logger.error("Data From Mapping sheet not found");
 			return null;
@@ -273,14 +274,33 @@ public class ClaimUtil {
 		Collection<TimelyFilingLimitDto> ruleGen = Collections2.filter(sheetData,
 				sh -> sh.getInsuranceName().trim().equalsIgnoreCase(name));
 		for (TimelyFilingLimitDto gs : ruleGen) {
-			insuranceType = gs.getTimelyFilingLimit();
+			timelyFilingLimitDto = gs;
 			break;
 		}
-		if (insuranceType == null) {
+		if (timelyFilingLimitDto == null) {
 			logger.error(name + " TimelyLimit Not found in  Google sheet");
 
 		}
-		return insuranceType;
+		return timelyFilingLimitDto;
+	}
+	 */
+	public static TimelyFilingLimitDto getTimelyLimitFromSheetListByCode(List<TimelyFilingLimitDto> sheetData, String code) {
+		TimelyFilingLimitDto timelyFilingLimitDto = null;
+		if (sheetData == null) {
+			logger.error("Data From Mapping sheet not found");
+			return null;
+		}
+		Collection<TimelyFilingLimitDto> ruleGen = Collections2.filter(sheetData,
+				sh -> sh.getInsuranceCode().trim().equalsIgnoreCase(code));
+		for (TimelyFilingLimitDto gs : ruleGen) {
+			timelyFilingLimitDto = gs;
+			break;
+		}
+		if (timelyFilingLimitDto == null) {
+			logger.error(code + " TimelyLimit Not found in  Google sheet");
+
+		}
+		return timelyFilingLimitDto;
 	}
 	
 	public static  RcmTeam filterTeamByNameId(List<RcmTeam> rcmTeamList, String teamNameId) {

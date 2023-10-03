@@ -11,4 +11,5 @@ public class AutoRunClaimReponseDto {
 	String claimType;
 	String assignmentOfBenefits;
 	ServiceValidationDataDto serviceValidationDataDto;
+	String preferredModeOfSubmission;
 }
