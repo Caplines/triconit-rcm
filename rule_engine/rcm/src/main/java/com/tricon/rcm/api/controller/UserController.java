@@ -191,7 +191,7 @@ public class UserController extends BaseHeaderController {
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
 		try {
-			response = userService.getIssueClaimsCounts(partialHeader.getCompany(),false);
+			response = userService.getIssueClaimsCounts(partialHeader.getCompany());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -229,7 +229,7 @@ public class UserController extends BaseHeaderController {
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
 		try {
-			response = userService.getIssueClaimsCounts(partialHeader.getCompany(),true);
+			response = userService.getArchiveClaimsCounts(partialHeader.getCompany());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

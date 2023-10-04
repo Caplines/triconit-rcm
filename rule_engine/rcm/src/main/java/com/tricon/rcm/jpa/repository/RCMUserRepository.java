@@ -123,6 +123,10 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	List<TreatmentPlanLinkDto> findTreatmentPlanLinkData(@Param("claimUuid") String claimUuid);
 	
 	@Query(value = "select count(cl.issue) from rcm_issue_claims cl "
-			+ "left join office off on  off.uuid=cl.office_id  where off.company_id=:clientUuid and cl.resolved is false and is_archive =:archiveStatus ", nativeQuery = true)
-	int findCountsOfIssueClaims(@Param("clientUuid") String clientUuid,@Param("archiveStatus")boolean archiveStatus);
+			+ "left join office off on  off.uuid=cl.office_id  where off.company_id=:clientUuid and cl.resolved is false ", nativeQuery = true)
+	int findCountsOfIssueClaims(@Param("clientUuid") String clientUuid);
+	
+	@Query(value = "select count(cl.issue) from rcm_issue_claims cl "
+			+ "left join office off on  off.uuid=cl.office_id  where off.company_id=:clientUuid and cl.resolved is false and is_archive is true ", nativeQuery = true)
+	int findCountsOfArchiveClaims(@Param("clientUuid") String clientUuid);
 }

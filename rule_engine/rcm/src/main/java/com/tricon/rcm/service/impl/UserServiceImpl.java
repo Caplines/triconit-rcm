@@ -157,10 +157,10 @@ public class UserServiceImpl {
 		return null;
 	}
 
-	public int getIssueClaimsCounts(RcmCompany company,boolean isArchive) throws Exception {
+	public int getIssueClaimsCounts(RcmCompany company) throws Exception {
 		int counts = 0;
 		if (company != null) {
-			counts = userRepo.findCountsOfIssueClaims(company.getUuid(),isArchive);
+			counts = userRepo.findCountsOfIssueClaims(company.getUuid());
 			if (counts > 0)
 				return counts;
 			else
@@ -174,5 +174,17 @@ public class UserServiceImpl {
 			return mappingTableRepo.findGsheetLinkByClientuuid(company.getUuid());
 		}
 		return null;
+	}
+	
+	public int getArchiveClaimsCounts(RcmCompany company) throws Exception {
+		int counts = 0;
+		if (company != null) {
+			counts = userRepo.findCountsOfArchiveClaims(company.getUuid());
+			if (counts > 0)
+				return counts;
+			else
+				return 0;
+		}
+		return 0;
 	}
 }

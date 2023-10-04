@@ -3569,12 +3569,11 @@ public class ClaimServiceImpl {
 	public List<RcmIssuClaimPaginationDto> getArchiveClaimsByPagination(int pageNumber, String companyId)
 			throws Exception {
 		List<RcmIssuClaimPaginationDto> paginationData = null;
-		boolean isArchive = true;
 		RcmIssuClaimPaginationDto paginationDto = null;
 		List<com.tricon.rcm.dto.IssueClaimDto> archiveData = null;
 		int totalElements = 0;
 		int offset = pageNumber * totalRecordsperPage;
-		totalElements = userRepo.findCountsOfIssueClaims(companyId, isArchive);
+		totalElements = userRepo.findCountsOfArchiveClaims(companyId);
 		if (totalElements == 0) {
 			paginationData = new ArrayList<>();
 			paginationDto = new RcmIssuClaimPaginationDto();

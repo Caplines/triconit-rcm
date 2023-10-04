@@ -637,7 +637,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 	@Query(value = "select cl.id as Id,cl.is_archive as IsArchive,cl.claim_id claimId,cl.issue,cl.source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "
 			+ "left join office off on off.uuid=cl.office_id "
-			+ "where off.company_id=:companyId and cl.resolved is false and cl.is_archive is true order by cl.id limit :offset, :limit", nativeQuery = true)
+			+ "where off.company_id=:companyId and cl.resolved is false and cl.is_archive is true order by cl.id desc limit :offset, :limit", nativeQuery = true)
 	List<IssueClaimDto> archiveClaimsByPagination(@Param("companyId") String companyId,@Param("offset")int offSet,@Param("limit")int limit); //and off.active is true
   
 	@Modifying
