@@ -29,6 +29,8 @@ import com.tricon.rcm.dto.RcmArchiveClaimsDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
+import com.tricon.rcm.dto.UnArchiveClaimDto;
+import com.tricon.rcm.dto.UnArchivedResponseDto;
 import com.tricon.rcm.dto.ClaimNotesDto;
 import com.tricon.rcm.dto.ClaimProductionLogDto;
 import com.tricon.rcm.dto.ClaimRemarkDto;
@@ -582,7 +584,8 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
-		if (dto.getArchiveClaims() == null || dto.getArchiveClaims().stream().anyMatch(x -> x.getId() == null)) {
+		if (dto.getArchiveClaims() == null || dto.getArchiveClaims().stream().anyMatch(x -> x.getId() == null)
+				||dto.getArchiveClaims().stream().anyMatch(x -> x.getArchiveStatus() == null)) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
@@ -675,4 +678,27 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
+	@PostMapping("api/save-unarchive-claims")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<?> unArchiveClaims(@RequestBody UnArchiveClaimDto dto, Model model) {
+		UnArchivedResponseDto response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+
+		if (dto.getId() == null || dto.getClaimId() == null || dto.getClaimId().isEmpty()) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		try {
+			response = claimServiceImpl.saveUnArchivedClaims(dto, partialHeader.getJwtUser());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+
 }

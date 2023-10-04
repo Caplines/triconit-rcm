@@ -494,4 +494,8 @@ export class ApplicationServiceService extends BaseService {
   fetchClientsByUser(callback: any) {
     this.getData({}, this.httpUrl['userClientsWithOffices'], callback)
   }
+
+  saveUnarchiveClaims(params: any,callback: any) {
+    this.postData(params, this.httpUrl['save-unarchive-claims'], callback)
+  }
 }

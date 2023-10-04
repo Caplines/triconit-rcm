@@ -12,4 +12,5 @@ public class IssueClaimPdfDto {
 	private String createdDate;
 	private String source;
 	private String issue;
+	private String newClaimId;
 }

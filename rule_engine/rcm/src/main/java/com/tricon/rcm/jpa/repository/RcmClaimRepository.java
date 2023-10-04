@@ -649,5 +649,10 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  where cmp.uuid=:companyId and claim_id=:claimId")
 	String fetchClaimIdByClaimIdAnCompany(@Param("claimId")  String claimId,@Param("companyId")  String companyId) ;
+	
+	@Modifying
+	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive=false,claim_id=:claimId,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id =:id")
+	int updateIssueClaimsUnArchiveStatus(@Param("id")int id,@Param("updatedBy")RcmUser updatedBy,@Param("claimId")String claimId);
+	
 
 }

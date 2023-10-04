@@ -137,6 +137,8 @@
                                                         </div>
                                                         
                                                     </th>
+                                                    <th colspan="6" *ngIf="(loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)">UnArchive  
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -160,10 +162,11 @@
                                                <ng-container *ngIf="!showIssueClaim">
                                                    <tr *ngFor="let aCl of filtertedArchiveItems;" >
                                                        <td colspan="6">{{aCl.officeName}}</td>
-                                                       <td colspan="6">{{aCl.claimId}}</td>
+                                                       <td colspan="6">{{aCl.newClaimId}}</td>
                                                        <td colspan="6">{{aCl.createdDate | date:'MMM dd, YYYY HH:mm:ss'}}</td>
                                                        <td colspan="6">{{aCl.issue}}</td>
                                                        <td colspan="6">{{aCl.source}}</td>
+                                                       <td colspan="6"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button" class="btn btn-danger file-button" (click)="UnarchiveClaims(aCl)">UnArchive</button></td>
                                                     </tr>
                                                 </ng-container>
                                             </tbody>

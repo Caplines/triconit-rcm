@@ -115,6 +115,8 @@ import com.tricon.rcm.dto.RuleRemarkDto;
 import com.tricon.rcm.dto.ServiceValidationDataDto;
 import com.tricon.rcm.dto.TPValidationResponseDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
+import com.tricon.rcm.dto.UnArchiveClaimDto;
+import com.tricon.rcm.dto.UnArchivedResponseDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDateDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
@@ -3605,18 +3607,21 @@ public class ClaimServiceImpl {
 	public String saveArchiveClaims(RcmArchiveClaimsDto dto, JwtUser jwtUser) throws Exception {
 		String msg = null;
 		RcmUser updatedBy = null;
-		List<Integer> archiveIdTrue = dto.getArchiveClaims().stream().filter(x -> x.isArchiveStatus() == true)
+		List<Integer> archiveIdTrue = dto.getArchiveClaims().stream().filter(x -> x.getArchiveStatus()== true)
 				.map(ArchiveClaimsPayloadDto::getId).collect(Collectors.toList());
 		if (!archiveIdTrue.isEmpty()) {
 			updatedBy = userRepo.findByEmail(jwtUser.getUsername());
-			int status = rcmClaimRepository.updateIssueClaimsArchiveStatus(archiveIdTrue, true, updatedBy);
+			int status = rcmClaimRepository.updateIssueClaimsArchiveStatus(archiveIdTrue,true, updatedBy);
 			if (status > 0) {
 				List<RcmIssueClaims> issueClaimData = issueClaimRepo.findByIdIn(archiveIdTrue);
 				for (RcmIssueClaims c : issueClaimData) {
+					if(c.getClaimId().startsWith(c.getId()+Constants.HYPHEN+Constants.ARCHIVE_PREFIX)){
+						continue;
+					}
 					c.setClaimId(c.getId() + Constants.HYPHEN + Constants.ARCHIVE_PREFIX.concat(c.getClaimId()));
 					issueClaimRepo.save(c);
 				}
-				msg = (status > 0) ? MessageConstants.RECORDS_UPDATE : null;
+				msg = (status > 0) ? MessageConstants.ARCHIVE_CLAIM_SUBMITTED : null;
 			}
 		}
 
@@ -3699,4 +3704,34 @@ public class ClaimServiceImpl {
     }
 	
 	
+
+	@Transactional(rollbackFor = Exception.class)
+	public UnArchivedResponseDto saveUnArchivedClaims(UnArchiveClaimDto dto, JwtUser jwtUser) throws Exception {
+		UnArchivedResponseDto response = null;
+		RcmUser updatedBy = null;
+		updatedBy = userRepo.findByEmail(jwtUser.getUsername());
+		String[] removePrefix = dto.getClaimId().split(Constants.ARCHIVE_PREFIX);
+		if (removePrefix.length < 2) {
+			return UnArchivedResponseDto.builder().unArchiveStatus(false).build();
+		}
+
+		Optional<RcmIssueClaims> archivedClaim = rcmIssueClaimsRepo.findById(dto.getId());
+		if (!archivedClaim.isPresent())
+			return UnArchivedResponseDto.builder().unArchiveStatus(false).build();
+
+		if (archivedClaim.isPresent() && !archivedClaim.get().isArchive())
+			return UnArchivedResponseDto.builder().message("Already UNARCHIVED").unArchiveStatus(false).build();
+
+		String existingClaim = rcmIssueClaimsRepo.fetchClaimByClaimIdAndCompany(removePrefix[1],
+				archivedClaim.get().getOffice().getCompany().getUuid());
+		if (existingClaim != null) {
+			return UnArchivedResponseDto.builder().message(MessageConstants.CLAIM_NOT_UNARCHIVED).unArchiveStatus(false).build();
+		}
+		int status = rcmClaimRepository.updateIssueClaimsUnArchiveStatus(dto.getId(), updatedBy, removePrefix[1]);
+		response = status > 0
+				? UnArchivedResponseDto.builder().message(MessageConstants.UNARCHIVE_CLAIM_SUBMITTED).unArchiveStatus(true)
+						.build()
+				: null;
+		return response;
+	}
 }

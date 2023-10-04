@@ -98,7 +98,8 @@ export class BaseService {
     'existingTLInfo': '/find-tl-by-client',
     'userClientsWithOffices': '/get-clients-with-offices',
     'archiveclaim': '/api/archiveunsub',
-    'unarchiveclaim': '/api/unarchivesub'
+    'unarchiveclaim': '/api/unarchivesub',
+    'save-unarchive-claims': '/api/save-unarchive-claims',
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

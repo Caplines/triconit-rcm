@@ -260,7 +260,7 @@ export class IssueClaimComponent {
     excelData = excelData.map((e: any) => {
       return {
         "Office": e.officeName,
-        "Claim ID": e.claimId,
+        "Claim ID": this.showIssueClaim ? e.claimId:e.newClaimId,
         "Upload Date": e.createdDate,
         'Issue due to which Claim could not be Uploaded': e.issue,
         "Source": e.source,
@@ -380,7 +380,7 @@ export class IssueClaimComponent {
         this.filtertedArchiveItems = res?.data[0].data;
         this.filtertedArchiveItems.forEach((e:any)=>{
           if(e.claimId.includes(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`)){
-            e.claimId = e.claimId.replace(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`,'')
+            e.newClaimId = e.claimId.replace(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`,'')
          }
         })
         this.totalArchivePages = res?.data[0].totalPages;
@@ -457,4 +457,36 @@ export class IssueClaimComponent {
 
   }
 
+  UnarchiveClaims(data: any) {
+    let param = {
+      "id": data.id,
+      "claimId": data.claimId
+    }
+    this.appSer.saveUnarchiveClaims(param, (res: any) => {
+      if (res.status == 200 && res.unArchiveStatus) {
+        this.showMessage = { 'msg': res.data.message, 'status': res.status };
+          this.loader.showLoader = false;
+          this.showHideMessage();
+          this.filtertedArchiveItems = this.removeUnArchivedItem(data);
+          this.getArchiveClaimsCount();
+          this.issueClaim();
+      }
+      else if(res.status == 200 && !res.unArchiveStatus) {
+        this.showMessage = { 'msg': res.data.message, 'status': res.status };
+        this.loader.showLoader = false;
+        this.showHideMessage();
+      }
+      else {
+        this.showMessage = { 'msg': res.message, 'status': res.status };
+        this.loader.showLoader = false;
+        this.showHideMessage();
+      }
+    })
+  }
+
+  
+  removeUnArchivedItem(data: any) {
+    return this.filtertedArchiveItems.filter((item: any) => item.id !== data.id);
+
+  }
 }
