@@ -22,6 +22,7 @@ import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
+import com.tricon.rcm.dto.UploadErrorCountsDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.dto.customquery.TreatmentPlanLinkDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -157,16 +158,19 @@ public class UserServiceImpl {
 		return null;
 	}
 
-	public int getIssueClaimsCounts(RcmCompany company) throws Exception {
-		int counts = 0;
+	public UploadErrorCountsDto getCountsOfUploadErrors(RcmCompany company) throws Exception {
+		UploadErrorCountsDto dto = null;
+		int countsOfIssue = 0;
+		int countsOfArchive = 0;
 		if (company != null) {
-			counts = userRepo.findCountsOfIssueClaims(company.getUuid());
-			if (counts > 0)
-				return counts;
-			else
-				return 0;
+			dto = new UploadErrorCountsDto();
+			countsOfIssue = userRepo.findCountsOfIssueClaims(company.getUuid());
+			countsOfArchive = this.getArchiveClaimsCounts(company);
+			dto.setIssueCount(countsOfIssue);
+			dto.setArchiveCount(countsOfArchive);
+			return dto;
 		}
-		return 0;
+		return dto;
 	}
 
 	public List<RcmCompanyWithGsheetDto> getGoogleSheetLink(RcmCompany company) throws Exception {

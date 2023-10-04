@@ -29,6 +29,7 @@ import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UpdatePasswordDto;
+import com.tricon.rcm.dto.UploadErrorCountsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.dto.customquery.TreatmentPlanLinkDto;
@@ -183,15 +184,15 @@ public class UserController extends BaseHeaderController {
 	
 	@RequestMapping(value = "/issue-claim-counts", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
-	public ResponseEntity<?> issueClaimCounts(Model model) {
-		int response = 0;
+	public ResponseEntity<?> uploadErrorsCounts(Model model) {
+		UploadErrorCountsDto response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
 		try {
-			response = userService.getIssueClaimsCounts(partialHeader.getCompany());
+			response = userService.getCountsOfUploadErrors(partialHeader.getCompany());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
