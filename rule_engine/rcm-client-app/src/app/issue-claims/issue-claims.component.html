@@ -60,8 +60,7 @@
                                                                                 [checked]="isFilterAllSelected.officeName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear
-                                                                            All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.officeName=false;"
                                                                             type="button" class="close"
@@ -89,8 +88,7 @@
                                                         </div>
                                                     </th>
                                                     <th colspan="6" >
-                                                        <div class="dFlex">Claim ID
-                                                        </div>
+                                                        <div class="dFlex">Claim ID</div>
                                                     </th>
                                                     <th colspan="6">
                                                         <div class="dFlex">  
@@ -130,10 +128,15 @@
                                                     </th>
                                                     <th colspan="6" *ngIf="(loginUserType == 'TL' && showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && showIssueClaim)">
                                                         <div class="dFlex">  
-                                                            Archive Claims &nbsp; <button class="btn btn-danger"
+                                                            {{archiveClaimsData.length ==0 ? 'Select' : 'Unselect'}} Archive Claims &nbsp;
+                                                             <!-- <button class="btn btn-danger"
                                                             style="min-width: 105px;justify-content: center;"
                                                             (click)="selectAllArchieveClaims(archiveClaimsData.length==0 ? true : false)">{{archiveClaimsData.length==0
-                                                                ? 'Select All' : 'Unselect All'}}</button>
+                                                                ? 'Select All' : 'Unselect All'}}</button> -->
+                                                                <label class="no-css-checkbox-container"  (change)="selectAllArchieveClaims($event)">
+                                                                    <input type="checkbox">
+                                                                    <div class="checkmark"></div>
+                                                                  </label>
                                                         </div>
                                                         
                                                     </th>

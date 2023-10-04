@@ -410,7 +410,8 @@ export class IssueClaimComponent {
     this.paginationPages= [...Array(this.totalArchivePages).keys()];
   }
 
-  selectAllArchieveClaims(isAllSelected: any){
+  selectAllArchieveClaims(event: any){
+    let isAllSelected:boolean = event.target.checked;
     if (isAllSelected) {
       this.filteredItems.forEach((e: any) => {
         if (!e.archive) {
@@ -463,7 +464,7 @@ export class IssueClaimComponent {
       "claimId": data.claimId
     }
     this.appSer.saveUnarchiveClaims(param, (res: any) => {
-      if (res.status == 200 && res.unArchiveStatus) {
+      if (res.status == 200 && res.data.unArchiveStatus) {
         this.showMessage = { 'msg': res.data.message, 'status': res.status };
           this.loader.showLoader = false;
           this.showHideMessage();
@@ -471,7 +472,7 @@ export class IssueClaimComponent {
           this.getArchiveClaimsCount();
           this.issueClaim();
       }
-      else if(res.status == 200 && !res.unArchiveStatus) {
+      else if(res.status == 200 && !res.data.unArchiveStatus) {
         this.showMessage = { 'msg': res.data.message, 'status': res.status };
         this.loader.showLoader = false;
         this.showHideMessage();
@@ -483,7 +484,6 @@ export class IssueClaimComponent {
       }
     })
   }
-
   
   removeUnArchivedItem(data: any) {
     return this.filtertedArchiveItems.filter((item: any) => item.id !== data.id);
