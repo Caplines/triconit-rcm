@@ -38,7 +38,7 @@ export class ToolUpdateComponent implements OnInit {
   gsLink:any='';
   clientName:string='';
   updateClaimbtnDisable=true;
-  issueClaimsCount: number = 0;
+  issueClaimsCount: any;
   
   constructor(public appService: ApplicationServiceService,private title:Title) { 
 

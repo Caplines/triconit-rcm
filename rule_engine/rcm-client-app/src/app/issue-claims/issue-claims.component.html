@@ -32,20 +32,20 @@
                                         </label>
                                     </div>
                                     <h6 style="color: black;">Upload Errors  
-                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="showIssueClaim">Number of Claims Not Uploaded: {{issueClaimsCount}}</span> 
-                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="!showIssueClaim">Number of Archive Claims: {{archiveClaimsCount}}</span>
+                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="showIssueClaim">Number of Claims Not Uploaded: {{issueClaimConfig.issueCount}}</span> 
+                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="!showIssueClaim">Number of Archive Claims: {{archiveClaimConfig.archiveCount}}</span>
                                          
                                     </h6>
                                     <div>
-                                        <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="(showIssueClaim ? filteredItems.length==0 : archiveClaimsCount==0) || loader.exportPDFLoader">
+                                        <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="(showIssueClaim ? filteredItems?.length==0 : filtertedArchiveItems?.length==0) || loader.exportPDFLoader">
                                             <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                                             class="spinner-border text-danger mx-1"></span>
-                                        <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="(showIssueClaim ? filteredItems.length==0 : archiveClaimsCount==0)">
+                                        <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="(showIssueClaim ? filteredItems?.length==0 : filtertedArchiveItems?.length==0)">
                                             <img src="../../assets/img/xls.png" /></button><span *ngIf="loader.exportCSVLoader"
                                             class="spinner-border text-success mx-1"></span>
                                     </div>
                                     <div class="table-responsive" >
-                                        <table class="table table-wrapper-scroll-y table-inner-scrollbar" #modalElement (scroll)="onModalScroll()"   id="issuetable"  *ngIf="issueCl?.length>0">
+                                        <table class="table table-wrapper-scroll-y table-inner-scrollbar" #modalElement (scroll)="onModalScroll()"   id="issuetable" >
                                             <thead>
                                                 <tr class="totalRow">
                                                     <th colspan="6">
@@ -128,13 +128,13 @@
                                                     </th>
                                                     <th colspan="6" *ngIf="(loginUserType == 'TL' && showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && showIssueClaim)">
                                                         <div class="dFlex">  
-                                                            {{archiveClaimsData.length ==0 ? 'Select' : 'Unselect'}} Archive Claims &nbsp;
+                                                            {{selectedClaimsToArchiveData.length ==0 ? 'Select' : 'Unselect'}} Archive Claims &nbsp;
                                                              <!-- <button class="btn btn-danger"
                                                             style="min-width: 105px;justify-content: center;"
                                                             (click)="selectAllArchieveClaims(archiveClaimsData.length==0 ? true : false)">{{archiveClaimsData.length==0
                                                                 ? 'Select All' : 'Unselect All'}}</button> -->
                                                                 <label class="no-css-checkbox-container"  (change)="selectAllArchieveClaims($event)">
-                                                                    <input type="checkbox">
+                                                                    <input type="checkbox" #archiveSelectBox>
                                                                     <div class="checkmark"></div>
                                                                   </label>
                                                         </div>
@@ -148,28 +148,28 @@
                                                 <tr *ngIf="loader.showLoader">
                                                     <td colspan="25" class="text-center"><span class="loader-data"></span></td>
                                                 </tr>
-                                                <tr *ngFor="let lg of filteredItems">
                                                 <ng-container *ngIf="showIssueClaim">
-                                                    <td colspan="6">{{lg.officeName}}</td>
-                                                    <td colspan="6">{{lg.claimId}}</td>
-                                                    <td colspan="6">{{lg.createdDate | date:'MMM dd, YYYY HH:mm:ss'}}</td>
-                                                    <td colspan="6">{{lg.issue}}</td>
-                                                    <td colspan="6">{{lg.source}}</td>
-                                                    <td colspan="6" *ngIf="(loginUserType == 'TL' || loginUserType == 'SUPER_ADMIN')">
-                                                            <a href="javascript:void(0);"></a><input type="checkbox"
-                                                            [(ngModel)]="lg.archive"
-                                                            (change)="archiveClaimsSelection(lg.archive,lg.id)"/>  
-                                                    </td>
-                                               </ng-container>
-                                               </tr>
-                                               <ng-container *ngIf="!showIssueClaim">
-                                                   <tr *ngFor="let aCl of filtertedArchiveItems;" >
-                                                       <td colspan="6">{{aCl.officeName}}</td>
-                                                       <td colspan="6">{{aCl.newClaimId}}</td>
-                                                       <td colspan="6">{{aCl.createdDate | date:'MMM dd, YYYY HH:mm:ss'}}</td>
-                                                       <td colspan="6">{{aCl.issue}}</td>
-                                                       <td colspan="6">{{aCl.source}}</td>
-                                                       <td colspan="6"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button" class="btn btn-danger file-button" (click)="UnarchiveClaims(aCl)">UnArchive</button></td>
+                                                    <tr *ngFor="let lg of filteredItems">
+                                                        <td colspan="6">{{lg.officeName}}</td>
+                                                        <td colspan="6">{{lg.claimId}}</td>
+                                                        <td colspan="6">{{lg.createdDate | date:'MMM dd, YYYY HH:mm:ss'}}</td>
+                                                        <td colspan="6">{{lg.issue}}</td>
+                                                        <td colspan="6">{{lg.source}}</td>
+                                                        <td colspan="6" *ngIf="(loginUserType == 'TL' || loginUserType == 'SUPER_ADMIN')">
+                                                            <a href="javascript:void(0);"></a><input type="checkbox" [(ngModel)]="lg.archive"
+                                                                (change)="selectClaimsToArchive(lg.archive,lg.id)" />
+                                                        </td>
+                                                    </tr>
+                                                </ng-container>
+                                                <ng-container *ngIf="!showIssueClaim">
+                                                    <tr *ngFor="let aCl of filtertedArchiveItems;">
+                                                        <td colspan="6">{{aCl.officeName}}</td>
+                                                        <td colspan="6">{{aCl.newClaimId}}</td>
+                                                        <td colspan="6">{{aCl.createdDate | date:'MMM dd, YYYY HH:mm:ss'}}</td>
+                                                        <td colspan="6">{{aCl.issue}}</td>
+                                                        <td colspan="6">{{aCl.source}}</td>
+                                                        <td colspan="6"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button"
+                                                                class="btn btn-danger file-button" (click)="UnarchiveClaims(aCl)">UnArchive</button></td>
                                                     </tr>
                                                 </ng-container>
                                             </tbody>
@@ -180,7 +180,7 @@
     </div>
     
       <pagination *ngIf="!showIssueClaim && totalArchivePages > 1" [paginationPages]="paginationPages" (emitToParent)="receiveChildEvent($event)"></pagination> 
-    <div class="text-center" *ngIf="showIssueClaim"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button" class="btn btn-success file-button" [disabled]="archiveClaimsData.length==0" (click)="archiveClaims()"><span *ngIf="loader.showLoader" class="spinner-grow spinner-grow-sm" role="status"
+    <div class="text-center" *ngIf="showIssueClaim"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button" class="btn btn-success file-button" [disabled]="selectedClaimsToArchiveData.length==0" (click)="archiveSelectedClaims()"><span *ngIf="loader.showLoader" class="spinner-grow spinner-grow-sm" role="status"
         aria-hidden="true"></span>Archive</button></div>
     </div>
     </div>
