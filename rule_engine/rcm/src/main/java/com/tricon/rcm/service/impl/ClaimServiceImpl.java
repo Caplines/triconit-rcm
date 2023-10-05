@@ -3612,7 +3612,7 @@ public class ClaimServiceImpl {
 			updatedBy = userRepo.findByEmail(jwtUser.getUsername());
 			int status = rcmClaimRepository.updateIssueClaimsArchiveStatus(archiveIdTrue,true, updatedBy);
 			if (status > 0) {
-				List<RcmIssueClaims> issueClaimData = issueClaimRepo.findByIdIn(archiveIdTrue);
+				List<RcmIssueClaims> issueClaimData = issueClaimRepo.findByIdInAndResolvedFalse(archiveIdTrue);
 				for (RcmIssueClaims c : issueClaimData) {
 					if(c.getClaimId().startsWith(c.getId()+Constants.HYPHEN+Constants.ARCHIVE_PREFIX)){
 						continue;

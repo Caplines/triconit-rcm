@@ -20,6 +20,7 @@ import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.util.Constants;
+import com.tricon.rcm.util.SearchClaimUtil;
 import com.tricon.rcm.dto.customquery.AllPendencyDateDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
@@ -641,7 +642,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<IssueClaimDto> archiveClaimsByPagination(@Param("companyId") String companyId,@Param("offset")int offSet,@Param("limit")int limit); //and off.active is true
   
 	@Modifying
-	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive =:archiveStatus,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id in (:id)")
+	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive =:archiveStatus,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id in (:id) AND resolved is false")
 	int updateIssueClaimsArchiveStatus(@Param("id")List<Integer>id,@Param("archiveStatus")boolean archiveStatus,@Param("updatedBy")RcmUser updatedBy);
 
 	@Query(nativeQuery = true, value = " select  claim_id  "+
@@ -651,7 +652,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	String fetchClaimIdByClaimIdAnCompany(@Param("claimId")  String claimId,@Param("companyId")  String companyId) ;
 	
 	@Modifying
-	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive=false,claim_id=:claimId,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id =:id")
+	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive=false,claim_id=:claimId,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id =:id AND resolved is false")
 	int updateIssueClaimsUnArchiveStatus(@Param("id")int id,@Param("updatedBy")RcmUser updatedBy,@Param("claimId")String claimId);
 	
 
