@@ -23,7 +23,7 @@ export class IssueClaimComponent {
   filteredOfficeName: any = [];
   isFilterAllSelected: any = { 'officeName': false};
   filterName: string = '';
-  loader: any = {'exportPDFLoader': false, 'exportCSVLoader': false, 'showLoader': false };
+  loader: any = {'exportPDFLoader': false, 'exportCSVLoader': false, 'showLoader': false , 'unarchive':false };
   date: any;
   showFilteredDropdown: any = { 'officeName': false};
   selectedClaimsToArchiveData:any = [];
@@ -415,7 +415,10 @@ selectClaimsToArchive(e:any,id:any){
     let param = {
       "id": data.id,
       "claimId": data.claimId
-    }
+    };
+    this.loader.unarchive = true;
+    this.loader.showLoader = true;
+
     this.appSer.saveUnarchiveClaims(param, (res: any) => {
       if (res.status == 200 && res.data.unArchiveStatus) {
         this.showMessage = { 'msg': res.data.message, 'status': res.status };
@@ -423,16 +426,19 @@ selectClaimsToArchive(e:any,id:any){
           this.showHideMessage();
           this.filtertedArchiveItems = this.removeUnArchivedItem(data);
           this.getArchiveClaimsCount();
+          this.loader.unarchive = false;
       }
       else if(res.status == 200 && !res.data.unArchiveStatus) {
         this.showMessage = { 'msg': res.data.message, 'status': res.status };
         this.loader.showLoader = false;
         this.showHideMessage();
+        this.loader.unarchive = false;
       }
       else {
         this.showMessage = { 'msg': res.message, 'status': res.status };
         this.loader.showLoader = false;
         this.showHideMessage();
+        this.loader.unarchive = false;
       }
     })
   }

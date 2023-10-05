@@ -196,4 +196,13 @@
     border-radius: 0em;
     transform: rotate(45deg);
   }
+
+  
+.modal-backdrop.fade.show{
+  display: none;
+}
+.modal-backdrop.fade.modalShow{
+  display: block;
+}
+
   
