@@ -193,6 +193,9 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "treating_provider_from_claim")
 	private String treatingProviderFromClaim;//using ProviderId(ES Code) and Sheet
 	
+	@Column(name = "treating_provider_from_claim_on_sheet")
+	private String treatingProviderFromClaimOnSheet;//using ProviderId(ES Code) and Sheet
+	
 	@Column(name = "ivf_id")
 	private String ivfId;
 	

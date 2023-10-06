@@ -131,7 +131,7 @@ public class ClaimUtil {
 		claims.setCurrentTeamId(team);
 		claims.setFirstWorkedTeamId(team);
 		claims.setPreferredModeOfSubmission(preferredModeOfSubmission);
-		
+		claims.setTreatingProviderFromClaimOnSheet(re.getTreatingProviderName());//Only from Sheet Data..
 		claims.setPatientId(re.getAccountId());
 		claims.setPatientName(re.getPatientName());
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {

@@ -2,6 +2,9 @@ package com.tricon.ruleengine.service.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -17,6 +20,8 @@ import java.util.Map.Entry;
 
 import javax.transaction.Transactional;
 
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +32,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Collections2;
+import com.itextpdf.io.codec.Base64.OutputStream;
 import com.tricon.ruleengine.api.enums.HighLevelReportMessageStatusEnum;
 import com.tricon.ruleengine.dao.CompanyDao;
 import com.tricon.ruleengine.dao.OfficeDao;
@@ -42,6 +48,7 @@ import com.tricon.ruleengine.dto.RuleMessageDetailDto;
 import com.tricon.ruleengine.dto.RuleReportDto;
 import com.tricon.ruleengine.dto.RuleReportResponseDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
+import com.tricon.ruleengine.dto.TeamwiseDataExcelDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.IVFormType;
@@ -54,6 +61,8 @@ import com.tricon.ruleengine.security.JwtUser;
 import com.tricon.ruleengine.service.ReportService;
 import com.tricon.ruleengine.utils.ConnectAndReadSheets;
 import com.tricon.ruleengine.utils.Constants;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 
 @Transactional
 @Service
@@ -756,6 +765,105 @@ public class ReportServiceImpl implements ReportService {
 
      return obj;
 	}	
+	
+	public Object[] generateTeamwiseExcel(TeamwiseDataExcelDto  dto) {
+		 XSSFWorkbook workbook = new XSSFWorkbook();
+		 Object[] obj=new Object[2];
+	        XSSFSheet sheet = workbook.createSheet("Team wise");// ("+dto.getD1() +"-"+dto.getD2()+")");
+	        int rowCount = 1;
+	        
+	        int columnCount = 0;
+	        Row row = sheet.createRow(0);
+	        Cell cell = row.createCell(0);
+	    	cell.setCellValue("Date Range");
+	    	cell = row.createCell(1);
+		    cell.setCellValue(dto.getD1() +"- "+dto.getD2());
+	        
+	        
+      	   row = sheet.createRow(1);
+      	   cell = row.createCell(0);
+    	  cell.setCellValue("S.No");
+      	   cell = row.createCell(++columnCount);
+      	  cell.setCellValue("Created Date");
+      	  cell = row.createCell(++columnCount);
+      	  cell.setCellValue("Patient Id");
+      	  cell = row.createCell(++columnCount);
+      	  cell.setCellValue("Patient Name");
+      	  cell = row.createCell(++columnCount);
+      	  cell.setCellValue("IVF Id");
+      	  cell = row.createCell(++columnCount);
+      	  cell.setCellValue("TP ID");
+      	  cell = row.createCell(++columnCount);
+      	  cell.setCellValue("Run By");
+      	  cell = row.createCell(++columnCount);
+      	  cell.setCellValue("Insurance Name");
+      	  cell = row.createCell(++columnCount);
+      	  cell.setCellValue("Appointment Date");
+      	  cell = row.createCell(++columnCount);
+     	  cell.setCellValue("Office Name");
+      	  
+      	  
+	        Map<String, List<ReportResponseDto>> data = dto.getData(); 
+	        for (Map.Entry<String,List<ReportResponseDto>> entry : data.entrySet())  {
+	          
+	        	
+	          for(ReportResponseDto d:entry.getValue()) {
+	        	  
+	        	   columnCount = -1;
+	        	   row = sheet.createRow(++rowCount);
+	        	   cell = row.createCell(++columnCount);
+		          cell.setCellValue(rowCount-1);
+		       	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getRd_created_date());
+	        	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getPatient_id());
+	        	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getPatient_name());
+	        	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getIvf_form_id());
+	        	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getTreatement_plan_id());
+	        	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getName());
+	        	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getIns_name());
+	        	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getApt_date());
+	        	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getOffice_name());
+	        	  
+	          }
+	        }
+	        FileOutputStream outputStream=null;
+	         String fileName=XSLT_PATH+"teamwise"+new Date().getTime()+".xlsx";
+	        try {
+	        	File file = new File(fileName);
+	        		 outputStream = new FileOutputStream(file);
+	        		 workbook.write(outputStream);
+	        		 workbook.close();
+	        		 
+	        		  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	        		  FileInputStream fl = new FileInputStream(fileName);
+	        		  byte[] arr = new byte[(int)file.length()];
+	        		  fl.read(arr); 
+	        		  fl.close(); 
+	        		  baos.write(arr, 0, arr.length);
+	        		  obj[1]=baos;
+	        		  
+	         file.delete();
+	        } catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	      
+	        
+	       
+	    obj[0]=fileName;
+		return obj;
+	}
 
 
 }

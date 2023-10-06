@@ -1,10 +1,9 @@
 package com.tricon.ruleengine.dto;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 
-public class ReportResponseDto {
-	
+public class ReportResponseTeamWiseDto {
+
 	private String rep_create_date;
 	private String rep_created_by;
 	private String rd_created_date;
@@ -26,21 +25,23 @@ public class ReportResponseDto {
     private String iv_date;
     private String apt_date;
     private String ins_name;
-    
-    
-	
-
-	public String getDos() {
-		return dos;
+	public String getRep_create_date() {
+		return rep_create_date;
 	}
-	public void setDos(String dos) {
-		this.dos = dos;
+	public void setRep_create_date(String rep_create_date) {
+		this.rep_create_date = rep_create_date;
 	}
 	public String getRep_created_by() {
 		return rep_created_by;
 	}
 	public void setRep_created_by(String rep_created_by) {
 		this.rep_created_by = rep_created_by;
+	}
+	public String getRd_created_date() {
+		return rd_created_date;
+	}
+	public void setRd_created_date(String rd_created_date) {
+		this.rd_created_date = rd_created_date;
 	}
 	public String getEmail() {
 		return email;
@@ -59,6 +60,12 @@ public class ReportResponseDto {
 	}
 	public void setRep_group_run(int rep_group_run) {
 		this.rep_group_run = rep_group_run;
+	}
+	public int getRd_group_run() {
+		return rd_group_run;
+	}
+	public void setRd_group_run(int rd_group_run) {
+		this.rd_group_run = rd_group_run;
 	}
 	public String getTreatement_plan_id() {
 		return treatement_plan_id;
@@ -96,8 +103,6 @@ public class ReportResponseDto {
 	public void setError_message(String error_message) {
 		this.error_message = error_message;
 	}
-
-	
 	public String getRule_name() {
 		return rule_name;
 	}
@@ -110,26 +115,6 @@ public class ReportResponseDto {
 	public void setPatient_id(String patient_id) {
 		this.patient_id = patient_id;
 	}
-
-	
-	public String getRep_create_date() {
-		return rep_create_date;
-	}
-	public void setRep_create_date(String rep_create_date) {
-		this.rep_create_date = rep_create_date;
-	}
-	public String getRd_created_date() {
-		return rd_created_date;
-	}
-	public void setRd_created_date(String rd_created_date) {
-		this.rd_created_date = rd_created_date;
-	}
-	public int getRd_group_run() {
-		return rd_group_run;
-	}
-	public void setRd_group_run(int rd_group_run) {
-		this.rd_group_run = rd_group_run;
-	}
 	public String getName() {
 		return name;
 	}
@@ -141,6 +126,12 @@ public class ReportResponseDto {
 	}
 	public void setMessageType(BigInteger messageType) {
 		this.messageType = messageType;
+	}
+	public String getDos() {
+		return dos;
+	}
+	public void setDos(String dos) {
+		this.dos = dos;
 	}
 	public String getIv_date() {
 		return iv_date;
@@ -160,7 +151,7 @@ public class ReportResponseDto {
 	public void setIns_name(String ins_name) {
 		this.ins_name = ins_name;
 	}
-
-	
-
+    
+    
+   
 }

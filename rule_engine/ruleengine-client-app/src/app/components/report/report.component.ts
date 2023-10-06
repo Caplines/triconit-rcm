@@ -69,7 +69,8 @@ export class ReportComponent implements OnInit {
 	showParam: any = {
 		TreatmentId: false, IvfId: false, Date: false, PatientName: false,
 		ivfRDBMS: false, DateFromTo: false, UserName: false, DateFromToUserName: false,
-		ivfRDBMSWebsiteParse:false,ruledatasheet:false,sealantElig:false
+		ivfRDBMSWebsiteParse:false,ruledatasheet:false,sealantElig:false,
+		Teamwise: false
 	}
 
 	constructor(public applicationService: ApplicationService, public router: Router, private datePipe: DatePipe, private route: ActivatedRoute) {
@@ -203,6 +204,19 @@ export class ReportComponent implements OnInit {
 				submit = true;
 			}
 		}
+		if (this.report.reportType == 'Teamwise') {
+			if (this.dateRange(15)){
+				submit = false;
+			}
+			else if (rep.reportField1 == '' || rep.reportField2 == '') {
+				submit = false;
+
+			} else {
+				this.report.reportField1 = this.datePipe.transform(this.report.reportField1, 'MM/dd/yyyy');
+				this.report.reportField2 = this.datePipe.transform(this.report.reportField2, 'MM/dd/yyyy');
+				submit = true;
+			}
+		}
 		this.arrayOfKeys=[];
 		if (submit) {
 			if (this.showParam.Date) {
@@ -214,7 +228,6 @@ export class ReportComponent implements OnInit {
 				let ths=this;
 				if (result.status === 'OK') {
 					this.reportData = result.data;
-					
 					if (this.report.reportType === 'ruledatasheet' ){
 						
 						this.showDetailsData=false;
@@ -253,6 +266,9 @@ export class ReportComponent implements OnInit {
 						if(diffDays>0){
 							this.showLoadingMoreDate=true;
 							this.loadMoreforMutipleDates(diffDays,this.report.reportField1);
+						}else{
+							this.showLoading = false;
+							this.showReportData = true;
 						}
 					}else {
 						this.showReportData = true;
@@ -521,7 +537,34 @@ downloadPdfSeal(){
 	
    }
 
-    
+   dateRange(range:number){
+	   let ths= this;
+	   if (ths.report.reportField1== '' || ths.report.reportField2 ==''){
+		   return true;
+	   }
+	   let date1:any = new Date(ths.report.reportField1);
+	   let date2:any = new Date(ths.report.reportField2);
+	   const diffTime:any = Math.abs(date2 - date1);
+	   const diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+	   //console.log(diffTime + " milliseconds");
+	   //console.log(diffDays + " days");
+	   //console.log(date1);
+	   if (diffDays>range) return true;
+	   return false;
+   }
+   
+   downloadTeamWiseCSV(){
+	   this.showLoading = true;
+	   this.applicationService.downloadExcelTeamData({ "data":  this.reportData, "d1": this.report.reportField1,"d2":this.report.reportField2 },"/generateTeamwiseExcel", (result) => {
+			this.showLoading = false;
+			if (result.status == '200') {
+				//const filename = result.headers.get('filename');
+				//console.log(result);
+				// this.downloadFile(result.body);
+				this.saveBolbData(result.body,  "TeamwiseReport.xlsx");
+			}
+		});
+   }
 
 
 }

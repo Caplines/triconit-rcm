@@ -483,6 +483,35 @@ export class ApplicationService {
 			);  
 		}
 	 
+	  downloadExcelTeamData(dataS:any,path, callback) {
+		  let headers = new HttpHeaders();
+		    headers = headers.append('Accept', 'application/pdf; charset=utf-8');
+			this.generateRefreshToken().pipe(switchMap(data => {
+				localStorage.setItem("token", (<any>data).token);
+				return  this.http.post(environment.API_URL+path,dataS,{
+					 headers: headers,
+				      observe: 'response',
+				      responseType: 'arraybuffer'
+				});
+			})
+			).subscribe(data => {
+				callback((<any>data));
+			},
+			error => {  
+				// console.log(33);
+				if (error.status==401){ 
+					this.router.navigate(['/logout']);
+				}
+	            if (error.status==500){
+					alert("Some Technical issues..");
+					callback(error);
+	            }
+	        },
+	        () => {        
+				}
+			);  
+		}
+	  
 	  
 	  dumpIVFOlDData(ivd:IVDumpModel,callback){
 	      this.generateRefreshToken().pipe(switchMap(data => {

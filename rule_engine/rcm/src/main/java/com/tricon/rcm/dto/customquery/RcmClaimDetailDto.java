@@ -61,6 +61,7 @@ public interface RcmClaimDetailDto {
 	String getProviderOnClaim();
 	String getProviderOnClaimFromSheet();//Provider Name from ES using TreatingProvider
 	String getTreatingProviderFromClaim();//using ProviderId(ES Code) and Sheet
+	String getTreatingProviderFromSheet();//using Treating provider on G-sheet
 	String getIvId();
 	String getIvDos();
 	String getTpId();

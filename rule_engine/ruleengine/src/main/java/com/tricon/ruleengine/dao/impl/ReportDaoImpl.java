@@ -182,7 +182,36 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				 
 					 queryString= queryString + " and " +batchrest;
 						 
-			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.IvfId.toString())) {
+			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.Teamwise.toString())) {
+				 queryString="SELECT DATE_FORMAT(rep.created_date,'%m/%d/%Y %T') as rep_create_date,rep.created_by as rep_created_by, "+
+						 " CONCAT( first_name ,' ' ,last_name ) as name ,CAST(COALESCE(rd.message_type, -200) as UNSIGNED) as messageType "
+				 		+ ", DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as rd_created_date," + 
+				 		"us.email as email,offi.name as office_name,rep.group_run as rep_group_run,rd.group_run as rd_group_run, " + 
+				 		x+",rep.patient_dob as dob,"
+				 		+ " rep.patient_name as patient_name,rep.patient_id as patient_id,rep.ivf_form_id as ivf_form_id," + 
+				 		"rd.rule_id as rule_id,rd.error_message as error_message,pd.apt_date , pd.ins_name FROM " + 
+			            t+ 
+				 		" ,user as us ,office as offi,patient_detail as pd where "+(!dto.getOfficeId().equals("")?"rep.office_id='"+dto.getOfficeId()+"' and ":" ")+ 
+				 		" rep.id=rd.report_id  and rd.rule_id is not null  and pd.id=ivf_form_id  " + 
+				 		" and us.uuid=rd.created_by and offi.uuid=rep.office_id ";
+				 if (dto.getIvformTypeId()!=null && !dto.getIvformTypeId().equals("")) {
+					 queryString= queryString + " and iv_form_type_id="+dto.getIvformTypeId()+" " ;
+				 }
+				 queryString= queryString+	"  and (" + 
+							"  (rd.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+							"                 or" + 
+							"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+						
+							" )  " ;//and rd.created_by='"+dto.getEmployerName() +"'" ;
+					 //}
+					
+					 queryString= queryString + " and " +batchrest;
+					 queryString= queryString + " group by rd.report_id ";
+						 
+			 }
+			 else if (dto.getReportType().equals(ReportTypeEnum.ReportType.IvfId.toString())) {
 				 queryString= queryString + "and  rep.ivf_form_id='"+dto.getReportField1()+"'";
 			 }else if (dto.getReportType().equals(ReportTypeEnum.ReportType.PatientName.toString())) {
 				 queryString= queryString + "and  rep.patient_name = '"+dto.getReportField1()+"'";
@@ -438,7 +467,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 		" us.email as email,offi.name as officeName,rd.group_run as groupRun, " + 
 			 		"rep.patient_dob as dob,"+
 			 		 " rep.patient_name as pname,rep.patient_id as patientId," + 
-			 		"rd.error_message as message,rd.iv_date as ivDate,rd.date_of_service as dos FROM " + 
+			 		"rd.error_message as message,rd.iv_date as ivDate, "+(dto.getReportType().equals("c")?"rd.date_of_service":"rd.tx_plan_date")+" as dos FROM " + 
 		            t + 
 			 		" ,user as us ,office as offi where rd.rule_id="+dto.getRuleId()+" and "+o+ 
 			 		" rep.id=rd.report_id  " + 

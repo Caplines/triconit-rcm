@@ -19,6 +19,7 @@ public class ClaimFromSheet {
 	private String claimTypeP;
 	private String primaryClaimStatus;
 	private String providerIdProviderName;
+	private String treatingProviderName;
 	private String primaryEstAmount;
 	private String primaryInsuranceCompany;
 	private String insuranceName;

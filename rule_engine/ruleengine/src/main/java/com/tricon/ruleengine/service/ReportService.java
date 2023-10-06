@@ -11,6 +11,7 @@ import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.RuleReportDto;
 import com.tricon.ruleengine.dto.RuleReportResponseDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
+import com.tricon.ruleengine.dto.TeamwiseDataExcelDto;
 
 public interface ReportService {
 
@@ -30,6 +31,9 @@ public interface ReportService {
 	public Object[] generateSealntPDByUIData(HashMap<String,List<TPValidationResponseDto>> rdto);
 	
 	public RuleReportResponseDto getRuleReportAllMessage(RuleReportDto dto);
+	
+	
+	public Object[] generateTeamwiseExcel(TeamwiseDataExcelDto  dto);
 	
 
 }

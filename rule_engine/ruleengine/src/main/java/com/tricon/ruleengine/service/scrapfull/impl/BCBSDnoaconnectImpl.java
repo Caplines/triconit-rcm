@@ -26,7 +26,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.microsoft.schemas.office.x2006.encryption.STSaltSize;
+//import com.microsoft.schemas.office.x2006.encryption.STSaltSize;
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.ScrapingFullDataDoa;
 import com.tricon.ruleengine.dto.PatientScrapSearchDto;

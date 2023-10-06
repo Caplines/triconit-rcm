@@ -14,7 +14,8 @@ public class ReportTypeEnum {
         UserName,
         DateFromToUserName,
         ruledatasheet,
-        sealant;
+        sealant,
+        Teamwise;
     }
  
     /*

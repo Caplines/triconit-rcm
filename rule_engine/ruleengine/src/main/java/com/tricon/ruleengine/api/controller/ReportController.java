@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.tricon.ruleengine.api.enums.ReportTypeEnum;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.TreatmentValidationDao;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
@@ -40,8 +41,10 @@ import com.tricon.ruleengine.dto.EnhancedReportDto;
 import com.tricon.ruleengine.dto.GenericResponse;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
+import com.tricon.ruleengine.dto.ReportResponseTeamWiseDto;
 import com.tricon.ruleengine.dto.RuleReportDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
+import com.tricon.ruleengine.dto.TeamwiseDataExcelDto;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.pdf.SelantPdfMainDto;
 import com.tricon.ruleengine.pdf.SelantPdfPatDto;
@@ -218,11 +221,19 @@ public class ReportController {
 		Map<String, List<ReportResponseDto>> map = new LinkedHashMap<>();
 		List<ReportResponseDto> a = new ArrayList<>();
 		String k = "";
+		int ctr=0;
 		if (li != null)
 			for (ReportResponseDto d : li) {
-				k = d.getRd_group_run() + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
-						+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " " + inv + d.getTreatement_plan_id()
-						+ " Run By-" + d.getName();
+				
+				if (dto.getReportType().equalsIgnoreCase(ReportTypeEnum.ReportType.Teamwise.toString())) {
+					k = (++ctr) + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
+							+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " " + inv + d.getTreatement_plan_id()
+							+ " Run By-" + d.getName();
+				}else {
+					k = d.getRd_group_run() + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
+							+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " " + inv + d.getTreatement_plan_id()
+							+ " Run By-" + d.getName();
+				}
 				if (map.containsKey(k)) {
 					// if the key has already been used,
 					// we'll just grab the array list and add the value to it
@@ -242,6 +253,45 @@ public class ReportController {
 		return map;
 
 	}
+	
+	/*private Map<String, List<ReportResponseTeamWiseDto>> prepareDataTeamWise(ReportDto dto, String inv) {
+		List<ReportResponseDto> li = reportService.getReports(dto);
+		Map<String, List<ReportResponseTeamWiseDto>> map = new LinkedHashMap<>();
+		List<ReportResponseTeamWiseDto> a = new ArrayList<>();
+		ReportResponseTeamWiseDto teamWise= null;
+		String k = "";
+		int ctr=0;
+		if (li != null)
+			for (ReportResponseDto d : li) {
+				
+				if (dto.getReportType().equalsIgnoreCase(ReportTypeEnum.ReportType.Teamwise.toString())) {
+					k = (++ctr) + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
+							+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " " + inv + d.getTreatement_plan_id()
+							+ " Run By-" + d.getName();
+				}else {
+					k = d.getRd_group_run() + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
+							+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " " + inv + d.getTreatement_plan_id()
+							+ " Run By-" + d.getName();
+				}
+				if (map.containsKey(k)) {
+					// if the key has already been used,
+					// we'll just grab the array list and add the value to it
+					a = (List<ReportResponseTeamWiseDto>) map.get(k + "");
+					teamWise= new ReportResponseTeamWiseDto();
+					a.add(teamWise);
+				} else {
+					// if the key hasn't been used yet,
+					// we'll create a new ArrayList<String> object, add the value
+					// and put it in the array list with the new key
+					a = new ArrayList<>();
+					a.add(d);
+					map.put(k + "", a);
+				}
+
+			}
+		return map;
+
+	}*/
 
 	@CrossOrigin
 	@RequestMapping(value = "/enreport", method = RequestMethod.POST)
@@ -380,6 +430,34 @@ public class ReportController {
 	}
 	
 	
+	@PostMapping
+	@RequestMapping(value = "/generateTeamwiseExcel")
+	public void generateTeamwiseExcel(@RequestBody TeamwiseDataExcelDto  dto, HttpServletResponse response) throws IOException {
+		//
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
+		JwtUser user = (JwtUser) userDetails;
+		
+		
+		 Object[] obj=null; 
+		 
+		  obj = reportService.generateTeamwiseExcel(dto);
+			if (obj != null && obj[1]!=null) {
+				ByteArrayOutputStream o =(ByteArrayOutputStream)  obj[1];
+				response.setContentType("application/octet-stream");
+				response.setHeader("Content-Disposition", String.format("attachment; filename="+"team_wise"+ ".xlsx"));
+				//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
+				InputStream in = new ByteArrayInputStream(o.toByteArray());
+				org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+				response.flushBuffer();
+				o.close();
+			}
+		
+		
+
+	}
 	
 
 }

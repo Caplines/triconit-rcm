@@ -350,112 +350,117 @@ public class ConnectAndReadSheets {
 					dto.setProviderIdProviderName("");
 				}
 				try {
-					dto.setPrimaryEstAmount(obj.get(++x));//M
+					dto.setTreatingProviderName(obj.get(++x));//M
+				} catch (Exception m) {
+					dto.setTreatingProviderName("");
+				}
+				try {
+					dto.setPrimaryEstAmount(obj.get(++x));//N
 				} catch (Exception m) {
 					dto.setPrimaryEstAmount("");
 				}
 				try {
-					dto.setPrimaryInsuranceCompany(obj.get(++x));//N
+					dto.setPrimaryInsuranceCompany(obj.get(++x));//O
 				} catch (Exception m) {
 					dto.setPrimaryInsuranceCompany("");
 				}
 				try {
-					dto.setInsuranceName(obj.get(++x));//O
+					dto.setInsuranceName(obj.get(++x));//P
 				} catch (Exception m) {
 					dto.setInsuranceName("");
 				}
 				try {
-					dto.setPrimaryMemberId(obj.get(++x));//P
+					dto.setPrimaryMemberId(obj.get(++x));//Q
 				} catch (Exception m) {
 					dto.setPrimaryMemberId("");
 				}
 				try {
-					dto.setPrimaryInsuranceAddress(obj.get(++x));//Q
+					dto.setPrimaryInsuranceAddress(obj.get(++x));//R
 				} catch (Exception m) {
 					dto.setPrimaryInsuranceAddress("");
 				}
 				try {
-					dto.setPrimaryGroupNumber(obj.get(++x));//R
+					dto.setPrimaryGroupNumber(obj.get(++x));//S
 				} catch (Exception m) {
 					dto.setPrimaryGroupNumber("");
 				}
 				try {
-					dto.setPrimaryPolicyHolderName(obj.get(++x));//S
+					dto.setPrimaryPolicyHolderName(obj.get(++x));//T
 				} catch (Exception m) {
 					dto.setPrimaryPolicyHolderName("");
 				}
 				try {
-					dto.setPrimaryPolicyHolderDob(obj.get(++x));//T
+					dto.setPrimaryPolicyHolderDob(obj.get(++x));//U
 				} catch (Exception m) {
 					dto.setPrimaryPolicyHolderDob("");
 				}
 				try {
-					dto.setSecondaryBIlledAmount(obj.get(++x));//U
+					dto.setSecondaryBIlledAmount(obj.get(++x));//V
 				} catch (Exception m) {
 					dto.setSecondaryBIlledAmount("");
 				}
 				try {
-					dto.setSecondaryClaimSubmissionDate(obj.get(++x));//V
+					dto.setSecondaryClaimSubmissionDate(obj.get(++x));//W
 				} catch (Exception m) {
 					dto.setSecondaryClaimSubmissionDate("");
 				}
 				try {
-					dto.setPrimaryPaid(obj.get(++x));//W
+					dto.setPrimaryPaid(obj.get(++x));//X
 				} catch (Exception m) {
 					dto.setPrimaryPaid("");
 				}
 				try {
-					dto.setClaimTypeS(obj.get(++x));//X
+					dto.setClaimTypeS(obj.get(++x));//Y
 				} catch (Exception m) {
 					dto.setClaimTypeS("");
 				}
 				try {
-					dto.setSecondaryClaimStatus(obj.get(++x));//Y
+					dto.setSecondaryClaimStatus(obj.get(++x));//Z
 				} catch (Exception m) {
 					dto.setSecondaryClaimStatus("");
 				}
 				try {
-					dto.setProviderIdReport(obj.get(++x));//Z
+					dto.setProviderIdReport(obj.get(++x));//AA
 				} catch (Exception m) {
 					dto.setProviderIdReport("");
 				}
 				try {
-					dto.setSecondaryEstAmount(obj.get(++x));//A
+					dto.setSecondaryEstAmount(obj.get(++x));//AB
 				} catch (Exception m) {
 					dto.setSecondaryEstAmount("");
 				}
 				try {
-					dto.setSecondaryInsuranceCompany(obj.get(++x));//AB
+					dto.setSecondaryInsuranceCompany(obj.get(++x));//AC
 				} catch (Exception m) {
 					dto.setSecondaryInsuranceCompany("");
 				}
 				try {
-					dto.setSecondaryInsuranceName(obj.get(++x));//AC
+					dto.setSecondaryInsuranceName(obj.get(++x));//AD
 				} catch (Exception m) {
 					dto.setSecondaryInsuranceName("");
 				}
 				try {
-					dto.setSecondaryMemberId(obj.get(++x));//AD
+					dto.setSecondaryMemberId(obj.get(++x));//AE
 				} catch (Exception m) {
 					dto.setSecondaryMemberId("");
 				}
 				try {
-					dto.setSecondaryInsuranceAddress(obj.get(++x));//AE
+					dto.setSecondaryInsuranceAddress(obj.get(++x));//AF
 				} catch (Exception m) {
 					dto.setSecondaryInsuranceAddress("");
 				}
 				try {
-					dto.setSecondaryGroupNumber(obj.get(++x));//AF
+					dto.setSecondaryGroupNumber(obj.get(++x));//AG
 				} catch (Exception m) {
 					dto.setSecondaryGroupNumber("");
 				}
 				try {
-					dto.setSecondaryPolicyHolder(obj.get(++x));//AG
+					dto.setSecondaryPolicyHolder(obj.get(++x));//AH
 				} catch (Exception m) {
 					dto.setSecondaryPolicyHolder("");
 				}
 				try {
-					dto.setSecondaryPolicyHolderDob(obj.get(++x));//AH
+					dto.setSecondaryPolicyHolderDob(obj.get(++x));//AI
 				} catch (Exception m) {
 					dto.setSecondaryPolicyHolderDob("");
 				}
@@ -463,7 +468,7 @@ public class ConnectAndReadSheets {
 				List<String> d=new ArrayList<>();
 				try {
 					
-					dto.setServiceCodes(Arrays.asList(obj.get(++x).split(",")));//AI
+					dto.setServiceCodes(Arrays.asList(obj.get(++x).split(",")));//AJ
 					
 				} catch (Exception m) {
 					dto.setServiceCodes(d);

@@ -105,6 +105,7 @@ public class FreshClaimDataImplDto {
 	String providerOnClaim;
 	String providerOnClaimFromSheet;//Provider Name from ES using TreatingProvider
 	String treatingProviderFromClaim;//using ProviderId(ES Code) and Sheet
+	String treatingProviderFromSheet;//using Treating provider on G-sheet
 	
 	Date primePolicyHolderDob;
 	String claimType;
