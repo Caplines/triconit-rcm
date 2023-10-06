@@ -205,4 +205,8 @@
   display: block;
 }
 
-  
+ .nowrap-text {white-space: nowrap;
+  align-items: end;
+
+  label {margin-bottom: 0px;}
+} 

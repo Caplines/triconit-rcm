@@ -127,16 +127,16 @@
                                                         </div>
                                                     </th>
                                                     <th colspan="6" *ngIf="(loginUserType == 'TL' && showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && showIssueClaim)">
-                                                        <div class="dFlex">  
-                                                            {{selectedClaimsToArchiveData.length ==0 ? 'Select' : 'Unselect'}} Archive Claims &nbsp;
+                                                        <div class="dFlex nowrap-text">  
+                                                            <label class="no-css-checkbox-container"  (change)="selectAllArchieveClaims($event)">
+                                                                <input type="checkbox" #archiveSelectBox>
+                                                                <div class="checkmark"></div>
+                                                              </label>  &nbsp;
+                                                              {{selectedClaimsToArchiveData.length ==0 ? 'Select All' : 'Unselect All'}} Archive Claims
                                                              <!-- <button class="btn btn-danger"
                                                             style="min-width: 105px;justify-content: center;"
                                                             (click)="selectAllArchieveClaims(archiveClaimsData.length==0 ? true : false)">{{archiveClaimsData.length==0
                                                                 ? 'Select All' : 'Unselect All'}}</button> -->
-                                                                <label class="no-css-checkbox-container"  (change)="selectAllArchieveClaims($event)">
-                                                                    <input type="checkbox" #archiveSelectBox>
-                                                                    <div class="checkmark"></div>
-                                                                  </label>
                                                         </div>
                                                         
                                                     </th>
