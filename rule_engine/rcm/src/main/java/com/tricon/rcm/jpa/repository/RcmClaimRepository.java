@@ -632,7 +632,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		"	select cl.claim_uuid claimUuid,rca.assigned_to claimAssignedTo,rca.id  claimAssignmentId,cl.office_id officeId from rcm_claims cl inner join office off on off.uuid=cl.office_id "+
 		"	inner join company com on com.uuid =off.company_id "+
 		"	inner join rcm_claim_assignment rca on rca.claim_id=cl.claim_uuid and rca.active is true  and rca.current_team_id =:teamId "+
-		"	where  com.uuid=:companyId and pending is true and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+		"	where  com.uuid=:companyId and pending is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
 	List<PendingClaimToReAssignDto> fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(@Param("companyId") String companyId,@Param("teamId")  int teamId) ;
 
 	@Query(value = "select cl.id as Id,cl.is_archive as IsArchive,cl.claim_id claimId,cl.issue,cl.source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "
