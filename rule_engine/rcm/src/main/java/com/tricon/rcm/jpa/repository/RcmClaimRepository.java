@@ -633,16 +633,16 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		"	select cl.claim_uuid claimUuid,rca.assigned_to claimAssignedTo,rca.id  claimAssignmentId,cl.office_id officeId from rcm_claims cl inner join office off on off.uuid=cl.office_id "+
 		"	inner join company com on com.uuid =off.company_id "+
 		"	inner join rcm_claim_assignment rca on rca.claim_id=cl.claim_uuid and rca.active is true  and rca.current_team_id =:teamId "+
-		"	where  com.uuid=:companyId and pending is true and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+		"	where  com.uuid=:companyId and pending is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
 	List<PendingClaimToReAssignDto> fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(@Param("companyId") String companyId,@Param("teamId")  int teamId) ;
 
 	@Query(value = "select cl.id as Id,cl.is_archive as IsArchive,cl.claim_id claimId,cl.issue,cl.source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "
 			+ "left join office off on off.uuid=cl.office_id "
-			+ "where off.company_id=:companyId and cl.resolved is false and cl.is_archive is true order by cl.id limit :offset, :limit", nativeQuery = true)
+			+ "where off.company_id=:companyId and cl.resolved is false and cl.is_archive is true order by cl.id desc limit :offset, :limit", nativeQuery = true)
 	List<IssueClaimDto> archiveClaimsByPagination(@Param("companyId") String companyId,@Param("offset")int offSet,@Param("limit")int limit); //and off.active is true
   
 	@Modifying
-	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive =:archiveStatus,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id in (:id)")
+	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive =:archiveStatus,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id in (:id) AND resolved is false")
 	int updateIssueClaimsArchiveStatus(@Param("id")List<Integer>id,@Param("archiveStatus")boolean archiveStatus,@Param("updatedBy")RcmUser updatedBy);
 
 	@Query(nativeQuery = true, value = " select  claim_id  "+
@@ -650,5 +650,10 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  where cmp.uuid=:companyId and claim_id=:claimId")
 	String fetchClaimIdByClaimIdAnCompany(@Param("claimId")  String claimId,@Param("companyId")  String companyId) ;
+	
+	@Modifying
+	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive=false,claim_id=:claimId,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id =:id AND resolved is false")
+	int updateIssueClaimsUnArchiveStatus(@Param("id")int id,@Param("updatedBy")RcmUser updatedBy,@Param("claimId")String claimId);
+	
 
 }

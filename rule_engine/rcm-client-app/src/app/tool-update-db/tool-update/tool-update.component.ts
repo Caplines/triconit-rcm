@@ -5,8 +5,6 @@ import {FreshClaimPLogs} from '../../models/fresh.claim.log';
 import {ClientModel} from '../../models/client.model';
 import {IssueClaimModel} from '../../models/issue.claim.model';
 import { Title } from '@angular/platform-browser';
-import html2canvas from 'html2canvas';
-import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
 
@@ -38,7 +36,7 @@ export class ToolUpdateComponent implements OnInit {
   gsLink:any='';
   clientName:string='';
   updateClaimbtnDisable=true;
-  issueClaimsCount: number = 0;
+  issueClaimsCount: any;
   
   constructor(public appService: ApplicationServiceService,private title:Title) { 
 
@@ -240,30 +238,6 @@ this.sourceType="";
         }
       })
     }
-  }
-
-  saveToPdf(divName: any) {
-    this.loader.exportPDFLoader=true;
-    let m:any=document.querySelector(".table-wrapper-scroll-y");
-    m.classList.remove('table-wrapper-scroll-y');
-    m.classList.remove('table-inner-scrollbar');
-    html2canvas(<any>document.getElementById(divName)).then(canvas => {
-      const content = canvas.toDataURL('image/png');
-      let pdf = new jsPDF('p', 'mm', 'a4');
-      let width = pdf.internal.pageSize.getWidth();
-      let height = canvas.height * width / canvas.width;
-       // Insert office name
-       pdf.setFontSize(10);  // Adjust the font size as needed
-       pdf.text(`RCM Tool-${this.clientName}`, 3, 10);
-       pdf.addImage(content, "PNG", 0, 15, width, height);
-      this.date = new Date();
-      this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${localStorage.getItem("selected_clientName")}_Upload Claims_${this.date}`);
-      this.loader.exportPDFLoader=false;
-      m.classList.add('table-wrapper-scroll-y');
-      m.classList.add('table-inner-scrollbar');
-    });
-
   }
 
   exportToCsv() {

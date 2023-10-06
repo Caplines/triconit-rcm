@@ -2,13 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { BaseService } from 'src/app/service/base-service.service';
 import { AuthService } from '../../service/auth-service.service';
 import { SwitchAccountModel } from '../../models/switch.account.model';
 import Utils from '../../util/utils';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
-import { ClientModel } from 'src/app/models/client.model';
-import { IssueClaimModel } from 'src/app/models/issue.claim.model';
 import { AppConstants } from 'src/app/constants/app.constants';
 
 @Component({

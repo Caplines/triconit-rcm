@@ -19,7 +19,7 @@
                                     <div class="colName">
                                                                                 Client Name
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'clientData':clients,'isSearchClaims':true}"></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'clientData':clients,'isSearchClaims':true}" (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
@@ -105,8 +105,7 @@
                                     </div>
                                     </div>
                                     <div class="mb-2 mt-2">
-                                    <a href="javascript:void(0);"
-                                                                               class="btn text-light btn-secondary "><img _ngcontent-fcp-c53="" src="../assets/img/search.png" class="search-icon">Search</a>
+                                    <a href="javascript:void(0);" (click)="searchClaims()" class="btn text-light btn-secondary "><img _ngcontent-fcp-c53="" src="../assets/img/search.png" class="search-icon">Search</a>
                                     </div>
                                 <div class="table-responsive">
 

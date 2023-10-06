@@ -7,6 +7,6 @@ import lombok.ToString;
 @ToString
 public class ArchiveClaimsPayloadDto {
 
-	       private boolean archiveStatus;
+	       private Boolean archiveStatus;
 	       private Integer id;
 }

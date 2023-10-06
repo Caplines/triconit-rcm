@@ -104,6 +104,7 @@
         </style>
     </head>
     <body>
+         <xsl:variable name="tab" select="tabSwitch" />
         <form>
             <xsl:choose>
                 <xsl:when test="tabSwitch='Issue'">
@@ -140,7 +141,14 @@
                      <xsl:for-each select="data/data">
                      <tr class="whiteBg">
                          <td><xsl:value-of select="officeName"/></td>
-                         <td><xsl:value-of select="claimId"/></td>
+                          <xsl:choose>
+                          <xsl:when test="$tab='Archive'">
+                          <td><xsl:value-of select="newClaimId"/></td>
+                      </xsl:when>
+                        <xsl:otherwise>
+                            <td><xsl:value-of select="claimId"/></td>
+                        </xsl:otherwise>
+                    </xsl:choose>
                          <td>
                        <xsl:variable name="month" select="substring(createdDate, 6, 2)" />
                        <xsl:variable name="day" select="substring(createdDate, 9, 2)" />

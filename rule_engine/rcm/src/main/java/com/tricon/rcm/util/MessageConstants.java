@@ -100,5 +100,11 @@ public class MessageConstants {
 	
 	public static final String RECORD_NOT_EXIST="Record not exist!";
 	public static final String CLAIM_ALREADY_SUBMITTED="Claim has been submitted already";
+	
+	public static final String ARCHIVE_CLAIM_SUBMITTED="The selected claims have been archived";
+	
+	public static final String UNARCHIVE_CLAIM_SUBMITTED="The selected claims have been Unarchived";
+	public static final String CLAIM_NOT_UNARCHIVED="Already Exists with Same Claim Id. Can not be UNARCHIVED.";
+	
 
 }

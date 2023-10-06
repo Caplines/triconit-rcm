@@ -1,11 +1,9 @@
 import { Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { ApplicationServiceService } from '../service/application-service.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import Utils from '../util/utils';
 import { ngxCsv } from 'ngx-csv';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { DownLoadService } from '../service/download.service';
 import {AppConstants} from '../constants/app.constants'
 
@@ -16,9 +14,6 @@ import {AppConstants} from '../constants/app.constants'
 })
 export class IssueClaimComponent {
   currentTeamId:any;
-  issueClaimsCount: number = 0;
-  issueClientName:any='';
-  issueCl : any=[];
   userInfo: any = { 'currentClientName': '', 'currentTeamId': '' }
   issueClaimPageNum:any=0;
   totalPages:number;
@@ -27,29 +22,32 @@ export class IssueClaimComponent {
   isSorted: any = {};
   filteredOfficeName: any = [];
   isFilterAllSelected: any = { 'officeName': false};
-  fliterName: string = '';
-  loader: any = {'exportPDFLoader': false, 'exportCSVLoader': false, 'showLoader': false };
+  filterName: string = '';
+  loader: any = {'exportPDFLoader': false, 'exportCSVLoader': false, 'showLoader': false , 'unarchive':false };
   date: any;
   showFilteredDropdown: any = { 'officeName': false};
-  archiveClaimsData:any = [];
+  selectedClaimsToArchiveData:any = [];
   loginUserType:any='';
-  archiveCl:any=[];
   showIssueClaim:boolean= true;
-  archiveClaimsCount:number=0;
-  showMessage:any=[];
+  showMessage:any={};
   filtertedArchiveItems:any=[];
   totalArchivePages:number = 0;
   paginationPages:any= [];
   tabSwitch: any = { 'IssueClaims': true, 'ArchiveClaims': false};
   tabSwitchValue:any='Issue';
 
+  issueClaimConfig:any= {'issueCount':0,'issueClaimsData':[]};
+  archiveClaimConfig:any= {'archiveCount':0,'archiveClaimsData':[]};
+
   @ViewChild('modalElement')modalElementRef!:ElementRef;
+  @ViewChild('archiveSelectBox')archiveSelectBox!:ElementRef;
+  
   
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
       setTimeout(() => {
-        this.showFilteredDropdown[this.fliterName] = false;
-      }, 500);
+        this.showFilteredDropdown[this.filterName] = false;
+      }, 300);
     }
   }
   
@@ -60,17 +58,15 @@ export class IssueClaimComponent {
 
   ngOnInit() {
     this.userInfo.currentClientName = localStorage.getItem("selected_clientName");
-    this.issueClaim();
-    this.getArchiveClaimsCount();
+    this.fetchIssueClaimDataWithCount();
   }
 
-  issueClaim(){
+  fetchIssueClaimDataWithCount(){
     this.appSer.fetchIssueClaimCounts((res:any)=>{
-      if(res.status==200){
-         this.issueClaimsCount = res.data;
-        if( this.issueClaimsCount!=0){
-          this.fetchIssueClaims();
-        }
+      if(res.status==200 && res.data){
+         this.issueClaimConfig.issueCount = res.data.issueCount; 
+         this.archiveClaimConfig.archiveCount = res.data.archiveCount; 
+         this.fetchIssueClaims();
       }
       else{
         //ERROR
@@ -78,53 +74,26 @@ export class IssueClaimComponent {
     });
   }
 
-  // fetchIssueClaims(){
-  //   let cName = JSON.parse(localStorage.getItem('clients'));
-  //   cName.find((ele:any)=>{
-  //     if(ele.name == this.userInfo.currentClientName){
-  //       this.clientUuid = ele.id;
-  //     }
-  //   });
-  //   if(this.clientUuid){
-  //     this.appSer.fetchIssueClaims(this.clientUuid+`/${this.issueClaimPageNum}`, (res: any) => {
-  //      if (res.status === 200 && res.data) {
-  //         this.totalPages = res.data[0].totalPages;
-  //        if (this.issueClaimPageNum == 0) {
-  //          this.issueCl = res.data[0].data;
-  //          this.filterOfficeName();
-  //        }
-  //        if (this.issueClaimPageNum != 0 && res.data[0].totalPages != this.issueClaimPageNum) {
-  //          this.issueCl.push.apply(this.issueCl, res.data[0].data);
-  //          this.filterOfficeName();
-  //        }
-  //         //this.modal();
-  //         this.filteredItems = this.issueCl;
-  //       }
-  //     });
-  //   }
-  // }
+  async fetchIssueClaims(){
+    let clientName = Utils.getClientsFromLS();
+      await clientName.find((ele:any)=>{
+          if(ele.name == this.userInfo.currentClientName){
+            this.clientUuid = ele.id;
+          }
+        });
 
-    fetchIssueClaims(){
-    let cName = JSON.parse(localStorage.getItem('clients'));
-    cName.find((ele:any)=>{
-      if(ele.name == this.userInfo.currentClientName){
-        this.clientUuid = ele.id;
-      }
-    });
     if(this.clientUuid){
       this.appSer.fetchIssueClaims(this.clientUuid, (res: any) => {
        if (res.status === 200 && res.data) {
-          this.fetchOfficeByUuid();
-           this.issueCl = res.data;
+         this.issueClaimConfig.issueClaimData = res.data;
+           this.fetchOfficeByUuid();
            this.filterOfficeName();
          }
-          //this.modal();
-          this.filteredItems = this.issueCl;
         }
       );
     }
   }
-
+   
   loadMore(){
     ++this.issueClaimPageNum;
     if(this.issueClaimPageNum < this.totalPages){
@@ -152,7 +121,7 @@ export class IssueClaimComponent {
   }
   showHideFilteredDropdown(filterName: any) {
     filterName == 'officeName' ? this.showFilteredDropdown.officeName = true : this.showFilteredDropdown.officeName = false;
-    this.fliterName = filterName;
+    this.filterName = filterName;
   }
 
   selectAll(event: any, filterProperty: any) {
@@ -167,9 +136,10 @@ export class IssueClaimComponent {
       this.filterOfficeName("selectAll");
     }
   }
+
   filterOfficeName(e?: any, filterProperty?: any) {
     if (!e) {
-      this.filteredItems = this.issueCl;
+      this.filteredItems = this.issueClaimConfig.issueClaimData;
       this.isFilterAllSelected.officeName = true;
     } else {
       let isAllSelected: boolean = true;
@@ -180,14 +150,14 @@ export class IssueClaimComponent {
         }
       }
       this.isFilterAllSelected.officeName = isAllSelected;
-      this.showIssueClaim ? this.filteredItems = this.issueCl.filter((item: any) => {
+      this.showIssueClaim ? this.filteredItems = this.issueClaimConfig?.issueClaimData?.filter((item: any) => {
         return this.filteredOfficeName.some((checkbox: any) => {
-          return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+          return checkbox.checked && checkbox['officeName'] === item['officeName'];
         });
       }) :
-      this.filtertedArchiveItems = this.archiveCl?.data?.filter((item: any) => {
+      this.filtertedArchiveItems = this.archiveClaimConfig.archiveClaimsData?.data?.filter((item: any) => {
         return this.filteredOfficeName.some((checkbox: any) => {
-          return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+          return checkbox.checked && checkbox['officeName'] === item['officeName'];
         });
       });
     }
@@ -206,37 +176,16 @@ export class IssueClaimComponent {
       }
     })
   }
+
   showFilterOptionOfficeName(data: any) {
     this.filteredOfficeName = data;
     this.filteredOfficeName.forEach((e: any) => {
-      this.issueCl.forEach((ele: any) => {
+      this.issueClaimConfig.issueClaimData.forEach((ele: any) => {
         e['checked'] = true;
       })
     });
     this.sortFiltereData(this.filteredOfficeName);
   }
-  // saveToPdf(divName: any) {
-  //   this.loader.exportPDFLoader = true;
-  //   let m: any = document.querySelector(".table-wrapper-scroll-y");
-  //   m.classList.remove('table-wrapper-scroll-y');
-  //   m.classList.remove('table-inner-scrollbar');
-  //   html2canvas(<any>document.getElementById(divName)).then(canvas => {
-  //     const content = canvas.toDataURL('image/png');
-  //     let pdf = new jsPDF('p', 'mm', 'a4');
-  //     let width = pdf.internal.pageSize.getWidth();
-  //     let height = canvas.height * width / canvas.width;
-  //     // Insert office name
-  //     pdf.setFontSize(10);  // Adjust the font size as needed
-  //     pdf.text(this.showIssueClaim ? `Issue Claims - ${ this.userInfo.currentClientName}`:`Archieved Claims - ${ this.userInfo.currentClientName}`, 2, 6);
-  //     pdf.addImage(content, "PNG", 0, 15, width, height);
-  //     this.date = new Date();
-  //     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-  //     pdf.save(this.showIssueClaim ? `${localStorage.getItem("selected_clientName")}_Issue Claims_${this.date}`:`${localStorage.getItem("selected_clientName")}_Archieved Claims_${this.date}`);
-  //     this.loader.exportPDFLoader = false;
-  //     m.classList.add('table-wrapper-scroll-y');
-  //     m.classList.add('table-inner-scrollbar');
-  //   });
-  // }
   
   exportToCsv() {
     this.loader.exportCSVLoader = true;
@@ -260,7 +209,7 @@ export class IssueClaimComponent {
     excelData = excelData.map((e: any) => {
       return {
         "Office": e.officeName,
-        "Claim ID": e.claimId,
+        "Claim ID": this.showIssueClaim ? e.claimId:e.newClaimId,
         "Upload Date": e.createdDate,
         'Issue due to which Claim could not be Uploaded': e.issue,
         "Source": e.source,
@@ -269,10 +218,10 @@ export class IssueClaimComponent {
 
     this.date = new Date();
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-    console.log(excelData.sort());
     new ngxCsv(excelData, this.showIssueClaim ? `${localStorage.getItem("selected_clientName")}_Upload Errors_${this.date}`: `${localStorage.getItem("selected_clientName")}_Upload Errors Claims-Archived_${this.date}`, options);
     this.loader.exportCSVLoader = false;
   }
+
   getMonthName(month: any) {
     const monthNames = [
       "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -280,6 +229,7 @@ export class IssueClaimComponent {
     ];
     return monthNames[month];
   }
+
   sortFiltereData(filterValue: any) {
     filterValue.sort((a: any, b: any) => {
       const nameA = Object.keys(filterValue[0])[4] == 'officeName' ? a.officeName.toUpperCase() : '';// ignore upper and lowercase
@@ -299,7 +249,7 @@ export class IssueClaimComponent {
   downloadPdf(){
     this.loader.exportPDFLoader = true;
     if(this.tabSwitchValue=='Issue' && this.filteredItems?.length>0){
-    let data = {"fileName":this.showIssueClaim ? "Upload Errors" : "Upload Errors Claims-Archived","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimsCount: this.archiveClaimsCount,"tabSwitch":this.tabSwitchValue};
+    let data = {"fileName":this.showIssueClaim ? "Upload Errors" : "Upload Errors Claims-Archived","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimConfig.issueCount: this.archiveClaimConfig.archiveCount,"tabSwitch":this.tabSwitchValue};
     this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
         this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Upload Errors.pdf" : "Upload Errors Claims-Archived.pdf");
@@ -310,7 +260,7 @@ export class IssueClaimComponent {
       }
     })
   }else if(this.tabSwitchValue=='Archive' && this.filtertedArchiveItems?.length>0){
-    let data = {"fileName":this.showIssueClaim ? "Upload Errors" : "Upload Errors Claims-Archived","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimsCount: this.archiveClaimsCount,"tabSwitch":this.tabSwitchValue};
+    let data = {"fileName":this.showIssueClaim ? "Upload Errors" : "Upload Errors Claims-Archived","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimConfig.issueCount: this.archiveClaimConfig.archiveCount,"tabSwitch":this.tabSwitchValue};
     this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
         this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Upload Errors.pdf" : "Upload Errors Claims-Archived.pdf");
@@ -326,33 +276,41 @@ export class IssueClaimComponent {
   }
 }
 
-  archiveClaimsSelection(e:any,id:any){
-    if (this.archiveClaimsData.length == 0) {
-      this.archiveClaimsData.push({'id': id, 'archiveStatus': e});
+selectClaimsToArchive(e:any,id:any){
+    if (this.selectedClaimsToArchiveData.length == 0) {
+      this.selectedClaimsToArchiveData.push({'id': id, 'archiveStatus': e});
     } else {
-      let exist = this.archiveClaimsData.some((item: any) => item.id == id);
+      let exist = this.selectedClaimsToArchiveData.some((item: any) => item.id == id);
       if (!exist) {
-        this.archiveClaimsData.push({'id': id, 'archiveStatus': e});
+        this.selectedClaimsToArchiveData.push({'id': id, 'archiveStatus': e});
       } else {
-        let indx = this.archiveClaimsData.findIndex((item: any) => item.id == id);
-        this.archiveClaimsData.splice(indx, 1);
+        let indx = this.selectedClaimsToArchiveData.findIndex((item: any) => item.id == id);
+        this.selectedClaimsToArchiveData.splice(indx, 1);
       }
     }
+    
   }
 
-  archiveClaims(){
+  archiveSelectedClaims(){
     this.showHideMessage();
     this.loader.showLoader=true;
     let params:any = {
-      'archiveClaims': this.archiveClaimsData
+      'archiveClaims': this.selectedClaimsToArchiveData
     };
     this.appSer.saveArchiveClaims(params,(res:any)=>{
       if(res.status== 200){
         this.showMessage = {'msg':res.data,'status':res.status}; 
         this.showHideMessage();
-        this.getArchiveClaimsCount();
-        this.issueClaim();
-        this.archiveClaimsData=[];
+        // this.getArchiveClaimsCount();
+        // this.issueClaim();
+        this.fetchIssueClaimDataWithCount();
+        if(this.selectedClaimsToArchiveData.length == this.filteredItems.length){
+          this.issueClaimConfig.issueClaimData=[];
+          this.filteredItems=[];
+          let archiveSelectboxEl = this.archiveSelectBox.nativeElement;
+          archiveSelectboxEl.checked = false;
+        }
+        this.selectedClaimsToArchiveData=[];
         this.loader.showLoader=false;
       }
       else{
@@ -370,17 +328,17 @@ export class IssueClaimComponent {
     }
   }
 
-  getArchiveClaims(pgNum:any){
-    if(this.archiveClaimsCount>0){
+   getArchiveClaims(pgNum:any){
+    if(this.archiveClaimConfig.archiveCount>0){
     this.loader.showLoader=true;
     let data = this.clientUuid + "/" + pgNum;
     this.appSer.fetchArchiveClaims(data,(res:any)=>{
       if(res.status){
-        this.archiveCl = res?.data[0];
+        this.archiveClaimConfig.archiveClaimsData = res?.data[0];
         this.filtertedArchiveItems = res?.data[0].data;
         this.filtertedArchiveItems.forEach((e:any)=>{
-          if(e.claimId.includes(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`)){
-            e.claimId = e.claimId.replace(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`,'')
+          if(e.claimId.startsWith(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`)){
+            e.newClaimId = e.claimId.replace(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`,'')
          }
         })
         this.totalArchivePages = res?.data[0].totalPages;
@@ -397,32 +355,28 @@ export class IssueClaimComponent {
 
   getArchiveClaimsCount(){
     this.appSer.fetchArchiveClaimsCount((res:any)=>{
-      this.archiveClaimsCount = res.data;
+      this.archiveClaimConfig.archiveCount = res.data;
     });
-  }
-
-  showArchiveClaims(){
-    this.showIssueClaim=false;
-    this.getArchiveClaims(0);
   }
 
   pagnationPages(){
     this.paginationPages= [...Array(this.totalArchivePages).keys()];
   }
 
-  selectAllArchieveClaims(isAllSelected: any){
+  selectAllArchieveClaims(event: any){
+    let isAllSelected:boolean = event.target.checked;
     if (isAllSelected) {
       this.filteredItems.forEach((e: any) => {
         if (!e.archive) {
           e.archive = true;
-          this.archiveClaimsData.push({'id':e.id, 'archiveStatus': e.archive})
+          this.selectedClaimsToArchiveData.push({'id':e.id, 'archiveStatus': e.archive})
         }
       });
     } else {
       this.filteredItems.forEach((e: any) => {
         if (e.archive) {
           e.archive = false;
-          this.archiveClaimsData = [];
+          this.selectedClaimsToArchiveData = [];
         }
       });
     }
@@ -434,16 +388,18 @@ export class IssueClaimComponent {
       this.tabSwitch.ArchiveClaims=false;
       this.showIssueClaim = true;
       this.tabSwitchValue = 'Issue';
+      this.fetchIssueClaimDataWithCount();
     }
     else{
       this.tabSwitch.IssueClaims=false;
       this.tabSwitch.ArchiveClaims=true;
       this.showIssueClaim=false;
-      this.showArchiveClaims();
       this.tabSwitchValue = 'Archive';
+      this.getArchiveClaims(0);
     }
     let event = { target: { checked: true } };  //added so that when tab is swtiched then by default all data should show.
     this.selectAll(event, 'officeName');
+    
   }
 
   showHideMessage(){
@@ -457,4 +413,41 @@ export class IssueClaimComponent {
 
   }
 
+  UnarchiveClaims(data: any) {
+    let param = {
+      "id": data.id,
+      "claimId": data.claimId
+    };
+    this.loader.unarchive = true;
+    this.loader.showLoader = true;
+
+    this.appSer.saveUnarchiveClaims(param, (res: any) => {
+      if (res.status == 200 && res.data.unArchiveStatus) {
+        this.showMessage = { 'msg': res.data.message, 'status': res.status };
+          this.loader.showLoader = false;
+          this.showHideMessage();
+          this.filtertedArchiveItems = this.removeUnArchivedItem(data);
+          this.getArchiveClaimsCount();
+          this.loader.unarchive = false;
+      }
+      else if(res.status == 200 && !res.data.unArchiveStatus) {
+        this.showMessage = { 'msg': res.data.message, 'status': res.status };
+        this.loader.showLoader = false;
+        this.showHideMessage();
+        this.loader.unarchive = false;
+      }
+      else {
+        this.showMessage = { 'msg': res.message, 'status': res.status };
+        this.loader.showLoader = false;
+        this.showHideMessage();
+        this.loader.unarchive = false;
+      }
+    })
+  }
+  
+  removeUnArchivedItem(data: any) {
+    let idx = this.filtertedArchiveItems.findIndex((item:any)=>item.id== data.id);
+    this.filtertedArchiveItems.splice(idx,1);
+    return this.filtertedArchiveItems;
+  }
 }

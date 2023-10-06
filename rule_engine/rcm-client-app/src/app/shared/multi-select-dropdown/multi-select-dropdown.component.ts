@@ -18,7 +18,7 @@ export class MultiSelectDropdownComponent {
   @Input() userClientData:any=[];
   @Input() userTeamData:any=[];
   @Input() inputConfig:any;
-  @Input() emitToParent:any = new EventEmitter();
+  @Output() emitToParent:any = new EventEmitter();
   
   clientCheckedList : any[];
   teamCheckedList : any[];
@@ -131,14 +131,15 @@ getSelectedValue(status: Boolean, value: any, type: String) {
   else if (type === 'searchClaimClient'){
     if (status) {
       this.searchClaimsConfig.clients.push(value);
+      this.emitToParent.emit({action:'getSelectClientName',value:this.searchClaimsConfig.clients});
     } else {
       this.searchClaimsConfig.clients.forEach((e: any, idx: any) => {
         if (e.clientUuid == value.clientUuid) {
           this.searchClaimsConfig.clients.splice(idx, 1);
+          this.emitToParent.emit({action:'getSelectClientName',value:this.searchClaimsConfig.clients});
         }
       });
     }
-    console.log(this.searchClaimsConfig.clients);
     
   }
 }
@@ -198,7 +199,8 @@ getSelectedValue(status: Boolean, value: any, type: String) {
         }
       })
       console.log(offices);
-      this._service.emitOnValueChange({action:'selectedClientsOffices',value:offices}) 
+     
+      // this._service.emitOnValueChange({action:'selectedClientsOffices',value:offices}) 
    
     }
 }

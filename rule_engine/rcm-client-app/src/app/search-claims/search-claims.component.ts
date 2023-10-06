@@ -16,6 +16,23 @@ export class SearchClaimsComponent {
   clients:any=[];
   offices:any=[];
   teamData:any = this.constants.teamData;
+  searchClaimConfig:any=  {
+      "clientUuid":[],
+      "officeUuid":[],
+      "claimId":"",
+      "patientId":"",
+      "startDate":"",
+      "endDate":"",
+      "ageCategory":[],
+      "claimStatus":[],
+      "insuranceName":[],
+      "insuranceType":[],
+      "providerName":[],
+      "providerType":[],
+      "responsibleTeam":[],
+      "showArchive":false,
+      "pageNumber":1
+  }
 
   constructor(public appService:ApplicationServiceService ,private title : Title,private constants:AppConstants){
     title.setTitle(Utils.defaultTitle + "Search Claims");
@@ -32,6 +49,22 @@ export class SearchClaimsComponent {
         this.clients = callback.data;
       }
     })
+  }
+
+  searchClaims(){
+    return;
+    this.appService.searchClaims(this.searchClaimConfig,(res:any)=>{
+      if(res.status){
+        console.log(res);
+      }
+    })
+  }
+
+  receiveChildrenEvent(event:any){
+      if(event['action'] == 'getSelectClientName'){
+        console.log(event);
+          this.searchClaimConfig['clientUuid'].push(event.value[0].clientUuid)
+      }
   }
 
 }
