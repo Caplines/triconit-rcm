@@ -288,6 +288,7 @@ selectClaimsToArchive(e:any,id:any){
         this.selectedClaimsToArchiveData.splice(indx, 1);
       }
     }
+    
   }
 
   archiveSelectedClaims(){
@@ -343,6 +344,7 @@ selectClaimsToArchive(e:any,id:any){
         this.totalArchivePages = res?.data[0].totalPages;
         this.pagnationPages();
         this.loader.showLoader=false;
+        this.filtertedArchiveItems=[];
       }
       else{
         this.loader.showLoader=false;
@@ -445,6 +447,8 @@ selectClaimsToArchive(e:any,id:any){
   }
   
   removeUnArchivedItem(data: any) {
-    return this.filtertedArchiveItems.filter((item: any) => item.id !== data.id);
+    let idx = this.filtertedArchiveItems.findIndex((item:any)=>item.id== data.id);
+    this.filtertedArchiveItems.splice(idx,1);
+    return this.filtertedArchiveItems;
   }
 }
