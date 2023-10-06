@@ -344,7 +344,6 @@ selectClaimsToArchive(e:any,id:any){
         this.totalArchivePages = res?.data[0].totalPages;
         this.pagnationPages();
         this.loader.showLoader=false;
-        this.filtertedArchiveItems=[];
       }
       else{
         this.loader.showLoader=false;
