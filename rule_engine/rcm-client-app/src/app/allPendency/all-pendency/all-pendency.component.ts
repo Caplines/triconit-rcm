@@ -1,7 +1,5 @@
 import { Component, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { ngxCsv } from 'ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import Utils from '../../util/utils';
@@ -111,33 +109,6 @@ export class AllPendencyComponent {
         })
       })
     }
-  }
-
-  saveToPdf(divName: any) {
-    this.showLoader.exportPDFLoader = true;
-    let m: any = document.querySelectorAll(".table-wrapper-scroll-y");
-    m.forEach((e: any) => {
-      e.classList.remove('table-wrapper-scroll-y');
-      e.classList.remove('table-inner-scrollbar');
-    })
-    html2canvas(<any>document.getElementById(divName)).then(canvas => {
-      const content = canvas.toDataURL('image/png');
-      let pdf = new jsPDF('p', 'mm', 'a4');
-      let width = pdf.internal.pageSize.getWidth();
-      let height = canvas.height * width / canvas.width;
-      // Insert office name
-      pdf.setFontSize(10);  // Adjust the font size as needed
-      pdf.text(`Pendency - Other Teams - ${this.clientName}`, 2, 6);
-      pdf.addImage(content, "PNG", 0, 15, width, height);
-      this.date = new Date();
-      this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${localStorage.getItem("selected_clientName")}_Pendency - Other Teams_${this.date}`);
-      this.showLoader.exportPDFLoader = false;
-      m.forEach((e: any) => {
-        e.classList.add('table-wrapper-scroll-y');
-        e.classList.add('table-inner-scrollbar');
-      })
-    });
   }
 
   exportToCsv(fromTable: any) {

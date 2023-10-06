@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ApplicationServiceService } from '../service/application-service.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import {  Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import Utils from '../util/utils';
 import { DownLoadService } from '../service/download.service';

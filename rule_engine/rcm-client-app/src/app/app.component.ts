@@ -10,7 +10,7 @@ import { ApplicationServiceService } from './service/application-service.service
 })
 export class AppComponent implements OnInit {
 
-  isLoggedIn: Boolean = false;
+  isLoggedIn: Boolean = false ;
   isBillPage:boolean=false;
   isIssueClaimsPage:boolean=false;
   constructor(private title: Title, public baseService: BaseService,private _service:ApplicationServiceService) {

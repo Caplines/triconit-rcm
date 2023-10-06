@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ApplicationServiceService  } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateLogModel } from '../../models/claim-associate-log-model';
-import html2canvas from 'html2canvas';
-import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
 import { Title } from '@angular/platform-browser';
@@ -77,26 +75,6 @@ export class FetchClaimsComponent implements OnInit {
     data.forEach((e:any)=>{
       this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalRemLiteReject + e.remoteLiteRejections;
    });
-  }
-
-  saveToPdf(divName: any) {
-    this.loader.exportPDFLoader=true;
-    let m:any=document.querySelector(".table-wrapper-scroll-y");
-    m.classList.remove('table-wrapper-scroll-y');
-    m.classList.remove('table-inner-scrollbar');
-    html2canvas(<any>document.getElementById(divName)).then(canvas => {
-      const content = canvas.toDataURL('image/png');
-      let pdf = new jsPDF('p', 'mm', 'a4');
-      let width = pdf.internal.pageSize.getWidth();
-      let height = canvas.height * width / canvas.width;
-      pdf.addImage(content, "PNG", 0, 0, width, height)
-      this.date = new Date();
-      this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${localStorage.getItem("selected_clientName")}_Fetch_Claims_${this.date}`)
-      this.loader.exportPDFLoader=false;
-      m.classList.add('table-wrapper-scroll-y');
-      m.classList.add('table-inner-scrollbar');
-    });
   }
 
   exportToCsv() {

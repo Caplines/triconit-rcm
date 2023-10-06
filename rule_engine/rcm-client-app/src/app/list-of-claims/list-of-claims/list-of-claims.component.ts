@@ -2,8 +2,6 @@ import { Component, OnInit, LOCALE_ID, Inject, HostListener } from '@angular/cor
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
-import html2canvas from 'html2canvas';
-import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
 import { Title } from '@angular/platform-browser';
@@ -613,29 +611,6 @@ export class ListOfClaimsComponent implements OnInit {
       return this.filteredColumnData.lastTeamWorked.some((checkbox: any) => {
         return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
       });
-    });
-  }
-
-  saveToPdf(divName: any) {
-    this.loader.exportPDFLoader = true;
-    let m: any = document.querySelector(".table-wrapper-scroll-y");
-    m.classList.remove('table-wrapper-scroll-y');
-    m.classList.remove('table-inner-scrollbar');
-    html2canvas(<any>document.getElementById(divName)).then(canvas => {
-      const content = canvas.toDataURL('image/png');
-      let pdf = new jsPDF('p', 'mm', 'a4');
-      let width = pdf.internal.pageSize.getWidth();
-      let height = canvas.height * width / canvas.width;
-      // Insert office name
-      pdf.setFontSize(10);  // Adjust the font size as needed
-      pdf.text(`List Of Claims - ${this.clientName}`, 2, 6);
-      pdf.addImage(content, "PNG", 0, 15, width, height);
-      this.date = new Date();
-      this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`);
-      this.loader.exportPDFLoader = false;
-      m.classList.add('table-wrapper-scroll-y');
-      m.classList.add('table-inner-scrollbar');
     });
   }
 

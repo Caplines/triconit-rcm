@@ -5,8 +5,6 @@ import { ClaimAssignmentModel } from '../../models/claim-assignment.model';
 import { ClaimAssignmentPullModel } from '../../models/claim-assignment-pull-model';
 import { BillingList } from '../../models/billing-list-model';
 import { Title } from '@angular/platform-browser';
-import html2canvas from 'html2canvas';
-import jsPDF from "jspdf";
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { Router } from '@angular/router';
 import Utils from '../../util/utils';
@@ -157,30 +155,6 @@ export class OfficeAssignmentComponent implements OnInit {
         scrollTo(0, 0);
       }
     })
-  }
-
-  saveToPdf(divName: any) {
-    this.loader.exportPDFLoader = true;
-    let m: any = document.querySelector(".table-wrapper-scroll-y");
-    m.classList.remove('table-wrapper-scroll-y');
-    m.classList.remove('table-inner-scrollbar');
-    html2canvas(<any>document.getElementById(divName)).then(canvas => {
-      const content = canvas.toDataURL('image/png');
-      let pdf = new jsPDF('p', 'mm', 'a4');
-      let width = pdf.internal.pageSize.getWidth();
-      let height = canvas.height * width / canvas.width;
-      // Insert office name
-      pdf.setFontSize(10);  // Adjust the font size as needed
-      pdf.text(`Pendency - ${this.clientName}`, 2, 6);
-      pdf.addImage(content, "PNG", 0, 15, width, height);
-      this.date = new Date();
-      this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      pdf.save(`${this.clientName}_Pendency_${this.date}`);
-      this.loader.exportPDFLoader = false;
-      m.classList.add('table-wrapper-scroll-y')
-      m.classList.add('table-inner-scrollbar')
-    });
-
   }
 
   sortData(data: any, sortProp: string, order: any, sortType: string) {

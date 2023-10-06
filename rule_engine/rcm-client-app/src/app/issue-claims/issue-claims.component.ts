@@ -304,6 +304,7 @@ selectClaimsToArchive(e:any,id:any){
         // this.issueClaim();
         this.fetchIssueClaimDataWithCount();
         if(this.selectedClaimsToArchiveData.length == this.filteredItems.length){
+          this.issueClaimConfig.issueClaimData=[];
           this.filteredItems=[];
           let archiveSelectboxEl = this.archiveSelectBox.nativeElement;
           archiveSelectboxEl.checked = false;
