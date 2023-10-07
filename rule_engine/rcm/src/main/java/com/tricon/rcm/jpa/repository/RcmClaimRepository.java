@@ -390,7 +390,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate,@Param("userId") String userId);
 
 	
-	@Query(nativeQuery = true, value = " select claim_uuid uuid,cl.claim_id claimId,dos,patient_birth_date  patientDob,"+
+	@Query(nativeQuery = true, value = " select claim_uuid uuid,cmp.uuid companyId,cl.claim_id claimId,dos,patient_birth_date  patientDob,"+
 			" patient_id patientId,patient_name patientName,pending ,cl.current_state currentState, auto_rule_run autoRuleRun,"+
 			" date_last_updated_es dateLastUpdatedES, status_es statusES,est_secondary_es estSecondaryES,description_es descriptionES, "+
 			" prim_date_sent primDateSent, prim_status primeStatus,prim_total_paid primeTotalPaid,"+
@@ -422,8 +422,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			"  left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id"+
 			"  left join rcm_claim_assignment assign on  assign.claim_id=cl.claim_uuid and assign.active=1"+
 			"  left join rcm_user us on us.uuid=assign.assigned_to"+
-			"  where claim_uuid=:claimUuid and cmp.uuid=:companyId")
-	RcmClaimDetailDto fetchIndividualClaim(@Param("companyId")  String companyId,@Param("claimUuid")  String claimUuid) ;
+			"  where claim_uuid=:claimUuid ")//and cmp.uuid=:companyId
+	RcmClaimDetailDto fetchIndividualClaim(@Param("claimUuid")  String claimUuid) ;
 	
 	@Query(nativeQuery = true, value = " select pinst.code primaryInsCode,sinst.code secondaryInsCode " +
 			"  from  rcm_claims cl "+

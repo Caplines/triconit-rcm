@@ -28,6 +28,7 @@ public class FreshClaimDataImplDto {
 	
 	String uuid;
 	String claimId;
+	String companyId;
 	Date dos;
 	Date patientDob;
 	String patientId;
@@ -122,5 +123,7 @@ public class FreshClaimDataImplDto {
     int currentState;
     
     String preferredModeOfSubmission;
+    
+    boolean claimCmpMatchesLoggedCmp;
 }
 

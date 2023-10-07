@@ -1241,13 +1241,15 @@
                                 type="button" class="btn btn-success" [disabled]="inSave"
                                 (click)="saveClaim('assign')">Assign to
                                 Other Team</button>
-                            <button *ngIf="claimRcm.pending && claimRcm.currentState==0" type="button"
-                                class="btn btn-success" [disabled]="inSave"
+                            <button
+                                *ngIf="claimRcm.pending && claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
+                                type="button" class="btn btn-success" [disabled]="inSave"
                                 (click)="openArchivedModal()">Archive</button>
 
 
                         </div>
-                        <div class="action-buttons" *ngIf="claimRcm.currentState==1">
+                        <div class="action-buttons"
+                            *ngIf="claimRcm.currentState==1 && claimRcm.claimCmpMatchesLoggedCmp">
                             <button *ngIf="claimRcm.pending" type="button" class="btn btn-success"
                                 (click)="openUnArchivedModal()">UnArchive</button>
                         </div>

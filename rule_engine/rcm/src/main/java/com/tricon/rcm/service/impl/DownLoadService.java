@@ -77,8 +77,8 @@ public class DownLoadService {
 	@Autowired
 	ResourceLoader resourceLoader;
 	
-	@Autowired
-    private Environment environment;
+	@Value("${rcm.serverdomain}")
+	private String SERVER_DOMAIN;
 	
 	
 	public Object[] generatePdfForListOfClaims(ListOfClaimDownloadDto data) {
@@ -204,7 +204,7 @@ public class DownLoadService {
 	
 //			String destinationFolder =this.setDestinationPath();
 //			dto.setTpLinkPath(destinationFolder);
-			dto.setPath(this.isDevProfileActive());
+			dto.setPath(SERVER_DOMAIN+"/");
 			String filePath = xml.convertToXMLForclaimDetails(dto, XSLT_PATH);		
 			File file = new File(filePath);
 			String xslt = CLAIM_DETAILS_XSLT_FILE;
@@ -422,17 +422,7 @@ public class DownLoadService {
 	}
 	
 
-	public String isDevProfileActive() {
-		String[] activeProfiles = environment.getActiveProfiles();
-		for (String profile : activeProfiles) {
-			if (profile.equals("dev")) {
-				return Constants.DEV_URL;
-			} else {
-				return Constants.PROD_URL;
-			}
-		}
-		return null;
-	}
+	
 	
     public Object[] generatePdfForOthersTeamWorks(OthersTeamWorkDownloadDto data) {
 		

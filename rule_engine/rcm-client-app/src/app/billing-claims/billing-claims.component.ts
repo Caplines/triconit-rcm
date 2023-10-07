@@ -1296,12 +1296,14 @@ export class BillingClaimsComponent {
       return !codedFound;
     }
     let claimCodes: Array<ClaimDetailModel> = this.claimServiceLevelModel.details;
-    claimCodes.forEach((c: ClaimDetailModel) => {
-      //console.log(c.serviceCode);
-      const cd = this.noProviderNoteCodes.find(elem => elem === c.serviceCode);
-      if (cd != undefined) codedFound = true;
+    if (claimCodes != null) {
+      claimCodes.forEach((c: ClaimDetailModel) => {
+        //console.log(c.serviceCode);
+        const cd = this.noProviderNoteCodes.find(elem => elem === c.serviceCode);
+        if (cd != undefined) codedFound = true;
 
-    });
+      });
+    }
     return !codedFound;
   }
 

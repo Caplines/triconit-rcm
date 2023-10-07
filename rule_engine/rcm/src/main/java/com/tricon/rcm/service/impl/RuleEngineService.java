@@ -276,7 +276,7 @@ public class RuleEngineService {
 
 										claim = new RcmClaims();
 										List<String> error = new ArrayList<>();
-										System.out.println(re.getPrimSecInsuranceCompanyId());
+										//System.out.println(re.getPrimSecInsuranceCompanyId());
 										ins = insuranceRepo
 												.findByInsuranceIdAndOffice(re.getPrimSecInsuranceCompanyId(), off);
 										if (ins == null) {

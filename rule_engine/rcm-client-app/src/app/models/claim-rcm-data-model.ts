@@ -79,6 +79,7 @@ export interface ClaimRcmDataModel {
 	assignmentOfBenefits?: string;
 	currentState?: number;
 	preferredModeOfSubmission?: string;
+	claimCmpMatchesLoggedCmp?: boolean;
 }
 
 

@@ -8,6 +8,7 @@ public interface RcmClaimDetailDto {
 
 	String getUuid();
 	String getClaimId();
+	String getCompanyId();
 	Date getDos();
 	Date getPatientDob();
 	String getPatientId();

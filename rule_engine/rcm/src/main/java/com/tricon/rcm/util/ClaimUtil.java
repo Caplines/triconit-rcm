@@ -21,38 +21,38 @@ import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 
-
 public class ClaimUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(ClaimUtil.class);
-	
-   /**
-    * 
-    * @param claims
-    * @param off
-    * @param re
-    * @param team
-    * @param user
-    * @param prim
-    * @param sec
-    * @param cType
-    * @param claimSuffix
-    * @param rcmInsuranceType
-    * @return
-    */
+
+	/**
+	 * 
+	 * @param claims
+	 * @param off
+	 * @param re
+	 * @param team
+	 * @param user
+	 * @param prim
+	 * @param sec
+	 * @param cType
+	 * @param claimSuffix
+	 * @param rcmInsuranceType
+	 * @return
+	 */
 	public static RcmClaims createClaimFromESData(RcmClaims claims, RcmOffice off, ClaimsFromRuleEngine re,
-			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,String claimSuffix,
-			RcmInsuranceType rcmInsuranceType,String timelyLmt,String preferredModeOfSubmission,ClaimTypeEnum claimTypeEnum) {
+			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec, RcmClaimStatusType cType,
+			String claimSuffix, RcmInsuranceType rcmInsuranceType, String timelyLmt, String preferredModeOfSubmission,
+			ClaimTypeEnum claimTypeEnum) {
 
 		claims.setOffice(off);
 		claims.setAttachmentCount(0);
-		claims.setClaimStatusType(cType);//;mStatus("NEED TO RELOOK");// see latter
-		
-		if (user!=null) claims.setCreatedBy(user);
+		claims.setClaimStatusType(cType);// ;mStatus("NEED TO RELOOK");// see latter
+
+		if (user != null)
+			claims.setCreatedBy(user);
 		claims.setCurrentTeamId(team);
 		claims.setFirstWorkedTeamId(team);
-		
-		
+
 		claims.setPatientId(re.getPatientId());
 		claims.setPatientName(re.getPatientName());
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {
@@ -63,53 +63,57 @@ public class ClaimUtil {
 			claims.setPrimePolicyHolder(re.getPrimeSecPolicyHolder());
 			try {
 				if (re.getPrimeSecPolicyHolder().equalsIgnoreCase(re.getPatientName()))
-				claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
+					claims.setPrimePolicyHolderDob(
+							new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
 			} catch (Exception dt) {
 			}
 		}
-         if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
-        	 claims.setSecInsuranceCompanyId(sec);
-        	 claims.setPrimaryStaus(Constants.Primary_Status_Secondary);
-        	 claims.setSecSubmittedTotal(re.getPrimSecSubmittedTotal());
-     		 claims.setSecStatus(re.getPrimSecStatus());
-     		 claims.setSecPolicyHolder(re.getPrimeSecPolicyHolder());
-     		 
-     		 claims.setPrimTotalPaid(re.getPrimTotalPaid());//extra
-    		 try {
-    			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getPrimDateSent()).getTime()));////extra
-    		} catch (Exception dt) {
-    		}
-    		 try {
- 				if (re.getPrimeSecPolicyHolder().equalsIgnoreCase(re.getPatientName()))
- 				claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
- 			} catch (Exception dt) {
- 			}
+		if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
+			claims.setSecInsuranceCompanyId(sec);
+			claims.setPrimaryStaus(Constants.Primary_Status_Secondary);
+			claims.setSecSubmittedTotal(re.getPrimSecSubmittedTotal());
+			claims.setSecStatus(re.getPrimSecStatus());
+			claims.setSecPolicyHolder(re.getPrimeSecPolicyHolder());
+
+			claims.setPrimTotalPaid(re.getPrimTotalPaid());// extra
+			try {
+				claims.setPrimDateSent(
+						new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getPrimDateSent()).getTime()));//// extra
+			} catch (Exception dt) {
+			}
+			try {
+				if (re.getPrimeSecPolicyHolder().equalsIgnoreCase(re.getPatientName()))
+					claims.setPrimePolicyHolderDob(
+							new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
+			} catch (Exception dt) {
+			}
 		}
-		
-		
+
 		claims.setProviderId(re.getProviderId());
 		claims.setRcmSource(ClaimSourceEnum.EAGLESOFT.toString());
-		//claims.setRcmStatus(Constants.CLAIM_WITH_SYSTEM);
-		
+		// claims.setRcmStatus(Constants.CLAIM_WITH_SYSTEM);
+
 		claims.setSubmittedTotal(re.getSubmittedTotal());
-		claims.setClaimId(re.getClaimId()+claimSuffix);
+		claims.setClaimId(re.getClaimId() + claimSuffix);
 		claims.setTimelyFilingLimitData(timelyLmt);
 		claims.setRcmInsuranceType(rcmInsuranceType);
 		claims.setPending(true);
 		claims.setPulledClaimsServiceDataFromEs(false);
-		
-		if (!re.getSecMemberId().equals(Constants.NO_DATA))claims.setSecMemberId(re.getSecMemberId());
-		if (!re.getGroupNumber().equals(Constants.NO_DATA))claims.setGroupNumber(re.getGroupNumber());
+
+		if (!re.getSecMemberId().equals(Constants.NO_DATA))
+			claims.setSecMemberId(re.getSecMemberId());
+		if (!re.getGroupNumber().equals(Constants.NO_DATA))
+			claims.setGroupNumber(re.getGroupNumber());
 		try {
 			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
 		} catch (Exception dt) {
 		}
-		
 
-//		try {
-//			claims.setSecDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecDateSent()).getTime()));
-//		} catch (Exception dt) {
-//		}
+		// try {
+		// claims.setSecDateSent(new
+		// java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecDateSent()).getTime()));
+		// } catch (Exception dt) {
+		// }
 		try {
 			claims.setDos(new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getTranDate()).getTime()));
 		} catch (Exception dt) {
@@ -118,123 +122,129 @@ public class ClaimUtil {
 		claims.setPrimaryEob("N/A");
 		return claims;
 	}
-	
-	public static RcmClaims createClaimFromSheetData(RcmClaims claims, RcmOffice off, ClaimFromSheet re,
-			RcmTeam team, RcmUser user, RcmInsurance prim, RcmInsurance sec,RcmClaimStatusType cType,String claimSuffix,
-			RcmInsuranceType rcmInsuranceType,String timelyLmt,String preferredModeOfSubmission,ClaimTypeEnum claimTypeEnum) {
+
+	public static RcmClaims createClaimFromSheetData(RcmClaims claims, RcmOffice off, ClaimFromSheet re, RcmTeam team,
+			RcmUser user, RcmInsurance prim, RcmInsurance sec, RcmClaimStatusType cType, String claimSuffix,
+			RcmInsuranceType rcmInsuranceType, String timelyLmt, String preferredModeOfSubmission,
+			ClaimTypeEnum claimTypeEnum) {
 
 		claims.setOffice(off);
 		claims.setAttachmentCount(0);
-		claims.setClaimStatusType(cType);//;mStatus("NEED TO RELOOK");// see latter
-		
-		if (user!=null) claims.setCreatedBy(user);
+		claims.setClaimStatusType(cType);// ;mStatus("NEED TO RELOOK");// see latter
+
+		if (user != null)
+			claims.setCreatedBy(user);
 		claims.setCurrentTeamId(team);
 		claims.setFirstWorkedTeamId(team);
 		claims.setPreferredModeOfSubmission(preferredModeOfSubmission);
-		claims.setTreatingProviderFromClaimOnSheet(re.getTreatingProviderName());//Only from Sheet Data..
+		claims.setTreatingProviderFromClaimOnSheet(re.getTreatingProviderName());// Only from Sheet Data..
 		claims.setPatientId(re.getAccountId());
 		claims.setPatientName(re.getPatientName());
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {
 			claims.setPrimInsuranceCompanyId(prim);
-			 claims.setPrimaryStaus(Constants.Primary_Status_Primary);
-			 claims.setProviderId(re.getProviderIdProviderName());
-			 claims.setSecMemberId(re.getPrimaryMemberId());
-			 claims.setGroupNumber(re.getPrimaryGroupNumber());
-			 try {
-			 claims.setSubmittedTotal(Float.parseFloat(re.getPrimaryBilledAmount().replaceAll("[^.0-9]", "")));
-			 }catch(Exception q) {
-				 claims.setSubmittedTotal(0);
-			 }
-			 claims.setPrimStatus(re.getPrimaryClaimStatus());
-			 claims.setPrimePolicyHolder(re.getPrimaryPolicyHolderName());
-			 try {
-			 claims.setPrimeSecSubmittedTotal(Float.parseFloat(re.getPrimaryEstAmount().replaceAll("[^.0-9]", "")));
-			 }catch(Exception q) {
-				 claims.setPrimeSecSubmittedTotal(0);
-			 }
-			 
-			 try {
-					claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPrimaryPolicyHolderDob()).getTime()));
-				} catch (Exception dt) {
-					 try {
-					claims.setPrimePolicyHolderDob(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getPrimaryPolicyHolderDob()).getTime()));
-					} catch (Exception dt1) {
-							
-					}
-					
+			claims.setPrimaryStaus(Constants.Primary_Status_Primary);
+			claims.setProviderId(re.getProviderIdProviderName());
+			claims.setSecMemberId(re.getPrimaryMemberId());
+			claims.setGroupNumber(re.getPrimaryGroupNumber());
+			try {
+				claims.setSubmittedTotal(Float.parseFloat(re.getPrimaryBilledAmount().replaceAll("[^.0-9]", "")));
+			} catch (Exception q) {
+				claims.setSubmittedTotal(0);
 			}
-			 
-			 claims.setPrimStatus(re.getPrimaryClaimStatus());
+			claims.setPrimStatus(re.getPrimaryClaimStatus());
+			claims.setPrimePolicyHolder(re.getPrimaryPolicyHolderName());
+			try {
+				claims.setPrimeSecSubmittedTotal(Float.parseFloat(re.getPrimaryEstAmount().replaceAll("[^.0-9]", "")));
+			} catch (Exception q) {
+				claims.setPrimeSecSubmittedTotal(0);
+			}
+
+			try {
+				claims.setPrimePolicyHolderDob(
+						new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPrimaryPolicyHolderDob()).getTime()));
+			} catch (Exception dt) {
+				try {
+					claims.setPrimePolicyHolderDob(new java.sql.Date(
+							Constants.SDF_SHEET_DATE.parse(re.getPrimaryPolicyHolderDob()).getTime()));
+				} catch (Exception dt1) {
+
+				}
+
+			}
+
+			claims.setPrimStatus(re.getPrimaryClaimStatus());
 		}
-         if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
-        	 claims.setSecInsuranceCompanyId(sec);
-        	 claims.setPrimaryStaus(Constants.Primary_Status_Secondary);
-        	 claims.setProviderId(re.getProviderIdReport());
-        	 claims.setSecMemberId(re.getSecondaryMemberId());
-        	 claims.setGroupNumber(re.getSecondaryGroupNumber());
-        	 claims.setSecStatus(re.getSecondaryClaimStatus());
-     		 claims.setSecPolicyHolder(re.getSecondaryPolicyHolder());
-        	 try {
-					claims.setPrimTotalPaid(Float.parseFloat(re.getPrimaryPaid().replaceAll("[^.0-9]", "")));
-				} catch (Exception dt) {
-					claims.setPrimTotalPaid(0);
+		if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
+			claims.setSecInsuranceCompanyId(sec);
+			claims.setPrimaryStaus(Constants.Primary_Status_Secondary);
+			claims.setProviderId(re.getProviderIdReport());
+			claims.setSecMemberId(re.getSecondaryMemberId());
+			claims.setGroupNumber(re.getSecondaryGroupNumber());
+			claims.setSecStatus(re.getSecondaryClaimStatus());
+			claims.setSecPolicyHolder(re.getSecondaryPolicyHolder());
+			try {
+				claims.setPrimTotalPaid(Float.parseFloat(re.getPrimaryPaid().replaceAll("[^.0-9]", "")));
+			} catch (Exception dt) {
+				claims.setPrimTotalPaid(0);
 			}
-        	 
-        	 try {
-        	 claims.setSecSubmittedTotal(Float.parseFloat(re.getSecondaryEstAmount().replaceAll("[^.0-9]", "")));
-        	 }catch(Exception q) {
-				 claims.setSecSubmittedTotal(0);
-			 }
-     		 
-     		 try {
-					claims.setSubmittedTotal(Float.parseFloat(re.getSecondaryBIlledAmount().replaceAll("[^.0-9]", "")));
-				} catch (Exception dt) {
+
+			try {
+				claims.setSecSubmittedTotal(Float.parseFloat(re.getSecondaryEstAmount().replaceAll("[^.0-9]", "")));
+			} catch (Exception q) {
+				claims.setSecSubmittedTotal(0);
 			}
-     		 
-    		 try {
-    			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecondaryClaimSubmissionDate()).getTime()));////extra
-    		} catch (Exception dt) {
-    			try {
-        			claims.setPrimDateSent(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getSecondaryClaimSubmissionDate()).getTime()));////extra
-        		} catch (Exception dt1) {
-        		}
-    		}
-    		 
-    		 try {
-					claims.setSecPolicyHolderDob(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecondaryPolicyHolderDob()).getTime()));
-				} catch (Exception dt) {
-					 try {
-							claims.setSecPolicyHolderDob(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getSecondaryPolicyHolderDob()).getTime()));
-						} catch (Exception dt1) {
-					}
+
+			try {
+				claims.setSubmittedTotal(Float.parseFloat(re.getSecondaryBIlledAmount().replaceAll("[^.0-9]", "")));
+			} catch (Exception dt) {
+			}
+
+			try {
+				claims.setPrimDateSent(
+						new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecondaryClaimSubmissionDate()).getTime()));//// extra
+			} catch (Exception dt) {
+				try {
+					claims.setPrimDateSent(new java.sql.Date(
+							Constants.SDF_SHEET_DATE.parse(re.getSecondaryClaimSubmissionDate()).getTime()));//// extra
+				} catch (Exception dt1) {
+				}
+			}
+
+			try {
+				claims.setSecPolicyHolderDob(
+						new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecondaryPolicyHolderDob()).getTime()));
+			} catch (Exception dt) {
+				try {
+					claims.setSecPolicyHolderDob(new java.sql.Date(
+							Constants.SDF_SHEET_DATE.parse(re.getSecondaryPolicyHolderDob()).getTime()));
+				} catch (Exception dt1) {
+				}
 			}
 		}
-		
-		
-		
+
 		claims.setRcmSource(ClaimSourceEnum.GOOGLESHEET.toString());
-		//claims.setRcmStatus(Constants.CLAIM_WITH_SYSTEM);
-		
-		
-		claims.setClaimId(re.getClaimId()+claimSuffix);
+		// claims.setRcmStatus(Constants.CLAIM_WITH_SYSTEM);
+
+		claims.setClaimId(re.getClaimId() + claimSuffix);
 		claims.setTimelyFilingLimitData(timelyLmt);
 		claims.setRcmInsuranceType(rcmInsuranceType);
 		claims.setPending(true);
-	
+
 		try {
 			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPaitentDob()).getTime()));
 		} catch (Exception dt) {
 			try {
-				claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getPaitentDob()).getTime()));
+				claims.setPatientBirthDate(
+						new java.sql.Date(Constants.SDF_SHEET_DATE.parse(re.getPaitentDob()).getTime()));
 			} catch (Exception dt1) {
 			}
 		}
-		
 
-//		try {
-//			claims.setSecDateSent(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecDateSent()).getTime()));
-//		} catch (Exception dt) {
-//		}
+		// try {
+		// claims.setSecDateSent(new
+		// java.sql.Date(Constants.SDF_ES_DATE.parse(re.getSecDateSent()).getTime()));
+		// } catch (Exception dt) {
+		// }
 		try {
 			claims.setDos(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getDos()).getTime()));
 		} catch (Exception dt) {
@@ -246,11 +256,11 @@ public class ClaimUtil {
 		claims.setPrimaryEob("N/A");
 		return claims;
 	}
-	
-	public static RcmClaimAssignment createAssginmentData(RcmClaimAssignment assignment,
-			RcmUser assigneByUser,RcmUser assigneToUser,String uuid,RcmClaims claims,
-			String commentsBy,RcmClaimStatusType rcmClaimStatusType,RcmTeam assignedTeam,String systemComment) {
-		
+
+	public static RcmClaimAssignment createAssginmentData(RcmClaimAssignment assignment, RcmUser assigneByUser,
+			RcmUser assigneToUser, String uuid, RcmClaims claims, String commentsBy,
+			RcmClaimStatusType rcmClaimStatusType, RcmTeam assignedTeam, String systemComment) {
+
 		assignment.setAssignedBy(assigneByUser);
 		assignment.setAssignedTo(assigneToUser);
 		assignment.setClaims(claims);
@@ -263,28 +273,23 @@ public class ClaimUtil {
 		assignment.setTakenBack(false);
 		return assignment;
 	}
-	
-	/*
-	public static TimelyFilingLimitDto getTimelyLimitFromSheetListByName(List<TimelyFilingLimitDto> sheetData, String name) {
-		TimelyFilingLimitDto timelyFilingLimitDto = null;
-		if (sheetData == null) {
-			logger.error("Data From Mapping sheet not found");
-			return null;
-		}
-		Collection<TimelyFilingLimitDto> ruleGen = Collections2.filter(sheetData,
-				sh -> sh.getInsuranceName().trim().equalsIgnoreCase(name));
-		for (TimelyFilingLimitDto gs : ruleGen) {
-			timelyFilingLimitDto = gs;
-			break;
-		}
-		if (timelyFilingLimitDto == null) {
-			logger.error(name + " TimelyLimit Not found in  Google sheet");
 
-		}
-		return timelyFilingLimitDto;
-	}
+	/*
+	 * public static TimelyFilingLimitDto
+	 * getTimelyLimitFromSheetListByName(List<TimelyFilingLimitDto> sheetData,
+	 * String name) { TimelyFilingLimitDto timelyFilingLimitDto = null; if
+	 * (sheetData == null) { logger.error("Data From Mapping sheet not found");
+	 * return null; } Collection<TimelyFilingLimitDto> ruleGen =
+	 * Collections2.filter(sheetData, sh ->
+	 * sh.getInsuranceName().trim().equalsIgnoreCase(name)); for
+	 * (TimelyFilingLimitDto gs : ruleGen) { timelyFilingLimitDto = gs; break; } if
+	 * (timelyFilingLimitDto == null) { logger.error(name +
+	 * " TimelyLimit Not found in  Google sheet");
+	 * 
+	 * } return timelyFilingLimitDto; }
 	 */
-	public static TimelyFilingLimitDto getTimelyLimitFromSheetListByCode(List<TimelyFilingLimitDto> sheetData, String code) {
+	public static TimelyFilingLimitDto getTimelyLimitFromSheetListByCode(List<TimelyFilingLimitDto> sheetData,
+			String code) {
 		TimelyFilingLimitDto timelyFilingLimitDto = null;
 		if (sheetData == null) {
 			logger.error("Data From Mapping sheet not found");
@@ -302,62 +307,65 @@ public class ClaimUtil {
 		}
 		return timelyFilingLimitDto;
 	}
-	
-	public static  RcmTeam filterTeamByNameId(List<RcmTeam> rcmTeamList, String teamNameId) {
+
+	public static RcmTeam filterTeamByNameId(List<RcmTeam> rcmTeamList, String teamNameId) {
 
 		Collection<RcmTeam> ruleGen = Collections2.filter(rcmTeamList, sh -> sh.getNameId().equals(teamNameId));
 		return ruleGen.iterator().next();
 
 	}
-	
-	public static  boolean isBillingClaimByInsuranceName(String insuranceName) {
 
-         boolean billing=false;
-         if (insuranceName.equalsIgnoreCase("HMO") || insuranceName.equalsIgnoreCase("PPO")
-        		 || insuranceName.equalsIgnoreCase("OON PPO")
-        		 || insuranceName.equalsIgnoreCase("HMO MCR")
-        		 || insuranceName.equalsIgnoreCase("PPO(Without OON)")
-        		 || insuranceName.equalsIgnoreCase("HMO Medicare")
-        		 
-        		 
-        		 )billing =true;
-         
-         return billing;
- 
+	public static boolean isBillingClaimByInsuranceName(String insuranceName) {
+
+		boolean billing = false;
+		if (insuranceName.equalsIgnoreCase("HMO") || insuranceName.equalsIgnoreCase("PPO")
+				|| insuranceName.equalsIgnoreCase("OON PPO") || insuranceName.equalsIgnoreCase("HMO MCR")
+				|| insuranceName.equalsIgnoreCase("PPO(Without OON)") || insuranceName.equalsIgnoreCase("HMO Medicare")
+
+		)
+			billing = true;
+
+		return billing;
 
 	}
-	public static  boolean isMedcaidClaimByInsuranceName(String insuranceName) {
 
-		boolean medicaid=false;
-        if (insuranceName.equalsIgnoreCase("Adult Medicaid"))medicaid =true;
-        else if (insuranceName.equalsIgnoreCase("Child Medicaid"))medicaid =true;
-        else if (insuranceName.equalsIgnoreCase("medicaid"))medicaid =true;
-        
-        return medicaid;
-        
+	public static boolean isMedcaidClaimByInsuranceName(String insuranceName) {
 
+		boolean medicaid = false;
+		if (insuranceName.equalsIgnoreCase("Adult Medicaid"))
+			medicaid = true;
+		else if (insuranceName.equalsIgnoreCase("Child Medicaid"))
+			medicaid = true;
+		else if (insuranceName.equalsIgnoreCase("medicaid"))
+			medicaid = true;
+
+		return medicaid;
+
+	}
+
+	public static boolean isMedicareClaimByInsuranceName(String insuranceName) {
+
+		boolean medicare = false;
+		if (insuranceName.equalsIgnoreCase("medicare"))
+			medicare = true;
+
+		return medicare;
+
+	}
+
+	public static boolean isChipClaimByInsuranceName(String insuranceName) {
+
+		boolean chip = false;
+		if (insuranceName.equalsIgnoreCase("chip"))
+			chip = true;
+
+		return chip;
 
 	}
 	
-	public static  boolean isMedicareClaimByInsuranceName(String insuranceName) {
-
-		boolean medicare=false;
-        if (insuranceName.equalsIgnoreCase("medicare"))medicare =true;
-        
-        return medicare;
-        
-
-
-	}
-	
-	public static  boolean isChipClaimByInsuranceName(String insuranceName) {
-
-		boolean chip=false;
-        if (insuranceName.equalsIgnoreCase("chip"))chip =true;
-        
-        return chip;
-        
-
-
+	public static boolean checkifCompanyIdMatchesList(String companyId,List<String> companies) {
+		
+		return companies.contains(companyId);
+		
 	}
 }

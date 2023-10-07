@@ -228,7 +228,7 @@ public class ConnectAndReadSheets {
 				continue;
 			try {
 				int x = -1;
-				dto = new TimelyFilingLimitDto(obj.get(++x), obj.get(++x));
+				dto = new TimelyFilingLimitDto(obj.get(++x),obj.get(++x), obj.get(++x));
 				list.add(dto);
 
 			} catch (Exception ex) {
@@ -344,15 +344,16 @@ public class ConnectAndReadSheets {
 				} catch (Exception m) {
 					dto.setPrimaryClaimStatus("");
 				}
+				
 				try {
-					dto.setProviderIdProviderName(obj.get(++x));//L
-				} catch (Exception m) {
-					dto.setProviderIdProviderName("");
-				}
-				try {
-					dto.setTreatingProviderName(obj.get(++x));//M
+					dto.setTreatingProviderName(obj.get(++x));//L
 				} catch (Exception m) {
 					dto.setTreatingProviderName("");
+				}
+				try {
+					dto.setProviderIdProviderName(obj.get(++x));//M
+				} catch (Exception m) {
+					dto.setProviderIdProviderName("");
 				}
 				try {
 					dto.setPrimaryEstAmount(obj.get(++x));//N
