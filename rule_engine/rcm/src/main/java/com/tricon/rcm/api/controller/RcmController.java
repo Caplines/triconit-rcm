@@ -29,6 +29,7 @@ import com.tricon.rcm.dto.RcmArchiveClaimsDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
+import com.tricon.rcm.dto.SearchParamDto;
 import com.tricon.rcm.dto.UnArchiveClaimDto;
 import com.tricon.rcm.dto.UnArchivedResponseDto;
 import com.tricon.rcm.dto.ClaimNotesDto;
@@ -693,6 +694,23 @@ public class RcmController extends BaseHeaderController{
 		}
 		try {
 			response = claimServiceImpl.saveUnArchivedClaims(dto, partialHeader.getJwtUser());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	
+	@GetMapping("api/searchparams")
+	public ResponseEntity<Object> getSearchParams(Model model) {
+		SearchParamDto response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return null;
+		try {
+			response = claimServiceImpl.getSearchParams();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

@@ -495,11 +495,16 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['userClientsWithOffices'], callback)
   }
 
-  saveUnarchiveClaims(params: any,callback: any) {
+  saveUnarchiveClaims(params: any, callback: any) {
     this.postData(params, this.httpUrl['save-unarchive-claims'], callback)
   }
 
-  searchClaims(params: any,callback: any) {
+  searchClaims(params: any, callback: any) {
     this.postData(params, this.httpUrl['search-claims'], callback)
   }
+
+  getSerachParams(callback: any) {
+    this.getData({}, this.httpUrl['search-params'], callback)
+  }
+
 }

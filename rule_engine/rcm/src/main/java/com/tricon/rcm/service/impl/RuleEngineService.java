@@ -301,6 +301,15 @@ public class RuleEngineService {
 											}
 											// error.add( "Primary Insurance Missing for
 											// id:"+re.getPrimInsuranceCompanyId());
+										}else {
+											if (ins.getInsuranceCode()==null) {
+												insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getInsuranceCompanyName().trim());
+												if (insuranceNameTypeDto!=null) {
+													ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
+													insuranceRepo.save(ins);
+												}
+												
+											}
 										}
 										// if (primaryIns.getInsuranceType()==null) {
 										// error.add("Primary Insurance Type Missing for
@@ -755,7 +764,7 @@ public class RuleEngineService {
 					table.getGoogleSheetSubName(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
 
 		} catch (Exception n) {
-			logger.error("Error in Fetching TimelyFilingLimi ");
+			logger.error("Error in Fetching TimelyFilingLimit ");
 			logger.error(n.getMessage());
 		}
 

@@ -111,6 +111,7 @@ import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.RuleRemarkDto;
+import com.tricon.rcm.dto.SearchParamDto;
 import com.tricon.rcm.dto.ServiceValidationDataDto;
 import com.tricon.rcm.dto.TPValidationResponseDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
@@ -455,7 +456,9 @@ public class ClaimServiceImpl {
 		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyuuid());
 		List<RcmTeam> allTeams = rcmTeamRepo.findAll();
 		InsuranceNameTypeDto insuranceNameTypeDto=null;
-		List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(company);
+		//For pulling Insurance name always use SimlePoint.
+		RcmCompany companyIns = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);//Uuid(dto.getCompanyuuid());//Always
+		List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(companyIns);
 		List<TimelyFilingLimitDto> timelyFilingLimits = ruleEngineService.pullTimelyFilingLmtMappingFromSheet(company);
 		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
 		RcmClaimStatusType systemStatusReBilling = rcmClaimStatusTypeRepo
@@ -615,7 +618,17 @@ public class ClaimServiceImpl {
 							     ins.setInsuranceType(rcmInsuranceTypes.get(re.getInsuranceName()));
 								 ins.setId(insuranceRepo.save(ins).getId());
 								 }
+								 
 								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim());
+							}
+							
+							if (ins.getInsuranceCode()==null) {
+								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim());
+								if (insuranceNameTypeDto!=null) {
+									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
+									insuranceRepo.save(ins);
+								}
+								
 							}
 							TimelyFilingLimitDto timely=null;
 							if (insuranceNameTypeDto!=null) {
@@ -876,6 +889,14 @@ public class ClaimServiceImpl {
 								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim());
 							}
 
+							if (ins.getInsuranceCode()==null) {
+								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim());
+								if (insuranceNameTypeDto!=null) {
+									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
+									insuranceRepo.save(ins);
+								}
+								
+							}
 							TimelyFilingLimitDto timely = null;
 							if (insuranceNameTypeDto!=null) timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
 									insuranceNameTypeDto.getInsuranceCode());
@@ -3799,6 +3820,45 @@ public class ClaimServiceImpl {
 						.build()
 				: null;
 		return response;
+	}
+	
+	public SearchParamDto getSearchParams() throws Exception {
+		Set<String> insuranceNames=new HashSet<String>();
+		Set<String> insuranceTypes=new HashSet<String>();
+		Set<String> providerTypes=new HashSet<String>();//Specialty
+		Set<String> providerNames=new HashSet<String>();
+		SearchParamDto searchParamDto= new SearchParamDto();
+		//For pulling Insurance name always use SimlePoint.
+		RcmCompany companyIns = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);//Uuid(dto.getCompanyuuid());//Always
+		List<InsuranceNameTypeDto> insuranceTypeDtoList = ruleEngineService.pullInsuranceMappingFromSheet(companyIns);
+		
+		for (InsuranceNameTypeDto dto:insuranceTypeDtoList) {
+			if (dto.getInsuranceName()==null) continue;
+			if (dto.getInsuranceName().equals("")) continue;
+			insuranceNames.add(dto.getInsuranceName());
+		}
+		
+		List<RcmInsuranceType> datas= rcmInsuranceTypeRepo.findAll();
+		for(RcmInsuranceType data:datas) {
+			if (data.getName()==null) continue;
+			if (data.getName().equals("")) continue;
+			insuranceTypes.add(data.getName());
+		}
+		
+		Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
+				Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
+				CREDENTIALS_FOLDER);
+		List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
+		for(ProviderCodeWithSpecialty pro:proEs) {
+			if (!pro.getSpecialty().equals("")) providerTypes.add(pro.getSpecialty());
+			if (!pro.getProviderNames().equals("")) providerNames.add(pro.getProviderNames());
+		}
+		searchParamDto.setInsuranceNames(insuranceNames);
+		searchParamDto.setInsuranceTypes(insuranceTypes);
+		searchParamDto.setProviderNames(providerNames);
+		searchParamDto.setProviderTypes(providerTypes);
+		
+		return searchParamDto;
 	}
 	
 	

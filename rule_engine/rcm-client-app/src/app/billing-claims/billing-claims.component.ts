@@ -76,7 +76,7 @@ export class BillingClaimsComponent {
   selectedFilesMap: any = new Map();
   removedFilesMap: any = new Map();
   serialNoArray = new Map<string, number>();
-  readonly noProviderNoteCodes: Array<string> = ["D0120", "D0150", "D0220", "D0230", "D1110", "D1208", "D0210"];
+  readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0220", "D0230", "D0272", "D0274", "D0210", "D1110", "D1120", "D1206", "D1208", "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D0431"];
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
     private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService,
@@ -1290,8 +1290,11 @@ export class BillingClaimsComponent {
 
   isProviderNotesNeeded(): boolean {
     //
-    //debugger;
+    //this Provider Notes requirement is only for the cases that are sent to billing team and not internal audit team.
     let codedFound = false;
+    if (this.claimRcm.firstTeamId == this.appConstants.INTERNAL_AUDIT_TEAM) {
+      return true;
+    }
     if (this.claimServiceLevelModel == undefined) {
       return !codedFound;
     }
