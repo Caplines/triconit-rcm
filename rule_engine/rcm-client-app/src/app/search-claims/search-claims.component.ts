@@ -37,6 +37,15 @@ export class SearchClaimsComponent {
 
   constructor(public appService: ApplicationServiceService, private title: Title, private constants: AppConstants) {
     title.setTitle(Utils.defaultTitle + "Search Claims");
+    this.appService.subscribeOnValueChange('FromMultiSelect',(event:any)=>{
+      if (event['action'] == 'getSelectClientName') {
+        this.searchClaimConfig['clientUuid'] = event.value.map(({ checked, clientName, offices, ...newClient }: any) => newClient.clientUuid);
+        this.searchClaimConfig['officeUuid'] = [];
+      } else if (event['action'] == 'getSelectedOffices') {
+        this.searchClaimConfig['officeUuid'] = event.value.map(({ active, checked, key, name, ...newOffice }: any) => newOffice.uuid);
+      }
+      console.log(this.searchClaimConfig);
+    })
   }
 
   ngOnInit(): void {
@@ -50,21 +59,30 @@ export class SearchClaimsComponent {
     this.appService.fetchClientsByUser((callback: any) => {
       if (callback.status) {
         this.clients = callback.data;
+      
       }
     })
+  }
+
+  addCheckedAndNameProperty(data:any){
+   data.insuranceNames =  data.insuranceNames.map((item:any) => ({ name: item, checked: false }));
+   data.insuranceTypes=  data.insuranceTypes.map((item:any) => ({ name: item, checked: false }));
+   data.providerNames = data.providerNames.map((item:any) => ({ name: item, checked: false }));
+   data.providerTypes = data.providerTypes.map((item:any) => ({ name: item, checked: false }));
+
+
   }
 
   getSerachParams() {
     this.appService.getSerachParams((callback: any) => {
       if (callback.status) {
         this.searchParamModel = callback.data;
-        console.log(this.searchParamModel);
+        this.addCheckedAndNameProperty(this.searchParamModel);
       }
     })
   }
 
   searchClaims() {
-    return;
     this.appService.searchClaims(this.searchClaimConfig, (res: any) => {
       if (res.status) {
         console.log(res);
@@ -73,10 +91,8 @@ export class SearchClaimsComponent {
   }
 
   receiveChildrenEvent(event: any) {
-    if (event['action'] == 'getSelectClientName') {
-      console.log(event);
-      this.searchClaimConfig['clientUuid'].push(event.value[0].clientUuid)
-    }
+   
   }
+  
 
 }

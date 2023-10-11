@@ -25,16 +25,20 @@ export class MultiSelectDropdownComponent {
   clients:any=[]
   selectAllChecked:boolean=false;
   teamData:any=this.constants.teamData;
-  searchClaimsConfig:any={'clients':[],'offices':[],"teams":[]};
+  searchClaimsConfig:any={'clients':[],'offices':[],"teams":[],'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[]};
 
 constructor(private _service:ApplicationServiceService,private constants:AppConstants) {
   this.clientCheckedList=this.teamCheckedList=[];
-  this.clients= JSON.parse(localStorage.getItem("clients"));
   this._service.subscribeOnValueChange('MultiSelect',(event:any)=>{
-    if(event.action==='selectedClientsOffices'){
-      this.inputConfig.officeData=event.value;
-    }
-  })
+    if (event.action === 'selectedClientsOffices') {
+        this.searchClaimsConfig.offices=[];      
+      if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+        && this.inputConfig.subType == 'office') {
+          this.inputConfig.officeData = JSON.parse(JSON.stringify(event.value))
+        } 
+      }
+      else return;
+    })
  }
 
  ngOnInit(){
@@ -131,16 +135,86 @@ getSelectedValue(status: Boolean, value: any, type: String) {
   else if (type === 'searchClaimClient'){
     if (status) {
       this.searchClaimsConfig.clients.push(value);
-      this.emitToParent.emit({action:'getSelectClientName',value:this.searchClaimsConfig.clients});
+      this._service.emitOnValueChange({action:'getSelectClientName',value:this.searchClaimsConfig.clients});
     } else {
       this.searchClaimsConfig.clients.forEach((e: any, idx: any) => {
         if (e.clientUuid == value.clientUuid) {
           this.searchClaimsConfig.clients.splice(idx, 1);
-          this.emitToParent.emit({action:'getSelectClientName',value:this.searchClaimsConfig.clients});
+          this._service.emitOnValueChange({action:'getSelectClientName',value:this.searchClaimsConfig.clients});
+        }
+      });
+      
+    }
+    this.addOfficessCrossClient();
+  }
+  else if (type === 'searchClaimOffices'){
+    if (status) {
+      this.searchClaimsConfig.offices.push(value);
+      this._service.emitOnValueChange({action:'getSelectedOffices',value:this.searchClaimsConfig.offices});
+    } else {
+      this.searchClaimsConfig.offices.forEach((e: any, idx: any) => {
+        if (e.uuid == value.uuid) {
+          this.searchClaimsConfig.offices.splice(idx, 1);
+          this._service.emitOnValueChange({action:'getSelectedOffices',value:this.searchClaimsConfig.offices});
+        }
+      });
+      
+    }
+  }
+  else if (type === 'insuranceNames'){
+    if (status) {
+      this.searchClaimsConfig.insuranceNames.push(value);
+      this.emitToParent.emit({action:'getinsuranceNames',value:this.searchClaimsConfig.insuranceNames});
+    } else {
+      this.searchClaimsConfig.insuranceNames.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.searchClaimsConfig.insuranceNames.splice(idx, 1);
+          this.emitToParent.emit({action:'getinsuranceNames',value:this.searchClaimsConfig.insuranceNames});
         }
       });
     }
-    
+  }
+  else if (type === 'insuranceTypes'){
+    if (status) {
+      this.searchClaimsConfig.insuranceTypes.push(value);
+      this.emitToParent.emit({action:'getinsuranceTypes',value:this.searchClaimsConfig.insuranceTypes});
+    } else {
+      this.searchClaimsConfig.insuranceTypes.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.searchClaimsConfig.insuranceTypes.splice(idx, 1);
+          this.emitToParent.emit({action:'getinsuranceTypes',value:this.searchClaimsConfig.insuranceTypes});
+        }
+      });
+      
+    }
+  }
+  else if (type === 'providerNames'){
+    if (status) {
+      this.searchClaimsConfig.providerNames.push(value);
+      this.emitToParent.emit({action:'getproviderNames',value:this.searchClaimsConfig.providerNames});
+    } else {
+      this.searchClaimsConfig.providerNames.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.searchClaimsConfig.providerNames.splice(idx, 1);
+          this.emitToParent.emit({action:'getproviderNames',value:this.searchClaimsConfig.providerNames});
+        }
+      });
+      
+    }
+  }
+  else if (type === 'providerTypes'){
+    if (status) {
+      this.searchClaimsConfig.providerTypes.push(value);
+      this.emitToParent.emit({action:'getproviderTypes',value:this.searchClaimsConfig.providerTypes});
+    } else {
+      this.searchClaimsConfig.providerTypes.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.searchClaimsConfig.providerTypes.splice(idx, 1);
+          this.emitToParent.emit({action:'getproviderTypes',value:this.searchClaimsConfig.providerTypes});
+        }
+      });
+      
+    }
   }
 }
   shareCheckedlist(action: any) {
@@ -189,18 +263,16 @@ getSelectedValue(status: Boolean, value: any, type: String) {
     }
     }
 
-    getOfficesCrossClients(){
+    addOfficessCrossClient(){
       let offices:any=[];
       this.searchClaimsConfig.clients.forEach((ele:any)=>{
-        if(ele.offices.length>0){
+        if(ele.offices.length>0){ 
           ele.offices.forEach((item:any)=>{
                   offices.push(item);
           })
         }
       })
-      console.log(offices);
-     
-      // this._service.emitOnValueChange({action:'selectedClientsOffices',value:offices}) 
+      this._service.emitOnValueChange({action:'selectedClientsOffices',value:offices});
    
     }
 }

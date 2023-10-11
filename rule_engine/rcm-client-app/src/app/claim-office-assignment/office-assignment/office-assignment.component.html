@@ -155,7 +155,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th>
+                                                <th *ngIf="teamId == 7">
                                                     <div class="dFlex">
                                                         # of RemoteLite Rejections
                                                         <span class="sorting">
@@ -194,7 +194,7 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td class="alignRight">{{totalClaimData.totalCount}}</td>
-                                                <td class="alignRight">{{totalClaimData.totalRemLiteReject}}</td>
+                                                <td *ngIf="teamId == 7" class="alignRight">{{totalClaimData.totalRemLiteReject}}</td>
                                                 <td class="alignRight">{{totalClaimData.totalcountAndRemLiteReject}}
                                                 </td>
                                             </tr>
@@ -223,7 +223,7 @@
                                                     <td>{{lg.opdtd}}</td>
                                                     <td>{{lg.opdosd}}</td>
                                                     <td class="alignRight">{{lg.count}}</td>
-                                                    <td class="alignRight">{{lg.remoteLiteRejections}}</td>
+                                                    <td *ngIf="teamId == 7" class="alignRight">{{lg.remoteLiteRejections}}</td>
                                                     <td class="alignRight">{{lg.totalBillingRejection}}</td>
                                                 </tr>
                                             </ng-container>

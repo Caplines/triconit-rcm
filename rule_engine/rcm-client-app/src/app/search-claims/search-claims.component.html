@@ -25,19 +25,19 @@
                                     <div class="colName">
                                                                                 Office Name
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'officeData':offices,'isSearchClaims':true}"></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'officeData':offices,'isSearchClaims':true,'subType':'office'}">"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Claim ID
                                     </div>
-                                    <div class="colAction"><input type="text" class="no-css-input-box claim-width"> </div>
+                                    <div class="colAction"><input type="text" class="no-css-input-box claim-width" [(ngModel)]="searchClaimConfig['claimId']"> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Patient ID
                                     </div>
-                                    <div class="colAction"><input type="text" class="no-css-input-box"> </div>
+                                    <div class="colAction"><input type="text" class="no-css-input-box" [(ngModel)]="searchClaimConfig['patientId']"> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
@@ -61,19 +61,19 @@
                                     <div class="colName">
                                                                                 Insurance Name
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'insuranceNames':searchParamModel?.insuranceNames,'isSearchClaims':true,'subType':'insuranceNames'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Insurance Type
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'insuranceTypes':searchParamModel?.insuranceTypes,'isSearchClaims':true,'subType':'insuranceTypes'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Provider Type
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'providerNames':searchParamModel?.providerNames,'isSearchClaims':true,'subType':'providerNames'}"></multi-select-dropdown> </div>
                                     </div>
                                     
                                      
@@ -82,7 +82,7 @@
                                     <div class="colName">
                                                                                 Provider Name
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown  [inputConfig]="{'providerTypes':searchParamModel?.providerTypes,'isSearchClaims':true,'subType':'providerTypes'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">

@@ -163,21 +163,23 @@ export class OfficeAssignmentComponent implements OnInit {
 
 
   calcCount(data: any) {
+    this.totalClaimData.totalCount= 0;
     data.forEach((e: any) => {
       this.totalClaimData.totalCount = this.totalClaimData.totalCount + e.count;
     });
   }
 
   calcRemLiteReject(data: any) {
+    this.totalClaimData.totalRemLiteReject=0;
     data.forEach((e: any) => {
       this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalRemLiteReject + e.remoteLiteRejections;
     });
   }
 
   calcCountAndRemLiteReject(data: any) {
+    this.totalClaimData.totalcountAndRemLiteReject=0;
     data.forEach((e: any) => {
       this.totalClaimData.totalcountAndRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject + e.count + e.remoteLiteRejections;
-      e['totalBillingRejection'] = e.remoteLiteRejections + e.count;
     });
   }
 
@@ -287,10 +289,6 @@ export class OfficeAssignmentComponent implements OnInit {
     if (!e) {
       this.filteredItems = JSON.parse(JSON.stringify(this.claimData));
       this.isFilterAllSelected.companyName = true;
-      this.calcCount(this.filteredItems);
-      this.calcRemLiteReject(this.filteredItems);
-      this.calcCountAndRemLiteReject(this.filteredItems);
-      this.addTotalCountAndRemLiterejectField(this.filteredItems);
     } else {
       let isAllSelected: boolean = true;
       for (let i = 0; i < this.filteredCompanyName.length; i++) {
@@ -306,6 +304,10 @@ export class OfficeAssignmentComponent implements OnInit {
         })
       })
     }
+      this.calcCount(this.filteredItems);
+      this.calcRemLiteReject(this.filteredItems);
+      this.calcCountAndRemLiteReject(this.filteredItems);
+      this.addTotalCountAndRemLiterejectField(this.filteredItems);
   }
   
   showFilterOptioncompanyName(data: any) {
@@ -334,7 +336,11 @@ export class OfficeAssignmentComponent implements OnInit {
 
 addTotalCountAndRemLiterejectField(data:any){
   data.forEach((e:any)=>{
-    e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
+    if(this.teamId == 7){
+      e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
+    } else{
+      e['totalBillingRejection'] = e.count;
+    }
   })
 
 }
@@ -366,6 +372,4 @@ selectAll(event: any, filterProperty: any) {
     this.filterCompanyName("selectAll");
   }
 }
-
-
 }
