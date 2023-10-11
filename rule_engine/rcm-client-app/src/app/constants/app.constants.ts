@@ -20,7 +20,7 @@ export class AppConstants {
             "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production"], "defaultpath": "/claim-assignment"
         }],
         [4, {
-            "name": "Lc3", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
+            "name": "LC3", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
         }],
         [5, {
             "name": "Office", "paths":AppConstants.commonPath, "defaultpath": "/update-pass"
@@ -94,7 +94,7 @@ export class AppConstants {
 
     public teamData: any = [
         {"unFormatedName": 'INTERNAL_AUDIT', "count":0,"teamName": "Internal Audit", "teamId": 3 },
-        {"unFormatedName": 'LC3', "count":0,"teamName": "Lc3", "teamId": 4 },
+        {"unFormatedName": 'LC3', "count":0,"teamName": "LC3", "teamId": 4 },
         {"unFormatedName": 'OFFICE', "count":0,"teamName": "Office", "teamId": 5 },
         {"unFormatedName": 'PATIENT_CALLING', "count":0,"teamName": "Patient Calling", "teamId": 6 },
         {"unFormatedName": 'BILLING', "count":0,"teamName": "Billing", "teamId": 7 },

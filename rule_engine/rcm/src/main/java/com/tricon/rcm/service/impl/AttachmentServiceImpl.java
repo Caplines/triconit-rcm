@@ -178,8 +178,16 @@ public class AttachmentServiceImpl {
 		RcmUser loginUser = null;
 		RcmClaims claims = null;
 		int deleteCount = 0;
-		List<RcmClaimAttachmentDto> data = attachmentRepo.findByAttachmentsById(dto.getClaimAttachmentId(),
-				dto.getClaimUuid());
+		claims = claimRepo.findByClaimUuid(dto.getClaimUuid());
+		if (claims == null) {
+			response = FileResponseDto.builder().message(MessageConstants.CLAIM_NOT_EXIST).fileResponseStatus(false).build();
+			return response;
+		}
+		if (!claims.isPending()) {
+			response = FileResponseDto.builder().message(MessageConstants.CLAIM_ALREADY_SUBMITTED).fileResponseStatus(false).build();
+			return response;
+		}
+		List<RcmClaimAttachmentDto> data = attachmentRepo.findByAttachmentsById(dto.getClaimAttachmentId(),claims.getClaimUuid());
 		if (!data.isEmpty()) {
 			for (RcmClaimAttachmentDto d : data) {
 				int status = 0;
@@ -241,7 +249,6 @@ public class AttachmentServiceImpl {
 			// update attachements count in rcm claim table
 
 			if (deleteCount > 0 ) {
-				claims = claimRepo.findByClaimUuid(dto.getClaimUuid());
 				logger.info("Previous Counts:"+claims.getAttachmentCount());
 				if (claims != null) {
 					attachmentRepo.updateAttachmentCountInRcmClaim(dto.getClaimUuid(),

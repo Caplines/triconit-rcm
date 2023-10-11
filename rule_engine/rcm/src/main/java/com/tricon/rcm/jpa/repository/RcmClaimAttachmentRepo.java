@@ -34,8 +34,7 @@ public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment
 			+ "inner join rcm_attachment_type atype on atype.id=a.attachment_type_id "
 			+ "inner join rcm_claims c on c.claim_uuid=a.claim_id "
 			+ "inner join rcm_team t on t.id=a.created_by_team "
-			+ "where a.id IN (:attachmentsId) and a.claim_id=:claimuUuid and a.is_deleted is false and a.status is true and t.active is true "
-			+ " and c.pending is true and c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED, nativeQuery = true)
+			+ "where a.id IN (:attachmentsId) and a.claim_id=:claimuUuid and a.is_deleted is false and a.status is true and t.active is true", nativeQuery = true)
 	List<RcmClaimAttachmentDto> findByAttachmentsById(@Param("attachmentsId")List<Integer>attachmentsId,@Param("claimuUuid") String claimuUuid);
    
 	
