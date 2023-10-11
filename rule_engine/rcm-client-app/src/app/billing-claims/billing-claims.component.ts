@@ -76,7 +76,11 @@ export class BillingClaimsComponent {
   selectedFilesMap: any = new Map();
   removedFilesMap: any = new Map();
   serialNoArray = new Map<string, number>();
-  readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0220", "D0230", "D0272", "D0274", "D0210", "D1110", "D1120", "D1206", "D1208", "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D0431"];
+  readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
+    "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
+    "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
+    "D2331", "D2332", "D2335", "D2391", "D2392", "D2393", "D2394", "D0431",
+    "D2140", "D2150", "D2160", "D2161"];
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
     private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService,
@@ -1300,14 +1304,20 @@ export class BillingClaimsComponent {
     }
     let claimCodes: Array<ClaimDetailModel> = this.claimServiceLevelModel.details;
     if (claimCodes != null) {
+      let rCode = [];
       claimCodes.forEach((c: ClaimDetailModel) => {
         //console.log(c.serviceCode);
+        //We have to ask for Provider notes if there are one ore more service codes in the 
+        //claim that are not in the list of excluded service codes that Capline sent us.
         const cd = this.noProviderNoteCodes.find(elem => elem === c.serviceCode);
-        if (cd != undefined) codedFound = true;
+        if (cd == undefined) rCode.push(c.serviceCode);
 
       });
+      //console.log(rCode.length);
+      if (rCode.length > 0) codedFound = true;
     }
-    return !codedFound;
+    //console.log(codedFound);
+    return codedFound;
   }
 
   isRuleEnginevalidationNeeded() {

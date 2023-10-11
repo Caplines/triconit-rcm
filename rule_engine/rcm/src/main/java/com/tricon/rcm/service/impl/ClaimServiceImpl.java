@@ -635,7 +635,13 @@ public class ClaimServiceImpl {
 								timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
 										insuranceNameTypeDto.getInsuranceCode().trim());
 								
-							}
+							}else if(ins.getInsuranceCode()!=null){
+                            	insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim());
+								if (insuranceNameTypeDto!=null) {
+                            	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
+                            			ins.getInsuranceCode().trim());
+								}
+                            }
 							if (timely == null) {
 								 error.add("Timely Limit Type Missing for Primary Ins. :"+re.getPrimaryInsuranceCompany());
 
@@ -888,7 +894,7 @@ public class ClaimServiceImpl {
 								 }
 								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim());
 							}
-
+							TimelyFilingLimitDto timely = null;
 							if (ins.getInsuranceCode()==null) {
 								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim());
 								if (insuranceNameTypeDto!=null) {
@@ -896,8 +902,14 @@ public class ClaimServiceImpl {
 									insuranceRepo.save(ins);
 								}
 								
-							}
-							TimelyFilingLimitDto timely = null;
+							}else if(ins.getInsuranceCode()!=null){
+                            	insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim());
+								if (insuranceNameTypeDto!=null) {
+                            	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
+                            			ins.getInsuranceCode().trim());
+								}
+                            }
+							
 							if (insuranceNameTypeDto!=null) timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
 									insuranceNameTypeDto.getInsuranceCode());
 							if (timely == null) {

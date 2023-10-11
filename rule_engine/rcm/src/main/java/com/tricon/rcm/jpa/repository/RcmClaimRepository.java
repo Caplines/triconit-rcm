@@ -195,7 +195,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
-			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance,prime_sec_submitted_total primeSecSubmittedTotal "
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
 			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
