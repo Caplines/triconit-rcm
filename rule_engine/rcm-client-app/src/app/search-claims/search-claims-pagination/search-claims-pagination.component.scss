@@ -1,0 +1,175 @@
+.sorting {
+    display: inline-flex;
+    flex-flow: column;
+    margin-left: 10px;
+    margin-top: 7px;
+}       
+
+    .arrow-up {
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid #b4b5b5;
+        margin-bottom: 4px;
+    }
+    a.arrow-down.selected{
+        border-top-color: #2d4047;
+    }
+    .arrow-down {
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #b4b5b5;
+    }
+    .sorting .selected {
+        border-bottom-color: #2d4047;
+    }
+
+.dFlex {
+    display: flex;
+}
+
+.filter-dropdown-menu{
+    display: flex;
+    min-width: 250px;
+    padding: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-dropdown-menu label{
+    width: 45%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.filter-dropdown-menu label input{
+    margin-right: 5px;
+}
+.table-wrapper-scroll-y {
+    display: block;
+  }
+  
+  .table-inner-scrollbar {
+    position: relative;
+    overflow-y: auto;
+    height: calc(100vh - 220px);
+    min-width: 100%;
+  }
+
+  .table-inner-scrollbar thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-top: 0px !important;
+    width: 20vw;
+}
+
+.table-inner-scrollbar {
+    thead {
+        th{
+            .filter-dropdown-menu {
+                width: 280px;
+                line-height: normal;
+                label {
+                    align-items: baseline;
+                    input {
+                        position: relative;
+                        top: 2px;}
+                }
+            }
+            &:first-child {
+                z-index: 9;
+            }
+            &:nth-child(6){
+                min-width: 80px;
+            }
+            &:nth-child(7){
+                z-index: 999999;
+            }
+            &:nth-child(8){
+                z-index: 99999;
+            }
+            &:nth-child(9){
+                z-index: 9999;
+                .filter-dropdown-menu {
+                    width: 300px;
+                    left: -56px;
+                }
+            }
+            &:nth-child(10){
+                
+                z-index: 999;
+                .filter-dropdown-menu {
+                    width: 340px;
+                    left: -45px;
+                }
+            }
+            &:nth-child(11){
+                
+                z-index: 99;
+            }
+            &:nth-child(12){
+                
+                z-index: 9;
+                .filter-dropdown-menu {
+                    width: 350px;
+                    left: -72px!important;
+                }
+            }
+            &:nth-child(13){
+                z-index: 8;
+                .filter-dropdown-menu {
+                    right: -190px;
+                    left: inherit!important;
+                }
+
+            }
+            // &:nth-child(10){
+            //     z-index: 9;
+            //     min-width: 140px;
+            //     .filter-dropdown-menu {
+            //         left: inherit;
+            //         right: -27px;
+            //     }
+            // }
+    
+        }    
+    }
+}
+.fetchMyClaims thead th:nth-child(13) .filter-dropdown-menu {
+    right: -123px;
+
+}
+.fetchFresh thead th:nth-child(13) .filter-dropdown-menu {
+    right: -123px;
+
+}
+.filter-dropdown-menu label:first-child{
+    color: #dc3545;
+    font-weight: 700;
+    width: 100%;
+}
+.filter-dropdown-menu label:first-child input[type=checkbox] {
+    accent-color:#dc3545;
+  }
+
+  .filter-dropdown-menu .close{
+    position: absolute;
+    right: 7px;
+    top: 4px;
+    outline: none;
+  }
+  .lastTeam .dropdown-menu {
+    right: 0px;
+    left: auto;
+  }
+  .addLast .insuranceName .dropdown-menu {     left: -95px!important; }
+  .addLast .insuranceType .dropdown-menu{  left: -97px!important;}
+
+.changeColor {
+    color: #ffffff !important;
+    background-color: #ff6573;
+}
