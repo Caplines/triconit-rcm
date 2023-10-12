@@ -6,7 +6,7 @@ import { SearchClaimsComponent } from './search-claims.component';
 import { MultiSelectDropdownModule } from '../shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module';
 import { DateRangeModule } from '../shared/date-range-picker/date-range-picker.module';
 import { FormsModule } from '@angular/forms';
-
+import { SearchClaimsPaginationModule } from './search-claims-pagination/search-claims-pagination.module';
 
 @NgModule({
   declarations: [SearchClaimsComponent],
@@ -15,7 +15,8 @@ import { FormsModule } from '@angular/forms';
     SearchClaimsRoutingModule,
     MultiSelectDropdownModule,
     DateRangeModule,
-    FormsModule
+    FormsModule,
+    SearchClaimsPaginationModule
   ],
   exports:[SearchClaimsComponent]
 })

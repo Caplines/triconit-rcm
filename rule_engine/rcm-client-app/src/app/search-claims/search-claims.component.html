@@ -43,19 +43,19 @@
                                     <div class="colName">
                                                                                 DOS Range
                                     </div>
-                                    <div class="colAction dateRange"><app-date-range></app-date-range> </div>
+                                    <div class="colAction dateRange"><app-date-range (emitToParent)="receiveChildrenEvent($event)"></app-date-range> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Age Category
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'ageCategory':constants.ageCategory,'isSearchClaims':true,'subType':'ageCategory'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Claim Status
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'claimStatus':constants.claimStatus,'isSearchClaims':true,'subType':'ageCategory'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
@@ -71,7 +71,7 @@
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
-                                                                                Provider Type
+                                                                                Provider Name
                                     </div>
                                     <div class="colAction"><multi-select-dropdown [inputConfig]="{'providerNames':searchParamModel?.providerNames,'isSearchClaims':true,'subType':'providerNames'}"></multi-select-dropdown> </div>
                                     </div>
@@ -80,7 +80,7 @@
                                     
                                                                         <div class="colBox">
                                     <div class="colName">
-                                                                                Provider Name
+                                                                                Provider Type
                                     </div>
                                     <div class="colAction"><multi-select-dropdown  [inputConfig]="{'providerTypes':searchParamModel?.providerTypes,'isSearchClaims':true,'subType':'providerTypes'}"></multi-select-dropdown> </div>
                                     </div>
@@ -98,119 +98,16 @@
                                     </div>
                                     <div class="colAction">
                                     <div class="custom-control custom-switch custom-switch-lg">
-                                    <input type="checkbox" class="custom-control-input" id="customSwitch1">
+                                    <input type="checkbox" [(ngModel)]="searchClaimConfig.showArchive" class="custom-control-input" id="customSwitch1">
                                     <label class="custom-control-label" for="customSwitch1"></label>
                                     </div>
                                     </div>
                                     </div>
                                     </div>
                                     <div class="mb-2 mt-2">
-                                    <a href="javascript:void(0);" (click)="searchClaims()" class="btn text-light btn-secondary "><img _ngcontent-fcp-c53="" src="../assets/img/search.png" class="search-icon">Search</a>
+                                    <a href="javascript:void(0);" [ngClass]="{'disabled':searchClaimConfig.clientUuid.length==0}" (click)="searchClaims()" class="btn text-light btn-secondary "><img _ngcontent-fcp-c53="" src="../assets/img/search.png" class="search-icon">Search</a>
                                     </div>
                                 <div class="table-responsive">
-
-
-                                    <!-- <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar"
-                                           id="table">
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                    <div class="dFlex">
-                                                        Client Name
-                                                    </div>
-                                                </th>
-                                                <th class="width-90">
-                                                    <div class="dFlex">
-                                                        Office Name
-                                                    </div>
-                                                </th>
-                                                <th class="width-115">
-                                                    <div class="dFlex">
-                                                        Claim ID
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
-                                                        Patient ID
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
-                                                        DOS Range
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
-                                                        Age Category
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
-                                                        Claim Status
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
-                                                       Insurance Name
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
-                                                        Insurance Type
-                                                    </div>
-                                                </th>
-                                                <th class="insuranceName">
-                                                    <div class="dFlex">
-                                                        Provider Type
-                                                    </div>
-                                                </th>
-                                                <th class="insuranceType">
-                                                    <div class="dFlex">
-                                                        Provider Name
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
-                                                        Currently Responsible Team
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div class="dFlex">
-                                                        Show Archived?
-                                                    </div>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td> <multi-select-dropdown [inputConfig]="{'clientData':clients,'isSearchClaims':true}"></multi-select-dropdown> </td>
-                                                <td> <multi-select-dropdown [inputConfig]="{'officeData':offices,'isSearchClaims':true}"></multi-select-dropdown> </td>
-                                                <td> <input type="text" class="no-css-input-box claim-width" style="width:120px;"> </td>
-                                                <td> <input type="text" class="no-css-input-box"> </td>
-                                                <td> <app-date-range></app-date-range> </td>
-                                                <td> <multi-select-dropdown></multi-select-dropdown> </td>
-                                                <td> <multi-select-dropdown></multi-select-dropdown> </td>
-                                                <td> <multi-select-dropdown></multi-select-dropdown> </td>
-                                                <td> <multi-select-dropdown></multi-select-dropdown> </td>
-                                                <td> <multi-select-dropdown></multi-select-dropdown> </td>
-                                                <td> <multi-select-dropdown></multi-select-dropdown> </td>
-                                                <td> <multi-select-dropdown [inputConfig]="{'teamData':teamData,'isSearchClaims':true}"></multi-select-dropdown> </td>
-                                                <td>
-                                                    <div class="custom-control custom-switch custom-switch-lg">
-                                                        <input type="checkbox" class="custom-control-input" id="customSwitch1">
-                                                        <label class="custom-control-label" for="customSwitch1"></label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table> -->
-
-                                    <!-- <div class="row mb-3">
-                                        <div class="col-sm-12">
-                                            <a href="javascript:void(0);"
-                                               class="btn text-light btn-secondary ml-2"><img _ngcontent-fcp-c53="" src="../assets/img/search.png" class="search-icon">Search</a>
-                                        </div>
-                                    </div> -->
 
                                     <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar"
                                            id="table" style="display:none;">
@@ -315,7 +212,8 @@
                     </div>
 
                 </div>
-
+                <app-search-claims-pagination *ngIf='listOfClaimsData.length>0' [searchInputConfig]="listOfClaimsData" ></app-search-claims-pagination>
+                <div *ngIf="listOfClaimsData.length==0 && !loader" class="d-flex justify-content-center align-items-center">No Data Found</div>
             </div>
         </div>
     </div>

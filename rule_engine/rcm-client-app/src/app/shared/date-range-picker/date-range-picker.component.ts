@@ -1,5 +1,4 @@
-import { Component} from '@angular/core';
-declare var moment:any;
+import { Component, EventEmitter, Output} from '@angular/core';
 declare var $:any;
 @Component({
   selector: 'app-date-range',
@@ -9,7 +8,7 @@ declare var $:any;
 export class DateRangePickerComponent {
     value:any;
     dateField:any;
-  
+  @Output() emitToParent:any = new EventEmitter();
   constructor(){}
 
   ngOnInit(){
@@ -42,10 +41,9 @@ export class DateRangePickerComponent {
     };
 
      $('#config-demo').daterangepicker(options, (start: any, end: any, label: any) => {
-      console.log(start.format("YYYY-MM-DD"));
-      console.log(end.format("YYYY-MM-DD"));
-      
-       }).click();;
+
+       this.emitToParent.emit({action:'getSelectedDateRange',value:{startDate:start.format("YYYY-MM-DD"),endDate:end.format("YYYY-MM-DD")}});
+    }).click();;
     
   }
 

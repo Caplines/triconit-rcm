@@ -33,16 +33,32 @@ export class SearchClaimsComponent {
     "responsibleTeam": [],
     "showArchive": false,
     "pageNumber": 1
-  }
+  };
 
-  constructor(public appService: ApplicationServiceService, private title: Title, private constants: AppConstants) {
+  listOfClaimsData:any=[];
+
+  constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants) {
     title.setTitle(Utils.defaultTitle + "Search Claims");
     this.appService.subscribeOnValueChange('FromMultiSelect',(event:any)=>{
       if (event['action'] == 'getSelectClientName') {
-        this.searchClaimConfig['clientUuid'] = event.value.map(({ checked, clientName, offices, ...newClient }: any) => newClient.clientUuid);
+        this.searchClaimConfig['clientUuid'] = event.value.map(({ checked, clientName, offices, ...newClient }: any) => newClient.clientUuid);   //removing unused propertieds
         this.searchClaimConfig['officeUuid'] = [];
       } else if (event['action'] == 'getSelectedOffices') {
-        this.searchClaimConfig['officeUuid'] = event.value.map(({ active, checked, key, name, ...newOffice }: any) => newOffice.uuid);
+        this.searchClaimConfig['officeUuid'] = event.value.map(({ active, checked, key, name, ...newOffice }: any) => newOffice.uuid);   //removing unused propertieds
+      } else if (event['action'] == 'getinsuranceNames') {
+        this.searchClaimConfig['insuranceName'] = event.value.map(({ checked, ...newInsName }: any) => newInsName.name);//removing unused propertieds
+      } else if (event['action'] == 'getinsuranceTypes') {
+        this.searchClaimConfig['insuranceType'] = event.value.map(({  checked, ...newInsType }: any) => newInsType.name);//removing unused propertieds
+      } else if (event['action'] == 'getproviderNames') {
+        this.searchClaimConfig['providerName'] = event.value.map(({ checked, ...newProviderName }: any) => newProviderName.name);//removing unused propertieds
+      } else if (event['action'] == 'getproviderTypes') {
+        this.searchClaimConfig['providerType'] = event.value.map(({ checked, ...newProviderType }: any) => newProviderType.name);//removing unused propertieds
+      } else if (event['action'] == 'getSelectedTeams') {
+        this.searchClaimConfig['responsibleTeam'] = event.value.map(({ checked,count,teamName,unFormatedName, ...newTeam }: any) => newTeam.teamId);//removing unused propertieds
+      } else if (event['action'] == 'getSelectedAge') {
+        this.searchClaimConfig['ageCategory'] = event.value.map(({ checked,name, ...newAge }: any) => newAge.value);//removing unused propertieds
+      } else if (event['action'] == 'getSelectedClaimStatus') {
+        this.searchClaimConfig['claimStatus'] = event.value.map(({ checked, ...newClaimAge }: any) => newClaimAge.name);//removing unused propertieds
       }
       console.log(this.searchClaimConfig);
     })
@@ -64,15 +80,6 @@ export class SearchClaimsComponent {
     })
   }
 
-  addCheckedAndNameProperty(data:any){
-   data.insuranceNames =  data.insuranceNames.map((item:any) => ({ name: item, checked: false }));
-   data.insuranceTypes=  data.insuranceTypes.map((item:any) => ({ name: item, checked: false }));
-   data.providerNames = data.providerNames.map((item:any) => ({ name: item, checked: false }));
-   data.providerTypes = data.providerTypes.map((item:any) => ({ name: item, checked: false }));
-
-
-  }
-
   getSerachParams() {
     this.appService.getSerachParams((callback: any) => {
       if (callback.status) {
@@ -82,16 +89,32 @@ export class SearchClaimsComponent {
     })
   }
 
+  addCheckedAndNameProperty(data:any){
+   data.insuranceNames =  data.insuranceNames.map((item:any) => ({ name: item, checked: false }));       //adding two properties from single value for Multiselect component
+   data.insuranceTypes=  data.insuranceTypes.map((item:any) => ({ name: item, checked: false }));       //adding two properties from single value for Multiselect component
+   data.providerNames =  data.providerNames.map((item:any) => ({ name: item, checked: false }));        //adding two properties from single value for Multiselect component
+   data.providerTypes = data.providerTypes.map((item:any) => ({ name: item, checked: false }));         //adding two properties from single value for Multiselect component
+  }
+
   searchClaims() {
+    this.loader= true;
+    this.listOfClaimsData=[];
     this.appService.searchClaims(this.searchClaimConfig, (res: any) => {
-      if (res.status) {
-        console.log(res);
+      if (res.status && res.data[0]?.data) {
+        this.loader= false;
+        this.listOfClaimsData = res.data[0].data;
+      }
+      else{
+        this.loader= false;
       }
     })
   }
 
   receiveChildrenEvent(event: any) {
-   
+      if(event['action'] == 'getSelectedDateRange'){
+        this.searchClaimConfig['startDate'] = event.value.startDate;
+        this.searchClaimConfig['endDate'] = event.value.endDate;
+      }
   }
   
 

@@ -140,4 +140,56 @@ export class AppConstants {
 
 
     public ARCHIVE_PREFIX: string = "arc_";
+
+    public claimStatus:any =
+             [
+                {
+                'name':'Unbilled',
+                'checked':false,
+                },
+                {
+                'name':'Open',
+                'checked':false,
+                },
+                {
+                'name':'Closed',
+                'checked':false,
+                },
+                {
+                'name':'Primary Closed - Secondary Unbilled',
+                'checked':false,
+                },
+                {
+                'name':'Primary Closed - Secondary Open',
+                'checked':false,
+                },
+                {
+                'name':'Billed',
+                'checked':false,
+                },
+
+            ];
+
+    public ageCategory:any=[
+        {
+            'name':'0-30',
+             checked:false,
+             value:1
+        },
+        {
+            'name':'31-60',
+             checked:false,
+             value:2
+        },
+        {
+            'name':'61-90',
+             checked:false,
+             value:3
+        },
+        {
+            'name':'90+',
+             checked:false,
+             value:4
+        },
+    ]        
 }

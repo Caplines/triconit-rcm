@@ -25,10 +25,14 @@ export class MultiSelectDropdownComponent {
   clients:any=[]
   selectAllChecked:boolean=false;
   teamData:any=this.constants.teamData;
-  searchClaimsConfig:any={'clients':[],'offices':[],"teams":[],'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[]};
+  searchClaimsConfig:any={'clients':[],'offices':[],"teams":[],'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[],'ageCategory':[],'claimStatus':[]};
+  searchText:any='';
+  filteredOptions:any={'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[]};
+
 
 constructor(private _service:ApplicationServiceService,private constants:AppConstants) {
   this.clientCheckedList=this.teamCheckedList=[];
+  
   this._service.subscribeOnValueChange('MultiSelect',(event:any)=>{
     if (event.action === 'selectedClientsOffices') {
         this.searchClaimsConfig.offices=[];      
@@ -164,12 +168,12 @@ getSelectedValue(status: Boolean, value: any, type: String) {
   else if (type === 'insuranceNames'){
     if (status) {
       this.searchClaimsConfig.insuranceNames.push(value);
-      this.emitToParent.emit({action:'getinsuranceNames',value:this.searchClaimsConfig.insuranceNames});
+      this._service.emitOnValueChange({action:'getinsuranceNames',value:this.searchClaimsConfig.insuranceNames});
     } else {
       this.searchClaimsConfig.insuranceNames.forEach((e: any, idx: any) => {
         if (e.name == value.name) {
           this.searchClaimsConfig.insuranceNames.splice(idx, 1);
-          this.emitToParent.emit({action:'getinsuranceNames',value:this.searchClaimsConfig.insuranceNames});
+          this._service.emitOnValueChange({action:'getinsuranceNames',value:this.searchClaimsConfig.insuranceNames});
         }
       });
     }
@@ -177,12 +181,12 @@ getSelectedValue(status: Boolean, value: any, type: String) {
   else if (type === 'insuranceTypes'){
     if (status) {
       this.searchClaimsConfig.insuranceTypes.push(value);
-      this.emitToParent.emit({action:'getinsuranceTypes',value:this.searchClaimsConfig.insuranceTypes});
+      this._service.emitOnValueChange({action:'getinsuranceTypes',value:this.searchClaimsConfig.insuranceTypes});
     } else {
       this.searchClaimsConfig.insuranceTypes.forEach((e: any, idx: any) => {
         if (e.name == value.name) {
           this.searchClaimsConfig.insuranceTypes.splice(idx, 1);
-          this.emitToParent.emit({action:'getinsuranceTypes',value:this.searchClaimsConfig.insuranceTypes});
+          this._service.emitOnValueChange({action:'getinsuranceTypes',value:this.searchClaimsConfig.insuranceTypes});
         }
       });
       
@@ -191,12 +195,12 @@ getSelectedValue(status: Boolean, value: any, type: String) {
   else if (type === 'providerNames'){
     if (status) {
       this.searchClaimsConfig.providerNames.push(value);
-      this.emitToParent.emit({action:'getproviderNames',value:this.searchClaimsConfig.providerNames});
+      this._service.emitOnValueChange({action:'getproviderNames',value:this.searchClaimsConfig.providerNames});
     } else {
       this.searchClaimsConfig.providerNames.forEach((e: any, idx: any) => {
         if (e.name == value.name) {
           this.searchClaimsConfig.providerNames.splice(idx, 1);
-          this.emitToParent.emit({action:'getproviderNames',value:this.searchClaimsConfig.providerNames});
+          this._service.emitOnValueChange({action:'getproviderNames',value:this.searchClaimsConfig.providerNames});
         }
       });
       
@@ -205,16 +209,61 @@ getSelectedValue(status: Boolean, value: any, type: String) {
   else if (type === 'providerTypes'){
     if (status) {
       this.searchClaimsConfig.providerTypes.push(value);
-      this.emitToParent.emit({action:'getproviderTypes',value:this.searchClaimsConfig.providerTypes});
+      this._service.emitOnValueChange({action:'getproviderTypes',value:this.searchClaimsConfig.providerTypes});
     } else {
       this.searchClaimsConfig.providerTypes.forEach((e: any, idx: any) => {
         if (e.name == value.name) {
           this.searchClaimsConfig.providerTypes.splice(idx, 1);
-          this.emitToParent.emit({action:'getproviderTypes',value:this.searchClaimsConfig.providerTypes});
+          this._service.emitOnValueChange({action:'getproviderTypes',value:this.searchClaimsConfig.providerTypes});
         }
       });
       
     }
+  }
+  else if (type === 'searchClaimTeam'){
+    if (status) {
+      this.searchClaimsConfig.teams.push(value);
+      this._service.emitOnValueChange({action:'getSelectedTeams',value:this.searchClaimsConfig.teams});
+    } else {
+      this.searchClaimsConfig.teams.forEach((e: any, idx: any) => {
+        if (e.teamName == value.teamName) {
+          this.searchClaimsConfig.teams.splice(idx, 1);
+          this._service.emitOnValueChange({action:'getSelectedTeams',value:this.searchClaimsConfig.teams});
+        }
+      });
+      
+    }
+    
+  }
+  else if (type === 'searchClaimAge'){
+    if (status) {
+      this.searchClaimsConfig.ageCategory.push(value);
+      this._service.emitOnValueChange({action:'getSelectedAge',value:this.searchClaimsConfig.ageCategory});
+    } else {
+      this.searchClaimsConfig.ageCategory.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.searchClaimsConfig.ageCategory.splice(idx, 1);
+          this._service.emitOnValueChange({action:'getSelectedAge',value:this.searchClaimsConfig.ageCategory});
+        }
+      });
+      
+    }
+    
+  }
+  else if (type === 'searchClaimStatus'){
+    if (status) {
+      this.searchClaimsConfig.claimStatus.push(value);
+      this._service.emitOnValueChange({action:'getSelectedClaimStatus',value:this.searchClaimsConfig.claimStatus});
+    } else {
+      this.searchClaimsConfig.claimStatus.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.searchClaimsConfig.claimStatus.splice(idx, 1);
+          this._service.emitOnValueChange({action:'getSelectedClaimStatus',value:this.searchClaimsConfig.claimStatus});
+        }
+      });
+      
+    }
+    
   }
 }
   shareCheckedlist(action: any) {
@@ -274,5 +323,12 @@ getSelectedValue(status: Boolean, value: any, type: String) {
       })
       this._service.emitOnValueChange({action:'selectedClientsOffices',value:offices});
    
+    }
+
+   
+    filterOptions(filterProperty:any) {
+      this.filteredOptions[filterProperty] = this.inputConfig[filterProperty].filter((option:any) =>
+        option.name.toLowerCase().includes(this.searchText.toLowerCase())
+      );
     }
 }
