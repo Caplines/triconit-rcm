@@ -93,11 +93,13 @@ const routes: Routes = [
   },
   {
     path: 'tool-update/issue-claims',
-    loadChildren: () => import("./issue-claims/issue-claims/issue-claims.module").then(m => m.IssueClaimCModule)
+    loadChildren: () => import("./issue-claims/issue-claims/issue-claims.module").then(m => m.IssueClaimCModule),
+    canActivate: [ClaimAssingnmentActivate]
   },
   {
     path: 'other-teams-work',
-    loadChildren: () => import("./other-teams-work/other-teams-work.module").then(m => m.OtherTeamsWorkModule)
+    loadChildren: () => import("./other-teams-work/other-teams-work.module").then(m => m.OtherTeamsWorkModule),
+    canActivate: [ClaimAssingnmentActivate]
   },
   {
     path: 'search-claims',

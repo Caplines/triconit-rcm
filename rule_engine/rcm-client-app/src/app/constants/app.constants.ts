@@ -17,7 +17,7 @@ export class AppConstants {
             "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client'], "defaultpath": "/register"
         }],
         [3, {
-            "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production"], "defaultpath": "/claim-assignment"
+            "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production","/search-claims"], "defaultpath": "/claim-assignment"
         }],
         [4, {
             "name": "LC3", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
@@ -29,7 +29,7 @@ export class AppConstants {
             "name": "Patient Calling", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [7, {
-            "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass"], "defaultpath": "/claim-assignment"
+            "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/search-claims"], "defaultpath": "/claim-assignment"
         }],
         [8, {
             "name": "Super Admin", "paths": AppConstants.commonPath, "defaultpath": "/claim-assignment"
@@ -78,7 +78,7 @@ export class AppConstants {
     public RE_BILLING_ID = 2;
     public INTERNAL_AUDIT_TEAM = 3;
     public BILLING_TEAM = 7;
-    public static commonPath:any=["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass"];
+    public static commonPath:any=["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/search-claims"];
 
 
     public TEAMS_ID_CONFIG = new Map<number, string>([

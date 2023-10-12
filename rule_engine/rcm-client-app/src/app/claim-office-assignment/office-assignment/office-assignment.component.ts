@@ -226,7 +226,7 @@ export class OfficeAssignmentComponent implements OnInit {
         "Oldest Pending Date": e.opdtd,
         "Oldest Pending DOS": e.opdosd,
         "# of Claims to be Billed": e.count,
-        "# of RemoteLite Rejections": this.teamId==7? e.remoteLiteRejection : '',
+        "# of RemoteLite Rejections": this.teamId ==7 ? e.remoteLiteRejections : '',
         "Total Pendency":  this.teamId==7? e.count + e.remoteLiteRejections  : e.count
       }
     })
