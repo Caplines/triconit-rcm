@@ -56,7 +56,6 @@ export class OfficeAssignmentComponent implements OnInit {
     this.clientName = localStorage.getItem("selected_clientName");
     this.getUserByTeamId();
     this.assignOfficeDetails.teamId = this.teamId;
-    this.setTopOnTotalRow();
     window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
   }
 
@@ -91,6 +90,7 @@ export class OfficeAssignmentComponent implements OnInit {
         ths.claimData = res.data;
         this.showFilterOptioncompanyName(ths.claimData);
         this.filterCompanyName();
+        this.setTopOnTotalRow();
         ths.loader.showLoader = false;
       } else {
         //ERROR
@@ -179,7 +179,12 @@ export class OfficeAssignmentComponent implements OnInit {
   calcCountAndRemLiteReject(data: any) {
     this.totalClaimData.totalcountAndRemLiteReject=0;
     data.forEach((e: any) => {
-      this.totalClaimData.totalcountAndRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject + e.count + e.remoteLiteRejections;
+      if(this.teamId == 7){
+        this.totalClaimData.totalcountAndRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject + e.count + e.remoteLiteRejections;
+        
+      } else{
+        this.totalClaimData.totalcountAndRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject + e.count ;
+      }
     });
   }
 
