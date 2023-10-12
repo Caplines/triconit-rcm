@@ -141,7 +141,7 @@
             </span>
         </button>
         <input type="text" placeholder="Search..." [(ngModel)]="searchText" (input)="filterOptions('insuranceNames')">
-        <div class="drop-show no-css-search-claim" *ngIf="searchText">
+        <div class="drop-show no-css-search-claim" (mouseleave)="searchText=''" *ngIf="searchText">
             <label *ngFor="let item of filteredOptions.insuranceNames">
                 <input type="checkbox" [(ngModel)]="item.checked"
                     (change)="getSelectedValue(item.checked,item,'insuranceNames')" id="{{ item.name }}">
@@ -160,7 +160,7 @@
         </span>
     </button>
     <input type="text" placeholder="Search..." [(ngModel)]="searchText" (input)="filterOptions('insuranceTypes')">
-    <div class="drop-show no-css-search-claim" *ngIf="searchText">
+    <div class="drop-show no-css-search-claim" (mouseleave)="searchText=''"  *ngIf="searchText">
         <label *ngFor="let item of filteredOptions.insuranceTypes">
             <input type="checkbox" [(ngModel)]="item.checked"
                 (change)="getSelectedValue(item.checked,item,'insuranceTypes')" id="{{ item.name }}">
@@ -179,7 +179,7 @@
         </span>
     </button>
     <input type="text" placeholder="Search..." [(ngModel)]="searchText" (input)="filterOptions('providerNames')">
-    <div class="drop-show no-css-search-claim" *ngIf="searchText">
+    <div class="drop-show no-css-search-claim" (mouseleave)="searchText=''"  *ngIf="searchText">
         <label *ngFor="let item of filteredOptions.providerNames">
             <input type="checkbox" [(ngModel)]="item.checked"
                 (change)="getSelectedValue(item.checked,item,'providerNames')" id="{{ item.name }}">
@@ -198,7 +198,7 @@
         </span>
     </button>
     <input type="text" placeholder="Search..." [(ngModel)]="searchText" (input)="filterOptions('providerTypes')">
-    <div class="drop-show no-css-search-claim" *ngIf="searchText">
+    <div class="drop-show no-css-search-claim" (mouseleave)="searchText=''"  *ngIf="searchText">
         <label *ngFor="let item of filteredOptions.providerTypes">
             <input type="checkbox" [(ngModel)]="item.checked"
                 (change)="getSelectedValue(item.checked,item,'providerTypes')" id="{{ item.name }}">
