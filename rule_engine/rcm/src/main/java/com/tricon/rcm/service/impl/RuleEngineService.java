@@ -319,10 +319,16 @@ public class RuleEngineService {
                                         if (insuranceNameTypeDto!=null) {
                                         	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
                                         			insuranceNameTypeDto.getInsuranceCode().trim());
+                                        }else if(ins.getInsuranceCode()!=null){
+                                        	insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getInsuranceCompanyName().trim());
+											if (insuranceNameTypeDto!=null) {
+                                        	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
+                                        			ins.getInsuranceCode().trim());
+											}
                                         }
 										
 										if (timely == null) {
-											error.add("Timely Limit Type Missing for Primary Ins. :" + re.getInsuranceCompanyName().trim());
+											error.add("Timely Limit Type Missing for  Ins. :" + re.getInsuranceCompanyName().trim());
 
 										}
 
