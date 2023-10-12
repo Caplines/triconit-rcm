@@ -1,23 +1,17 @@
 package com.tricon.rcm.util;
 
-import java.math.BigInteger;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.springframework.stereotype.Repository;
+import com.tricon.rcm.enums.AgeBracketEnum;
 
-import com.tricon.rcm.dto.SearchClaimResponseDto;
-
-@Repository
 public class SearchClaimUtil {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SearchClaimUtil.class);
 
-	@PersistenceContext
-	private EntityManager entityManager;
-
-	private final String selectColumns = "select off.name as officeName,claims.claim_id as claimId,claims.patient_id as patientId,claims.dos as dos"
+	private static final String selectColumns = "select off.name as officeName,claims.claim_id as claimId,claims.patient_id as patientId,claims.dos as dos"
 			+ ",claims.patient_name as patientName,claims.claim_status_type_id as statusType"
 			+ ",insurance.name as primaryInsurance,secinsurance.name as secondaryInsurance"
 			+ ",insuranceT.name prName,secinsuranceT.name secName"
@@ -25,19 +19,19 @@ public class SearchClaimUtil {
 			+ ",timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount"
 			+ ",claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal"
 			+ ",prime_sec_submitted_total primeSecSubmittedTotal ";
-	
-	private final String countColumn = "select count(*) ";
 
-	private final String fromClause = "from rcm_claims claims "
+	private static final String countColumn = "select count(*) ";
+
+	private static final String fromClause = "from rcm_claims claims "
 			+ "left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
 			+ "left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id "
 			+ "left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ "left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "left join rcm_team team on team.id=claims.current_team_id "
 			+ "inner join office off on off.uuid=claims.office_id "
-			+ "inner join company comp on comp.uuid=off.company_id "
-			+ "inner join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id";
+			+ "inner join company comp on comp.uuid=off.company_id ";
 
-	public StringBuffer setClientUuid(List<String> clientUuid, StringBuffer searchQuery) {
+	public static StringBuilder setClientUuid(List<String> clientUuid, StringBuilder searchQuery) {
 		searchQuery.append(" where comp.uuid in(");
 		for (int i = 0; i < clientUuid.size(); i++) {
 			searchQuery.append("'");
@@ -47,14 +41,11 @@ public class SearchClaimUtil {
 				searchQuery.append(", ");
 			}
 		}
-		searchQuery.append(")")
-				.append(" and pending=true and assign.active=1 and (primary_status = "
-						+ Constants.Primary_Status_Primary + " or primary_status = "
-						+ Constants.Primary_Status_Primary_submit + " )");
+		searchQuery.append(")");
 		return searchQuery;
 	}
 
-	public StringBuffer setOfficeUuid(List<String> officeUuid, StringBuffer searchQuery) {
+	public static StringBuilder setOfficeUuid(List<String> officeUuid, StringBuilder searchQuery) {
 		searchQuery.append(" and off.uuid in(");
 		for (int i = 0; i < officeUuid.size(); i++) {
 			searchQuery.append("'");
@@ -68,69 +59,184 @@ public class SearchClaimUtil {
 		return searchQuery;
 	}
 
-	public StringBuffer setPatientId(String patientId, StringBuffer searchQuery) {
+	public static StringBuilder setPatientId(String patientId, StringBuilder searchQuery) {
 
 		return searchQuery.append(" and claims.patient_id='" + patientId + "'");
 	}
 
-	public StringBuffer setClaimId(String claimId, StringBuffer searchQuery) {
+	public static StringBuilder setClaimId(String claimId, StringBuilder searchQuery) {
 
-		return searchQuery.append(
-				" and (claims.claim_id like '%" + claimId + "%_P' OR claims.claim_id like '%" + claimId + "%_S')");
+		return searchQuery.append(" and (claims.claim_id ='" + claimId + "_P' OR claims.claim_id = '" + claimId + "_S' "
+				+ " OR claims.claim_id like '%" + Constants.HYPHEN + Constants.ARCHIVE_PREFIX + claimId
+				+ "_P%' OR claims.claim_id like '%" + Constants.HYPHEN + Constants.ARCHIVE_PREFIX + claimId + "_S%')");
 	}
 
-
-	public StringBuffer setDateRange(String startDate, String endDate, StringBuffer searchQuery) {
+	public static StringBuilder setDateRange(String startDate, String endDate, StringBuilder searchQuery) {
 
 		return searchQuery.append(" and CAST(dos as DATE) between STR_TO_DATE('" + startDate
 				+ "', '%Y-%m-%d') and  STR_TO_DATE('" + endDate + "', '%Y-%m-%d')");
 	}
-	
-	public StringBuffer setArchiveStatus(Boolean showArchive, StringBuffer searchQuery) {
-		int archiveStatus = 0;
+
+	public static StringBuilder setArchiveStatus(Boolean showArchive, StringBuilder searchQuery) {
 		if (showArchive) {
-			archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED;
+			int archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED;
+			searchQuery.append(" and claims.current_state=" + archiveStatus + "");
 		} else {
-			archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED;
+			// archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED;
 		}
-		return searchQuery.append(" and claims.current_state=" + archiveStatus + "");
+		return searchQuery;
 	}
 
-	public List<SearchClaimResponseDto> buildSearchQuery(StringBuffer searchQuery, int pageNumber,
-			int totalRecordsperPage) {
-		String finalQuery = this.generateFinalQuery(searchQuery);
-		List<SearchClaimResponseDto> searchDto = null;
-		try {
-			synchronized (entityManager) {
-				Query query = entityManager.createNativeQuery(finalQuery);
-				query.setFirstResult((pageNumber - 1) * totalRecordsperPage);
-				query.setMaxResults(totalRecordsperPage);
-				searchDto = query.getResultList();
+	public static StringBuilder setInsuranceName(List<String> insuranceName, StringBuilder searchQuery) {
+		searchQuery.append(" and LOWER(insurance.name) in(");
+		for (int i = 0; i < insuranceName.size(); i++) {
+			searchQuery.append("'");
+			searchQuery.append(insuranceName.get(i).toLowerCase());
+			searchQuery.append("'");
+			if (i < insuranceName.size() - 1) {
+				searchQuery.append(", ");
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-		return searchDto;
+		searchQuery.append(")");
+		return searchQuery;
 	}
 
-	private String generateFinalQuery(StringBuffer searchQuery) {
+	public static StringBuilder setInsuranceType(List<String> insuranceType, StringBuilder searchQuery) {
+		searchQuery.append(" and LOWER(insuranceT.name) in(");
+		for (int i = 0; i < insuranceType.size(); i++) {
+			searchQuery.append("'");
+			searchQuery.append(insuranceType.get(i).toLowerCase());
+			searchQuery.append("'");
+			if (i < insuranceType.size() - 1) {
+				searchQuery.append(", ");
+			}
+		}
+		searchQuery.append(")");
+		return searchQuery;
+	}
+
+	public static StringBuilder setProviderName(List<String> providerName, StringBuilder searchQuery) {
+		searchQuery.append(" and LOWER(claims.provider_on_claim) in(");
+		for (int i = 0; i < providerName.size(); i++) {
+			searchQuery.append("'");
+			searchQuery.append(providerName.get(i).toLowerCase());
+			searchQuery.append("'");
+			if (i < providerName.size() - 1) {
+				searchQuery.append(", ");
+			}
+		}
+		searchQuery.append(")");
+		return searchQuery;
+	}
+
+	public static StringBuilder setProviderType(List<String> providerType, StringBuilder searchQuery) {
+		searchQuery.append(" and LOWER(claims.claim_type) in(");
+		for (int i = 0; i < providerType.size(); i++) {
+			searchQuery.append("'");
+			searchQuery.append(providerType.get(i).toLowerCase());
+			searchQuery.append("'");
+			if (i < providerType.size() - 1) {
+				searchQuery.append(", ");
+			}
+		}
+		searchQuery.append(")");
+		return searchQuery;
+	}
+
+	public static StringBuilder setResponsibleTeam(List<Integer> responsibleTeam, StringBuilder searchQuery) {
+		searchQuery.append(" and claims.current_team_id in(");
+		for (int i = 0; i < responsibleTeam.size(); i++) {
+			searchQuery.append("'");
+			searchQuery.append(responsibleTeam.get(i));
+			searchQuery.append("'");
+			if (i < responsibleTeam.size() - 1) {
+				searchQuery.append(", ");
+			}
+		}
+		searchQuery.append(")");
+		return searchQuery;
+	}
+
+	public static StringBuilder setAgeCategory(List<Integer> ageCategory, StringBuilder searchQuery) {
+
+		// if length is zero then return
+		if (ageCategory.size() == 0) {
+			return searchQuery;
+		}
+		if (ageCategory.size() == 1) {
+			int ageType = AgeBracketEnum.getAgeByValue(ageCategory.get(0));
+			if (ageType == 1) {
+				searchQuery.append(" and (DATEDIFF(CURDATE(), claims.dos) <="
+						+ AgeBracketEnum.getRangeByValue(ageType, Constants.MIN_RANGE) + ")");
+			} else if (ageType == 2) {
+				searchQuery.append(" and (DATEDIFF(CURDATE(), claims.dos) > "
+						+ AgeBracketEnum.getRangeByValue(ageType, Constants.MIN_RANGE)
+						+ " AND DATEDIFF(CURDATE(), claims.dos) <= "
+						+ AgeBracketEnum.getRangeByValue(ageType, Constants.MAX_RANGE) + ")");
+			} else if (ageType == 3) {
+
+				searchQuery.append(" and (DATEDIFF(CURDATE(), claims.dos) > "
+						+ AgeBracketEnum.getRangeByValue(ageType, Constants.MIN_RANGE)
+						+ " AND DATEDIFF(CURDATE(), claims.dos) <= "
+						+ AgeBracketEnum.getRangeByValue(ageType, Constants.MAX_RANGE) + ")");
+			} else if (ageType == 4) {
+				searchQuery.append(" and (DATEDIFF(CURDATE(), claims.dos) >"
+						+ AgeBracketEnum.getRangeByValue(ageType, Constants.MIN_RANGE) + ") ");
+			} else {
+			}
+		} else {
+			int index = 0;
+			for (int age : ageCategory) {
+				if (index == 4) // we have only 4 ageBrackets so.
+					break;
+				if (index == 0)
+					searchQuery.append(" and("); // first time we add and
+				else
+					searchQuery.append(" or "); // second time we add or and combine the query with or
+				int ageType = AgeBracketEnum.getAgeByValue(age);
+				if (ageType == 1) {
+
+					searchQuery.append(" (DATEDIFF(CURDATE(), claims.dos) <="
+							+ AgeBracketEnum.getRangeByValue(ageType, Constants.MIN_RANGE) + ")");
+				}
+				if (ageType == 2) {
+
+					searchQuery.append(" (DATEDIFF(CURDATE(), claims.dos) > "
+							+ AgeBracketEnum.getRangeByValue(ageType, Constants.MIN_RANGE)
+							+ " AND DATEDIFF(CURDATE(), claims.dos) <= "
+							+ AgeBracketEnum.getRangeByValue(ageType, Constants.MAX_RANGE) + ")");
+				}
+				if (ageType == 3) {
+
+					searchQuery.append(" (DATEDIFF(CURDATE(), claims.dos) > "
+							+ AgeBracketEnum.getRangeByValue(ageType, Constants.MIN_RANGE)
+							+ " AND DATEDIFF(CURDATE(), claims.dos) <= "
+							+ AgeBracketEnum.getRangeByValue(ageType, Constants.MAX_RANGE) + ")");
+				}
+				if (ageType == 4) {
+
+					searchQuery.append(" (DATEDIFF(CURDATE(), claims.dos) > "
+							+ AgeBracketEnum.getRangeByValue(ageType, Constants.MIN_RANGE) + ")");
+				}
+				index++;
+			}
+
+			searchQuery.append(" )");
+
+		}
+		return searchQuery;
+	}
+
+	public static String generateFinalQuery(StringBuilder searchQuery) {
+		
+		logger.info("FianlQuery:"+selectColumns + fromClause + searchQuery.toString());
 		return selectColumns + fromClause + searchQuery.toString();
 	}
-	
-	public long generateCountQuery(StringBuffer searchQuery) {
-		String finalQuery = countColumn + fromClause + searchQuery.toString();
-		long counts = 0;
-		try {
-			synchronized (entityManager) {
-			Query query = entityManager.createNativeQuery(finalQuery);
-			BigInteger countResult = (BigInteger) query.getSingleResult();
-			return countResult.longValue();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return counts;
-	}
 
+	public static String generateCountQuery(StringBuilder searchQuery) {
+		
+		logger.info("CountQuery:"+countColumn + fromClause + searchQuery.toString());
+		return countColumn + fromClause + searchQuery.toString();
+	}
 
 }

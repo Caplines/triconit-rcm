@@ -119,5 +119,8 @@ public class Constants {
 	public static final List<String> SKIP_URL_FROM_RCM_LOGS = Arrays.asList("/api/list-of-claim/d/pdf",
 				"/api/issue-claim/d/pdf", "/api/other-teams-work/d/pdf", "/api/ivf/d/pdf", "/api/tp-link/d/pdf",
 				"/api/allPendancy/d/pdf", "/api/production/d/pdf", "/api/claim-details/d/pdf", "/api/pendancy/d/pdf");
+	
+	public static final int MIN_RANGE=1;
+	public static final int MAX_RANGE=2;
 
 }
