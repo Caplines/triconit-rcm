@@ -88,7 +88,7 @@ public class SearchClaimUtil {
 	}
 
 	public static StringBuilder setInsuranceName(List<String> insuranceName, StringBuilder searchQuery) {
-		searchQuery.append(" and LOWER(insurance.name) in(");
+		searchQuery.append(" and (LOWER(insurance.name) in(");
 		for (int i = 0; i < insuranceName.size(); i++) {
 			searchQuery.append("'");
 			searchQuery.append(insuranceName.get(i).toLowerCase());
@@ -97,12 +97,21 @@ public class SearchClaimUtil {
 				searchQuery.append(", ");
 			}
 		}
-		searchQuery.append(")");
+		searchQuery.append(") or (LOWER(secinsurance.name) in(");
+		for (int i = 0; i < insuranceName.size(); i++) {
+			searchQuery.append("'");
+			searchQuery.append(insuranceName.get(i).toLowerCase());
+			searchQuery.append("'");
+			if (i < insuranceName.size() - 1) {
+				searchQuery.append(", ");
+			}
+		}
+		searchQuery.append(")))");
 		return searchQuery;
 	}
 
 	public static StringBuilder setInsuranceType(List<String> insuranceType, StringBuilder searchQuery) {
-		searchQuery.append(" and LOWER(insuranceT.name) in(");
+		searchQuery.append(" and (LOWER(insuranceT.name) in(");
 		for (int i = 0; i < insuranceType.size(); i++) {
 			searchQuery.append("'");
 			searchQuery.append(insuranceType.get(i).toLowerCase());
@@ -111,7 +120,16 @@ public class SearchClaimUtil {
 				searchQuery.append(", ");
 			}
 		}
-		searchQuery.append(")");
+		searchQuery.append(") or (LOWER(secinsuranceT.name) in(");
+		for (int i = 0; i < insuranceType.size(); i++) {
+			searchQuery.append("'");
+			searchQuery.append(insuranceType.get(i).toLowerCase());
+			searchQuery.append("'");
+			if (i < insuranceType.size() - 1) {
+				searchQuery.append(", ");
+			}
+		}
+		searchQuery.append("))) ");
 		return searchQuery;
 	}
 

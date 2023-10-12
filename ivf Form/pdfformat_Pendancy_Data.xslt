@@ -99,6 +99,7 @@ version="1.0" >
         <form>
      <table class="table" vertical-align="top">
          <tr>
+            <xsl:variable name="cTeamId" select="currentTeamId" />   
              <td class="bgWhite">
                  <table class="inner-table">
                      <tr class="bgWhite">
@@ -111,17 +112,21 @@ version="1.0" >
                          <td>Oldest Pending Date</td>
                          <td>Oldest Pending DOS</td>
                          <td># of Claims to be Billed</td>
+                         <xsl:if test="$cTeamId=7">
                          <td># of RemoteLite Rejections</td>
+                         </xsl:if>
                          <td>Total Pendency</td>
                      </tr>   
-                     <tr style="background-color:d#A9A9A9;">
+                    <tr style="background-color:d#A9A9A9;">
                     <td >Total</td>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td><xsl:value-of select="totalCount"/></td>
+                    <xsl:if test="$cTeamId=7">
                     <td><xsl:value-of select="totalRemLiteReject"/></td>
+                    </xsl:if>
                     <td><xsl:value-of select="totalcountAndRemLiteReject"/></td>
                      </tr> 
                       <xsl:for-each select="data/data">   
@@ -131,9 +136,18 @@ version="1.0" >
                          <td><xsl:value-of select="concat(fname,' ',lname)"/></td>
                          <td><xsl:value-of select="opdtd"/></td>
                          <td><xsl:value-of select="opdosd"/></td>
-                        <td><xsl:value-of select="count"/></td>  
-                        <td><xsl:value-of select="remoteLiteRejections"/></td>
-                        <td><xsl:value-of select="remoteLiteRejections+count"/></td>                  
+                         <td><xsl:value-of select="count"/></td> 
+                         <xsl:if test="$cTeamId=7">
+                         <td><xsl:value-of select="remoteLiteRejections"/></td>
+                         </xsl:if>
+                         <xsl:choose>
+                         <xsl:when test="$cTeamId=7">
+                         <td><xsl:value-of select="remoteLiteRejections+count"/></td>
+                         </xsl:when>
+                         <xsl:otherwise>
+                            <td><xsl:value-of select="count"/></td>   
+                         </xsl:otherwise>
+                         </xsl:choose>                
                        </tr>            
                     </xsl:for-each> 
                  </table>

@@ -56,6 +56,7 @@ export class OfficeAssignmentComponent implements OnInit {
     this.clientName = localStorage.getItem("selected_clientName");
     this.getUserByTeamId();
     this.assignOfficeDetails.teamId = this.teamId;
+    this.setTopOnTotalRow();
     window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
   }
 
@@ -192,9 +193,9 @@ export class OfficeAssignmentComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Client","Office", "User Assignment", "Oldest Pending Date", "Oldest Pending DOS", "# of Claims to be Billed", "# of RemoteLite Rejections", "Total Pendency"],
+      headers: ["Client","Office", "User Assignment", "Oldest Pending Date", "Oldest Pending DOS", "# of Claims to be Billed", this.teamId==7? "# of RemoteLite Rejections" : '', "Total Pendency"],
     }
-    let excelData: any = JSON.parse(JSON.stringify(this.claimData));
+    let excelData: any = JSON.parse(JSON.stringify(this.filteredItems));
     excelData = excelData.map((e: any) => {
       e['officeAssignedTo'] = e.fname ? e.fname + " " + e.lname : "-";
       // if(e.opdosd){
@@ -225,8 +226,8 @@ export class OfficeAssignmentComponent implements OnInit {
         "Oldest Pending Date": e.opdtd,
         "Oldest Pending DOS": e.opdosd,
         "# of Claims to be Billed": e.count,
-        "# of RemoteLite Rejections": e.remoteLiteRejections,
-        "Total Pendency": e.count ? e.count + e.remoteLiteRejections : '0'
+        "# of RemoteLite Rejections": this.teamId==7? e.remoteLiteRejection : '',
+        "Total Pendency":  this.teamId==7? e.count + e.remoteLiteRejections  : e.count
       }
     })
 
@@ -238,7 +239,7 @@ export class OfficeAssignmentComponent implements OnInit {
         "Oldest Pending Date": '-',
         "Oldest Pending DOS": '-',
         "# of Claims to be Billed": this.totalClaimData.totalCount,
-        "# of RemoteLite Rejections": this.totalClaimData.totalRemLiteReject,
+        "# of RemoteLite Rejections": this.teamId==7? this.totalClaimData.totalRemLiteReject:'',
         "Total Pendency": this.totalClaimData.totalcountAndRemLiteReject
       }
     )
@@ -273,7 +274,7 @@ export class OfficeAssignmentComponent implements OnInit {
   }
   downloadPdf() {
     this.loader.exportPDFLoader = true;
-    let data = { "fileName": "Pendancy", "data": this.claimData, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName };
+    let data = { "fileName": "Pendancy", "data": this.filteredItems, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName ,"currentTeamId":this.teamId };
     this.appService.pendancyPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
         this.downloadService.saveBolbData(res.body, "Pendancy.pdf");
