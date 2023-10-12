@@ -1,4 +1,4 @@
-<nav> 
+<nav *ngIf="!isSearchClaimsPage"> 
     <ul class="pagination justify-content-center">
         <li #link class="page-item" (click)="prevBtn()">
             <span aria-hidden="true">&laquo;</span>
@@ -13,3 +13,21 @@
         </li>
     </ul>
 </nav>
+<ng-container *ngIf="isSearchClaimsPage">
+  <nav >
+    <ul class="pagination justify-content-center">
+      <li #link class="page-item" [attr.disabled]="currentPage === 1" (click)="navigateToPage(currentPage - 1)">
+        <span aria-hidden="true">&laquo;</span>
+        <span class="sr-only">Previous</span>
+      </li>
+      <ng-container *ngFor="let page of getPagesArray()">
+        <li class="page-link" [ngClass]="{'active':page === currentPage,'disabled':page === currentPage}" value="page"
+          (click)="navigateToPage(page)">{{page}}</li>
+      </ng-container>
+      <li class="page-item" [class.disabled]="currentPage === totalPages" (click)="navigateToPage(currentPage + 1)">
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Next</span>
+      </li>
+    </ul>
+  </nav>
+</ng-container>

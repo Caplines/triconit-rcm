@@ -9,8 +9,33 @@ export class PaginationComponent{
   currentValue:number = 1;
   @Input() paginationPages:any = [];
   @Output() emitToParent = new EventEmitter();
-  @ViewChildren('link') linkElememtRef: QueryList<ElementRef>; 
+  @ViewChildren('link') linkElememtRef: QueryList<ElementRef>;
   
+  @Input() currentPage: number;
+  @Input() totalPages: number;
+  @Input() isSearchClaimsPage:boolean=false;
+  
+
+  ngOnInit(){
+    this.getPagesArray();
+  }
+
+  getPagesArray(): number[] {
+    const pagesArray: number[] = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pagesArray.push(i);
+    }
+    return pagesArray;
+  }
+
+  
+  navigateToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.emitToParent.emit({action:'changePage',value:page});
+    }
+  }
+
+
   activeLink(e:any){
     this.linkElememtRef.forEach((e:any)=>{
       e.nativeElement.classList.remove("active")

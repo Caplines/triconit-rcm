@@ -36,6 +36,8 @@ export class SearchClaimsComponent {
   };
 
   listOfClaimsData:any=[];
+  totalPages:any;
+  pageNumber:any;
 
   constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants) {
     title.setTitle(Utils.defaultTitle + "Search Claims");
@@ -100,8 +102,10 @@ export class SearchClaimsComponent {
     this.loader= true;
     this.listOfClaimsData=[];
     this.appService.searchClaims(this.searchClaimConfig, (res: any) => {
-      if (res.status && res.data[0]?.data) {
+      if (res.status && res?.data[0]?.data) {
         this.loader= false;
+        this.totalPages = res.data[0].totalPages;
+        this.pageNumber  = res.data[0].pageNumber;
         this.listOfClaimsData = res.data[0].data;
       }
       else{
@@ -114,6 +118,10 @@ export class SearchClaimsComponent {
       if(event['action'] == 'getSelectedDateRange'){
         this.searchClaimConfig['startDate'] = event.value.startDate;
         this.searchClaimConfig['endDate'] = event.value.endDate;
+      }
+      else if(event['action'] == 'changePage'){
+        this.searchClaimConfig.pageNumber = event.value;
+          this.searchClaims();
       }
   }
   
