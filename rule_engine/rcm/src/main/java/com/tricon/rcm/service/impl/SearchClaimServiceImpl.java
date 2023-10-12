@@ -1,11 +1,13 @@
 package com.tricon.rcm.service.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -59,7 +61,9 @@ public class SearchClaimServiceImpl {
 
 		List<SearchClaimPaginationDto> paginationData = null;
 		SearchClaimPaginationDto paginationDto = null;
-		List<SearchClaimResponseDto> searchClaimData = null;
+		List<Object[]> searchClaimData = null;
+		SearchClaimResponseDto searchResponseDto=null;
+		List<SearchClaimResponseDto> searchResponseList=null;
 
 		// set clients.This is Mandatory to set clients
 		searchQuery = SearchClaimUtil.setClientUuid(dto.getClientUuid(), searchQuery);
@@ -142,7 +146,31 @@ public class SearchClaimServiceImpl {
 		if (searchClaimData != null && !searchClaimData.isEmpty()) {
 			paginationData = new ArrayList<>();
 			paginationDto = new SearchClaimPaginationDto();
-			paginationDto.setData(searchClaimData);
+			searchResponseList=new ArrayList<>();
+			// set data beacuse data is List<Object> form by default
+			for (Object[] data : searchClaimData) {
+				searchResponseDto = new SearchClaimResponseDto();
+				//BeanUtils.copyProperties(data, searchResponseDto); not working 
+				searchResponseDto.setOfficeName((String) data[0]);
+				searchResponseDto.setUuid((String) data[1]);
+				searchResponseDto.setClaimId((String) data[2]);
+				searchResponseDto.setPatientId((String) data[3]);
+				searchResponseDto.setDos((Date) data[4]);
+				searchResponseDto.setPatientName((String) data[5]);
+				searchResponseDto.setStatusType(String.valueOf(data[6]));
+				searchResponseDto.setPrimaryInsurance((String) data[7]);
+				searchResponseDto.setSecondaryInsurance((String) data[8]);
+				searchResponseDto.setPrName((String) data[9]);
+				searchResponseDto.setSecName((String) data[10]);
+				searchResponseDto.setClaimAge(((BigInteger) data[11]).intValue());
+				searchResponseDto.setTimelyFilingLimitData((String) data[12]);
+				searchResponseDto.setBilledAmount((float) data[13]);
+				searchResponseDto.setPrimTotal((float) data[14]);
+				searchResponseDto.setSecTotal((float) data[15]);
+				searchResponseDto.setPrimeSecSubmittedTotal((Float) data[16]);
+				searchResponseList.add(searchResponseDto);
+			}
+			paginationDto.setData(searchResponseList);
 			paginationDto.setPageNumber(dto.getPageNumber());
 			paginationDto.setTotalElements(counts);
 			paginationDto.setPageSize(totalRecordsperPage);

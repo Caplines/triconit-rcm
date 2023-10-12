@@ -19,10 +19,9 @@ public class SearchClaimRepo {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	public List<SearchClaimResponseDto> buildSearchQuery(StringBuilder searchQuery, int pageNumber,
-			int totalRecordsperPage) {
+	public List<Object[]> buildSearchQuery(StringBuilder searchQuery, int pageNumber, int totalRecordsperPage) {
 		String finalQuery = SearchClaimUtil.generateFinalQuery(searchQuery);
-		List<SearchClaimResponseDto> searchDto = null;
+		List<Object[]> searchDto = null;
 		try {
 			Query query = entityManager.createNativeQuery(finalQuery);
 			query.setFirstResult((pageNumber - 1) * totalRecordsperPage);

@@ -11,7 +11,7 @@ public class SearchClaimUtil {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SearchClaimUtil.class);
 
-	private static final String selectColumns = "select off.name as officeName,claims.claim_id as claimId,claims.patient_id as patientId,claims.dos as dos"
+	private static final String selectColumns = "select off.name as officeName,claims.claim_uuid as claimUuid,claims.claim_id as claimId,claims.patient_id as patientId,claims.dos as dos"
 			+ ",claims.patient_name as patientName,claims.claim_status_type_id as statusType"
 			+ ",insurance.name as primaryInsurance,secinsurance.name as secondaryInsurance"
 			+ ",insuranceT.name prName,secinsuranceT.name secName"
