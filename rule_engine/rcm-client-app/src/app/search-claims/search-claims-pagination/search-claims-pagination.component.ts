@@ -58,18 +58,25 @@ export class SearchClaimsPaginationComponent {
     this.currentTeamId = Utils.selectedTeam();
   }
 
-  fetchOfficeByUuid() {
-    this.appService.fetchOfficeByUuid((res: any) => {
-      if (res.status) {
-        res.data = res.data.map((e: any) => {
+  async fetchOfficeByUuid() {
+    let checkOfficesExist = JSON.parse(<any>localStorage.getItem("officeByUuid"));
+    if(!checkOfficesExist){
+      await this.appService.fetchOfficeByUuid((res: any) => {
+        if (res.status) {
+          res.data =   res.data.map((e: any) => {
           return {
             ...e,
             "officeName": e.name,
           }
         })
+        localStorage.setItem("officeByUuid",JSON.stringify(res.data));
         this.showFilterOptionOfficeName(res.data);
       }
     })
+  } else{
+    this.showFilterOptionOfficeName(checkOfficesExist);
+  }
+
   }
 
 

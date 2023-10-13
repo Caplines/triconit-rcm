@@ -21,8 +21,13 @@
         <span class="sr-only">Previous</span>
       </li>
       <ng-container *ngFor="let page of getPagesArray()">
-        <li class="page-link" [ngClass]="{'active':page === currentPage,'disabled':page === currentPage}" value="page"
+        <ng-container *ngIf="page === '...'">
+          <span class="page-link disabled">{{ page }}</span>
+        </ng-container>
+        <ng-container *ngIf="page !== '...'">
+          <li class="page-link" [ngClass]="{'active':page === currentPage,'disabled':page === currentPage}" value="page"
           (click)="navigateToPage(page)">{{page}}</li>
+        </ng-container>
       </ng-container>
       <li class="page-item" [class.disabled]="currentPage === totalPages" (click)="navigateToPage(currentPage + 1)">
         <span aria-hidden="true">&raquo;</span>

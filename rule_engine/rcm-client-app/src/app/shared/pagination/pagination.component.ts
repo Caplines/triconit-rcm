@@ -20,16 +20,43 @@ export class PaginationComponent{
     this.getPagesArray();
   }
 
-  getPagesArray(): number[] {
-    const pagesArray: number[] = [];
-    for (let i = 1; i <= this.totalPages; i++) {
-      pagesArray.push(i);
+  getPagesArray() {
+    const pagesArray: any=[];
+    const maxPagesToShow = 12;
+  
+    if (this.totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= this.totalPages; i++) {
+        pagesArray.push(i);
+      }
+    } else {
+      if (this.currentPage <= maxPagesToShow - 3) {
+        for (let i = 1; i <= maxPagesToShow - 1; i++) {
+          pagesArray.push(i);
+        }
+        pagesArray.push('...');
+        pagesArray.push(this.totalPages);
+      } else if (this.currentPage >= this.totalPages - (maxPagesToShow - 3)) {
+        pagesArray.push(1);
+        pagesArray.push('...');
+        for (let i = this.totalPages - (maxPagesToShow - 4); i <= this.totalPages; i++) {
+          pagesArray.push(i);
+        }
+      } else {
+        pagesArray.push(1);
+        pagesArray.push('...');
+        for (let i = this.currentPage - 1; i <= this.currentPage + 1; i++) {
+          pagesArray.push(i);
+        }
+        pagesArray.push('...');
+        pagesArray.push(this.totalPages);
+      }
     }
+  
     return pagesArray;
   }
 
   
-  navigateToPage(page: number): void {
+  navigateToPage(page:any) {
     if (page >= 1 && page <= this.totalPages) {
       this.emitToParent.emit({action:'changePage',value:page});
     }
