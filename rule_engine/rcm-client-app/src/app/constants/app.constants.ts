@@ -11,25 +11,25 @@ export class AppConstants {
 
     public TEAMS_CONFIG = new Map<Number, TeamModel>([
         [1, {
-            "name": "NA", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', '/tool-update'], "defaultpath": "/register"
+            "name": "NA", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', '/tool-update', '/tool-update/issue-claims'], "defaultpath": "/register"
         }],
         [2, {
             "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client'], "defaultpath": "/register"
         }],
         [3, {
-            "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production","/search-claims"], "defaultpath": "/claim-assignment"
+            "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production", "/search-claims", '/tool-update/issue-claims'], "defaultpath": "/claim-assignment"
         }],
         [4, {
             "name": "LC3", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
         }],
         [5, {
-            "name": "Office", "paths":AppConstants.commonPath, "defaultpath": "/update-pass"
+            "name": "Office", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
         }],
         [6, {
             "name": "Patient Calling", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [7, {
-            "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/search-claims"], "defaultpath": "/claim-assignment"
+            "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'], "defaultpath": "/claim-assignment"
         }],
         [8, {
             "name": "Super Admin", "paths": AppConstants.commonPath, "defaultpath": "/claim-assignment"
@@ -56,7 +56,7 @@ export class AppConstants {
             "name": "Need to hold", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [16, {
-            "name": "Quality", "paths":AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "name": "Quality", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [17, {
             "name": "AR", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
@@ -78,7 +78,7 @@ export class AppConstants {
     public RE_BILLING_ID = 2;
     public INTERNAL_AUDIT_TEAM = 3;
     public BILLING_TEAM = 7;
-    public static commonPath:any=["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/search-claims"];
+    public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
 
 
     public TEAMS_ID_CONFIG = new Map<number, string>([
@@ -93,21 +93,21 @@ export class AppConstants {
     ]);
 
     public teamData: any = [
-        {"unFormatedName": 'INTERNAL_AUDIT', "count":0,"teamName": "Internal Audit", "teamId": 3 },
-        {"unFormatedName": 'LC3', "count":0,"teamName": "LC3", "teamId": 4 },
-        {"unFormatedName": 'OFFICE', "count":0,"teamName": "Office", "teamId": 5 },
-        {"unFormatedName": 'PATIENT_CALLING', "count":0,"teamName": "Patient Calling", "teamId": 6 },
-        {"unFormatedName": 'BILLING', "count":0,"teamName": "Billing", "teamId": 7 },
-        {"unFormatedName": 'ORTHO', "count":0,"teamName": "Ortho", "teamId": 10 },
-        {"unFormatedName": 'CDP', "count":0,"teamName": "CDP", "teamId": 11 },
-        {"unFormatedName": 'PAYMENT_POSTING', "count":0,"teamName": "Payment Posting", "teamId": 12 },
-        {"unFormatedName": 'PPO_IV', "count":0,"teamName": "PPO IV", "teamId": 13 },
-        {"unFormatedName": 'MEDICAID_IV', "count":0,"teamName": "Medicaid IV", "teamId": 14 },
-        {"unFormatedName": 'NEED_TO_HOLD', "count":0,"teamName": "Need to hold", "teamId": 15 },
-        {"unFormatedName": 'QUALITY', "count":0,"teamName": "Quality", "teamId": 16 },
-        {"unFormatedName": 'AR', "count":0,"teamName": "AR", "teamId": 17 },
-        {"unFormatedName": 'PATIENT_STATEMENT', "count":0,"teamName": "Patient Statement", "teamId": 18 },
-        {"unFormatedName": 'CREDENTIALING', "count":0,"teamName": "Credentialing", "teamId": 19 },
+        { "unFormatedName": 'INTERNAL_AUDIT', "count": 0, "teamName": "Internal Audit", "teamId": 3 },
+        { "unFormatedName": 'LC3', "count": 0, "teamName": "LC3", "teamId": 4 },
+        { "unFormatedName": 'OFFICE', "count": 0, "teamName": "Office", "teamId": 5 },
+        { "unFormatedName": 'PATIENT_CALLING', "count": 0, "teamName": "Patient Calling", "teamId": 6 },
+        { "unFormatedName": 'BILLING', "count": 0, "teamName": "Billing", "teamId": 7 },
+        { "unFormatedName": 'ORTHO', "count": 0, "teamName": "Ortho", "teamId": 10 },
+        { "unFormatedName": 'CDP', "count": 0, "teamName": "CDP", "teamId": 11 },
+        { "unFormatedName": 'PAYMENT_POSTING', "count": 0, "teamName": "Payment Posting", "teamId": 12 },
+        { "unFormatedName": 'PPO_IV', "count": 0, "teamName": "PPO IV", "teamId": 13 },
+        { "unFormatedName": 'MEDICAID_IV', "count": 0, "teamName": "Medicaid IV", "teamId": 14 },
+        { "unFormatedName": 'NEED_TO_HOLD', "count": 0, "teamName": "Need to hold", "teamId": 15 },
+        { "unFormatedName": 'QUALITY', "count": 0, "teamName": "Quality", "teamId": 16 },
+        { "unFormatedName": 'AR', "count": 0, "teamName": "AR", "teamId": 17 },
+        { "unFormatedName": 'PATIENT_STATEMENT', "count": 0, "teamName": "Patient Statement", "teamId": 18 },
+        { "unFormatedName": 'CREDENTIALING', "count": 0, "teamName": "Credentialing", "teamId": 19 },
     ];
 
     public attachmentType =
@@ -141,55 +141,55 @@ export class AppConstants {
 
     public ARCHIVE_PREFIX: string = "arc_";
 
-    public claimStatus:any =
-             [
-                {
-                'name':'Unbilled',
-                'checked':false,
-                },
-                {
-                'name':'Open',
-                'checked':false,
-                },
-                {
-                'name':'Closed',
-                'checked':false,
-                },
-                {
-                'name':'Primary Closed - Secondary Unbilled',
-                'checked':false,
-                },
-                {
-                'name':'Primary Closed - Secondary Open',
-                'checked':false,
-                },
-                {
-                'name':'Billed',
-                'checked':false,
-                },
+    public claimStatus: any =
+        [
+            {
+                'name': 'Unbilled',
+                'checked': false,
+            },
+            {
+                'name': 'Open',
+                'checked': false,
+            },
+            {
+                'name': 'Closed',
+                'checked': false,
+            },
+            {
+                'name': 'Primary Closed - Secondary Unbilled',
+                'checked': false,
+            },
+            {
+                'name': 'Primary Closed - Secondary Open',
+                'checked': false,
+            },
+            {
+                'name': 'Billed',
+                'checked': false,
+            },
 
-            ];
+        ];
 
-    public ageCategory:any=[
+    public ageCategory: any = [
         {
-            'name':'0-30',
-             checked:false,
-             value:1
+            'name': '0-30',
+            checked: false,
+            value: 1
         },
         {
-            'name':'31-60',
-             checked:false,
-             value:2
+            'name': '31-60',
+            checked: false,
+            value: 2
         },
         {
-            'name':'61-90',
-             checked:false,
-             value:3
+            'name': '61-90',
+            checked: false,
+            value: 3
         },
         {
-            'name':'90+',
-             checked:false,
-             value:4
+            'name': '90+',
+            checked: false,
+            value: 4
         },
-    ]        
+    ]
 }
