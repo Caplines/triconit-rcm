@@ -42,7 +42,6 @@ import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimStatusUpdate;
 import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
-import com.tricon.rcm.dto.ClaimSubmittedDto;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.GenericResponse;

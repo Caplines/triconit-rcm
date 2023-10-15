@@ -8,7 +8,7 @@ import { DateRangeModule } from '../shared/date-range-picker/date-range-picker.m
 import { FormsModule } from '@angular/forms';
 import { SearchClaimsPaginationModule } from './search-claims-pagination/search-claims-pagination.module';
 import { PaginationModule } from '../shared/pagination/pagination/pagination.module';
-
+import { DatePipe } from '@angular/common';
 @NgModule({
   declarations: [SearchClaimsComponent],
   imports: [
@@ -20,6 +20,7 @@ import { PaginationModule } from '../shared/pagination/pagination/pagination.mod
     SearchClaimsPaginationModule,
     PaginationModule
   ],
-  exports:[SearchClaimsComponent]
+  providers: [DatePipe],
+  exports: [SearchClaimsComponent]
 })
 export class SearchClaimsModule { }

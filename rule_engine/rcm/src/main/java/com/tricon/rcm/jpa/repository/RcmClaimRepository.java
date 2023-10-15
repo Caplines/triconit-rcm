@@ -117,7 +117,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " inner join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=1  "
 			+ " where claims.first_worked_team_id<>:teamid  and off.company_id=:companyId " + " and pending=true"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-			+ " and (primary_status = "+Constants.Primary_Status_Primary+" or primary_status = "+Constants.Primary_Status_Primary_submit+" )  "
+			+ " and (primary_status = "+Constants.Primary_Status_Primary+" or primary_status = "+Constants.Primary_Status_Primary_submit+" ) order by dos asc  "
 						
 			+ " ")
 	List<FreshClaimDataDto> fetchFreshClaimDetails(@Param("companyId") String companyId, @Param("teamid") int teamid);
@@ -141,7 +141,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and rca.assigned_to=:userid and rca.active=1  and pending=true"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) ")
+			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by claims.dos asc  ")
 	List<FreshClaimDataDto> fetchFreshClaimDetailsInd(@Param("companyId") String companyId, @Param("teamid") int teamid,@Param("userid") String userId);
 	
 	
@@ -170,7 +170,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and claims.last_work_team_id!=3 and off.company_id=:companyId " + " and pending=true"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-					+ " ")
+					+ " order by claims.dos asc  ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBilling(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
@@ -189,7 +189,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + " and pending=true "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-					+ "")
+					+ " order by claims.dos asc ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamInternalAudit(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
 
@@ -210,7 +210,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
 			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId " + " and pending=true "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-					+ "")
+					+ " order by claims.dos asc  ")
 	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeam(@Param("companyId") String companyId,
 			@Param("teamid") int teamid);
 	
@@ -230,7 +230,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId and rca.assigned_to=:userId and pending=true "
-			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED +" order by claims.dos asc "
 			+ "")
 	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeamInd(@Param("companyId") String companyId,
 			@Param("teamid") int teamid,@Param("userId") String userId);
@@ -296,6 +296,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<ProductionDto> claimProductionByForBilling(@Param("companyIds") List<String> companyIds,
 			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
 	
+	//Production can be considered on the basis of processing of claim in ES instead of when
+	//Production can be considered on the basis of processing of claim in ES instead of when we are marking that as submitted in the RCM Tool
+	//we are marking that as submitted in the RCM Tool
 	@Query(nativeQuery = true, value = 
 		       " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
 						+" us.uuid as uuid,us.first_name "
@@ -305,7 +308,10 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 						//+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId "
 						+" 	left join rcm_claims cl on cl.updated_by=us.uuid "
 						+"     and rut.team_id=:teamId  and  cl.pending is false and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.first_worked_team_id=:teamId  "
-						+" 	and  CAST(cl.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
+						//+" 	and  CAST(cl.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
+						//+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') " --
+						+ " left join rcm_claims_submission_details rcsd on cl.claim_uuid= rcsd.calim_id and rcsd.es_date is not null "
+						+" 	and  CAST(rcsd.es_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
 						+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
 						+" 	left join office off on off.uuid=cl.office_id  "
 						+ " inner join company comp on comp.uuid=off.company_id  "
