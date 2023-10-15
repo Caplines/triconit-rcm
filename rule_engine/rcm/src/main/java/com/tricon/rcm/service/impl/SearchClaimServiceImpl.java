@@ -72,6 +72,11 @@ public class SearchClaimServiceImpl {
 		if (!dto.getOfficeUuid().isEmpty()) {
 			searchQuery = SearchClaimUtil.setOfficeUuid(dto.getOfficeUuid(), searchQuery);
 		}
+		
+		// set Claim Status
+		if (!dto.getClaimStatus().isEmpty()) {
+			searchQuery = SearchClaimUtil.setClaimStatus(dto.getClaimStatus(), searchQuery);
+		}
 
 		// set patientId
 		if (StringUtils.isNotBlank(dto.getPatientId())) {
@@ -162,7 +167,13 @@ public class SearchClaimServiceImpl {
 				searchResponseDto.setSecondaryInsurance((String) data[8]);
 				searchResponseDto.setPrName((String) data[9]);
 				searchResponseDto.setSecName((String) data[10]);
-				searchResponseDto.setClaimAge(((BigInteger) data[11]).intValue());
+				//System.out.println( data[11].getClass().getName());
+				if (data[11].getClass().getName().equals("java.lang.Integer")) {
+					searchResponseDto.setClaimAge(((Integer) data[11]).intValue());
+				}else {
+					searchResponseDto.setClaimAge(((BigInteger) data[11]).intValue());
+				}
+				
 				searchResponseDto.setTimelyFilingLimitData((String) data[12]);
 				searchResponseDto.setBilledAmount((float) data[13]);
 				searchResponseDto.setPrimTotal((float) data[14]);

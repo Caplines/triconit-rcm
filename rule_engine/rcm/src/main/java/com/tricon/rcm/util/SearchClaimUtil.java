@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tricon.rcm.enums.AgeBracketEnum;
+import com.tricon.rcm.enums.ClaimStatusSearchEnum;
 
 public class SearchClaimUtil {
 	
@@ -21,6 +22,8 @@ public class SearchClaimUtil {
 			+ ",prime_sec_submitted_total primeSecSubmittedTotal ";
 
 	private static final String countColumn = "select count(*) ";
+	
+	private static final String orderBy = " order by claims.dos asc ";
 
 	private static final String fromClause = "from rcm_claims claims "
 			+ "left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
@@ -52,6 +55,22 @@ public class SearchClaimUtil {
 			searchQuery.append(officeUuid.get(i));
 			searchQuery.append("'");
 			if (i < officeUuid.size() - 1) {
+				searchQuery.append(", ");
+			}
+		}
+		searchQuery.append(")");
+		return searchQuery;
+	}
+	
+	public static StringBuilder setClaimStatus(List<String> claimStatus, StringBuilder searchQuery) {
+		//For now we only have billed -> pending =0 and unbilled -> pending=1
+		ClaimStatusSearchEnum.getStatusByStatus("s");
+		searchQuery.append(" and claims.pending in(");
+		for (int i = 0; i < claimStatus.size(); i++) {
+			//searchQuery.append("'");
+			searchQuery.append(ClaimStatusSearchEnum.getStatusByStatus(claimStatus.get(i)));
+			//searchQuery.append("'");
+			if (i < claimStatus.size() - 1) {
 				searchQuery.append(", ");
 			}
 		}
@@ -247,8 +266,8 @@ public class SearchClaimUtil {
 
 	public static String generateFinalQuery(StringBuilder searchQuery) {
 		
-		logger.info("FianlQuery:"+selectColumns + fromClause + searchQuery.toString());
-		return selectColumns + fromClause + searchQuery.toString();
+		logger.info("FinalQuery:"+selectColumns + fromClause + searchQuery.toString());
+		return selectColumns + fromClause + searchQuery.toString()  + orderBy ;
 	}
 
 	public static String generateCountQuery(StringBuilder searchQuery) {

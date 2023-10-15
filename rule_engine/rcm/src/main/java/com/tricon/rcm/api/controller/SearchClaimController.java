@@ -51,7 +51,7 @@ public class SearchClaimController extends BaseHeaderController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@PostMapping(value = "/search-claims")
+	@PostMapping(value = "/api/search-claims")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','REPORTING')")
 	public ResponseEntity<?> claimSearch(@RequestBody SearchClaimDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

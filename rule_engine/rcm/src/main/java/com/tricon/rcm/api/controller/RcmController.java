@@ -555,7 +555,7 @@ public class RcmController extends BaseHeaderController{
         return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
     }
 	
-	@PostMapping("/api/search-claims")
+	/*@PostMapping("/api/search-claims")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','REPORTING','TL','ASSO')")
 	public ResponseEntity<Object> submittedClaims(@RequestBody ClaimSubmittedDto dto, Model model) {
 		ClaimSubDet response = null;
@@ -574,7 +574,7 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
+	}*/
 	
 	@PostMapping("api/save-archive-claims")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")

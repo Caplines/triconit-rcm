@@ -147,7 +147,7 @@ export class AppConstants {
                 'name': 'Unbilled',
                 'checked': false,
             },
-            {
+            /*{
                 'name': 'Open',
                 'checked': false,
             },
@@ -162,7 +162,7 @@ export class AppConstants {
             {
                 'name': 'Primary Closed - Secondary Open',
                 'checked': false,
-            },
+            },*/
             {
                 'name': 'Billed',
                 'checked': false,
