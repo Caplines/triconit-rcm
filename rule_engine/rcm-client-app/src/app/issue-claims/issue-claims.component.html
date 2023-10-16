@@ -31,11 +31,19 @@
                                             (click)="switchTab('Archive Claim')">Archived Claims
                                         </label>
                                     </div>
-                                    <h6 style="color: black;">Upload Errors  
+                                    <div class="d-flex" style="align-items: center;">
+                                    <h6 style="color: black; margin-bottom: 0px;">Upload Errors  
                                         <span class="number-of-claims" style="pointer-events:none;" *ngIf="showIssueClaim">Number of Claims Not Uploaded: {{issueClaimConfig.issueCount}}</span> 
                                         <span class="number-of-claims" style="pointer-events:none;" *ngIf="!showIssueClaim">Number of Archive Claims: {{archiveClaimConfig.archiveCount}}</span>
                                          
                                     </h6>
+                                    <div *ngIf="(loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)" class="dFlex nowrap-text unarchiveAll">  
+                                        <label class="no-css-checkbox-container"  (change)="selectAllArchieveClaims($event)">
+                                            <input type="checkbox" #archiveSelectBox>
+                                            <div class="checkmark"></div>
+                                          </label>  &nbsp;<strong> UnArchive All Claims</strong> 
+                                    </div>
+                                </div>
                                     <div>
                                         <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="(showIssueClaim ? issueClaimConfig.issueCount ==0  : archiveClaimConfig.archiveCount==0) || loader.exportPDFLoader">
                                             <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
@@ -140,8 +148,11 @@
                                                         </div>
                                                         
                                                     </th>
+                    
                                                     <th colspan="6" *ngIf="(loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)">UnArchive  
+            
                                                     </th>
+                                                    
                                                 </tr>
                                             </thead>
                                             <tbody>
