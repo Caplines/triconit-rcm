@@ -532,7 +532,7 @@ export class SearchClaimsPaginationComponent {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Claim Id", "Patient ID","Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Last Team that Worked on this claim" : ""]
+      headers: ["Office", "Claim Id", "Patient ID","Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type","Insurance Name", "Insurance Type", "Estimated Amount"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -573,9 +573,6 @@ export class SearchClaimsPaginationComponent {
     })      //method add value as "-" or "0", if its empty or null.
 
 
-    if (this.tabSwitch.Fresh || this.tabSwitch.MyClaims) {
-
-
       excelData = excelData.map((e: any) => {
         return {
           "Office Name": e.officeName,
@@ -585,10 +582,7 @@ export class SearchClaimsPaginationComponent {
           'DOS': e.dos,
           "Claim Age": e.claimAge,
           "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
-          "Pending Since Date":e.pendingSince,
-          "Age Bracket":e.ageBracket,
           "Claim Type": e.claimType,
-          "Action Required": e.actionRequired,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
           "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
@@ -596,32 +590,8 @@ export class SearchClaimsPaginationComponent {
         }
       })
       excelData = excelData.map(
-        ({ claimId, opdos, opdt, secTotal, uuid, statusType, billedAmount, EstAmount, ...newClaimData }: any) => newClaimData);
+        ({ claimId, opdos, opdt, secTotal, uuid, statusType, billedAmount, EstAmount,ageBracket,pendingSince,actionRequired, ...newClaimData }: any) => newClaimData);
 
-    } else {
-      excelData = excelData.map((e: any) => {
-        return {
-          "Office Name": e.officeName,
-          "Claim Id":e.newClaimId,
-          "Patient ID": e.patientId,
-          "Patient Name": e.patientName,
-          'DOS': e.dos,
-          "Claim Age": e.claimAge,
-          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
-          "Pending Since Date":e.pendingSince,
-          "Age Bracket":e.ageBracket,
-          "Claim Type": e.claimType,
-          "Action Required": e.actionRequired,
-          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
-          "Insurance Type": e.prName ? e.prName : e.secName,
-          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
-          "Billing Amount": e.billedAmount ? '$' + formatNumber(e.billedAmount, this.locale, '.0-0').toString() : "$0",
-          "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
-        }
-      })  //method aligns the header to the value in CSV.
-      excelData = excelData.map(
-        ({ claimId, opdos, opdt, secTotal, uuid, statusType, EstAmount, ...newClaimData }: any) => newClaimData);    //methods removes unwanted properties that are not going to display in CSV.
-    }
 
     this.date = new Date();
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
