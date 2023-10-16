@@ -745,21 +745,21 @@ export class SearchClaimsPaginationComponent {
     });
   }
 
-  downloadPdf(){
+  downloadPdf() {
     this.loader.exportPDFLoader = true;
-    if(this.filteredItems.length!=0){
-    let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamId":this.currentTeamId};
-    this. appService.lisOfClaimsPdfDownload(data,"pdf",(res: any) => {
-      if (res.status === 200){
-        console.log(res.body);
-        this.downloadService.saveBolbData(res.body, "List_Of_Claims.pdf");
-        this.loader.exportPDFLoader = false;
-      }else{
-        console.log("something went wrong");
-        this.loader.exportPDFLoader = false;
-      }
-    })
-  }
+    if (this.filteredItems.length != 0) {
+      let data = { "fileName": "Search-claims", "data": this.filteredItems, "clientName": this.clientName };
+      this.appService.seacrhClaimsPdfDownload(data, "pdf", (res: any) => {
+        if (res.status === 200) {
+          console.log(res.body);
+          this.downloadService.saveBolbData(res.body, "Search-claims.pdf");
+          this.loader.exportPDFLoader = false;
+        } else {
+          console.log("something went wrong");
+          this.loader.exportPDFLoader = false;
+        }
+      })
+    }
   }
   
   showAgeBracket_WithColor_AndClaimIdDigits(){

@@ -30,6 +30,7 @@ import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
 import com.tricon.rcm.dto.download.OthersTeamWorkDownloadDto;
 import com.tricon.rcm.dto.download.PendancyDownloadDto;
 import com.tricon.rcm.dto.download.ProductionDownloadDto;
+import com.tricon.rcm.dto.download.SearchClaimDownloadDto;
 import com.tricon.rcm.dto.download.TreatmentPlanDownloadDto;
 import com.tricon.rcm.pdfDto.AllPendancyPdfDto;
 import com.tricon.rcm.pdfDto.TotalCount;
@@ -70,6 +71,9 @@ public class DownLoadService {
 	
 	@Value("${others_team.xslt.file}")
 	private String OTHERS_TEAM_XSLT_FILE;
+	
+	@Value("${search_claim.xslt.file}")
+	private String SEARCH_CLAIM_XSLT_FILE;
 	
 	@Autowired
 	ClaimServiceImpl claimServiceImpl;
@@ -442,6 +446,29 @@ public class DownLoadService {
 		obj[1]=o;
 		}catch(Exception c) {
 			
+		}
+		return obj;
+	}
+
+
+	public Object[] generatePdfForSearchClaim(SearchClaimDownloadDto dto) {
+		ByteArrayOutputStream o = null;
+		Object[] obj = new Object[2];
+		DtoToXmlConverted xml = new DtoToXmlConverted();
+		try {
+			String filePath = xml.convertToXMLForSearchClaim(dto, XSLT_PATH);
+			File file = new File(filePath);
+			String xslt = SEARCH_CLAIM_XSLT_FILE;
+			o = xml.createPdfStream(
+
+					xml.createHtml(filePath, xslt), "");
+
+			if (file != null)
+				file.delete();
+
+			obj[1] = o;
+		} catch (Exception c) {
+
 		}
 		return obj;
 	}

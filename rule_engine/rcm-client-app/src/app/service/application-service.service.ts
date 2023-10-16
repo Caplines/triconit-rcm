@@ -507,4 +507,7 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['search-params'], callback)
   }
 
+  seacrhClaimsPdfDownload(params: any, pdfcsv: string, callback: any) {
+    this.postDataPdf(params, this.httpUrl['search-claims-pdf'] + "/" + pdfcsv, callback);
+  }
 }

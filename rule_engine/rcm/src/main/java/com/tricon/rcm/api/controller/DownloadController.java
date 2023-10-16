@@ -38,6 +38,7 @@ import com.tricon.rcm.dto.download.ListOfClaimDownloadDto;
 import com.tricon.rcm.dto.download.OthersTeamWorkDownloadDto;
 import com.tricon.rcm.dto.download.PendancyDownloadDto;
 import com.tricon.rcm.dto.download.ProductionDownloadDto;
+import com.tricon.rcm.dto.download.SearchClaimDownloadDto;
 import com.tricon.rcm.dto.download.TreatmentPlanDownloadDto;
 import com.tricon.rcm.service.impl.AttachmentServiceImpl;
 import com.tricon.rcm.service.impl.DownLoadService;
@@ -283,5 +284,23 @@ public class DownloadController extends BaseHeaderController{
 		}
 		
 
+	}
+	
+	@PostMapping
+	@RequestMapping(value = "/api/search-claim/d/pdf")
+	public void generatePDF(@RequestBody SearchClaimDownloadDto dto, HttpServletResponse response) throws IOException {
+
+		Object[] obj = null;
+		obj = service.generatePdfForSearchClaim(dto);
+		if (obj != null && obj[1] != null) {
+			ByteArrayOutputStream o = (ByteArrayOutputStream) obj[1];
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition",
+					String.format("attachment; filename=" + dto.getFileName().toString().replaceAll(",", "") + ".pdf"));
+			InputStream in = new ByteArrayInputStream(o.toByteArray());
+			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+			response.flushBuffer();
+			o.close();
+		}
 	}
 }
