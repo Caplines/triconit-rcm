@@ -12,4 +12,6 @@ public class RcmIVfDto {
     private String claimUuid;
     private String ivfId;
     private String tpId;
+    private Boolean removeTp;
+    private Boolean removeIv;
 }
