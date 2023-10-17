@@ -3837,10 +3837,17 @@ public class ClaimServiceImpl {
 	
 
 	@Transactional(rollbackFor = Exception.class)
-	public UnArchivedResponseDto saveUnArchivedClaims(UnArchiveClaimDto dto, JwtUser jwtUser) throws Exception {
+	public UnArchivedResponseDto saveUnArchivedClaims(UnArchiveClaimDto dto, JwtUser jwtUser,RcmCompany selectedClients) throws Exception {
 		UnArchivedResponseDto response = null;
 		RcmUser updatedBy = null;
 		updatedBy = userRepo.findByEmail(jwtUser.getUsername());
+		
+		// if select all unchrive then execute above condition
+		if (dto.isUnArchiveAll()) {
+			response = this.unArchiveAllClaims(selectedClients, updatedBy);
+			return response;
+
+		}else {  //if single claim is unarchived then below code is executed
 		String[] removePrefix = dto.getClaimId().split(Constants.ARCHIVE_PREFIX);
 		if (removePrefix.length < 2) {
 			return UnArchivedResponseDto.builder().unArchiveStatus(false).build();
@@ -3864,6 +3871,7 @@ public class ClaimServiceImpl {
 						.build()
 				: null;
 		return response;
+	  }
 	}
 	
 	public SearchParamDto getSearchParams() throws Exception {
@@ -3909,5 +3917,39 @@ public class ClaimServiceImpl {
 	private  boolean checkifCompanyIdMatchesList(String userid,String userCompanyId) {
 		List<String> companies= rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(userid);
 		return ClaimUtil.checkifCompanyIdMatchesList(userCompanyId, companies);
+	}
+	
+	private UnArchivedResponseDto unArchiveAllClaims(RcmCompany selectedClients, RcmUser updatedBy) throws Exception {
+		UnArchivedResponseDto response = null;
+		String associatedClientsFromClaims = selectedClients.getUuid();
+		List<IssueClaimDto> listOfUnarchiveClaims = rcmIssueClaimsRepo
+				.fetchAllUnarchiveClaimAssociatedClient(associatedClientsFromClaims);
+		int status = 0;
+		if (!listOfUnarchiveClaims.isEmpty()) {
+			for (IssueClaimDto data : listOfUnarchiveClaims) {
+				status = 0;
+				String[] removePrefix = data.getClaimId().split(Constants.ARCHIVE_PREFIX);
+				if (removePrefix.length < 2) {
+					logger.error("Prefix not match of ClaimId>>>>>>>>>>>>>" + data.getClaimId());
+					break; // if any condition is unmatch then show error claim in ui for error
+				} else {
+					status = rcmClaimRepository.updateIssueClaimsUnArchiveStatus(data.getId(), updatedBy,
+							removePrefix[1]);
+					if (status == 0) {
+						logger.error("Error in ClaimId>>>>>>>>>>>>>" + data.getClaimId());
+						break;
+					}
+				}
+			}
+			response = status > 0
+					? UnArchivedResponseDto.builder().message(MessageConstants.UNARCHIVE_CLAIM_SUBMITTED)
+							.unArchiveStatus(true).build()
+					: null;
+		} else {
+			response = UnArchivedResponseDto.builder().message("All Claims Are Unarchived Already")
+					.unArchiveStatus(true).build();
+
+		}
+		return response;
 	}
 }
