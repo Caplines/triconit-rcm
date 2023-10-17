@@ -76,6 +76,8 @@ export class BillingClaimsComponent {
   selectedFilesMap: any = new Map();
   removedFilesMap: any = new Map();
   serialNoArray = new Map<string, number>();
+  deleteType = "";
+  deleteLoaderIVTP = false;
   readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -110,7 +112,13 @@ export class BillingClaimsComponent {
       if (res.status === 200) {
         this.loader.claimDetail = this.loader.linkToRelatedDoc = false;
         ths.claimRcm = res.data;
-
+        //-O- Means its delete Intentionally
+        if (ths.claimRcm.ivfId != null) {
+          ths.claimRcm.ivfId = ths.claimRcm.ivfId.replace("-O-", "");
+        }
+        if (ths.claimRcm.tpId != null) {
+          ths.claimRcm.tpId = ths.claimRcm.tpId.replace("-O-", "");
+        }
         ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
         ths.fetchOtherTeamRemarks();
         ths.fetchClaimNotes();
@@ -767,7 +775,7 @@ export class BillingClaimsComponent {
     else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
     if (this.claimRcm.firstTeamId == 3 && this.isBilling
-    ) {
+    ) { //use case claim->/e28dd916-4da7-45c7-9884-ee6fd3cac759
       return true;
     }
     return false;
@@ -990,10 +998,23 @@ export class BillingClaimsComponent {
     popup.style.display = 'block';
   }
 
+  openDeleteIvTPopup(event: any, type: string) {
+    event.stopPropagation();
+    this.deleteType = type;
+    let popup: any = document.getElementById("iVTPDEL");
+    popup.style.display = 'block';
+  }
+
   closeIvPopup() {
     let popup: any = document.getElementById("ivUpdate");
     popup.style.display = 'none';
     this.updatedIvfId = '';
+  }
+
+  closeDelPopup() {
+    let popup: any = document.getElementById("iVTPDEL");
+    popup.style.display = 'none';
+    this.deleteType = '';
   }
 
   updateIV(claimUuid: any, ivId: any, tpid: any) {
@@ -1002,6 +1023,7 @@ export class BillingClaimsComponent {
       'ivfId': ivId,
       'tpId': tpid
     };
+
     this.appService.updateIvId(params, (res: any) => {
       if (res.status) {
         if (res.data.success) {
@@ -1014,6 +1036,38 @@ export class BillingClaimsComponent {
         }
       }
       this.closeIvPopup();
+    })
+  }
+
+  removeIVTP() {
+    let params: any = null;
+    if (this.deleteType === "IV") {
+      params = {
+        'claimUuid': this.claimUUid,
+        'removeIv': true
+      };
+    }
+    if (this.deleteType === "TP") {
+      params = {
+        'claimUuid': this.claimUUid,
+        'removeTp': true
+      };
+    }
+    this.deleteLoaderIVTP = true;
+    this.appService.removeIVTP(params, (res: any) => {
+
+      if (res.status) {
+        this.deleteLoaderIVTP = false;
+        if (res.data.success) {
+          if (res.data.ivfId != null) this.claimRcm.ivfId = res.data.ivfId;
+          if (res.data.ivDos != null) this.claimRcm.ivDos = res.data.ivDos;
+          if (res.data.tpId != null) this.claimRcm.tpId = res.data.tpId;
+          if (res.data.tpDos != null) this.claimRcm.tpDos = res.data.tpDos;
+          if (res.data.ssn != null) this.claimRcm.ssn = res.data.ssn;
+          this.reval();
+        }
+      }
+      this.closeDelPopup();
     })
   }
 

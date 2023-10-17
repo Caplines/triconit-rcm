@@ -431,6 +431,10 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['updateIv'], callback)
   }
 
+  removeIVTP(params: any, callback: any) {
+    this.postData(params, this.httpUrl['removeIVTP'], callback)
+  }
+
   issueClaimPdfDownload(params: any, pdfcsv: string, callback: any) {
     this.postDataPdf(params, this.httpUrl['issueClaimsPdf'] + "/" + pdfcsv, callback);
   }

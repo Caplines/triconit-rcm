@@ -69,6 +69,7 @@ export class BaseService {
     'fetchIssueClaimCounts': '/issue-claim-counts',
     'googleSheetLink': '/gsheet-link',
     'updateIv': '/api/updateivfid',
+    'removeIVTP': '/api/updateivfid/delete',
     'claimAttachment': '/api/claim-attachment',
     'final-attachments-data': '/api/final-attachments-data',
     'assign-claim-with-remark': '/api/assign-claim-with-remark',

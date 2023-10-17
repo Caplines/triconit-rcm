@@ -197,6 +197,15 @@
                                             style="cursor: pointer;" (click)="openUpdateIvPopup($event)">Update IV ID /
                                             TX Plan ID
                                             ?</span></a>
+                                    <a data-toggle="collapse" aria-expanded="false"><span class="passedNum"
+                                            *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons && (claimRcm.ivfId!=null && claimRcm.ivfId!='')"
+                                            style="cursor: pointer;" (click)="openDeleteIvTPopup($event,'IV')">Remove IV
+                                            ID?
+                                        </span></a>
+                                    <a data-toggle="collapse" aria-expanded="false"><span class="passedNum"
+                                            *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons && (claimRcm.tpId!=null && claimRcm.tpId!='')"
+                                            style="cursor: pointer;" (click)="openDeleteIvTPopup($event,'TP')">TX Plan
+                                            ID ?</span></a>
                                     <div class="down-icon" (click)="showHide(1)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
@@ -1323,6 +1332,27 @@
                             role="alert">
                             <strong>{{alert.alertMsg}}</strong>
                         </div>
+
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <div id="iVTPDEL" class="modal iVTPDEL">
+            <div class="modal-content" style="width:40%">
+                <div _ngcontent-qaa-c48="" class="modal-header">
+                    <h5 class="modal-title">Remove {{deleteType=="TP"?"Treatement Plan":"IV Id"}}</h5>
+                    <button type="button" (click)="closeDelPopup()" class="close"><span>×</span></button>
+                </div>
+                <div class="modal-body">
+                    <ng-container>
+                        <div>
+                            <div class="plan-id-box">
+                                <label>&nbsp;</label>
+                                <button class="btn btn-success" (click)="removeIVTP()">
+                                    Are you Sure!!</button>
+                            </div>
+                        </div>
+                        <div *ngIf="deleteLoaderIVTP" class="loader-data"></div>
 
                     </ng-container>
                 </div>
