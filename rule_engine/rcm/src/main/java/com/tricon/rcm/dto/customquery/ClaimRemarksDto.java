@@ -9,4 +9,5 @@ public interface ClaimRemarksDto {
 	String getFName();
 	String getLName();
 	String getTeamName();
+	int getAttchmentsWithRemarks();
 }

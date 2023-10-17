@@ -2929,7 +2929,7 @@ public class ClaimServiceImpl {
 				message="Submitted";
 			}else if(dto.isAssignToOtherTeam()){
 				message= assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
-						dto.getAssignToTeam(),dto.getAssignToComment(),claim,assign,user,office);
+						dto.getAssignToTeam(),dto.getAssignToComment(),claim,assign,user,office,false);
 			}/*else if(dto.isAssignToTL()){//Separate API
 				//RcmUser assignuser = userRepo.findByUuid(jwtUser.getUuid());
 				claim.setUpdatedBy(user);
@@ -3019,7 +3019,7 @@ public class ClaimServiceImpl {
 			} else {
 				message =assignClaimToOtherTeamWithRemarkCommon(partialHeader, dto.getClaimUuid(),
 						assignToTeamId, dto.getRemark(), claim,
-						 assign, user, office);
+						 assign, user, office,dto.isAttachmentsWithRemarks());
 				if (message!=null && message.equals("OtherTeam")) message="done";
 				return message;
 			
@@ -3040,7 +3040,7 @@ public class ClaimServiceImpl {
 	 */
 	private String assignClaimToOtherTeamWithRemarkCommon(PartialHeader partialHeader,String claimUuid,
 			int assignToTeam,String assignToComment,RcmClaims claim,
-			RcmClaimAssignment assign,RcmUser user,RcmOffice office) {
+			RcmClaimAssignment assign,RcmUser user,RcmOffice office,boolean attachmentsWithRemarks) {
           
 		if (!claim.isPending()) {
 			
@@ -3062,6 +3062,12 @@ public class ClaimServiceImpl {
 		  //assign.setCommentAssignedBy(Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+ ":"+assignTeam.getName());
 		  assign.setUpdatedBy(user);
 		  assign.setUpdatedDate(new Date());
+		  
+		  //save attachment-with-remarks(yes/no)
+		  
+		  if(attachmentsWithRemarks) {
+			  assign.setAttachmentWithRemarks(Constants.ATTACHMENT_WITH_REMARKS);	  
+		  }
 		  
 		  rcmClaimAssignmentRepo.save(assign);
 		  //Assignment Table
