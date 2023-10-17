@@ -687,12 +687,15 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
-		if (dto.getId() == null || dto.getClaimId() == null || dto.getClaimId().isEmpty()) {
-			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		//if all claims has to be unarchive then no need to check below parameters
+		if (!dto.isUnArchiveAll()) {
+			if (dto.getId() == null || dto.getClaimId() == null || dto.getClaimId().isEmpty()) {
+				return ResponseEntity
+						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+			}
 		}
 		try {
-			response = claimServiceImpl.saveUnArchivedClaims(dto, partialHeader.getJwtUser());
+			response = claimServiceImpl.saveUnArchivedClaims(dto, partialHeader.getJwtUser(),partialHeader.getCompany());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

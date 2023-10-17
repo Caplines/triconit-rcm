@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class UnArchiveClaimDto {
 
-     private Integer id    ;
+     private Integer id;
      private String claimId;
+     private boolean unArchiveAll;
 }

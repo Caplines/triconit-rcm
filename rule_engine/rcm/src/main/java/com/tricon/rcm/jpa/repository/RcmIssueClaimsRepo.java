@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.tricon.rcm.db.entity.RcmIssueClaims;
 import com.tricon.rcm.db.entity.RcmOffice;
+import com.tricon.rcm.dto.customquery.IssueClaimDto;
 
 public interface RcmIssueClaimsRepo extends JpaRepository<RcmIssueClaims, Integer>{
 
@@ -23,4 +24,9 @@ public interface RcmIssueClaimsRepo extends JpaRepository<RcmIssueClaims, Intege
 			+ "where cmp.uuid=:companyId and claim_id=:claimId and cl.is_archive is false and cl.resolved is false")
 	String fetchClaimByClaimIdAndCompany(@Param("claimId") String claimId,@Param("companyId") String companyId) ;
 
+	
+	@Query(value = "select cl.id as Id,cl.is_archive as IsArchive,cl.claim_id claimId,cl.issue,cl.source,off.name officeName from rcm_issue_claims cl "
+			+ "left join office off on off.uuid=cl.office_id "
+			+ "where off.company_id=:companyId and cl.resolved is false and cl.is_archive is true", nativeQuery = true)
+	List<IssueClaimDto> fetchAllUnarchiveClaimAssociatedClient(@Param("companyId") String companyId);
 }
