@@ -1616,13 +1616,15 @@ public class ClaimServiceImpl {
                //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
                String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE_HELPING.format(implDto.getDos());
                //String doc1FromProvider = doc1NameMap.get(officeName + "->" + sheetDate);
-               providers = getDocsFromHelpingData(helpingList,sheetDate,officeName);
+               providers = getDocsFromHelpingData(helpingList,sheetDate,officeName,implDto.getClientName());
                //final String  treatingProviderF=treatingProvider;
                List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
    			   
                final String proIdFinal=implDto.getProviderId();
+               final String clientName=implDto.getClientName();
                List<ProviderCodeWithOffice> pCodeList = pro.stream()
    					.filter(e -> e.getOffice().trim().equalsIgnoreCase(officeName)
+   							&&  e.getClientName().trim().equalsIgnoreCase(clientName)
    							&& e.getEsCode().trim().equalsIgnoreCase(proIdFinal))
    					.collect(Collectors.toList());
                
@@ -1630,8 +1632,10 @@ public class ClaimServiceImpl {
    				treatingProviderFromClaim = pCodeList.get(0).getProviderCode();
 			 	
    			 List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
-   			 List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equalsIgnoreCase(pCodeList.get(0).getProviderCode()))
-			.collect(Collectors.toList());
+   			 List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> 
+   			               p.getProviderCode().equalsIgnoreCase(pCodeList.get(0).getProviderCode())
+   			               &&  p.getClientName().equalsIgnoreCase(clientName)
+   					        ).collect(Collectors.toList());
    			 if (proEsF!=null && proEsF.size()>0) {
    				providerOnClaim =proEsF.get(0).getProviderNames();
    				specialty = proEsF.get(0).getSpecialty();
@@ -1643,7 +1647,10 @@ public class ClaimServiceImpl {
    			for(ProivderHelpingSheetDto provider: providers) {
    				final String  treatingProviderF=provider.getTreatingProvider();
    				treatingProvider=treatingProvider+Constants.ProviderJoinCons+provider.getTreatingProvider();
-   				List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equalsIgnoreCase(treatingProviderF))
+   				List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> 
+   				                   p.getProviderCode().equalsIgnoreCase(treatingProviderF) &&
+   				                   p.getClientName().equalsIgnoreCase(clientName)
+   				                   )
    	   					.collect(Collectors.toList());
    	   			if (proEsF!=null && proEsF.size()>0) {
    	   				providerOnClaimFromSheet =providerOnClaimFromSheet+Constants.ProviderJoinCons+ proEsF.get(0).getProviderNames();
@@ -3218,6 +3225,8 @@ public class ClaimServiceImpl {
 		calendar.setTime(new Date());
 		System.out.println(calendar.get(Calendar.YEAR));
 		RcmOffice off =officeRepo.findByUuid(claim.getOffice().getUuid());
+		RcmCompany rcmCompany= rcmCompanyRepo.findByUuid(off.getCompany().getUuid());
+		
 		//RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(off.getCompany().getUuid(), partialHeader.getCompany());
 		if (validateClaimRight) {
 
@@ -3268,13 +3277,14 @@ public class ClaimServiceImpl {
 		               //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
 		               String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE_HELPING.format(claim.getDos());
 		               //String doc1FromProvider = doc1NameMap.get(officeName + "->" + sheetDate);
-		               providers = getDocsFromHelpingData(helpingList,sheetDate,officeName);
+		               providers = getDocsFromHelpingData(helpingList,sheetDate,officeName,rcmCompany.getName());
 		               //final String  treatingProviderF=treatingProvider;
 		               List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
 		   			   
 		               final String proIdFinal=claim.getProviderId();
 		               List<ProviderCodeWithOffice> pCodeList = pro.stream()
 		   					.filter(e -> e.getOffice().trim().equalsIgnoreCase(officeName)
+		   							&& e.getClientName().trim().equalsIgnoreCase(rcmCompany.getName())
 		   							&& e.getEsCode().trim().equalsIgnoreCase(proIdFinal))
 		   					.collect(Collectors.toList());
 		               
@@ -3282,7 +3292,10 @@ public class ClaimServiceImpl {
 		   				treatingProviderFromClaim = pCodeList.get(0).getProviderCode();
 					 	
 		   			 List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
-		   			 List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equalsIgnoreCase(pCodeList.get(0).getProviderCode()))
+		   			 List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> 
+		   			                            p.getProviderCode().equalsIgnoreCase(pCodeList.get(0).getProviderCode())
+		   			                          && p.getClientName().equalsIgnoreCase(rcmCompany.getName())
+		   			                            )
 					.collect(Collectors.toList());
 		   			 if (proEsF!=null && proEsF.size()>0) {
 		   				providerOnClaim =proEsF.get(0).getProviderNames();
@@ -3296,7 +3309,10 @@ public class ClaimServiceImpl {
 		   			for(ProivderHelpingSheetDto provider: providers) {
 		   				final String  treatingProviderF=provider.getTreatingProvider();
 		   				treatingProvider=treatingProvider+Constants.ProviderJoinCons+provider.getTreatingProvider();
-		   				List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> p.getProviderCode().equalsIgnoreCase(treatingProviderF))
+		   				List<ProviderCodeWithSpecialty> proEsF= proEs.stream().filter(p -> 
+		   				            p.getProviderCode().equalsIgnoreCase(treatingProviderF) &&
+		   				            p.getClientName().equalsIgnoreCase(rcmCompany.getName())
+		   				            )
 		   	   					.collect(Collectors.toList());
 		   	   			if (proEsF!=null && proEsF.size()>0) {
 		   	   				providerOnClaimFromSheet =providerOnClaimFromSheet+Constants.ProviderJoinCons+ proEsF.get(0).getProviderNames();
@@ -3662,10 +3678,12 @@ public class ClaimServiceImpl {
 	}
 	
 	private List<ProivderHelpingSheetDto> getDocsFromHelpingData(List<ProivderHelpingSheetDto> helpingList,String sheetDate,
-			String officeName) {
+			String officeName,String clientName) {
 		
-	List<ProivderHelpingSheetDto> filteredList =	helpingList.stream().filter(re -> re.getDate().equals(sheetDate) &&  re.getOfficeName().equalsIgnoreCase(officeName))
-	      .collect(Collectors.toList());
+		List<ProivderHelpingSheetDto> filteredList = helpingList.stream()
+				.filter(re -> re.getClientName().equalsIgnoreCase(clientName) && re.getDate().equals(sheetDate)
+						&& re.getOfficeName().equalsIgnoreCase(officeName))
+				.collect(Collectors.toList());
 	List<ProivderHelpingSheetDto> providers=new ArrayList<>();
 	if (filteredList!=null && filteredList.size()>0) {
 		for(ProivderHelpingSheetDto d:filteredList) {
