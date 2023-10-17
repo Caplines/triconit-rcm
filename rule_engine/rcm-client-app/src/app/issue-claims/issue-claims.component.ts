@@ -38,9 +38,11 @@ export class IssueClaimComponent {
 
   issueClaimConfig:any= {'issueCount':0,'issueClaimsData':[]};
   archiveClaimConfig:any= {'archiveCount':0,'archiveClaimsData':[]};
+  showUnArchiveModal:boolean=false;
 
   @ViewChild('modalElement')modalElementRef!:ElementRef;
   @ViewChild('archiveSelectBox')archiveSelectBox!:ElementRef;
+  @ViewChild('unArchiveSelectBox')unArchiveSelectBox!:ElementRef;
   
   
   @HostListener('mouseleave') onMouseLeave(event: Event) {
@@ -413,10 +415,11 @@ selectClaimsToArchive(e:any,id:any){
 
   }
 
-  UnarchiveClaims(data: any) {
+  UnarchiveClaims(data: any,isUnarchiveAll:boolean) {
     let param = {
-      "id": data.id,
-      "claimId": data.claimId
+      "id": data.id? data.id : '',
+      "claimId": data.claimId ? data.claimId :'',
+      "unArchiveAll":isUnarchiveAll
     };
     this.loader.unarchive = true;
     this.loader.showLoader = true;
@@ -428,17 +431,21 @@ selectClaimsToArchive(e:any,id:any){
           this.showHideMessage();
           this.filtertedArchiveItems = this.removeUnArchivedItem(data);
           this.getArchiveClaimsCount();
+          let hasUnarchivedAll:boolean=isUnarchiveAll;
+          this.closeConfirmationModal(hasUnarchivedAll);
           this.loader.unarchive = false;
       }
       else if(res.status == 200 && !res.data.unArchiveStatus) {
         this.showMessage = { 'msg': res.data.message, 'status': res.status };
         this.loader.showLoader = false;
+        this.closeConfirmationModal(false);
         this.showHideMessage();
         this.loader.unarchive = false;
       }
       else {
         this.showMessage = { 'msg': res.message, 'status': res.status };
         this.loader.showLoader = false;
+        this.closeConfirmationModal(false);
         this.showHideMessage();
         this.loader.unarchive = false;
       }
@@ -449,5 +456,15 @@ selectClaimsToArchive(e:any,id:any){
     let idx = this.filtertedArchiveItems.findIndex((item:any)=>item.id== data.id);
     this.filtertedArchiveItems.splice(idx,1);
     return this.filtertedArchiveItems;
+  }
+
+  UnarchiveClaimsConfirmModal(){
+        this.showUnArchiveModal = true;
+  }
+
+  closeConfirmationModal(hasUnarchivedAll:boolean){
+    this.showUnArchiveModal = false;
+    this.unArchiveSelectBox.nativeElement.checked=false;
+    if(hasUnarchivedAll) location.reload();
   }
 }
