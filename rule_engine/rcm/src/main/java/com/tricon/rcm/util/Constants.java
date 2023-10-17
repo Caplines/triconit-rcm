@@ -122,5 +122,6 @@ public class Constants {
 	
 	public static final int MIN_RANGE=1;
 	public static final int MAX_RANGE=2;
+	public static final int ATTACHMENT_WITH_REMARKS=1;
 
 }

@@ -73,4 +73,7 @@ public class RcmClaimAssignment extends BaseAuditEntity implements Serializable{
 	@Column(name = "active",columnDefinition = "BIT default 1")
 	private boolean active;//
 	
+	@Column(name = "attachment_with_remarks", columnDefinition = "integer default 0")
+	private int attachmentWithRemarks;
+	
 }
