@@ -1603,6 +1603,7 @@ public class ClaimServiceImpl {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(new Date());
 				try {
+					if (claim==null) claim = rcmClaimRepository.findByClaimUuid(claimUuid);
 					String sheetYear = Constants.SDF_SHEET_PROVIDER_DATE_HELPING_YEAR.format(claim.getDos());
 			    Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
 					Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
@@ -1730,6 +1731,37 @@ public class ClaimServiceImpl {
 	}
 	
 	
+	@Transactional(rollbackFor = Exception.class)
+	public ClaimSubDet  removeIvIdAndTpId(RcmIVfDto dto,PartialHeader partialHeader) {
+		
+        RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+        ClaimSubDet det = new ClaimSubDet();
+		det.setSuccess(false);
+		if (!claim.isPending()){
+			return det;
+		}
+		
+		if (dto.getRemoveIv()!=null) {
+			 claim.setIvfId("-O-");
+			 det.setIvfId("");
+			 claim.setIvDos("");
+			 det.setIvDos("");
+			 claim.setSsn("");
+			 det.setSsn("");
+			   
+		}
+       if (dto.getRemoveTp()!=null) {
+    	   claim.setTpDos("");
+    	   claim.setTpId("-O-");
+    	   det.setTpDos(claim.getTpDos());
+		   det.setTpId("");
+		   rcmTPDetailRepo.deleteByClaimId(claim.getClaimUuid());
+		} 
+        rcmClaimRepository.save(claim);
+        det.setSuccess(true);
+		return det;
+		
+	}
 	@Transactional(rollbackFor = Exception.class)
 	public ClaimSubDet updateAutoIvIdAndTpId(RcmIVfDto dto,PartialHeader partialHeader) {
 
