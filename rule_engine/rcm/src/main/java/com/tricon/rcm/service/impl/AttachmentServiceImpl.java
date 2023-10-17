@@ -162,7 +162,7 @@ public class AttachmentServiceImpl {
 				inner.setName((d.getFileName()==null ||d.getFileName().isEmpty())?"":d.getFileName().split(Constants.HYPHEN,2)[1]);
 				attachmentDto = ClaimAttachmentsResponseDto.builder().id(d.getId())
 						.file(inner).attachmentId(d.getAttachmentId())
-						.isDeleted(d.getIsDeleted()).build();
+						.isDeleted(d.getIsDeleted()).uploadedBy(d.getCreatedBy()).uploadedDate(d.getCreatedDate()).uploadedByTeam(d.getUploadedByTeam()).uploadedByUserUuid(d.getUploadedByUserUuid()).build();
 				responseData.add(attachmentDto);
 			}
 		}
@@ -208,6 +208,12 @@ public class AttachmentServiceImpl {
 					RcmClaimAttachmentDto renameFileData = attachmentRepo.findRenameFile(checkEmptyFileName,
 							dto.getClaimUuid());
 					if (renameFileData == null) {
+						//Only the user who uploaded the attachments can delete them.
+						if(!d.getUserUuid().equals(loginUser.getUuid())) {
+							response = FileResponseDto.builder().message(MessageConstants.ATTACHMENTS_REMOVE_FALIED)
+									.fileResponseStatus(false).build();
+							break;
+						}
 						boolean isTrue = existingFile.renameTo(renameFile);
 						if (isTrue) {
 							status = attachmentRepo.updateAttachmentStatusById(loginUser, d.getId(), renameFileName);
@@ -219,6 +225,12 @@ public class AttachmentServiceImpl {
 						}
 
 					} else {
+						//Only the user who uploaded the attachments can delete them.
+						if(!d.getUserUuid().equals(loginUser.getUuid())) {
+							response = FileResponseDto.builder().message(MessageConstants.ATTACHMENTS_REMOVE_FALIED)
+									.fileResponseStatus(false).build();
+							break;
+						}
 						String reName = Constants.REMOVE_ATTACHMENT_PREFIX.concat(renameFileData.getRenameFile());
 						File replaceFile = new File(attachmentDirPath.concat(File.separator).concat(dto.getClaimUuid())
 								.concat(File.separator).concat(reName));
