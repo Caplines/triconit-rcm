@@ -19,6 +19,10 @@ public class ClaimAttachmentsResponseDto {
 	private Integer attachmentId;
 	private String message;
 	private boolean status;
+	private String uploadedBy;
+	private String uploadedDate;
+	private String uploadedByTeam;
+	private String uploadedByUserUuid;
 	
 	public class File{
 		private String name;

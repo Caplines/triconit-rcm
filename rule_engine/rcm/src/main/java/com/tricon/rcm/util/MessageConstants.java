@@ -105,6 +105,7 @@ public class MessageConstants {
 	
 	public static final String UNARCHIVE_CLAIM_SUBMITTED="The selected claims have been Unarchived";
 	public static final String CLAIM_NOT_UNARCHIVED="Already Exists with Same Claim Id. Can not be UNARCHIVED.";
+	public static final String ATTACHMENTS_REMOVE_FALIED="You can remove only own uploaded attachments";
 	
 
 }

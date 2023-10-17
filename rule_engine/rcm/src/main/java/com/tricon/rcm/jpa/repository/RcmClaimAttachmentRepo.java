@@ -15,11 +15,12 @@ import com.tricon.rcm.util.Constants;
 public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment, Integer>{
 
 	
-	@Query(value = "select a.id as Id,a.file_name as FileName,a.is_deleted as IsDeleted,a.attachment_type_id as AttachmentId "
+	@Query(value = "select a.id as Id,a.file_name as FileName,a.is_deleted as IsDeleted,a.attachment_type_id as AttachmentId,u.first_name as CreatedBy,DATE_FORMAT(a.created_date, '%Y-%m-%d') as CreatedDate,t.name as UploadedByTeam,u.email as UploadedByUserUuid "
 			+ "from rcm_claim_attachment a "
 			+ "inner join rcm_attachment_type atype on atype.id=a.attachment_type_id "
 			+ "inner join rcm_claims c on c.claim_uuid=a.claim_id "
 			+ "inner join rcm_team t on t.id=a.created_by_team "
+			+ "inner join rcm_user u on u.uuid=a.created_by "
 			+ "where a.claim_id=:claimuUuid and a.is_deleted is false and a.status is true and t.active is true", nativeQuery = true)
 	List<RcmClaimAttachmentDto> findByAttachmentId(@Param("claimuUuid") String claimuUuid);
 	
@@ -29,11 +30,12 @@ public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment
 			@Param("attachmentId") int attachmentId,@Param("renameFile") String renameFile);
 	
 	
-	@Query(value = "select a.id as Id,a.file_name as FileName,a.is_deleted as IsDeleted,a.status as Status,a.claim_id as ClaimUuid "
+	@Query(value = "select a.id as Id,a.file_name as FileName,a.is_deleted as IsDeleted,a.status as Status,a.claim_id as ClaimUuid,u.uuid as UserUuid "
 			+ "from rcm_claim_attachment a "
 			+ "inner join rcm_attachment_type atype on atype.id=a.attachment_type_id "
 			+ "inner join rcm_claims c on c.claim_uuid=a.claim_id "
 			+ "inner join rcm_team t on t.id=a.created_by_team "
+			+ "inner join rcm_user u on u.uuid=a.created_by "
 			+ "where a.id IN (:attachmentsId) and a.claim_id=:claimuUuid and a.is_deleted is false and a.status is true and t.active is true", nativeQuery = true)
 	List<RcmClaimAttachmentDto> findByAttachmentsById(@Param("attachmentsId")List<Integer>attachmentsId,@Param("claimuUuid") String claimuUuid);
    

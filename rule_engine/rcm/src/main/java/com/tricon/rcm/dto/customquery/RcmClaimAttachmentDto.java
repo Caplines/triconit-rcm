@@ -10,5 +10,10 @@ public interface RcmClaimAttachmentDto {
 	String getClaimUuid();
 	String getFileLocation();
 	String getRenameFile();
+	String getCreatedBy();
+	String getCreatedDate();
+	String getUploadedByTeam();
+	String getUploadedByUserUuid();
+	String getUserUuid();
 	
 }
