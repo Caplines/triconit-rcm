@@ -71,8 +71,7 @@ export class SearchClaimsComponent {
   ngOnInit(): void {
     this.getcompanyData();
     this.getSerachParams();
-    this.setDefaultDate();
-
+   // this.setDefaultDate();
   }
 
 

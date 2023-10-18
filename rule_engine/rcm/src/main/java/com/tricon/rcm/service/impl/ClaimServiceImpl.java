@@ -137,6 +137,7 @@ import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimArchiveHistoryRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimAttachmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimCommentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimDetailRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLogRepo;
@@ -276,6 +277,9 @@ public class ClaimServiceImpl {
 
 	@Autowired
 	RcmIssueClaimsRepo issueClaimRepo;
+	
+	@Autowired
+	 RcmClaimAttachmentRepo attachmentRepo;
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -2922,7 +2926,7 @@ public class ClaimServiceImpl {
 				message="Submitted";
 			}else if(dto.isAssignToOtherTeam()){
 				message= assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
-						dto.getAssignToTeam(),dto.getAssignToComment(),claim,assign,user,office,false);
+						dto.getAssignToTeam(),dto.getAssignToComment(),claim,assign,user,office,null);
 			}/*else if(dto.isAssignToTL()){//Separate API
 				//RcmUser assignuser = userRepo.findByUuid(jwtUser.getUuid());
 				claim.setUpdatedBy(user);
@@ -3012,7 +3016,7 @@ public class ClaimServiceImpl {
 			} else {
 				message =assignClaimToOtherTeamWithRemarkCommon(partialHeader, dto.getClaimUuid(),
 						assignToTeamId, dto.getRemark(), claim,
-						 assign, user, office,dto.isAttachmentsWithRemarks());
+						 assign, user, office,dto.getAttachmentsWithRemarks());
 				if (message!=null && message.equals("OtherTeam")) message="done";
 				return message;
 			
@@ -3033,7 +3037,7 @@ public class ClaimServiceImpl {
 	 */
 	private String assignClaimToOtherTeamWithRemarkCommon(PartialHeader partialHeader,String claimUuid,
 			int assignToTeam,String assignToComment,RcmClaims claim,
-			RcmClaimAssignment assign,RcmUser user,RcmOffice office,boolean attachmentsWithRemarks) {
+			RcmClaimAssignment assign,RcmUser user,RcmOffice office,String attachmentsWithRemarks) {
           
 		if (!claim.isPending()) {
 			
@@ -3076,8 +3080,10 @@ public class ClaimServiceImpl {
 				rcmAssigment.setActive(false);
 				
 				// save attachment-with-remarks(yes/no)
-				if (attachmentsWithRemarks) {
-					rcmAssigment.setAttachmentWithRemarks(Constants.ATTACHMENT_WITH_REMARKS);
+				if (attachmentsWithRemarks!=null && attachmentsWithRemarks.equals(Constants.ATTACH_WITH_REMARKS)){
+					int existingAttachmentCounts=attachmentRepo.attachmentCountOfUserUuid(claimUuid, user.getUuid());
+					if(existingAttachmentCounts>0) {
+					rcmAssigment.setAttachmentWithRemarks(Constants.ATTACHMENT_WITH_REMARKS);}
 				}
 				
 				rcmClaimAssignmentRepo.save(rcmAssigment);

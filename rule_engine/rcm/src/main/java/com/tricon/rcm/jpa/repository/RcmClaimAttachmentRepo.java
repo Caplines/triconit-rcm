@@ -67,4 +67,11 @@ public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment
 	@Query(value = "update rcm_claims set attachment_count=:count where claim_uuid=:claimuUuid", nativeQuery = true)
 	int updateAttachmentCountInRcmClaim(@Param("claimuUuid") String claimuUuid, @Param("count") int count);
 	
+	@Query(value = "select count(*) from rcm_claim_attachment attach "
+			+ "inner join rcm_user u on u.uuid= attach.created_by "
+			+ "inner join rcm_claims c on c.claim_uuid=attach.claim_id " 
+			+ "where attach.created_by=:uuid "
+			+ "and attach.is_deleted is false and attach.claim_id=:claimuUuid", nativeQuery = true)
+	int attachmentCountOfUserUuid(@Param("claimuUuid") String claimuUuid, @Param("uuid") String userUuid);
+	
 }
