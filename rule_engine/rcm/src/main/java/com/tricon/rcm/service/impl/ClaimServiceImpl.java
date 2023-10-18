@@ -3056,12 +3056,6 @@ public class ClaimServiceImpl {
 		  assign.setUpdatedBy(user);
 		  assign.setUpdatedDate(new Date());
 		  
-		  //save attachment-with-remarks(yes/no)
-		  
-		  if(attachmentsWithRemarks) {
-			  assign.setAttachmentWithRemarks(Constants.ATTACHMENT_WITH_REMARKS);	  
-		  }
-		  
 		  rcmClaimAssignmentRepo.save(assign);
 		  //Assignment Table
 		  UserAssignOffice assignedUser = userAssignOfficeRepo
@@ -3080,6 +3074,11 @@ public class ClaimServiceImpl {
 				rcmAssigment.setCurrentTeamId(oldTeam); 
 				rcmAssigment.setAssignedTo(oldRcmUser);
 				rcmAssigment.setActive(false);
+				
+				// save attachment-with-remarks(yes/no)
+				if (attachmentsWithRemarks) {
+					rcmAssigment.setAttachmentWithRemarks(Constants.ATTACHMENT_WITH_REMARKS);
+				}
 				
 				rcmClaimAssignmentRepo.save(rcmAssigment);
 				

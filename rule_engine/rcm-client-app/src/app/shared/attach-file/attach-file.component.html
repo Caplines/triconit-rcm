@@ -53,12 +53,15 @@
                                                     {{item.value}}</option>
                                             </ng-container>
                                         </select></td>
-                                        <td> <span class="close" *ngIf="(this.inputConfig['isDetailPage'] || this.inputConfig['isDeleteAllowed'] || this.inputConfig['isOtherTeam']) && (userEmail|uppercase) == (file.uploadedByUserUuid|uppercase) " (click)="removePreSelectedFile(file)">&times;</span>
+                                        <td style="vertical-align: middle;"> <div class="action-flex">
+                                            <span class="closeBtn" title="Remove" *ngIf="(this.inputConfig['isDetailPage'] || this.inputConfig['isDeleteAllowed'] || this.inputConfig['isOtherTeam']) && (userEmail|uppercase) == (file.uploadedByUserUuid|uppercase) " (click)="removePreSelectedFile(file)">&times;</span>
                                             <ng-container *ngIf="inputConfig['attachmentCount']>0">
                                                 <button type="button" class="icon-btn download-button"
                                                     (click)="downloadAttachment(file)" title="Download">
                                                     <img src="../../assets/img/down-arrow.png" /></button>
-                                            </ng-container></td>
+                                            </ng-container>
+                                        </div>
+                                        </td>
                                     </tr>
                                 </ng-container>
                                 <tr *ngIf="selectedFiles.length > 0">
@@ -70,7 +73,7 @@
                                         <td class="fileEllipsis">{{file.file.name}}</td>
                                         <td>{{file.uploadedBy}}</td>
                                         <td>{{file.uploadedByTeam}}</td>
-                                        <td>{{file.uploadedDate|date:"MM/DD/YYYY"}}</td>
+                                        <td>{{file.uploadedDate | date}}</td>
                                         <td>   <select class="form-control" [(ngModel)]="file.attachmentTypeId"
                                             style="width: 300px; margin-left: 15px;" name="type">
                                             <ng-container *ngFor="let item of constant.attachmentType">

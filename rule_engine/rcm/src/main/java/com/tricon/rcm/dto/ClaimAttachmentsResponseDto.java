@@ -1,5 +1,7 @@
 package com.tricon.rcm.dto;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +22,7 @@ public class ClaimAttachmentsResponseDto {
 	private String message;
 	private boolean status;
 	private String uploadedBy;
-	private String uploadedDate;
+	private Date uploadedDate;
 	private String uploadedByTeam;
 	private String uploadedByUserUuid;
 	

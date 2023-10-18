@@ -15,7 +15,7 @@ import com.tricon.rcm.util.Constants;
 public interface RcmClaimAttachmentRepo extends JpaRepository<RcmClaimAttachment, Integer>{
 
 	
-	@Query(value = "select a.id as Id,a.file_name as FileName,a.is_deleted as IsDeleted,a.attachment_type_id as AttachmentId,u.first_name as CreatedBy,DATE_FORMAT(a.created_date, '%Y-%m-%d') as CreatedDate,t.name as UploadedByTeam,u.email as UploadedByUserUuid "
+	@Query(value = "select a.id as Id,a.file_name as FileName,a.is_deleted as IsDeleted,a.attachment_type_id as AttachmentId,u.first_name as CreatedBy,a.created_date as CreatedDate,t.name as UploadedByTeam,u.email as UploadedByUserUuid "
 			+ "from rcm_claim_attachment a "
 			+ "inner join rcm_attachment_type atype on atype.id=a.attachment_type_id "
 			+ "inner join rcm_claims c on c.claim_uuid=a.claim_id "

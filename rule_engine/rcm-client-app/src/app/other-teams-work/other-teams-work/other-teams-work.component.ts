@@ -407,7 +407,7 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
       "remark":this.submitBtnConfig['remarks'][claimUuid],
       "claimUuid":claimUuid,
       "assignToTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : null ,   //converting string into number using unary operator +
-      "attachmentWithRemarks":hasAttachedFiles
+      "attachmentsWithRemarks":hasAttachedFiles
     }
   this.appService.AssignClaimWithRemark(params,(res:any)=>{
       if(res.status == 200){
